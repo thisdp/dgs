@@ -1,6 +1,0 @@
-addEvent("onGlobalResourceDataRequire",true)
-addEventHandler("onGlobalResourceDataRequire",root,function()
-    local db = getElementData(root,"generalDataBase")
-    local data = exports.datamanager:getAllDBData(db,"GeneralResource")
-    triggerClientEvent(source,"onGlobalResourceDataReturn",source,data)
-end)
