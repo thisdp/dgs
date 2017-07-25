@@ -1,0 +1,32 @@
+
+function dgsDxCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg,selimg,cliimg,defcolor,selcolor,clicolor)
+	assert(tonumber(x),"@dgsDxCreateButton argument 1,expect number got "..type(x))
+	assert(tonumber(y),"@dgsDxCreateButton argument 2,expect number got "..type(y))
+	assert(tonumber(sx),"@dgsDxCreateButton argument 3,expect number got "..type(sx))
+	assert(tonumber(sy),"@dgsDxCreateButton argument 4,expect number got "..type(sy))
+	if isElement(parent) then
+		assert(dgsIsDxElement(parent),"@dgsDxCreateButton argument 7,expect dgs-dxgui got "..dgsGetType(parent))
+	end
+	local button = createElement("dgs-dxbutton")
+	dgsSetType(button,"dgs-dxbutton")
+	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true) or table.insert(MaxFatherTable,1,button)
+	defcolor,selcolor,clicolor = defcolor or tocolor(0,120,200,200),selcolor or tocolor(0,90,255,200),clicolor or tocolor(50,90,250,200)
+	dgsSetData(button,"image",{defimg,selimg,cliimg})
+	dgsSetData(button,"color",{defcolor,selcolor,clicolor})
+	dgsSetData(button,"text",tostring(text))
+	dgsSetData(button,"textcolor",textcolor or tocolor(255,255,255,255))
+	dgsSetData(button,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
+	dgsSetData(button,"shadow",{_,_,_})
+	dgsSetData(button,"font",msyh)
+	dgsSetData(button,"clickoffset",{0,0})
+	dgsSetData(button,"clip",false)
+	dgsSetData(button,"clickType",1)
+	dgsSetData(button,"wordbreak",false)
+	dgsSetData(button,"colorcoded",false)
+	dgsSetData(button,"rightbottom",{"center","center"})
+	insertResourceDxGUI(sourceResource,button)
+	triggerEvent("onClientDgsDxGuiPreCreate",button)
+	calculateGuiPositionSize(button,x,y,relative or false,sx,sy,relative or false,true)
+	triggerEvent("onClientDgsDxGuiCreate",button)
+	return button
+end

@@ -1,0 +1,173 @@
+﻿<meta>
+	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
+	<file src="msyh.ttf" type="client" />
+	<file src="dsm.ttf" type="client" />
+
+	<script src="event.lua" type="client" />
+
+	<script src="Core/button.lua" type="client" />
+	<script src="Core/cmd.lua" type="client" />
+	<script src="Core/cyclehitshape.lua" type="client" />
+	<script src="Core/edit.lua" type="client" />
+	<script src="Core/gridlist.lua" type="client" />
+	<script src="Core/image.lua" type="client" />
+	<script src="Core/label.lua" type="client" />
+	<script src="Core/scrollbar.lua" type="client" />
+	<script src="Core/scrollpane.lua" type="client" />
+	<script src="Core/tabpanel.lua" type="client" />
+	<script src="Core/window.lua" type="client" />
+	<script src="Core/progressbar.lua" type="client" />
+	<script src="Core/radiobutton.lua" type="client" />
+	
+	<script src="server.lua" type="server" />
+	<script src="client.lua" type="client" />
+	<script src="plugin/shader.lua" type="client" />
+	<script src="functions.lua" type="client" />
+	<script src="animation.lua" type="client" />
+	<script src="dxCmdEvent.lua" type="client" />
+	<script src="test.lua" type="client" />
+
+	<script src="update.lua" type="server" />
+	<file src="image/radiobutton/rb_t.png" type="client" />
+	<file src="image/radiobutton/rb_f.png" type="client" />
+	<file src="image/radiobutton/rb_t_s.png" type="client" />
+	<file src="image/radiobutton/rb_f_s.png" type="client" />
+	<file src="image/scrollbar/scrollbar_arrow.png" type="client" />
+	
+	<export function="dgsGetPosition" type="client" />
+	<export function="dgsSetPosition" type="client" />
+	<export function="dgsSetParent" type="client" />
+	<export function="dgsGetParent" type="client" />
+	<export function="dgsGetChild" type="client" />
+	<export function="dgsGetChildren" type="client" />
+	<export function="dgsGetSize" type="client" />
+	<export function="dgsSetSize" type="client" />
+	<export function="dgsGetType" type="client" />
+	<export function="dgsMoveTo" type="client" />
+	<export function="dgsIsMoving" type="client" />
+	<export function="dgsStopMoving" type="client" />
+	<export function="dgsSizeTo" type="client" />
+	<export function="dgsIsSizing" type="client" />
+	<export function="dgsStopSizing" type="client" />
+	<export function="dgsAlphaTo" type="client" />
+	<export function="dgsIsAlphaing" type="client" />
+	<export function="dgsStopAlphaing" type="client" />
+	<export function="dgsDxGUIGetProperty" type="client" />
+	<export function="dgsDxGUISetProperty" type="client" />
+	<export function="dgsDxGUIGetVisible" type="client" />
+	<export function="dgsDxGUISetVisible" type="client" />
+	<export function="dgsDxGUIGetEnabled" type="client" />
+	<export function="dgsDxGUISetEnabled" type="client" />
+	<export function="dgsDxGUIGetSide" type="client" />
+	<export function="dgsDxGUISetSide" type="client" />
+	<export function="dgsDxGUIGetAlpha" type="client" />
+	<export function="dgsDxGUISetAlpha" type="client" />
+	<export function="dgsSetBottom" type="client" />
+	<export function="dgsDxGUIGetFont" type="client" />
+	<export function="dgsDxGUISetFont" type="client" />
+	<export function="dgsDxGUISetText" type="client" />
+	<export function="dgsDxGUIGetText" type="client" />
+	<export function="dgsDxGUICreateFont" type="client" />
+	<export function="dgsDxGUIBringToFront" type="client" />
+	<export function="dgsDxGetMouseEnterGUI" type="client" />
+
+	<export function="dgsDxCreateWindow" type="client" />
+	<export function="dgsDxWindowSetSizable" type="client" />
+	<export function="dgsDxWindowSetMovable" type="client" />
+	<export function="dgsDxGUICloseWindow" type="client" />
+
+	<export function="dgsDxCreateScrollPane" type="client" />
+	<export function="dgsDxScrollPaneGetScrollBar" type="client" />
+	
+	<export function="dgsDxCreateRadioButton" type="client" />
+	<export function="dgsDxRadioButtonGetSelected" type="client" />
+	<export function="dgsDxRadioButtonGetSelected" type="client" />
+
+	<export function="dgsDxCreateButton" type="client" />
+	<export function="dgsDxCreateCmd" type="client" />
+	<export function="dgsDxCmdSetMode" type="client" />
+	<export function="dgsDxEventCmdSetPreName" type="client" />
+	<export function="outputCmdMessage" type="client" />
+	<export function="dgsGetChars" type="client" />
+	<export function="dgsGetCmdEdit" type="client" />
+	<export function="dgsDxCmdAddEventToWhiteList" type="client" />
+	<export function="dgsDxCmdRemoveEventFromWhiteList" type="client" />
+	<export function="dgsDxCmdRemoveAllEvents" type="client" />
+	<export function="dgsDxCmdIsInWhiteList" type="client" />
+	<export function="dgsAddCommandHandler" type="client" />
+	<export function="dgsRemoveCommandHandler" type="client" />
+
+	<export function="dgsDxCreateEdit" type="client" />
+	<export function="dgsDxEditMoveCaret" type="client" />
+	<export function="dgsDxEditGetCaretPosition" type="client" />
+	<export function="dgsDxEditSetCaretStyle" type="client" />
+	<export function="dgsDxEditSetWhiteList" type="client" />
+	<export function="dgsDxEditGetMaxLength" type="client" />
+	<export function="dgsDxEditSetMaxLength" type="client" />
+
+	<export function="dgsDxCreateImage" type="client" />
+	<export function="dgsDxImageLoadImage" type="client" />
+	
+	<export function="dgsDxCreateProgressBar" type="client" />
+	<export function="dgsDxProgressBarGetProgress" type="client" />
+	<export function="dgsDxProgressBarSetProgress" type="client" />
+	<export function="dgsDxProgressBarGetMode" type="client" />
+	<export function="dgsDxProgressBarSetMode" type="client" />
+	<export function="dgsDxProgressBarGetUpDownDistance" type="client" />
+	<export function="dgsDxProgressBarSetUpDownDistance" type="client" />
+	<export function="dgsDxProgressBarGetLeftRightDistance" type="client" />
+	<export function="dgsDxProgressBarSetLeftRightDistance" type="client" />
+
+	<export function="dgsDxCreateLabel" type="client" />
+	<export function="dgsDxLabelGetColor" type="client" />
+	<export function="dgsDxLabelSetColor" type="client" />
+	<export function="dgsDxLabelSetHorizontalAlign" type="client" />
+	<export function="dgsDxLabelSetVerticalAlign" type="client" />
+	<export function="dgsDxLabelGetHorizontalAlign" type="client" />
+	<export function="dgsDxLabelGetVerticalAlign" type="client" />
+	
+	<export function="dgsDxCreateTabPanel" type="client" />
+	<export function="dgsDxCreateTab" type="client" />
+	<export function="dgsDxTabPanelGetTabFromID" type="client" />
+	<export function="dgsDxTabPanelMoveTab" type="client" />
+	<export function="dgsDxTabPanelGetTabID" type="client" />
+	<export function="dgsDxDeleteTab" type="client" />
+	
+	<export function="dgsDxCreateScrollBar" type="client" />
+	<export function="dgsDxScrollBarSetScrollBarPosition" type="client" />
+	<export function="dgsDxScrollBarGetScrollBarPosition" type="client" />
+	<export function="dgsDxScrollBarSetColor" type="client" />
+
+	<export function="dgsDxCreateGridList" type="client" />
+	<export function="dgsDxScrollPaneGetScrollBar" type="client" />
+	<export function="dgsDxGridListSetColumnRelative" type="client" />
+	<export function="dgsDxGridListGetColumnRelative" type="client" />
+	<export function="dgsDxGridListAddColumn" type="client" />
+	<export function="dgsDxGridListGetColumnCount" type="client" />
+	<export function="dgsDxGridListRemoveColumn" type="client" />
+	<export function="dgsDxGridListGetColumnAllLength" type="client" />
+	<export function="dgsDxGridListGetColumnLength" type="client" />
+	<export function="dgsDxGridListGetColumnTitle" type="client" />
+	<export function="dgsDxGridListSetColumnTitle" type="client" />
+	<export function="dgsDxGridListAddRow" type="client" />
+	<export function="dgsDxGridListRemoveRow" type="client" />
+	<export function="dgsDxGridListClearRow" type="client" />
+	<export function="dgsDxGridListGetRowCount" type="client" />
+	<export function="dgsDxGridListSetItemText" type="client" />
+	<export function="dgsDxGridListGetItemText" type="client" />
+	<export function="dgsDxGridListGetSelectedItem" type="client" />
+	<export function="dgsDxGridListSetSelectedItem" type="client" />
+	<export function="dgsDxGridListSetItemColor" type="client" />
+	<export function="dgsDxGridListGetItemColor" type="client" />
+	<export function="dgsDxGridListGetItemBackGroundImage" type="client" />
+	<export function="dgsDxGridListSetItemBackGroundImage" type="client" />
+	<export function="dgsDxGridListSetRowColor" type="client" />
+	<export function="dgsDxGridListGetRowColor" type="client" />
+
+	<export function="dgsDxCreateCycleHitShape" type="client" />
+	<export function="dgsDxSetCycleHitShapeRadius" type="client" />
+	<export function="dgsDxGetCycleHitShapeRadius" type="client" />
+	<export function="dgsDxCycleHitShapeSetDebugMode" type="client" />
+	<min_mta_version server="1.4.0" />
+	<download_priority_group>999</download_priority_group>
+</meta>
