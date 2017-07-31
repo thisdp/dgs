@@ -1251,13 +1251,13 @@ end
 addEventHandler("onClientRender",root,GUIRender)
 
 function removeColorCodeFromString(str)
-	--[[repeat
+	repeat
 		local temp = str
 		str = string.gsub(str,'#%x%x%x%x%x%x','')
 		if str == temp then
 			return temp
 		end
-	until(false)]]
+	until(false)
 end
 
 ccax = 0
