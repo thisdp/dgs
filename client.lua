@@ -930,7 +930,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
 				if shadowoffx and shadowoffy and shadowc then
 					shadowc = setColorAlpha(shadowc,getColorAlpha(shadowc)*galpha)
-					dxDrawText(colorcoded and removeColorCodeFromString(text) or text,x+shadowoffx,y+shadowoffy,x+w,y+h,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget)
+					dxDrawText(colorcoded and text:gsub('#%x%x%x%x%x%x',''),x+shadowoffx,y+shadowoffy,x+w,y+h,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget)
 				end
 				dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget,colorcoded)
 				if enabled then
@@ -1251,13 +1251,13 @@ end
 addEventHandler("onClientRender",root,GUIRender)
 
 function removeColorCodeFromString(str)
-	repeat
+	--[[repeat
 		local temp = str
 		str = string.gsub(str,'#%x%x%x%x%x%x','')
 		if str == temp then
 			return temp
 		end
-	until(false)
+	until(false)]]
 end
 
 ccax = 0
