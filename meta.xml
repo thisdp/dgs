@@ -1,7 +1,8 @@
-﻿<meta>
+<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
-	<file src="msyh.ttf" type="client" />
-	<file src="dsm.ttf" type="client" />
+	<file src="msyh.ttf" />
+	<file src="dsm.ttf" />
+	<file src="image/combobox/arrow.fx" />
 
 	<script src="event.lua" type="client" />
 
@@ -18,6 +19,7 @@
 	<script src="Core/window.lua" type="client" />
 	<script src="Core/progressbar.lua" type="client" />
 	<script src="Core/radiobutton.lua" type="client" />
+	<script src="Core/combobox.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
 	<script src="client.lua" type="client" />
@@ -83,6 +85,17 @@
 	<export function="dgsDxRadioButtonGetSelected" type="client" />
 	<export function="dgsDxRadioButtonGetSelected" type="client" />
 
+	<export function="dgsDxCreateComboBox" type="client" />
+	<export function="dgsDxComboBoxAddItem" type="client" />
+	<export function="dgsDxComboBoxRemoveItem" type="client" />
+	<export function="dgsDxComboBoxSetItemText" type="client" />
+	<export function="dgsDxComboBoxGetItemText" type="client" />
+	<export function="dgsDxComboBoxClear" type="client" />
+	<export function="dgsDxComboBoxSetSelectedItem" type="client" />
+	<export function="dgsDxComboBoxGetSelectedItem" type="client" />
+	<export function="dgsDxComboBoxSetItemColor" type="client" />
+	<export function="dgsDxComboBoxGetItemColor" type="client" />
+	
 	<export function="dgsDxCreateButton" type="client" />
 	<export function="dgsDxCreateCmd" type="client" />
 	<export function="dgsDxCmdSetMode" type="client" />
