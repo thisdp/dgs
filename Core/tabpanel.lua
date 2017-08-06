@@ -26,12 +26,12 @@ function dgsDxCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	dgsSetData(tabpanel,"taboffperc",0)
 	dgsSetData(tabpanel,"allleng",0)
 	insertResourceDxGUI(sourceResource,tabpanel)
-	triggerEvent("onClientDgsDxGuiPreCreate",tabpanel)
+	triggerEvent("onClientDgsDxGUIPreCreate",tabpanel)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx,aby = unpack(dgsGetData(tabpanel,"absSize"))
 	local rendertarget = dxCreateRenderTarget(abx,tabheight or 20,true)
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
-	triggerEvent("onClientDgsDxGuiCreate",tabpanel)
+	triggerEvent("onClientDgsDxGUICreate",tabpanel)
 	return tabpanel
 end
 
@@ -61,11 +61,11 @@ function dgsDxCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolo
 	dgsSetData(tab,"tabimg",{tabdefimg,tabselimg,tabcliimg})
 	dgsSetData(tab,"tabcolor",{tonumber(tabdefcolor) or tocolor(40,40,40,180),tonumber(tabselcolor) or tocolor(80,80,80,190),tonumber(tabclicolor) or tocolor(0,0,0,200)})
 	insertResourceDxGUI(sourceResource,tabpanel)
-	triggerEvent("onClientDgsDxGuiPreCreate",tab)
+	triggerEvent("onClientDgsDxGUIPreCreate",tab)
 	if dgsElementData[tabpanel]["selected"] == -1 then
 		dgsSetData(tabpanel,"selected",id)
 	end
-	triggerEvent("onClientDgsDxGuiCreate",tab)
+	triggerEvent("onClientDgsDxGUICreate",tab)
 	return tab
 end
 

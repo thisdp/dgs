@@ -13,11 +13,11 @@ function dgsDxCreateCycleHitShape(x,y,radius,relative,parent)
 		table.insert(MaxFatherTable,chs)
 	end
 	insertResourceDxGUI(sourceResource,chs)
-	triggerEvent("onClientDgsDxGuiPreCreate",chs)
+	triggerEvent("onClientDgsDxGUIPreCreate",chs)
 	calculateGuiPositionSize(chs,x,y,relative or false,radius*2,radius*2,relative or false,true)
 	local sx = unpack(dgsGetData(chs,"absSize"))
 	dgsSetData(chs,"radius",sx)
-	triggerEvent("onClientDgsDxGuiCreate",chs)
+	triggerEvent("onClientDgsDxGUICreate",chs)
 	return chs
 end
 

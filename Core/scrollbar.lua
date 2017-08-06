@@ -22,9 +22,9 @@ function dgsDxCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcurso
 	else
 		table.insert(MaxFatherTable,scrollbar)
 	end
-	triggerEvent("onClientDgsDxGuiPreCreate",scrollbar)
+	triggerEvent("onClientDgsDxGUIPreCreate",scrollbar)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onClientDgsDxGuiCreate",scrollbar)
+	triggerEvent("onClientDgsDxGUICreate",scrollbar)
 	return scrollbar
 end
 

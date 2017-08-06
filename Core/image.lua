@@ -21,7 +21,7 @@ function dgsDxCreateImage(x,y,sx,sy,img,relative,parent,color)
 		table.insert(MaxFatherTable,image)
 	end
 	insertResourceDxGUI(sourceResource,image)
-	triggerEvent("onClientDgsDxGuiPreCreate",image)
+	triggerEvent("onClientDgsDxGUIPreCreate",image)
 	calculateGuiPositionSize(image,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(texture) and not getElementType(texture) == "shader" then
@@ -29,7 +29,7 @@ function dgsDxCreateImage(x,y,sx,sy,img,relative,parent,color)
 	end
 	dgsSetData(image,"imagesize",{mx,my})
 	dgsSetData(image,"imagepos",{0,0})
-	triggerEvent("onClientDgsDxGuiCreate",image)
+	triggerEvent("onClientDgsDxGUICreate",image)
 	return image
 end
 

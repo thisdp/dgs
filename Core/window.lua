@@ -21,9 +21,9 @@ function dgsDxCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,
 	dgsSetData(window,"minSize",{60,60})
 	dgsSetData(window,"maxSize",{20000,20000})
 	insertResourceDxGUI(sourceResource,window)
-	triggerEvent("onClientDgsDxGuiPreCreate",window)
+	triggerEvent("onClientDgsDxGUIPreCreate",window)
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
-	triggerEvent("onClientDgsDxGuiCreate",window)
+	triggerEvent("onClientDgsDxGUICreate",window)
 	if not nooffbutton then
 		local relat = relative and sW or 1
 		local buttonOff = dgsDxCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)

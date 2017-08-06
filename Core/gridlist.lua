@@ -35,7 +35,7 @@
 	else
 		table.insert(MaxFatherTable,gridlist)
 	end
-	triggerEvent("onClientDgsDxGuiPreCreate",gridlist)
+	triggerEvent("onClientDgsDxGUIPreCreate",gridlist)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = unpack(dgsGetData(gridlist,"absSize"))
 	local columnRender = dxCreateRenderTarget(abx,columnHeight or 20,true)
@@ -48,7 +48,7 @@
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
-	triggerEvent("onClientDgsDxGuiCreate",gridlist)
+	triggerEvent("onClientDgsDxGUICreate",gridlist)
 	return gridlist
 end
 -----------------------------Column
@@ -226,9 +226,15 @@ end
 -----------------------------Row
 --[[
 	rowData Struct:
-	-3				-2				-1				0							1					2					...
-	bgImage			selectable		clickable		bgColor						column1				column2				...
-{{	{def,sel,cli},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},{the same as preview table}}
+		-3				-2				-1				0								1					2					...
+		bgImage			selectable		clickable		bgColor							column1				column2				...
+{
+	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
+	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
+	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
+	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
+	{	the same as preview table																										},
+}
 
 	table[i](i<=0) isn't counted in #table
 ]]

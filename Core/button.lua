@@ -1,4 +1,3 @@
-
 function dgsDxCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg,selimg,cliimg,defcolor,selcolor,clicolor)
 	assert(tonumber(x),"@dgsDxCreateButton argument 1,expect number got "..type(x))
 	assert(tonumber(y),"@dgsDxCreateButton argument 2,expect number got "..type(y))
@@ -25,8 +24,8 @@ function dgsDxCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scale
 	dgsSetData(button,"colorcoded",false)
 	dgsSetData(button,"rightbottom",{"center","center"})
 	insertResourceDxGUI(sourceResource,button)
-	triggerEvent("onClientDgsDxGuiPreCreate",button)
+	triggerEvent("onClientDgsDxGUIPreCreate",button)
 	calculateGuiPositionSize(button,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onClientDgsDxGuiCreate",button)
+	triggerEvent("onClientDgsDxGUICreate",button)
 	return button
 end

@@ -30,14 +30,14 @@ function dgsDxCreateProgressBar(x,y,sx,sy,relative,parent,bgimg,bgcolor,barimg,b
 		table.insert(MaxFatherTable,progressbar)
 	end
 	insertResourceDxGUI(sourceResource,progressbar)
-	triggerEvent("onClientDgsDxGuiPreCreate",progressbar)
+	triggerEvent("onClientDgsDxGUIPreCreate",progressbar)
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(barimg) then
 		mx,my = dxGetMaterialSize(barimg)
 	end
 	dgsSetData(progressbar,"barsize",{mx,my})
-	triggerEvent("onClientDgsDxGuiCreate",progressbar)
+	triggerEvent("onClientDgsDxGUICreate",progressbar)
 	return progressbar
 end
 

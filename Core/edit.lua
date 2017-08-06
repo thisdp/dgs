@@ -39,9 +39,9 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 		table.insert(MaxFatherTable,edit)
 	end
 	insertResourceDxGUI(sourceResource,edit)
-	triggerEvent("onClientDgsDxGuiPreCreate",edit)
+	triggerEvent("onClientDgsDxGUIPreCreate",edit)
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onClientDgsDxGuiCreate",edit)
+	triggerEvent("onClientDgsDxGUICreate",edit)
 	local sx,sy = dgsGetSize(edit,false)
 	local renderTarget = dxCreateRenderTarget(sx-4,sy,true)
 	dgsSetData(edit,"renderTarget",renderTarget)

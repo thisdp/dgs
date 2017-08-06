@@ -32,9 +32,9 @@ function dgsDxCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgc
 		table.insert(MaxFatherTable,cmd)
 	end
 	insertResourceDxGUI(sourceResource,cmd)
-	triggerEvent("onClientDgsDxGuiPreCreate",cmd)
+	triggerEvent("onClientDgsDxGUIPreCreate",cmd)
 	calculateGuiPositionSize(cmd,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onClientDgsDxGuiCreate",cmd)
+	triggerEvent("onClientDgsDxGUICreate",cmd)
 	local sx,sy = dgsGetSize(cmd,false)
 	local edit = dgsDxCreateEdit(0,sy-scaley*20,sx,scaley*20,"",false,cmd,tocolor(0,0,0,255),scalex,scaley)
 	dgsSetData(cmd,"cmdEdit",edit)
@@ -52,7 +52,7 @@ function dgsDxCmdSetMode(cmd,mode,output)
 		if not wasEventCancelled() then
 			dgsSetData(cmd,"cmdType","event")
 			if output then
-				outputCmdMessage(cmd,"[模式切换]当前CMD已经切换成‘"..(mode == "function" and "Function" or "Event").." CMD’")
+				outputCmdMessage(cmd,"[Mode]Current Mode is ‘"..(mode == "function" and "Function" or "Event").." CMD’")
 			end
 			return true
 		end
@@ -213,7 +213,7 @@ function executeCmdCommand(cmd,str,...)
 			end
 		end
 		if not ifound then
-			outputCmdMessage(cmd,"未找到此命令:"..str)
+			outputCmdMessage(cmd,"Coundn't Fiund Such Command:"..str)
 		end
 	elseif cmdType == "event" then
 		if dgsDxCmdIsInWhiteList(cmd,dgsGetData(cmd,"preName")..str) then
@@ -221,7 +221,7 @@ function executeCmdCommand(cmd,str,...)
 			triggerEvent(dgsGetData(cmd,"preName")..str,cmd,...)
 		end
 		if not ifound then
-			outputCmdMessage(cmd,"没有权限调用此Event:"..str)
+			outputCmdMessage(cmd,"Access Dined When Calling Event:"..str)
 		end
 	end
 end

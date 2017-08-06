@@ -10,7 +10,7 @@ function dgsDxCreateScrollPane(x,y,sx,sy,relative,parent)
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true) or table.insert(MaxFatherTable,1,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	dgsSetData(scrollpane,"scrollBarThick",20,true)
-	triggerEvent("onClientDgsDxGuiPreCreate",scrollpane)
+	triggerEvent("onClientDgsDxGUIPreCreate",scrollpane)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
 	local sx,sy = unpack(dgsGetData(scrollpane,"absSize"))
 	local x,y = unpack(dgsGetData(scrollpane,"absPos"))
@@ -33,7 +33,7 @@ function dgsDxCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(scrollbar1,"parent_sp",scrollpane)
 	dgsSetData(scrollbar2,"parent_sp",scrollpane)
-	triggerEvent("onClientDgsDxGuiCreate",scrollpane)
+	triggerEvent("onClientDgsDxGUICreate",scrollpane)
 	return scrollpane
 end
 
