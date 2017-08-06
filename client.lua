@@ -1,4 +1,4 @@
-﻿------------Copyrights thisdp's DirectX Graphical User Interface
+------------Copyrights thisdp's DirectX Graphical User Interface
 white = tocolor(255,255,255,255)
 black = tocolor(0,0,0,255)
 sW,sH = guiGetScreenSize()
@@ -164,6 +164,14 @@ function dgsSetData(element,key,value,check)
 				elseif key == "columnHeight" then
 					configGirdList(element)
 				end
+			elseif dgsType == "dgs-dxcombobox" then
+				if key == "scrollBarThick" then
+					assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
+					local scrollbar = dgsElementData[element]["scrollbar"]
+					configComboBox_Box(dgsElementData[element].myBox)
+				elseif key == "listState" then
+					triggerEvent("onClientDgsDxComboBoxStateChanged",element,value == 1 and true or false)
+				end
 			elseif dgsType == "dgs-dxtabpanel" then
 				if key == "selected" then
 					triggerEvent("onClientDgsDxTabPanelTabSelect",element,dgsElementData[element]["selected"],value)
@@ -256,6 +264,7 @@ dgsType = {
 "dgs-dxwindow",
 "dgs-dxprogressbar",
 "dgs-dxtabpanel",
+"dgs-dxcombobox",
 "dgs-dxtab",
 }
 
@@ -1114,6 +1123,171 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			else
 				visible = false
 			end
+		elseif dxType =="dgs-dxcombobox" then
+			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			if x and y then
+				local colors,imgs = dgsElementData[v].color,dgsElementData[v].image
+				local colorimgid = 1
+				local textbox = dgsElementData[v].textbox
+				local buttonLen_t = dgsElementData[v].buttonLen
+				local buttonLen
+				local bgcolor = dgsElementData[v].combobgColor
+				local bgimg = dgsElementData[v].combobgImage
+				if textbox then
+					buttonLen = buttonLen_t[2] and buttonLen_t[1]*h or buttonLen_t[1]
+				else
+					buttonLen = w
+				end
+				if MouseData.enter == v then
+					colorimgid = 2
+					if dgsElementData[v].clickType == 1 then
+						if MouseData.clickl == v then
+							colorimgid = 3
+						end
+					elseif dgsElementData[v].clickType == 2 then
+						if MouseData.clickr == v then
+							colorimgid = 3
+						end
+					else
+						if MouseData.clickl == v or MouseData.clickr == v then
+							colorimgid = 3
+						end
+					end
+				end
+				
+				if imgs[colorimgid] then
+					dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[colorimgid],0,0,0,setColorAlpha(colors[colorimgid],getColorAlpha(colors[colorimgid])*galpha),not DEBUG_MODE and isRenderTarget)
+				else
+					dxDrawRectangle(x+w-buttonLen,y,buttonLen,h,setColorAlpha(colors[colorimgid],getColorAlpha(colors[colorimgid])*galpha),not DEBUG_MODE and isRenderTarget)
+				end
+				local arrowColor = dgsElementData[v].arrowColor
+				local arrowWidth = dgsElementData[v].arrowWidth
+				local arrowDistance = dgsElementData[v].arrowDistance/2*buttonLen
+				local arrowHeight = dgsElementData[v].arrowHeight/2*h
+				if bgimg then
+					dxDrawImage(x,y,w-buttonLen,h,bgimg,0,0,0,setColorAlpha(bgcolor,getColorAlpha(bgcolor)*galpha),not DEBUG_MODE and isRenderTarget)
+				else
+					dxDrawRectangle(x,y,w-buttonLen,h,setColorAlpha(bgcolor,getColorAlpha(bgcolor)*galpha),not DEBUG_MODE and isRenderTarget)
+				end
+				local shader = dgsElementData[v].arrow
+				local listState = dgsElementData[v].listState
+				if dgsElementData[v].listStateAnim ~= listState then
+					local stat = dgsElementData[v].listStateAnim+dgsElementData[v].listState*0.08
+					dgsElementData[v].listStateAnim = listState == -1 and math.max(stat,listState) or math.min(stat,listState)
+				end
+				if dgsElementData[v].arrowSettings then
+					dxSetShaderValue(shader,dgsElementData[v].arrowSettings[1],dgsElementData[v].arrowSettings[2]*dgsElementData[v].listStateAnim)
+				end
+				if textbox then
+					dxDrawImage(x+w-buttonLen,y,buttonLen,h,shader,0,0,0,setColorAlpha(arrowColor,getColorAlpha(arrowColor)*galpha),not DEBUG_MODE and isRenderTarget)
+					local font = dgsElementData[v].font or msyh
+					local textcolor = dgsElementData[v].textcolor
+					local rb = dgsElementData[v].rightbottom
+					local txtSizX = dgsElementData[v].textsize[1]*(textFontSize[font] or 1)
+					local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+					local colorcoded = dgsElementData[v].colorcoded
+					local shadow = dgsElementData[v].shadow
+					local wordbreak = dgsElementData[v].wordbreak
+					local selection = dgsElementData[v].select
+					local itemData = dgsElementData[v].itemData
+					local sele = itemData[selection]
+					local text = sele and sele[1] or ""
+					if shadow then
+						dxDrawText(text:gsub("#%x%x%x%x%x%x",""),x-shadow[1],y-shadow[2],x+w-buttonLen-shadow[1],y+h-shadow[2],setColorAlpha(shadow[3],getColorAlpha(shadow[3])*galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget)
+					end
+					dxDrawText(text,x,y,x+w-buttonLen,y+h,setColorAlpha(textcolor,getColorAlpha(textcolor)*galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget,colorcoded)
+				end
+				if enabled then
+					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+						MouseData.hit = v
+					end
+				end
+			else
+				visible = false
+			end
+		elseif dxType == "dgs-dxcombobox-Box" then
+			local combo = dgsElementData[v].myCombo
+			local x,y = dgsGetPosition(v,false,true)
+			local w,h = unpack(dgsElementData[v].absSize or {})
+			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,v,rndtgt,OffsetX,OffsetY)
+			if x and y then
+				local DataTab = dgsElementData[combo]
+				local itemData = DataTab.itemData
+				local boxbgImage = dgsElementData[combo].boxbgImage
+				local boxbgColor = dgsElementData[combo].boxbgColor
+				local scbThick = dgsElementData[combo].scrollBarThick
+				if boxbgImage then
+					dxDrawImage(x,y,w,h,boxbgImage,0,0,0,setColorAlpha(boxbgColor,getColorAlpha(boxbgColor)*galpha),not DEBUG_MODE and isRenderTarget)
+				else
+					dxDrawRectangle(x,y,w,h,setColorAlpha(boxbgColor,getColorAlpha(boxbgColor)*galpha),not DEBUG_MODE and isRenderTarget)
+				end
+				local itemHeight = DataTab.itemHeight
+				local itemMoveOffset = DataTab.itemMoveOffset
+				local whichRowToStart = -math.floor((itemMoveOffset+itemHeight)/itemHeight)+1
+				local whichRowToEnd = whichRowToStart+math.floor(h/itemHeight)+1
+				DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #itemData and whichRowToEnd or #itemData}
+				local renderTarget = dgsElementData[combo].renderTarget
+				dxSetRenderTarget(renderTarget,true)
+				local rb_l = dgsElementData[combo].rightbottomList
+
+				if mx >= cx-2 and mx <= cx+w-scbThick-1 and my >= cy and my <= cy+h-1 then
+					local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
+					sid = math.floor((my-cy-toffset)/itemHeight)+whichRowToStart+1
+					if sid <= #itemData then
+						DataTab.preSelect = sid
+						MouseData.enterData = true
+					else
+						DataTab.preSelect = -1
+					end
+				else
+					DataTab.preSelect = -1
+				end
+				local preSelect = DataTab.preSelect
+				local Select = DataTab.select
+				local sizex,sizey = DataTab.listtextsize[1],DataTab.listtextsize[2]
+				
+				local font = DataTab.font
+				local fontsx,fontsy = sizex*(textFontSize[font] or 1),(sizey or sizex)*(textFontSize[font] or 1)
+				local shadow = dgsElementData[combo].shadow
+				local colorcoded = dgsElementData[v].colorcoded
+				local wordbreak = dgsElementData[v].wordbreak
+				local clip = dgsElementData[v].clip
+				for i=DataTab.FromTo[1],DataTab.FromTo[2] do
+					local lc_rowData = itemData[i]
+					local textcolor = lc_rowData[-2]
+					local image = lc_rowData[-1]
+					local color = lc_rowData[0]
+					local itemState = 1
+					if i == preSelect then
+						itemState = 2
+					end
+					if i == Select then
+						itemState = 3
+					end
+					local rowpos = i*itemHeight
+					local rowpos_1 = (i-1)*itemHeight
+					if image[itemState] then
+						dxDrawImage(0,rowpos_1+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,color[itemState])
+					else
+						dxDrawRectangle(0,rowpos_1+itemMoveOffset,w,itemHeight,color[itemState])
+					end
+					local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW,rowpos+itemMoveOffset
+					local text = itemData[i][1]
+					if shadow then
+						dxDrawText(text:gsub("#%x%x%x%x%x%x",""),1-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak)
+					end
+					dxDrawText(text,1,_y,_sx,_sy,textcolor,fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
+				end
+				dxSetRenderTarget()
+				dxDrawImage(x,y,w-dgsElementData[combo].scrollBarThick,h,renderTarget,0,0,0,tocolor(255,255,255,255),not DEBUG_MODE and isRenderTarget)
+				if enabled then
+					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+						MouseData.hit = v
+					end
+				end
+			else
+				visible = false
+			end
 		elseif dxType == "dgs-dxtabpanel" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			local hits = MouseData.hit
@@ -1735,17 +1909,23 @@ addEventHandler("onClientDgsDxMouseClick",root,function(button,state)
 				end
 				local py =  pos*0.01*(slotRange-cursorRange)
 				checkScrollBar(py,voh)
-			end
-			if guitype == "dgs-dxgridlist" then
+			elseif guitype == "dgs-dxgridlist" then
 				local preSelect = dgsElementData[source].preSelect
 				local oldSelect = dgsElementData[source].select
 				dgsElementData[source].select = preSelect
 				triggerEvent("onClientDgsDxGridListSelect",source,oldSelect,preSelect)
-			end
-			if guitype == "dgs-dxtabpanel" then
+			elseif guitype == "dgs-dxcombobox-Box" then
+				local combobox = dgsElementData[source].myCombo
+				local preSelect = dgsElementData[combobox].preSelect
+				local oldSelect = dgsElementData[combobox].select
+				dgsElementData[combobox].select = preSelect
+				triggerEvent("onClientDgsDxComboBoxSelect",combobox,oldSelect,preSelect)
+			elseif guitype == "dgs-dxtabpanel" then
 				if dgsElementData[source]["preselect"] ~= -1 then
 					dgsSetData(source,"selected",dgsElementData[source]["preselect"])
 				end
+			elseif guitype == "dgs-dxcombobox" then
+				dgsSetData(source,"listState",dgsElementData[source].listState == 1 and -1 or 1)
 			end
 		end
 	else
@@ -1768,7 +1948,7 @@ end)
 addEventHandler("onClientElementDestroy",resourceRoot,function()
 	local parent = dgsGetParent(source) or root
 	if dgsIsDxElement(source) then
-		triggerEvent("onClientDgsDxGuiDestroy",source)
+		triggerEvent("onClientDgsDxGUIDestroy",source)
 		local child = ChildrenTable[source] or {}
 		for k=1,#child do
 			if isElement(child[1]) then
@@ -1801,6 +1981,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				destroyElement(scrollbar[2])
 			end
 		elseif dgsGetType(source) == "dgs-dxtabpanel" then
+			local rentarg = dgsElementData[source].renderTarget
+			destroyElement(rentarg)
+		elseif dgsGetType(source) == "dgs-dxcombobox" then
 			local rentarg = dgsElementData[source].renderTarget
 			destroyElement(rentarg)
 		end
@@ -1992,6 +2175,10 @@ addEventHandler("onClientDgsDxGUISizeChange",root,function()
 		configScrollPane(source)
 	elseif typ == "dgs-dxtabpanel" then
 		configTabPanel(source)
+	--elseif typ == "dgs-dxcombobox" then
+		--configComboBox(source)
+	elseif typ == "dgs-dxcombobox-Box" then
+		configComboBox_Box(source)
 	end
 	local parent = dgsGetParent(source)
 	if isElement(parent) then
