@@ -33,10 +33,9 @@ function dgsGetGuiLocationOnScreen(baba,relative,rndsup)
 end
 
 function getParentLocation(baba,rndsup,x,y)
-	baba = dgsGetParent(baba)
-	if not isElement(baba) then return x,y end
-	if rndsup and dgsElementData[baba].renderTarget_parent then return x,y end
-	if dgsGetType(baba) == "dgs-dxtab" then
+	local baba = FatherTable[baba]
+	if not isElement(baba) or (rndsup and dgsElementData[baba].renderTarget_parent) then return x,y end
+	if dgsElementType[baba] == "dgs-dxtab" then
 		baba = dgsElementData[baba]["parent"]
 		local h = dgsElementData[baba].absSize[2]
 		local tabheight = dgsElementData[baba]["tabheight"][2] and dgsElementData[baba]["tabheight"][1]*h or dgsElementData[baba]["tabheight"][1]
@@ -54,7 +53,8 @@ function dgsGetPosition(gui,bool,includeParent,rndsupport)
 	if includeParent then
 		return dgsGetGuiLocationOnScreen(gui,bool,rndsupport)
 	else
-		return unpack(dgsElementData[gui][bool and "rltPos" or "absPos"])
+		local pos = dgsElementData[gui][bool and "rltPos" or "absPos"]
+		return pos[1],pos[2]
 	end
 end
 
@@ -219,9 +219,9 @@ function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 		end
 	end
 	if isElement(lastFront) and lastFront ~= dxgui then
-		triggerEvent("onClientDgsDxBlur",lastFront)
+		triggerEvent("onClientDgsDxBlur",lastFront,dxgui)
 	end
-	triggerEvent("onClientDgsDxFocus",dxgui)
+	triggerEvent("onClientDgsDxFocus",dxgui,lastFront)
 	lastFront = dxgui
 	if mouse == "left" then
 		MouseData.clickl = dxgui
@@ -356,7 +356,7 @@ function dgsDxSetShaderValue(...)
 	return dxSetShaderValue(...)
 end
 
-addEventHandler("onClientDgsDxGuiPreCreate",root,function()
+addEventHandler("onClientDgsDxGUIPreCreate",root,function()
 	dgsSetData(source,"lor","left")
 	dgsSetData(source,"tob","top")
 	dgsSetData(source,"visible",true)

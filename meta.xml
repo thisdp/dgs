@@ -1,4 +1,4 @@
-<meta>
+﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
 	<file src="msyh.ttf" />
 	<file src="dsm.ttf" />
@@ -83,7 +83,7 @@
 	
 	<export function="dgsDxCreateRadioButton" type="client" />
 	<export function="dgsDxRadioButtonGetSelected" type="client" />
-	<export function="dgsDxRadioButtonGetSelected" type="client" />
+	<export function="dgsDxRadioButtonSetSelected" type="client" />
 
 	<export function="dgsDxCreateComboBox" type="client" />
 	<export function="dgsDxComboBoxAddItem" type="client" />
@@ -95,6 +95,8 @@
 	<export function="dgsDxComboBoxGetSelectedItem" type="client" />
 	<export function="dgsDxComboBoxSetItemColor" type="client" />
 	<export function="dgsDxComboBoxGetItemColor" type="client" />
+	<export function="dgsDxComboBoxSetState" type="client" />
+	<export function="dgsDxComboBoxGetState" type="client" />
 	
 	<export function="dgsDxCreateButton" type="client" />
 	<export function="dgsDxCreateCmd" type="client" />

@@ -18,7 +18,7 @@ addCommandHandler("cmd",function()
 			setTimer(function()
 				cmdSystem["cmd"] = dgsDxCreateCmd(0,0,1,1,true,cmdSystem["window"])
 				dgsDxCmdAddEventToWhiteList(cmdSystem["cmd"],{"changeMode"})
-				outputCmdMessage(cmd,"DGS ( Thisdp's Dx Graphical User Interface System ) Version: 1.62 beta")
+				outputCmdMessage(cmdSystem["cmd"],"DGS ( Thisdp's Dx Graphical User Interface System ) Version: 2.70 beta")
 			end,310,1)
 			dgsShowCursor(true)
 		end,310,1)
@@ -75,7 +75,7 @@ addEventHandler("onClientDgsDxWindowClose",root,function()
 	end
 end)
 
-----------------------------------------预设
+----------------------------------------Insides
 dgsAddCommandHandler("version",function(cmd)
 	outputCmdMessage(cmd,"[Version]1.62")
 end)
@@ -199,12 +199,12 @@ addEventHandler("onDGSCmdOutput",root,function(message)
     end
 end)
 
------------------------------预设CMD_Event
+-----------------------------Inside CMD_Event
 preinstallWhiteList = {}
 
 --[[
-创建预设事件命令
-str:		事件名
+Create Inside CMD Event
+str:		Event Name
 ]]
 function dgsAddEventCommand(str)
 	addEvent(str,true)

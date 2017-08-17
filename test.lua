@@ -19,3 +19,10 @@ function createTest3()
 	local rb1= dgsDxCreateRadioButton(500,500,200,30,"aaaa",false)
 	local rb2 = dgsDxCreateRadioButton(500,520,200,30,"bbbb",false)
 end
+
+function createTest4()
+	rb1 = dgsDxCreateComboBox(500,400,200,30,false)
+	for i=1,20 do
+		dgsDxComboBoxAddItem(rb1,i)
+	end
+end
