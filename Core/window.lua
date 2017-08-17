@@ -15,6 +15,7 @@ function dgsDxCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,
 	dgsSetData(window,"titlesize",tonumber(titsize) or 25)
 	dgsSetData(window,"sidesize",tonumber(sidesize) or 5)
 	dgsSetData(window,"sizable",true)
+	dgsSetData(window,"colorcoded",false)
 	dgsSetData(window,"movable",true)
 	dgsSetData(window,"movetyp",false) --false only title;true are all
 	dgsSetData(window,"font",msyh)

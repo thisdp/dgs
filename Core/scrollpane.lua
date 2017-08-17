@@ -37,7 +37,7 @@ function dgsDxCreateScrollPane(x,y,sx,sy,relative,parent)
 	return scrollpane
 end
 
-addEventHandler("onClientDgsDxGuiCreate",root,function()
+addEventHandler("onClientDgsDxGUICreate",root,function()
 	local parent = dgsGetParent(source)
 	if isElement(parent) and dgsGetType(parent) == "dgs-dxscrollpane" then
 		local relativePos,relativeSize = unpack(dgsGetData(source,"relative"))
@@ -118,7 +118,7 @@ function dgsScrollPaneUpdateScrollBar(scrollpane,ntempx,ntempy)
 	end
 end
 
-addEventHandler("onClientDgsDxGuiDestroy",root,function()
+addEventHandler("onClientDgsDxGUIDestroy",root,function()
 	local parent = dgsGetParent(source)
 	if isElement(parent) then
 		if dgsGetType(parent) == "dgs-dxscrollpane" then

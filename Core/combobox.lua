@@ -47,8 +47,6 @@ function dgsDxCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scal
 	dgsSetData(combobox,"itemImage",{idefimg,ihovimg,iselimg})
 	dgsSetData(combobox,"listState",-1,true)
 	dgsSetData(combobox,"listStateAnim",-1)
-	dgsSetData(combobox,"boxbgColor",tocolor(200,200,200,200))
-	dgsSetData(combobox,"boxbgImage",nil)
 	dgsSetData(combobox,"arrowColor",tocolor(255,255,255,255))
 	dgsSetData(combobox,"arrowSettings",{"height",0.15})
 	dgsSetData(combobox,"arrowWidth",10)
@@ -71,9 +69,10 @@ function dgsDxCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scal
 	dgsSetData(combobox,"myBox",box)
 	dgsSetData(box,"myCombo",combobox)
 	local boxsiz = dgsElementData[box].absSize
-	local rendertarget = dxCreateRenderTarget(boxsiz[1]-20,boxsiz[2],true)
+	local rendertarget = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true)
 	dgsSetData(combobox,"renderTarget",rendertarget)
 	local scrollbar = dgsDxCreateScrollBar(boxsiz[1]-20,0,20,boxsiz[2],false,false,box)
+	dgsSetData(scrollbar,"length",{0,true})
 	dgsDxGUISetVisible(scrollbar,false)
 	dgsDxGUISetVisible(box,false)
 	dgsSetData(combobox,"scrollbar",scrollbar)
@@ -139,6 +138,16 @@ function dgsDxComboBoxSetItemColor(combobox,item,color)
 		return true
 	end
 	return false
+end
+
+function dgsDxComboBoxSetState(combobox,state)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetState argument 1,expect number got "..dgsGetType(combobox))
+	return dgsSetData(combobox,"listState",state and 1 or -1)
+end
+
+function dgsDxComboBoxGetState(combobox)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetState argument 1,expect number got "..dgsGetType(combobox))
+	return dgsElementData[combobox].listState == 1 and true or false
 end
 
 function dgsDxComboBoxGetItemColor(combobox,item)
@@ -232,7 +241,7 @@ function configComboBox_Box(box)
 		destroyElement(rendertarget)
 	end
 	local sbt = dgsElementData[combobox].scrollBarThick
-	local rendertarget = dxCreateRenderTarget(boxsiz[1]-sbt,boxsiz[2],true)
+	local rendertarget = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true)
 	dgsSetData(combobox,"renderTarget",rendertarget)
 	local sb = dgsElementData[combobox].scrollbar
 	dgsSetPosition(sb,boxsiz[1]-sbt,0,false)
@@ -263,4 +272,8 @@ addEventHandler("onClientDgsDxComboBoxStateChanged",root,function(state)
 			dgsDxGUISetVisible(box,false)
 		end
 	end
+end)
+
+addEventHandler("onClientDgsDxMouseClick",root,function()
+	
 end)
