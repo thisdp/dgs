@@ -6,3 +6,5 @@ You can use it as a original gui , but what different is that it have more optio
 See more information: http://wiki.mtasa.com/wiki/dgs
 
 The resource name of DGS should be dgs
+
+See the update logs, click here: http://angel.mtaip.cn:233/dgsUpdate/
