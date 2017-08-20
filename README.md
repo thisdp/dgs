@@ -4,7 +4,7 @@ This is a dx gui lib of MTASA that is designed with dx functions.
 
 Everything is refer to original GUI (gui*). BUT the difference between them is that DGS have a STRONG property system that can freshen your dxgui looks even design the style with shaders by yourself.
 
-Sry for the bad default style. But with property system, you can change it into your OWN style.
+Sry for the bad design of default style. But with property system, you can change it into your OWN style.
 
 See more information: http://wiki.mtasa.com/wiki/dgs
 
