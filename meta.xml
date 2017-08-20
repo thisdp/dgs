@@ -97,7 +97,7 @@
 	<export function="dgsDxComboBoxGetItemColor" type="client" />
 	<export function="dgsDxComboBoxSetState" type="client" />
 	<export function="dgsDxComboBoxGetState" type="client" />
-	
+
 	<export function="dgsDxCreateButton" type="client" />
 	<export function="dgsDxCreateCmd" type="client" />
 	<export function="dgsDxCmdSetMode" type="client" />
@@ -115,14 +115,17 @@
 	<export function="dgsDxCreateEdit" type="client" />
 	<export function="dgsDxEditMoveCaret" type="client" />
 	<export function="dgsDxEditGetCaretPosition" type="client" />
+	<export function="dgsDxEditSetCaretPosition" type="client" />
 	<export function="dgsDxEditSetCaretStyle" type="client" />
 	<export function="dgsDxEditSetWhiteList" type="client" />
 	<export function="dgsDxEditGetMaxLength" type="client" />
 	<export function="dgsDxEditSetMaxLength" type="client" />
+	<export function="dgsDxEditSetReadOnly" type="client" />
+	<export function="dgsDxEditGetReadOnly" type="client" />
 
 	<export function="dgsDxCreateImage" type="client" />
 	<export function="dgsDxImageLoadImage" type="client" />
-	
+
 	<export function="dgsDxCreateProgressBar" type="client" />
 	<export function="dgsDxProgressBarGetProgress" type="client" />
 	<export function="dgsDxProgressBarSetProgress" type="client" />
@@ -178,6 +181,8 @@
 	<export function="dgsDxGridListSetItemBackGroundImage" type="client" />
 	<export function="dgsDxGridListSetRowColor" type="client" />
 	<export function="dgsDxGridListGetRowColor" type="client" />
+	<export function="dgsDxGridListGetItemData" type="client" />
+	<export function="dgsDxGridListSetItemData" type="client" />
 
 	<export function="dgsDxCreateCycleHitShape" type="client" />
 	<export function="dgsDxSetCycleHitShapeRadius" type="client" />

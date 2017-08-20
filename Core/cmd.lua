@@ -213,7 +213,7 @@ function executeCmdCommand(cmd,str,...)
 			end
 		end
 		if not ifound then
-			outputCmdMessage(cmd,"Coundn't Fiund Such Command:"..str)
+			outputCmdMessage(cmd,"Coundn't Find Such Command:"..str)
 		end
 	elseif cmdType == "event" then
 		if dgsDxCmdIsInWhiteList(cmd,dgsGetData(cmd,"preName")..str) then

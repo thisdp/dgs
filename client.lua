@@ -46,7 +46,7 @@ dgsElementData = {}		--Store The Data
 
 function dgsGetType(shenMeGui)
 	if isElement(shenMeGui) then
-		return dgsElementType[shenMeGui] or getElementType(shenMeGui)
+		return tostring(dgsElementType[shenMeGui] or getElementType(shenMeGui))
 	else
 		return type(shenMeGui)
 	end
@@ -196,6 +196,13 @@ function dgsSetData(element,key,value,check)
 					local gedit = dgsElementData[element].edit
 					if value and isElement(gedit) then
 						return guiEditSetMaxLength(gedit,value)
+					else
+						return false
+					end
+				elseif key == "readOnly" then
+					local gedit = dgsElementData[element].edit
+					if value and isElement(gedit) then
+						return guiEditSetReadOnly(gedit,value)
 					else
 						return false
 					end

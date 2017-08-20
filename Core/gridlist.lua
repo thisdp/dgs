@@ -142,12 +142,12 @@ end
 
 function dgsDxGridListGetColumnCount(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnCount at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	return #(dgsGetData(gridlist,"columnData") or {})
+	return #(dgsElementData[gridlist].columnData or {})
 end
 
 function dgsDxGridListRemoveColumn(gridlist,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListRemoveColumn at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local columnData = dgsGetData(gridlist,"columnData")
+	local columnData = dgsElementData[gridlist].columnData
 	local oldLen = columnData[pos][3]
 	table.remove(columnData,pos)
 	local lastColumnLen = 10
@@ -176,7 +176,7 @@ mode 快速(true)/慢速(false)
 function dgsDxGridListGetColumnAllLength(gridlist,pos,relative,mode)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnAllLength at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(pos) == "number","@dgsDxGridListGetColumnAllLength at argument 2,expect number got "..dgsGetType(pos))
-	local columnData = dgsGetData(gridlist,"columnData")
+	local columnData = dgsElementData[gridlist].columnData
 	local scbThick = dgsGetData(gridlist,"scrollBarThick")
 	local columnSize = unpack(dgsGetData(gridlist,"absSize"))
 	columnSize = columnSize-scbThick
@@ -216,9 +216,38 @@ end
 function dgsDxGridListGetColumnLength(gridlist,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnLength at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(pos) == "number","@dgsDxGridListGetColumnLength at argument 2,expect number got "..dgsGetType(pos))
-	local columnData = dgsGetData(gridlist,"columnData")
+	local columnData = dgsElementData[gridlist].columnData
 	if pos > 0 and pos <= #columnData then
 		return columnData[pos][2]
+	end
+	return false
+end
+
+function dgsDxGridListSetItemData(gridlist,row,column,data)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemData at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","@dgsDxGridListSetItemData at argument 2,expect number got "..dgsGetType(row))
+	assert(type(column) == "number","@dgsDxGridListSetItemData at argument 3,expect number got "..dgsGetType(column))
+	local rowData = dgsElementData[gridlist].rowData
+	if row > 0 and row <= #rowData then
+		local columnData = dgsElementData[gridlist].columnData
+		if column > 0 and column <= #columnData then
+			rowData[row][column][-1] = data
+			return true
+		end
+	end
+	return false
+end
+
+function dgsDxGridListGetItemData(gridlist,row,column)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemData at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","@dgsDxGridListGetItemData at argument 2,expect number got "..dgsGetType(row))
+	assert(type(column) == "number","@dgsDxGridListGetItemData at argument 3,expect number got "..dgsGetType(column))
+	local rowData = dgsElementData[gridlist].rowData
+	if row > 0 and row <= #rowData then
+		local columnData = dgsElementData[gridlist].columnData
+		if column > 0 and column <= #columnData then
+			return rowData[row][column][-1]
+		end
 	end
 	return false
 end

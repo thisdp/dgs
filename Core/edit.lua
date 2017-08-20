@@ -21,6 +21,7 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	dgsSetData(edit,"cursorStyle",0)
 	dgsSetData(edit,"cursorThick",1.2)
 	dgsSetData(edit,"cursorOffset",0)
+	dgsSetData(edit,"readOnly",false)
 	dgsSetData(edit,"font",msyh)
 	dgsSetData(edit,"side",0)
 	dgsSetData(edit,"sidecolor",tocolor(0,0,0,255))
@@ -136,6 +137,17 @@ function dgsDxEditGetMaxLength(edit,fromgui)
 	else
 		return dgsElementData[edit].maxLength
 	end
+end
+
+function dgsDxEditSetReadOnly(edit,state)
+	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetReadOnly argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	local guiedit = dgsElementData[edit].edit
+	return dgsSetData(edit,"readOnly",state and true or false)
+end
+
+function dgsDxEditGetReadOnly(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditGetReadOnly argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	return dgsGetData(edit,"readOnly")
 end
 
 function configEdit(source)
