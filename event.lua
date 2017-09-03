@@ -1,6 +1,7 @@
 addEvent("onClientDgsDxMouseLeave",true)
 addEvent("onClientDgsDxMouseEnter",true)
 addEvent("onClientDgsDxMouseClick",true)
+addEvent("onClientDgsDxMouseDoubleClick",true)
 addEvent("onClientDgsDxWindowClose",true)
 addEvent("onClientDgsDxGUIPositionChange",true)
 addEvent("onClientDgsDxGUISizeChange",true)
@@ -8,6 +9,7 @@ addEvent("onClientDgsDxGUITextChange",true)
 addEvent("onClientDgsDxScrollBarScrollPositionChange",true)
 addEvent("onClientDgsDxGUIDestroy",true)
 addEvent("onClientDgsDxGridListSelect",true)
+addEvent("onClientDgsDxProgressBarChange",true)
 addEvent("onClientDgsDxGUICreate",true)
 addEvent("onClientDgsDxGUIPreCreate",true)
 addEvent("onClientDgsDxPreRender",true)
@@ -19,6 +21,7 @@ addEvent("onClientDgsDxTabPanelTabSelect",true)
 addEvent("onClientDgsDxRadioButtonChanged",true)
 addEvent("onClientDgsDxComboBoxSelect",true)
 addEvent("onClientDgsDxComboBoxStateChanged",true)
+
 -------
 addEvent("giveIPBack",true)
 

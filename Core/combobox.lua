@@ -33,7 +33,7 @@ function dgsDxCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scal
 	dgsSetData(combobox,"listtextcolor",textcolor or tocolor(0,0,0,255))
 	dgsSetData(combobox,"listtextsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
 	dgsSetData(combobox,"shadow",false)
-	dgsSetData(combobox,"font",msyh)
+	dgsSetData(combobox,"font",systemFont)
 	dgsSetData(combobox,"combobgColor",tocolor(200,200,200,200))
 	dgsSetData(combobox,"combobgImage",nil)
 	dgsSetData(combobox,"buttonLen",{1,true}) --height
@@ -47,6 +47,8 @@ function dgsDxCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scal
 	dgsSetData(combobox,"itemImage",{idefimg,ihovimg,iselimg})
 	dgsSetData(combobox,"listState",-1,true)
 	dgsSetData(combobox,"listStateAnim",-1)
+	dgsSetData(combobox,"combo_BoxTextSide",{5,5})
+	dgsSetData(combobox,"comboTextSide",{5,5})
 	dgsSetData(combobox,"arrowColor",tocolor(255,255,255,255))
 	dgsSetData(combobox,"arrowSettings",{"height",0.15})
 	dgsSetData(combobox,"arrowWidth",10)
@@ -226,10 +228,11 @@ end
 function dgsDxComboBoxGetSelectedItem(combobox)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetSelectedItem argument 1,expect number got "..dgsGetType(combobox))
 	local itemData = dgsElementData[combobox].itemData
-	if itemData < 1 and itemData > #itemData then
+	local selected = dgsElementData[combobox].select
+	if selected < 1 and selected > #itemData then
 		return -1
 	else
-		return dgsElementData[combobox].select
+		return selected
 	end
 end
 

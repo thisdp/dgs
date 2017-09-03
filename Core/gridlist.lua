@@ -11,20 +11,21 @@
 	dgsSetData(gridlist,"columnimage",columnimage)
 	dgsSetData(gridlist,"columncolor",columncolor or tocolor(220,220,220,255))
 	dgsSetData(gridlist,"columntextcolor",columntextcolor or tocolor(0,0,0,255))
-	dgsSetData(gridlist,"columntextsize",{0.8,0.8})
+	dgsSetData(gridlist,"columntextsize",{1,1})
 	dgsSetData(gridlist,"rowcolor",{rowdefc or tocolor(200,200,200,255),rowhovc or tocolor(150,150,150,255),rowselc or tocolor(0,170,242,255)})
 	dgsSetData(gridlist,"rowimage",{rowdefi,rowhovi,rowseli})
 	dgsSetData(gridlist,"columnData",{})
 	dgsSetData(gridlist,"rowData",{})
-	dgsSetData(gridlist,"rowtextsize",{0.8,0.8})
+	dgsSetData(gridlist,"rowtextsize",{1,1})
 	dgsSetData(gridlist,"rowtextcolor",tocolor(0,0,0,255))
 	dgsSetData(gridlist,"columnRelative",true)
 	dgsSetData(gridlist,"columnMoveOffset",0)
-	dgsSetData(gridlist,"font",msyh)
+	dgsSetData(gridlist,"font",systemFont)
 	dgsSetData(gridlist,"columnShadow",false)
 	dgsSetData(gridlist,"scrollBarThick",20,true)
 	dgsSetData(gridlist,"rowHeight",15)
 	dgsSetData(gridlist,"colorcoded",false)
+	dgsSetData(gridlist,"mode",false,true)
 	dgsSetData(gridlist,"rowShadow",false)
 	dgsSetData(gridlist,"rowMoveOffset",0)
 	dgsSetData(gridlist,"preSelect",-1)
@@ -54,9 +55,9 @@ end
 -----------------------------Column
 --[[
 	columnData Struct:
-	  1			2			...
-	  column1		column2			column...
-	{{text1,oldLen,Len},	{text1,oldLen,Len},	{text1...,oldLen，Len}}
+	  1									2									N
+	  column1							column2								columnN
+	{{text1,AllLengthFront,Length},		{text1,AllLengthFront,Length},		{textN,AllLengthFront,Length}, ...}
 
 ]]
 
@@ -171,7 +172,7 @@ function dgsDxGridListRemoveColumn(gridlist,pos)
 end
 
 --[[
-mode 快速(true)/慢速(false)
+mode Fast(true)/Slow(false)
 --]]
 function dgsDxGridListGetColumnAllLength(gridlist,pos,relative,mode)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnAllLength at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
@@ -333,13 +334,16 @@ function dgsDxGridListRemoveRow(gridlist,pos)
 	return true
 end
 
-function dgsDxGridListClearRow(gridlist)
+function dgsDxGridListClearRow(gridlist,notresetSelected)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListClearRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsGetData(gridlist,"rowData")
  	local scrollbars = dgsGetData(gridlist,"scrollbars")
 	dgsSetData(scrollbars[1],"length",{0,true})
 	dgsSetData(scrollbars[1],"position",0)
 	dgsDxGUISetVisible(scrollbars[1],false)
+	if not notresetSelected then
+		 dgsDxGridListSetSelectedItem(gridlist,-1)
+	end
 	return table.remove(rowData) and dgsSetData(gridlist,"rowData",{})
 end
 
@@ -355,9 +359,9 @@ function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
 	assert(column >= 1 or develop,"@dgsDxGridListSetItemText at argument 3,expect a number >= 1 got "..tostring(row))
 	local rowData = dgsGetData(gridlist,"rowData")
 	if column < 1 then
-		rowData[row][column] = text
+		rowData[row][column] = tostring(text)
 	else
-		rowData[row][column][1] = text
+		rowData[row][column][1] = tostring(text)
 	end
 	return dgsSetData(gridlist,"rowData",rowData)
 end
@@ -458,7 +462,7 @@ addEventHandler("onClientDgsDxScrollBarScrollPositionChange",root,function(new,o
 	end
 end)
 
-function configGirdList(source)
+function configGridList(source)
 	local scrollbar = dgsGetData(source,"scrollbars")
 	local sx,sy = unpack(dgsGetData(source,"absSize"))
 	local columnHeight = dgsGetData(source,"columnHeight")
@@ -503,10 +507,20 @@ function configGirdList(source)
 		if isElement(rentarg[2]) then
 			destroyElement(rentarg[2])
 		end
-		local columnRender = dxCreateRenderTarget(relSizX+scbThick,columnHeight,true)
-		local rowRender = dxCreateRenderTarget(relSizX+scbThick,relSizY-columnHeight,true)
-		dgsSetData(source,"renderTarget",{columnRender,rowRender})
+		if not dgsElementData[source].mode then
+			local columnRender = dxCreateRenderTarget(relSizX+scbThick,columnHeight,true)
+			local rowRender = dxCreateRenderTarget(relSizX+scbThick,relSizY-columnHeight,true)
+			dgsSetData(source,"renderTarget",{columnRender,rowRender})
+		end
 	end
+end
+
+function dgsDxGridListResetScrollBarPosition(gridlist)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetScrollBar at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	local scrollbars = dgsElementData[gridlist].scrollbars
+	dgsDxScrollBarSetScrollPosition(scrollbar[1],0)
+	dgsDxScrollBarSetScrollPosition(scrollbar[2],0)
+	return true
 end
 
 function dgsDxGridListGetScrollBar(gridlist)

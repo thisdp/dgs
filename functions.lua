@@ -1,19 +1,21 @@
 resourceDxGUI ={}
 
 function insertResourceDxGUI(res,gui)
-	if sourceResource and isElement(gui) then
-		resourceDxGUI[sourceResource] = resourceDxGUI[sourceResource] or {}
-		table.insert(resourceDxGUI[sourceResource],gui)
+	if res and isElement(gui) then
+		resourceDxGUI[res] = resourceDxGUI[res] or {}
+		table.insert(resourceDxGUI[res],gui)
 		setElementData(gui,"resource",res)
 	end
 end
 
 addEventHandler("onClientResourceStop",root,function(res)
-	if resourceDxGUI[res] then
-		for i=1,#resourceDxGUI[res] do
-			local v = resourceDxGUI[res][1]
-			if isElement(v) then
-				destroyElement(v)
+	local guiTable = resourceDxGUI[res]
+	if guiTable then
+		for k,v in pairs(guiTable) do
+			local ele = v
+			guiTable[k] = ""
+			if isElement(ele) then
+				destroyElement(ele)
 			end
 		end
 		resourceDxGUI[res] = nil
@@ -324,7 +326,6 @@ function dgsDxGUICreateFont(path,clear)
 		path = filename[#filename]
 	end
 	local font = dxCreateFont(path,clear)
-	textFontSize[font] = 12/clear
 	return font
 end
 

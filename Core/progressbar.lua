@@ -50,7 +50,10 @@ function dgsDxProgressBarSetProgress(gui,progress)
 	assert(dgsGetType(gui) == "dgs-dxprogressbar","@dgsDxProgressBarSetProgress argument 1,expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
 	if progress < 0 then progress = 0 end
 	if progress > 100 then progress = 100 end
-	return dgsSetData(gui,"progress",progress)
+	if dgsElementData[gui].progress ~= progress then
+		dgsSetData(gui,"progress",progress)
+	end
+	return true
 end
 
 function dgsDxProgressBarSetMode(gui,mode)

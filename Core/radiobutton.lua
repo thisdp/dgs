@@ -41,7 +41,7 @@ function dgsDxCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,
 	dgsSetData(rb,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
 	dgsSetData(rb,"textImageSpace",{2,false})
 	dgsSetData(rb,"shadow",{_,_,_})
-	dgsSetData(rb,"font",msyh)
+	dgsSetData(rb,"font",systemFont)
 	dgsSetData(rb,"buttonsize",{16,false})
 	dgsSetData(rb,"clip",false)
 	dgsSetData(rb,"wordbreak",false)

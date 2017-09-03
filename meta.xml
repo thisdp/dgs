@@ -1,6 +1,5 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
-	<file src="msyh.ttf" />
 	<file src="dsm.ttf" />
 	<file src="image/combobox/arrow.fx" />
 
@@ -36,6 +35,8 @@
 	<file src="image/radiobutton/rb_f_s.png" type="client" />
 	<file src="image/scrollbar/scrollbar_arrow.png" type="client" />
 	
+	<export function="setSystemFont" type="client" />
+	<export function="getSystemFont" type="client" />
 	<export function="dgsGetPosition" type="client" />
 	<export function="dgsSetPosition" type="client" />
 	<export function="dgsSetParent" type="client" />
@@ -72,6 +73,9 @@
 	<export function="dgsDxGUICreateFont" type="client" />
 	<export function="dgsDxGUIBringToFront" type="client" />
 	<export function="dgsDxGetMouseEnterGUI" type="client" />
+	<export function="dgsGetDxGUIFromResource" type="client" />
+	<export function="dgsGetDxGUINoParent" type="client" />
+	
 
 	<export function="dgsDxCreateWindow" type="client" />
 	<export function="dgsDxWindowSetSizable" type="client" />
@@ -99,18 +103,20 @@
 	<export function="dgsDxComboBoxGetState" type="client" />
 
 	<export function="dgsDxCreateButton" type="client" />
+
 	<export function="dgsDxCreateCmd" type="client" />
 	<export function="dgsDxCmdSetMode" type="client" />
 	<export function="dgsDxEventCmdSetPreName" type="client" />
 	<export function="outputCmdMessage" type="client" />
 	<export function="dgsGetChars" type="client" />
-	<export function="dgsGetCmdEdit" type="client" />
+	<export function="dgsDxCmdGetEdit" type="client" />
 	<export function="dgsDxCmdAddEventToWhiteList" type="client" />
 	<export function="dgsDxCmdRemoveEventFromWhiteList" type="client" />
 	<export function="dgsDxCmdRemoveAllEvents" type="client" />
 	<export function="dgsDxCmdIsInWhiteList" type="client" />
-	<export function="dgsAddCommandHandler" type="client" />
-	<export function="dgsRemoveCommandHandler" type="client" />
+	<export function="dgsDxCmdAddCommandHandler" type="client" />
+	<export function="dgsDxCmdRemoveCommandHandler" type="client" />
+	<export function="dgsDxCmdClearText" type="client" />
 
 	<export function="dgsDxCreateEdit" type="client" />
 	<export function="dgsDxEditMoveCaret" type="client" />

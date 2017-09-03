@@ -3,38 +3,52 @@ white = tocolor(255,255,255,255)
 black = tocolor(0,0,0,255)
 sW,sH = guiGetScreenSize()
 fontSize = {}
-textFontSize = {}
-fontSize["msyh"] = 12
-fontSize["dsm"] = 10
-msyh = dxCreateFont("msyh.ttf",fontSize["msyh"])
-textFontSize[msyh] = 12/fontSize["msyh"]
+fontDxHave = {
+["default"]=true,
+["default-bold"]=true,
+["clear"]=true,
+["arial"]=true,
+["sans"]=true,
+["pricedown"]=true,
+["bankgothic"]=true,
+["diploma"]=true,
+["beckett"]=true,
+}
+systemFont = "default"
 
-fontSize["msyh_s"] = 12
-msyh_s = dxCreateFont("msyh.ttf",fontSize["msyh_s"])
-textFontSize[msyh_s] = 12/fontSize["msyh_s"]
+function setSystemFont(font,size,bold,quality)
+	assert(type(font) == "string","Bad argument @setSystemFont at argument 1, expect a string got "..dgsGetType(font))
+	if fontDxHave[font] then
+		systemFont = font
+		return true
+	else
+		if sourceResource then
+			local path
+			if not string.find(font,":") then
+				local resname = getResourceName(sourceResource)
+				path = ":"..resname.."/"..font
+			else
+				path = font
+			end
+			assert(fileExists(path),"Bad argument @setSystemFont at argument 1,couldn't find such file '"..path.."'")
+			local filename = split(path,"/")
+			local pathindgs = ":"..getResourceName(getThisResource()).."/Third/"..filename[#filename]
+			fileCopy(path,pathindgs,true)
+			local font = dxCreateFont(pathindgs,size,bold,quality)
+			if isElement(font) then
+				if isElement(systemFont) then
+					destroyElement(systemFont)
+				end
+				systemFont = font
+			end
+		end
+	end
+	return false
+end
 
-dsm = dxCreateFont("dsm.ttf",fontSize["dsm"])
-textFontSize[dsm] = 10/fontSize["dsm"]
-
-fontSize["msyh_18"] = 18
-msyh_18 = dxCreateFont("msyh.ttf",fontSize["msyh_18"])
-textFontSize[msyh_18] = 12/fontSize["msyh_18"]
-
-
-fontSize["msyh_32"] = 32
-msyh_32 = dxCreateFont("msyh.ttf",fontSize["msyh_32"])
-textFontSize[msyh_32] = 12/fontSize["msyh_32"]
-
-fontSize["msyh_10"] = 10
-msyh_10 = dxCreateFont("msyh.ttf",fontSize["msyh_10"])
-textFontSize[msyh_10] = 12/fontSize["msyh_10"]
-
-setElementData(root,"system_font_10",msyh_10,false)
-setElementData(root,"system_font",msyh,false)
-setElementData(root,"system_font_dsm",dsm,false)
-setElementData(root,"system_font_18",msyh_18,false)
-setElementData(root,"system_font_12",msyh_s,false)
-setElementData(root,"system_font_32",msyh_32,false)
+function getSystemFont()
+	return systemFont
+end
 
 -----------------------------------------------------Core-----------------------------------------------------
 dgsElementType = {}
@@ -78,6 +92,17 @@ end
 
 function dgsGetParent(erzi)
 	return FatherTable[erzi] or false
+end
+
+function dgsGetDxGUIFromResource(res)
+	local res = res or sourceResource
+	if res then
+		return resourceDxGUI[res] or {}
+	end
+end
+
+function dgsGetDxGUINoParent(alwaysBottom)
+	return alwaysBottom and BottomFatherTable or MaxFatherTable
 end
 
 function dgsSetParent(erzi,baba,nocheckfather)
@@ -157,12 +182,14 @@ function dgsSetData(element,key,value,check)
 					dgsSetPosition(scrollbars[2],0,size[2]-value,false)
 					dgsSetSize(scrollbars[2],size[1]-value,value,false)
 					if dgsType == "dgs-dxgridlist" then
-						configGirdList(element)
+						configGridList(element)
 					else
 						configScrollPane(element)
 					end
 				elseif key == "columnHeight" then
-					configGirdList(element)
+					configGridList(element)
+				elseif key == "mode" then
+					configGridList(element)
 				end
 			elseif dgsType == "dgs-dxcombobox" then
 				if key == "scrollBarThick" then
@@ -206,6 +233,10 @@ function dgsSetData(element,key,value,check)
 					else
 						return false
 					end
+				end
+			elseif dgsType == "dgs-dxprogressbar" then
+				if key == "progress" then
+					triggerEvent("onClientDgsDxProgressBarChange",source,value,oldValue)
 				end
 			end
 		end
@@ -318,9 +349,14 @@ function GUIRender()
 	dgsDxCheckHit(MouseData.hit,mx,my)
 	triggerEvent("onClientDgsDxRender",root)
 	if DEBUG_MODE then
+		dxDrawText("DGS:",6,sH*0.4-59,sW,sH,tocolor(0,0,0,255))
 		dxDrawText("DGS:",5,sH*0.4-60)
-		dxDrawText("Render Time: "..getTickCount()-tk.." ms",10,sH*0.4-45)
+		local ticks = getTickCount()-tk
+		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-44,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-45)
+		dxDrawText("Enter:"..tostring(MouseData.hit),11,sH*0.4-29,sW,sH,tocolor(0,0,0,255))
 		dxDrawText("Enter:"..tostring(MouseData.hit),10,sH*0.4-30)
+		dxDrawText("Click Left:"..tostring(MouseData.clickl).." ;Right:"..tostring(MouseData.clickr),11,sH*0.4-14,sW,sH,tocolor(0,0,0,255))
 		dxDrawText("Click Left:"..tostring(MouseData.clickl).." ;Right:"..tostring(MouseData.clickr),10,sH*0.4-15)
 		DGSCount = 0
 		for k,v in ipairs(dgsType) do
@@ -329,11 +365,15 @@ function GUIRender()
 			if v == "dgs-dxtab" or v == "dgs-dxcombobox-Box" then
 				x = 30
 			end
+			dxDrawText(v.." : "..#getElementsByType(v),x+1,sH*0.4+15*(k+1)+1,sW,sH,tocolor(0,0,0,255))
 			dxDrawText(v.." : "..#getElementsByType(v),x,sH*0.4+15*(k+1))
 		end
-		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4)
-		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+15)	
+		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4+1,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4,sW,sH)
+		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+16,sW,sH,tocolor(0,0,0,255))	
+		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+15,sW,sH)
 	
+		dxDrawText("Resource Elements:",201,sH*0.4+16,sW,sH,tocolor(0,0,0,255))
 		dxDrawText("Resource Elements:",200,sH*0.4+15)
 		Resource = 0
 		ResCount = 0
@@ -341,6 +381,7 @@ function GUIRender()
 			if type(ka) == "userdata" and va then
 				Resource = Resource+#va
 				ResCount = ResCount +1
+				dxDrawText(getResourceName(ka).." : "..#va,201,sH*0.4+15*(ResCount+1)+1,sW,sH,tocolor(0,0,0,255))
 				dxDrawText(getResourceName(ka).." : "..#va,200,sH*0.4+15*(ResCount+1))
 			end
 		end
@@ -399,12 +440,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					dxDrawRectangle(x,y,w,titsize,titcolor,not DEBUG_MODE)
 				end
-				local font = dgsElementData[v].font or msyh
+				local font = dgsElementData[v].font or systemFont
 				local titnamecolor = dgsElementData[v].titnamecolor
 				titnamecolor = applyColorAlpha(titnamecolor,galpha)
-				dxDrawText(dgsElementData[v].text,x,y,x+w,y+titsize,titnamecolor,1*(textFontSize[font] or 1),msyh,"center","center",true,false,not DEBUG_MODE,dgsElementData[v].colorcoded)
+				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
+				dxDrawText(dgsElementData[v].text,x,y,x+w,y+titsize,titnamecolor,txtSizX,txtSizY,systemFont,"center","center",true,false,not DEBUG_MODE,dgsElementData[v].colorcoded)
 				if enabled then
-					if mx >= x-2 and mx<= x+w-1 and my >= y-2 and my <= y+h-1 then
+					if mx >= x and mx<= x+w and my >= y and my <= y+h then
 						MouseData.hit = v
 					end
 				end
@@ -439,9 +481,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local text = dgsElementData[v].text
 				if #text ~= 0 then
-					local font = dgsElementData[v].font or msyh
-					local txtSizX = dgsElementData[v].textsize[1]*(textFontSize[font] or 1)
-					local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+					local font = dgsElementData[v].font or systemFont
+					local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
 					local txtoffsets = {0,0}
 					local clip = dgsElementData[v].clip
 					local wordbreak = dgsElementData[v].wordbreak
@@ -458,7 +499,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawText(text,math.floor(x+txtoffsets[1]),math.floor(y+txtoffsets[2]),x+w-1,y+h-1,applyColorAlpha(dgsElementData[v].textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -497,15 +538,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						fnc[1](unpack(fnc[2]))
 					end
 					if not sx or not sy or not px or not py then
-						dxDrawImage(x,y,w,h,imgs,0,0,0,colors,not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x,y,w,h,imgs,0,0,0,colors,rendSet)
 					else
-						dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,0,0,0,colors,not DEBUG_MODE and isRenderTarget)
+						dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,0,0,0,colors,rendSet)
 					end
 				else
-					dxDrawRectangle(x,y,w,h,colors,not DEBUG_MODE and isRenderTarget)
+					dxDrawRectangle(x,y,w,h,colors,rendSet)
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w and my >= cy-0.5 and my <= cy+h then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -548,13 +589,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				if image[colorimgid] then
-					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,applyColorAlpha(color[colorimgid],galpha),not DEBUG_MODE and isRenderTarget)
+					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,applyColorAlpha(color[colorimgid],galpha),rendSet)
 				else
-					dxDrawRectangle(x,y+h/2-buttonSize/2,buttonSize,buttonSize,applyColorAlpha(color[colorimgid],galpha),not DEBUG_MODE and isRenderTarget)
+					dxDrawRectangle(x,y+h/2-buttonSize/2,buttonSize,buttonSize,applyColorAlpha(color[colorimgid],galpha),rendSet)
 				end
-				local font = dgsElementData[v].font or msyh
-				local txtSizX = dgsElementData[v].textsize[1]*(textFontSize[font] or 1)
-				local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+				local font = dgsElementData[v].font or systemFont
+				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
 				local clip = dgsElementData[v].clip
 				local wordbreak = dgsElementData[v].wordbreak
 				local _textImageSpace = dgsElementData[v].textImageSpace
@@ -565,11 +605,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local px = x+buttonSize+textImageSpace
 				if shadowoffx and shadowoffy and shadowc then
 					shadowc = applyColorAlpha(shadowc,galpha)
-					dxDrawText(dgsElementData[v].text,px+shadowoffx,y+shadowoffy,px+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget,colorcoded)
+					dxDrawText(dgsElementData[v].text,px+shadowoffx,y+shadowoffy,px+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
-				dxDrawText(dgsElementData[v].text,px,y,px+w-1,y+h-1,applyColorAlpha(dgsElementData[v].textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget,colorcoded)
+				dxDrawText(dgsElementData[v].text,px,y,px+w-1,y+h-1,applyColorAlpha(dgsElementData[v].textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -612,9 +652,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				guiEditSetCaretIndex(edit,cursorPos)
 				guiSetProperty(edit,"SelectionStart",cursorPos)
 				guiSetProperty(edit,"SelectionLength",selectFro-cursorPos)
-				local font = dgsElementData[v].font or msyh
-				local txtSizX = dgsElementData[v].textsize[1]*(textFontSize[font] or 1)
-				local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+				local font = dgsElementData[v].font or systemFont
+				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
 				local renderTarget = dgsElementData[v].renderTarget
 				if isElement(renderTarget) then
 					local selectMode = dgsElementData[v].selectmode
@@ -658,8 +697,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,black,dgsElementData[v].cursorThick,isRenderTarget)
 							end
 						end
-					end	
-					dxDrawImageSection(x+2,y,w-4,h,0,0,w-4,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					end
+					local px,py,pw,ph = useFloor and math.floor(x+2) or x+2, useFloor and math.floor(y) or y, useFloor and math.floor(w-4) or w-4, useFloor and math.floor(h) or h
+					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				local side = dgsElementData[v].side
 				if side ~= 0 then
@@ -670,7 +710,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawLine(x,y+h-side/2,x+w,y+h-side/2,sidecolor,side,isRenderTarget)
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -713,9 +753,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				guiEditSetCaretIndex(memo,cursorPos)
 				guiSetProperty(memo,"SelectionStart",cursorPos)
 				guiSetProperty(memo,"SelectionLength",selectFro-cursorPos)
-				local font = dgsElementData[v].font or msyh
-				local txtSizX = dgsElementData[v].textsize[1]*(textFontSize[font] or 1)
-				local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+				local font = dgsElementData[v].font or systemFont
+				local txtSizX = dgsElementData[v].textsize[1]
+				local txtSizY = dgsElementData[v].textsize[2]
 				local renderTarget = dgsElementData[v].renderTarget
 				if isElement(renderTarget) then
 					local selectMode = dgsElementData[v].selectmode
@@ -739,9 +779,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					dxSetRenderTarget(rndtgt)
 					if imagebg then
-						dxDrawImage(x,y,w,h,imagebg,0,0,0,colorbg,not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x,y,w,h,imagebg,0,0,0,colorbg,rendSet)
 					else
-						dxDrawRectangle(x,y,w,h,colorbg,not DEBUG_MODE and isRenderTarget)
+						dxDrawRectangle(x,y,w,h,colorbg,rendSet)
 					end
 					if MouseData.nowShow == v and MouseData.editCursor then
 						local width = dxGetTextWidth(utfSub(text,0,cursorPos),txtSizX,font)
@@ -758,7 +798,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,black,dgsElementData[v].cursorThick,isRenderTarget)
 						end
 					end	
-					dxDrawImageSection(x+2,y,w-4,h,0,0,w-4,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),not DEBUG_MODE and isRenderTarget)
+					dxDrawImageSection(x+2,y,w-4,h,0,0,w-4,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				local side = dgsElementData[v].side
 				if side ~= 0 then
@@ -800,10 +840,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position/100 or 0
 				OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position/100 or 0
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.scrollPane = v
 						MouseData.hit = v
-						if mx >= cx-1+relSizX and my >= cy-1+relSizY and scbstate[1] and scbstate[2] then
+						if mx >= cx+relSizX and my >= cy+relSizY and scbstate[1] and scbstate[2] then
 							enabled = false
 						end
 					else
@@ -892,37 +932,37 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				if voh then
 					if imgs[3] then
-						dxDrawImage(x+arrowPos,y,w-2*arrowPos,h,imgs[3],0,0,0,colors[1][3],not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x+arrowPos,y,w-2*arrowPos,h,imgs[3],0,0,0,colors[1][3],rendSet)
 					else
-						dxDrawRectangle(x+arrowPos,y,w-2*arrowPos,h,colors[1][3],not DEBUG_MODE and isRenderTarget)
+						dxDrawRectangle(x+arrowPos,y,w-2*arrowPos,h,colors[1][3],rendSet)
 					end
 					if scrollArrow then
-						dxDrawImage(x,y,h,h,imgs[1],270,0,0,colors[colorimgid[1]][1],not DEBUG_MODE and isRenderTarget)
-						dxDrawImage(x+w-h,y,h,h,imgs[1],90,0,0,colors[colorimgid[4]][1],not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x,y,h,h,imgs[1],270,0,0,colors[colorimgid[1]][1],rendSet)
+						dxDrawImage(x+w-h,y,h,h,imgs[1],90,0,0,colors[colorimgid[4]][1],rendSet)
 					end
 					if imgs[2] then
-						dxDrawImage(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,imgs[2],270,0,0,colors[colorimgid[2]][2],not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,imgs[2],270,0,0,colors[colorimgid[2]][2],rendSet)
 					else
-						dxDrawRectangle(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,colors[colorimgid[2]][2],not DEBUG_MODE and isRenderTarget)
+						dxDrawRectangle(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,colors[colorimgid[2]][2],rendSet)
 					end
 				else
 					if imgs[3] then
-						dxDrawImage(x,y+arrowPos,w,h-2*arrowPos,imgs[3],0,0,0,colors[1][3],not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x,y+arrowPos,w,h-2*arrowPos,imgs[3],0,0,0,colors[1][3],rendSet)
 					else
-						dxDrawRectangle(x,y+arrowPos,w,h-2*arrowPos,colors[1][3],not DEBUG_MODE and isRenderTarget)
+						dxDrawRectangle(x,y+arrowPos,w,h-2*arrowPos,colors[1][3],rendSet)
 					end
 					if scrollArrow then
-						dxDrawImage(x,y,w,w,imgs[1],0,0,0,colors[colorimgid[1]][1],not DEBUG_MODE and isRenderTarget)
-						dxDrawImage(x,y+h-w,w,w,imgs[1],180,0,0,colors[colorimgid[4]][1],not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x,y,w,w,imgs[1],0,0,0,colors[colorimgid[1]][1],rendSet)
+						dxDrawImage(x,y+h-w,w,w,imgs[1],180,0,0,colors[colorimgid[4]][1],rendSet)
 					end
 					if imgs[2] then
-						dxDrawImage(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,imgs[2],270,0,0,colors[colorimgid[2]][2],not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,imgs[2],270,0,0,colors[colorimgid[2]][2],rendSet)
 					else
-						dxDrawRectangle(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,colors[colorimgid[2]][2],not DEBUG_MODE and isRenderTarget)
+						dxDrawRectangle(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,colors[colorimgid[2]][2],rendSet)
 					end
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -942,7 +982,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						colorimgid = 3
 					end
 				end
-				local font = dgsElementData[v].font or msyh
+				local font = dgsElementData[v].font or systemFont
 				local clip = dgsElementData[v].clip
 				local wordbreak = dgsElementData[v].wordbreak
 				local shadowoffx,shadowoffy,shadowc = unpack(dgsElementData[v].shadow)
@@ -954,15 +994,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					text = dgsElementData[v].text
 				end
 				local colorcoded = dgsElementData[v].colorcoded
-				local txtSizX = dgsElementData[v].textsize[1]*(textFontSize[font] or 1)
-				local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
 				if shadowoffx and shadowoffy and shadowc then
 					shadowc = applyColorAlpha(shadowc,galpha)
-					dxDrawText(colorcoded and text:gsub('#%x%x%x%x%x%x','') or text,x+shadowoffx,y+shadowoffy,x+w,y+h,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget)
+					dxDrawText(colorcoded and text:gsub('#%x%x%x%x%x%x','') or text,x+shadowoffx,y+shadowoffy,x+w,y+h,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,false,true)
 				end
-				dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,not DEBUG_MODE and isRenderTarget,colorcoded)
+				dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded,true)
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -986,18 +1025,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					MouseData.enterData = false
 				end
 				if bgimg then
-					dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgimg,0,0,0,bgcolor,not DEBUG_MODE and isRenderTarget)
+					dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgimg,0,0,0,bgcolor,rendSet)
 				else
-					dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgcolor,not DEBUG_MODE and isRenderTarget)
+					dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgcolor,rendSet)
 				end
 				if columnimg then
-					dxDrawImage(x,y,w,columnHeight,columnimg,0,0,0,columncolor,not DEBUG_MODE and isRenderTarget)
+					dxDrawImage(x,y,w,columnHeight,columnimg,0,0,0,columncolor,rendSet)
 				else
-					dxDrawRectangle(x,y,w,columnHeight,columncolor,not DEBUG_MODE and isRenderTarget)
+					dxDrawRectangle(x,y,w,columnHeight,columncolor,rendSet)
 				end
+				local mode = DataTab.mode
 				local columnTextColor = DataTab.columntextcolor
-				local font = DataTab.font or msyh_ms
-				local renderTarget = DataTab.renderTarget
+				local font = DataTab.font or systemFont
 				local columnData = DataTab.columnData
 				local columnRelt = DataTab.columnRelative
 				local rowData = DataTab.rowData
@@ -1008,36 +1047,135 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				dxSetRenderTarget()
 				local rowMoveOffset = DataTab.rowMoveOffset
 				local columnMoveOffset = DataTab.columnMoveOffset
-				local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+1
-				local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThick+rowHeight*2)/rowHeight)-1
-				DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #rowData and whichRowToEnd or #rowData}
 				local fnc = dgsElementData[v].functions
+				local rowtextx,rowtexty = DataTab.rowtextsize[1],DataTab.rowtextsize[2] or DataTab.rowtextsize[1]
+				local columntextx,columntexty = DataTab.columntextsize[1],DataTab.columntextsize[2] or DataTab.columntextsize[1]
 				if type(fnc) == "table" then
 					fnc[1](unpack(fnc[2]))
 				end
-				local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
-				dxSetRenderTarget(renderTarget[1],true)
-					local sizex,sizey = DataTab.columntextsize[1],DataTab.columntextsize[2]
-					local tempFont = textFontSize[font] or 1
-					local fontSizex = sizex*tempFont
-					local fontSizey = (sizey or sizex)*tempFont
+				if not mode then
+					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+1
+					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThick+rowHeight*2)/rowHeight)-1
+					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #rowData and whichRowToEnd or #rowData}
+					local renderTarget = DataTab.renderTarget
+					local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
+					dxSetRenderTarget(renderTarget[1],true)
+						local sizex,sizey = DataTab.columntextsize[1],DataTab.columntextsize[2]
+						local cpos = {}
+						local multipiler = columnRelt and (w-scbThick) or 1
+						for id,data in ipairs(columnData) do
+							local textxSize = data[2]*multipiler
+							cpos[id] = columnData[id][3]*multipiler
+							if isDraw1 then
+								if DataTab.columnShadow then
+									dxDrawText(data[1],2+cpos[id]+columnMoveOffset,1,sW,columnHeight,black,columntextx,columntexty,font,"left","center",false,false,false,false,true)
+								end
+								dxDrawText(data[1],1+cpos[id]+columnMoveOffset,0,sW,columnHeight,columnTextColor,columntextx,columntexty,font,"left","center",false,false,false,false,true)
+							end
+						end
+					dxSetRenderTarget(renderTarget[2],true)
+						if MouseData.enter == v then		-------PreSelect
+							local ypcolumn = cy+columnHeight
+							if mx >= cx and mx <= cx+w and my >= ypcolumn and my <= cy+h-scbThick then
+								local toffset = (whichRowToStart*rowHeight)+DataTab.rowMoveOffset
+								sid = math.floor((my-ypcolumn-toffset)/rowHeight)+whichRowToStart+1
+								if sid <= #rowData then
+									DataTab.preSelect = sid
+									MouseData.enterData = true
+								else
+									DataTab.preSelect = -1
+								end
+							else
+								DataTab.preSelect = -1
+							end
+						end
+						local preSelect = DataTab.preSelect
+						local Select = DataTab.select
+						for i=DataTab.FromTo[1],DataTab.FromTo[2] do
+							local lc_rowData = rowData[i]
+							local image = lc_rowData[-3]
+							local color = lc_rowData[0]
+							local rowState = 1
+							if i == preSelect then
+								rowState = 2
+							end
+							if i == Select then
+								rowState = 3
+							end
+							if isDraw2 then
+								local rowpos = i*rowHeight
+								local rowpos_1 = rowpos-rowHeight
+								local _x,_y,_sx,_sy = columnMoveOffset,rowpos_1+rowMoveOffset,sW,rowpos+rowMoveOffset
+								if #image > 0 then
+									dxDrawImage(0,_y,w,rowHeight,image[rowState],0,0,0,color[rowState])
+								else
+									dxDrawRectangle(0,_y,w,rowHeight,color[rowState])
+								end
+								for id=1,#columnData do
+									local text = lc_rowData[id][1]
+									if text then
+										local offset = cpos[id]
+										local _x = _x+offset
+										local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
+										if shadow then
+											if colorcoded then
+												text = text:gsub("#%x%x%x%x%x%x","") or text
+											end
+											dxDrawText(text,_x+shadow[1],_y+shadow[2],_sx+shadow[1],_sy+shadow[2],shadow[3],rowtextx,rowtexty,font,"left","center",false,false,false,false,true)
+										end
+										dxDrawText(lc_rowData[id][1],_x,_y,_sx,_sy,lc_rowData[id][2],rowtextx,rowtexty,font,"left","center",false,false,false,colorcoded,true)
+									end
+								end
+							end
+						end
+					dxSetRenderTarget(rndtgt)
+					if isElement(renderTarget[2]) then
+						dxDrawImage(x,y+columnHeight,w,h-columnHeight-scbThick,renderTarget[2],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					end
+					if isElement(renderTarget[1]) then
+						dxDrawImage(x,y,w,columnHeight,renderTarget[1],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					end
+				else
+					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+2
+					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThick+rowHeight*2)/rowHeight)-3
+					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #rowData and whichRowToEnd or #rowData}
+					local _rowMoveOffset = math.floor(rowMoveOffset/rowHeight)*rowHeight
+					
+					local whichColumnToStart,whichColumnToEnd = 0,0
 					local cpos = {}
 					local multipiler = columnRelt and (w-scbThick) or 1
+					local ypcolumn = cy+columnHeight
+					local _y,_sx = ypcolumn+_rowMoveOffset,cx+w-scbThick
+					local column_x
+					local allColumnWidth = columnData[#columnData][2]+columnData[#columnData][3]
+					local scrollbar = dgsElementData[v].scrollbars[2]
+					local scrollPos = dgsElementData[scrollbar].position/100
 					for id,data in ipairs(columnData) do
 						local textxSize = data[2]*multipiler
-						cpos[id] = columnData[id][3]*multipiler
-						if isDraw1 then
-							if DataTab.columnShadow then
-								dxDrawText(data[1],2+cpos[id]+columnMoveOffset,1,sW,columnHeight,black,fontSizex,fontSizey,font,"left","center",false,false,false,false,true)
+						cpos[id] = data[3]*multipiler
+						local nextone = 0
+						if columnData[id+1] then
+							nextone = columnData[id+1][3]/multipiler
+						end
+						if (data[3]+data[2])/allColumnWidth >= scrollPos then
+							whichColumnToStart = whichColumnToStart ~= 0 and whichColumnToStart or id
+							whichColumnToEnd = whichColumnToEnd <= whichColumnToStart and whichColumnToStart or id
+							if cpos[id]+scrollPos*(allColumnWidth-w+scbThick+10) <= w then
+								whichColumnToEnd = id
 							end
-							dxDrawText(data[1],1+cpos[id]+columnMoveOffset,0,sW,columnHeight,columnTextColor,fontSizex,fontSizey,font,"left","center",false,false,false,false,true)
 						end
 					end
-				dxSetRenderTarget(renderTarget[2],true)
+					column_x = cx-cpos[whichColumnToStart]+cpos[1]
+					for i=whichColumnToStart,whichColumnToEnd or #columnData do
+						local posx = column_x+cpos[i]
+						if DataTab.columnShadow then
+							dxDrawText(columnData[i][1],1+posx,1+cy,cx+w-scbThick,ypcolumn,black,columntextx,columntexty,font,"left","center",true,false,rendSet,false,true)
+						end
+						dxDrawText(columnData[i][1],posx,cy,cx+w-scbThick,ypcolumn,columnTextColor,columntextx,columntexty,font,"left","center",true,false,rendSet,false,true)
+					end
 					if MouseData.enter == v then		-------PreSelect
-						local ypcolumn = cy+columnHeight
-						if mx >= cx-2 and mx <= cx+w-1 and my >= ypcolumn and my <= cy+h-scbThick-1 then
-							local toffset = (whichRowToStart*rowHeight)+DataTab.rowMoveOffset
+						if mx >= cx and mx <= cx+w and my >= ypcolumn and my <= cy+h-scbThick then
+							local toffset = (whichRowToStart*rowHeight)+_rowMoveOffset
 							sid = math.floor((my-ypcolumn-toffset)/rowHeight)+whichRowToStart+1
 							if sid <= #rowData then
 								DataTab.preSelect = sid
@@ -1049,49 +1187,43 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							DataTab.preSelect = -1
 						end
 					end
-					local preSelect = DataTab.preSelect
-					local Select = DataTab.select
-					local sizex,sizey = DataTab.rowtextsize[1],DataTab.rowtextsize[2]
-					local fontsx,fontsy = sizex*(textFontSize[font] or 1),(sizey or sizex)*(textFontSize[font] or 1)
 					for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 						local lc_rowData = rowData[i]
 						local image = lc_rowData[-3]
 						local color = lc_rowData[0]
 						local rowState = 1
-						if i == preSelect then
+						if i == DataTab.preSelect then
 							rowState = 2
 						end
-						if i == Select then
+						if i == DataTab.select then
 							rowState = 3
 						end
-						if isDraw2 then
-							local rowpos = i*rowHeight
-							local rowpos_1 = (i-1)*rowHeight
-							if #image > 0 then
-								dxDrawImage(0,1+rowpos_1+rowMoveOffset,w,rowHeight,image[rowState],0,0,0,color[rowState])
-							else
-								dxDrawRectangle(0,1+rowpos_1+rowMoveOffset,w,rowHeight,color[rowState])
-							end
-							local _x,_y,_sx,_sy = 1+columnMoveOffset,rowpos_1+rowMoveOffset,sW,rowpos+rowMoveOffset
-							for id=1,#columnData do
+						local rowpos = i*rowHeight
+						local __x,__y,__sx,__sy = column_x,_y+rowpos-rowHeight,_sx,_y+rowpos
+						if #image > 0 then
+							dxDrawImage(cx,__y,w,rowHeight,image[rowState],0,0,0,color[rowState],rendSet)
+						else
+							dxDrawRectangle(cx,__y,w,rowHeight,color[rowState],rendSet)
+						end
+						for id=whichColumnToStart,whichColumnToEnd do
+							local text = lc_rowData[id][1]
+							if text ~= "" then
 								local offset = cpos[id]
-								local _x = _x+offset
+								local __x = __x+offset
+								local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
 								if shadow then
-									dxDrawText(string.gsub(lc_rowData[id][1], "#%x%x%x%x%x%x", "") or lc_rowData[id][1],_x+shadow[1],_y+shadow[2],_sx+shadow[1],_sy+shadow[2],shadow[3],fontsx,fontsy,font,"left","center",false,false,false,false,true)
+									if colorcoded then
+										text = text:gsub("#%x%x%x%x%x%x","") or text
+									end
+									dxDrawText(text,__x+shadow[1],__y+shadow[2],__sx+shadow[1],__sy+shadow[2],shadow[3],rowtextx,rowtexty,font,"left","center",true,false,rendSet,false,true)
 								end
-								dxDrawText(lc_rowData[id][1],_x,_y,_sx,_sy,lc_rowData[id][2],fontsx,fontsy,font,"left","center",false,false,false,colorcoded,true)
+								dxDrawText(lc_rowData[id][1],__x,__y,__sx,__sy,lc_rowData[id][2],rowtextx,rowtexty,font,"left","center",true,false,rendSet,colorcoded,true)
 							end
 						end
 					end
-				dxSetRenderTarget(rndtgt)
-				if isElement(renderTarget[2]) then
-					dxDrawImage(x,y+columnHeight,w,h-columnHeight-scbThick,renderTarget[2],0,0,0,tocolor(255,255,255,255*galpha),not DEBUG_MODE and isRenderTarget)
-				end
-				if isElement(renderTarget[1]) then
-					dxDrawImage(x,y,w,columnHeight,renderTarget[1],0,0,0,tocolor(255,255,255,255*galpha),not DEBUG_MODE and isRenderTarget)
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -1115,9 +1247,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if bgimg then
 					local sx,sy = dgsElementData[v].imagesize[1],dgsElementData[v].imagesize[2]
 					local px,py = dgsElementData[v].imagepos[1],dgsElementData[v].imagepos[2]
-					dxDrawImage(x,y,w,h,bgimg,0,0,0,bgcolor,not DEBUG_MODE and isRenderTarget)
+					dxDrawImage(x,y,w,h,bgimg,0,0,0,bgcolor,rendSet)
 				else
-					dxDrawRectangle(x,y,w,h,bgcolor,not DEBUG_MODE and isRenderTarget)
+					dxDrawRectangle(x,y,w,h,bgcolor,rendSet)
 				end
 				local percent = dgsElementData[v].progress/100
 				if barimg then
@@ -1127,15 +1259,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						fnc[1](unpack(fnc[2]))
 					end
 					if not sx or not sy or not barmode then
-						dxDrawImage(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barimg,0,0,0,barcolor,not DEBUG_MODE and isRenderTarget)
+						dxDrawImage(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barimg,0,0,0,barcolor,rendSet)
 					else
-						dxDrawImageSection(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,1,1,sx*percent,sy,barimg,0,0,0,barcolor,not DEBUG_MODE and isRenderTarget)
+						dxDrawImageSection(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,1,1,sx*percent,sy,barimg,0,0,0,barcolor,rendSet)
 					end
 				else
-					dxDrawRectangle(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barcolor,not DEBUG_MODE and isRenderTarget)
+					dxDrawRectangle(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barcolor,rendSet)
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -1145,7 +1277,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType =="dgs-dxcombobox" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
-				local postgui = not DEBUG_MODE and isRenderTarget
+				local postgui = rendSet
 				local colors,imgs = dgsElementData[v].color,dgsElementData[v].image
 				local colorimgid = 1
 				local textbox = dgsElementData[v].textbox
@@ -1198,14 +1330,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				if dgsElementData[v].arrowSettings then
 					dxSetShaderValue(shader,dgsElementData[v].arrowSettings[1],dgsElementData[v].arrowSettings[2]*dgsElementData[v].listStateAnim)
-					end
+				end
+				dxSetShaderValue(shader,"_color",{1,1,1,galpha})
+				dxSetShaderValue(shader,"ocolor",{1,0,0,galpha})
+				dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,applyColorAlpha(arrowColor,galpha),postgui)
 				if textbox then
-					dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,applyColorAlpha(arrowColor,galpha),postgui)
-					local font = dgsElementData[v].font or msyh
+					local textSide = dgsElementData[v].comboTextSide
+					local font = dgsElementData[v].font or systemFont
 					local textcolor = dgsElementData[v].textcolor
 					local rb = dgsElementData[v].rightbottom
-					local txtSizX = dgsElementData[v].textsize[1]*(textFontSize[font] or 1)
-					local txtSizY = dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+					local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
 					local colorcoded = dgsElementData[v].colorcoded
 					local shadow = dgsElementData[v].shadow
 					local wordbreak = dgsElementData[v].wordbreak
@@ -1213,13 +1347,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local itemData = dgsElementData[v].itemData
 					local sele = itemData[selection]
 					local text = sele and sele[1] or ""
+					local nx,ny,nw,nh = x+textSide[1],y,x+textBoxLen-textSide[2],y+h
 					if shadow then
-						dxDrawText(text:gsub("#%x%x%x%x%x%x",""),x-shadow[1],y-shadow[2],x+textBoxLen-shadow[1],y+h-shadow[2],applyColorAlpha(shadow[3],galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui)
+						dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui)
 					end
-					dxDrawText(text,x,y,x+textBoxLen,y+h,applyColorAlpha(textcolor,galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui,colorcoded)
+					dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textcolor,galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui,colorcoded)
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -1246,9 +1381,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local rb_l = dgsElementData[combo].rightbottomList
 					local scrollbar = dgsElementData[combo].scrollbar
 					local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
-					if mx >= cx-2 and mx <= cx+w-scbcheck-1 and my >= cy and my <= cy+h-1 then
+					if mx >= cx-2 and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
 						local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
-						sid = math.floor((my-cy-toffset)/itemHeight)+whichRowToStart+1
+						sid = math.floor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
 						if sid <= #itemData then
 							DataTab.preSelect = sid
 							MouseData.enterData = true
@@ -1261,13 +1396,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local preSelect = DataTab.preSelect
 					local Select = DataTab.select
 					local sizex,sizey = DataTab.listtextsize[1],DataTab.listtextsize[2]
-					
 					local font = DataTab.font
-					local fontsx,fontsy = sizex*(textFontSize[font] or 1),(sizey or sizex)*(textFontSize[font] or 1)
+					local fontsx,fontsy = sizex,sizey or sizex
 					local shadow = dgsElementData[combo].shadow
 					local colorcoded = dgsElementData[v].colorcoded
 					local wordbreak = dgsElementData[v].wordbreak
 					local clip = dgsElementData[v].clip
+					local textSide = dgsElementData[combo].combo_BoxTextSide
 					for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 						local lc_rowData = itemData[i]
 						local textcolor = lc_rowData[-2]
@@ -1287,22 +1422,22 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						else
 							dxDrawRectangle(0,rowpos_1+itemMoveOffset,w,itemHeight,color[itemState])
 						end
-						local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW,rowpos+itemMoveOffset
+						local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW-textSide[2],rowpos+itemMoveOffset
 						local text = itemData[i][1]
 						if shadow then
-							dxDrawText(text:gsub("#%x%x%x%x%x%x",""),1-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak)
+							dxDrawText(text:gsub("#%x%x%x%x%x%x",""),textSide[1]-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak)
 						end
-						dxDrawText(text,1,_y,_sx,_sy,textcolor,fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
+						dxDrawText(text,textSide[1],_y,_sx,_sy,textcolor,fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
 					end
 					dxSetRenderTarget()
-					dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255),not DEBUG_MODE and isRenderTarget)
+					dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				if enabled then
 					local height = #itemData*itemHeight
 					if height > h then
 						height = h
 					end
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+height-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+height then
 						MouseData.hit = v
 					end
 				end
@@ -1319,7 +1454,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local selected = dgsElementData[v]["selected"]
 				local tabs = dgsElementData[v]["tabs"]
 				local height = dgsElementData[v]["tabheight"][2] and dgsElementData[v]["tabheight"][1]*h or dgsElementData[v]["tabheight"][1]
-				local font = dgsElementData[v].font or msyh_ms
+				local font = dgsElementData[v].font or systemFont
 				if selected == -1 then
 					dxDrawRectangle(x,y+height,w,h-height,dgsElementData[v]["defbackground"],not DEBUG_MODE)
 				else
@@ -1372,7 +1507,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				if enabled then
 					if MouseData.hit == hits then
-						if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+						if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 							MouseData.hit = v
 							dgsElementData[v]["preselect"] = preselected
 						else
@@ -1391,16 +1526,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local colors,imgs = dgsElementData[v].bgcolor,dgsElementData[v].bgimage
 				colors = applyColorAlpha(colors,galpha)
 				if imgs then
-					dxDrawImage(x,y,w,h,imgs,0,0,0,colors,not DEBUG_MODE and isRenderTarget)
+					dxDrawImage(x,y,w,h,imgs,0,0,0,colors,rendSet)
 				else
-					dxDrawRectangle(x,y,w,h,colors,not DEBUG_MODE and isRenderTarget)
+					dxDrawRectangle(x,y,w,h,colors,rendSet)
 				end
 				local hangju,cmdtexts = dgsElementData[v].hangju,dgsElementData[v].texts or {}
 				local canshow = math.floor(h/dgsElementData[v].hangju)-1
 				local rowoffset = 0
 				local readyToRenderTable = {}
 				local font = dgsElementData[v].font or dsm
-				local txtSizX,txtSizY = dgsElementData[v].textsize[1]*(textFontSize[font] or 1),dgsElementData[v].textsize[2]*(textFontSize[font] or 1)
+				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
 				for i=1,#cmdtexts do
 					local movex = 0
 					local rndStr = ""
@@ -1421,10 +1556,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				for i=#readyToRenderTable,1,-1 do
 					local width = dxGetTextWidth(readyToRenderTable[i],txtSizX,font)
-					dxDrawText(readyToRenderTable[i],x+5,y+(i-1)*hangju,x+width+5,y+i*hangju,white,txtSizX,txtSizY,font,"left","bottom",false,true,not DEBUG_MODE and isRenderTarget)
+					dxDrawText(readyToRenderTable[i],x+5,y+(i-1)*hangju,x+width+5,y+i*hangju,white,txtSizX,txtSizY,font,"left","bottom",false,true,rendSet)
 				end
 				if enabled then
-					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
 				end
@@ -1975,7 +2110,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 	if dgsIsDxElement(source) then
 		triggerEvent("onClientDgsDxGUIDestroy",source)
 		local child = ChildrenTable[source] or {}
-		for k=1,#child do
+		for i=1,#child do
 			if isElement(child[1]) then
 				destroyElement(child[1])
 			end
@@ -2007,6 +2142,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			end
 		elseif dgsGetType(source) == "dgs-dxtabpanel" then
 			local rentarg = dgsElementData[source].renderTarget
+			for k,v in pairs(dgsElementData[source].tabs or {}) do
+				destroyElement(v)
+			end
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
@@ -2097,12 +2235,33 @@ function checkScale()
 	return true
 end
 
+DoubleClick = false
+
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsDxGetMouseEnterGUI()
 	if isElement(guiele) then
-		if button == "left" and state == "down" then
-			if dgsGetType(guiele) == "dgs-dxradiobutton" then
-				dgsDxRadioButtonSetSelected(guiele,true)
+		if state == "down" then
+			if button == "left" then
+				if dgsGetType(guiele) == "dgs-dxradiobutton" then
+					dgsDxRadioButtonSetSelected(guiele,true)
+				end
+			end
+			if DoubleClick and isTimer(DoubleClick.timer) and DoubleClick.ele == guiele and DoubleClick.but == button then
+				triggerEvent("onClientDgsDxMouseDoubleClick",guiele,button,x,y)
+				killTimer(DoubleClick.timer)
+				DoubleClick.ele = false
+			else
+				if DoubleClick then
+					if isTimer(DoubleClick.timer) then
+						killTimer(DoubleClick.timer)
+					end
+				end
+				DoubleClick = {}
+				DoubleClick.ele = guiele
+				DoubleClick.but = button
+				DoubleClick.timer = setTimer(function()
+					DGSDoubleClickElement = false
+				end,500,1)
 			end
 		end
 		triggerEvent("onClientDgsDxMouseClick",guiele,button,state,x,y)
@@ -2113,6 +2272,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			destroyElement(gui)
 		end
 		MouseData.nowShow = false
+		if isElement(lastFront) then
+			triggerEvent("onClientDgsDxBlur",lastFront,false)
+			lastFront = false
+		end
 	end
 	if state == "up" then
 		if button == "left" then
@@ -2195,7 +2358,7 @@ addEventHandler("onClientDgsDxGUISizeChange",root,function()
 	end
 	local typ = dgsGetType(source)
 	if typ == "dgs-dxgridlist" then
-		configGirdList(source)
+		configGridList(source)
 	elseif typ == "dgs-dxcmd" then
 		configCMD(source)
 	elseif typ == "dgs-dxedit" then
@@ -2204,8 +2367,6 @@ addEventHandler("onClientDgsDxGUISizeChange",root,function()
 		configScrollPane(source)
 	elseif typ == "dgs-dxtabpanel" then
 		configTabPanel(source)
-	--elseif typ == "dgs-dxcombobox" then
-		--configComboBox(source)
 	elseif typ == "dgs-dxcombobox-Box" then
 		configComboBox_Box(source)
 	end

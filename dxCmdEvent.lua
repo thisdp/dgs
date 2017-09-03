@@ -76,11 +76,11 @@ addEventHandler("onClientDgsDxWindowClose",root,function()
 end)
 
 ----------------------------------------Insides
-dgsAddCommandHandler("version",function(cmd)
+dgsDxCmdAddCommandHandler("version",function(cmd)
 	outputCmdMessage(cmd,"[Version]1.62")
 end)
 
-dgsAddCommandHandler("mode",function(cmd,cmdtype)
+dgsDxCmdAddCommandHandler("mode",function(cmd,cmdtype)
 	triggerEvent("onCmdModePreChange",cmd,cmdtype)
 	if not wasEventCancelled() then
 		if cmdtype == "function" then
@@ -94,30 +94,30 @@ dgsAddCommandHandler("mode",function(cmd,cmdtype)
 		end
 		triggerEvent("onCmdModeChange",cmd,cmdtype)
 		outputCmdMessage(cmd,"[Mode Switch]Usage: mode <argument>")
-		outputCmdMessage(cmd,"   function -->Function CMD: Only Run the command added by 'dgsAddCommandHandler'")
+		outputCmdMessage(cmd,"   function -->Function CMD: Only Run the command added by 'dgsDxCmdAddCommandHandler'")
 		outputCmdMessage(cmd,"   event    -->Event CMD: Only Run the command added by 'addEvent' like 'triggerEvent'")
 	end
 end)
 
-dgsAddCommandHandler("serial",function(cmd)
+dgsDxCmdAddCommandHandler("serial",function(cmd)
 	outputCmdMessage(cmd,"Serial:"..getPlayerSerial())
 end)
 
-dgsAddCommandHandler("mtaversion",function(cmd)
+dgsDxCmdAddCommandHandler("mtaversion",function(cmd)
 	outputCmdMessage(cmd,"MTA Client Version:")
 	for k,v in pairs(getVersion()) do
 		outputCmdMessage(cmd,k..":  "..tostring(v))
 	end
 end)
 
-dgsAddCommandHandler("dxstatus",function(cmd)
+dgsDxCmdAddCommandHandler("dxstatus",function(cmd)
 	outputCmdMessage(cmd,"DX status:")
 	for k,v in pairs(dxGetStatus()) do
 		outputCmdMessage(cmd,k..":  "..tostring(v))
 	end
 end)
 
-dgsAddCommandHandler("netstatus",function(cmd)
+dgsDxCmdAddCommandHandler("netstatus",function(cmd)
 	if not isElement(netSystem["window"]) then
 		netSystem["window"] = dgsCreateAnimationWindow(sW/2-250,sH/2-150,500,300,"Network Status",false,tocolor(20,20,200,255),_,_,tocolor(80,140,200,255),_,tocolor(0,0,0,200))
 		dgsDxWindowSetSizable(netSystem["window"],false)
@@ -129,7 +129,7 @@ dgsAddCommandHandler("netstatus",function(cmd)
 	end
 end)
 
-dgsAddCommandHandler("getping",function(cmd,times,time)
+dgsDxCmdAddCommandHandler("getping",function(cmd,times,time)
 	times = times or 1
 	time = time or 500
 	setTimer(function(cmd)
@@ -138,7 +138,7 @@ dgsAddCommandHandler("getping",function(cmd,times,time)
 	end,time,times,cmd)
 end)
 
-dgsAddCommandHandler("pos",function(cmd,playern)
+dgsDxCmdAddCommandHandler("pos",function(cmd,playern)
     local player = localPlayer
     if playern then
         player = getPlayerFromName(playern) or player
@@ -152,7 +152,7 @@ dgsAddCommandHandler("pos",function(cmd,playern)
     outputCmdMessage(cmd,"Dimension:"..getElementDimension(localPlayer))
 end)
 
-dgsAddCommandHandler("getvehid",function(cmd)
+dgsDxCmdAddCommandHandler("getvehid",function(cmd)
     if isPedInVehicle(localPlayer) then
         local veh = getPedOccupiedVehicle(localPlayer)
         outputCmdMessage(cmd,"Current Vehicle ID:"..getElementModel(veh))
@@ -161,7 +161,7 @@ dgsAddCommandHandler("getvehid",function(cmd)
     end
 end)
 
-dgsAddCommandHandler("gettarvehid",function(cmd)
+dgsDxCmdAddCommandHandler("gettarvehid",function(cmd)
     local target = getPedTarget(localPlayer)
     if isElement(target) and getElementType(target) == "vehicle" then
         outputCmdMessage(cmd,"Target Vehicle ID:"..getElementModel(target))
@@ -170,7 +170,7 @@ dgsAddCommandHandler("gettarvehid",function(cmd)
     end
 end)
 
-dgsAddCommandHandler("getvehstate",function(cmd)
+dgsDxCmdAddCommandHandler("getvehstate",function(cmd)
     local veh = getPedOccupiedVehicle(localPlayer)
     if isElement(veh) then
         outputCmdMessage(cmd,"Current Vehicle ID:"..getElementModel(veh))
@@ -186,7 +186,7 @@ dgsAddCommandHandler("getvehstate",function(cmd)
     end
 end)
 
-dgsAddCommandHandler("exit",function(cmd)
+dgsDxCmdAddCommandHandler("exit",function(cmd)
     if isElement(cmdSystem["window"]) then
         dgsDxGUICloseWindow(cmdSystem["window"])
     end
@@ -290,17 +290,12 @@ addEvent("onAnimationWindowCreate",true)
 addEventHandler("onAnimationWindowCreate",root,function()
 	if source == netSystem["window"] then
 		netSystem["Sent"] = dgsDxCreateLabel(10,5,100,30,"Send",false,netSystem["window"],_,1.5,1.5)
-		dgsDxGUISetFont(netSystem["Sent"],msyh_18)
 		netSystem["ByteSent"] = dgsDxCreateLabel(10,35,200,20,"Bytes:",false,netSystem["window"])
 		netSystem["PacketsSent"] = dgsDxCreateLabel(10,55,200,20,"Packages:",false,netSystem["window"])
-
 		netSystem["Received"] = dgsDxCreateLabel(10,85,100,30,"Receive",false,netSystem["window"],_,1.5,1.5)
-		dgsDxGUISetFont(netSystem["Received"],msyh_18)
 		netSystem["BytesReceived"] = dgsDxCreateLabel(10,115,200,20,"Bytes:",false,netSystem["window"])
 		netSystem["PacketsReceived"] = dgsDxCreateLabel(10,135,200,20,"Packages:",false,netSystem["window"])
-
 		netSystem["PacketLoss"] = dgsDxCreateLabel(10,165,200,30,"Package Loss",false,netSystem["window"],_,1.5,1.5)
-		dgsDxGUISetFont(netSystem["PacketLoss"],msyh_18)
 		netSystem["packetlossLastSecond"] = dgsDxCreateLabel(10,195,200,20,"Package Loss:",false,netSystem["window"])
 		netSystem["PacketLossTotal"] = dgsDxCreateLabel(10,215,200,20,"Average Loss:",false,netSystem["window"])
 		
