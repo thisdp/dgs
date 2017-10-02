@@ -19,6 +19,7 @@ addEvent("onClientDgsDxBlur",true)
 addEvent("onClientDgsDxGUICursorMove",true)
 addEvent("onClientDgsDxTabPanelTabSelect",true)
 addEvent("onClientDgsDxRadioButtonChanged",true)
+addEvent("onClientDgsDxCheckBoxChanged",true)
 addEvent("onClientDgsDxComboBoxSelect",true)
 addEvent("onClientDgsDxComboBoxStateChanged",true)
 

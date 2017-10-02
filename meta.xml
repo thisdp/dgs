@@ -19,6 +19,7 @@
 	<script src="Core/progressbar.lua" type="client" />
 	<script src="Core/radiobutton.lua" type="client" />
 	<script src="Core/combobox.lua" type="client" />
+	<script src="Core/checkbox.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
 	<script src="client.lua" type="client" />
@@ -29,6 +30,13 @@
 	<script src="test.lua" type="client" />
 
 	<script src="update.lua" type="server" />
+	<file src="image/checkbox/cb_t.png" type="client" />
+	<file src="image/checkbox/cb_f.png" type="client" />
+	<file src="image/checkbox/cb_i.png" type="client" />
+	<file src="image/checkbox/cb_t_s.png" type="client" />
+	<file src="image/checkbox/cb_f_s.png" type="client" />
+	<file src="image/checkbox/cb_i_s.png" type="client" />
+	
 	<file src="image/radiobutton/rb_t.png" type="client" />
 	<file src="image/radiobutton/rb_f.png" type="client" />
 	<file src="image/radiobutton/rb_t_s.png" type="client" />
@@ -164,6 +172,7 @@
 
 	<export function="dgsDxCreateGridList" type="client" />
 	<export function="dgsDxScrollPaneGetScrollBar" type="client" />
+	<export function="dgsDxGridListResetScrollBarPosition" type="client" />
 	<export function="dgsDxGridListSetColumnRelative" type="client" />
 	<export function="dgsDxGridListGetColumnRelative" type="client" />
 	<export function="dgsDxGridListAddColumn" type="client" />

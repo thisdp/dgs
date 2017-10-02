@@ -38,7 +38,7 @@
 	end
 	triggerEvent("onClientDgsDxGUIPreCreate",gridlist)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
-	local abx,aby = unpack(dgsGetData(gridlist,"absSize"))
+	local abx,aby = unpack(dgsElementData[gridlist].absSize)
 	local columnRender = dxCreateRenderTarget(abx,columnHeight or 20,true)
 	local rowRender = dxCreateRenderTarget(abx,aby-(columnHeight or 20)-20,true)
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
@@ -65,7 +65,7 @@ function dgsDxGridListSetColumnRelative(gridlist,relative,transformColumn)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetColumnRelative at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	dgsSetData(gridlist,"columnRelative",relative)
 	if transformColumn then
-		local columnData = dgsGetData(gridlist,"columnData")
+		local columnData = dgsElementData[gridlist].columnData
 		local w,h = dgsGetSize(v,false)
 		if relative then
 			for k,v in ipairs(columnData) do
@@ -85,7 +85,7 @@ end
 function dgsDxGridListSetColumnTitle(gridlist,column,name)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetColumnTitle at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(column) == "number","@dgsDxGridListSetColumnTitle at argument 2,expect number got "..type(column))
-	local columnData = dgsGetData(gridlist,"columnData")
+	local columnData = dgsElementData[gridlist].columnData
 	if columnData[column] then
 		columnData[column][1] = name
 		dgsSetData(gridlist,"columnData",columnData)
@@ -95,26 +95,26 @@ end
 function dgsDxGridListGetColumnTitle(gridlist,column)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnTitle at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(column) == "number","@dgsDxGridListGetColumnTitle at argument 2,expect number got "..type(column))
-	local columnData = dgsGetData(gridlist,"columnData")
+	local columnData = dgsElementData[gridlist].columnData
 	return columnData[column][1]
 end
 
 function dgsDxGridListGetColumnRelative(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnRelative at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	return dgsGetData(gridlist,"columnRelative")
+	return dgsElementData[gridlist].columnRelative
 end
 
 function dgsDxGridListAddColumn(gridlist,name,len,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListAddColumn at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(len) == "number","@dgsDxGridListAddColumn at argument 2,expect number got "..dgsGetType(len))
-	local columnData = dgsGetData(gridlist,"columnData")
+	local columnData = dgsElementData[gridlist].columnData
 	pos = tonumber(pos) or #columnData+1
 	if pos > #columnData+1 then
 		pos = #columnData+1
 	end
-	local sx,sy = unpack(dgsGetData(gridlist,"absSize"))
-	local scrollBarThick = dgsGetData(gridlist,"scrollBarThick")
-	local multiplier = dgsGetData(gridlist,"columnRelative") and sx-scrollBarThick or 1
+	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local scrollBarThick = dgsElementData[gridlist].scrollBarThick
+	local multiplier = dgsElementData[gridlist].columnRelative and sx-scrollBarThick or 1
 	local oldLen = 10/multiplier
 	if #columnData > 0 then
 		oldLen = columnData[#columnData][3]+columnData[#columnData][2]
@@ -127,14 +127,14 @@ function dgsDxGridListAddColumn(gridlist,name,len,pos)
 	dgsSetData(gridlist,"columnData",columnData)
 	oldLen = multiplier*oldLen
 	local columnLen = multiplier*len+oldLen
-	local scrollbars = dgsGetData(gridlist,"scrollbars")
+	local scrollbars = dgsElementData[gridlist].scrollbars
 	if columnLen > (sx-scrollBarThick) then
 		dgsDxGUISetVisible(scrollbars[2],true)
 	else
 		dgsDxGUISetVisible(scrollbars[2],false)
 	end
 	dgsSetData(scrollbars[2],"length",{(sx-scrollBarThick)/columnLen,true})
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	for i=1,#rowData do
 		rowData[i][pos] = {"",tocolor(0,0,0,255)}
 	end
@@ -158,16 +158,16 @@ function dgsDxGridListRemoveColumn(gridlist,pos)
 			lastColumnLen = columnData[k]
 		end
 	end
-	local sx,sy = unpack(dgsGetData(gridlist,"absSize"))
-	local scrollbars = dgsGetData(gridlist,"scrollbars")
-	local scrollBarThick = dgsGetData(gridlist,"scrollBarThick")
+	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local scrollbars = dgsElementData[gridlist].scrollbars
+	local scrollBarThick = dgsElementData[gridlist].scrollBarThick
 	if lastColumnLen > (sx-scrollBarThick) then
 		dgsDxGUISetVisible(scrollbars[2],true)
 	else
 		dgsDxGUISetVisible(scrollbars[2],false)
 	end
 	dgsSetData(scrollbars[2],"length",{(sx-scrollBarThick)/columnData[pos][2],true})
-	dgsSetData(scrollbars[2],"position",dgsGetData(scrollbars[2],"position"))
+	dgsSetData(scrollbars[2],"position",dgsElementData[scrollbars[2]].position)
 	return true
 end
 
@@ -178,10 +178,10 @@ function dgsDxGridListGetColumnAllLength(gridlist,pos,relative,mode)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnAllLength at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(pos) == "number","@dgsDxGridListGetColumnAllLength at argument 2,expect number got "..dgsGetType(pos))
 	local columnData = dgsElementData[gridlist].columnData
-	local scbThick = dgsGetData(gridlist,"scrollBarThick")
-	local columnSize = unpack(dgsGetData(gridlist,"absSize"))
+	local scbThick = dgsElementData[gridlist].scrollBarThick
+	local columnSize = unpack(dgsElementData[gridlist].absSize)
 	columnSize = columnSize-scbThick
-	local rlt = dgsGetData(gridlist,"columnRelative")
+	local rlt = dgsElementData[gridlist].columnRelative
 	if pos > 0 then
 		if mode then
 			local data = columnData[pos][3]+columnData[pos][2]
@@ -272,34 +272,34 @@ end
 
 function dgsDxGridListAddRow(gridlist,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListAddRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	local rowLength = 0
 	pos = pos or #rowData+1
 	local rowTable = {}
 	rowTable[-3] = {}
 	rowTable[-2] = true
 	rowTable[-1] = true
-	rowTable[0] = dgsGetData(gridlist,"rowcolor")
-	for i=1,#dgsGetData(gridlist,"columnData") do
-		rowTable[i] = {"",dgsGetData(gridlist,"rowtextcolor")}
+	rowTable[0] = dgsElementData[gridlist].rowcolor
+	for i=1,#dgsElementData[gridlist].columnData do
+		rowTable[i] = {"",dgsElementData[gridlist].rowtextcolor}
 	end
 	table.insert(rowData,pos,rowTable)
- 	local scrollbars = dgsGetData(gridlist,"scrollbars")
-	local sx,sy = unpack(dgsGetData(gridlist,"absSize"))
-	local scbThick = dgsGetData(gridlist,"scrollBarThick")
-	local columnHeight = dgsGetData(gridlist,"columnHeight")
-	if pos*dgsGetData(gridlist,"rowHeight") > (sy-scbThick-columnHeight) then
+ 	local scrollbars = dgsElementData[gridlist].scrollbars
+	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local scbThick = dgsElementData[gridlist].scrollBarThick
+	local columnHeight = dgsElementData[gridlist].columnHeight
+	if pos*dgsElementData[gridlist].rowHeight > (sy-scbThick-columnHeight) then
 		dgsDxGUISetVisible(scrollbars[1],true)
 	else
 		dgsDxGUISetVisible(scrollbars[1],false)
 	end
-	dgsSetData(scrollbars[1],"length",{(sy-scbThick-columnHeight)/((pos+1)*dgsGetData(gridlist,"rowHeight")),true})
+	dgsSetData(scrollbars[1],"length",{(sy-scbThick-columnHeight)/((pos+1)*dgsElementData[gridlist].rowHeight),true})
 	return pos
 end
 
 function dgsDxGridListSetRowColor(gridlist,row,colordef,colorsel,colorcli)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
 		rowData[row][0] = {colordef or 255,colorsel or 255,colorcli or 255}
 		return true
@@ -309,35 +309,35 @@ end
 
 function dgsDxGridListGetRowColor(gridlist,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	return rowData[pos] and unpack(rowData[pos][0]) or false
 end
 
 function dgsDxGridListRemoveRow(gridlist,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListRemoveRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	pos = tonumber(pos) or #rowData
 	if pos == 0 or  pos > #rowData then
 		return false
 	end
 	table.remove(rowData,pos)
- 	local scrollbars = dgsGetData(gridlist,"scrollbars")
-	local sx,sy = unpack(dgsGetData(gridlist,"absSize"))
-	local scbThick = dgsGetData(gridlist,"scrollBarThick")
-	if (pos-1)*dgsGetData(gridlist,"rowHeight") > (sy-scbThick-dgsGetData(gridlist,"columnHeight")) then
+ 	local scrollbars = dgsElementData[gridlist].scrollbars
+	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local scbThick = dgsElementData[gridlist].scrollBarThick
+	if (pos-1)*dgsElementData[gridlist].rowHeight > (sy-scbThick-dgsElementData[gridlist].columnHeight) then
 		dgsDxGUISetVisible(scrollbars[1],true)
 	else
 		dgsDxGUISetVisible(scrollbars[1],false)
 	end
-	dgsSetData(scrollbars[1],"length",{(sy-scbThick-dgsGetData(gridlist,"columnHeight"))/((pos+1)*dgsGetData(gridlist,"rowHeight")),true})
-	dgsSetData(scrollbars[2],"length",dgsGetData(scrollbars[2],"length"))
+	dgsSetData(scrollbars[1],"length",{(sy-scbThick-dgsElementData[gridlist].columnHeight)/((pos+1)*dgsElementData[gridlist].rowHeight),true})
+	dgsSetData(scrollbars[2],"length",dgsElementData[scrollbars[2]].length)
 	return true
 end
 
 function dgsDxGridListClearRow(gridlist,notresetSelected)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListClearRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local rowData = dgsGetData(gridlist,"rowData")
- 	local scrollbars = dgsGetData(gridlist,"scrollbars")
+	local rowData = dgsElementData[gridlist].rowData
+ 	local scrollbars = dgsElementData[gridlist].scrollbars
 	dgsSetData(scrollbars[1],"length",{0,true})
 	dgsSetData(scrollbars[1],"position",0)
 	dgsDxGUISetVisible(scrollbars[1],false)
@@ -349,7 +349,7 @@ end
 
 function dgsDxGridListGetRowCount(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowCount at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	return #dgsGetData(gridlist,"rowData")
+	return #dgsElementData[gridlist].rowData
 end
 
 function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
@@ -357,7 +357,7 @@ function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
 	assert(type(row) == "number","@dgsDxGridListSetItemText at argument 2,expect number got "..type(row))
 	assert(type(column) == "number","@dgsDxGridListSetItemText at argument 3,expect number got "..type(column))
 	assert(column >= 1 or develop,"@dgsDxGridListSetItemText at argument 3,expect a number >= 1 got "..tostring(row))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	if column < 1 then
 		rowData[row][column] = tostring(text)
 	else
@@ -370,21 +370,21 @@ function dgsDxGridListGetItemText(gridlist,row,column)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemText at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","@dgsDxGridListGetItemText at argument 2,expect number got "..type(row))
 	assert(type(column) == "number","@dgsDxGridListGetItemText at argument 3,expect number got "..type(column))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	return rowData[row][column][1]
 end
 
 function dgsDxGridListGetSelectedItem(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetSelectedItem at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	return dgsGetData(gridlist,"select")
+	return dgsElementData[gridlist].select
 end
 
 function dgsDxGridListSetSelectedItem(gridlist,item)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetSelectedItem at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(item) == "number","@dgsDxGridListSetSelectedItem at argument 2,expect number got "..type(item))
 	if item == -1 or item > 0 then
-		dgsSetData(gridlist,"select",item <= #dgsGetData(gridlist,"rowData") and item or #dgsGetData(gridlist,"rowData"))
-		triggerEvent("onClientDgsDxGridListSelect",gridlist,dgsGetData(gridlist,"select"),item)
+		dgsSetData(gridlist,"select",item <= #dgsElementData[gridlist].rowData and item or #dgsElementData[gridlist].rowData)
+		triggerEvent("onClientDgsDxGridListSelect",gridlist,dgsElementData[gridlist].select,item)
 		return true
 	end
 	return false
@@ -393,19 +393,21 @@ end
 function dgsDxGridListSetItemColor(gridlist,row,column,color)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","@dgsDxGridListSetItemColor at argument 2,expect number got "..type(row))
-	local rowData = dgsElementData[gridlist]["rowData"][row]
+	local rowData = dgsElementData[gridlist]["rowData"]
 	if rowData then
-		local columnID = #dgsElementData[gridlist]["columnData"]
-		if type(column) == "number" then
-			if column > 0 and column <= columnID then
-				rowData[row][column][2] = color
+		if row > 0 and row <= #rowData then
+			local columnID = #dgsElementData[gridlist]["columnData"]
+			if type(column) == "number" then
+				if column > 0 and column <= columnID then
+					rowData[row][column][2] = color
+				end
+			else
+				for i=1,columnID do
+					rowData[row][i][2] = color
+				end
 			end
-		else
-			for i=1,columnID do
-				rowData[row][i][2] = color
-			end
+			return true
 		end
-		return true
 	end
 	return false
 end
@@ -414,14 +416,14 @@ function dgsDxGridListGetItemColor(gridlist,row,column)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","@dgsDxGridListGetItemColor at argument 2,expect number got "..type(row))
 	assert(type(column) == "number","@dgsDxGridListGetItemColor at argument 3,expect number got "..type(column))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	return rowData[row][column][2]
 end
 
 function dgsDxGridListGetItemBackGroundImage(gridlist,row)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemBackGroundImage at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","@dgsDxGridListGetItemBackGroundImage at argument 2,expect number got "..type(row))
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	return unpack(rowData[row][-3])
 end
 
@@ -437,7 +439,7 @@ function dgsDxGridListSetItemBackGroundImage(gridlist,row,defimage,selimage,clii
 	if cliimage then
 		assert(type(cliimage) == "string" or isElement(cliimage) and getElementType(cliimage) == "texture","@dgsDxGridListSetItemBackGroundImage at argument 5,expect string/texture got "..tostring(isElement(cliimage) or type(cliimage)))
 	end
-	local rowData = dgsGetData(gridlist,"rowData")
+	local rowData = dgsElementData[gridlist].rowData
 	rowData[row][-3] = {defimage,selimage,cliimage}
 	return dgsSetData(gridlist,"rowData",rowData)
 end
@@ -463,11 +465,11 @@ addEventHandler("onClientDgsDxScrollBarScrollPositionChange",root,function(new,o
 end)
 
 function configGridList(source)
-	local scrollbar = dgsGetData(source,"scrollbars")
-	local sx,sy = unpack(dgsGetData(source,"absSize"))
-	local columnHeight = dgsGetData(source,"columnHeight")
-	local rowHeight = dgsGetData(source,"rowHeight")
-	local scbThick = dgsGetData(source,"scrollBarThick")
+	local scrollbar = dgsElementData[source].scrollbars
+	local sx,sy = unpack(dgsElementData[source].absSize)
+	local columnHeight = dgsElementData[source].columnHeight
+	local rowHeight = dgsElementData[source].rowHeight
+	local scbThick = dgsElementData[source].scrollBarThick
 	local relSizX,relSizY = sx-scbThick,sy-scbThick
 	if scrollbar then
 		dgsSetPosition(scrollbar[1],relSizX,0,false)
@@ -475,7 +477,7 @@ function configGridList(source)
 		dgsSetSize(scrollbar[1],scbThick,relSizY,false)
 		dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 		local maxColumn = dgsDxGridListGetColumnCount(source)
-		local columnData = dgsGetData(source,"columnData")
+		local columnData = dgsElementData[source].columnData
 		local columnCount =  dgsDxGridListGetColumnCount(source)
 		local columnLength = dgsDxGridListGetColumnAllLength(source,columnCount,false,true)
 		if columnLength > relSizX then
@@ -484,7 +486,7 @@ function configGridList(source)
 			dgsDxGUISetVisible(scrollbar[2],false)
 			dgsSetData(scrollbar[2],"position",0)
 		end
-		local rowLength = #dgsGetData(source,"rowData")*rowHeight
+		local rowLength = #dgsElementData[source].rowData*rowHeight
 		local rowShowRange = relSizY-columnHeight
 		if rowLength > rowShowRange then
 			dgsDxGUISetVisible(scrollbar[1],true)
@@ -492,14 +494,13 @@ function configGridList(source)
 			dgsDxGUISetVisible(scrollbar[1],false)
 			dgsSetData(scrollbar[1],"position",0)
 		end
-		local scroll1 = dgsGetData(scrollbar[1],"position")
-		local scroll2 = dgsGetData(scrollbar[2],"position")
-		local sx,sy = unpack(dgsGetData(source,"absSize"))
+		local scroll1 = dgsElementData[scrollbar[1]].position
+		local scroll2 = dgsElementData[scrollbar[2]].position
 		dgsSetData(source,"rowMoveOffset",-scroll1*(rowLength-relSizY+columnHeight)/100)
 		dgsSetData(scrollbar[1],"length",{rowShowRange/rowLength,true})
 		dgsSetData(scrollbar[2],"length",{relSizX/(columnLength+scbThick),true})
 	end
-	local rentarg = dgsGetData(source,"renderTarget")
+	local rentarg = dgsElementData[source].renderTarget
 	if rentarg then
 		if isElement(rentarg[1]) then
 			destroyElement(rentarg[1])
@@ -518,12 +519,12 @@ end
 function dgsDxGridListResetScrollBarPosition(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetScrollBar at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local scrollbars = dgsElementData[gridlist].scrollbars
-	dgsDxScrollBarSetScrollPosition(scrollbar[1],0)
-	dgsDxScrollBarSetScrollPosition(scrollbar[2],0)
+	dgsDxScrollBarSetScrollBarPosition(scrollbars[1],0)
+	dgsDxScrollBarSetScrollBarPosition(scrollbars[2],0)
 	return true
 end
 
 function dgsDxGridListGetScrollBar(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetScrollBar at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	return dgsGetData(gridlist,"scrollbars")
+	return dgsElementData[gridlist].scrollbars
 end

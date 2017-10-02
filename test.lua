@@ -26,3 +26,11 @@ function createTest4()
 		dgsDxComboBoxAddItem(rb1,i)
 	end
 end
+
+function createTest5()
+	local cb1= dgsDxCreateCheckBox(500,500,200,30,"test_indeterminate",false)
+	local cb2 = dgsDxCreateCheckBox(500,520,200,30,"test_checked",false)
+	local cb2 = dgsDxCreateCheckBox(500,540,200,30,"test_unchecked",false)
+	dgsDxCheckBoxSetSelected(cb1,nil)
+end
+createTest5()

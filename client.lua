@@ -296,6 +296,7 @@ dgsType = {
 "dgs-dxgridlist",
 "dgs-dximage",
 "dgs-dxradiobutton",
+"dgs-dxcheckbox",
 "dgs-dxlabel",
 "dgs-dxscrollbar",
 "dgs-dxscrollpane",
@@ -570,6 +571,73 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					image = image_f
 					color = color_f
+				end
+				local colorimgid = 1
+				if MouseData.enter == v then
+					colorimgid = 2
+					if dgsElementData[v].clickType == 1 then
+						if MouseData.clickl == v then
+							colorimgid = 3
+						end
+					elseif dgsElementData[v].clickType == 2 then
+						if MouseData.clickr == v then
+							colorimgid = 3
+						end
+					else
+						if MouseData.clickl == v or MouseData.clickr == v then
+							colorimgid = 3
+						end
+					end
+				end
+				if image[colorimgid] then
+					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,applyColorAlpha(color[colorimgid],galpha),rendSet)
+				else
+					dxDrawRectangle(x,y+h/2-buttonSize/2,buttonSize,buttonSize,applyColorAlpha(color[colorimgid],galpha),rendSet)
+				end
+				local font = dgsElementData[v].font or systemFont
+				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
+				local clip = dgsElementData[v].clip
+				local wordbreak = dgsElementData[v].wordbreak
+				local _textImageSpace = dgsElementData[v].textImageSpace
+				local textImageSpace = _textImageSpace[2] and _textImageSpace[1]*w or _textImageSpace[1]
+				local colorcoded = dgsElementData[v].colorcoded
+				local tplt = dgsElementData[v].rightbottom
+ 				local shadowoffx,shadowoffy,shadowc = dgsElementData[v].shadow[1],dgsElementData[v].shadow[2],dgsElementData[v].shadow[3]
+				local px = x+buttonSize+textImageSpace
+				if shadowoffx and shadowoffy and shadowc then
+					shadowc = applyColorAlpha(shadowc,galpha)
+					dxDrawText(dgsElementData[v].text,px+shadowoffx,y+shadowoffy,px+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
+				end
+				dxDrawText(dgsElementData[v].text,px,y,px+w-1,y+h-1,applyColorAlpha(dgsElementData[v].textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
+				if enabled then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+						MouseData.hit = v
+					end
+				end
+			else
+				visible = false
+			end
+		elseif dxType == "dgs-dxcheckbox" then
+			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			if x and y then
+				local image_f = dgsElementData[v].image_f
+				local color_f = dgsElementData[v].color_f
+				local image_t = dgsElementData[v].image_t
+				local color_t = dgsElementData[v].color_t
+				local image_i = dgsElementData[v].image_i
+				local color_i = dgsElementData[v].color_i
+				local image,color
+				local _buttonSize = dgsElementData[v].buttonsize
+				local buttonSize = _buttonSize[2] and _buttonSize[1]*h or _buttonSize[1]
+				if dgsElementData[v].CheckBoxState == true then
+					image = image_t
+					color = color_t
+				elseif dgsElementData[v].CheckBoxState == false then 
+					image = image_f
+					color = color_f
+				else
+					image = image_i
+					color = color_i
 				end
 				local colorimgid = 1
 				if MouseData.enter == v then
@@ -2242,8 +2310,12 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 	if isElement(guiele) then
 		if state == "down" then
 			if button == "left" then
-				if dgsGetType(guiele) == "dgs-dxradiobutton" then
+				local gtype = dgsGetType(guiele)
+				if gtype == "dgs-dxradiobutton" then
 					dgsDxRadioButtonSetSelected(guiele,true)
+				elseif gtype == "dgs-dxcheckbox" then
+					local state = dgsElementData[guiele].CheckBoxState
+					dgsDxCheckBoxSetSelected(guiele,not state)
 				end
 			end
 			if DoubleClick and isTimer(DoubleClick.timer) and DoubleClick.ele == guiele and DoubleClick.but == button then
