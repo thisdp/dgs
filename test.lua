@@ -33,4 +33,3 @@ function createTest5()
 	local cb2 = dgsDxCreateCheckBox(500,540,200,30,"test_unchecked",false)
 	dgsDxCheckBoxSetSelected(cb1,nil)
 end
-createTest5()
