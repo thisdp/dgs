@@ -7,13 +7,15 @@ checkBox.true_cli = dxCreateTexture("image/checkbox/cb_t_s.png")
 checkBox.inde_cli = dxCreateTexture("image/checkbox/cb_i_s.png")
 
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
-function dgsDxCreateCheckBox(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t,defimg_i,hovimg_i,cliimg_i,defcolor_i,hovcolor_i,clicolor_i)
+function dgsDxCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t,defimg_i,hovimg_i,cliimg_i,defcolor_i,hovcolor_i,clicolor_i)
 	assert(tonumber(x),"@dgsDxCreateCheckBox argument 1,expect number got "..type(x))
 	assert(tonumber(y),"@dgsDxCreateCheckBox argument 2,expect number got "..type(y))
 	assert(tonumber(sx),"@dgsDxCreateCheckBox argument 3,expect number got "..type(sx))
 	assert(tonumber(sy),"@dgsDxCreateCheckBox argument 4,expect number got "..type(sy))
+	assert(tonumber(sy),"@dgsDxCreateCheckBox argument 4,expect number got "..type(sy))
+	assert(not state or state == true,"@dgsDxCreateCheckBox argument 6,expect boolean/nil got "..type(state))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsDxCreateCheckBox argument 7,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"@dgsDxCreateCheckBox argument 8,expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
@@ -59,7 +61,7 @@ function dgsDxCreateCheckBox(x,y,sx,sy,text,relative,parent,textcolor,scalex,sca
 	dgsSetData(cb,"clip",false)
 	dgsSetData(cb,"wordbreak",false)
 	dgsSetData(cb,"colorcoded",false)
-	dgsSetData(cb,"CheckBoxState",false)
+	dgsSetData(cb,"CheckBoxState",state)
 	dgsSetData(cb,"rightbottom",{"left","center"})
 	insertResourceDxGUI(sourceResource,cb)
 	triggerEvent("onClientDgsDxGUIPreCreate",cb)

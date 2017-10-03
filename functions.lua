@@ -1,4 +1,49 @@
-resourceDxGUI ={}
+resourceDxGUI = {}
+builtins = {}
+builtins.Linear = true
+builtins.InQuad = true
+builtins.OutQuad = true
+builtins.InOutQuad = true
+builtins.OutInQuad = true
+builtins.InElastic = true
+builtins.OutElastic = true
+builtins.InOutElastic = true
+builtins.OutInElastic = true
+builtins.InBack = true
+builtins.OutBack = true
+builtins.InOutBack = true
+builtins.OutInBack = true
+builtins.InBounce = true
+builtins.OutBounce = true
+builtins.InOutBounce = true
+builtins.OutInBounce = true
+builtins.SineCurve = true
+builtins.CosineCurve = true
+SelfEasing = {}
+SEInterface = [[
+local args = {...};
+local value,setting = args[1],args[2];
+]]
+function addEasingFunction(name,str)
+	assert(type(name) == "string","Bad Argument @addEasingFunction at argument 1, expected a string got "..type(name))
+	assert(type(str) == "string","Bad Argument @addEasingFunction at argument 2, expected a string got "..type(str))
+	assert(not builtins[name],"Bad Argument @addEasingFunction at argument 1, duplicated name with builtins ("..name..")")
+	assert(not SelfEasing[name],"Bad Argument @addEasingFunction at argument 1, this name has been used ("..name..")")
+	local str = SEInterface..str
+	local fnc = loadstring(str)
+	assert(type(fnc) == "function","Bad Argument @addEasingFunction at argument 2, failed to load the code")
+	SelfEasing[name] = fnc
+	return true
+end
+
+function removeEasingFunction(name)
+	assert(type(name) == "string","Bad Argument @removeEasingFunction at argument 1, expected a string got "..type(name))
+	if SelfEasing[name] then
+		SelfEasing[name] = nil
+		return true
+	end
+	return false
+end
 
 function insertResourceDxGUI(res,gui)
 	if res and isElement(gui) then

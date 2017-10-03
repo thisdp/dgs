@@ -43,6 +43,8 @@
 	<file src="image/radiobutton/rb_f_s.png" type="client" />
 	<file src="image/scrollbar/scrollbar_arrow.png" type="client" />
 	
+	<export function="addEasingFunction" type="client" />
+	<export function="removeEasingFunction" type="client" />
 	<export function="setSystemFont" type="client" />
 	<export function="getSystemFont" type="client" />
 	<export function="dgsGetPosition" type="client" />

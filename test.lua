@@ -1,8 +1,13 @@
 ﻿function createTest()
+addEasingFunction("Pre_line",[[
+	return math.abs(value^2-0.5)*2
+]])
+
 wind = dgsDxCreateWindow(math.floor(0.2*sW),math.floor(0.3*sH),math.floor(0.4*sW),math.floor(0.4*sH),"Example Scroll Pane (exclude this window)",false)
-pane = dgsDxCreateScrollPane(0,0,1,1,true,wind)
-gdlt = dgsDxCreateImage(0,0,0.7,0.7,_,true,pane,tocolor(255,255,255,255))
+--pane = dgsDxCreateScrollPane(0,0,1,1,true,wind)
+gdlt = dgsDxCreateImage(0,0,0.7,0.7,_,true,wind,tocolor(255,255,255,255))
 gdlt2 = dgsDxCreateImage(0,0,0.7,0.7,_,true,gdlt,tocolor(0,255,255,255))
+dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"line",1000)
 end
 
 function createTest2()
