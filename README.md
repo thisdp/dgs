@@ -8,6 +8,8 @@ Sry for the bad design of default style. But with property system, you can chang
 
 See more information: http://wiki.mtasa.com/wiki/dgs
 
+Auto Completion For N++: http://www.mediafire.com/file/m6dm7815d5dihax/lua.zip
+
 If you don't want more bugs, Plz let the resource name to be *dgs*.
 
 To know what I have done with dgs, Plz see the update logs, click here: http://angel.mtaip.cn:233/dgsUpdate/
