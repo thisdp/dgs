@@ -104,6 +104,7 @@ function checkFiles()
 			end,"",false,path,sha)
 		end
 	end
+	print("[DGS]Please Wait...")
 end
 
 function DownloadFiles()

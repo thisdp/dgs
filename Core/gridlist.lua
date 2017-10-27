@@ -20,7 +20,11 @@
 	dgsSetData(gridlist,"rowtextcolor",tocolor(0,0,0,255))
 	dgsSetData(gridlist,"columnRelative",true)
 	dgsSetData(gridlist,"columnMoveOffset",0)
+	dgsSetData(gridlist,"sectionColumnOffset",-10)
+	dgsSetData(gridlist,"defaultColumnOffset",0)
+	--dgsSetData(gridlist,"rowAsSection",{})
 	dgsSetData(gridlist,"font",systemFont)
+	dgsSetData(gridlist,"sectionFont",systemFont)
 	dgsSetData(gridlist,"columnShadow",false)
 	dgsSetData(gridlist,"scrollBarThick",20,true)
 	dgsSetData(gridlist,"rowHeight",15)
@@ -256,13 +260,13 @@ end
 -----------------------------Row
 --[[
 	rowData Struct:
-		-3				-2				-1				0								1					2					...
-		bgImage			selectable		clickable		bgColor							column1				column2				...
+		-4					-3				-2				-1				0								1										2										...
+		columnOffset		bgImage			selectable		clickable		bgColor							column1									column2									...
 {
-	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
-	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
-	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
-	{	{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color},		{text,color},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
 	{	the same as preview table																										},
 }
 
@@ -276,6 +280,7 @@ function dgsDxGridListAddRow(gridlist,pos)
 	local rowLength = 0
 	pos = pos or #rowData+1
 	local rowTable = {}
+	rowTable[-4] = dgsElementData[gridlist].defaultColumnOffset
 	rowTable[-3] = {}
 	rowTable[-2] = true
 	rowTable[-1] = true
@@ -364,6 +369,31 @@ function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
 		rowData[row][column][1] = tostring(text)
 	end
 	return dgsSetData(gridlist,"rowData",rowData)
+end
+
+function dgsDxGridListSetRowAsSection(gridlist,row,enabled,enableMouseClickAndSelect)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowAsSection at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","@dgsDxGridListSetRowAsSection at argument 2,expect number got "..type(row))
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		if enabled then
+			rowData[row][-4] = dgsElementData[gridlist].sectionColumnOffset
+			if not enableMouseClickAndSelect then
+				rowData[row][-2] = false
+				rowData[row][-1] = false
+			else
+				rowData[row][-2] = true
+				rowData[row][-1] = true
+			end
+		else
+			rowData[row][-4] = dgsElementData[gridlist].defaultColumnOffset
+			rowData[row][-2] = true
+			rowData[row][-1] = true
+		end
+		rowData[row][-5] = enabled and true or false --Enable Section Mode
+		return dgsSetData(gridlist,"rowData",rowData)
+	end
+	return false
 end
 
 function dgsDxGridListGetItemText(gridlist,row,column)

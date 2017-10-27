@@ -38,3 +38,18 @@ function createTest5()
 	local cb2 = dgsDxCreateCheckBox(500,540,200,30,"test_unchecked",false)
 	dgsDxCheckBoxSetSelected(cb1,nil)
 end
+
+function createTestMemo()
+	local memo= dgsDxCreateMemo(500,200,200,300,[[This is a dgs-dxmemo
+	
+	Thisdp's
+	DirectX
+	Graphical User Interface
+	System
+	
+	MTA DxLib
+	Version 2.88
+	Test UTF8: 你好
+	Test Selection]],false)
+end
+--createTestMemo()

@@ -156,10 +156,10 @@ function dgsSetData(element,key,value,check)
 		if not dgsElementData[element] then
 			dgsElementData[element] = {}
 		end
-		local oldValue = dgsElementData[element][""..key..""]
+		local dgsType = dgsGetType(element)
 		dgsElementData[element][""..key..""] = value
 		if not check then
-		    local dgsType = dgsGetType(element)
+			local oldValue = dgsElementData[element][""..key..""]
 			if tostring(key) == "text" then
 				triggerEvent("onClientDgsDxGUITextChange",element,value)
 			elseif dgsGetType(element) == "dgs-dxscrollbar" and tostring(key) == "length" then
@@ -287,11 +287,19 @@ MouseData.EditTimer = setTimer(function()
 	end
 end,500,0)
 
+MouseData.MemoTimer = setTimer(function()
+	if isElement(MouseData.nowShow) then
+		if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+			MouseData.memoCursor = not MouseData.memoCursor
+		end
+	end
+end,500,0)
+
 dgsType = {
 "dgs-dxbutton",
 "dgs-dxcmd",
 "dgs-dxedit",
---"dgs-dxmemo",
+"dgs-dxmemo",
 "dgs-dxcyclehitshape",
 "dgs-dxgridlist",
 "dgs-dximage",
@@ -350,15 +358,21 @@ function GUIRender()
 	dgsDxCheckHit(MouseData.hit,mx,my)
 	triggerEvent("onClientDgsDxRender",root)
 	if DEBUG_MODE then
-		dxDrawText("DGS:",6,sH*0.4-59,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("DGS:",5,sH*0.4-60)
+		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-115)
+		dxDrawText("Version: 2.88",6,sH*0.4-99,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Version: 2.88",5,sH*0.4-100)
 		local ticks = getTickCount()-tk
-		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-44,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-45)
-		dxDrawText("Enter:"..tostring(MouseData.hit),11,sH*0.4-29,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Enter:"..tostring(MouseData.hit),10,sH*0.4-30)
-		dxDrawText("Click Left:"..tostring(MouseData.clickl).." ;Right:"..tostring(MouseData.clickr),11,sH*0.4-14,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Click Left:"..tostring(MouseData.clickl).." ;Right:"..tostring(MouseData.clickr),10,sH*0.4-15)
+		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-84,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-85)
+		dxDrawText("Enter: "..tostring(MouseData.hit),11,sH*0.4-69,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Enter: "..tostring(MouseData.hit),10,sH*0.4-70)
+		dxDrawText("Click:",11,sH*0.4-54,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Click:",10,sH*0.4-55)
+		dxDrawText("  Left: "..tostring(MouseData.clickl),11,sH*0.4-39,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("  Left: "..tostring(MouseData.clickl),10,sH*0.4-40)
+		dxDrawText("  Right: "..tostring(MouseData.clickr),11,sH*0.4-24,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("  Right: "..tostring(MouseData.clickr),10,sH*0.4-25)
 		DGSCount = 0
 		for k,v in ipairs(dgsType) do
 			DGSCount = DGSCount+#getElementsByType(v)
@@ -366,16 +380,14 @@ function GUIRender()
 			if v == "dgs-dxtab" or v == "dgs-dxcombobox-Box" then
 				x = 30
 			end
-			dxDrawText(v.." : "..#getElementsByType(v),x+1,sH*0.4+15*(k+1)+1,sW,sH,tocolor(0,0,0,255))
-			dxDrawText(v.." : "..#getElementsByType(v),x,sH*0.4+15*(k+1))
+			dxDrawText(v.." : "..#getElementsByType(v),x+1,sH*0.4+15*k+6,sW,sH,tocolor(0,0,0,255))
+			dxDrawText(v.." : "..#getElementsByType(v),x,sH*0.4+15*k+5)
 		end
-		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4+1,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4,sW,sH)
-		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+16,sW,sH,tocolor(0,0,0,255))	
-		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+15,sW,sH)
+		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4-9,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4-10,sW,sH)
+		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,tocolor(0,0,0,255))	
+		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+5,sW,sH)
 	
-		dxDrawText("Resource Elements:",201,sH*0.4+16,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Resource Elements:",200,sH*0.4+15)
 		Resource = 0
 		ResCount = 0
 		for ka,va in pairs(resourceDxGUI) do
@@ -386,6 +398,8 @@ function GUIRender()
 				dxDrawText(getResourceName(ka).." : "..#va,200,sH*0.4+15*(ResCount+1))
 			end
 		end
+		dxDrawText("Resource Elements("..ResCount.."):",201,sH*0.4+16,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Resource Elements("..ResCount.."):",200,sH*0.4+15)
 	end
 	MouseData.hit = false
 end
@@ -687,13 +701,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxedit" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
-				local pos = dgsElementData[v].position
 				local imagebg = dgsElementData[v].imagebg
 				local colorbg = dgsElementData[v].colorbg
 				colorbg = applyColorAlpha(colorbg,galpha)
 				local edit = dgsElementData[v].edit
 				if not isElement(edit) then
-					destroyElement(source)
+					destroyElement(v)
 					return
 				end
 				local _ = isMainMenuActive() and guiSetVisible(edit,false) or guiSetVisible(edit,true)
@@ -706,12 +719,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				guiSetText(edit,text)
 				if dgsElementData[v].masked then
-					text = string.rep(dgsElementData[v].maskText,string.count(text))
+					text = string.rep(dgsElementData[v].maskText,utf8.len(text))
 				end
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
-						dgsSetData(v,"cursorpos",0)
-						dgsSetData(v,"selectfrom",string.count(text))
+						dgsSetData(v,"cursorposXY",0)
+						dgsSetData(v,"selectfrom",utf8.len(text))
 					end
 				end
 				local cursorPos = dgsElementData[v].cursorpos
@@ -726,12 +739,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if isElement(renderTarget) then
 					local selectMode = dgsElementData[v].selectmode
 					local textcolor = dgsElementData[v].textcolor
-					local width = dxGetTextWidth(utfSub(text,0,cursorPos),txtSizX,font)
+					local width = dxGetTextWidth(utf8.sub(text,0,cursorPos),txtSizX,font)
 					local selx = 0
 					if selectFro-cursorPos > 0 then
-						selx = dxGetTextWidth(utfSub(text,cursorPos+1,selectFro),txtSizX,font)
+						selx = dxGetTextWidth(utf8.sub(text,cursorPos+1,selectFro),txtSizX,font)
 					elseif selectFro-cursorPos < 0 then
-						selx = -dxGetTextWidth(utfSub(text,selectFro+1,cursorPos),txtSizX,font)
+						selx = -dxGetTextWidth(utf8.sub(text,selectFro+1,cursorPos),txtSizX,font)
 					end
 					local showPos = dgsElementData[v].showPos
 					dxSetRenderTarget(renderTarget,true)
@@ -756,7 +769,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								dxDrawLine(x+width+showPos+2,y+2,x+width+showPos+2,y+h-4,black,dgsElementData[v].cursorThick,isRenderTarget)
 							end
 						elseif cursorStyle == 1 then
-							local cursorWidth = dxGetTextWidth(utfSub(text,cursorPos+1,cursorPos+1),txtSizX,font)
+							local cursorWidth = dxGetTextWidth(utf8.sub(text,cursorPos+1,cursorPos+1),txtSizX,font)
 							if cursorWidth == 0 then
 								cursorWidth = txtSizX*8
 							end
@@ -785,65 +798,94 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			else
 				visible = false
 			end
-		--[[elseif dxType == "dgs-dxmemo" then
+		elseif dxType == "dgs-dxmemo" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
-				local pos = dgsElementData[v].position
 				local imagebg = dgsElementData[v].imagebg
 				local colorbg = dgsElementData[v].colorbg
 				colorbg = setColorAlpha(colorbg,getColorAlpha(colorbg)*galpha)
 				local memo = dgsElementData[v].memo
 				if not isElement(memo) then
-					destroyElement(source)
-					return
+					destroyElement(v)
 				end
 				local _ = isMainMenuActive() and guiSetVisible(memo,false) or guiSetVisible(memo,true)
 				guiSetPosition(memo,cx,cy,false)
 				guiSetSize(memo,w,h,false)
 				local text = dgsElementData[v].text
-				local fnc = dgsElementData[v].functions
-				if type(fnc) == "table" then
-					text = fnc[1](unpack(fnc[2]))
-				end
-				guiSetText(memo,text)
-				if dgsElementData[v].masked then
-					text = string.rep(dgsElementData[v].maskText,string.count(text))
-				end
+				local allLine = #text
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
-						dgsSetData(v,"cursorpos",0)
-						dgsSetData(v,"selectfrom",string.count(text))
+						dgsSetData(v,"cursorposXY",{0,1})
+						dgsSetData(v,"selectfrom",{utf8.len(text[allLine]),allLine})
 					end
 				end
-				local cursorPos = dgsElementData[v].cursorpos
+				local cursorPos = dgsElementData[v].cursorposXY
 				local selectFro = dgsElementData[v].selectfrom
 				local selectcolor = dgsElementData[v].selectcolor
-				guiEditSetCaretIndex(memo,cursorPos)
-				guiSetProperty(memo,"SelectionStart",cursorPos)
-				guiSetProperty(memo,"SelectionLength",selectFro-cursorPos)
 				local font = dgsElementData[v].font or systemFont
-				local txtSizX = dgsElementData[v].textsize[1]
-				local txtSizY = dgsElementData[v].textsize[2]
+				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2]
 				local renderTarget = dgsElementData[v].renderTarget
+				local fontHeight = dxGetFontHeight(dgsElementData[v].textsize[2],font)
 				if isElement(renderTarget) then
 					local selectMode = dgsElementData[v].selectmode
 					local textcolor = dgsElementData[v].textcolor
-					local startx = dxGetTextWidth(utfSub(text,0,cursorPos),txtSizX,font)
-					local selx = 0
-					if selectFro-cursorPos > 0 then
-						selx = dxGetTextWidth(utfSub(text,cursorPos+1,selectFro),txtSizX,font)
-					elseif selectFro-cursorPos < 0 then
-						selx = -dxGetTextWidth(utfSub(text,selectFro+1,cursorPos),txtSizX,font)
-					end
-					local offset = dgsElementData[v].showPos
+					local showLine = dgsElementData[v].showLine
+					local canHoldLines = math.floor((h-4)/fontHeight)
+					canHoldLines = canHoldLines > allLine and allLine or canHoldLines
+					local selPosStart,selPosEnd,selStart,selEnd
 					dxSetRenderTarget(renderTarget,true)
-					if selectMode then
-						dxDrawRectangle(startx+offset,2,selx,h-4,selectcolor)
-					end
-					local bools = dxDrawText(text,offset,0,dxGetTextWidth(text,txtSizX,font),h,textcolor,txtSizX,txtSizY,font,"left","center",true,false,false,false)
-
-					if not selectMode then
-						dxDrawRectangle(startx+offset,2,selx,h-4,selectcolor)
+					if allLine > 0 then
+						local toShowLine = showLine+canHoldLines
+						toShowLine = toShowLine > #text and #text or toShowLine
+						local offset = dgsElementData[v].showPos
+						if cursorPos[2] == selectFro[2] then
+							if selectFro[1]>cursorPos[1] then
+								selPosStart = cursorPos[1]
+								selPosEnd = selectFro[1]
+							else
+								selPosStart = selectFro[1]
+								selPosEnd = cursorPos[1]
+							end
+							if selectFro[2]>cursorPos[2] then
+								selStart = cursorPos[2]
+								selEnd = selectFro[2]
+							else
+								selStart = selectFro[2]
+								selEnd = cursorPos[2]
+							end
+							local startx = dxGetTextWidth(utf8.sub(text[selStart],0,selPosStart),txtSizX,font)
+							local selx = dxGetTextWidth(utf8.sub(text[selStart],selPosStart+1,selPosEnd),txtSizX,font)
+							dxDrawRectangle(offset+startx,2+(selStart-showLine)*fontHeight,selx,fontHeight-4,selectcolor)
+						else
+							if selectFro[2]>cursorPos[2] then
+								selStart = cursorPos[2]
+								selEnd = selectFro[2]
+								selPosStart = cursorPos[1]
+								selPosEnd = selectFro[1]
+							else
+								selStart = selectFro[2]
+								selEnd = cursorPos[2]
+								selPosStart = selectFro[1]
+								selPosEnd = cursorPos[1]
+							end
+							local startx = dxGetTextWidth(utf8.sub(text[selStart],0,selPosStart),txtSizX,font)
+							for i=selStart > showLine and selStart or showLine,selEnd < toShowLine and selEnd or toShowLine do
+								if i ~= selStart and i ~= selEnd then
+									local selx = dxGetTextWidth(text[i],txtSizX,font)
+									dxDrawRectangle(offset,2+(i-showLine)*fontHeight,selx,fontHeight-4,selectcolor)
+								elseif i == selStart then
+									local selx = dxGetTextWidth(utf8.sub(text[i],selPosStart+1),txtSizX,font)
+									dxDrawRectangle(offset+startx,2+(i-showLine)*fontHeight,selx,fontHeight-4,selectcolor)
+								elseif i == selEnd then
+									local selx = dxGetTextWidth(utf8.sub(text[i],0,selPosEnd),txtSizX,font)
+									dxDrawRectangle(offset,2+(i-showLine)*fontHeight,selx,fontHeight-4,selectcolor)
+								end
+							end
+						end
+						for i=showLine,toShowLine do
+							local ypos = (i-showLine)*fontHeight
+							dxDrawText(text[i],offset,ypos,dxGetTextWidth(text[i],txtSizX,font),fontHeight+ypos,textcolor,txtSizX,txtSizY,font,"left","top",true,false,false,false)
+						end
 					end
 					dxSetRenderTarget(rndtgt)
 					if imagebg then
@@ -851,14 +893,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					else
 						dxDrawRectangle(x,y,w,h,colorbg,rendSet)
 					end
-					if MouseData.nowShow == v and MouseData.editCursor then
-						local width = dxGetTextWidth(utfSub(text,0,cursorPos),txtSizX,font)
+					dxDrawImageSection(x+2,y,w-4,h,0,0,w-4,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					if MouseData.nowShow == v and MouseData.memoCursor then
+						local theText = text[cursorPos[2]]
+						local cursorPX = cursorPos[1]
+						local showLine = dgsElementData[v].showLine
+						local currentLine = dgsElementData[v].cursorposXY[2]
+						local lineStart = fontHeight*(currentLine-showLine)
+						local width = dxGetTextWidth(utfSub(theText,1,cursorPX),txtSizX,font)
 						local showPos = dgsElementData[v].showPos
 						local cursorStyle = dgsElementData[v].cursorStyle
 						if cursorStyle == 0 then
-							dxDrawLine(x+width+showPos+2,y+2,x+width+showPos+2,y+h-4,black,dgsElementData[v].cursorThick,isRenderTarget)
+							dxDrawLine(x+width+showPos+2,y+lineStart+1,x+width+showPos+2,y+lineStart+fontHeight-2,black,dgsElementData[v].cursorThick,isRenderTarget)
 						elseif cursorStyle == 1 then
-							local cursorWidth = dxGetTextWidth(utfSub(text,cursorPos+1,cursorPos+1),txtSizX,font)
+							local cursorWidth = dxGetTextWidth(utf8.sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 							if cursorWidth == 0 then
 								cursorWidth = txtSizX*8
 							end
@@ -866,8 +914,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,black,dgsElementData[v].cursorThick,isRenderTarget)
 						end
 					end	
-					dxDrawImageSection(x+2,y,w-4,h,0,0,w-4,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
+				
 				local side = dgsElementData[v].side
 				if side ~= 0 then
 					local sidecolor = dgsElementData[v].sidecolor
@@ -883,7 +931,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 			else
 				visible = false
-			end]]
+			end
 		elseif dxType == "dgs-dxscrollpane" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
@@ -1148,8 +1196,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								local toffset = (whichRowToStart*rowHeight)+DataTab.rowMoveOffset
 								sid = math.floor((my-ypcolumn-toffset)/rowHeight)+whichRowToStart+1
 								if sid <= #rowData then
-									DataTab.preSelect = sid
-									MouseData.enterData = true
+									DataTab.oPreSelect = sid
+									if rowData[sid][-2] then
+										DataTab.preSelect = sid
+										MouseData.enterData = true
+									else
+										DataTab.preSelect = -1
+									end
 								else
 									DataTab.preSelect = -1
 								end
@@ -1159,9 +1212,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 						local preSelect = DataTab.preSelect
 						local Select = DataTab.select
+						local sectionFont = dgsElementData[v].sectionFont or font
 						for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 							local lc_rowData = rowData[i]
 							local image = lc_rowData[-3]
+							local columnOffset = lc_rowData[-4]
+							local isSection = lc_rowData[-5]
 							local color = lc_rowData[0]
 							local rowState = 1
 							if i == preSelect then
@@ -1173,7 +1229,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							if isDraw2 then
 								local rowpos = i*rowHeight
 								local rowpos_1 = rowpos-rowHeight
-								local _x,_y,_sx,_sy = columnMoveOffset,rowpos_1+rowMoveOffset,sW,rowpos+rowMoveOffset
+								local _x,_y,_sx,_sy = columnMoveOffset+columnOffset,rowpos_1+rowMoveOffset,sW,rowpos+rowMoveOffset
 								if #image > 0 then
 									dxDrawImage(0,_y,w,rowHeight,image[rowState],0,0,0,color[rowState])
 								else
@@ -1181,6 +1237,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								end
 								for id=1,#columnData do
 									local text = lc_rowData[id][1]
+									local _txtFont = isSection and sectionFont or (lc_rowData[id][3] or font)
+									local _txtScalex = lc_rowData[id][4] or rowtextx
+									local _txtScaley = lc_rowData[id][5] or rowtexty
 									if text then
 										local offset = cpos[id]
 										local _x = _x+offset
@@ -1189,9 +1248,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 											if colorcoded then
 												text = text:gsub("#%x%x%x%x%x%x","") or text
 											end
-											dxDrawText(text,_x+shadow[1],_y+shadow[2],_sx+shadow[1],_sy+shadow[2],shadow[3],rowtextx,rowtexty,font,"left","center",false,false,false,false,true)
+											dxDrawText(text,_x+shadow[1],_y+shadow[2],_sx+shadow[1],_sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",false,false,false,false,true)
 										end
-										dxDrawText(lc_rowData[id][1],_x,_y,_sx,_sy,lc_rowData[id][2],rowtextx,rowtexty,font,"left","center",false,false,false,colorcoded,true)
+										dxDrawText(lc_rowData[id][1],_x,_y,_sx,_sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",false,false,false,colorcoded,true)
 									end
 								end
 							end
@@ -1246,8 +1305,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							local toffset = (whichRowToStart*rowHeight)+_rowMoveOffset
 							sid = math.floor((my-ypcolumn-toffset)/rowHeight)+whichRowToStart+1
 							if sid <= #rowData then
-								DataTab.preSelect = sid
-								MouseData.enterData = true
+								DataTab.oPreSelect = sid
+								if rowData[sid][-2] then
+									DataTab.preSelect = sid
+									MouseData.enterData = true
+								else
+									DataTab.preSelect = -1
+								end
 							else
 								DataTab.preSelect = -1
 							end
@@ -1259,6 +1323,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						local lc_rowData = rowData[i]
 						local image = lc_rowData[-3]
 						local color = lc_rowData[0]
+						local columnOffset = lc_rowData[-4]
+						local isSection = lc_rowData[-5]
 						local rowState = 1
 						if i == DataTab.preSelect then
 							rowState = 2
@@ -1267,7 +1333,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							rowState = 3
 						end
 						local rowpos = i*rowHeight
-						local __x,__y,__sx,__sy = column_x,_y+rowpos-rowHeight,_sx,_y+rowpos
+						local __x,__y,__sx,__sy = column_x+columnOffset,_y+rowpos-rowHeight,_sx,_y+rowpos
 						if #image > 0 then
 							dxDrawImage(cx,__y,w,rowHeight,image[rowState],0,0,0,color[rowState],rendSet)
 						else
@@ -1275,6 +1341,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 						for id=whichColumnToStart,whichColumnToEnd do
 							local text = lc_rowData[id][1]
+							local _txtFont = isSection and sectionFont or (lc_rowData[id][3] or font)
+							local _txtScalex = lc_rowData[id][4] or rowtextx
+							local _txtScaley = lc_rowData[id][5] or rowtexty
 							if text ~= "" then
 								local offset = cpos[id]
 								local __x = __x+offset
@@ -1283,9 +1352,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 									if colorcoded then
 										text = text:gsub("#%x%x%x%x%x%x","") or text
 									end
-									dxDrawText(text,__x+shadow[1],__y+shadow[2],__sx+shadow[1],__sy+shadow[2],shadow[3],rowtextx,rowtexty,font,"left","center",true,false,rendSet,false,true)
+									dxDrawText(text,__x+shadow[1],__y+shadow[2],__sx+shadow[1],__sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",true,false,rendSet,false,true)
 								end
-								dxDrawText(lc_rowData[id][1],__x,__y,__sx,__sy,lc_rowData[id][2],rowtextx,rowtexty,font,"left","center",true,false,rendSet,colorcoded,true)
+								dxDrawText(lc_rowData[id][1],__x,__y,__sx,__sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",true,false,rendSet,colorcoded,true)
 							end
 						end
 					end
@@ -1449,7 +1518,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local rb_l = dgsElementData[combo].rightbottomList
 					local scrollbar = dgsElementData[combo].scrollbar
 					local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
-					if mx >= cx-2 and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
+					if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
 						local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
 						sid = math.floor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
 						if sid <= #itemData then
@@ -1834,24 +1903,174 @@ function checkEditCursor(button,state)
 				MouseData.editCursorMoveOffset = false
 			end
 		end
+	elseif dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+		if state then
+			local cmd = dgsElementData[MouseData.nowShow].mycmd
+			local shift = getKeyState("lshift") or getKeyState("rshift")
+			if button == "arrow_l" then
+				dgsDxMemoMoveCaret(MouseData.nowShow,-1,0,shift)
+				if isTimer(MouseData.Timer["memoMove"]) then
+					killTimer(MouseData.Timer["memoMove"])
+				end
+				if isTimer(MouseData.Timer["memoMoveDelay"]) then
+					killTimer(MouseData.Timer["memoMoveDelay"])
+				end
+				MouseData.Timer["memoMoveDelay"] = setTimer(function()
+					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+						MouseData.Timer["memoMove"] = setTimer(function()
+							local shift = getKeyState("lshift") or getKeyState("rshift")
+							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+								dgsDxMemoMoveCaret(MouseData.nowShow,-1,0,shift)
+							else
+								killTimer(MouseData.Timer["memoMove"])
+							end
+						end,50,0)
+					end
+				end,500,1)
+			elseif button == "arrow_r" then
+				dgsDxMemoMoveCaret(MouseData.nowShow,1,0,shift)
+				if isTimer(MouseData.Timer["memoMove"]) then
+					killTimer(MouseData.Timer["memoMove"])
+				end
+				if isTimer(MouseData.Timer["memoMoveDelay"]) then
+					killTimer(MouseData.Timer["memoMoveDelay"])
+				end
+				MouseData.Timer["memoMoveDelay"] = setTimer(function()
+					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+						MouseData.Timer["memoMove"] = setTimer(function()
+							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							local shift = getKeyState("lshift") or getKeyState("rshift")
+								dgsDxMemoMoveCaret(MouseData.nowShow,1,0,shift)
+							else
+								killTimer(MouseData.Timer["memoMove"])
+							end
+						end,50,0)
+					end
+				end,500,1)
+			elseif button == "arrow_u" then
+				dgsDxMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
+				if isTimer(MouseData.Timer["memoMove"]) then
+					killTimer(MouseData.Timer["memoMove"])
+				end
+				if isTimer(MouseData.Timer["memoMoveDelay"]) then
+					killTimer(MouseData.Timer["memoMoveDelay"])
+				end
+				MouseData.Timer["memoMoveDelay"] = setTimer(function()
+					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+						MouseData.Timer["memoMove"] = setTimer(function()
+							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							local shift = getKeyState("lshift") or getKeyState("rshift")
+								dgsDxMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
+							else
+								killTimer(MouseData.Timer["memoMove"])
+							end
+						end,50,0)
+					end
+				end,500,1)
+			elseif button == "arrow_d" then
+				dgsDxMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
+				if isTimer(MouseData.Timer["memoMove"]) then
+					killTimer(MouseData.Timer["memoMove"])
+				end
+				if isTimer(MouseData.Timer["memoMoveDelay"]) then
+					killTimer(MouseData.Timer["memoMoveDelay"])
+				end
+				MouseData.Timer["memoMoveDelay"] = setTimer(function()
+					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+						MouseData.Timer["memoMove"] = setTimer(function()
+							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							local shift = getKeyState("lshift") or getKeyState("rshift")
+								dgsDxMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
+							else
+								killTimer(MouseData.Timer["memoMove"])
+							end
+						end,50,0)
+					end
+				end,500,1)
+			elseif button == "home" then
+				local tarline
+				if getKeyState("lctrl") or getKeyState("rctrl") then
+					tarline = 1
+				end
+				dgsDxMemoSetCaretPosition(MouseData.nowShow,0,tarline,getKeyState("lshift") or getKeyState("rshift"))
+			elseif button == "end" then
+				local text = dgsElementData[MouseData.nowShow].text
+				local line = dgsElementData[MouseData.nowShow].cursorposXY[2]
+				local tarline
+				if getKeyState("lctrl") or getKeyState("rctrl") then
+					tarline = #text
+				end
+				dgsDxMemoSetCaretPosition(MouseData.nowShow,utf8.len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
+			elseif button == "delete" then
+				local cpos = dgsElementData[MouseData.nowShow].cursorposXY
+				local spos = dgsElementData[MouseData.nowShow].selectfrom
+				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
+					dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
+					dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
+				else
+					local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
+					dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+				end
+			elseif button == "backspace" then
+				local cpos = dgsElementData[MouseData.nowShow].cursorposXY
+				local spos = dgsElementData[MouseData.nowShow].selectfrom
+				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
+					dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
+					dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
+				else
+					local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
+					dgsDxMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+				end
+			elseif button == "c" or button == "x" then
+				if getKeyState("lctrl") or getKeyState("rctrl") then
+					local cpos = dgsElementData[MouseData.nowShow].cursorposXY
+					local spos = dgsElementData[MouseData.nowShow].selectfrom
+					local theText = dgsDxMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],button == "x")
+					setClipboard(theText)
+				end
+			end
+		else
+			if button == "arrow_l" or button == "arrow_r" or button == "arrow_u" or button == "arrow_d" then
+				if isTimer(MouseData.Timer["memoMove"]) then
+					killTimer(MouseData.Timer["memoMove"])
+				end
+				if isTimer(MouseData.Timer["memoMoveDelay"]) then
+					killTimer(MouseData.Timer["memoMoveDelay"])
+				end
+			end
+		end
 	end
 end
 addEventHandler("onClientKey",root,checkEditCursor)
 
 addEventHandler("onClientGUIFocus",resourceRoot,function()
-	if getElementType(source) == "gui-edit" then
+	local guitype = getElementType(source)
+	if guitype == "gui-edit" then
 		local edit = dgsElementData[source].dxedit
 		if isElement(edit) then
 			dgsDxGUIBringToFront(edit,"left")
+		end
+	elseif guitype == "gui-memo" then
+		local memo = dgsElementData[source].dxmemo
+		if isElement(memo) then
+			dgsDxGUIBringToFront(memo,"left")
 		end
 	end
 end)
 
 addEventHandler("onClientGUIBlur",resourceRoot,function()
-	if getElementType(source) == "gui-edit" then
+	local guitype = getElementType(source)
+	if guitype == "gui-edit" then
 		local edit = dgsElementData[source].dxedit
 		if isElement(edit) then
 			if MouseData.nowShow == edit then
+				MouseData.nowShow = false
+			end
+		end
+	elseif guitype == "gui-memo" then
+		local memo = dgsElementData[source].dxmemo
+		if isElement(memo) then
+			if MouseData.nowShow == memo then
 				MouseData.nowShow = false
 			end
 		end
@@ -1886,10 +2105,10 @@ addEventHandler("onClientDgsDxGUITextChange",root,function(text)
 		end
 	end
 end)
-
-addEventHandler("onClientGUIChanged",root,function()
-	if getElementType(source) == "gui-edit" then
-		if not dgsElementData[source] then return end
+addEventHandler("onClientGUIChanged",resourceRoot,function()
+	if not dgsElementData[source] then return end
+	local guitype = getElementType(source)
+	if guitype == "gui-edit" then
 		local myedit = dgsElementData[source].dxedit
 		if isElement(myedit) then
 			if source == dgsElementData[myedit].edit then
@@ -1905,7 +2124,7 @@ addEventHandler("onClientGUIChanged",root,function()
 				local prepos = dgsElementData[myedit].cursorpos
 				local prefrom = dgsElementData[myedit].selectfrom
 				local presele = prefrom-prepos
-				local offset = presele > 0 and 1 or string.count(text_new)-string.count(text_old)
+				local offset = presele > 0 and 1 or utf8.len(text_new)-utf8.len(text_old)
 				dgsSetData(myedit,"text",text_new)
 				local pos = dgsElementData[myedit].cursorpos
 				local from = dgsElementData[myedit].selectfrom
@@ -1920,25 +2139,43 @@ addEventHandler("onClientGUIChanged",root,function()
 					end
 				elseif getKeyState("backspace") then
 					if sele == 0 then
-						dgsDxEditSetCaretPosition(myedit,pos+string.count(text_new)-string.count(text_old))
+						dgsDxEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
 					else
 						if sele > 0 then
 							dgsDxEditSetCaretPosition(myedit,pos)
 						else
-							dgsDxEditSetCaretPosition(myedit,pos+string.count(text_new)-string.count(text_old))
+							dgsDxEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
 						end
 					end
 				else
 					dgsDxEditSetCaretPosition(myedit,pos+offset)
 				end
 				local pos = dgsElementData[myedit].cursorpos
-				if pos > string.count(text_new) then
-					dgsDxEditSetCaretPosition(myedit,string.count(text_new))
+				if pos > utf8.len(text_new) then
+					dgsDxEditSetCaretPosition(myedit,utf8.len(text_new))
+				end
+			end
+		end
+	elseif guitype == "gui-memo" then
+		local mymemo = dgsElementData[source].dxmemo
+		if isElement(mymemo) then
+			if source == dgsElementData[mymemo].memo then
+				local text = guiGetText(source)
+				local cool = dgsElementData[mymemo].CoolTime
+				if #text ~= 0 and not cool then
+					local cursorposXY = dgsElementData[mymemo].cursorposXY
+					local selectfrom = dgsElementData[mymemo].selectfrom
+					dgsDxMemoDeleteText(mymemo,cursorposXY[1],cursorposXY[2],selectfrom[1],selectfrom[2])
+					handleDxMemoText(mymemo,utf8.sub(text,1,utf8.len(text)-1))
+					dgsElementData[mymemo].CoolTime = true
+					guiSetText(source,"")
+					dgsElementData[mymemo].CoolTime = false
 				end
 			end
 		end
 	end
 end)
+
 
 function dgsDxCheckHit(hits,mx,my)
 	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.clickData == 2) then
@@ -2138,10 +2375,14 @@ addEventHandler("onClientDgsDxMouseClick",root,function(button,state)
 				local py =  pos*0.01*(slotRange-cursorRange)
 				checkScrollBar(py,voh)
 			elseif guitype == "dgs-dxgridlist" then
-				local preSelect = dgsElementData[source].preSelect
-				local oldSelect = dgsElementData[source].select
-				dgsElementData[source].select = preSelect
-				triggerEvent("onClientDgsDxGridListSelect",source,oldSelect,preSelect)
+				local oPreSelect = dgsElementData[source].oPreSelect
+				local rowData = dgsElementData[source].rowData
+				if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
+					local preSelect = dgsElementData[source].preSelect
+					local oldSelect = dgsElementData[source].select
+					dgsElementData[source].select = preSelect
+					triggerEvent("onClientDgsDxGridListSelect",source,oldSelect,preSelect)
+				end
 			elseif guitype == "dgs-dxcombobox-Box" then
 				local combobox = dgsElementData[source].myCombo
 				local preSelect = dgsElementData[combobox].preSelect
@@ -2186,6 +2427,13 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		if dgsGetType(source) == "dgs-dxedit" then
 			local edit = dgsElementData[source].edit
 			destroyElement(edit)
+			local rentarg = dgsElementData[source].renderTarget
+			if isElement(rentarg) then
+				destroyElement(rentarg)
+			end
+		elseif dgsGetType(source) == "dgs-dxmemo" then
+			local memo = dgsElementData[source].memo
+			destroyElement(memo)
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)

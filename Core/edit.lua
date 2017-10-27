@@ -47,7 +47,7 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	local sx,sy = dgsGetSize(edit,false)
 	local renderTarget = dxCreateRenderTarget(sx-4,sy,true)
 	dgsSetData(edit,"renderTarget",renderTarget)
-	dgsDxEditSetCaretPosition(edit,#(tostring(text) or ""))
+	dgsDxEditSetCaretPosition(edit,utf8.len(tostring(text) or ""))
 	return edit
 end
 
@@ -55,19 +55,19 @@ function dgsDxEditMoveCaret(edit,offset,noselect)
 	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditMoveCaret argument 1,expect dgs-dxedit got "..dgsGetType(edit))
 	assert(type(offset) == "number","@dgsDxEditMoveCaret argument 2,expect number got "..type(offset))
 	local guiedit = dgsElementData[edit].edit
-	local text_new = guiGetText(guiedit)
+	local text = guiGetText(guiedit)
 	if dgsElementData[edit].masked then
-		text_new = string.rep(dgsElementData[edit].maskText,string.count(text_new))
+		text = string.rep(dgsElementData[edit].maskText,utf8.len(text))
 	end
 	local pos = dgsElementData[edit].cursorpos+math.floor(offset)
 	if pos < 0 then
 		pos = 0
-	elseif pos > string.count(text_new) then
-		pos = string.count(text_new)
+	elseif pos > utf8.len(text) then
+		pos = utf8.len(text)
 	end
 	local showPos = dgsElementData[edit].showPos
 	local font = dgsElementData[edit].font
-	local nowLen = dxGetTextWidth(utfSub(text_new,0,pos),dgsGetData(edit,"textsize")[1],font)
+	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textsize[1],font)
 	local sx,sy = dgsGetSize(edit)
 	if nowLen+showPos > sx-4 then
 		dgsSetData(edit,"showPos",sx-4-nowLen)
@@ -86,12 +86,12 @@ end
 function dgsDxEditSetCaretPosition(edit,pos,noselect)
 	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetCaretPosition argument 1,expect dgs-dxedit got "..dgsGetType(edit))
 	assert(type(pos) == "number","@dgsDxEditSetCaretPosition argument 2,expect number got "..type(pos))
-	local text_new = guiGetText(dgsElementData[edit].edit)
+	local text = guiGetText(dgsElementData[edit].edit)
 	if dgsElementData[edit].masked then
-		text_new = string.rep(dgsElementData[edit].maskText,string.count(text_new))
+		text = string.rep(dgsElementData[edit].maskText,utf8.len(text))
 	end
-	if pos > string.count(text_new) then
-		pos = string.count(text_new)
+	if pos > utf8.len(text) then
+		pos = utf8.len(text)
 	elseif pos < 0 then
 		pos = 0
 	end
@@ -101,7 +101,7 @@ function dgsDxEditSetCaretPosition(edit,pos,noselect)
 	end
 	local showPos = dgsElementData[edit].showPos
 	local font = dgsElementData[edit].font
-	local nowLen = dxGetTextWidth(utfSub(text_new,0,pos),dgsGetData(edit,"textsize")[1],font)
+	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsGetData(edit,"textsize")[1],font)
 	local sx,sy = dgsGetSize(edit,false)
 	if nowLen+showPos > sx-4 then
 		dgsSetData(edit,"showPos",sx-4-nowLen)
@@ -167,25 +167,28 @@ function resetEdit(x,y)
 	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 		if MouseData.nowShow == MouseData.clickl then
 			local edit = dgsElementData[MouseData.nowShow].edit
-			local pos = checkMousePosition(MouseData.nowShow,x*sW,y*sH)
+			local pos = searchEditMousePosition(MouseData.nowShow,x*sW,y*sH)
 			dgsDxEditSetCaretPosition(MouseData.nowShow,pos,true)
 		end
 	end
 end
 addEventHandler("onClientCursorMove",root,resetEdit)
 
-function checkMousePosition(dxedit,posx,posy)
+function searchEditMousePosition(dxedit,posx,posy)
 	local edit = dgsElementData[dxedit].edit
 	if isElement(edit) then
 		local text = guiGetText(edit)
+		local sfrom,sto = 0,utf8.len(text)
+		if dgsElementData[edit].masked then
+			text = string.rep(dgsElementData[edit].maskText,sto)
+		end
 		local font = dgsElementData[dxedit].font or systemFont
 		local txtSizX = dgsElementData[dxedit].textsize[1]
 		local offset = dgsElementData[dxedit].showPos
 		local x = dgsGetPosition(dxedit,false,true)
 		local pos = posx-x-offset
-		local sfrom,sto = 0,#text
 		local templen = 0
-		for i=1,#text do
+		for i=1,sto do
 			local strlen = dxGetTextWidth(utf8.sub(text,sfrom+1,sto/2+sfrom/2),txtSizX,font)
 			local len1 = strlen+templen
 			if pos < len1 then
@@ -206,15 +209,15 @@ function checkMousePosition(dxedit,posx,posy)
 		local start = dxGetTextWidth(utf8.sub(text,0,sfrom),txtSizX,font)
 		for i=sfrom,sto do
 			local poslen1 = dxGetTextWidth(utf8.sub(text,sfrom+1,i),txtSizX,font)+start
-			local temp = dxGetTextWidth(utf8.sub(text,i+1,i+1),txtSizX,font)
-			local poslen2 = temp/2+poslen1+1
-			local temp1 = dxGetTextWidth(utf8.sub(text,i,i),txtSizX,font)/2-1
-			local temp3 = poslen1-temp1
-			if i <= sfrom and pos <= temp3 then
+			local theNext = dxGetTextWidth(utf8.sub(text,i+1,i+1),txtSizX,font)/2
+			local offsetR = theNext+poslen1
+			local theLast = dxGetTextWidth(utf8.sub(text,i,i),txtSizX,font)/2
+			local offsetL = poslen1-theLast
+			if i <= sfrom and pos <= offsetL then
 				return sfrom
-			elseif i >= sto and pos >= poslen2 then
+			elseif i >= sto and pos >= offsetR then
 				return sto
-			elseif pos >= temp3 and pos <= poslen2 then
+			elseif pos >= offsetL and pos <= offsetR then
 				return i
 			end
 		end
@@ -225,7 +228,7 @@ end
 function checkEditMousePosition(button,state,x,y)
 	if dgsGetType(source) == "dgs-dxedit" then
 		if state == "down" then
-			local pos = checkMousePosition(source,x,y)
+			local pos = searchEditMousePosition(source,x,y)
 			dgsDxEditSetCaretPosition(source,pos)
 		end
 	end

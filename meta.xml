@@ -19,6 +19,7 @@
 	<script src="Core/progressbar.lua" type="client" />
 	<script src="Core/radiobutton.lua" type="client" />
 	<script src="Core/combobox.lua" type="client" />
+	<script src="Core/memo.lua" type="client" />
 	<script src="Core/checkbox.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
@@ -98,6 +99,10 @@
 	<export function="dgsDxCreateRadioButton" type="client" />
 	<export function="dgsDxRadioButtonGetSelected" type="client" />
 	<export function="dgsDxRadioButtonSetSelected" type="client" />
+	
+	<export function="dgsDxCreateCheckBox" type="client" />
+	<export function="dgsDxCheckBoxGetSelected" type="client" />
+	<export function="dgsDxCheckBoxSetSelected" type="client" />
 
 	<export function="dgsDxCreateComboBox" type="client" />
 	<export function="dgsDxComboBoxAddItem" type="client" />
@@ -138,6 +143,17 @@
 	<export function="dgsDxEditSetMaxLength" type="client" />
 	<export function="dgsDxEditSetReadOnly" type="client" />
 	<export function="dgsDxEditGetReadOnly" type="client" />
+	
+	<export function="dgsDxCreateMemo" type="client" />
+	<export function="dgsDxMemoMoveCaret" type="client" />
+	<export function="dgsDxMemoSeekPosition" type="client" />
+	<export function="dgsDxMemoSetCaretPosition" type="client" />
+	<export function="dgsDxMemoGetCaretPosition" type="client" />
+	<export function="dgsDxMemoSetCaretStyle" type="client" />
+	<export function="dgsDxMemoSetReadOnly" type="client" />
+	<export function="dgsDxMemoGetReadOnly" type="client" />
+	<export function="dgsDxMemoGetPartOfText" type="client" />
+	<export function="dgsDxMemoDeleteText" type="client" />
 
 	<export function="dgsDxCreateImage" type="client" />
 	<export function="dgsDxImageLoadImage" type="client" />
@@ -200,7 +216,8 @@
 	<export function="dgsDxGridListGetRowColor" type="client" />
 	<export function="dgsDxGridListGetItemData" type="client" />
 	<export function="dgsDxGridListSetItemData" type="client" />
-
+	<export function="dgsDxGridListSetRowAsSection" type="client" />
+	
 	<export function="dgsDxCreateCycleHitShape" type="client" />
 	<export function="dgsDxSetCycleHitShapeRadius" type="client" />
 	<export function="dgsDxGetCycleHitShapeRadius" type="client" />
