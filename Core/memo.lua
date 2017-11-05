@@ -558,6 +558,7 @@ function seekMaxLengthLine(memo)
 end
 
 function configMemo(source)
+	if dgsElementData[source].disableScrollBar then return end
 	local mymemo = dgsElementData[source].memo
 	local size = dgsElementData[source].absSize
 	guiSetSize(mymemo,size[1],size[2],false)
