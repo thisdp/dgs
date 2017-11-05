@@ -50,6 +50,22 @@ function createTestMemo()
 	MTA DxLib
 	Version 2.88
 	Test UTF8: 你好
-	Test Selection]],false)
+	Test Selection
+	
+	DGS Memo Updates
+	1.Added Scroll Bars
+	2.Fix backspace and delete doesn't works well
+	
+	Very looooooooooong
+	Test Scroll Bars
+	1
+	2
+	3
+	4
+	5
+	6
+	7
+	8
+	9
+	10]],false)
 end
---createTestMemo()

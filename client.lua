@@ -157,9 +157,9 @@ function dgsSetData(element,key,value,check)
 			dgsElementData[element] = {}
 		end
 		local dgsType = dgsGetType(element)
+		local oldValue = dgsElementData[element][""..key..""]
 		dgsElementData[element][""..key..""] = value
 		if not check then
-			local oldValue = dgsElementData[element][""..key..""]
 			if tostring(key) == "text" then
 				triggerEvent("onClientDgsDxGUITextChange",element,value)
 			elseif dgsGetType(element) == "dgs-dxscrollbar" and tostring(key) == "length" then
@@ -893,7 +893,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					else
 						dxDrawRectangle(x,y,w,h,colorbg,rendSet)
 					end
-					dxDrawImageSection(x+2,y,w-4,h,0,0,w-4,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					local scbThick = dgsElementData[v].scrollBarThick
+					local scrollbars = dgsElementData[v].scrollbars
+					local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+					dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					if MouseData.nowShow == v and MouseData.memoCursor then
 						local theText = text[cursorPos[2]]
 						local cursorPX = cursorPos[1]
@@ -1237,7 +1240,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								end
 								for id=1,#columnData do
 									local text = lc_rowData[id][1]
-									local _txtFont = isSection and sectionFont or (lc_rowData[id][3] or font)
+									local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
 									local _txtScalex = lc_rowData[id][4] or rowtextx
 									local _txtScaley = lc_rowData[id][5] or rowtexty
 									if text then
@@ -1341,7 +1344,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 						for id=whichColumnToStart,whichColumnToEnd do
 							local text = lc_rowData[id][1]
-							local _txtFont = isSection and sectionFont or (lc_rowData[id][3] or font)
+							local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
 							local _txtScalex = lc_rowData[id][4] or rowtextx
 							local _txtScaley = lc_rowData[id][5] or rowtexty
 							if text ~= "" then
@@ -2010,6 +2013,20 @@ function checkEditCursor(button,state)
 				else
 					local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
 					dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+					MouseData.Timer["memoMoveDelay"] = setTimer(function()
+						if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							MouseData.Timer["memoMove"] = setTimer(function()
+								if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+									local cpos = dgsElementData[MouseData.nowShow].cursorposXY
+									local spos = dgsElementData[MouseData.nowShow].selectfrom
+									local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
+									dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+								else
+									killTimer(MouseData.Timer["memoMove"])
+								end
+							end,50,0)
+						end
+					end,500,1)
 				end
 			elseif button == "backspace" then
 				local cpos = dgsElementData[MouseData.nowShow].cursorposXY
@@ -2020,6 +2037,20 @@ function checkEditCursor(button,state)
 				else
 					local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
 					dgsDxMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+					MouseData.Timer["memoMoveDelay"] = setTimer(function()
+						if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							MouseData.Timer["memoMove"] = setTimer(function()
+								if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+									local cpos = dgsElementData[MouseData.nowShow].cursorposXY
+									local spos = dgsElementData[MouseData.nowShow].selectfrom
+									local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
+									dgsDxMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+								else
+									killTimer(MouseData.Timer["memoMove"])
+								end
+							end,50,0)
+						end
+					end,500,1)
 				end
 			elseif button == "c" or button == "x" then
 				if getKeyState("lctrl") or getKeyState("rctrl") then
@@ -2030,7 +2061,7 @@ function checkEditCursor(button,state)
 				end
 			end
 		else
-			if button == "arrow_l" or button == "arrow_r" or button == "arrow_u" or button == "arrow_d" then
+			if button == "arrow_l" or button == "arrow_r" or button == "arrow_u" or button == "arrow_d" or button == "backspace" or button == "delete" then
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end

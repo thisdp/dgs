@@ -144,7 +144,7 @@ function dgsDxGUISetProperty(dxgui,key,value,...)
 			dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel]["allleng"]-owid+wid)
 			dgsSetData(dxgui,"width",wid)
 		elseif dgsType == "dgs-dxmemo" then
-			handleDxMemoText(dxgui,value)
+			return handleDxMemoText(dxgui,value)
 		end
 	end
 	return dgsSetData(dxgui,tostring(key),value)
@@ -362,9 +362,8 @@ function dgsDxGUIGetEnabled(dxgui)
 	return dgsGetData(dxgui,"enabled")
 end
 
-function dgsDxGUICreateFont(path,clear)
+function dgsDxGUICreateFont(path,...)
 	assert(type(path) == "string","@dgsDxGUICreateFont argument at 1,expect string got "..type(path))
-	assert(type(clear) == "number","@dgsDxGUICreateFont argument at 2,expect number got "..type(clear))
 	if not fileExists(":"..getResourceName(getThisResource()).."/"..path) and not fileExists(path) then
 		if not fileExists(path) then
 			assert(false,"@dgsDxGUICreateFont argument at 1,couldn't find such file '"..path.."'")
@@ -373,7 +372,7 @@ function dgsDxGUICreateFont(path,clear)
 		fileCopy(path,":"..getResourceName(getThisResource()).."/"..filename[#filename])
 		path = filename[#filename]
 	end
-	local font = dxCreateFont(path,clear)
+	local font = dxCreateFont(path,...)
 	return font
 end
 
@@ -398,7 +397,7 @@ end
 
 function dgsDxGUIGetText(dxgui)
 	assert(dgsIsDxElement(dxgui),"@dgsDxGUIGetText argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsGetData(dxgui,"text")
+	return dgsElementData[dxgui].text
 end
 
 function dgsDxSetShaderValue(...)

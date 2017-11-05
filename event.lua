@@ -78,14 +78,37 @@ function findRotation(x1,y1,x2,y2)
 	return t<0 and t+360 or t
 end
 
---[[_dxSetRenderTarget = dxSetRenderTarget
-nowRenderTarget = false
-function dxSetRenderTarget(a,b)
-	nowRenderTarget = a
-	return _dxSetRenderTarget(a,b)
+function string.split(s, delim, mode)
+    if type(delim) ~= "string" or string.len(delim) <= 0 then
+        return
+    end
+	if mode then
+		local start = 1
+		local t = {}
+		local index = 1
+		while true do
+			local pos = string.find (s, delim, start, true)
+			if not pos then
+			  break
+			end
+			t[index] = string.sub(s,start,pos-1)
+			start = pos + string.len(delim)
+			index = index+1
+		end
+		t[index] = string.sub(s,start)
+		return t
+	else
+		local start = 1
+		local t = {}
+		while true do
+			local pos = string.find (s, delim, start, true)
+			if not pos then
+			  break
+			end
+			table.insert (t, string.sub (s, start, pos - 1))
+			start = pos + string.len (delim)
+		end
+		table.insert (t, string.sub (s, start))
+		return t
+	end
 end
-
-function dxClearRenderTarget(rndtgt)
-	dxSetRenderTarget(rndtgt,true)
-	dxSetRenderTarget(nowRenderTarget)
-end]]

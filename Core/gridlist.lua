@@ -22,7 +22,6 @@
 	dgsSetData(gridlist,"columnMoveOffset",0)
 	dgsSetData(gridlist,"sectionColumnOffset",-10)
 	dgsSetData(gridlist,"defaultColumnOffset",0)
-	--dgsSetData(gridlist,"rowAsSection",{})
 	dgsSetData(gridlist,"font",systemFont)
 	dgsSetData(gridlist,"sectionFont",systemFont)
 	dgsSetData(gridlist,"columnShadow",false)
@@ -263,10 +262,10 @@ end
 		-4					-3				-2				-1				0								1										2										...
 		columnOffset		bgImage			selectable		clickable		bgColor							column1									column2									...
 {
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,font,scalex,scaley},		{text,color,font,scalex,scaley},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
 	{	the same as preview table																										},
 }
 
@@ -274,19 +273,20 @@ end
 ]]
 
 
-function dgsDxGridListAddRow(gridlist,pos)
+function dgsDxGridListAddRow(gridlist,pos,...)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListAddRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
 	local rowLength = 0
 	pos = pos or #rowData+1
 	local rowTable = {}
+	local args = {...}
 	rowTable[-4] = dgsElementData[gridlist].defaultColumnOffset
 	rowTable[-3] = {}
 	rowTable[-2] = true
 	rowTable[-1] = true
 	rowTable[0] = dgsElementData[gridlist].rowcolor
 	for i=1,#dgsElementData[gridlist].columnData do
-		rowTable[i] = {"",dgsElementData[gridlist].rowtextcolor}
+		rowTable[i] = {args[i] or "",dgsElementData[gridlist].rowtextcolor}
 	end
 	table.insert(rowData,pos,rowTable)
  	local scrollbars = dgsElementData[gridlist].scrollbars
@@ -361,10 +361,10 @@ function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemText at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","@dgsDxGridListSetItemText at argument 2,expect number got "..type(row))
 	assert(type(column) == "number","@dgsDxGridListSetItemText at argument 3,expect number got "..type(column))
-	assert(column >= 1 or develop,"@dgsDxGridListSetItemText at argument 3,expect a number >= 1 got "..tostring(row))
+	assert(column >= 1 or column <= -5,"@dgsDxGridListSetItemText at argument 3,expect a number >= 1 got "..tostring(column))
 	local rowData = dgsElementData[gridlist].rowData
-	if column < 1 then
-		rowData[row][column] = tostring(text)
+	if column <= -5 then
+		rowData[row][column] = text
 	else
 		rowData[row][column][1] = tostring(text)
 	end
