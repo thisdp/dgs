@@ -25,6 +25,7 @@
 	<script src="server.lua" type="server" />
 	<script src="client.lua" type="client" />
 	<script src="plugin/shader.lua" type="client" />
+	<script src="plugin/multimedia.lua" type="client" />
 	<script src="functions.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
@@ -116,6 +117,9 @@
 	<export function="dgsDxComboBoxGetItemColor" type="client" />
 	<export function="dgsDxComboBoxSetState" type="client" />
 	<export function="dgsDxComboBoxGetState" type="client" />
+	<export function="dgsDxComboBoxSetBoxHeight" type="client" />
+	<export function="dgsDxComboBoxGetBoxHeight" type="client" />
+	<export function="dgsDxComboBoxGetScrollBar" type="client" />
 
 	<export function="dgsDxCreateButton" type="client" />
 
@@ -154,6 +158,7 @@
 	<export function="dgsDxMemoGetReadOnly" type="client" />
 	<export function="dgsDxMemoGetPartOfText" type="client" />
 	<export function="dgsDxMemoDeleteText" type="client" />
+	<export function="dgsDxMemoGetScrollBars" type="client" />
 
 	<export function="dgsDxCreateImage" type="client" />
 	<export function="dgsDxImageLoadImage" type="client" />
@@ -210,10 +215,10 @@
 	<export function="dgsDxGridListSetSelectedItem" type="client" />
 	<export function="dgsDxGridListSetItemColor" type="client" />
 	<export function="dgsDxGridListGetItemColor" type="client" />
-	<export function="dgsDxGridListGetItemBackGroundImage" type="client" />
-	<export function="dgsDxGridListSetItemBackGroundImage" type="client" />
-	<export function="dgsDxGridListSetRowColor" type="client" />
-	<export function="dgsDxGridListGetRowColor" type="client" />
+	<export function="dgsDxGridListGetRowBackGroundImage" type="client" />
+	<export function="dgsDxGridListSetRowBackGroundImage" type="client" />
+	<export function="dgsDxGridListSetRowBackGroundColor" type="client" />
+	<export function="dgsDxGridListGetRowBackGroundColor" type="client" />
 	<export function="dgsDxGridListGetItemData" type="client" />
 	<export function="dgsDxGridListSetItemData" type="client" />
 	<export function="dgsDxGridListSetRowAsSection" type="client" />

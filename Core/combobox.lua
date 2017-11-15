@@ -83,8 +83,31 @@ function dgsDxCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scal
 	return combobox
 end
 
+function dgsDxComboBoxSetBoxHeight(combobox,height,relative)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetBoxHeight argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(height) == "number","@dgsDxComboBoxSetBoxHeight argument 2,expect number got "..type(height))
+	relative = relative and true or false
+	local box = dgsElementData[combobox].myBox
+	if isElement(box) then
+		local size = relative and dgsElementData[box].rltSize and dgsElementData[box].absSize
+		return dgsSetSize(box,size[1],height,relative)
+	end
+	return false
+end
+
+function dgsDxComboBoxGetBoxHeight(combobox,relative)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetBoxHeight argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
+	relative = relative and true or false
+	local box = dgsElementData[combobox].myBox
+	if isElement(box) then
+		local size = relative and dgsElementData[box].rltSize and dgsElementData[box].absSize
+		return size[2]
+	end
+	return false
+end
+
 function dgsDxComboBoxAddItem(combobox,text)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxAddItem argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxAddItem argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(text) == "string" or type(text) == "number","@dgsDxComboBoxAddItem argument 2,expect number/string got "..type(text))
 	local data = dgsElementData[combobox].itemData
 	local itemHeight = dgsElementData[combobox].itemHeight
@@ -105,7 +128,7 @@ function dgsDxComboBoxAddItem(combobox,text)
 end
 
 function dgsDxComboBoxSetItemText(combobox,item,text)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetItemText argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetItemText argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","@dgsDxComboBoxSetItemText argument 2,expect number got "..type(item))
 	assert(type(text) == "string" or type(text) == "number","@dgsDxComboBoxSetItemText argument 3,expect number/string got "..type(text))
 	local data = dgsElementData[combobox].itemData
@@ -118,7 +141,7 @@ function dgsDxComboBoxSetItemText(combobox,item,text)
 end
 
 function dgsDxComboBoxGetItemText(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetItemText argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetItemText argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(tonumber(item),"@dgsDxComboBoxGetItemText argument 2,expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
 	local item = tonumber(item)
@@ -130,7 +153,7 @@ function dgsDxComboBoxGetItemText(combobox,item)
 end
 
 function dgsDxComboBoxSetItemColor(combobox,item,color)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetItemColor argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetItemColor argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","@dgsDxComboBoxSetItemColor argument 2,expect number got "..type(item))
 	assert(type(color) == "number" or type(color) == "number","@dgsDxComboBoxSetItemColor argument 3,expect number/string got "..type(color))
 	local data = dgsElementData[combobox].itemData
@@ -143,17 +166,17 @@ function dgsDxComboBoxSetItemColor(combobox,item,color)
 end
 
 function dgsDxComboBoxSetState(combobox,state)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetState argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetState argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	return dgsSetData(combobox,"listState",state and 1 or -1)
 end
 
 function dgsDxComboBoxGetState(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetState argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetState argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	return dgsElementData[combobox].listState == 1 and true or false
 end
 
 function dgsDxComboBoxGetItemColor(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetItemColor argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetItemColor argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","@dgsDxComboBoxGetItemColor argument 2,expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
 	item = math.floor(item)
@@ -164,7 +187,7 @@ function dgsDxComboBoxGetItemColor(combobox,item)
 end
 
 function dgsDxComboBoxRemoveItem(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxRemoveItem argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxRemoveItem argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(tonumber(item),"@dgsDxComboBoxRemoveItem argument 2,expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
 	local item = tonumber(item)
@@ -184,7 +207,7 @@ function dgsDxComboBoxRemoveItem(combobox,item)
 end
 
 function dgsDxComboBoxClear(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxClear argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxClear argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	local data = dgsElementData[combobox].itemData
 	table.remove(data)
 	dgsElementData[combobox].itemData = {}
@@ -210,7 +233,7 @@ function dgsDxComboBoxCreateBox(x,y,sx,sy,relative,parent)
 end
 
 function dgsDxComboBoxSetSelectedItem(combobox,id)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetSelectedItem argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxSetSelectedItem argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	local itemData = dgsElementData[combobox].itemData
 	local old = dgsElementData[combobox].select
 	if not id or id == -1 then
@@ -226,7 +249,7 @@ function dgsDxComboBoxSetSelectedItem(combobox,id)
 end
 
 function dgsDxComboBoxGetSelectedItem(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetSelectedItem argument 1,expect number got "..dgsGetType(combobox))
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","@dgsDxComboBoxGetSelectedItem argument 1,expect dgs-dxcombobox got "..dgsGetType(combobox))
 	local itemData = dgsElementData[combobox].itemData
 	local selected = dgsElementData[combobox].select
 	if selected < 1 and selected > #itemData then

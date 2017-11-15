@@ -77,6 +77,7 @@ end
 function dgsSetBottom(shenMeGUI)
 	local id = table.find(MaxFatherTable,shenMeGUI)
 	if id then
+		dgsSetData(sheMeGUI,"alwaysOnBottom",true)
 		table.remove(MaxFatherTable,id)
 		table.insert(BottomFatherTable,shenMeGUI)
 	end
@@ -360,8 +361,8 @@ function GUIRender()
 	if DEBUG_MODE then
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,tocolor(0,0,0,255))
 		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-115)
-		dxDrawText("Version: 2.88",6,sH*0.4-99,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Version: 2.88",5,sH*0.4-100)
+		dxDrawText("Version: 2.91",6,sH*0.4-99,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Version: 2.91",5,sH*0.4-100)
 		local ticks = getTickCount()-tk
 		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-84,sW,sH,tocolor(0,0,0,255))
 		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-85)
@@ -710,6 +711,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					return
 				end
 				local _ = isMainMenuActive() and guiSetVisible(edit,false) or guiSetVisible(edit,true)
+				if MouseData.nowShow == v then
+					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
+						MouseData.nowShow = false
+					end
+				end
 				guiSetPosition(edit,cx,cy,false)
 				guiSetSize(edit,w,h,false)
 				local text = dgsElementData[v].text
@@ -809,6 +815,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					destroyElement(v)
 				end
 				local _ = isMainMenuActive() and guiSetVisible(memo,false) or guiSetVisible(memo,true)
+				if MouseData.nowShow == v then
+					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
+						MouseData.nowShow = false
+					end
+				end
 				guiSetPosition(memo,cx,cy,false)
 				guiSetSize(memo,w,h,false)
 				local text = dgsElementData[v].text
@@ -1894,9 +1905,29 @@ function checkEditCursor(button,state)
 				dgsDxEditSetCaretPosition(MouseData.nowShow,0,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "end" then
 				dgsDxEditSetCaretPosition(MouseData.nowShow,#text,getKeyState("lshift") or getKeyState("rshift"))
+			elseif button == "tab" then
+				cancelEvent()
+				triggerEvent("onClientDgsDxEditPreSwitch",MouseData.nowShow)
+				if isTimer(MouseData.Timer["editMove"]) then
+					killTimer(MouseData.Timer["editMove"])
+				end
+				if isTimer(MouseData.Timer["editMoveDelay"]) then
+					killTimer(MouseData.Timer["editMoveDelay"])
+				end
+				MouseData.Timer["editMoveDelay"] = setTimer(function()
+					if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+						MouseData.Timer["editMove"] = setTimer(function()
+							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+								triggerEvent("onClientDgsDxEditPreSwitch",MouseData.nowShow)
+							else
+								killTimer(MouseData.Timer["editMove"])
+							end
+						end,50,0)
+					end
+				end,500,1)
 			end
 		else
-			if button == "arrow_l" or button == "arrow_r" then
+			if button == "arrow_l" or button == "arrow_r" or button == "tab" then
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -2074,35 +2105,39 @@ function checkEditCursor(button,state)
 end
 addEventHandler("onClientKey",root,checkEditCursor)
 
-addEventHandler("onClientGUIFocus",resourceRoot,function()
+--[[addEventHandler("onClientGUIFocus",resourceRoot,function()
 	local guitype = getElementType(source)
-	if guitype == "gui-edit" then
-		local edit = dgsElementData[source].dxedit
-		if isElement(edit) then
-			dgsDxGUIBringToFront(edit,"left")
-		end
-	elseif guitype == "gui-memo" then
-		local memo = dgsElementData[source].dxmemo
-		if isElement(memo) then
-			dgsDxGUIBringToFront(memo,"left")
+	if dgsElementData[source] then
+		if guitype == "gui-edit" then
+			local edit = dgsElementData[source].dxedit
+			if isElement(edit) then
+				dgsDxGUIBringToFront(edit,"left")
+			end
+		elseif guitype == "gui-memo" then
+			local memo = dgsElementData[source].dxmemo
+			if isElement(memo) then
+				dgsDxGUIBringToFront(memo,"left")
+			end
 		end
 	end
 end)
-
+]]
 addEventHandler("onClientGUIBlur",resourceRoot,function()
 	local guitype = getElementType(source)
-	if guitype == "gui-edit" then
-		local edit = dgsElementData[source].dxedit
-		if isElement(edit) then
-			if MouseData.nowShow == edit then
-				MouseData.nowShow = false
+	if dgsElementData[source] then
+		if guitype == "gui-edit" then
+			local edit = dgsElementData[source].dxedit
+			if isElement(edit) then
+				if MouseData.nowShow == edit then
+					MouseData.nowShow = false
+				end
 			end
-		end
-	elseif guitype == "gui-memo" then
-		local memo = dgsElementData[source].dxmemo
-		if isElement(memo) then
-			if MouseData.nowShow == memo then
-				MouseData.nowShow = false
+		elseif guitype == "gui-memo" then
+			local memo = dgsElementData[source].dxmemo
+			if isElement(memo) then
+				if MouseData.nowShow == memo then
+					MouseData.nowShow = false
+				end
 			end
 		end
 	end
@@ -2318,8 +2353,8 @@ addEventHandler("onClientDgsDxMouseClick",root,function(button,state)
 		local guitype = dgsGetType(source)
 		if guitype == "dgs-dxscrollpane" then
 			local scrollbar = dgsElementData[source].scrollbars
-			dgsDxGUIBringToFront(scrollbar[1],"left")
-			dgsDxGUIBringToFront(scrollbar[2],"left")
+			dgsDxGUIBringToFront(scrollbar[1],"left",_,true)
+			dgsDxGUIBringToFront(scrollbar[2],"left",_,true)
 		end
 		if button == "left" then
 			if guitype == "dgs-dxwindow" then

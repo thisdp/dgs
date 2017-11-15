@@ -69,3 +69,12 @@ function createTestMemo()
 	9
 	10]],false)
 end
+
+function editTest() --Test Tab Switch for edit.
+	edit = dgsDxCreateEdit(0.3,0.3,0.2,0.05,"123123",true)
+	edit2 = dgsDxCreateEdit(0.3,0.4,0.2,0.05,"123123",true)
+	edit3 = dgsDxCreateEdit(0.3,0.5,0.2,0.05,"123123",true)
+	edit4 = dgsDxCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
+	dgsDxGUIBringToFront(edit,"left")
+	dgsDxEditSetCaretPosition (edit, 1)
+end

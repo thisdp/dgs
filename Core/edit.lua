@@ -1,3 +1,4 @@
+local editsCount = 1
 function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,imagebg,colorbg,selectmode)
 	assert(type(x) == "number","@dgsDxCreateEdit argument 1,expect number got "..type(x))
 	assert(type(y) == "number","@dgsDxCreateEdit argument 2,expect number got "..type(y))
@@ -27,14 +28,17 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	dgsSetData(edit,"sidecolor",tocolor(0,0,0,255))
 	dgsSetData(edit,"selectfrom",0)
 	dgsSetData(edit,"useFloor",false)
+	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
 	dgsSetData(edit,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
-	local gedit = guiCreateEdit(0,0,0,0,tostring(text) or "",false)
+	local gedit = guiCreateEdit(0,0,0,0,tostring(text) or "",false,GlobalEditParent)
+	guiSetProperty(gedit,"ClippedByParent","False")
 	dgsSetData(edit,"edit",gedit)
 	dgsSetData(gedit,"dxedit",edit)
 	guiSetAlpha(gedit,0)
-	guiSetProperty(gedit,"AlwaysOnTop","True")
 	dgsSetData(edit,"maxLength",guiGetProperty(gedit,"MaxTextLength"))
+	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
+	editsCount = editsCount+1
 	if isElement(parent) then
 		dgsSetParent(edit,parent)
 	else
@@ -257,3 +261,33 @@ function dgsDxEditSetWhiteList(edit,str)
 		dgsSetData(edit,"whiteList",nil)
 	end
 end
+
+addEventHandler("onClientDgsDxEditPreSwitch",resourceRoot,function()
+	if not wasEventCancelled() then
+		if not dgsElementData[source].enableTabSwitch then return end
+		local parent = FatherTable[source]
+		local theTable = isElement(parent) and ChildrenTable[parent] or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or MaxFatherTable)
+		local id = dgsElementData[source].editCounts
+		if id then
+			local theNext
+			local theFirst
+			for k,v in ipairs(theTable) do
+				local editCounts = dgsElementData[v].editCounts
+				if editCounts then
+					if id ~= editCounts and dgsGetType(v) == "dgs-dxedit" and dgsElementData[v].enableTabSwitch then
+						if editCounts < id then
+							theFirst = theFirst and (dgsElementData[theFirst].editCounts > editCounts and v or theFirst) or v
+						else
+							theNext = theNext and (dgsElementData[theNext].editCounts > editCounts and v or theNext) or v
+						end
+					end
+				end
+			end
+			local theFinal = theNext or theFirst
+			if theFinal then
+				dgsDxGUIBringToFront(theFinal)
+				triggerEvent("onClientDgsDxEditSwitched",theFinal,source)
+			end
+		end
+	end
+end)

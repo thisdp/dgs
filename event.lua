@@ -22,12 +22,15 @@ addEvent("onClientDgsDxRadioButtonChanged",true)
 addEvent("onClientDgsDxCheckBoxChanged",true)
 addEvent("onClientDgsDxComboBoxSelect",true)
 addEvent("onClientDgsDxComboBoxStateChanged",true)
+addEvent("onClientDgsDxEditPreSwitch",true)
+addEvent("onClientDgsDxEditSwitched",true)
 
 -------
 addEvent("giveIPBack",true)
 
 
 -------
+GlobalEditParent = guiCreateLabel(0,0,0,0,"",false)
 function table.find(tabl,value)
 	for k,v in pairs(tabl) do
 		if v == value then
@@ -111,4 +114,9 @@ function string.split(s, delim, mode)
 		table.insert (t, string.sub (s, start))
 		return t
 	end
+end
+
+function fromcolor(int)
+	local a,r,g,b = getColorFromString(string.format("#%.8x",int))
+	return r,g,b,a
 end

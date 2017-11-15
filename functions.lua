@@ -209,6 +209,7 @@ lastFront = false
 function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 	assert(dgsIsDxElement(dxgui),"@dgsDxGUIBringToFront argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	local parent = dgsGetParent(dxgui)
+	local mouse = mouse or "left"
 	if not dontChangeData then
 		local oldShow = MouseData.nowShow
 		MouseData.nowShow = dxgui
@@ -216,12 +217,10 @@ function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 			if mouse == "left" then
 				MouseData.editCursor = true
 				resetTimer(MouseData.EditTimer)
-			else
-				if oldShow ~= dxgui then
-					MouseData.nowShow = oldShow	
-				end
+				local edit = dgsElementData[dxgui].edit
+				guiBringToFront(edit)
 			end
-		elseif dgsGetType(oldShow) == "dgs-dxedit" then
+		elseif dgsGetType(oldShow) == "dgs-dxedit" and dxgui ~= oldShow then
 			local gui = guiCreateLabel(0,0,0,0,"",false)
 			guiBringToFront(gui)
 			destroyElement(gui)

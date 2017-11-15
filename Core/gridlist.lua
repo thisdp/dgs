@@ -302,8 +302,8 @@ function dgsDxGridListAddRow(gridlist,pos,...)
 	return pos
 end
 
-function dgsDxGridListSetRowColor(gridlist,row,colordef,colorsel,colorcli)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+function dgsDxGridListSetRowBackGroundColor(gridlist,row,colordef,colorsel,colorcli)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowBackGroundColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
 		rowData[row][0] = {colordef or 255,colorsel or 255,colorcli or 255}
@@ -312,8 +312,8 @@ function dgsDxGridListSetRowColor(gridlist,row,colordef,colorsel,colorcli)
 	return false
 end
 
-function dgsDxGridListGetRowColor(gridlist,pos)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+function dgsDxGridListGetRowBackGroundColor(gridlist,pos)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowBackGroundColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
 	return rowData[pos] and unpack(rowData[pos][0]) or false
 end
@@ -420,10 +420,16 @@ function dgsDxGridListSetSelectedItem(gridlist,item)
 	return false
 end
 
-function dgsDxGridListSetItemColor(gridlist,row,column,color)
+function dgsDxGridListSetItemColor(gridlist,row,column,r,g,b,a)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","@dgsDxGridListSetItemColor at argument 2,expect number got "..type(row))
 	local rowData = dgsElementData[gridlist]["rowData"]
+	local color
+	if r and g and b then
+		color = tocolor(r,g,b,a or 255)
+	elseif r and (not g or not b) then
+		color = r
+	end
 	if rowData then
 		if row > 0 and row <= #rowData then
 			local columnID = #dgsElementData[gridlist]["columnData"]
@@ -442,32 +448,37 @@ function dgsDxGridListSetItemColor(gridlist,row,column,color)
 	return false
 end
 
-function dgsDxGridListGetItemColor(gridlist,row,column)
+function dgsDxGridListGetItemColor(gridlist,row,column,notSplitColor)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","@dgsDxGridListGetItemColor at argument 2,expect number got "..type(row))
 	assert(type(column) == "number","@dgsDxGridListGetItemColor at argument 3,expect number got "..type(column))
 	local rowData = dgsElementData[gridlist].rowData
-	return rowData[row][column][2]
+	if row > 0 and row <= #rowData then
+		local columnID = #dgsElementData[gridlist]["columnData"]
+		if column > 0 and column <= columnID then
+			return notSplitColor and rowData[row][column][2] or fromcolor(rowData[row][column][2])
+		end
+	end
 end
 
-function dgsDxGridListGetItemBackGroundImage(gridlist,row)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemBackGroundImage at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListGetItemBackGroundImage at argument 2,expect number got "..type(row))
+function dgsDxGridListGetRowBackGroundImage(gridlist,row)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowBackGroundImage at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","@dgsDxGridListGetRowBackGroundImage at argument 2,expect number got "..type(row))
 	local rowData = dgsElementData[gridlist].rowData
 	return unpack(rowData[row][-3])
 end
 
-function dgsDxGridListSetItemBackGroundImage(gridlist,row,defimage,selimage,cliimage)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemBackGroundImage at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListSetItemBackGroundImage at argument 2,expect number got "..type(row))
+function dgsDxGridListSetRowBackGroundImage(gridlist,row,defimage,selimage,cliimage)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowBackGroundImage at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","@dgsDxGridListSetRowBackGroundImage at argument 2,expect number got "..type(row))
 	if defimage then
-		assert(type(defimage) == "string" or isElement(defimage) and getElementType(defimage) == "texture","@dgsDxGridListSetItemBackGroundImage at argument 3,expect string/texture got "..tostring(isElement(defimage) or type(defimage)))
+		assert(type(defimage) == "string" or isElement(defimage) and getElementType(defimage) == "texture","@dgsDxGridListSetRowBackGroundImage at argument 3,expect string/texture got "..tostring(isElement(defimage) or type(defimage)))
 	end
 	if selimage then
-		assert(type(selimage) == "string" or isElement(selimage) and getElementType(selimage) == "texture","@dgsDxGridListSetItemBackGroundImage at argument 4,expect string/texture got "..tostring(isElement(selimage) or type(selimage)))
+		assert(type(selimage) == "string" or isElement(selimage) and getElementType(selimage) == "texture","@dgsDxGridListSetRowBackGroundImage at argument 4,expect string/texture got "..tostring(isElement(selimage) or type(selimage)))
 	end
 	if cliimage then
-		assert(type(cliimage) == "string" or isElement(cliimage) and getElementType(cliimage) == "texture","@dgsDxGridListSetItemBackGroundImage at argument 5,expect string/texture got "..tostring(isElement(cliimage) or type(cliimage)))
+		assert(type(cliimage) == "string" or isElement(cliimage) and getElementType(cliimage) == "texture","@dgsDxGridListSetRowBackGroundImage at argument 5,expect string/texture got "..tostring(isElement(cliimage) or type(cliimage)))
 	end
 	local rowData = dgsElementData[gridlist].rowData
 	rowData[row][-3] = {defimage,selimage,cliimage}
