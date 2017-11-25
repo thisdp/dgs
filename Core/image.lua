@@ -15,6 +15,9 @@ function dgsDxCreateImage(x,y,sx,sy,img,relative,parent,color)
 	end
 	dgsSetData(image,"image",texture)
 	dgsSetData(image,"color",color or tocolor(255,255,255,255))
+	dgsSetData(image,"sideColor",tocolor(255,255,255,255))
+	dgsSetData(image,"sideState","in") --in/out/center
+	dgsSetData(image,"sideSize",0)
 	if isElement(parent) then
 		dgsSetParent(image,parent)
 	else
@@ -33,8 +36,13 @@ function dgsDxCreateImage(x,y,sx,sy,img,relative,parent,color)
 	return image
 end
 
-function dgsDxImageLoadImage(gui,img)
-	assert(dgsGetType(gui) == "dgs-dximage","@dgsDxImageLoadImage argument 1,expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsDxImageGetImage(gui)
+	assert(dgsGetType(gui) == "dgs-dximage","@dgsDxImageGetImage argument 1,expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+	return dgsElementData[gui].image
+end
+
+function dgsDxImageSetImage(gui,img)
+	assert(dgsGetType(gui) == "dgs-dximage","@dgsDxImageSetImage argument 1,expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	return dgsSetData(gui,"image",img)
 end
 
@@ -47,9 +55,19 @@ function dgsDxImageSetImageSize(gui,sx,sy)
 	return dgsSetData(gui,"imagesize",{sx,sy})
 end
 
+function dgsDxImageGetImageSize(gui)
+	assert(dgsGetType(gui) == "dgs-dximage","@dgsDxImageGetImageSize argument 1,expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+	return dgsElementData[gui].imagesize[1],dgsElementData[gui].imagesize[2]
+end
+
 function dgsDxImageSetImagePosition(gui,x,y)
 	assert(dgsGetType(gui) == "dgs-dximage","@dgsDxImageSetImagePosition argument 1,expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	x = tonumber(x) or 0
 	y = tonumber(y) or 0
 	return dgsSetData(gui,"imagepos",{x,y})
+end
+
+function dgsDxImageGetImagePosition(gui,x,y)
+	assert(dgsGetType(gui) == "dgs-dximage","@dgsDxImageGetImagePosition argument 1,expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+	return dgsElementData[gui].imagepos[1],dgsElementData[gui].imagepos[2]
 end

@@ -16,8 +16,8 @@ function dgsDxCreateProgressBar(x,y,sx,sy,relative,parent,bgimg,bgcolor,barimg,b
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
-	dgsSetData(progressbar,"bgcolor",bgcolor or tocolor(100,100,100,200))
-	dgsSetData(progressbar,"barcolor",barcolor or tocolor(40,60,200,200))
+	dgsSetData(progressbar,"bgcolor",bgcolor or schemeColor.progressbar.bgcolor)
+	dgsSetData(progressbar,"barcolor",barcolor or schemeColor.progressbar.barcolor)
 	dgsSetData(progressbar,"bgimg",bgimg)
 	dgsSetData(progressbar,"barimg",barimg)
 	dgsSetData(progressbar,"barmode",barmode and true or false)

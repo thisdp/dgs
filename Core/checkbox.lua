@@ -24,25 +24,25 @@ function dgsDxCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scal
 	hovimg_f = hovimg_f or checkBox.false_cli
 	cliimg_f = cliimg_f or hovimg_f
 	
-	defcolor_f = defcolor_f or tocolor(255,255,255,255)
-	hovcolor_f = hovcolor_f or tocolor(255,255,255,255)
-	clicolor_f = clicolor_f or tocolor(180,180,180,255)
+	defcolor_f = defcolor_f or schemeColor.checkbox.schemeColor_f[1]
+	hovcolor_f = hovcolor_f or schemeColor.checkbox.schemeColor_f[2]
+	clicolor_f = clicolor_f or schemeColor.checkbox.schemeColor_f[3]
 	
 	defimg_t = defimg_t or checkBox.true_
 	hovimg_t = hovimg_t or checkBox.true_cli
 	cliimg_t = cliimg_t or hovimg_t
 	
-	defcolor_t = defcolor_t or tocolor(255,255,255,255)
-	hovcolor_t = hovcolor_t or tocolor(255,255,255,255)
-	clicolor_t = clicolor_t or tocolor(180,180,180,255)
+	defcolor_t = defcolor_t or schemeColor.checkbox.schemeColor_t[1]
+	hovcolor_t = hovcolor_t or schemeColor.checkbox.schemeColor_t[2]
+	clicolor_t = clicolor_t or schemeColor.checkbox.schemeColor_t[3]
 	
 	defimg_i = defimg_i or checkBox.inde_
 	hovimg_i = hovimg_i or checkBox.inde_cli
 	cliimg_i = cliimg_i or hovimg_i
 	
-	defcolor_i = defcolor_i or tocolor(255,255,255,255)
-	hovcolor_i = hovcolor_i or tocolor(255,255,255,255)
-	clicolor_i = clicolor_i or tocolor(180,180,180,255)
+	defcolor_i = defcolor_i or schemeColor.checkbox.schemeColor_i[1]
+	hovcolor_i = hovcolor_i or schemeColor.checkbox.schemeColor_i[2]
+	clicolor_i = clicolor_i or schemeColor.checkbox.schemeColor_i[3]
 	
 	dgsSetData(cb,"cbParent",dgsIsDxElement(parent) and parent or resourceRoot)
 	dgsSetData(cb,"image_f",{defimg_f,hovimg_f,cliimg_f})
@@ -52,7 +52,7 @@ function dgsDxCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scal
 	dgsSetData(cb,"color_t",{defcolor_t,hovcolor_t,clicolor_t})
 	dgsSetData(cb,"color_i",{defcolor_i,hovcolor_i,clicolor_i})
 	dgsSetData(cb,"text",tostring(text))
-	dgsSetData(cb,"textcolor",textcolor or tocolor(255,255,255,255))
+	dgsSetData(cb,"textcolor",textcolor or schemeColor.checkbox.textcolor)
 	dgsSetData(cb,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
 	dgsSetData(cb,"textImageSpace",{2,false})
 	dgsSetData(cb,"shadow",{_,_,_})

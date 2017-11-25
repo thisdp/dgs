@@ -1,5 +1,5 @@
 local editsCount = 1
-function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,imagebg,colorbg,selectmode)
+function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bgimage,bgcolor,selectmode)
 	assert(type(x) == "number","@dgsDxCreateEdit argument 1,expect number got "..type(x))
 	assert(type(y) == "number","@dgsDxCreateEdit argument 2,expect number got "..type(y))
 	assert(type(sx) == "number","@dgsDxCreateEdit argument 3,expect number got "..type(sx))
@@ -10,12 +10,13 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	end
 	local edit = createElement("dgs-dxedit")
 	dgsSetType(edit,"dgs-dxedit")
-	dgsSetData(edit,"imagebg",imagebg)
-	dgsSetData(edit,"colorbg",colorbg or tocolor(200,200,200,255))
+	dgsSetData(edit,"bgimage",bgimage)
+	dgsSetData(edit,"bgcolor",bgcolor or schemeColor.edit.bgcolor)
 	dgsSetData(edit,"text",tostring(text) or "")
-	dgsSetData(edit,"textcolor",textcolor or tocolor(0,0,0,255))
+	dgsSetData(edit,"textcolor",textcolor or schemeColor.edit.textcolor)
 	dgsSetData(edit,"textsize",{scalex or 1,scaley or 1})
 	dgsSetData(edit,"cursorpos",0)
+	dgsSetData(edit,"selectfrom",0)
 	dgsSetData(edit,"masked",false)
 	dgsSetData(edit,"maskText","*")
 	dgsSetData(edit,"showPos",0)
@@ -23,10 +24,11 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	dgsSetData(edit,"cursorThick",1.2)
 	dgsSetData(edit,"cursorOffset",0)
 	dgsSetData(edit,"readOnly",false)
+	dgsSetData(edit,"readOnlyCaretShow",false)
+	dgsSetData(edit,"clearSelection",true)
 	dgsSetData(edit,"font",systemFont)
 	dgsSetData(edit,"side",0)
-	dgsSetData(edit,"sidecolor",tocolor(0,0,0,255))
-	dgsSetData(edit,"selectfrom",0)
+	dgsSetData(edit,"sidecolor",schemeColor.edit.sidecolor)
 	dgsSetData(edit,"useFloor",false)
 	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
@@ -79,7 +81,11 @@ function dgsDxEditMoveCaret(edit,offset,noselect)
 		dgsSetData(edit,"showPos",-nowLen)
 	end
 	dgsSetData(edit,"cursorpos",pos)
-	if not noselect then
+	local isReadOnlyShow = true
+	if dgsElementData[edit].readOnly then
+		isReadOnlyShow = dgsElementData[edit].readOnlyCaretShow
+	end
+	if not noselect or not isReadOnlyShow then
 		dgsSetData(edit,"selectfrom",pos)
 	end
 	resetTimer(MouseData.EditTimer)
@@ -124,6 +130,11 @@ function dgsDxEditSetCaretStyle(edit,style)
 	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetCaretStyle argument 1,expect dgs-dxedit got "..dgsGetType(edit))
 	assert(type(style) == "number","@dgsDxEditSetCaretStyle argument 2,expect number got "..type(style))
 	return dgsSetData(edit,"cursorStyle",style)
+end
+
+function dgsDxEditGetCaretStyle(edit,style)
+	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditGetCaretStyle argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	return dgsElementData[edit].cursorStyle
 end
 
 function dgsDxEditSetMaxLength(edit,maxLength)

@@ -15,7 +15,7 @@ function dgsDxCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgc
 	dgsSetData(cmd,"textsize",{scalex,scaley})
 	dgsSetData(cmd,"bgimg",bgimg)
 	dgsSetData(cmd,"hangju",tonumber(hangju) or 20)
-	dgsSetData(cmd,"bgcolor",bgcolor or tocolor(0,0,0,150))
+	dgsSetData(cmd,"bgcolor",bgcolor or schemeColor.cmd.bgcolor)
 	dgsSetData(cmd,"texts",{})
 	dgsSetData(cmd,"preName","")
 	dgsSetData(cmd,"startRow",0)

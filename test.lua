@@ -40,7 +40,7 @@ function createTest5()
 end
 
 function createTestMemo()
-	local memo= dgsDxCreateMemo(500,200,200,300,[[This is a dgs-dxmemo
+	local memo = dgsDxCreateMemo(500,200,200,300,[[This is a dgs-dxmemo
 	
 	Thisdp's
 	DirectX
@@ -68,13 +68,18 @@ function createTestMemo()
 	8
 	9
 	10]],false)
+	--dgsDxMemoSetReadOnly(memo,true)
 end
 
 function editTest() --Test Tab Switch for edit.
-	edit = dgsDxCreateEdit(0.3,0.3,0.2,0.05,"123123",true)
+	edit = dgsDxCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaass",true)
+	setTimer(function()
+		dgsDxEditSetMaxLength(edit,10,true)
+	end,1000,1)
 	edit2 = dgsDxCreateEdit(0.3,0.4,0.2,0.05,"123123",true)
 	edit3 = dgsDxCreateEdit(0.3,0.5,0.2,0.05,"123123",true)
 	edit4 = dgsDxCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
+	dgsDxEditSetReadOnly(edit4,true)
 	dgsDxGUIBringToFront(edit,"left")
 	dgsDxEditSetCaretPosition (edit, 1)
 end

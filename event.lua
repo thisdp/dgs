@@ -120,3 +120,19 @@ function fromcolor(int)
 	local a,r,g,b = getColorFromString(string.format("#%.8x",int))
 	return r,g,b,a
 end
+
+function table.deepcopy(obj)      
+    local InTable = {}
+    local function Func(obj)  
+        if type(obj) ~= "table" then
+            return obj
+        end
+        local NewTable = {}
+        InTable[obj] = NewTable
+        for k,v in pairs(obj) do
+            NewTable[Func(k)] = Func(v)  
+        end
+        return setmetatable(NewTable, getmetatable(obj))
+    end
+    return Func(obj)
+end  

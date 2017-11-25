@@ -1,0 +1,4 @@
+dgsConfig.updateCheckAuto = true
+dgsConfig.updateCheckURL = "http://angel.mtaip.cn:233/dgsUpdate"
+dgsConfig.updateCheckNoticeInterval = 5
+dgsConfig.updateCheckInterval = 60

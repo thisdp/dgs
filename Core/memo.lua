@@ -1,4 +1,4 @@
-function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,imagebg,colorbg,selectmode)
+function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bgimage,bgcolor)
 	assert(type(x) == "number","@dgsDxCreateMemo argument 1,expect number got "..type(x))
 	assert(type(y) == "number","@dgsDxCreateMemo argument 2,expect number got "..type(y))
 	assert(type(sx) == "number","@dgsDxCreateMemo argument 3,expect number got "..type(sx))
@@ -9,15 +9,14 @@ function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	end
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
-	dgsSetData(memo,"imagebg",imagebg)
-	dgsSetData(memo,"colorbg",colorbg or tocolor(200,200,200,255))
+	dgsSetData(memo,"bgimage",bgimage)
+	dgsSetData(memo,"bgcolor",bgcolor or schemeColor.memo.bgcolor)
 	dgsSetData(memo,"text",{})
 	dgsSetData(memo,"textLength",{})
-	dgsSetData(memo,"textcolor",textcolor or tocolor(0,0,0,255))
+	dgsSetData(memo,"textcolor",textcolor or schemeColor.memo.textcolor)
 	dgsSetData(memo,"textsize",{scalex or 1,scaley or 1})
 	dgsSetData(memo,"cursorposXY",{0,1})
-	dgsSetData(memo,"selectfrom",{1,1})
-	dgsSetData(memo,"maskText","*")
+	dgsSetData(memo,"selectfrom",{0,1})
 	dgsSetData(memo,"rightLength",{0,1})
 	dgsSetData(memo,"showPos",0)
 	dgsSetData(memo,"showLine",1)
@@ -28,10 +27,9 @@ function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	dgsSetData(memo,"readOnly",false)
 	dgsSetData(memo,"font",systemFont)
 	dgsSetData(memo,"side",0)
-	dgsSetData(memo,"sidecolor",tocolor(0,0,0,255))
-	dgsSetData(memo,"changeEventRnt",false)
+	dgsSetData(memo,"sidecolor",schemeColor.memo.sidecolor)
 	dgsSetData(memo,"useFloor",false)
-	dgsSetData(memo,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
+	dgsSetData(memo,"readOnlyCaretShow",false)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
 	local gmemo = guiCreateMemo(0,0,0,0,"",false)
 	dgsSetData(memo,"memo",gmemo)
@@ -63,8 +61,8 @@ function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	return memo
 end
 
-function dgsDxMemoGetScrollBars(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","@dgsDxMemoGetScrollBars argument 1,expect dgs-dxmemo got "..dgsGetType(memo))
+function dgsDxMemoGetScrollBar(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","@dgsDxMemoGetScrollBar argument 1,expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsElementData[memo].scrollbars
 end
 
@@ -102,8 +100,12 @@ function dgsDxMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 		dgsSetData(memo,"showLine",line)
 		syncScrollBars(memo,1)
 	end
-	dgsSetData(memo,"cursorposXY",{pos,line})
-	if not noselect then
+	dgsSetData(memo,"cursorposXY",{pos,line})	
+	local isReadOnlyShow = true
+	if dgsElementData[memo].readOnly then
+		isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
+	end
+	if not noselect or not isReadOnlyShow then
 		dgsSetData(memo,"selectfrom",{pos,line})
 	end
 	resetTimer(MouseData.MemoTimer)
@@ -193,28 +195,6 @@ function dgsDxMemoSetCaretPosition(memo,tpos,tline,noselect)
 	return true
 end
 
-function syncScrollBars(dxgui,which)
-	local scrollbars = dgsElementData[dxgui].scrollbars
-	local size = dgsElementData[dxgui].absSize
-	local scbThick = dgsElementData[dxgui].scrollBarThick
-	local font = dgsElementData[dxgui].font
-	local textsize = dgsElementData[dxgui].textsize
-	local text = dgsElementData[dxgui].text
-	local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
-	if which == 1 or not which then
-		local fontHeight = dxGetFontHeight(dgsElementData[dxgui].textsize[2],font)
-		local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
-		local new = (dgsElementData[dxgui].showLine-1)*100/(#text-canHold)
-		dgsDxScrollBarSetScrollBarPosition(scrollbars[1],new)
-	end
-	if which == 2 or not which then
-		local len = dgsElementData[dxgui].rightLength[1]
-		local canHold = math.floor(len-size[1]+scbTakes1+2)/100
-		local new = -dgsElementData[dxgui].showPos/canHold
-		dgsDxScrollBarSetScrollBarPosition(scrollbars[2],new)
-	end
-end
-
 function dgsDxMemoGetCaretPosition(memo,detail)
 	assert(dgsGetType(memo) == "dgs-dxmemo","@dgsDxMemoGetCaretPosition argument 1,expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsElementData[memo].cursorposXY[1],dgsElementData[memo].cursorposXY[2]
@@ -224,6 +204,11 @@ function dgsDxMemoSetCaretStyle(memo,style)
 	assert(dgsGetType(memo) == "dgs-dxmemo","@dgsDxMemoSetCaretStyle argument 1,expect dgs-dxmemo got "..dgsGetType(memo))
 	assert(type(style) == "number","@dgsDxMemoSetCaretStyle argument 2,expect number got "..type(style))
 	return dgsSetData(memo,"cursorStyle",style)
+end
+
+function dgsDxMemoGetCaretStyle(memo,style)
+	assert(dgsGetType(memo) == "dgs-dxmemo","@dgsDxMemoGetCaretStyle argument 1,expect dgs-dxmemo got "..dgsGetType(memo))
+	return dgsElementData[memo].cursorStyle
 end
 
 function dgsDxMemoSetReadOnly(memo,state)
@@ -619,3 +604,26 @@ addEventHandler("onClientDgsDxScrollBarScrollPositionChange",root,function(new,o
 		end
 	end
 end)
+
+function syncScrollBars(dxgui,which)
+	local scrollbars = dgsElementData[dxgui].scrollbars
+	local size = dgsElementData[dxgui].absSize
+	local scbThick = dgsElementData[dxgui].scrollBarThick
+	local font = dgsElementData[dxgui].font
+	local textsize = dgsElementData[dxgui].textsize
+	local text = dgsElementData[dxgui].text
+	local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+	if which == 1 or not which then
+		local fontHeight = dxGetFontHeight(dgsElementData[dxgui].textsize[2],font)
+		local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
+		print(#text,canHold)
+		local new = (#text-canHold) == 0 and 0 or (dgsElementData[dxgui].showLine-1)*100/(#text-canHold)
+		dgsDxScrollBarSetScrollBarPosition(scrollbars[1],new)
+	end
+	if which == 2 or not which then
+		local len = dgsElementData[dxgui].rightLength[1]
+		local canHold = math.floor(len-size[1]+scbTakes1+2)/100
+		local new = -dgsElementData[dxgui].showPos/canHold
+		dgsDxScrollBarSetScrollBarPosition(scrollbars[2],new)
+	end
+end

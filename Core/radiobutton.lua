@@ -19,17 +19,17 @@ function dgsDxCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,
 	hovimg_f = hovimg_f or radioButton_s.false_cli
 	cliimg_f = cliimg_f or hovimg_f
 	
-	defcolor_f = defcolor_f or tocolor(255,255,255,255)
-	hovcolor_f = hovcolor_f or tocolor(255,255,255,255)
-	clicolor_f = clicolor_f or tocolor(180,180,180,255)
+	defcolor_f = defcolor_f or schemeColor.radiobutton.schemeColor_f[1]
+	hovcolor_f = hovcolor_f or schemeColor.radiobutton.schemeColor_f[2]
+	clicolor_f = clicolor_f or schemeColor.radiobutton.schemeColor_f[3]
 	
 	defimg_t = defimg_t or radioButton_s.true_
 	hovimg_t = hovimg_t or radioButton_s.true_cli
 	cliimg_t = cliimg_t or hovimg_t
 	
-	defcolor_t = defcolor_t or tocolor(255,255,255,255)
-	hovcolor_t = hovcolor_t or tocolor(255,255,255,255)
-	clicolor_t = clicolor_t or tocolor(180,180,180,255)
+	defcolor_t = defcolor_t or schemeColor.radiobutton.schemeColor_t[1]
+	hovcolor_t = hovcolor_t or schemeColor.radiobutton.schemeColor_t[2]
+	clicolor_t = clicolor_t or schemeColor.radiobutton.schemeColor_t[3]
 	
 	dgsSetData(rb,"rbParent",dgsIsDxElement(parent) and parent or resourceRoot)
 	dgsSetData(rb,"image_f",{defimg_f,hovimg_f,cliimg_f})
@@ -37,7 +37,7 @@ function dgsDxCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,
 	dgsSetData(rb,"color_f",{defcolor_f,hovcolor_f,clicolor_f})
 	dgsSetData(rb,"color_t",{defcolor_t,hovcolor_t,clicolor_t})
 	dgsSetData(rb,"text",tostring(text))
-	dgsSetData(rb,"textcolor",textcolor or tocolor(255,255,255,255))
+	dgsSetData(rb,"textcolor",textcolor or schemeColor.radiobutton.textcolor)
 	dgsSetData(rb,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
 	dgsSetData(rb,"textImageSpace",{2,false})
 	dgsSetData(rb,"shadow",{_,_,_})

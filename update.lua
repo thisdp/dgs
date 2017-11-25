@@ -10,27 +10,24 @@ Version = tonumber(allstr) or 0
 RemoteVersion = 0
 ManualUpdate = false
 updateTimer = false
-updatePeriodTime = 1 --hour
 updatePeriodTimer = false
-updateCheckTime = 5 --minute
-DP_URL = "http://angel.mtaip.cn:233/dgsUpdate"
 function checkUpdate()
-	fetchRemote(DP_URL.."/dgs/update.cfg",function(data,err)
+	fetchRemote(dgsConfig.updateCheckURL.."/dgs/update.cfg",function(data,err)
 		if err == 0 then
 			RemoteVersion = tonumber(data)
 			if not ManualUpdate then
 				if RemoteVersion > Version then
-					print("[DGS]Remote Version Got [Remote:"..data.." Current:"..Version.."]")
+					print("[DGS]Remote Version Got [Remote:"..data.." Current:"..Version.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
 					print("[DGS]Update? Command: updatedgs")
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
 						if RemoteVersion > Version then
-							print("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..Version.."]")
+							print("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..Version.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
 							print("[DGS]Update? Command: updatedgs")
 						else
 							killTimer(updateTimer)
 						end
-					end,updateCheckTime*60000,0)
+					end,dgsConfig.updateCheckNoticeInterval*60000,0)
 				end
 			else
 				startUpdate()
@@ -41,9 +38,11 @@ function checkUpdate()
 	end)
 end
 
-checkUpdate()
-updatePeriodTimer = setTimer(checkUpdate,updatePeriodTime*3600000,0)
-
+if dgsConfig.updateCheckAuto then
+	checkUpdate()
+	updatePeriodTimer = setTimer(checkUpdate,dgsConfig.updateCheckInterval*3600000,0)
+end
+	
 addCommandHandler("updatedgs",function(player)
 	print("[DGS]Preparing for updating dgs")
 	outputChatBox("[DGS]Preparing for updating dgs",root,0,255,0)
@@ -59,7 +58,7 @@ function startUpdate()
 	ManualUpdate = false
 	setTimer(function()
 		print("[DGS]Downloading meta.xml")
-		fetchRemote(DP_URL.."/dgs/meta.xml",function(data,err)
+		fetchRemote(dgsConfig.updateCheckURL.."/dgs/meta.xml",function(data,err)
 			if err == 0 then
 				local meta = fileCreate("updated/meta.xml")
 				fileWrite(meta,data)
@@ -83,25 +82,27 @@ function checkFiles()
 	for k,v in pairs(xmlNodeGetChildren(xml)) do
 		if xmlNodeGetName(v) == "script" or xmlNodeGetName(v) == "file" then
 			local path = xmlNodeGetAttribute(v,"src")
-			local sha = ""
-			if fileExists(path) then
-				local file = fileOpen(path)
-				local text = fileRead(file,fileGetSize(file))
-				fileClose(file)
-				sha = hash("sha256",text)
+			if path ~= "colorScheme.txt" or not fileExists(path) then
+				local sha = ""
+				if fileExists(path) then
+					local file = fileOpen(path)
+					local text = fileRead(file,fileGetSize(file))
+					fileClose(file)
+					sha = hash("sha256",text)
+				end
+				preFetch = preFetch+1
+				print("[DGS]Checking File:"..path.."("..preFetch..")")
+				fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
+					FetchCount = FetchCount+1
+					if sha ~= data then
+						print("[DGS]Need Update ("..path..")")
+						table.insert(preUpdate,path)
+					end
+					if FetchCount == preFetch then
+						DownloadFiles()
+					end
+				end,"",false,path,sha)
 			end
-			preFetch = preFetch+1
-			print("[DGS]Checking File:"..path.."("..preFetch..")")
-			fetchRemote(DP_URL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
-				FetchCount = FetchCount+1
-				if sha ~= data then
-					print("[DGS]Need Update ("..path..")")
-					table.insert(preUpdate,path)
-				end
-				if FetchCount == preFetch then
-					DownloadFiles()
-				end
-			end,"",false,path,sha)
 		end
 	end
 	print("[DGS]Please Wait...")
@@ -114,7 +115,7 @@ function DownloadFiles()
 		return
 	end
 	print("[DGS]Downloading :"..tostring(preUpdate[UpdateCount]).." ("..UpdateCount.."/"..(#preUpdate or "Unknown")..")")
-	fetchRemote(DP_URL.."/dgs/"..preUpdate[UpdateCount],function(data,err,path)
+	fetchRemote(dgsConfig.updateCheckURL.."/dgs/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
 			if fileExists(path) then
 				fileDelete(path)

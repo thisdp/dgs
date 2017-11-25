@@ -25,16 +25,16 @@ function dgsDxCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scal
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true) or table.insert(MaxFatherTable,1,combobox)
-	defcolor,hovcolor,clicolor = defcolor or tocolor(0,120,200,200),hovcolor or tocolor(0,90,255,200),clicolor or tocolor(50,90,250,200)
+	defcolor,hovcolor,clicolor = defcolor or schemeColor.combobox.color[1],hovcolor or schemeColor.combobox.color[2],clicolor or schemeColor.combobox.color[3]
 	dgsSetData(combobox,"image",{defimg,hovimg,cliimg})
 	dgsSetData(combobox,"color",{defcolor,hovcolor,clicolor})
-	dgsSetData(combobox,"textcolor",textcolor or tocolor(0,0,0,255))
+	dgsSetData(combobox,"textcolor",textcolor or schemeColor.combobox.textcolor)
 	dgsSetData(combobox,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
-	dgsSetData(combobox,"listtextcolor",textcolor or tocolor(0,0,0,255))
+	dgsSetData(combobox,"listtextcolor",textcolor or schemeColor.combobox.listtextcolor)
 	dgsSetData(combobox,"listtextsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
 	dgsSetData(combobox,"shadow",false)
 	dgsSetData(combobox,"font",systemFont)
-	dgsSetData(combobox,"combobgColor",tocolor(200,200,200,200))
+	dgsSetData(combobox,"combobgColor",schemeColor.combobox.combobgColor)
 	dgsSetData(combobox,"combobgImage",nil)
 	dgsSetData(combobox,"buttonLen",{1,true}) --height
 	dgsSetData(combobox,"textbox",true) --enable textbox
@@ -43,18 +43,18 @@ function dgsDxCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scal
 	dgsSetData(combobox,"wordbreak",false)
 	dgsSetData(combobox,"itemHeight",itemheight or 20)
 	dgsSetData(combobox,"colorcoded",false)
-	dgsSetData(combobox,"itemColor",{idefcolor or tocolor(200,200,200,255),ihovcolor or tocolor(160,160,160,255),iselcolor or tocolor(130,130,130,255)})
+	dgsSetData(combobox,"itemColor",{idefcolor or schemeColor.combobox.itemColor[1],ihovcolor or schemeColor.combobox.itemColor[2],iselcolor or schemeColor.combobox.itemColor[3]})
 	dgsSetData(combobox,"itemImage",{idefimg,ihovimg,iselimg})
 	dgsSetData(combobox,"listState",-1,true)
 	dgsSetData(combobox,"listStateAnim",-1)
 	dgsSetData(combobox,"combo_BoxTextSide",{5,5})
 	dgsSetData(combobox,"comboTextSide",{5,5})
-	dgsSetData(combobox,"arrowColor",tocolor(255,255,255,255))
+	dgsSetData(combobox,"arrowColor",schemeColor.combobox.arrowColor)
 	dgsSetData(combobox,"arrowSettings",{"height",0.15})
 	dgsSetData(combobox,"arrowWidth",10)
 	dgsSetData(combobox,"arrowDistance",0.6)
 	dgsSetData(combobox,"arrowHeight",0.6)
-	dgsSetData(combobox,"arrowOutSideColor",tocolor(255,255,255,255))
+	dgsSetData(combobox,"arrowOutSideColor",schemeColor.combobox.arrowOutSideColor)
 	dgsSetData(combobox,"scrollBarThick",20,true)
 	dgsSetData(combobox,"itemData",{})
 	dgsSetData(combobox,"rightbottom",{"left","center"})
@@ -89,7 +89,7 @@ function dgsDxComboBoxSetBoxHeight(combobox,height,relative)
 	relative = relative and true or false
 	local box = dgsElementData[combobox].myBox
 	if isElement(box) then
-		local size = relative and dgsElementData[box].rltSize and dgsElementData[box].absSize
+		local size = relative and dgsElementData[box].rltSize or dgsElementData[box].absSize
 		return dgsSetSize(box,size[1],height,relative)
 	end
 	return false
@@ -100,7 +100,7 @@ function dgsDxComboBoxGetBoxHeight(combobox,relative)
 	relative = relative and true or false
 	local box = dgsElementData[combobox].myBox
 	if isElement(box) then
-		local size = relative and dgsElementData[box].rltSize and dgsElementData[box].absSize
+		local size = relative and dgsElementData[box].rltSize or dgsElementData[box].absSize
 		return size[2]
 	end
 	return false

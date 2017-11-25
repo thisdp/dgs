@@ -225,6 +225,9 @@ function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 			guiBringToFront(gui)
 			destroyElement(gui)
 		end
+		if isElement(oldShow) and dgsElementData[oldShow].clearSelection then
+			dgsSetData(oldShow,"selectfrom",dgsElementData[oldShow].cursorpos)
+		end
 	end
 	if not isElement(parent) then
 		local id = table.find(MaxFatherTable,dxgui)
@@ -412,6 +415,7 @@ addEventHandler("onClientDgsDxGUIPreCreate",root,function()
 	dgsSetData(source,"textRelative",false)
 	dgsSetData(source,"alpha",1)
 	dgsSetData(source,"hitoutofparent",false)
+	dgsSetData(source,"PixelInt",true)
 end)
 
 function fromcolor(int)

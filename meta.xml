@@ -1,9 +1,12 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
 	<file src="dsm.ttf" />
+	<file src="colorScheme.txt" />
 	<file src="image/combobox/arrow.fx" />
 
+	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
+	<script src="colorSchemeLoad.lua" type="client" />
 
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
@@ -141,6 +144,7 @@
 	<export function="dgsDxEditMoveCaret" type="client" />
 	<export function="dgsDxEditGetCaretPosition" type="client" />
 	<export function="dgsDxEditSetCaretPosition" type="client" />
+	<export function="dgsDxEditGetCaretStyle" type="client" />
 	<export function="dgsDxEditSetCaretStyle" type="client" />
 	<export function="dgsDxEditSetWhiteList" type="client" />
 	<export function="dgsDxEditGetMaxLength" type="client" />
@@ -154,14 +158,20 @@
 	<export function="dgsDxMemoSetCaretPosition" type="client" />
 	<export function="dgsDxMemoGetCaretPosition" type="client" />
 	<export function="dgsDxMemoSetCaretStyle" type="client" />
+	<export function="dgsDxMemoGetCaretStyle" type="client" />
 	<export function="dgsDxMemoSetReadOnly" type="client" />
 	<export function="dgsDxMemoGetReadOnly" type="client" />
 	<export function="dgsDxMemoGetPartOfText" type="client" />
 	<export function="dgsDxMemoDeleteText" type="client" />
-	<export function="dgsDxMemoGetScrollBars" type="client" />
+	<export function="dgsDxMemoGetScrollBar" type="client" />
 
 	<export function="dgsDxCreateImage" type="client" />
-	<export function="dgsDxImageLoadImage" type="client" />
+	<export function="dgsDxImageSetImage" type="client" />
+	<export function="dgsDxImageGetImage" type="client" />
+	<export function="dgsDxImageSetImageSize" type="client" />
+	<export function="dgsDxImageGetImageSize" type="client" />
+	<export function="dgsDxImageSetImagePosition" type="client" />
+	<export function="dgsDxImageGetImagePosition" type="client" />
 
 	<export function="dgsDxCreateProgressBar" type="client" />
 	<export function="dgsDxProgressBarGetProgress" type="client" />

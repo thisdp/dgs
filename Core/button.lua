@@ -9,11 +9,11 @@ function dgsDxCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scale
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true) or table.insert(MaxFatherTable,1,button)
-	defcolor,selcolor,clicolor = defcolor or tocolor(0,120,200,200),selcolor or tocolor(0,90,255,200),clicolor or tocolor(50,90,250,200)
+	defcolor,selcolor,clicolor = defcolor or schemeColor.button.color[1],selcolor or schemeColor.button.color[2],clicolor or schemeColor.button.color[3]
 	dgsSetData(button,"image",{defimg,selimg,cliimg})
 	dgsSetData(button,"color",{defcolor,selcolor,clicolor})
 	dgsSetData(button,"text",tostring(text))
-	dgsSetData(button,"textcolor",textcolor or tocolor(255,255,255,255))
+	dgsSetData(button,"textcolor",textcolor or schemeColor.button.textcolor)
 	dgsSetData(button,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
 	dgsSetData(button,"shadow",{_,_,_})
 	dgsSetData(button,"font",systemFont)
