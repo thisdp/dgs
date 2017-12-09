@@ -1,11 +1,11 @@
 function dgsDxCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsDxCreateTabPanel argument 6,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateTabPanel at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
-	assert(tonumber(x),"@dgsDxCreateTabPanel argument 1,expect number got "..type(x))
-	assert(tonumber(y),"@dgsDxCreateTabPanel argument 2,expect number got "..type(y))
-	assert(tonumber(sx),"@dgsDxCreateTabPanel argument 3,expect number got "..type(sx))
-	assert(tonumber(sy),"@dgsDxCreateTabPanel argument 4,expect number got "..type(sy))
+	assert(tonumber(x),"Bad argument @dgsDxCreateTabPanel at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsDxCreateTabPanel at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsDxCreateTabPanel at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsDxCreateTabPanel at argument 4, expect number got "..type(sy))
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
 	if isElement(parent) then
@@ -36,8 +36,8 @@ function dgsDxCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 end
 
 function dgsDxCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,tabdefimg,tabselimg,tabcliimg,tabdefcolor,tabselcolor,tabclicolor)
-	assert(type(text) == "string" or type(text) == "number","@dgsCreateTab argument 1, expect string/number got "..type(text))
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","@dgsCreateTab argument 2, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
+	assert(type(text) == "string" or type(text) == "number","Bad argument @dgsCreateTab at argument 1, expect string/number got "..type(text))
+	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
 	dgsSetData(tab,"text",text)
@@ -70,16 +70,16 @@ function dgsDxCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolo
 end
 
 function dgsDxTabPanelGetTabFromID(tabpanel,id)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","@dgsDxTabPanelGetTabFromID at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
-	assert(type(id) == "number","@dgsDxTabPanelGetTabFromID at argument 2, expect number got "..type(id))
+	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsDxTabPanelGetTabFromID at at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
+	assert(type(id) == "number","Bad argument @dgsDxTabPanelGetTabFromID at at argument 2, expect number got "..type(id))
 	local tabs = dgsElementData[tabpanel]["tabs"]
 	return tabs[id]
 end
 
 function dgsDxTabPanelMoveTab(tabpanel,from,to)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","@dgsDxTabPanelMoveTab at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
-	assert(type(from) == "number","@dgsDxTabPanelMoveTab at argument 2, expect number got "..type(from))
-	assert(type(to) == "number","@dgsDxTabPanelMoveTab at argument 3, expect number got "..type(to))
+	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsDxTabPanelMoveTab at at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
+	assert(type(from) == "number","Bad argument @dgsDxTabPanelMoveTab at at argument 2, expect number got "..type(from))
+	assert(type(to) == "number","Bad argument @dgsDxTabPanelMoveTab at at argument 3, expect number got "..type(to))
 	local tab = dgsElementData[tabpanel]["tabs"][from]
 	local myid = dgsElementData[tab].id
 	local parent = dgsElementData[tab].parent
@@ -96,12 +96,12 @@ function dgsDxTabPanelMoveTab(tabpanel,from,to)
 end
 
 function dgsDxTabPanelGetTabID(tab)
-	assert(dgsGetType(tab) == "dgs-dxtab","@dgsDxTabPanelGetTabID at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
+	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsDxTabPanelGetTabID at at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
 	return dgsElementData[tab].id
 end
 
 function dgsDxDeleteTab(tab)
-	assert(dgsGetType(tab) == "dgs-dxtab","@dgsDxDeleteTab at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
+	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsDxDeleteTab at at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
 	local tabpanel = dgsGetData(tab,"parent")
 	if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
 		local wid = dgsElementData[tab]["width"]

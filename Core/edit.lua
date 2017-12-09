@@ -1,9 +1,9 @@
 local editsCount = 1
 function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bgimage,bgcolor,selectmode)
-	assert(type(x) == "number","@dgsDxCreateEdit argument 1,expect number got "..type(x))
-	assert(type(y) == "number","@dgsDxCreateEdit argument 2,expect number got "..type(y))
-	assert(type(sx) == "number","@dgsDxCreateEdit argument 3,expect number got "..type(sx))
-	assert(type(sy) == "number","@dgsDxCreateEdit argument 4,expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsDxCreateEdit at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsDxCreateEdit at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsDxCreateEdit at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsDxCreateEdit at argument 4, expect number got "..type(sy))
 	text = tostring(text)
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"@dgsDxCreateEdit argument 7,expect dgs-dxgui got "..dgsGetType(parent))
@@ -57,9 +57,19 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	return edit
 end
 
-function dgsDxEditMoveCaret(edit,offset,noselect)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditMoveCaret argument 1,expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(offset) == "number","@dgsDxEditMoveCaret argument 2,expect number got "..type(offset))
+function dgsDxEditSetMasked(edit,masked)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditSetMasked at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	return dgsSetData(edit,"masked",masked and true or false)
+end
+
+function dgsDxEditGetMasked(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditGetMasked at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	return dgsElementData[edit].masked
+end
+
+function dgsDxEditMoveCaret(edit,offset,selectText)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditMoveCaret at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(type(offset) == "number","Bad argument @dgsDxEditMoveCaret at argument 2, expect number got "..type(offset))
 	local guiedit = dgsElementData[edit].edit
 	local text = guiGetText(guiedit)
 	if dgsElementData[edit].masked then
@@ -85,7 +95,7 @@ function dgsDxEditMoveCaret(edit,offset,noselect)
 	if dgsElementData[edit].readOnly then
 		isReadOnlyShow = dgsElementData[edit].readOnlyCaretShow
 	end
-	if not noselect or not isReadOnlyShow then
+	if not selectText or not isReadOnlyShow then
 		dgsSetData(edit,"selectfrom",pos)
 	end
 	resetTimer(MouseData.EditTimer)
@@ -93,9 +103,9 @@ function dgsDxEditMoveCaret(edit,offset,noselect)
 	return true
 end
 
-function dgsDxEditSetCaretPosition(edit,pos,noselect)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetCaretPosition argument 1,expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(pos) == "number","@dgsDxEditSetCaretPosition argument 2,expect number got "..type(pos))
+function dgsDxEditSetCaretPosition(edit,pos,selectText)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditSetCaretPosition at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(type(pos) == "number","Bad argument @dgsDxEditSetCaretPosition at argument 2, expect number got "..type(pos))
 	local text = guiGetText(dgsElementData[edit].edit)
 	if dgsElementData[edit].masked then
 		text = string.rep(dgsElementData[edit].maskText,utf8.len(text))
@@ -106,7 +116,7 @@ function dgsDxEditSetCaretPosition(edit,pos,noselect)
 		pos = 0
 	end
 	dgsSetData(edit,"cursorpos",math.floor(pos))
-	if not noselect then
+	if not selectText then
 		dgsSetData(edit,"selectfrom",math.floor(pos))
 	end
 	local showPos = dgsElementData[edit].showPos
@@ -122,31 +132,31 @@ function dgsDxEditSetCaretPosition(edit,pos,noselect)
 end
 
 function dgsDxEditGetCaretPosition(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditGetCaretPosition argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditGetCaretPosition at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
 	return dgsGetData(edit,"cursorpos")
 end
 
 function dgsDxEditSetCaretStyle(edit,style)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetCaretStyle argument 1,expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(style) == "number","@dgsDxEditSetCaretStyle argument 2,expect number got "..type(style))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditSetCaretStyle at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(type(style) == "number","Bad argument @dgsDxEditSetCaretStyle at argument 2, expect number got "..type(style))
 	return dgsSetData(edit,"cursorStyle",style)
 end
 
 function dgsDxEditGetCaretStyle(edit,style)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditGetCaretStyle argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditGetCaretStyle at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
 	return dgsElementData[edit].cursorStyle
 end
 
 function dgsDxEditSetMaxLength(edit,maxLength)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetMaxLength argument 1,expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(maxLength) == "number","@dgsDxEditSetMaxLength argument 2,expect number got "..type(maxLength))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditSetMaxLength at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(type(maxLength) == "number","Bad argument @dgsDxEditSetMaxLength at argument 2, expect number got "..type(maxLength))
 	local guiedit = dgsElementData[edit].edit
 	dgsSetData(edit,"maxLength",maxLength)
 	return guiEditSetMaxLength(guiedit,maxLength)
 end
 
 function dgsDxEditGetMaxLength(edit,fromgui)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditGetMaxLength argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditGetMaxLength at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
 	local guiedit = dgsElementData[edit].edit
 	if fromgui then
 		return guiGetProperty(guiedit,"MaxTextLength")
@@ -156,13 +166,13 @@ function dgsDxEditGetMaxLength(edit,fromgui)
 end
 
 function dgsDxEditSetReadOnly(edit,state)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetReadOnly argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditSetReadOnly at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
 	local guiedit = dgsElementData[edit].edit
 	return dgsSetData(edit,"readOnly",state and true or false)
 end
 
 function dgsDxEditGetReadOnly(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditGetReadOnly argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditGetReadOnly at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
 	return dgsGetData(edit,"readOnly")
 end
 
@@ -265,7 +275,7 @@ addEventHandler("onClientGUIAccepted",root,function()
 end)
 
 function dgsDxEditSetWhiteList(edit,str)
-	assert(dgsGetType(edit) == "dgs-dxedit","@dgsDxEditSetWhiteList argument 1,expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsDxEditSetWhiteList at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
 	if type(str) == "string" then
 		dgsSetData(edit,"whiteList",str)
 	else

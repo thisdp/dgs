@@ -39,6 +39,11 @@ function createTest5()
 	dgsDxCheckBoxSetSelected(cb1,nil)
 end
 
+function testButtonDisable()
+	local button = dgsDxCreateButton(500,500,200,80,"test",false)
+	dgsDxGUISetEnabled(button,false)
+end
+
 function createTestMemo()
 	local memo = dgsDxCreateMemo(500,200,200,300,[[This is a dgs-dxmemo
 	

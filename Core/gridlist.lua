@@ -1,6 +1,10 @@
 ﻿function dgsDxCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,columntextcolor,columncolor,rowdefc,rowhovc,rowselc,img,columnimage,rowdefi,rowhovi,rowseli)
+	assert(tonumber(x),"Bad argument @dgsDxCreateGridList at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsDxCreateGridList at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsDxCreateGridList at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsDxCreateGridList at argument 4, expect number got "..type(sy))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsDxCreateGridList argument 6,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateGridList at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local gridlist = createElement("dgs-dxgridlist")
 	insertResourceDxGUI(sourceResource,gridlist)
@@ -29,6 +33,7 @@
 	dgsSetData(gridlist,"rowHeight",15)
 	dgsSetData(gridlist,"colorcoded",false)
 	dgsSetData(gridlist,"mode",false,true)
+	dgsSetData(gridlist,"clip",true)
 	dgsSetData(gridlist,"rowShadow",false)
 	dgsSetData(gridlist,"rowMoveOffset",0)
 	dgsSetData(gridlist,"preSelect",-1)
@@ -65,7 +70,7 @@ end
 ]]
 
 function dgsDxGridListSetColumnRelative(gridlist,relative,transformColumn)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetColumnRelative at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetColumnRelative at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	dgsSetData(gridlist,"columnRelative",relative)
 	if transformColumn then
 		local columnData = dgsElementData[gridlist].columnData
@@ -86,8 +91,8 @@ function dgsDxGridListSetColumnRelative(gridlist,relative,transformColumn)
 end
 
 function dgsDxGridListSetColumnTitle(gridlist,column,name)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetColumnTitle at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(column) == "number","@dgsDxGridListSetColumnTitle at argument 2,expect number got "..type(column))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetColumnTitle at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(column) == "number","Bad argument @dgsDxGridListSetColumnTitle at argument 2, expect number got "..type(column))
 	local columnData = dgsElementData[gridlist].columnData
 	if columnData[column] then
 		columnData[column][1] = name
@@ -96,20 +101,20 @@ function dgsDxGridListSetColumnTitle(gridlist,column,name)
 end
 
 function dgsDxGridListGetColumnTitle(gridlist,column)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnTitle at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(column) == "number","@dgsDxGridListGetColumnTitle at argument 2,expect number got "..type(column))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetColumnTitle at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(column) == "number","Bad argument @dgsDxGridListGetColumnTitle at argument 2, expect number got "..type(column))
 	local columnData = dgsElementData[gridlist].columnData
 	return columnData[column][1]
 end
 
 function dgsDxGridListGetColumnRelative(gridlist)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnRelative at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetColumnRelative at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return dgsElementData[gridlist].columnRelative
 end
 
 function dgsDxGridListAddColumn(gridlist,name,len,pos)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListAddColumn at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(len) == "number","@dgsDxGridListAddColumn at argument 2,expect number got "..dgsGetType(len))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListAddColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(len) == "number","Bad argument @dgsDxGridListAddColumn at argument 2, expect number got "..dgsGetType(len))
 	local columnData = dgsElementData[gridlist].columnData
 	pos = tonumber(pos) or #columnData+1
 	if pos > #columnData+1 then
@@ -145,12 +150,12 @@ function dgsDxGridListAddColumn(gridlist,name,len,pos)
 end
 
 function dgsDxGridListGetColumnCount(gridlist)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnCount at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetColumnCount at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return #(dgsElementData[gridlist].columnData or {})
 end
 
 function dgsDxGridListRemoveColumn(gridlist,pos)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListRemoveColumn at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListRemoveColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local columnData = dgsElementData[gridlist].columnData
 	local oldLen = columnData[pos][3]
 	table.remove(columnData,pos)
@@ -178,8 +183,8 @@ end
 mode Fast(true)/Slow(false)
 --]]
 function dgsDxGridListGetColumnAllLength(gridlist,pos,relative,mode)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnAllLength at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(pos) == "number","@dgsDxGridListGetColumnAllLength at argument 2,expect number got "..dgsGetType(pos))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetColumnAllLength at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsDxGridListGetColumnAllLength at argument 2, expect number got "..dgsGetType(pos))
 	local columnData = dgsElementData[gridlist].columnData
 	local scbThick = dgsElementData[gridlist].scrollBarThick
 	local columnSize = unpack(dgsElementData[gridlist].absSize)
@@ -218,8 +223,8 @@ function dgsDxGridListGetColumnAllLength(gridlist,pos,relative,mode)
 end
 
 function dgsDxGridListGetColumnLength(gridlist,pos)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetColumnLength at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(pos) == "number","@dgsDxGridListGetColumnLength at argument 2,expect number got "..dgsGetType(pos))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetColumnLength at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsDxGridListGetColumnLength at argument 2, expect number got "..dgsGetType(pos))
 	local columnData = dgsElementData[gridlist].columnData
 	if pos > 0 and pos <= #columnData then
 		return columnData[pos][2]
@@ -228,9 +233,9 @@ function dgsDxGridListGetColumnLength(gridlist,pos)
 end
 
 function dgsDxGridListSetItemData(gridlist,row,column,data)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemData at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListSetItemData at argument 2,expect number got "..dgsGetType(row))
-	assert(type(column) == "number","@dgsDxGridListSetItemData at argument 3,expect number got "..dgsGetType(column))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListSetItemData at argument 2, expect number got "..dgsGetType(row))
+	assert(type(column) == "number","Bad argument @dgsDxGridListSetItemData at argument 3, expect number got "..dgsGetType(column))
 	local rowData = dgsElementData[gridlist].rowData
 	if row > 0 and row <= #rowData then
 		local columnData = dgsElementData[gridlist].columnData
@@ -243,9 +248,9 @@ function dgsDxGridListSetItemData(gridlist,row,column,data)
 end
 
 function dgsDxGridListGetItemData(gridlist,row,column)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemData at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListGetItemData at argument 2,expect number got "..dgsGetType(row))
-	assert(type(column) == "number","@dgsDxGridListGetItemData at argument 3,expect number got "..dgsGetType(column))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListGetItemData at argument 2, expect number got "..dgsGetType(row))
+	assert(type(column) == "number","Bad argument @dgsDxGridListGetItemData at argument 3, expect number got "..dgsGetType(column))
 	local rowData = dgsElementData[gridlist].rowData
 	if row > 0 and row <= #rowData then
 		local columnData = dgsElementData[gridlist].columnData
@@ -274,7 +279,7 @@ end
 
 
 function dgsDxGridListAddRow(gridlist,pos,...)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListAddRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListAddRow at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
 	local rowLength = 0
 	pos = pos or #rowData+1
@@ -303,7 +308,7 @@ function dgsDxGridListAddRow(gridlist,pos,...)
 end
 
 function dgsDxGridListSetRowBackGroundColor(gridlist,row,colordef,colorsel,colorcli)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowBackGroundColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetRowBackGroundColor at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
 		rowData[row][0] = {colordef or 255,colorsel or 255,colorcli or 255}
@@ -313,13 +318,13 @@ function dgsDxGridListSetRowBackGroundColor(gridlist,row,colordef,colorsel,color
 end
 
 function dgsDxGridListGetRowBackGroundColor(gridlist,pos)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowBackGroundColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetRowBackGroundColor at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
 	return rowData[pos] and unpack(rowData[pos][0]) or false
 end
 
 function dgsDxGridListRemoveRow(gridlist,pos)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListRemoveRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListRemoveRow at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
 	pos = tonumber(pos) or #rowData
 	if pos == 0 or  pos > #rowData then
@@ -340,7 +345,7 @@ function dgsDxGridListRemoveRow(gridlist,pos)
 end
 
 function dgsDxGridListClearRow(gridlist,notresetSelected)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListClearRow at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListClearRow at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local rowData = dgsElementData[gridlist].rowData
  	local scrollbars = dgsElementData[gridlist].scrollbars
 	dgsSetData(scrollbars[1],"length",{0,true})
@@ -353,15 +358,15 @@ function dgsDxGridListClearRow(gridlist,notresetSelected)
 end
 
 function dgsDxGridListGetRowCount(gridlist)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowCount at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetRowCount at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return #dgsElementData[gridlist].rowData
 end
 
 function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemText at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListSetItemText at argument 2,expect number got "..type(row))
-	assert(type(column) == "number","@dgsDxGridListSetItemText at argument 3,expect number got "..type(column))
-	assert(column >= 1 or column <= -5,"@dgsDxGridListSetItemText at argument 3,expect a number >= 1 got "..tostring(column))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetItemText at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListSetItemText at argument 2, expect number got "..type(row))
+	assert(type(column) == "number","Bad argument @dgsDxGridListSetItemText at argument 3, expect number got "..type(column))
+	assert(column >= 1 or column <= -5,"Bad argument @dgsDxGridListSetItemText at argument 3, expect a number >= 1 got "..tostring(column))
 	local rowData = dgsElementData[gridlist].rowData
 	if column <= -5 then
 		rowData[row][column] = text
@@ -372,8 +377,8 @@ function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
 end
 
 function dgsDxGridListSetRowAsSection(gridlist,row,enabled,enableMouseClickAndSelect)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowAsSection at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListSetRowAsSection at argument 2,expect number got "..type(row))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetRowAsSection at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListSetRowAsSection at argument 2, expect number got "..type(row))
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
 		if enabled then
@@ -397,21 +402,21 @@ function dgsDxGridListSetRowAsSection(gridlist,row,enabled,enableMouseClickAndSe
 end
 
 function dgsDxGridListGetItemText(gridlist,row,column)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemText at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListGetItemText at argument 2,expect number got "..type(row))
-	assert(type(column) == "number","@dgsDxGridListGetItemText at argument 3,expect number got "..type(column))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetItemText at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListGetItemText at argument 2, expect number got "..type(row))
+	assert(type(column) == "number","Bad argument @dgsDxGridListGetItemText at argument 3, expect number got "..type(column))
 	local rowData = dgsElementData[gridlist].rowData
 	return rowData[row][column][1]
 end
 
 function dgsDxGridListGetSelectedItem(gridlist)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetSelectedItem at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetSelectedItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return dgsElementData[gridlist].select
 end
 
 function dgsDxGridListSetSelectedItem(gridlist,item)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetSelectedItem at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(item) == "number","@dgsDxGridListSetSelectedItem at argument 2,expect number got "..type(item))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetSelectedItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(item) == "number","Bad argument @dgsDxGridListSetSelectedItem at argument 2, expect number got "..type(item))
 	if item == -1 or item > 0 then
 		dgsSetData(gridlist,"select",item <= #dgsElementData[gridlist].rowData and item or #dgsElementData[gridlist].rowData)
 		triggerEvent("onClientDgsDxGridListSelect",gridlist,dgsElementData[gridlist].select,item)
@@ -421,8 +426,8 @@ function dgsDxGridListSetSelectedItem(gridlist,item)
 end
 
 function dgsDxGridListSetItemColor(gridlist,row,column,r,g,b,a)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetItemColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListSetItemColor at argument 2,expect number got "..type(row))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetItemColor at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListSetItemColor at argument 2, expect number got "..type(row))
 	local rowData = dgsElementData[gridlist]["rowData"]
 	local color
 	if r and g and b then
@@ -449,9 +454,9 @@ function dgsDxGridListSetItemColor(gridlist,row,column,r,g,b,a)
 end
 
 function dgsDxGridListGetItemColor(gridlist,row,column,notSplitColor)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetItemColor at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListGetItemColor at argument 2,expect number got "..type(row))
-	assert(type(column) == "number","@dgsDxGridListGetItemColor at argument 3,expect number got "..type(column))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetItemColor at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListGetItemColor at argument 2, expect number got "..type(row))
+	assert(type(column) == "number","Bad argument @dgsDxGridListGetItemColor at argument 3, expect number got "..type(column))
 	local rowData = dgsElementData[gridlist].rowData
 	if row > 0 and row <= #rowData then
 		local columnID = #dgsElementData[gridlist]["columnData"]
@@ -462,23 +467,23 @@ function dgsDxGridListGetItemColor(gridlist,row,column,notSplitColor)
 end
 
 function dgsDxGridListGetRowBackGroundImage(gridlist,row)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetRowBackGroundImage at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListGetRowBackGroundImage at argument 2,expect number got "..type(row))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetRowBackGroundImage at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListGetRowBackGroundImage at argument 2, expect number got "..type(row))
 	local rowData = dgsElementData[gridlist].rowData
 	return unpack(rowData[row][-3])
 end
 
 function dgsDxGridListSetRowBackGroundImage(gridlist,row,defimage,selimage,cliimage)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListSetRowBackGroundImage at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","@dgsDxGridListSetRowBackGroundImage at argument 2,expect number got "..type(row))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetRowBackGroundImage at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsDxGridListSetRowBackGroundImage at argument 2, expect number got "..type(row))
 	if defimage then
-		assert(type(defimage) == "string" or isElement(defimage) and getElementType(defimage) == "texture","@dgsDxGridListSetRowBackGroundImage at argument 3,expect string/texture got "..tostring(isElement(defimage) or type(defimage)))
+		assert(type(defimage) == "string" or isElement(defimage) and getElementType(defimage) == "texture","Bad argument @dgsDxGridListSetRowBackGroundImage at argument 3, expect string/texture got "..tostring(isElement(defimage) or type(defimage)))
 	end
 	if selimage then
-		assert(type(selimage) == "string" or isElement(selimage) and getElementType(selimage) == "texture","@dgsDxGridListSetRowBackGroundImage at argument 4,expect string/texture got "..tostring(isElement(selimage) or type(selimage)))
+		assert(type(selimage) == "string" or isElement(selimage) and getElementType(selimage) == "texture","Bad argument @dgsDxGridListSetRowBackGroundImage at argument 4, expect string/texture got "..tostring(isElement(selimage) or type(selimage)))
 	end
 	if cliimage then
-		assert(type(cliimage) == "string" or isElement(cliimage) and getElementType(cliimage) == "texture","@dgsDxGridListSetRowBackGroundImage at argument 5,expect string/texture got "..tostring(isElement(cliimage) or type(cliimage)))
+		assert(type(cliimage) == "string" or isElement(cliimage) and getElementType(cliimage) == "texture","Bad argument @dgsDxGridListSetRowBackGroundImage at argument 5, expect string/texture got "..tostring(isElement(cliimage) or type(cliimage)))
 	end
 	local rowData = dgsElementData[gridlist].rowData
 	rowData[row][-3] = {defimage,selimage,cliimage}
@@ -558,7 +563,7 @@ function configGridList(source)
 end
 
 function dgsDxGridListResetScrollBarPosition(gridlist)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetScrollBar at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetScrollBar at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local scrollbars = dgsElementData[gridlist].scrollbars
 	dgsDxScrollBarSetScrollBarPosition(scrollbars[1],0)
 	dgsDxScrollBarSetScrollBarPosition(scrollbars[2],0)
@@ -566,6 +571,6 @@ function dgsDxGridListResetScrollBarPosition(gridlist)
 end
 
 function dgsDxGridListGetScrollBar(gridlist)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","@dgsDxGridListGetScrollBar at argument 1,expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetScrollBar at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return dgsElementData[gridlist].scrollbars
 end

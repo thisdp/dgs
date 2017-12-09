@@ -3,16 +3,15 @@ schemeColor.button.color = {tocolor(0,120,200,200),tocolor(0,90,255,200),tocolor
 schemeColor.button.textcolor = tocolor(255,255,255,255)
 
 schemeColor.checkbox = {}
-schemeColor.checkbox.schemeColor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
-schemeColor.checkbox.schemeColor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
-schemeColor.checkbox.schemeColor_i = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.defcolor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.defcolor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.defcolor_i = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
 schemeColor.checkbox.textcolor = tocolor(255,255,255,255)
 
 schemeColor.radiobutton = {}
-schemeColor.radiobutton.schemeColor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
-schemeColor.radiobutton.schemeColor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.radiobutton.defcolor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.radiobutton.defcolor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
 schemeColor.radiobutton.textcolor = tocolor(255,255,255,255)
-
 schemeColor.cmd = {}
 schemeColor.cmd.bgcolor = tocolor(0,0,0,150)
 
@@ -63,3 +62,6 @@ schemeColor.window = {}
 schemeColor.window.titnamecolor = tocolor(255,255,255,255)
 schemeColor.window.titcolor = tocolor(20,20,20,200)
 schemeColor.window.color = tocolor(20,20,20,150)
+
+schemeColor.disabledColor = true
+schemeColor.disabledColorPercent = 0.8

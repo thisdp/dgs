@@ -109,13 +109,14 @@ end
 function dgsSetParent(erzi,baba,nocheckfather)
 	if isElement(erzi) then
 		local parent = FatherTable[erzi]
-		local parentTable = isElement(parent) and ChildrenTable[parent] or MaxFatherTable or BottomFatherTable
+		local parentTable = isElement(parent) and ChildrenTable[parent] or MaxFatherTable
 		if isElement(baba) then
 			if not dgsIsDxElement(baba) then return end
 			if not nocheckfather then
 				local id = table.find(parentTable,erzi)
 				if id then
-					parentTable[id] = nil
+					table.remove(parentTable,id)
+					--parentTable[id] = nil
 				end
 			end
 			FatherTable[erzi] = baba
@@ -202,7 +203,7 @@ function dgsSetData(element,key,value,check)
 					local scrollbar = dgsElementData[element]["scrollbar"]
 					configComboBox_Box(dgsElementData[element].myBox)
 				elseif key == "listState" then
-					triggerEvent("onClientDgsDxComboBoxStateChanged",element,value == 1 and true or false)
+					triggerEvent("onClientDgsDxComboBoxStateChange",element,value == 1 and true or false)
 				end
 			elseif dgsType == "dgs-dxtabpanel" then
 				if key == "selected" then
@@ -250,7 +251,7 @@ function dgsSetData(element,key,value,check)
 				end
 			elseif dgsType == "dgs-dxprogressbar" then
 				if key == "progress" then
-					triggerEvent("onClientDgsDxProgressBarChange",source,value,oldValue)
+					triggerEvent("onClientDgsDxProgressBarChange",element,value,oldValue)
 				end
 			end
 		end
@@ -353,10 +354,10 @@ function GUIRender()
 	MouseData.hit = false
 	DGSShow = 0
 	for k,v in ipairs(BottomFatherTable) do
-		renderGUI(v,mx,my,dgsElementData[v].enabled,dgsElementData[v].renderTarget_parent,0,0,1,dgsElementData[v].visible)
+		renderGUI(v,mx,my,{dgsElementData[v].enabled,dgsElementData[v].enabled},dgsElementData[v].renderTarget_parent,0,0,1,dgsElementData[v].visible)
 	end
 	for k,v in ipairs(MaxFatherTable) do
-		renderGUI(v,mx,my,dgsElementData[v].enabled,dgsElementData[v].renderTarget_parent,0,0,1,dgsElementData[v].visible)
+		renderGUI(v,mx,my,{dgsElementData[v].enabled,dgsElementData[v].enabled},dgsElementData[v].renderTarget_parent,0,0,1,dgsElementData[v].visible)
 	end
 	dxSetRenderTarget()
 	if not isCursorShowing() then
@@ -372,21 +373,25 @@ function GUIRender()
 	dgsDxCheckHit(MouseData.hit,mx,my)
 	triggerEvent("onClientDgsDxRender",root)
 	if DEBUG_MODE then
-		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-115)
-		dxDrawText("Version: 2.91",6,sH*0.4-99,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Version: 2.91",5,sH*0.4-100)
 		local ticks = getTickCount()-tk
-		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-84,sW,sH,tocolor(0,0,0,255))
+		local version = getElementData(resourceRoot,"Version") or "N/A"
+		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,black)
+		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-115)
+		dxDrawText("Version: "..version,6,sH*0.4-99,sW,sH,black)
+		dxDrawText("Version: "..version,5,sH*0.4-100)
+		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-84,sW,sH,black)
 		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-85)
-		dxDrawText("Enter: "..tostring(MouseData.hit),11,sH*0.4-69,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("Enter: "..tostring(MouseData.hit),10,sH*0.4-70)
-		dxDrawText("Click:",11,sH*0.4-54,sW,sH,tocolor(0,0,0,255))
+		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).."("..tostring(MouseData.hit)..")" or "None"
+		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
+		dxDrawText("Enter: "..enterStr,10,sH*0.4-70)
+		dxDrawText("Click:",11,sH*0.4-54,sW,sH,black)
 		dxDrawText("Click:",10,sH*0.4-55)
-		dxDrawText("  Left: "..tostring(MouseData.clickl),11,sH*0.4-39,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("  Left: "..tostring(MouseData.clickl),10,sH*0.4-40)
-		dxDrawText("  Right: "..tostring(MouseData.clickr),11,sH*0.4-24,sW,sH,tocolor(0,0,0,255))
-		dxDrawText("  Right: "..tostring(MouseData.clickr),10,sH*0.4-25)
+		local leftStr = MouseData.clickl and dgsGetType(MouseData.clickl).."("..tostring(MouseData.clickl)..")" or "None"
+		local rightStr = MouseData.clickr and dgsGetType(MouseData.clickr).."("..tostring(MouseData.clickr)..")" or "None"
+		dxDrawText("  Left: "..leftStr,11,sH*0.4-39,sW,sH,black)
+		dxDrawText("  Left: "..leftStr,10,sH*0.4-40)
+		dxDrawText("  Right: "..rightStr,11,sH*0.4-24,sW,sH,black)
+		dxDrawText("  Right: "..rightStr,10,sH*0.4-25)
 		DGSCount = 0
 		for k,v in ipairs(dgsType) do
 			DGSCount = DGSCount+#getElementsByType(v)
@@ -394,12 +399,12 @@ function GUIRender()
 			if v == "dgs-dxtab" or v == "dgs-dxcombobox-Box" then
 				x = 30
 			end
-			dxDrawText(v.." : "..#getElementsByType(v),x+1,sH*0.4+15*k+6,sW,sH,tocolor(0,0,0,255))
+			dxDrawText(v.." : "..#getElementsByType(v),x+1,sH*0.4+15*k+6,sW,sH,black)
 			dxDrawText(v.." : "..#getElementsByType(v),x,sH*0.4+15*k+5)
 		end
-		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4-9,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4-9,sW,sH,black)
 		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4-10,sW,sH)
-		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,tocolor(0,0,0,255))	
+		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,black)	
 		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+5,sW,sH)
 	
 		Resource = 0
@@ -408,11 +413,11 @@ function GUIRender()
 			if type(ka) == "userdata" and va then
 				Resource = Resource+#va
 				ResCount = ResCount +1
-				dxDrawText(getResourceName(ka).." : "..#va,201,sH*0.4+15*(ResCount+1)+1,sW,sH,tocolor(0,0,0,255))
+				dxDrawText(getResourceName(ka).." : "..#va,201,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
 				dxDrawText(getResourceName(ka).." : "..#va,200,sH*0.4+15*(ResCount+1))
 			end
 		end
-		dxDrawText("Resource Elements("..ResCount.."):",201,sH*0.4+16,sW,sH,tocolor(0,0,0,255))
+		dxDrawText("Resource Elements("..ResCount.."):",201,sH*0.4+16,sW,sH,black)
 		dxDrawText("Resource Elements("..ResCount.."):",200,sH*0.4+15)
 	end
 	MouseData.hit = false
@@ -434,7 +439,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 	if DEBUG_MODE then
 		DGSShow = DGSShow+1
 	end
-	local enabled = enabled and dgsElementData[v].enabled
+	local enabled = {enabled[1] and dgsElementData[v].enabled,dgsElementData[v].enabled}
 	if dgsElementData[v].visible and visible and isElement(v) then
 		visible = dgsElementData[v].visible
 		local dxType = dgsGetType(v)
@@ -474,7 +479,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				titnamecolor = applyColorAlpha(titnamecolor,galpha)
 				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
 				dxDrawText(dgsElementData[v].text,x,y,x+w,y+titsize,titnamecolor,txtSizX,txtSizY,systemFont,"center","center",true,false,not DEBUG_MODE,dgsElementData[v].colorcoded)
-				if enabled then
+				if enabled[1] then
 					if mx >= x and mx<= x+w and my >= y and my <= y+h then
 						MouseData.hit = v
 					end
@@ -503,10 +508,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				if imgs[colorimgid] then
-					dxDrawImage(x,y,w,h,imgs[colorimgid],0,0,0,applyColorAlpha(colors[colorimgid],galpha),rendSet)
+				local finalcolor
+				if not enabled[1] and not enabled[2] then
+					if type(dgsElementData[v].disabledColor) == "number" then
+						finalcolor = applyColorAlpha(dgsElementData[v].disabledColor,galpha)
+					elseif dgsElementData[v].disabledColor == true then
+						local r,g,b,a = fromcolor(colors[1],true)
+						local average = (r+g+b)/3*dgsElementData[v].disabledColorPercent
+						finalcolor = tocolor(average,average,average,a*galpha)
+					else
+						finalcolor = colors[colorimgid]
+					end
 				else
-					dxDrawRectangle(x,y,w,h,applyColorAlpha(colors[colorimgid],galpha),rendSet)
+					finalcolor = applyColorAlpha(colors[colorimgid],galpha)
+				end
+				if imgs[colorimgid] then
+					dxDrawImage(x,y,w,h,imgs[colorimgid],0,0,0,finalcolor,rendSet)
+				else
+					dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 				end
 				local text = dgsElementData[v].text
 				if #text ~= 0 then
@@ -530,7 +549,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					dxDrawText(text,math.floor(x+txtoffsets[1]),math.floor(y+txtoffsets[2]),x+w-1,y+h-1,applyColorAlpha(dgsElementData[v].textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -542,7 +561,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				local radius = dgsElementData[v].radius
-				if enabled then
+				if enabled[1] then
 					if dgsDxCheckRadius(cx,cy,radius) then
 						MouseData.hit = v
 						if dgsElementData[v].debug then
@@ -564,16 +583,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				colors = applyColorAlpha(colors,galpha)
 				if colors >= 16777216 or colors < 0 then
 					if imgs then
-						local sx,sy = unpack(dgsElementData[v].imagesize)
-						local px,py = unpack(dgsElementData[v].imagepos)
+						local sx,sy = dgsElementData[v].imagesize[1],dgsElementData[v].imagesize[2]
+						local px,py = dgsElementData[v].imagepos[1],dgsElementData[v].imagepos[2]
+						local rotOffx,rotOffy = dgsElementData[v].rotationCenter[1],dgsElementData[v].rotationCenter[2]
+						local rot = dgsElementData[v].rotation or 0
 						local fnc = dgsElementData[v].functions
 						if type(fnc) == "table" then
 							fnc[1](unpack(fnc[2]))
 						end
 						if not sx or not sy or not px or not py then
-							dxDrawImage(x,y,w,h,imgs,0,0,0,colors,rendSet)
+							dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,rendSet)
 						else
-							dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,0,0,0,colors,rendSet)
+							dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,rot,rotOffy,rotOffy,colors,rendSet)
 						end
 					else
 						dxDrawRectangle(x,y,w,h,colors,rendSet)
@@ -600,7 +621,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
 					end
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -643,10 +664,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				if image[colorimgid] then
-					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,applyColorAlpha(color[colorimgid],galpha),rendSet)
+				local finalcolor
+				if not enabled[1] and not enabled[2] then
+					if type(dgsElementData[v].disabledColor) == "number" then
+						finalcolor = applyColorAlpha(dgsElementData[v].disabledColor,galpha)
+					elseif dgsElementData[v].disabledColor == true then
+						local r,g,b,a = fromcolor(color[1],true)
+						local average = (r+g+b)/3*dgsElementData[v].disabledColorPercent
+						finalcolor = tocolor(average,average,average,a*galpha)
+					else
+						finalcolor = color[colorimgid]
+					end
 				else
-					dxDrawRectangle(x,y+h/2-buttonSize/2,buttonSize,buttonSize,applyColorAlpha(color[colorimgid],galpha),rendSet)
+					finalcolor = applyColorAlpha(color[colorimgid],galpha)
+				end
+				if image[colorimgid] then
+					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,finalcolor,rendSet)
+				else
+					dxDrawRectangle(x,y+h/2-buttonSize/2,buttonSize,buttonSize,finalcolor,rendSet)
 				end
 				local font = dgsElementData[v].font or systemFont
 				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
@@ -666,7 +701,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawText(dgsElementData[v].text,px+shadowoffx,y+shadowoffy,px+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				dxDrawText(dgsElementData[v].text,px,y,px+w-1,y+h-1,applyColorAlpha(dgsElementData[v].textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -713,10 +748,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				if image[colorimgid] then
-					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,applyColorAlpha(color[colorimgid],galpha),rendSet)
+				local finalcolor
+				if not enabled[1] and not enabled[2] then
+					if type(dgsElementData[v].disabledColor) == "number" then
+						finalcolor = applyColorAlpha(dgsElementData[v].disabledColor,galpha)
+					elseif dgsElementData[v].disabledColor == true then
+						local r,g,b,a = fromcolor(color[1],true)
+						local average = (r+g+b)/3*dgsElementData[v].disabledColorPercent
+						finalcolor = tocolor(average,average,average,a*galpha)
+					else
+						finalcolor = color[colorimgid]
+					end
 				else
-					dxDrawRectangle(x,y+h/2-buttonSize/2,buttonSize,buttonSize,applyColorAlpha(color[colorimgid],galpha),rendSet)
+					finalcolor = applyColorAlpha(color[colorimgid],galpha)
+				end
+				if image[colorimgid] then
+					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,finalcolor,rendSet)
+				else
+					dxDrawRectangle(x,y+h/2-buttonSize/2,buttonSize,buttonSize,finalcolor,rendSet)
 				end
 				local font = dgsElementData[v].font or systemFont
 				local txtSizX,txtSizY = dgsElementData[v].textsize[1],dgsElementData[v].textsize[2] or dgsElementData[v].textsize[1]
@@ -736,7 +785,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawText(dgsElementData[v].text,px+shadowoffx,y+shadowoffy,px+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				dxDrawText(dgsElementData[v].text,px,y,px+w-1,y+h-1,applyColorAlpha(dgsElementData[v].textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -774,7 +823,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
-						dgsSetData(v,"cursorposXY",0)
+						dgsSetData(v,"cursorpos",0)
 						dgsSetData(v,"selectfrom",utf8.len(text))
 					end
 				end
@@ -808,10 +857,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawRectangle(width+showPos,2,selx,h-4,selectcolor)
 					end
 					dxSetRenderTarget(rndtgt)
-					if bgimage then
-						dxDrawImage(x,y,w,h,bgimage,0,0,0,bgcolor,rendSet)
+					local finalcolor
+					if not enabled[1] and not enabled[2] then
+						if type(dgsElementData[v].disabledColor) == "number" then
+							finalcolor = applyColorAlpha(dgsElementData[v].disabledColor,galpha)
+						elseif dgsElementData[v].disabledColor == true then
+							local r,g,b,a = fromcolor(bgcolor,true)
+							local average = (r+g+b)/3*dgsElementData[v].disabledColorPercent
+							finalcolor = tocolor(average,average,average,a*galpha)
+						else
+							finalcolor = bgcolor
+						end
 					else
-						dxDrawRectangle(x,y,w,h,bgcolor,rendSet)
+						finalcolor = applyColorAlpha(bgcolor,galpha)
+					end
+					if bgimage then
+						dxDrawImage(x,y,w,h,bgimage,0,0,0,finalcolor,rendSet)
+					else
+						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 					end
 					if MouseData.nowShow == v and MouseData.editCursor then
 						local CaretShow = true
@@ -847,7 +910,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawLine(x+w-side/2,y,x+w-side/2,y+h,sidecolor,side,isRenderTarget)
 					dxDrawLine(x,y+h-side/2,x+w,y+h-side/2,sidecolor,side,isRenderTarget)
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -950,10 +1013,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 					dxSetRenderTarget(rndtgt)
-					if bgimage then
-						dxDrawImage(x,y,w,h,bgimage,0,0,0,bgcolor,rendSet)
+					local finalcolor
+					if not enabled[1] and not enabled[2] then
+						if type(dgsElementData[v].disabledColor) == "number" then
+							finalcolor = applyColorAlpha(dgsElementData[v].disabledColor,galpha)
+						elseif dgsElementData[v].disabledColor == true then
+							local r,g,b,a = fromcolor(bgcolor,true)
+							local average = (r+g+b)/3*dgsElementData[v].disabledColorPercent
+							finalcolor = tocolor(average,average,average,a*galpha)
+						else
+							finalcolor = bgcolor
+						end
 					else
-						dxDrawRectangle(x,y,w,h,bgcolor,rendSet)
+						finalcolor = applyColorAlpha(bgcolor,galpha)
+					end
+					if bgimage then
+						dxDrawImage(x,y,w,h,bgimage,0,0,0,finalcolor,rendSet)
+					else
+						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 					end
 					local scbThick = dgsElementData[v].scrollBarThick
 					local scrollbars = dgsElementData[v].scrollbars
@@ -995,7 +1072,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawLine(x+w-side/2,y,x+w-side/2,y+h,sidecolor,side,isRenderTarget)
 					dxDrawLine(x,y+h-side/2,x+w,y+h-side/2,sidecolor,side,isRenderTarget)
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
 						MouseData.hit = v
 					end
@@ -1026,15 +1103,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 				OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position/100 or 0
 				OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position/100 or 0
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.scrollPane = v
 						MouseData.hit = v
 						if mx >= cx+relSizX and my >= cy+relSizY and scbstate[1] and scbstate[2] then
-							enabled = false
+							enabled[1] = false
 						end
 					else
-						enabled = false
+						enabled[1] = false
 					end
 				end
 				if dgsElementData[v].PixelInt then
@@ -1151,7 +1228,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawRectangle(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,colors[colorimgid[2]][2],rendSet)
 					end
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1193,7 +1270,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawText(colorcoded and text:gsub('#%x%x%x%x%x%x','') or text,x+shadowoffx,y+shadowoffy,x+w,y+h,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,false,true)
 				end
 				dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded,true)
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1246,6 +1323,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if type(fnc) == "table" then
 					fnc[1](unpack(fnc[2]))
 				end
+				local clip = dgsElementData[v].clip
 				if not mode then
 					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+1
 					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThick+rowHeight*2)/rowHeight)-1
@@ -1261,9 +1339,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							cpos[id] = dgsElementData[v].PixelInt and math.floor(columnData[id][3]*multipiler) or columnData[id][3]*multipiler
 							if isDraw1 then
 								if DataTab.columnShadow then
-									dxDrawText(data[1],2+cpos[id]+columnMoveOffset,1,sW,columnHeight,black,columntextx,columntexty,font,"left","center",false,false,false,false,true)
+									dxDrawText(data[1],2+cpos[id]+columnMoveOffset,1,sW,columnHeight,black,columntextx,columntexty,font,"left","center",clip,false,false,false,true)
 								end
-								dxDrawText(data[1],1+cpos[id]+columnMoveOffset,0,sW,columnHeight,columnTextColor,columntextx,columntexty,font,"left","center",false,false,false,false,true)
+								dxDrawText(data[1],1+cpos[id]+columnMoveOffset,0,sW,columnHeight,columnTextColor,columntextx,columntexty,font,"left","center",clip,false,false,false,true)
 							end
 						end
 					dxSetRenderTarget(renderTarget[2],true)
@@ -1320,14 +1398,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 									if text then
 										local offset = cpos[id]
 										local _x = _x+offset
+										local _sx = _x+(cpos[id+1] or w)-10
 										local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
 										if shadow then
 											if colorcoded then
 												text = text:gsub("#%x%x%x%x%x%x","") or text
 											end
-											dxDrawText(text,_x+shadow[1],_y+shadow[2],_sx+shadow[1],_sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",false,false,false,false,true)
+											dxDrawText(text,_x+shadow[1],_y+shadow[2],_sx+shadow[1],_sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,false,false,true)
 										end
-										dxDrawText(lc_rowData[id][1],_x,_y,_sx,_sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",false,false,false,colorcoded,true)
+										dxDrawText(lc_rowData[id][1],_x,_y,_sx,_sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,false,colorcoded,true)
 									end
 								end
 							end
@@ -1370,12 +1449,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 					column_x = cx-cpos[whichColumnToStart]+cpos[1]
+					local column_sx = cx+w-scbThick
 					for i=whichColumnToStart,whichColumnToEnd or #columnData do
 						local posx = column_x+cpos[i]
 						if DataTab.columnShadow then
-							dxDrawText(columnData[i][1],1+posx,1+cy,cx+w-scbThick,ypcolumn,black,columntextx,columntexty,font,"left","center",true,false,rendSet,false,true)
+							dxDrawText(columnData[i][1],1+posx,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,font,"left","center",clip,false,rendSet,false,true)
 						end
-						dxDrawText(columnData[i][1],posx,cy,cx+w-scbThick,ypcolumn,columnTextColor,columntextx,columntexty,font,"left","center",true,false,rendSet,false,true)
+						dxDrawText(columnData[i][1],posx,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,font,"left","center",clip,false,rendSet,false,true)
 					end
 					if MouseData.enter == v then		-------PreSelect
 						if mx >= cx and mx <= cx+w and my >= ypcolumn and my <= cy+h-scbThick then
@@ -1424,14 +1504,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							if text ~= "" then
 								local offset = cpos[id]
 								local __x = __x+offset
+								local _sx = __x+(cpos[id+1] or w)-10
 								local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
 								if shadow then
 									if colorcoded then
 										text = text:gsub("#%x%x%x%x%x%x","") or text
 									end
-									dxDrawText(text,__x+shadow[1],__y+shadow[2],__sx+shadow[1],__sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",true,false,rendSet,false,true)
+									dxDrawText(text,__x+shadow[1],__y+shadow[2],__sx+shadow[1],__sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,rendSet,false,true)
 								end
-								dxDrawText(lc_rowData[id][1],__x,__y,__sx,__sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",true,false,rendSet,colorcoded,true)
+								dxDrawText(lc_rowData[id][1],__x,__y,__sx,__sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,rendSet,colorcoded,true)
 							end
 						end
 					end
@@ -1459,8 +1540,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local udvalue = udspace[2] and udspace[1]*h or udspace[1]
 				local lrvalue = lrspace[2] and lrspace[1]*w or lrspace[1]
 				if bgimg then
-					local sx,sy = dgsElementData[v].imagesize[1],dgsElementData[v].imagesize[2]
-					local px,py = dgsElementData[v].imagepos[1],dgsElementData[v].imagepos[2]
 					dxDrawImage(x,y,w,h,bgimg,0,0,0,bgcolor,rendSet)
 				else
 					dxDrawRectangle(x,y,w,h,bgcolor,rendSet)
@@ -1480,7 +1559,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					dxDrawRectangle(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barcolor,rendSet)
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1520,11 +1599,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				
-				if imgs[colorimgid] then
-					dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[colorimgid],0,0,0,applyColorAlpha(colors[colorimgid],galpha),postgui)
+				local finalcolor
+				if not enabled[1] and not enabled[2] then
+					if type(dgsElementData[v].disabledColor) == "number" then
+						finalcolor = applyColorAlpha(dgsElementData[v].disabledColor,galpha)
+					elseif dgsElementData[v].disabledColor == true then
+						local r,g,b,a = fromcolor(colors[1],true)
+						local average = (r+g+b)/3*dgsElementData[v].disabledColorPercent
+						finalcolor = tocolor(average,average,average,a*galpha)
+					else
+						finalcolor = colors[colorimgid]
+					end
 				else
-					dxDrawRectangle(x+w-buttonLen,y,buttonLen,h,applyColorAlpha(colors[colorimgid],galpha),postgui)
+					finalcolor = applyColorAlpha(colors[colorimgid],galpha)
+				end
+				if imgs[colorimgid] then
+					dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[colorimgid],0,0,0,finalcolor,postgui)
+				else
+					dxDrawRectangle(x+w-buttonLen,y,buttonLen,h,finalcolor,postgui)
 				end
 				local arrowColor = dgsElementData[v].arrowColor
 				local arrowWidth = dgsElementData[v].arrowWidth
@@ -1567,7 +1659,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textcolor,galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui,colorcoded)
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1646,7 +1738,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxSetRenderTarget()
 					dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
-				if enabled then
+				if enabled[1] then
 					local height = #itemData*itemHeight
 					if height > h then
 						height = h
@@ -1699,10 +1791,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								elseif dgsElementData[v]["preselect"] == d then
 									selectstate = 2
 								end
-								if tabimg[selectstate] then
-									dxDrawImage(tabsize,0,width,height,tabimg[selectstate],0,0,0,tabcolor[selectstate])
+								local finalcolor
+								if not enabled[1] then
+									if type(dgsElementData[v].disabledColor) == "number" then
+										finalcolor = applyColorAlpha(dgsElementData[v].disabledColor,galpha)
+									elseif dgsElementData[v].disabledColor == true then
+										local r,g,b,a = fromcolor(tabimg[1],true)
+										local average = (r+g+b)/3*dgsElementData[v].disabledColorPercent
+										finalcolor = tocolor(average,average,average,a*galpha)
+									else
+										finalcolor = tabimg[selectstate]
+									end
 								else
-									dxDrawRectangle(tabsize,0,width,height,tabcolor[selectstate])
+									finalcolor = applyColorAlpha(tabimg[selectstate],galpha)
+								end
+								if tabimg[selectstate] then
+									dxDrawImage(tabsize,0,width,height,tabimg[selectstate],0,0,0,finalcolor)
+								else
+									dxDrawRectangle(tabsize,0,width,height,finalcolor)
 								end
 								local textsize = dgsElementData[t]["textsize"]
 								if dgsElementData[v].PixelInt then
@@ -1725,7 +1831,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				if enabled then
+				if enabled[1] then
 					if MouseData.hit == hits then
 						if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 							MouseData.hit = v
@@ -1778,7 +1884,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local width = dxGetTextWidth(readyToRenderTable[i],txtSizX,font)
 					dxDrawText(readyToRenderTable[i],x+5,y+(i-1)*hangju,x+width+5,y+i*hangju,white,txtSizX,txtSizY,font,"left","bottom",false,true,rendSet)
 				end
-				if enabled then
+				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1790,7 +1896,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		triggerEvent("onClientDgsRender",v,x,y,w,h)
 		if not dgsElementData[v].hitoutofparent then
 			if MouseData.hit ~= v then
-				enabled = false
+				enabled[1] = false
 			end
 		end
 		for k,child in ipairs(children) do
@@ -1864,6 +1970,11 @@ function checkEditCursor(button,state)
 					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 				end
 			end
+		elseif dgsGetType(MouseData.enter) == "dgs-dxmemo" then
+				local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
+				if dgsDxGUIGetVisible(scrollbar) then
+					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+				end
 		elseif isElement(MouseData.scrollPane) then
 			local scrollbar1 = dgsElementData[MouseData.scrollPane].scrollbars[1]
 			local scrollbar2 = dgsElementData[MouseData.scrollPane].scrollbars[2]
@@ -2522,14 +2633,14 @@ addEventHandler("onClientDgsDxMouseClick",root,function(button,state)
 					local preSelect = dgsElementData[source].preSelect
 					local oldSelect = dgsElementData[source].select
 					dgsElementData[source].select = preSelect
-					triggerEvent("onClientDgsDxGridListSelect",source,oldSelect,preSelect)
+					triggerEvent("onClientDgsDxGridListSelect",source,preSelect,oldSelect)
 				end
 			elseif guitype == "dgs-dxcombobox-Box" then
 				local combobox = dgsElementData[source].myCombo
 				local preSelect = dgsElementData[combobox].preSelect
 				local oldSelect = dgsElementData[combobox].select
 				dgsElementData[combobox].select = preSelect
-				triggerEvent("onClientDgsDxComboBoxSelect",combobox,oldSelect,preSelect)
+				triggerEvent("onClientDgsDxComboBoxSelect",combobox,preSelect,oldSelect)
 			elseif guitype == "dgs-dxtabpanel" then
 				if dgsElementData[source]["preselect"] ~= -1 then
 					dgsSetData(source,"selected",dgsElementData[source]["preselect"])

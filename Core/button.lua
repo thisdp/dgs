@@ -1,10 +1,10 @@
 function dgsDxCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg,selimg,cliimg,defcolor,selcolor,clicolor)
-	assert(tonumber(x),"@dgsDxCreateButton argument 1,expect number got "..type(x))
-	assert(tonumber(y),"@dgsDxCreateButton argument 2,expect number got "..type(y))
-	assert(tonumber(sx),"@dgsDxCreateButton argument 3,expect number got "..type(sx))
-	assert(tonumber(sy),"@dgsDxCreateButton argument 4,expect number got "..type(sy))
+	assert(tonumber(x),"Bad argument @dgsDxCreateButton at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsDxCreateButton at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsDxCreateButton at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsDxCreateButton at argument 4, expect number got "..type(sy))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsDxCreateButton argument 7,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")

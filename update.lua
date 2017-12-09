@@ -7,6 +7,7 @@ end
 local allstr = fileRead(check,fileGetSize(check))
 fileClose(check)
 Version = tonumber(allstr) or 0
+setElementData(resourceRoot,"Version",Version)
 RemoteVersion = 0
 ManualUpdate = false
 updateTimer = false
@@ -82,27 +83,28 @@ function checkFiles()
 	for k,v in pairs(xmlNodeGetChildren(xml)) do
 		if xmlNodeGetName(v) == "script" or xmlNodeGetName(v) == "file" then
 			local path = xmlNodeGetAttribute(v,"src")
-			if path ~= "colorScheme.txt" or not fileExists(path) then
-				local sha = ""
-				if fileExists(path) then
-					local file = fileOpen(path)
-					local text = fileRead(file,fileGetSize(file))
-					fileClose(file)
-					sha = hash("sha256",text)
-				end
-				preFetch = preFetch+1
-				print("[DGS]Checking File:"..path.."("..preFetch..")")
-				fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
-					FetchCount = FetchCount+1
-					if sha ~= data then
-						print("[DGS]Need Update ("..path..")")
-						table.insert(preUpdate,path)
-					end
-					if FetchCount == preFetch then
-						DownloadFiles()
-					end
-				end,"",false,path,sha)
+			if path == "colorScheme.txt" and fileExists(path) then
+				path = "colorScheme.txt.backup"
 			end
+			local sha = ""
+			if fileExists(path) then
+				local file = fileOpen(path)
+				local text = fileRead(file,fileGetSize(file))
+				fileClose(file)
+				sha = hash("sha256",text)
+			end
+			preFetch = preFetch+1
+			print("[DGS]Checking File ("..preFetch.."): "..path)
+			fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
+				FetchCount = FetchCount+1
+				if sha ~= data then
+					print("[DGS]Need Update ("..path..")")
+					table.insert(preUpdate,path)
+				end
+				if FetchCount == preFetch then
+					DownloadFiles()
+				end
+			end,"",false,path,sha)
 		end
 	end
 	print("[DGS]Please Wait...")
@@ -114,18 +116,23 @@ function DownloadFiles()
 		DownloadFinish()
 		return
 	end
-	print("[DGS]Downloading :"..tostring(preUpdate[UpdateCount]).." ("..UpdateCount.."/"..(#preUpdate or "Unknown")..")")
+	print("[DGS]Download ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]).."")
 	fetchRemote(dgsConfig.updateCheckURL.."/dgs/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
+			local size = 0
 			if fileExists(path) then
+				local file = fileOpen(path)
+				size = fileGetSize(file)
+				fileClose(file)
 				fileDelete(path)
 			end
 			local file = fileCreate(path)
 			fileWrite(file,data)
+			local newsize = fileGetSize(file)
 			fileClose(file)
-			print("[DGS]File Got :"..path.." ("..UpdateCount.."/"..#preUpdate..")")
+			print("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 		else
-			print("[DGS]Download Failed:"..path.." ("..err..")")
+			print("[DGS]Download Failed: "..path.." ("..err..")")
 		end
 		if preUpdate[UpdateCount+1] then
 			DownloadFiles()
@@ -176,7 +183,7 @@ addCommandHandler("dgsver",function(pla,cmd)
 		if vsdd then
 			outputChatBox("[DGS]Version: "..vsdd,pla,0,255,0)
 		else
-			outputChatBox("ERROR:[DGS]Version State is damaged! Please use /updatedgs to update",pla,255,0,0)
+			outputChatBox("[DGS]Version State is damaged! Please use /updatedgs to update",pla,255,0,0)
 		end
 	end
 end)

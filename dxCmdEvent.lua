@@ -7,6 +7,7 @@ end)
 
 cmdSystem = {}
 netSystem = {}
+dxStatus = {}
 addCommandHandler("cmd",function()
 	if not isElement(cmdSystem["window"]) then
 		cmdSystem["window"] = dgsDxCreateWindow(sW*0.5-20,sH*0.5,40,25,"CMD",false,tocolor(255,0,0,255),_,_,tocolor(80,140,200,255))
@@ -18,9 +19,10 @@ addCommandHandler("cmd",function()
 			setTimer(function()
 				cmdSystem["cmd"] = dgsDxCreateCmd(0,0,1,1,true,cmdSystem["window"])
 				dgsDxCmdAddEventToWhiteList(cmdSystem["cmd"],{"changeMode"})
-				outputCmdMessage(cmdSystem["cmd"],"DGS ( Thisdp's Dx Graphical User Interface System ) Version: 2.75 beta")
+				local version = getElementData(resourceRoot,"Version") or "N/A"
+				outputCmdMessage(cmdSystem["cmd"],"DGS ( Thisdp's Dx Graphical User Interface System ) Version: "..version)
 			end,310,1)
-			dgsShowCursor(true)
+			dgsShowCursor(true,"cmd")
 		end,310,1)
 	else
 		for k,v in pairs(cmdSystem) do
@@ -56,8 +58,12 @@ addEventHandler("onClientDgsDxWindowClose",root,function()
 			destroyElement(cmdSystem["window"])
 		end,500,1)
 	elseif dgsGetData(source,"animated") == 1 then
-		if source == netSystem["window"] then
-			outputCmdMessage(cmdSystem["cmd"],"Network Monitor: OFF")
+		if isElement(cmdSystem["cmd"]) then
+			if source == netSystem["window"] then
+				outputCmdMessage(cmdSystem["cmd"],"Network Monitor: OFF")
+			elseif source == dxStatus["window"] then
+				outputCmdMessage(cmdSystem["cmd"],"Dx Status Monitor: OFF")
+			end
 		end
 		cancelEvent()
 		local children = dgsGetChildren(source)
@@ -111,9 +117,15 @@ dgsDxCmdAddCommandHandler("mtaversion",function(cmd)
 end)
 
 dgsDxCmdAddCommandHandler("dxstatus",function(cmd)
-	outputCmdMessage(cmd,"DX status:")
-	for k,v in pairs(dxGetStatus()) do
-		outputCmdMessage(cmd,k..":  "..tostring(v))
+	if not isElement(dxStatus["window"]) then
+		dxStatus["window"] = dgsCreateAnimationWindow(sW/2-250,sH/2-150,500,300,"Dx Status",false,tocolor(20,20,200,255),_,_,tocolor(80,140,200,255),_,tocolor(0,0,0,200))
+		dgsDxWindowSetSizable(dxStatus["window"],false)
+		dgsDxGUIBringToFront(dxStatus["window"])
+		outputCmdMessage(cmd,"Dx Status Monitor:ON")
+		dgsShowCursor(true,"dx")
+	else
+		outputCmdMessage(cmd,"Dx Status Monitor:OFF")
+		triggerEvent("onClientDgsDxWindowClose",dxStatus["window"])
 	end
 end)
 
@@ -123,9 +135,10 @@ dgsDxCmdAddCommandHandler("netstatus",function(cmd)
 		dgsDxWindowSetSizable(netSystem["window"],false)
 		dgsDxGUIBringToFront(netSystem["window"])
 		outputCmdMessage(cmd,"Network Monitor:ON")
+		dgsShowCursor(true,"net")
 	else
-		triggerEvent("onClientDgsDxWindowClose",netSystem["window"])
 		outputCmdMessage(cmd,"Network Monitor:OFF")
+		triggerEvent("onClientDgsDxWindowClose",netSystem["window"])
 	end
 end)
 
@@ -247,17 +260,32 @@ addEventHandler("onClientPreRender",root,function()
 	end
 end)
 
-addEventHandler("onClientDgsDxGuiDestroy",root,function()
-	if source == cmdSystem["window"] or source == netSystem["window"] then
-		dgsShowCursor(false,source)
+addEventHandler("onClientDgsDxGUIDestroy",root,function()
+	if source == cmdSystem["window"] then
+		dgsShowCursor(false,"cmd")
+	elseif source == netSystem["window"] then
+		dgsShowCursor(false,"net")
+	elseif source == dxStatus["window"] then
+		dgsShowCursor(false,"dx")
 	end
 end)
 
-function dgsShowCursor(bool,gui)
+cursorManager = {}
+function dgsShowCursor(bool,code)
+	assert(type(code) == "string","Bad argument @dgsShowCursor at argument 1, expect a string got "..dgsGetType(code))
+	bool = bool and true or false
+	cursorManager[code] = bool
 	if bool then
 		showCursor(true)
 	else
-		if (gui == cmdSystem["window"] and not isElement(netSystem["window"])) or (gui == netSystem["window"] and not isElement(cmdSystem["window"])) then
+		local noPass
+		for k,v in pairs(cursorManager) do
+			if v then
+				noPass = true
+				break
+			end
+		end
+		if not noPass then
 			showCursor(false)
 		end
 	end
@@ -286,6 +314,21 @@ function dgsCreateAnimationWindow(...)
 	return window
 end
 
+function dxStatusUpdate()
+	if not isElement(dxStatus["dxList"]) then return removeEventHandler("onClientRender",root,dxStatusUpdate) end
+	local rowData = dgsDxGUIGetProperty(dxStatus["dxList"],"rowData")
+	local count = 0
+	for k,v in pairs(dxGetStatus()) do
+		count = count+1
+		if not rowData[count] then
+			dgsDxGridListAddRow(dxStatus["dxList"])
+		end
+		rowData[count][1] = {k,white}
+		rowData[count][2] = {tostring(v),white}
+	end
+	dgsDxGUISetProperty(dxStatus["dxList"],"rowData",rowData)
+end
+
 addEvent("onAnimationWindowCreate",true)
 addEventHandler("onAnimationWindowCreate",root,function()
 	if source == netSystem["window"] then
@@ -300,5 +343,14 @@ addEventHandler("onAnimationWindowCreate",root,function()
 		netSystem["PacketLossTotal"] = dgsDxCreateLabel(10,215,200,20,"Average Loss:",false,netSystem["window"])
 		
 		netSystem["IP"] = dgsDxCreateLabel(10,250,200,20,"My IP:"..dgs_MyIP,false,netSystem["window"])
+	elseif source == dxStatus["window"] then
+		dxStatus["dxList"] = dgsDxCreateGridList(10,10,480,255,false,dxStatus["window"],_,tocolor(0,0,0,100),white,tocolor(0,0,0,100),tocolor(0,0,0,0),tocolor(100,100,100,100),tocolor(200,200,200,150))
+		dgsDxGridListAddColumn(dxStatus["dxList"],"Name",0.55)
+		dgsDxGridListAddColumn(dxStatus["dxList"],"Value",0.35)
+		local scrollBars = dgsDxGridListGetScrollBar(dxStatus["dxList"])
+		dgsDxGUISetProperty(scrollBars[1],"scrollArrow",false)
+		dgsDxGUISetProperty(scrollBars[2],"scrollArrow",false)
+		dgsDxGUISetProperty(dxStatus["dxList"],"mode",true)
+		addEventHandler("onClientRender",root,dxStatusUpdate)
 	end
 end)

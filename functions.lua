@@ -25,19 +25,19 @@ local args = {...};
 local value,setting = args[1],args[2];
 ]]
 function addEasingFunction(name,str)
-	assert(type(name) == "string","Bad Argument @addEasingFunction at argument 1, expected a string got "..type(name))
-	assert(type(str) == "string","Bad Argument @addEasingFunction at argument 2, expected a string got "..type(str))
-	assert(not builtins[name],"Bad Argument @addEasingFunction at argument 1, duplicated name with builtins ("..name..")")
-	assert(not SelfEasing[name],"Bad Argument @addEasingFunction at argument 1, this name has been used ("..name..")")
+	assert(type(name) == "string","Bad at argument @addEasingFunction at argument 1, expected a string got "..type(name))
+	assert(type(str) == "string","Bad at argument @addEasingFunction at argument 2, expected a string got "..type(str))
+	assert(not builtins[name],"Bad at argument @addEasingFunction at argument 1, duplicated name with builtins ("..name..")")
+	assert(not SelfEasing[name],"Bad at argument @addEasingFunction at argument 1, this name has been used ("..name..")")
 	local str = SEInterface..str
 	local fnc = loadstring(str)
-	assert(type(fnc) == "function","Bad Argument @addEasingFunction at argument 2, failed to load the code")
+	assert(type(fnc) == "function","Bad at argument @addEasingFunction at argument 2, failed to load the code")
 	SelfEasing[name] = fnc
 	return true
 end
 
 function removeEasingFunction(name)
-	assert(type(name) == "string","Bad Argument @removeEasingFunction at argument 1, expected a string got "..type(name))
+	assert(type(name) == "string","Bad at argument @removeEasingFunction at argument 1, expected a string got "..type(name))
 	if SelfEasing[name] then
 		SelfEasing[name] = nil
 		return true
@@ -96,7 +96,7 @@ function getParentLocation(baba,rndsup,x,y)
 end
 
 function dgsGetPosition(gui,bool,includeParent,rndsupport)
-	assert(dgsIsDxElement(gui),"@dgsGetPosition argument 1,expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if includeParent then
 		return dgsGetGuiLocationOnScreen(gui,bool,rndsupport)
 	else
@@ -114,7 +114,7 @@ function dgsSetPosition(gui,x,y,bool)
 end
 
 function dgsGetSize(gui,bool)
-	assert(dgsIsDxElement(gui),"@dgsGetSize argument 1,expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsGetSize at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return unpack(dgsElementData[gui][bool and "rltSize" or "absSize"])
 end
 
@@ -127,12 +127,12 @@ function dgsSetSize(gui,x,y,bool)
 end
 
 function dgsDxGUISetProperty(dxgui,key,value,...)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUISetProperty argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if key == "functions" then
 		value = {loadstring(value),{...}}
 	elseif key == "textcolor" then
 		if not tonumber(value) then
-			assert(false,"@dgsDxGUISetProperty argument at 3,expect a number got "..type(value))
+			assert(false,"Bad argument @dgsDxGUISetProperty at argument 3, expect a number got "..type(value))
 		end
 	elseif key == "text" then
 		local dgsType = dgsGetType(dxgui)
@@ -151,7 +151,7 @@ function dgsDxGUISetProperty(dxgui,key,value,...)
 end
 
 function dgsDxGUIGetProperty(dxgui,key)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUIGetProperty argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsElementData[dxgui] then
 		return dgsElementData[dxgui][key]
 	end
@@ -178,7 +178,7 @@ function dgsGUIApplyVisible(parent,visible)
 end
 
 function dgsDxGUISetVisible(dxgui,visible)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUISetVisible argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsGetType(dxgui) == "dgs-dxedit" then
 		local edit = dgsGetData(dxgui,"edit")
 		guiSetVisible(edit,visible)
@@ -189,7 +189,7 @@ function dgsDxGUISetVisible(dxgui,visible)
 end
 
 function dgsDxGUIGetVisible(dxgui)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUIGetVisible argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsElementData[dxgui]["visible"]
 end
 
@@ -207,7 +207,7 @@ end
 
 lastFront = false
 function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUIBringToFront argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIBringToFront at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	local parent = dgsGetParent(dxgui)
 	local mouse = mouse or "left"
 	if not dontChangeData then
@@ -299,7 +299,9 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		else
 			psx,psy = unpack(dgsElementData[parent].absSize)
 		end
-		if dgsElementData[gui].withoutTitle then
+		if dgsElementData[gui].ignoreParentTitle or dgsElementData[parent].ignoreTitleSize then
+			titleOffset = 0
+		else
 			titleOffset = dgsElementData[parent].titlesize or 0
 		end
 	end
@@ -343,32 +345,32 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 end
 
 function dgsDxGUISetAlpha(dxgui,alpha)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUISetAlpha argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	assert(type(alpha) == "number","@dgsDxGUISetAlpha argument at 2,expect a number got "..type(alpha))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(type(alpha) == "number","Bad argument @dgsDxGUISetAlpha at argument 2, expect a number got "..type(alpha))
 	return dgsSetData(dxgui,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 end
 
 function dgsDxGUIGetAlpha(dxgui)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUIGetAlpha argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsGetData(dxgui,"alpha")
 end
 
 function dgsDxGUISetEnabled(dxgui,enabled)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUISetEnabled argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))	
-	assert(type(enabled) == "boolean","@dgsDxGUISetEnabled argument at 2,expect a boolean element got "..type(enabled))	
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))	
+	assert(type(enabled) == "boolean","Bad argument @dgsDxGUISetEnabled at argument 2, expect a boolean element got "..type(enabled))	
 	return dgsSetData(dxgui,"enabled",enabled)
 end
 
 function dgsDxGUIGetEnabled(dxgui)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUIGetEnabled argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsGetData(dxgui,"enabled")
 end
 
 function dgsDxGUICreateFont(path,...)
-	assert(type(path) == "string","@dgsDxGUICreateFont argument at 1,expect string got "..type(path))
+	assert(type(path) == "string","Bad argument @dgsDxGUICreateFont at argument 1, expect string got "..type(path))
 	if not fileExists(":"..getResourceName(getThisResource()).."/"..path) and not fileExists(path) then
 		if not fileExists(path) then
-			assert(false,"@dgsDxGUICreateFont argument at 1,couldn't find such file '"..path.."'")
+			assert(false,"Bad argument @dgsDxGUICreateFont at argument 1,couldn't find such file '"..path.."'")
 		end
 		local filename = split(path,"/")
 		fileCopy(path,":"..getResourceName(getThisResource()).."/"..filename[#filename])
@@ -379,26 +381,26 @@ function dgsDxGUICreateFont(path,...)
 end
 
 function dgsDxGUISetFont(dxgui,font)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUISetFont argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if font then
 		dgsSetData(dxgui,"font",font)	
 	end
 end
 
 function dgsDxGUIGetFont(dxgui)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUIGetFont argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsIsDxElement(dxgui) then
 		return dgsGetData(dxgui,"font")	
 	end
 end
 
 function dgsDxGUISetText(dxgui,text)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUISetText argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsDxGUISetProperty(dxgui,"text",tostring(text))
 end
 
 function dgsDxGUIGetText(dxgui)
-	assert(dgsIsDxElement(dxgui),"@dgsDxGUIGetText argument at 1,expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsElementData[dxgui].text
 end
 
@@ -411,14 +413,11 @@ addEventHandler("onClientDgsDxGUIPreCreate",root,function()
 	dgsSetData(source,"tob","top")
 	dgsSetData(source,"visible",true)
 	dgsSetData(source,"enabled",true)
-	dgsSetData(source,"withoutTitle",true)
+	dgsSetData(source,"ignoreParentTitle",false)
 	dgsSetData(source,"textRelative",false)
 	dgsSetData(source,"alpha",1)
 	dgsSetData(source,"hitoutofparent",false)
 	dgsSetData(source,"PixelInt",true)
+	dgsSetData(source,"disabledColor",schemeColor.disabledColor)
+	dgsSetData(source,"disabledColorPercent",schemeColor.disabledColorPercent)
 end)
-
-function fromcolor(int)
-	local a,r,g,b = getColorFromString(string.format("#%.8x",int))
-	return r,g,b,a
-end

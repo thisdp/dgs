@@ -123,7 +123,7 @@
 	<export function="dgsDxComboBoxSetBoxHeight" type="client" />
 	<export function="dgsDxComboBoxGetBoxHeight" type="client" />
 	<export function="dgsDxComboBoxGetScrollBar" type="client" />
-
+	
 	<export function="dgsDxCreateButton" type="client" />
 
 	<export function="dgsDxCreateCmd" type="client" />
@@ -151,6 +151,8 @@
 	<export function="dgsDxEditSetMaxLength" type="client" />
 	<export function="dgsDxEditSetReadOnly" type="client" />
 	<export function="dgsDxEditGetReadOnly" type="client" />
+	<export function="dgsDxEditSetMasked" type="client" />
+	<export function="dgsDxEditGetMasked" type="client" />
 	
 	<export function="dgsDxCreateMemo" type="client" />
 	<export function="dgsDxMemoMoveCaret" type="client" />

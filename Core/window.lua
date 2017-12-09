@@ -1,8 +1,8 @@
 function dgsDxCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,titcolor,bgimg,bgcolor,sidesize,nooffbutton)
-	assert(tonumber(x),"@dgsDxCreateWindow argument 1,expect number got "..type(x))
-	assert(tonumber(y),"@dgsDxCreateWindow argument 2,expect number got "..type(y))
-	assert(tonumber(sx),"@dgsDxCreateWindow argument 3,expect number got "..type(sx))
-	assert(tonumber(sy),"@dgsDxCreateWindow argument 4,expect number got "..type(sy))
+	assert(tonumber(x),"Bad argument @dgsDxCreateWindow at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsDxCreateWindow at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsDxCreateWindow at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsDxCreateWindow at argument 4, expect number got "..type(sy))
 	local window = createElement("dgs-dxwindow")
 	dgsSetType(window,"dgs-dxwindow")
 	table.insert(MaxFatherTable,window)
@@ -16,6 +16,7 @@ function dgsDxCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,
 	dgsSetData(window,"titlesize",tonumber(titsize) or 25)
 	dgsSetData(window,"sidesize",tonumber(sidesize) or 5)
 	dgsSetData(window,"sizable",true)
+	dgsSetData(window,"ignoreTitleSize",false)
 	dgsSetData(window,"colorcoded",false)
 	dgsSetData(window,"movable",true)
 	dgsSetData(window,"movetyp",false) --false only title;true are all
@@ -31,7 +32,7 @@ function dgsDxCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,
 		local buttonOff = dgsDxCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
 		dgsSetData(window,"closeButton",buttonOff)
 		dgsDxGUISetSide(buttonOff,"right",false)
-		dgsSetData(buttonOff,"withoutTitle",false)
+		dgsSetData(buttonOff,"ignoreParentTitle",true)
 		dgsSetPosition(buttonOff,30,0,false)
 	end
 	return window
@@ -54,7 +55,7 @@ function dgsDxWindowSetMovable(window,bool)
 end
 
 function dgsDxGUICloseWindow(window)
-    assert(dgsGetType(window) == "dgs-dxwindow","@dgsDxGUICloseWindow at argument 1,expect dgs-dxwindow got "..(dgsGetType(window) or getElementType(window) or type(window)))
+    assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsDxGUICloseWindow at at argument 1, expect dgs-dxwindow got "..(dgsGetType(window) or getElementType(window) or type(window)))
     triggerEvent("onClientDgsDxWindowClose",window)
 	if not wasEventCancelled() then
 		return destroyElement(window)

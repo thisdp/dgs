@@ -1,5 +1,7 @@
 schemeColor = {}
 defcolor = {}
+defcolor.disabledColor = true
+defcolor.disabledColorPercent = 0.8
 defcolor.button = {}
 defcolor.button.color = {tocolor(0,120,200,200),tocolor(0,90,255,200),tocolor(50,90,250,200)}
 defcolor.button.textcolor = tocolor(255,255,255,255)

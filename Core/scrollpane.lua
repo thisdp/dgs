@@ -1,10 +1,10 @@
 function dgsDxCreateScrollPane(x,y,sx,sy,relative,parent)
-	assert(tonumber(x),"@dgsDxCreateScrollPane argument 1,expect number got "..type(x))
-	assert(tonumber(y),"@dgsDxCreateScrollPane argument 2,expect number got "..type(y))
-	assert(tonumber(sx),"@dgsDxCreateScrollPane argument 3,expect number got "..type(sx))
-	assert(tonumber(sy),"@dgsDxCreateScrollPane argument 4,expect number got "..type(sy))
+	assert(tonumber(x),"Bad argument @dgsDxCreateScrollPane at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsDxCreateScrollPane at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsDxCreateScrollPane at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsDxCreateScrollPane at argument 4, expect number got "..type(sy))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsDxCreateScrollPane argument 6,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateScrollPane at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true) or table.insert(MaxFatherTable,1,scrollpane)
@@ -216,6 +216,6 @@ function sortScrollPane(source,parent)
 end
 
 function dgsDxScrollPaneGetScrollBar(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","@dgsDxScrollPaneGetScrollBar at argument 1,expect dgs-dxscrollpane got "..tostring(dgsGetType(scrollpane) or type(scrollpane)))
+	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsDxScrollPaneGetScrollBar at at argument 1, expect dgs-dxscrollpane got "..tostring(dgsGetType(scrollpane) or type(scrollpane)))
 	return dgsGetData(scrollpane,"scrollbars")
 end

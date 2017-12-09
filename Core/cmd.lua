@@ -2,12 +2,12 @@
 eventHandlers = {}
 
 function dgsDxCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgcolor)
-	assert(tonumber(x),"@dgsDxCreateCmd argument 1,expect number got "..type(x))
-	assert(tonumber(y),"@dgsDxCreateCmd argument 2,expect number got "..type(y))
-	assert(tonumber(sx),"@dgsDxCreateCmd argument 3,expect number got "..type(sx))
-	assert(tonumber(sy),"@dgsDxCreateCmd argument 4,expect number got "..type(sy))
+	assert(tonumber(x),"Bad argument @dgsDxCreateCmd at argument 1, expect number [ got "..type(x).." ]")
+	assert(tonumber(y),"Bad argument @dgsDxCreateCmd at argument 2, expect number [ got "..type(y).." ]")
+	assert(tonumber(sx),"Bad argument @dgsDxCreateCmd at argument 3, expect number [ got "..type(sx).." ]")
+	assert(tonumber(sy),"Bad argument @dgsDxCreateCmd at argument 4, expect number [ got "..type(sy).." ]")
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsDxCreateCmd argument 6,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateCmd at argument 6, expect dgs-dxgui [ got "..dgsGetType(parent).." ]")
 	end
 	local cmd = createElement("dgs-dxcmd")
 	scalex,scaley = tonumber(scalex) or 1,tonumber(scaley) or 1
@@ -45,8 +45,8 @@ function dgsDxCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgc
 end
 
 function dgsDxCmdSetMode(cmd,mode,output)
-	assert(dgsGetType(cmd) == "dgs-dxcmd","@dgsDxCmdSetMode argument 1,expect dgs-dxcmd got "..dgsGetType(cmd))
-	assert(type(mode) == "string","@dgsDxCMDSetMode argument 2, expect string got "..type(mode))
+	assert(dgsGetType(cmd) == "dgs-dxcmd","Bad argument @dgsDxCmdSetMode at argument 1, expect dgs-dxcmd [ got "..dgsGetType(cmd).." ]")
+	assert(type(mode) == "string","Bad argument @dgsDxCMDSetMode at argument 2, expect string [ got "..type(mode).." ]")
 	if mode == "function" or mode == "event" then
 		triggerEvent("onCMDModePreChange",cmd,mode)
 		if not wasEventCancelled() then
@@ -61,13 +61,13 @@ function dgsDxCmdSetMode(cmd,mode,output)
 end
 
 function dgsDxCmdClearText(cmd)
-	assert(dgsGetType(cmd) == "dgs-dxcmd","@dgsDxCmdSetMode argument 1,expect dgs-dxcmd got "..dgsGetType(cmd))
+	assert(dgsGetType(cmd) == "dgs-dxcmd","Bad argument @dgsDxCmdSetMode at argument 1, expect dgs-dxcmd [ got "..dgsGetType(cmd).." ]")
 	dgsSetData(cmd,"texts",{})
 end
 
 function dgsDxCmdAddEventToWhiteList(cmd,rules)
-	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","@dgsDxCmdAddEventToWhiteList argument 1,expect dgs-dxcmd or string('all') got "..(dgsGetType(cmd) or type(cmd)))
-	assert(type(rules) == "table","@dgsDxCmdAddEventToWhiteList argument 2,expect table got "..type(rules))
+	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsDxCmdAddEventToWhiteList at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetType(cmd).." ]")
+	assert(type(rules) == "table","Bad argument @dgsDxCmdAddEventToWhiteList at argument 2, expect table [ got "..type(rules).." ]")
 	if cmd == "all" then
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
 			local oldrule = dgsGetData(v,"whitelist")
@@ -87,8 +87,8 @@ function dgsDxCmdAddEventToWhiteList(cmd,rules)
 end
 
 function dgsDxCmdRemoveEventFromWhiteList(cmd,rules)
-	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","@dgsDxCmdRemoveEventFromWhiteList argument 1,expect dgs-dxcmd or string('all') got "..(dgsGetType(cmd) or type(cmd)))
-	assert(type(rules) == "table","@dgsDxCmdAddEventToWhiteList argument 2,expect table got "..type(rules))
+	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsDxCmdRemoveEventFromWhiteList at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetType(cmd).." ]")
+	assert(type(rules) == "table","Bad argument @dgsDxCmdAddEventToWhiteList at argument 2, expect table [ got "..type(rules).." ]")
 	if cmd == "all" then
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
 			local oldrule = dgsGetData(v,"whitelist")
@@ -108,7 +108,7 @@ function dgsDxCmdRemoveEventFromWhiteList(cmd,rules)
 end
 
 function dgsDxCmdRemoveAllEvents(cmd)
-	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","@dgsDxCmdRemoveAllEvents argument 1,expect dgs-dxcmd or string('all') got "..(dgsGetType(cmd) or type(cmd)))
+	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsDxCmdRemoveAllEvents at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetType(cmd).." ]")
 	if cmd == "all" then
 		cmdBaseWhiteList = {}
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
@@ -120,8 +120,8 @@ function dgsDxCmdRemoveAllEvents(cmd)
 end
 
 function dgsDxCmdIsInWhiteList(cmd,rule)
-	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","@dgsDxCmdIsInWhiteList argument 1,expect dgs-dxcmd or string('all') got "..(dgsGetType(cmd) or type(cmd)))
-	assert(type(rule) == "string","@dgsDxCmdIsInWhiteList argument 2,expect string got "..type(rule))
+	assert(dgsGetType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsDxCmdIsInWhiteList at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetType(cmd).." ]")
+	assert(type(rule) == "string","Bad argument @dgsDxCmdIsInWhiteList at argument 2, expect string [ got "..type(rule).." ]")
 	if table.find(preinstallWhiteList,rule) then
 		return true
 	else
@@ -140,6 +140,7 @@ function dgsDxCmdIsInWhiteList(cmd,rule)
 end
 
 function outputCmdMessage(cmd,str)
+	assert(dgsGetType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect dgs-dxcmd [ got "..dgsGetType(cmd).." ]")
 	local texts = dgsGetData(cmd,"texts")
 	table.insert(texts,1,dgsGetChars(str))
 end
@@ -190,15 +191,15 @@ end
 
 function dgsDxCmdAddCommandHandler(str,func)
 	eventHandlers[str] = eventHandlers[str] or {}
-	assert(type(str) == "string","bad argument 'addEventHandler' at 1 ,expect string got "..type(str))
-	assert(type(func) == "function","bad argument 'addEventHandler' at 2 ,expect function got "..type(func))
+	assert(type(str) == "string","bad argument @addEventHandler at argument 1, expect string [ got "..type(str).." ]")
+	assert(type(func) == "function","bad argument @addEventHandler at argument 2, expect function [ got "..type(func).." ]")
 	return table.insert(eventHandlers[str],func)
 end
 
 function dgsDxCmdRemoveCommandHandler(str,func)
 	eventHandlers[str] = eventHandlers[str] or {}
-	assert(type(str) == "string","bad argument 'addEventHandler' at 1 ,expect string got "..type(str))
-	assert(type(func) == "function","bad argument 'addEventHandler' at 2 ,expect function got "..type(func))
+	assert(type(str) == "string","bad argument @addEventHandler at argument 1, expect string [ got "..type(str).." ]")
+	assert(type(func) == "function","bad argument @addEventHandler at argument 2, expect function [ got "..type(func).." ]")
 	local id = table.find(eventHandlers[str],func)
 	if id then
 		return table.remove(eventHandlers[str],id)
@@ -232,7 +233,7 @@ function executeCmdCommand(cmd,str,...)
 end
 
 function dgsDxEventCmdSetPreName(cmd,preName)
-    assert(dgsGetType(cmd) == "dgs-dxcmd","@dgsDxEventCmdSetPreName argument 1,expect dgs-dxcmd got "..(dgsGetType(cmd) or type(cmd)))
-    assert(type(preName) == "string","@dgsDxEventCmdSetPreName argument 2,expect string got "..type(preName))
+    assert(dgsGetType(cmd) == "dgs-dxcmd","Bad argument @dgsDxEventCmdSetPreName at argument 1, expect dgs-dxcmd [ got "..dgsGetType(cmd).." ]")
+    assert(type(preName) == "string","Bad argument @dgsDxEventCmdSetPreName at argument 2, expect string [ got "..type(preName).." ]")
     return dgsSetData(cmd,"preName",preName)
 end

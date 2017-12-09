@@ -18,10 +18,10 @@ addEvent("onClientDgsDxFocus",true)
 addEvent("onClientDgsDxBlur",true)
 addEvent("onClientDgsDxGUICursorMove",true)
 addEvent("onClientDgsDxTabPanelTabSelect",true)
-addEvent("onClientDgsDxRadioButtonChanged",true)
-addEvent("onClientDgsDxCheckBoxChanged",true)
+addEvent("onClientDgsDxRadioButtonChange",true)
+addEvent("onClientDgsDxCheckBoxChange",true)
 addEvent("onClientDgsDxComboBoxSelect",true)
-addEvent("onClientDgsDxComboBoxStateChanged",true)
+addEvent("onClientDgsDxComboBoxStateChange",true)
 addEvent("onClientDgsDxEditPreSwitch",true)
 addEvent("onClientDgsDxEditSwitched",true)
 
@@ -116,8 +116,13 @@ function string.split(s, delim, mode)
 	end
 end
 
-function fromcolor(int)
-	local a,r,g,b = getColorFromString(string.format("#%.8x",int))
+function fromcolor(int,useMath)
+	local a,r,g,b
+	if useMath then
+		b,g,r,a = bitExtract(int,0,8),bitExtract(int,8,8),bitExtract(int,16,8),bitExtract(int,24,8)
+	else
+		a,r,g,b = getColorFromString(string.format("#%.8x",int))
+	end
 	return r,g,b,a
 end
 
