@@ -24,6 +24,7 @@
 	dgsSetData(gridlist,"rowtextcolor",schemeColor.gridlist.rowtextcolor)
 	dgsSetData(gridlist,"columnRelative",true)
 	dgsSetData(gridlist,"columnMoveOffset",0)
+	dgsSetData(gridlist,"UseImage",false)
 	dgsSetData(gridlist,"sectionColumnOffset",-10)
 	dgsSetData(gridlist,"defaultColumnOffset",0)
 	dgsSetData(gridlist,"font",systemFont)
@@ -156,8 +157,11 @@ end
 
 function dgsDxGridListRemoveColumn(gridlist,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListRemoveColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsDxGridListRemoveColumn at argument 2, expect number got "..dgsGetType(pos))
 	local columnData = dgsElementData[gridlist].columnData
+	assert(columnData[pos],"Bad argument @dgsDxGridListRemoveColumn at argument 2, column index is out of range [max "..#columnData..", got "..pos.."]")
 	local oldLen = columnData[pos][3]
+    local pLen = columnData[pos][2]
 	table.remove(columnData,pos)
 	local lastColumnLen = 10
 	for k,v in ipairs(columnData) do
@@ -166,7 +170,7 @@ function dgsDxGridListRemoveColumn(gridlist,pos)
 			lastColumnLen = columnData[k]
 		end
 	end
-	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[gridlist].absSize[2]
 	local scrollbars = dgsElementData[gridlist].scrollbars
 	local scrollBarThick = dgsElementData[gridlist].scrollBarThick
 	if lastColumnLen > (sx-scrollBarThick) then
@@ -174,7 +178,7 @@ function dgsDxGridListRemoveColumn(gridlist,pos)
 	else
 		dgsDxGUISetVisible(scrollbars[2],false)
 	end
-	dgsSetData(scrollbars[2],"length",{(sx-scrollBarThick)/columnData[pos][2],true})
+	dgsSetData(scrollbars[2],"length",{(sx-scrollBarThick)/pLen,true})
 	dgsSetData(scrollbars[2],"position",dgsElementData[scrollbars[2]].position)
 	return true
 end
@@ -264,14 +268,14 @@ end
 -----------------------------Row
 --[[
 	rowData Struct:
-		-4					-3				-2				-1				0								1										2										...
-		columnOffset		bgImage			selectable		clickable		bgColor							column1									column2									...
+		-4					-3				-2				-1				0								1																					2																					...
+		columnOffset		bgImage			selectable		clickable		bgColor							column1																				column2																				...
 {
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font},		{text,color,colorcoded,scalex,scaley,font},		...		},
-	{	the same as preview table																										},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		...		},
+	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		{text,color,colorcoded,scalex,scaley,font,image,{imagex,imagey,imagew,imageh}},		...		},
+	{	the same as preview table																																													},
 }
 
 	table[i](i<=0) isn't counted in #table
@@ -362,7 +366,7 @@ function dgsDxGridListGetRowCount(gridlist)
 	return #dgsElementData[gridlist].rowData
 end
 
-function dgsDxGridListSetItemText(gridlist,row,column,text,develop)
+function dgsDxGridListSetItemText(gridlist,row,column,text,image)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListSetItemText at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsDxGridListSetItemText at argument 2, expect number got "..type(row))
 	assert(type(column) == "number","Bad argument @dgsDxGridListSetItemText at argument 3, expect number got "..type(column))
@@ -406,7 +410,7 @@ function dgsDxGridListGetItemText(gridlist,row,column)
 	assert(type(row) == "number","Bad argument @dgsDxGridListGetItemText at argument 2, expect number got "..type(row))
 	assert(type(column) == "number","Bad argument @dgsDxGridListGetItemText at argument 3, expect number got "..type(column))
 	local rowData = dgsElementData[gridlist].rowData
-	return rowData[row][column][1]
+	return rowData[row][column][1],rowData[row][column][7]
 end
 
 function dgsDxGridListGetSelectedItem(gridlist)
@@ -562,11 +566,15 @@ function configGridList(source)
 	end
 end
 
-function dgsDxGridListResetScrollBarPosition(gridlist)
+function dgsDxGridListResetScrollBarPosition(gridlist,vertical,horizontal)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsDxGridListGetScrollBar at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local scrollbars = dgsElementData[gridlist].scrollbars
-	dgsDxScrollBarSetScrollBarPosition(scrollbars[1],0)
-	dgsDxScrollBarSetScrollBarPosition(scrollbars[2],0)
+	if not vertical then
+		dgsDxScrollBarSetScrollBarPosition(scrollbars[1],0)
+	end
+	if not horizontal then
+		dgsDxScrollBarSetScrollBarPosition(scrollbars[2],0)
+	end
 	return true
 end
 

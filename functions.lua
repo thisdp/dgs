@@ -150,10 +150,52 @@ function dgsDxGUISetProperty(dxgui,key,value,...)
 	return dgsSetData(dxgui,tostring(key),value)
 end
 
+function dgsDxGUISetProperties(dxgui,theTable,additionArg)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(type(theTable)=="table","Bad argument @dgsDxGUISetProperties at argument 2, expect a table got "..type(theTable))
+	assert(additionArg and type(additionArg)=="table","Bad argument @dgsDxGUISetProperties at argument 3, expect a table or none got "..type(additionArg))
+	local success = true
+	local dgsType = dgsGetType(dxgui)
+	for key,value in pairs(theTable) do
+		local skip = false
+		if key == "functions" then
+			value = {loadstring(value),additionArg.functions or {}}
+		elseif key == "textcolor" then
+			if not tonumber(value) then
+				assert(false,"Bad argument @dgsDxGUISetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
+			end
+		elseif key == "text" then
+			if dgsType == "dgs-dxtab" then
+				local tabpanel = dgsElementData[dxgui]["parent"]
+				local font = dgsElementData[tabpanel]["font"]
+				local wid = min(max(dxGetTextWidth(value,dgsElementData[dxgui]["textsize"][1],font),dgsElementData[tabpanel]["tabminwidth"]),dgsElementData[tabpanel]["tabmaxwidth"])
+				local owid = dgsElementData[tab]["width"]
+				dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel]["allleng"]-owid+wid)
+				dgsSetData(dxgui,"width",wid)
+			elseif dgsType == "dgs-dxmemo" then
+				success = success and handleDxMemoText(dxgui,value)
+				skip = true
+			end
+		end
+		if not skip then
+			success = success and dgsSetData(dxgui,tostring(key),value)
+		end
+	end
+	return success
+end
+
 function dgsDxGUIGetProperty(dxgui,key)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsElementData[dxgui] then
 		return dgsElementData[dxgui][key]
+	end
+	return false
+end
+
+function dgsDxGUIGetProperties(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	if dgsElementData[dxgui] then
+		return dgsElementData[dxgui]
 	end
 	return false
 end
@@ -194,15 +236,13 @@ function dgsDxGUIGetVisible(dxgui)
 end
 
 function dgsDxGUISetSide(dxgui,side,topleft)
-	if dgsIsDxElement(dxgui) then
-		return dgsSetData(dxgui,topleft and "tob" or "lor",side)
-	end
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	return dgsSetData(dxgui,topleft and "tob" or "lor",side)
 end
 
 function dgsDxGUIGetSide(dxgui,topleft)
-	if dgsIsDxElement(dxgui) then
-		return dgsGetData(dxgui,topleft and "tob" or "lor")
-	end
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	return dgsGetData(dxgui,topleft and "tob" or "lor")
 end
 
 lastFront = false
@@ -401,7 +441,12 @@ end
 
 function dgsDxGUIGetText(dxgui)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsElementData[dxgui].text
+	local dxtype = dgsGetType(dxgui)
+	if dxtype == "dgs-dxmemo" then
+		return dgsDxMemoGetPartOfText(dxgui)
+	else
+		return dgsElementData[dxgui].text
+	end
 end
 
 function dgsDxSetShaderValue(...)

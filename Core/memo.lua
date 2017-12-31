@@ -378,6 +378,14 @@ function handleDxMemoText(dxgui,text,noclear,noAffectCaret,index,line)
 	end
 end
 
+function dgsDxMemoInsertText(dxgui,index,line,text,noAffectCaret)
+	assert(dgsGetType(dxgui) == "dgs-dxmemo","Bad argument @dgsDxMemoInsertText at argument 1, expect dgs-dxmemo got "..dgsGetType(dxgui))
+	assert(dgsGetType(index) == "number","Bad argument @dgsDxMemoInsertText at argument 2, expect number got "..dgsGetType(index))
+	assert(dgsGetType(line) == "number","Bad argument @dgsDxMemoInsertText at argument 3, expect number got "..dgsGetType(line))
+	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsDxMemoInsertText at argument 4, expect string/number got "..dgsGetType(text))
+	return handleDxMemoText(dxgui,tostring(text),true,noAffectCaret,index,line)
+end
+
 function dgsDxMemoDeleteText(dxgui,fromindex,fromline,toindex,toline,noAffectCaret)
 	assert(dgsGetType(dxgui) == "dgs-dxmemo","Bad argument @dgsDxMemoDeleteText at argument 1, expect dgs-dxmemo got "..dgsGetType(dxgui))
 	local textTable = dgsElementData[dxgui].text

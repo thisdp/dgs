@@ -3,6 +3,7 @@
 	<file src="dsm.ttf" />
 	<file src="colorScheme.txt" />
 	<file src="image/combobox/arrow.fx" />
+	<file src="image/eda/ellipse.fx" />
 
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -10,7 +11,7 @@
 
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
-	<script src="Core/cyclehitshape.lua" type="client" />
+	<script src="Core/eda.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
 	<script src="Core/gridlist.lua" type="client" />
 	<script src="Core/image.lua" type="client" />
@@ -72,6 +73,8 @@
 	<export function="dgsStopAlphaing" type="client" />
 	<export function="dgsDxGUIGetProperty" type="client" />
 	<export function="dgsDxGUISetProperty" type="client" />
+	<export function="dgsDxGUIGetProperties" type="client" />
+	<export function="dgsDxGUISetProperties" type="client" />
 	<export function="dgsDxGUIGetVisible" type="client" />
 	<export function="dgsDxGUISetVisible" type="client" />
 	<export function="dgsDxGUIGetEnabled" type="client" />
@@ -96,6 +99,8 @@
 	<export function="dgsDxWindowSetSizable" type="client" />
 	<export function="dgsDxWindowSetMovable" type="client" />
 	<export function="dgsDxGUICloseWindow" type="client" />
+	<export function="dgsDxWindowSetCloseButtonEnabled" type="client" />
+	<export function="dgsDxWindowGetCloseButtonEnabled" type="client" />
 
 	<export function="dgsDxCreateScrollPane" type="client" />
 	<export function="dgsDxScrollPaneGetScrollBar" type="client" />
@@ -165,6 +170,7 @@
 	<export function="dgsDxMemoGetReadOnly" type="client" />
 	<export function="dgsDxMemoGetPartOfText" type="client" />
 	<export function="dgsDxMemoDeleteText" type="client" />
+	<export function="dgsDxMemoInsertText" type="client" />
 	<export function="dgsDxMemoGetScrollBar" type="client" />
 
 	<export function="dgsDxCreateImage" type="client" />
@@ -235,10 +241,9 @@
 	<export function="dgsDxGridListSetItemData" type="client" />
 	<export function="dgsDxGridListSetRowAsSection" type="client" />
 	
-	<export function="dgsDxCreateCycleHitShape" type="client" />
-	<export function="dgsDxSetCycleHitShapeRadius" type="client" />
-	<export function="dgsDxGetCycleHitShapeRadius" type="client" />
-	<export function="dgsDxCycleHitShapeSetDebugMode" type="client" />
+	<export function="dgsDxCreateEDA" type="client" />
+	<export function="dgsDxEDASetDebugModeEnabled" type="client" />
+	<export function="dgsDxEDAGetDebugModeEnabled" type="client" />
 	<min_mta_version server="1.4.0" />
 	<download_priority_group>999</download_priority_group>
 </meta>

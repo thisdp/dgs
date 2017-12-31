@@ -20,9 +20,11 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	dgsSetData(edit,"masked",false)
 	dgsSetData(edit,"maskText","*")
 	dgsSetData(edit,"showPos",0)
+	dgsSetData(edit,"sideWhite",{2,0})
+	dgsSetData(edit,"center",false)
 	dgsSetData(edit,"cursorStyle",0)
 	dgsSetData(edit,"cursorThick",1.2)
-	dgsSetData(edit,"cursorOffset",0)
+	dgsSetData(edit,"cursorOffset",3)
 	dgsSetData(edit,"readOnly",false)
 	dgsSetData(edit,"readOnlyCaretShow",false)
 	dgsSetData(edit,"clearSelection",true)
@@ -51,7 +53,9 @@ function dgsDxCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onClientDgsDxGUICreate",edit)
 	local sx,sy = dgsGetSize(edit,false)
-	local renderTarget = dxCreateRenderTarget(sx-4,sy,true)
+	local sideWhite = dgsElementData[edit].sideWhite
+	local sizex,sizey = sx-sideWhite[1]*2,sy-sideWhite[2]*2
+	local renderTarget = dxCreateRenderTarget(math.floor(sizex),math.floor(sizey),true)
 	dgsSetData(edit,"renderTarget",renderTarget)
 	dgsDxEditSetCaretPosition(edit,utf8.len(tostring(text) or ""))
 	return edit
@@ -83,10 +87,18 @@ function dgsDxEditMoveCaret(edit,offset,selectText)
 	end
 	local showPos = dgsElementData[edit].showPos
 	local font = dgsElementData[edit].font
-	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textsize[1],font)
-	local sx,sy = dgsGetSize(edit)
-	if nowLen+showPos > sx-4 then
-		dgsSetData(edit,"showPos",sx-4-nowLen)
+	local sx = dgsElementData[edit].absSize[1]
+	local sideWhite = dgsElementData[edit].sideWhite
+	local startX = 0
+	local center = dgsElementData[edit].center
+	if center then
+		local txtSizX = dgsElementData[edit].textsize[1]
+		local alllen = dxGetTextWidth(text,txtSizX,font)
+		startX = sx/2-alllen/2-showPos/2
+	end
+	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textsize[1],font)+startX
+	if nowLen+showPos > sx-sideWhite[1] then
+		dgsSetData(edit,"showPos",sx-sideWhite[1]-nowLen)
 	elseif nowLen+showPos < 0 then
 		dgsSetData(edit,"showPos",-nowLen)
 	end
@@ -121,13 +133,22 @@ function dgsDxEditSetCaretPosition(edit,pos,selectText)
 	end
 	local showPos = dgsElementData[edit].showPos
 	local font = dgsElementData[edit].font
-	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsGetData(edit,"textsize")[1],font)
-	local sx,sy = dgsGetSize(edit,false)
-	if nowLen+showPos > sx-4 then
-		dgsSetData(edit,"showPos",sx-4-nowLen)
+	local sx = dgsElementData[edit].absSize[1]
+	local sideWhite = dgsElementData[edit].sideWhite
+	local startX = 0
+	local center = dgsElementData[edit].center
+	if center then
+		local txtSizX = dgsElementData[edit].textsize[1]
+		local alllen = dxGetTextWidth(text,txtSizX,font)
+		startX = sx/2-alllen/2-showPos/2
+	end
+	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsGetData(edit,"textsize")[1],font)+startX
+	if nowLen+showPos > sx-sideWhite[1] then
+		dgsSetData(edit,"showPos",sx-sideWhite[1]-nowLen)
 	elseif nowLen+showPos < 0 then
 		dgsSetData(edit,"showPos",-nowLen)
 	end
+	--print(nowLen+showPos)
 	return true
 end
 
@@ -180,7 +201,8 @@ function configEdit(source)
 	local myedit = dgsGetData(source,"edit")
 	local x,y = unpack(dgsGetData(source,"absSize"))
 	guiSetSize(myedit,x,y,false)
-	local px,py = math.floor(x-4), math.floor(y)
+	local sideWhite = dgsElementData[source].sideWhite
+	local px,py = math.floor(x-sideWhite[1]*2), math.floor(y-sideWhite[2]*2)
 	local renderTarget = dxCreateRenderTarget(px,py,true)
 	dgsSetData(source,"renderTarget",renderTarget)
 	local oldPos = dgsDxEditGetCaretPosition(source)
@@ -211,7 +233,15 @@ function searchEditMousePosition(dxedit,posx,posy)
 		local txtSizX = dgsElementData[dxedit].textsize[1]
 		local offset = dgsElementData[dxedit].showPos
 		local x = dgsGetPosition(dxedit,false,true)
-		local pos = posx-x-offset
+		local center = dgsElementData[dxedit].center 
+		local sideWhite = dgsElementData[dxedit].sideWhite
+		local startX = sideWhite[1]
+		if center then
+			local sx,sy = dgsElementData[dxedit].absSize[1],dgsElementData[dxedit].absSize[2]
+			local alllen = dxGetTextWidth(text,txtSizX,font)
+			startX = sx/2-alllen/2-offset/2
+		end
+		local pos = posx-x-offset-startX
 		local templen = 0
 		for i=1,sto do
 			local strlen = dxGetTextWidth(utf8.sub(text,sfrom+1,sto/2+sfrom/2),txtSizX,font)

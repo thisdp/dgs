@@ -88,3 +88,26 @@ function editTest() --Test Tab Switch for edit.
 	dgsDxGUIBringToFront(edit,"left")
 	dgsDxEditSetCaretPosition (edit, 1)
 end
+
+function edatest()
+	local eda = dgsDxCreateEDA(400,400,300,100,false)
+	dgsDxEDASetDebugMode(eda,true)
+end
+function gridlistTest()
+	gridlist = dgsDxCreateGridList(300,300,300,100,false)
+	dgsDxGridListAddColumn(gridlist,"test",0.7)
+	for i=1,10 do
+		local row = dgsDxGridListAddRow(gridlist)
+		dgsDxGridListSetItemText(gridlist,row,1,tostring(i))
+	end
+	
+	addEventHandler("onClientDgsDxGridListItemDoubleClick",gridlist,function()
+		outputChatBox("a")
+	end)
+end
+
+function centerEdit()
+	edit = dgsDxCreateEdit(300,300,300,100,"Test",false)
+	--dgsDxGUISetProperty(edit,"center",true)
+end
+--centerEdit()
