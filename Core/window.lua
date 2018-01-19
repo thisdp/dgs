@@ -1,8 +1,8 @@
-function dgsDxCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,titcolor,bgimg,bgcolor,sidesize,nooffbutton)
-	assert(tonumber(x),"Bad argument @dgsDxCreateWindow at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsDxCreateWindow at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsDxCreateWindow at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsDxCreateWindow at argument 4, expect number got "..type(sy))
+function dgsCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,titcolor,bgimg,bgcolor,sidesize,nooffbutton)
+	assert(tonumber(x),"Bad argument @dgsCreateWindow at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsCreateWindow at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsCreateWindow at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsCreateWindow at argument 4, expect number got "..type(sy))
 	local window = createElement("dgs-dxwindow")
 	dgsSetType(window,"dgs-dxwindow")
 	table.insert(MaxFatherTable,window)
@@ -24,27 +24,27 @@ function dgsDxCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,
 	dgsSetData(window,"minSize",{60,60})
 	dgsSetData(window,"maxSize",{20000,20000})
 	insertResourceDxGUI(sourceResource,window)
-	triggerEvent("onClientDgsDxGUIPreCreate",window)
+	triggerEvent("onDgsPreCreate",window)
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
-	triggerEvent("onClientDgsDxGUICreate",window)
+	triggerEvent("onDgsCreate",window)
 	if not nooffbutton then
-		local buttonOff = dgsDxCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
+		local buttonOff = dgsCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
 		dgsSetData(window,"closeButton",buttonOff)
-		dgsDxGUISetSide(buttonOff,"right",false)
+		dgsSetSide(buttonOff,"right",false)
 		dgsSetData(buttonOff,"ignoreParentTitle",true)
 		dgsSetPosition(buttonOff,30,0,false)
 	end
 	return window
 end
 
-function dgsDxWindowSetCloseButtonEnabled(window,bool)
-	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsDxWindowSetCloseButtonEnabled at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+function dgsWindowSetCloseButtonEnabled(window,bool)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetCloseButtonEnabled at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
 	local closeButton = dgsElementData[window].closeButton
 	if bool then
 		if not isElement(closeButton) then
-			local buttonOff = dgsDxCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
+			local buttonOff = dgsCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
 			dgsSetData(window,"closeButton",buttonOff)
-			dgsDxGUISetSide(buttonOff,"right",false)
+			dgsSetSide(buttonOff,"right",false)
 			dgsSetData(buttonOff,"ignoreParentTitle",true)
 			dgsSetPosition(buttonOff,30,0,false)
 			return true
@@ -59,13 +59,13 @@ function dgsDxWindowSetCloseButtonEnabled(window,bool)
 	return false
 end
 
-function dgsDxWindowGetCloseButtonEnabled(window)
-	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsDxWindowGetCloseButtonEnabled at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+function dgsWindowGetCloseButtonEnabled(window)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowGetCloseButtonEnabled at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
 	return isElement(dgsElementData[window].closeButton)
 end
 
-function dgsDxWindowSetSizable(window,bool)
-	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsDxWindowSetSizable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+function dgsWindowSetSizable(window,bool)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetSizable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
 	if dgsGetType(window) == "dgs-dxwindow" then
 		dgsSetData(window,"sizable",(bool and true) or false)
 		return true
@@ -73,8 +73,8 @@ function dgsDxWindowSetSizable(window,bool)
 	return false
 end
 
-function dgsDxWindowSetMovable(window,bool)
-	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsDxWindowSetMovable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+function dgsWindowSetMovable(window,bool)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetMovable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
     if dgsGetType(window) == "dgs-dxwindow" then
 		dgsSetData(window,"movable",(bool and true) or false)
 		return true
@@ -82,10 +82,13 @@ function dgsDxWindowSetMovable(window,bool)
 	return false
 end
 
-function dgsDxGUICloseWindow(window)
-    assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsDxGUICloseWindow at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
-    triggerEvent("onClientDgsDxWindowClose",window)
-	if not wasEventCancelled() then
+function dgsCloseWindow(window)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsCloseWindow at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+	triggerEvent("onDgsWindowClose",window)
+	local canceled = wasEventCancelled()
+	triggerEvent("onClientDgsDxWindowClose",window)
+	local canceled2 = wasEventCancelled()
+	if not canceled and not canceled2 then
 		return destroyElement(window)
 	end
 	return false

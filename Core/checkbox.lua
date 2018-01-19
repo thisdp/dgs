@@ -1,4 +1,4 @@
-local checkBox = {}
+checkBox = {}
 checkBox.false_ = dxCreateTexture("image/checkbox/cb_f.png")
 checkBox.true_ = dxCreateTexture("image/checkbox/cb_t.png")
 checkBox.inde_ = dxCreateTexture("image/checkbox/cb_i.png")
@@ -7,15 +7,15 @@ checkBox.true_cli = dxCreateTexture("image/checkbox/cb_t_s.png")
 checkBox.inde_cli = dxCreateTexture("image/checkbox/cb_i_s.png")
 
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
-function dgsDxCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t,defimg_i,hovimg_i,cliimg_i,defcolor_i,hovcolor_i,clicolor_i)
-	assert(tonumber(x),"Bad argument @dgsDxCreateCheckBox at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsDxCreateCheckBox at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsDxCreateCheckBox at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsDxCreateCheckBox at argument 4, expect number got "..type(sy))
-	assert(tonumber(sy),"Bad argument @dgsDxCreateCheckBox at argument 4, expect number got "..type(sy))
-	assert(not state or state == true,"@dgsDxCreateCheckBox at argument 6, expect boolean/nil got "..type(state))
+function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t,defimg_i,hovimg_i,cliimg_i,defcolor_i,hovcolor_i,clicolor_i)
+	assert(tonumber(x),"Bad argument @dgsCreateCheckBox at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsCreateCheckBox at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsCreateCheckBox at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
+	assert(tonumber(sy),"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
+	assert(not state or state == true,"@dgsCreateCheckBox at argument 6, expect boolean/nil got "..type(state))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateCheckBox at argument 8,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateCheckBox at argument 8,expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
@@ -64,28 +64,28 @@ function dgsDxCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scal
 	dgsSetData(cb,"CheckBoxState",state)
 	dgsSetData(cb,"rightbottom",{"left","center"})
 	insertResourceDxGUI(sourceResource,cb)
-	triggerEvent("onClientDgsDxGUIPreCreate",cb)
+	triggerEvent("onDgsPreCreate",cb)
 	calculateGuiPositionSize(cb,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onClientDgsDxGUICreate",cb)
+	triggerEvent("onDgsCreate",cb)
 	return cb
 end
 
-function dgsDxCheckBoxGetSelected(cb)
-	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsDxCheckBoxGetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
+function dgsCheckBoxGetSelected(cb)
+	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxGetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
 	return dgsElementData[cb].CheckBoxState
 end
 
-function dgsDxCheckBoxSetSelected(cb,state)
-	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsDxCheckBoxSetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
-	assert(not state or state == true,"Bad argument @dgsDxCheckBoxSetSelected at argument 2,expect boolean/nil got "..type(state))
+function dgsCheckBoxSetSelected(cb,state)
+	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxSetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
+	assert(not state or state == true,"Bad argument @dgsCheckBoxSetSelected at argument 2,expect boolean/nil got "..type(state))
 	local oldState = dgsElementData[cb].CheckBoxState
 	if state ~= oldState then
-		triggerEvent("onClientDgsDxCheckBoxChange",cb,state,oldState)
+		triggerEvent("onDgsCheckBoxChange",cb,state,oldState)
 	end
 	return true
 end
 
-addEventHandler("onClientDgsDxCheckBoxChange",resourceRoot,function(state)
+addEventHandler("onDgsCheckBoxChange",resourceRoot,function(state)
 	if not wasEventCancelled() then
 		dgsSetData(source,"CheckBoxState",state)
 	end

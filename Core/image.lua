@@ -1,10 +1,10 @@
-function dgsDxCreateImage(x,y,sx,sy,img,relative,parent,color)
-	assert(tonumber(x),"Bad argument @dgsDxCreateImage at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsDxCreateImage at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsDxCreateImage at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsDxCreateImage at argument 4, expect number got "..type(sy))
+function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
+	assert(tonumber(x),"Bad argument @dgsCreateImage at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsCreateImage at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsCreateImage at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsCreateImage at argument 4, expect number got "..type(sy))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateImage at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateImage at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local image = createElement("dgs-dximage")
 	dgsSetType(image,"dgs-dximage")
@@ -26,7 +26,7 @@ function dgsDxCreateImage(x,y,sx,sy,img,relative,parent,color)
 		table.insert(MaxFatherTable,image)
 	end
 	insertResourceDxGUI(sourceResource,image)
-	triggerEvent("onClientDgsDxGUIPreCreate",image)
+	triggerEvent("onDgsPreCreate",image)
 	calculateGuiPositionSize(image,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(texture) and not getElementType(texture) == "shader" then
@@ -34,22 +34,22 @@ function dgsDxCreateImage(x,y,sx,sy,img,relative,parent,color)
 	end
 	dgsSetData(image,"imagesize",{mx,my})
 	dgsSetData(image,"imagepos",{0,0})
-	triggerEvent("onClientDgsDxGUICreate",image)
+	triggerEvent("onDgsCreate",image)
 	return image
 end
 
-function dgsDxImageGetImage(gui)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsDxImageGetImage at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageGetImage(gui)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetImage at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	return dgsElementData[gui].image
 end
 
-function dgsDxImageSetImage(gui,img)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsDxImageSetImage at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageSetImage(gui,img)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImage at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	return dgsSetData(gui,"image",img)
 end
 
-function dgsDxImageSetImageSize(gui,sx,sy)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsDxImageSetImageSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageSetImageSize(gui,sx,sy)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImageSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	local texture = dgsSetData(gui,"image")
 	local mx,my = dxGetMaterialSize(texture)
 	sx = tonumber(sx) or mx
@@ -57,19 +57,19 @@ function dgsDxImageSetImageSize(gui,sx,sy)
 	return dgsSetData(gui,"imagesize",{sx,sy})
 end
 
-function dgsDxImageGetImageSize(gui)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsDxImageGetImageSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageGetImageSize(gui)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetImageSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	return dgsElementData[gui].imagesize[1],dgsElementData[gui].imagesize[2]
 end
 
-function dgsDxImageSetImagePosition(gui,x,y)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsDxImageSetImagePosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageSetImagePosition(gui,x,y)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImagePosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	x = tonumber(x) or 0
 	y = tonumber(y) or 0
 	return dgsSetData(gui,"imagepos",{x,y})
 end
 
-function dgsDxImageGetImagePosition(gui,x,y)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsDxImageGetImagePosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageGetImagePosition(gui,x,y)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetImagePosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	return dgsElementData[gui].imagepos[1],dgsElementData[gui].imagepos[2]
 end

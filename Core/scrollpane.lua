@@ -1,16 +1,16 @@
-function dgsDxCreateScrollPane(x,y,sx,sy,relative,parent)
-	assert(tonumber(x),"Bad argument @dgsDxCreateScrollPane at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsDxCreateScrollPane at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsDxCreateScrollPane at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsDxCreateScrollPane at argument 4, expect number got "..type(sy))
+function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
+	assert(tonumber(x),"Bad argument @dgsCreateScrollPane at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsCreateScrollPane at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsCreateScrollPane at argument 4, expect number got "..type(sy))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateScrollPane at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollPane at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true) or table.insert(MaxFatherTable,1,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	dgsSetData(scrollpane,"scrollBarThick",20,true)
-	triggerEvent("onClientDgsDxGUIPreCreate",scrollpane)
+	triggerEvent("onDgsPreCreate",scrollpane)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
 	local sx,sy = unpack(dgsGetData(scrollpane,"absSize"))
 	local x,y = unpack(dgsGetData(scrollpane,"absPos"))
@@ -24,20 +24,20 @@ function dgsDxCreateScrollPane(x,y,sx,sy,relative,parent)
 			titleOffset = dgsGetData(parent,"titlesize") or 0
 		end
 	end
-	local scrollbar1 = dgsDxCreateScrollBar(x+sx-scrbThick,y-titleOffset,scrbThick,sy-scrbThick,false,false,parent)
-	local scrollbar2 = dgsDxCreateScrollBar(x,y+sy-scrbThick-titleOffset,sx-scrbThick,scrbThick,true,false,parent)
-	dgsDxGUISetVisible(scrollbar1,false)
-	dgsDxGUISetVisible(scrollbar2,false)
+	local scrollbar1 = dgsCreateScrollBar(x+sx-scrbThick,y-titleOffset,scrbThick,sy-scrbThick,false,false,parent)
+	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scrbThick-titleOffset,sx-scrbThick,scrbThick,true,false,parent)
+	dgsSetVisible(scrollbar1,false)
+	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollpane,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(scrollbar1,"parent_sp",scrollpane)
 	dgsSetData(scrollbar2,"parent_sp",scrollpane)
-	triggerEvent("onClientDgsDxGUICreate",scrollpane)
+	triggerEvent("onDgsCreate",scrollpane)
 	return scrollpane
 end
 
-addEventHandler("onClientDgsDxGUICreate",root,function()
+addEventHandler("onDgsCreate",root,function()
 	local parent = dgsGetParent(source)
 	if isElement(parent) and dgsGetType(parent) == "dgs-dxscrollpane" then
 		local relativePos,relativeSize = unpack(dgsGetData(source,"relative"))
@@ -80,8 +80,8 @@ addEventHandler("onClientDgsDxGUICreate",root,function()
 		local scrollbar = dgsGetData(parent,"scrollbars")
 		local xthick,ythick = 0,0
 		if scrollbar then
-			xthick = dgsDxGUIGetVisible(scrollbar[1]) and scrbThick or 0
-			ythick = dgsDxGUIGetVisible(scrollbar[2]) and scrbThick or 0
+			xthick = dgsGetVisible(scrollbar[1]) and scrbThick or 0
+			ythick = dgsGetVisible(scrollbar[2]) and scrbThick or 0
 		end
 		local sx,sy = unpack(dgsGetData(parent,"absSize"))
 		local renderTarget = dxCreateRenderTarget(sx-xthick,sy-ythick,true)
@@ -96,29 +96,29 @@ function dgsScrollPaneUpdateScrollBar(scrollpane,ntempx,ntempy)
 			local ntmpx,ntmpy = unpack(dgsGetData(scrollpane,"maxChildSize"))
 			ntempx,ntempy = ntempx or ntmpx,ntempy or ntmpy
 			local sx,sy = unpack(dgsGetData(scrollpane,"absSize"))
-			local scbstate = {dgsDxGUIGetVisible(scrollbar[1]),dgsDxGUIGetVisible(scrollbar[2])}
+			local scbstate = {dgsGetVisible(scrollbar[1]),dgsGetVisible(scrollbar[2])}
 			local scbThick = dgsGetData(scrollpane,"scrollBarThick")
 			local xthick,ythick = scbstate[1] and scbThick or 0,scbstate[2] and scbThick or 0
 			
 			if ntempx then
 				if ntempx > sx then
-					dgsDxGUISetVisible(scrollbar[2],true)
+					dgsSetVisible(scrollbar[2],true)
 				else
-					dgsDxGUISetVisible(scrollbar[2],false)
+					dgsSetVisible(scrollbar[2],false)
 				end
 			end
 			if ntempy then
 				if ntempy > sy then
-					dgsDxGUISetVisible(scrollbar[1],true)
+					dgsSetVisible(scrollbar[1],true)
 				else
-					dgsDxGUISetVisible(scrollbar[1],false)
+					dgsSetVisible(scrollbar[1],false)
 				end
 			end
 		end
 	end
 end
 
-addEventHandler("onClientDgsDxGUIDestroy",root,function()
+addEventHandler("onDgsDestroy",root,function()
 	local parent = dgsGetParent(source)
 	if isElement(parent) then
 		if dgsGetType(parent) == "dgs-dxscrollpane" then
@@ -172,8 +172,8 @@ function configScrollPane(source)
 				titleOffset = dgsGetData(parent,"titlesize") or 0
 			end
 		end
-		xthick = dgsDxGUIGetVisible(scrollbar[1]) and scrbThick or 0
-		ythick = dgsDxGUIGetVisible(scrollbar[2]) and scrbThick or 0
+		xthick = dgsGetVisible(scrollbar[1]) and scrbThick or 0
+		ythick = dgsGetVisible(scrollbar[2]) and scrbThick or 0
 		dgsSetPosition(scrollbar[1],x+sx-scrbThick,y-titleOffset,false)
 		dgsSetPosition(scrollbar[2],x,y+sy-scrbThick-titleOffset,false)
 		dgsSetSize(scrollbar[1],scrbThick,sy-scrbThick,false)
@@ -215,7 +215,7 @@ function sortScrollPane(source,parent)
 	dgsSetData(parent,"maxChildSize",maxSize)
 end
 
-function dgsDxScrollPaneGetScrollBar(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsDxScrollPaneGetScrollBar at at argument 1, expect dgs-dxscrollpane got "..tostring(dgsGetType(scrollpane) or type(scrollpane)))
+function dgsScrollPaneGetScrollBar(scrollpane)
+	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetScrollBar at at argument 1, expect dgs-dxscrollpane got "..tostring(dgsGetType(scrollpane) or type(scrollpane)))
 	return dgsGetData(scrollpane,"scrollbars")
 end

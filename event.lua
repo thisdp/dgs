@@ -1,30 +1,31 @@
-addEvent("onClientDgsDxMouseLeave",true)
-addEvent("onClientDgsDxMouseEnter",true)
-addEvent("onClientDgsDxMouseClick",true)
-addEvent("onClientDgsDxMouseDoubleClick",true)
-addEvent("onClientDgsDxWindowClose",true)
-addEvent("onClientDgsDxGUIPositionChange",true)
-addEvent("onClientDgsDxGUISizeChange",true)
-addEvent("onClientDgsDxGUITextChange",true)
-addEvent("onClientDgsDxScrollBarScrollPositionChange",true)
-addEvent("onClientDgsDxGUIDestroy",true)
-addEvent("onClientDgsDxGridListSelect",true)
-addEvent("onClientDgsDxGridListItemDoubleClick",true)
-addEvent("onClientDgsDxProgressBarChange",true)
-addEvent("onClientDgsDxGUICreate",true)
-addEvent("onClientDgsDxGUIPreCreate",true)
-addEvent("onClientDgsDxPreRender",true)
-addEvent("onClientDgsDxRender",true)
-addEvent("onClientDgsDxFocus",true)
-addEvent("onClientDgsDxBlur",true)
-addEvent("onClientDgsDxGUICursorMove",true)
-addEvent("onClientDgsDxTabPanelTabSelect",true)
-addEvent("onClientDgsDxRadioButtonChange",true)
-addEvent("onClientDgsDxCheckBoxChange",true)
-addEvent("onClientDgsDxComboBoxSelect",true)
-addEvent("onClientDgsDxComboBoxStateChange",true)
-addEvent("onClientDgsDxEditPreSwitch",true)
-addEvent("onClientDgsDxEditSwitched",true)
+dgs = exports[getResourceName(getThisResource())]
+addEvent("onDgsMouseLeave",true)
+addEvent("onDgsMouseEnter",true)
+addEvent("onDgsMouseClick",true)
+addEvent("onDgsMouseDoubleClick",true)
+addEvent("onDgsWindowClose",true)
+addEvent("onDgsPositionChange",true)
+addEvent("onDgsSizeChange",true)
+addEvent("onDgsTextChange",true)
+addEvent("onDgsScrollBarScrollPositionChange",true)
+addEvent("onDgsDestroy",true)
+addEvent("onDgsGridListSelect",true)
+addEvent("onDgsGridListItemDoubleClick",true)
+addEvent("onDgsProgressBarChange",true)
+addEvent("onDgsCreate",true)
+addEvent("onDgsPreCreate",true)
+addEvent("onDgsPreRender",true)
+addEvent("onDgsRender",true)
+addEvent("onDgsFocus",true)
+addEvent("onDgsBlur",true)
+addEvent("onDgsCursorMove",true)
+addEvent("onDgsTabPanelTabSelect",true)
+addEvent("onDgsRadioButtonChange",true)
+addEvent("onDgsCheckBoxChange",true)
+addEvent("onDgsComboBoxSelect",true)
+addEvent("onDgsComboBoxStateChange",true)
+addEvent("onDgsEditPreSwitch",true)
+addEvent("onDgsEditSwitched",true)
 
 -------
 addEvent("giveIPBack",true)
@@ -39,6 +40,14 @@ function table.find(tabl,value)
 		end
 	end
 	return false
+end
+
+function table.count(tabl)
+	local cnt = 0
+	for k,v in pairs(tabl) do
+		cnt = cnt + 1
+	end
+	return cnt
 end
 
 function table.merger(...)
@@ -141,4 +150,4 @@ function table.deepcopy(obj)
         return setmetatable(NewTable, getmetatable(obj))
     end
     return Func(obj)
-end  
+end

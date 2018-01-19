@@ -5,9 +5,9 @@ else
 	check = fileCreate("update.cfg")
 end
 local allstr = fileRead(check,fileGetSize(check))
+setElementData(resourceRoot,"Version",allstr)
 fileClose(check)
 Version = tonumber(allstr) or 0
-setElementData(resourceRoot,"Version",Version)
 RemoteVersion = 0
 ManualUpdate = false
 updateTimer = false
@@ -18,23 +18,25 @@ function checkUpdate()
 			RemoteVersion = tonumber(data)
 			if not ManualUpdate then
 				if RemoteVersion > Version then
-					print("[DGS]Remote Version Got [Remote:"..data.." Current:"..Version.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
-					print("[DGS]Update? Command: updatedgs")
+					outputDebugString("[DGS]Remote Version Got [Remote:"..data.." Current:"..allstr.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
+					outputDebugString("[DGS]Update? Command: updatedgs")
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
 						if RemoteVersion > Version then
-							print("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..Version.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
-							print("[DGS]Update? Command: updatedgs")
+							outputDebugString("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..allstr.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
+							outputDebugString("[DGS]Update? Command: updatedgs")
 						else
 							killTimer(updateTimer)
 						end
 					end,dgsConfig.updateCheckNoticeInterval*60000,0)
+				else
+					outputDebugString("[DGS]Current Version("..allstr..") is latest!")
 				end
 			else
 				startUpdate()
 			end
 		else
-			print("[DGS]Can't Get Remote Version ("..err..")")
+			outputDebugString("[DGS]Can't Get Remote Version ("..err..")")
 		end
 	end)
 end
@@ -45,29 +47,38 @@ if dgsConfig.updateCheckAuto then
 end
 	
 addCommandHandler("updatedgs",function(player)
-	print("[DGS]Preparing for updating dgs")
-	outputChatBox("[DGS]Preparing for updating dgs",root,0,255,0)
-	if RemoteVersion > Version then
-		startUpdate()
+	local account = getPlayerAccount(player)
+	local accName = getAccountName(account)
+	local isAdmin = isObjectInACLGroup("user."..accName,aclGetGroup("Admin")) or isObjectInACLGroup("user."..accName,aclGetGroup("Console"))
+	if isAdmin then
+		outputDebugString("[DGS]Player "..getPlayerName(player).." attempt to update dgs (Allowed)")
+		outputDebugString("[DGS]Preparing for updating dgs")
+		outputChatBox("[DGS]Preparing for updating dgs",root,0,255,0)
+		if RemoteVersion > Version then
+			startUpdate()
+		else
+			ManualUpdate = true
+			checkUpdate()
+		end
 	else
-		ManualUpdate = true
-		checkUpdate()
+		outputChatBox("[DGS]Access Denined!",player,255,0,0)
+		outputDebugString("[DGS]Player "..getPlayerName(player).." attempt to update dgs (Denied)",2)
 	end
 end)
 
 function startUpdate()
 	ManualUpdate = false
 	setTimer(function()
-		print("[DGS]Downloading meta.xml")
+		outputDebugString("[DGS]Downloading meta.xml")
 		fetchRemote(dgsConfig.updateCheckURL.."/dgs/meta.xml",function(data,err)
 			if err == 0 then
 				local meta = fileCreate("updated/meta.xml")
 				fileWrite(meta,data)
 				fileClose(meta)
 				checkFiles()
-				print("[DGS]Preparing For Checking Files")
+				outputDebugString("[DGS]Preparing For Checking Files")
 			else
-				print("[DGS]Can't Get meta.xml, Update Failed ("..err..")")
+				outputDebugString("[DGS]Can't Get meta.xml, Update Failed ("..err..")",2)
 			end
 		end)
 	end,50,1)
@@ -94,11 +105,11 @@ function checkFiles()
 				sha = hash("sha256",text)
 			end
 			preFetch = preFetch+1
-			print("[DGS]Checking File ("..preFetch.."): "..path)
+			outputDebugString("[DGS]Checking File ("..preFetch.."): "..path)
 			fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
 				FetchCount = FetchCount+1
 				if sha ~= data then
-					print("[DGS]Need Update ("..path..")")
+					outputDebugString("[DGS]Need Update ("..path..")")
 					table.insert(preUpdate,path)
 				end
 				if FetchCount == preFetch then
@@ -107,7 +118,7 @@ function checkFiles()
 			end,"",false,path,sha)
 		end
 	end
-	print("[DGS]Please Wait...")
+	outputDebugString("[DGS]Please Wait...")
 end
 
 function DownloadFiles()
@@ -116,7 +127,7 @@ function DownloadFiles()
 		DownloadFinish()
 		return
 	end
-	print("[DGS]Download ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]).."")
+	outputDebugString("[DGS]Download ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]).."")
 	fetchRemote(dgsConfig.updateCheckURL.."/dgs/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
 			local size = 0
@@ -130,9 +141,9 @@ function DownloadFiles()
 			fileWrite(file,data)
 			local newsize = fileGetSize(file)
 			fileClose(file)
-			print("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
+			outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 		else
-			print("[DGS]Download Failed: "..path.." ("..err..")")
+			outputDebugString("[DGS]Download Failed: "..path.." ("..err..")")
 		end
 		if preUpdate[UpdateCount+1] then
 			DownloadFiles()
@@ -143,7 +154,7 @@ function DownloadFiles()
 end
 
 function DownloadFinish()
-	print("[DGS]Changing Config File")
+	outputDebugString("[DGS]Changing Config File")
 	if fileExists("update.cfg") then
 		fileDelete("update.cfg")
 	end
@@ -154,8 +165,8 @@ function DownloadFinish()
 		fileDelete("meta.xml")
 	end
 	fileRename("updated/meta.xml","meta.xml")
-	print("[DGS]Update Complete (Updated "..#preUpdate.." Files)")
-	print("[DGS]Please Restart DGS")
+	outputDebugString("[DGS]Update Complete (Updated "..#preUpdate.." Files)")
+	outputDebugString("[DGS]Please Restart DGS")
 	outputChatBox("[DGS]Update Complete (Updated "..#preUpdate.." Files)",root,0,255,0)
 	preUpdate = {}
 	preUpdateCount = 0

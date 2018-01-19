@@ -1,9 +1,9 @@
 scrollBarSettings = {}
 scrollBarSettings.arrow = "image/scrollbar/scrollbar_arrow.png"
 
-function dgsDxCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,colorn1,colornmid,colorncursor,colore1,colorecursor,colorc1,colorccursor)
+function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,colorn1,colornmid,colorncursor,colore1,colorecursor,colorc1,colorccursor)
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateScrollBar at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollBar at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
@@ -22,25 +22,25 @@ function dgsDxCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcurso
 	else
 		table.insert(MaxFatherTable,scrollbar)
 	end
-	triggerEvent("onClientDgsDxGUIPreCreate",scrollbar)
+	triggerEvent("onDgsPreCreate",scrollbar)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onClientDgsDxGUICreate",scrollbar)
+	triggerEvent("onDgsCreate",scrollbar)
 	return scrollbar
 end
 
-function dgsDxScrollBarSetScrollBarPosition(scrollbar,pos)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsDxSetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
-	assert(type(pos) == "number","Bad argument @dgsDxSetScrollBarPosition at argument at 2, expect number got "..type(pos))
+function dgsScrollBarSetScrollBarPosition(scrollbar,pos)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsSetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
+	assert(type(pos) == "number","Bad argument @dgsSetScrollBarPosition at argument at 2, expect number got "..type(pos))
 	dgsSetData(scrollbar,"position",pos)
 end
 
-function dgsDxScrollBarGetScrollBarPosition(scrollbar)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsDxGetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
+function dgsScrollBarGetScrollBarPosition(scrollbar)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsGetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
 	return dgsGetData(scrollbar,"position")
 end
 
-function dgsDxScrollBarSetColor(scrollbar,colorn1,colorncursor,colornmid,colore1,colorecursor,colorc1,colorccursor)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsDxScrollBarSetColor at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
+function dgsScrollBarSetColor(scrollbar,colorn1,colorncursor,colornmid,colore1,colorecursor,colorc1,colorccursor)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetColor at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
 	local colorn = dgsGetData(scrollbar,"colorn")
 	local colore = dgsGetData(scrollbar,"colore")
 	local colorc = dgsGetData(scrollbar,"colorc")

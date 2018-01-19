@@ -1,11 +1,11 @@
-function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bgimage,bgcolor)
-	assert(type(x) == "number","Bad argument @dgsDxCreateMemo at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsDxCreateMemo at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsDxCreateMemo at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsDxCreateMemo at argument 4, expect number got "..type(sy))
+function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bgimage,bgcolor)
+	assert(type(x) == "number","Bad argument @dgsCreateMemo at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateMemo at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateMemo at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateMemo at argument 4, expect number got "..type(sy))
 	text = tostring(text)
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateMemo at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateMemo at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
@@ -30,6 +30,7 @@ function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	dgsSetData(memo,"sidecolor",schemeColor.memo.sidecolor)
 	dgsSetData(memo,"useFloor",false)
 	dgsSetData(memo,"readOnlyCaretShow",false)
+	dgsSetData(memo,"editmemoSign",true)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
 	local gmemo = guiCreateMemo(0,0,0,0,"",false)
 	dgsSetData(memo,"memo",gmemo)
@@ -43,38 +44,38 @@ function dgsDxCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 		table.insert(MaxFatherTable,memo)
 	end
 	insertResourceDxGUI(sourceResource,memo)
-	triggerEvent("onClientDgsDxGUIPreCreate",memo)
+	triggerEvent("onDgsPreCreate",memo)
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = unpack(dgsElementData[memo].absSize)
-	local scrollbar1 = dgsDxCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
-	local scrollbar2 = dgsDxCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
-	dgsDxGUISetVisible(scrollbar1,false)
-	dgsDxGUISetVisible(scrollbar2,false)
+	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
+	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
+	dgsSetVisible(scrollbar1,false)
+	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
 	local renderTarget = dxCreateRenderTarget(abx-4,sy,true)
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
-	dgsDxMemoSetCaretPosition(memo,utf8.len(tostring(text)))
-	triggerEvent("onClientDgsDxGUICreate",memo)
+	dgsMemoSetCaretPosition(memo,utf8.len(tostring(text)))
+	triggerEvent("onDgsCreate",memo)
 	return memo
 end
 
-function dgsDxMemoGetScrollBar(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoGetScrollBar at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+function dgsMemoGetScrollBar(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetScrollBar at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsElementData[memo].scrollbars
 end
 
-function dgsDxMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoMoveCaret at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(offset) == "number","Bad argument @dgsDxMemoMoveCaret at argument 2, expect number got "..type(offset))
+function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoMoveCaret at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(type(offset) == "number","Bad argument @dgsMemoMoveCaret at argument 2, expect number got "..type(offset))
 	lineoffset = lineoffset or 0
 	local xpos = dgsElementData[memo].cursorposXY[1]
 	local line = dgsElementData[memo].cursorposXY[2]
 	local textTable = dgsElementData[memo].text
 	local text = textTable[line] or ""
-	local pos,line = dgsDxMemoSeekPosition(textTable,xpos+math.floor(offset),line+math.floor(lineoffset),noMoveLine)
+	local pos,line = dgsMemoSeekPosition(textTable,xpos+math.floor(offset),line+math.floor(lineoffset),noMoveLine)
 	local showPos,showLine = dgsElementData[memo].showPos,dgsElementData[memo].showLine
 	local font = dgsElementData[memo].font
 	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[memo].textsize[1],font)
@@ -113,7 +114,7 @@ function dgsDxMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 	return true
 end
 
-function dgsDxMemoSeekPosition(textTable,pos,line,noMoveLine)
+function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
 	local line = (line < 1 and 1) or (line > #textTable and #textTable) or line
 	local text = textTable[line] or ""
 	local strCount = utf8.len(text)
@@ -155,14 +156,14 @@ function dgsDxMemoSeekPosition(textTable,pos,line,noMoveLine)
 	end
 end
 
-function dgsDxMemoSetCaretPosition(memo,tpos,tline,noselect)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoSetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(tpos) == "number","Bad argument @dgsDxMemoSetCaretPosition at argument 2, expect number got "..type(tpos))
+function dgsMemoSetCaretPosition(memo,tpos,tline,noselect)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(type(tpos) == "number","Bad argument @dgsMemoSetCaretPosition at argument 2, expect number got "..type(tpos))
 	local textTable = dgsElementData[memo].text
 	local curpos = dgsElementData[memo].cursorposXY
 	tline = tline or curpos[2]
 	local text = textTable[tline] or ""
-	local pos,line = dgsDxMemoSeekPosition(textTable,tpos,tline)
+	local pos,line = dgsMemoSeekPosition(textTable,tpos,tline)
 	local showPos,showLine = dgsElementData[memo].showPos,dgsElementData[memo].showLine
 	local font = dgsElementData[memo].font
 	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[memo].textsize[1],font)
@@ -195,30 +196,30 @@ function dgsDxMemoSetCaretPosition(memo,tpos,tline,noselect)
 	return true
 end
 
-function dgsDxMemoGetCaretPosition(memo,detail)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+function dgsMemoGetCaretPosition(memo,detail)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsElementData[memo].cursorposXY[1],dgsElementData[memo].cursorposXY[2]
 end
 
-function dgsDxMemoSetCaretStyle(memo,style)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoSetCaretStyle at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(style) == "number","Bad argument @dgsDxMemoSetCaretStyle at argument 2, expect number got "..type(style))
+function dgsMemoSetCaretStyle(memo,style)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetCaretStyle at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(type(style) == "number","Bad argument @dgsMemoSetCaretStyle at argument 2, expect number got "..type(style))
 	return dgsSetData(memo,"cursorStyle",style)
 end
 
-function dgsDxMemoGetCaretStyle(memo,style)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoGetCaretStyle at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+function dgsMemoGetCaretStyle(memo,style)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretStyle at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsElementData[memo].cursorStyle
 end
 
-function dgsDxMemoSetReadOnly(memo,state)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoSetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+function dgsMemoSetReadOnly(memo,state)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	local guimemo = dgsElementData[memo].memo
 	return dgsSetData(memo,"readOnly",state and true or false)
 end
 
-function dgsDxMemoGetReadOnly(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoGetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+function dgsMemoGetReadOnly(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsGetData(memo,"readOnly")
 end
 
@@ -226,7 +227,7 @@ function resetMemo(x,y)
 	if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 		if MouseData.nowShow == MouseData.clickl then
 			local pos,line = searchMemoMousePosition(MouseData.nowShow,x*sW,y*sH)
-			dgsDxMemoSetCaretPosition(MouseData.nowShow,pos,line,true)
+			dgsMemoSetCaretPosition(MouseData.nowShow,pos,line,true)
 		end
 	end
 end
@@ -298,7 +299,7 @@ function handleDxMemoText(dxgui,text,noclear,noAffectCaret,index,line)
 	end
 	local font = dgsElementData[dxgui].font
 	local textsize = dgsElementData[dxgui].textsize
-	local _index,_line = dgsDxMemoGetCaretPosition(dxgui,true)
+	local _index,_line = dgsMemoGetCaretPosition(dxgui,true)
 	local index,line = index or _index,line or _line
 	local fixed = utf8.gsub(text,splitChar,splitChar2)
 	local fixed = utf8.gsub(fixed,"	"," ")
@@ -371,23 +372,23 @@ function handleDxMemoText(dxgui,text,noclear,noAffectCaret,index,line)
 		end
 		if not noAffectCaret then
 			if line < _line or (line == _line and index <= _index) then
-				dgsDxMemoSetCaretPosition(dxgui,index+offset-1,line)
+				dgsMemoSetCaretPosition(dxgui,index+offset-1,line)
 			end
 		end
-		triggerEvent("onClientDgsDxGUITextChange",dxgui,str)
+		triggerEvent("onDgsTextChange",dxgui,str)
 	end
 end
 
-function dgsDxMemoInsertText(dxgui,index,line,text,noAffectCaret)
-	assert(dgsGetType(dxgui) == "dgs-dxmemo","Bad argument @dgsDxMemoInsertText at argument 1, expect dgs-dxmemo got "..dgsGetType(dxgui))
-	assert(dgsGetType(index) == "number","Bad argument @dgsDxMemoInsertText at argument 2, expect number got "..dgsGetType(index))
-	assert(dgsGetType(line) == "number","Bad argument @dgsDxMemoInsertText at argument 3, expect number got "..dgsGetType(line))
-	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsDxMemoInsertText at argument 4, expect string/number got "..dgsGetType(text))
+function dgsMemoInsertText(dxgui,index,line,text,noAffectCaret)
+	assert(dgsGetType(dxgui) == "dgs-dxmemo","Bad argument @dgsMemoInsertText at argument 1, expect dgs-dxmemo got "..dgsGetType(dxgui))
+	assert(dgsGetType(index) == "number","Bad argument @dgsMemoInsertText at argument 2, expect number got "..dgsGetType(index))
+	assert(dgsGetType(line) == "number","Bad argument @dgsMemoInsertText at argument 3, expect number got "..dgsGetType(line))
+	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsMemoInsertText at argument 4, expect string/number got "..dgsGetType(text))
 	return handleDxMemoText(dxgui,tostring(text),true,noAffectCaret,index,line)
 end
 
-function dgsDxMemoDeleteText(dxgui,fromindex,fromline,toindex,toline,noAffectCaret)
-	assert(dgsGetType(dxgui) == "dgs-dxmemo","Bad argument @dgsDxMemoDeleteText at argument 1, expect dgs-dxmemo got "..dgsGetType(dxgui))
+function dgsMemoDeleteText(dxgui,fromindex,fromline,toindex,toline,noAffectCaret)
+	assert(dgsGetType(dxgui) == "dgs-dxmemo","Bad argument @dgsMemoDeleteText at argument 1, expect dgs-dxmemo got "..dgsGetType(dxgui))
 	local textTable = dgsElementData[dxgui].text
 	local textLen = dgsElementData[dxgui].textLength
 	local font = dgsElementData[dxgui].font
@@ -466,9 +467,9 @@ function dgsDxMemoDeleteText(dxgui,fromindex,fromline,toindex,toline,noAffectCar
 	if not noAffectCaret then
 		local cpos = dgsElementData[dxgui].cursorposXY
 		if cpos[2] > fromline then
-			dgsDxMemoSetCaretPosition(dxgui,cpos[1]-(toindex-fromindex),cpos[2]-(toline-fromline))
+			dgsMemoSetCaretPosition(dxgui,cpos[1]-(toindex-fromindex),cpos[2]-(toline-fromline))
 		elseif cpos[2] == fromline and cpos[1] >= fromindex then
-			dgsDxMemoSetCaretPosition(dxgui,fromindex,fromline)
+			dgsMemoSetCaretPosition(dxgui,fromindex,fromline)
 		end
 	end
 end
@@ -477,14 +478,14 @@ function checkMemoMousePosition(button,state,x,y)
 	if dgsGetType(source) == "dgs-dxmemo" then
 		if state == "down" then
 			local pos,line = searchMemoMousePosition(source,x,y)
-			dgsDxMemoSetCaretPosition(source,pos,line)
+			dgsMemoSetCaretPosition(source,pos,line)
 		end
 	end
 end
-addEventHandler("onClientDgsDxMouseClick",root,checkMemoMousePosition)
+addEventHandler("onDgsMouseClick",root,checkMemoMousePosition)
 
-function dgsDxMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsDxMemoGetPartOfText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetPartOfText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	local outStr = ""
 	local textTable = dgsElementData[memo].text
 	local textLines = #textTable
@@ -534,7 +535,7 @@ function dgsDxMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
 		outStr = txt1 ..splitChar2 ..outStr.. txt2
 	end
 	if delete then
-		dgsDxMemoDeleteText(memo,cindex,cline,tindex,tline)
+		dgsMemoDeleteText(memo,cindex,cline,tindex,tline)
 	end
 	return outStr
 end
@@ -562,15 +563,15 @@ function configMemo(source)
 	local scbThick = dgsElementData[source].scrollBarThick
 	local scrollbars = dgsElementData[source].scrollbars
 	local visible1,visible2 = dgsElementData[scrollbars[1]].visible, dgsElementData[scrollbars[2]].visible
-	dgsDxGUISetVisible(scrollbars[1],false)
-	dgsDxGUISetVisible(scrollbars[2],false)
+	dgsSetVisible(scrollbars[1],false)
+	dgsSetVisible(scrollbars[2],false)
 	
-	dgsDxGUISetVisible(scrollbars[2],dgsElementData[source].rightLength[1] > size[1])
+	dgsSetVisible(scrollbars[2],dgsElementData[source].rightLength[1] > size[1])
 	local scbTakes2 = dgsElementData[scrollbars[2]].visible and scbThick or 0
 	local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
-	dgsDxGUISetVisible(scrollbars[1], #text > canHold )
+	dgsSetVisible(scrollbars[1], #text > canHold )
 	local scbTakes1 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4
-	dgsDxGUISetVisible(scrollbars[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
+	dgsSetVisible(scrollbars[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
 	local scbTakes2 = dgsElementData[scrollbars[2]].visible and scbThick or 0
 	local higLen = #text/(#text-canHold)/4
 	higLen = higLen >= 0.95 and 0.95 or higLen
@@ -589,7 +590,7 @@ function configMemo(source)
 	end
 end
 
-addEventHandler("onClientDgsDxScrollBarScrollPositionChange",root,function(new,old)
+addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxmemo" then
 		local scrollbars = dgsElementData[parent].scrollbars
@@ -626,12 +627,12 @@ function syncScrollBars(dxgui,which)
 		local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
 		print(#text,canHold)
 		local new = (#text-canHold) == 0 and 0 or (dgsElementData[dxgui].showLine-1)*100/(#text-canHold)
-		dgsDxScrollBarSetScrollBarPosition(scrollbars[1],new)
+		dgsScrollBarSetScrollBarPosition(scrollbars[1],new)
 	end
 	if which == 2 or not which then
 		local len = dgsElementData[dxgui].rightLength[1]
 		local canHold = math.floor(len-size[1]+scbTakes1+2)/100
 		local new = -dgsElementData[dxgui].showPos/canHold
-		dgsDxScrollBarSetScrollBarPosition(scrollbars[2],new)
+		dgsScrollBarSetScrollBarPosition(scrollbars[2],new)
 	end
 end

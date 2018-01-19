@@ -1,19 +1,54 @@
-local moveGUIList = {}
+animGUIList = {}
+moveGUIList = {}
+sizeGUIList = {}
+alphaGUIList = {}
+
+function dgsIsAniming(gui)
+	assert(dgsIsDxElement(gui),"Bad argument @dgsIsAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	return moveGUIList[gui] or false
+end
+
+function dgsAnimTo(gui,property,value,easing,thetime)
+	assert(dgsIsDxElement(gui),"Bad argument @dgsAnimTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	local thetime = tonumber(thetime)
+	assert(type(property) == "string","Bad argument @dgsAnimTo at argument 2, expect string got "..type(property))
+	assert(thetime,"Bad argument @dgsAnimTo at argument 6, expect number got "..type(thetime))
+	local easing = easing or "Linear"
+	assert(isEasingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
+	assert(not(type(value) ~= "number" and builtins[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
+	dgsSetData(gui,"anim",{[0]=getTickCount(),property,value,dgsElementData[gui][property],easing,thetime})
+	if not animGUIList[gui] then
+		animGUIList[gui] = true
+		return true
+	end
+	return false
+end
+
+function dgsStopAniming(gui)
+	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	if animGUIList[gui] then
+		dgsSetData(gui,"anim",false)
+		animGUIList[gui] = nil
+		return true
+	end
+	return false
+end
+
 function dgsIsMoving(gui)
-	assert(dgsIsDxElement(gui),"@dgsIsMoving argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsIsMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return moveGUIList[gui] or false
 end
 
 function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
-	assert(dgsIsDxElement(gui),"@dgsMoveTo argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
-	assert(tonumber(x),"@dgsMoveTo argument 2,expect number got "..type(x))
-	assert(tonumber(y),"@dgsMoveTo argument 3,expect number got "..type(y))
-	assert(tonumber(torvx),"@dgsMoveTo argument 7,expect number got "..type(torvx))
-	x = tonumber(x)
-	y = tonumber(y)
-	torvx = tonumber(torvx)
+	assert(dgsIsDxElement(gui),"Bad argument @dgsMoveTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	local x,y,torvx = tonumber(x),tonumber(y),tonumber(torvx)
+	assert(x,"Bad argument @dgsMoveTo at argument 2, expect number got "..type(x))
+	assert(y,"Bad argument @dgsMoveTo at argument 3, expect number got "..type(y))
+	assert(torvx,"Bad argument @dgsMoveTo at argument 7, expect number got "..type(torvx))
+	local easing = easing or "Linear"
+	assert(isEasingFunctionExists(easing),"Bad argument @dgsMoveTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetPosition(gui,relative or false)
-	dgsSetData(gui,"move",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing or "Linear",torvx,vy or torvx})
+	dgsSetData(gui,"move",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not moveGUIList[gui] then
 		moveGUIList[gui] = true
 		return true
@@ -22,7 +57,7 @@ function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 end
 
 function dgsStopMoving(gui)
-	assert(dgsIsDxElement(gui),"@dgsStopMoving argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsStopMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if moveGUIList[gui] then
 		dgsSetData(gui,"move",false)
 		moveGUIList[gui] = nil
@@ -31,22 +66,21 @@ function dgsStopMoving(gui)
 	return false
 end
 
-local sizeGUIList = {}
 function dgsIsSizing(gui)
-	assert(dgsIsDxElement(gui),"@dgsIsSizing argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsIsSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return sizeGUIList[gui] or false
 end
 
 function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
-	assert(dgsIsDxElement(gui),"@dgsSizeTo argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
-	assert(tonumber(x),"@dgsSizeTo argument 2,expect number got "..type(x))
-	assert(tonumber(y),"@dgsSizeTo argument 3,expect number got "..type(y))
-	assert(tonumber(torvx),"@dgsSizeTo argument 7,expect number got "..type(torvx))
-	x = tonumber(x)
-	y = tonumber(y)
-	torvx = tonumber(torvx)
+	assert(dgsIsDxElement(gui),"Bad argument @dgsSizeTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	local x,y,torvx = tonumber(x),tonumber(y),tonumber(torvx)
+	assert(x,"Bad argument @dgsSizeTo at argument 2, expect number got "..type(x))
+	assert(y,"Bad argument @dgsSizeTo at argument 3, expect number got "..type(y))
+	assert(torvx,"Bad argument @dgsSizeTo at argument 7, expect number got "..type(torvx))
+	local easing = easing or "Linear"
+	assert(isEasingFunctionExists(easing),"Bad argument @dgsSizeTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetSize(gui,relative or false)
-	dgsSetData(gui,"size",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing or "Linear",torvx,vy or torvx})
+	dgsSetData(gui,"size",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not sizeGUIList[gui] then
 		sizeGUIList[gui] = true
 		return true
@@ -55,7 +89,7 @@ function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 end
 
 function dgsStopSizing(gui)
-	assert(dgsIsDxElement(gui),"@dgsStopSizing argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsStopSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if sizeGUIList[gui] then
 		dgsSetData(gui,"size",false)
 		sizeGUIList[gui] = nil
@@ -64,20 +98,20 @@ function dgsStopSizing(gui)
 	return false
 end
 
-local alphaGUIList = {}
 function dgsIsAlphaing(gui)
-	assert(dgsIsDxElement(gui),"@dgsIsAlphaing argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsIsAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return alphaGUIList[gui] or false
 end
 
 function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
-	assert(dgsIsDxElement(gui),"@dgsAlphaTo argument 1,expect dgs-dxgui got "..(isElement(gui) and dgsGetType(gui)) or type(gui))
-	assert(tonumber(toalpha),"@dgsAlphaTo argument 2,expect number got "..type(toalpha))
-	assert(tonumber(torv),"@dgsAlphaTo argument 5,expect number got "..type(torv))
-	toalpha = tonumber(toalpha)
-	torv = tonumber(torv)
+	assert(dgsIsDxElement(gui),"Bad argument @dgsAlphaTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	local toalpha,torv = tonumber(toalpha),tonumber(torv)
+	assert(toalpha,"Bad argument @dgsAlphaTo at argument 2, expect number got "..type(toalpha))
+	assert(torv,"Bad argument @dgsAlphaTo at argument 5, expect number got "..type(torv))
+	local easing = easing or "Linear"
+	assert(isEasingFunctionExists(easing),"Bad argument @dgsAlphaTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	local toalpha = (toalpha > 1 and 1) or (toalpha < 0 and 0) or toalpha
-	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsGetData(gui,"alpha")-toalpha,toalpha,movetype,easing or "Linear",torv})
+	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsGetData(gui,"alpha")-toalpha,toalpha,movetype,easing,torv})
 	if not alphaGUIList[gui] then
 		alphaGUIList[gui] = true
 		return true
@@ -86,7 +120,7 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 end
 
 function dgsStopAlphaing(gui)
-	assert(dgsIsDxElement(gui),"@dgsStopAlphaing argument 1,expect dgs-dxgui got "..tostring(isElement(gui) and dgsGetType(gui)) or type(gui))
+	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if alphaGUIList[gui] then
 		dgsSetData(gui,"calpha",false)
 		alphaGUIList[gui] = nil
@@ -97,12 +131,37 @@ end
 
 addEventHandler("onClientRender",root,function()
 	local tickCount = getTickCount()
+	for v,value in pairs(animGUIList) do
+		if not dgsIsDxElement(v) or not value then animGUIList[v] = nil end
+		local data = dgsElementData[v].anim
+		if not data then animGUIList[v] = nil end
+		if animGUIList[v] then
+			local propertyName,targetValue,oldValue,easing,thetime = data[1],data[2],data[3],data[4],data[5]
+			local changeTime = tickCount-data[0]
+			if changeTime <= thetime then
+				if builtins[easing] then
+					local percent = oldValue+getEasingValue(changeTime/thetime,easing)*(targetValue-oldValue)
+					dgsSetProperty(v,propertyName,percent)
+				else
+					if SelfEasing[easing] then
+						local value = SelfEasing[easing](changeTime/thetime,{propertyName,targetValue,oldValue})
+						dgsSetProperty(v,propertyName,value)
+					else
+						animGUIList[v] = nil
+						assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
+					end
+				end
+			else
+				animGUIList[v] = nil
+			end
+		end
+	end
 	for v,value in pairs(moveGUIList) do
 		if not dgsIsDxElement(v) or not value then moveGUIList[v] = nil end
-		local datas = dgsElementData[v].move
-		if not datas then moveGUIList[v] = nil end
+		local data = dgsElementData[v].move
+		if not data then moveGUIList[v] = nil end
 		if moveGUIList[v] then
-			local allDistance,ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = datas[1],datas[2],datas[3],datas[4],datas[5],datas[6],datas[7],datas[8],datas[9],datas[-1]
+			local allDistance,ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[-1]
 			local nx,ny = dgsGetPosition(v,rlt)
 			local tx,ty
 			local compMove = false
@@ -122,7 +181,7 @@ addEventHandler("onClientRender",root,function()
 					tx,ty = nx+torvx,ny+vy
 				end
 			else
-				local changeTime = tickCount-datas[0]
+				local changeTime = tickCount-data[0]
 				local temp = changeTime/torvx
 				if builtins[easing] then
 					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
@@ -144,10 +203,10 @@ addEventHandler("onClientRender",root,function()
 	end
 	for v,value in pairs(sizeGUIList) do
 		if not dgsIsDxElement(v) or not value then sizeGUIList[v] = nil end
-		local datas = dgsGetData(v,"size")
-		if not datas then sizeGUIList[v] = nil end
+		local data = dgsGetData(v,"size")
+		if not data then sizeGUIList[v] = nil end
 		if sizeGUIList[v] then
-			local allDistance,ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = datas[1],datas[2],datas[3],datas[4],datas[5],datas[6],datas[7],datas[8],datas[9],datas[-1]
+			local allDistance,ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[-1]
 			local nx,ny = dgsGetSize(v,rlt)
 			local tx,ty
 			local compSize = false
@@ -167,7 +226,7 @@ addEventHandler("onClientRender",root,function()
 					tx,ty = nx+torvx,ny+vy
 				end
 			else
-				local changeTime = tickCount-datas[0]
+				local changeTime = tickCount-data[0]
 				local temp = changeTime/torvx
 				if builtins[easing] then
 					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
@@ -189,9 +248,9 @@ addEventHandler("onClientRender",root,function()
 	end
 	for v,value in pairs(alphaGUIList) do
 		if not dgsIsDxElement(v) or not value then alphaGUIList[v] = nil end
-		local datas = dgsElementData[v].calpha
-		if not datas then alphaGUIList[v] = nil end
-		local allDistance,endalpha,mtype,easing,torv,settings = datas[1],datas[2],datas[3],datas[4],datas[5],datas[-1]
+		local data = dgsElementData[v].calpha
+		if not data then alphaGUIList[v] = nil end
+		local allDistance,endalpha,mtype,easing,torv,settings = data[1],data[2],data[3],data[4],data[5],data[-1]
 		local alp = dgsElementData[v].alpha
 		if not alp then alphaGUIList[v] = nil end
 		if alphaGUIList[v] then
@@ -212,7 +271,7 @@ addEventHandler("onClientRender",root,function()
 					talp = talp+torv+percentalp*torv
 				end
 			else
-				local changeTime = tickCount-datas[0]
+				local changeTime = tickCount-data[0]
 				local temp = changeTime/torv
 				if builtins[easing] then
 					percentalp = interpolateBetween(endalpha+allDistance,0,0,endalpha,0,0,temp,easing or "Linear")

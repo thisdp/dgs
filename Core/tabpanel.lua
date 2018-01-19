@@ -1,11 +1,11 @@
-function dgsDxCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
+function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateTabPanel at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateTabPanel at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
-	assert(tonumber(x),"Bad argument @dgsDxCreateTabPanel at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsDxCreateTabPanel at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsDxCreateTabPanel at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsDxCreateTabPanel at argument 4, expect number got "..type(sy))
+	assert(tonumber(x),"Bad argument @dgsCreateTabPanel at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsCreateTabPanel at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsCreateTabPanel at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsCreateTabPanel at argument 4, expect number got "..type(sy))
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
 	if isElement(parent) then
@@ -26,16 +26,16 @@ function dgsDxCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	dgsSetData(tabpanel,"taboffperc",0)
 	dgsSetData(tabpanel,"allleng",0)
 	insertResourceDxGUI(sourceResource,tabpanel)
-	triggerEvent("onClientDgsDxGUIPreCreate",tabpanel)
+	triggerEvent("onDgsPreCreate",tabpanel)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx,aby = unpack(dgsGetData(tabpanel,"absSize"))
 	local rendertarget = dxCreateRenderTarget(abx,tabheight or 20,true)
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
-	triggerEvent("onClientDgsDxGUICreate",tabpanel)
+	triggerEvent("onDgsCreate",tabpanel)
 	return tabpanel
 end
 
-function dgsDxCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,tabdefimg,tabselimg,tabcliimg,tabdefcolor,tabselcolor,tabclicolor)
+function dgsCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,tabdefimg,tabselimg,tabcliimg,tabdefcolor,tabselcolor,tabclicolor)
 	assert(type(text) == "string" or type(text) == "number","Bad argument @dgsCreateTab at argument 1, expect string/number got "..type(text))
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
 	local tab = createElement("dgs-dxtab")
@@ -61,25 +61,25 @@ function dgsDxCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolo
 	dgsSetData(tab,"tabimg",{tabdefimg,tabselimg,tabcliimg})
 	dgsSetData(tab,"tabcolor",{tonumber(tabdefcolor) or schemeColor.tab.tabcolor[1],tonumber(tabselcolor) or schemeColor.tab.tabcolor[2],tonumber(tabclicolor) or schemeColor.tab.tabcolor[3]})
 	insertResourceDxGUI(sourceResource,tabpanel)
-	triggerEvent("onClientDgsDxGUIPreCreate",tab)
+	triggerEvent("onDgsPreCreate",tab)
 	if dgsElementData[tabpanel]["selected"] == -1 then
 		dgsSetData(tabpanel,"selected",id)
 	end
-	triggerEvent("onClientDgsDxGUICreate",tab)
+	triggerEvent("onDgsCreate",tab)
 	return tab
 end
 
-function dgsDxTabPanelGetTabFromID(tabpanel,id)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsDxTabPanelGetTabFromID at at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
-	assert(type(id) == "number","Bad argument @dgsDxTabPanelGetTabFromID at at argument 2, expect number got "..type(id))
+function dgsTabPanelGetTabFromID(tabpanel,id)
+	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelGetTabFromID at at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
+	assert(type(id) == "number","Bad argument @dgsTabPanelGetTabFromID at at argument 2, expect number got "..type(id))
 	local tabs = dgsElementData[tabpanel]["tabs"]
 	return tabs[id]
 end
 
-function dgsDxTabPanelMoveTab(tabpanel,from,to)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsDxTabPanelMoveTab at at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
-	assert(type(from) == "number","Bad argument @dgsDxTabPanelMoveTab at at argument 2, expect number got "..type(from))
-	assert(type(to) == "number","Bad argument @dgsDxTabPanelMoveTab at at argument 3, expect number got "..type(to))
+function dgsTabPanelMoveTab(tabpanel,from,to)
+	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelMoveTab at at argument 1, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
+	assert(type(from) == "number","Bad argument @dgsTabPanelMoveTab at at argument 2, expect number got "..type(from))
+	assert(type(to) == "number","Bad argument @dgsTabPanelMoveTab at at argument 3, expect number got "..type(to))
 	local tab = dgsElementData[tabpanel]["tabs"][from]
 	local myid = dgsElementData[tab].id
 	local parent = dgsElementData[tab].parent
@@ -95,13 +95,13 @@ function dgsDxTabPanelMoveTab(tabpanel,from,to)
 	return true
 end
 
-function dgsDxTabPanelGetTabID(tab)
-	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsDxTabPanelGetTabID at at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
+function dgsTabPanelGetTabID(tab)
+	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsTabPanelGetTabID at at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
 	return dgsElementData[tab].id
 end
 
-function dgsDxDeleteTab(tab)
-	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsDxDeleteTab at at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
+function dgsDeleteTab(tab)
+	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsDeleteTab at at argument 1, expect dgs-dxtab got "..(dgsGetType(tab) or type(tab)))
 	local tabpanel = dgsGetData(tab,"parent")
 	if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
 		local wid = dgsElementData[tab]["width"]

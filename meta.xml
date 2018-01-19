@@ -4,6 +4,7 @@
 	<file src="colorScheme.txt" />
 	<file src="image/combobox/arrow.fx" />
 	<file src="image/eda/ellipse.fx" />
+	<file src="media.html" />
 
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -29,7 +30,7 @@
 	<script src="server.lua" type="server" />
 	<script src="client.lua" type="client" />
 	<script src="plugin/shader.lua" type="client" />
-	<script src="plugin/multimedia.lua" type="client" />
+	<script src="plugin/media.lua" type="client" />
 	<script src="functions.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
@@ -48,8 +49,10 @@
 	<file src="image/radiobutton/rb_t_s.png" type="client" />
 	<file src="image/radiobutton/rb_f_s.png" type="client" />
 	<file src="image/scrollbar/scrollbar_arrow.png" type="client" />
+	<script src="oldFunctions.lua" type="client" />
 	
 	<export function="addEasingFunction" type="client" />
+	<export function="isEasingFunctionExists" type="client" />
 	<export function="removeEasingFunction" type="client" />
 	<export function="setSystemFont" type="client" />
 	<export function="getSystemFont" type="client" />
@@ -62,6 +65,9 @@
 	<export function="dgsGetSize" type="client" />
 	<export function="dgsSetSize" type="client" />
 	<export function="dgsGetType" type="client" />
+	<export function="dgsAnimTo" type="client" />
+	<export function="dgsIsAniming" type="client" />
+	<export function="dgsStopAniming" type="client" />
 	<export function="dgsMoveTo" type="client" />
 	<export function="dgsIsMoving" type="client" />
 	<export function="dgsStopMoving" type="client" />
@@ -71,6 +77,188 @@
 	<export function="dgsAlphaTo" type="client" />
 	<export function="dgsIsAlphaing" type="client" />
 	<export function="dgsStopAlphaing" type="client" />
+	<export function="dgsGetProperty" type="client" />
+	<export function="dgsSetProperty" type="client" />
+	<export function="dgsGetProperties" type="client" />
+	<export function="dgsSetProperties" type="client" />
+	<export function="dgsGetVisible" type="client" />
+	<export function="dgsSetVisible" type="client" />
+	<export function="dgsGetEnabled" type="client" />
+	<export function="dgsSetEnabled" type="client" />
+	<export function="dgsGetSide" type="client" />
+	<export function="dgsSetSide" type="client" />
+	<export function="dgsGetAlpha" type="client" />
+	<export function="dgsSetAlpha" type="client" />
+	<export function="dgsSetBottom" type="client" />
+	<export function="dgsGetFont" type="client" />
+	<export function="dgsSetFont" type="client" />
+	<export function="dgsSetText" type="client" />
+	<export function="dgsGetText" type="client" />
+	<export function="dgsCreateFont" type="client" />
+	<export function="dgsBringToFront" type="client" />
+	<export function="dgsGetMouseEnterGUI" type="client" />
+	<export function="dgsGetMouseLeaveGUI" type="client" />
+	<export function="dgsGetDxGUIFromResource" type="client" />
+	<export function="dgsGetDxGUINoParent" type="client" />
+	<export function="dgsGetFocusedGUI" type="client" />
+	<export function="dgsRoundUp" type="client" />
+	<export function="dgsSetRoundUpPoints" type="client" />
+	<export function="dgsGetRoundUpPoints" type="client" />
+
+	<export function="dgsCreateWindow" type="client" />
+	<export function="dgsWindowSetSizable" type="client" />
+	<export function="dgsWindowSetMovable" type="client" />
+	<export function="dgsCloseWindow" type="client" />
+	<export function="dgsWindowSetCloseButtonEnabled" type="client" />
+	<export function="dgsWindowGetCloseButtonEnabled" type="client" />
+
+	<export function="dgsCreateScrollPane" type="client" />
+	<export function="dgsScrollPaneGetScrollBar" type="client" />
+	
+	<export function="dgsCreateRadioButton" type="client" />
+	<export function="dgsRadioButtonGetSelected" type="client" />
+	<export function="dgsRadioButtonSetSelected" type="client" />
+	
+	<export function="dgsCreateCheckBox" type="client" />
+	<export function="dgsCheckBoxGetSelected" type="client" />
+	<export function="dgsCheckBoxSetSelected" type="client" />
+
+	<export function="dgsCreateComboBox" type="client" />
+	<export function="dgsComboBoxAddItem" type="client" />
+	<export function="dgsComboBoxRemoveItem" type="client" />
+	<export function="dgsComboBoxSetItemText" type="client" />
+	<export function="dgsComboBoxGetItemText" type="client" />
+	<export function="dgsComboBoxClear" type="client" />
+	<export function="dgsComboBoxSetSelectedItem" type="client" />
+	<export function="dgsComboBoxGetSelectedItem" type="client" />
+	<export function="dgsComboBoxSetItemColor" type="client" />
+	<export function="dgsComboBoxGetItemColor" type="client" />
+	<export function="dgsComboBoxSetState" type="client" />
+	<export function="dgsComboBoxGetState" type="client" />
+	<export function="dgsComboBoxSetBoxHeight" type="client" />
+	<export function="dgsComboBoxGetBoxHeight" type="client" />
+	<export function="dgsComboBoxGetScrollBar" type="client" />
+	
+	<export function="dgsCreateButton" type="client" />
+
+	<export function="dgsCreateCmd" type="client" />
+	<export function="dgsCmdSetMode" type="client" />
+	<export function="dgsEventCmdSetPreName" type="client" />
+	<export function="outputCmdMessage" type="client" />
+	<export function="dgsGetChars" type="client" />
+	<export function="dgsCmdGetEdit" type="client" />
+	<export function="dgsCmdAddEventToWhiteList" type="client" />
+	<export function="dgsCmdRemoveEventFromWhiteList" type="client" />
+	<export function="dgsCmdRemoveAllEvents" type="client" />
+	<export function="dgsCmdIsInWhiteList" type="client" />
+	<export function="dgsCmdAddCommandHandler" type="client" />
+	<export function="dgsCmdRemoveCommandHandler" type="client" />
+	<export function="dgsCmdClearText" type="client" />
+
+	<export function="dgsCreateEdit" type="client" />
+	<export function="dgsEditMoveCaret" type="client" />
+	<export function="dgsEditGetCaretPosition" type="client" />
+	<export function="dgsEditSetCaretPosition" type="client" />
+	<export function="dgsEditGetCaretStyle" type="client" />
+	<export function="dgsEditSetCaretStyle" type="client" />
+	<export function="dgsEditSetWhiteList" type="client" />
+	<export function="dgsEditGetMaxLength" type="client" />
+	<export function="dgsEditSetMaxLength" type="client" />
+	<export function="dgsEditSetReadOnly" type="client" />
+	<export function="dgsEditGetReadOnly" type="client" />
+	<export function="dgsEditSetMasked" type="client" />
+	<export function="dgsEditGetMasked" type="client" />
+	
+	<export function="dgsCreateMemo" type="client" />
+	<export function="dgsMemoMoveCaret" type="client" />
+	<export function="dgsMemoSeekPosition" type="client" />
+	<export function="dgsMemoSetCaretPosition" type="client" />
+	<export function="dgsMemoGetCaretPosition" type="client" />
+	<export function="dgsMemoSetCaretStyle" type="client" />
+	<export function="dgsMemoGetCaretStyle" type="client" />
+	<export function="dgsMemoSetReadOnly" type="client" />
+	<export function="dgsMemoGetReadOnly" type="client" />
+	<export function="dgsMemoGetPartOfText" type="client" />
+	<export function="dgsMemoDeleteText" type="client" />
+	<export function="dgsMemoInsertText" type="client" />
+	<export function="dgsMemoGetScrollBar" type="client" />
+
+	<export function="dgsCreateImage" type="client" />
+	<export function="dgsImageSetImage" type="client" />
+	<export function="dgsImageGetImage" type="client" />
+	<export function="dgsImageSetImageSize" type="client" />
+	<export function="dgsImageGetImageSize" type="client" />
+	<export function="dgsImageSetImagePosition" type="client" />
+	<export function="dgsImageGetImagePosition" type="client" />
+
+	<export function="dgsCreateProgressBar" type="client" />
+	<export function="dgsProgressBarGetProgress" type="client" />
+	<export function="dgsProgressBarSetProgress" type="client" />
+	<export function="dgsProgressBarGetMode" type="client" />
+	<export function="dgsProgressBarSetMode" type="client" />
+	<export function="dgsProgressBarGetUpDownDistance" type="client" />
+	<export function="dgsProgressBarSetUpDownDistance" type="client" />
+	<export function="dgsProgressBarGetLeftRightDistance" type="client" />
+	<export function="dgsProgressBarSetLeftRightDistance" type="client" />
+
+	<export function="dgsCreateLabel" type="client" />
+	<export function="dgsLabelGetColor" type="client" />
+	<export function="dgsLabelSetColor" type="client" />
+	<export function="dgsLabelSetHorizontalAlign" type="client" />
+	<export function="dgsLabelSetVerticalAlign" type="client" />
+	<export function="dgsLabelGetHorizontalAlign" type="client" />
+	<export function="dgsLabelGetVerticalAlign" type="client" />
+	
+	<export function="dgsCreateTabPanel" type="client" />
+	<export function="dgsCreateTab" type="client" />
+	<export function="dgsTabPanelGetTabFromID" type="client" />
+	<export function="dgsTabPanelMoveTab" type="client" />
+	<export function="dgsTabPanelGetTabID" type="client" />
+	<export function="dgsDeleteTab" type="client" />
+	
+	<export function="dgsCreateScrollBar" type="client" />
+	<export function="dgsScrollBarSetScrollBarPosition" type="client" />
+	<export function="dgsScrollBarGetScrollBarPosition" type="client" />
+	<export function="dgsScrollBarSetColor" type="client" />
+
+	<export function="dgsCreateGridList" type="client" />
+	<export function="dgsScrollPaneGetScrollBar" type="client" />
+	<export function="dgsGridListResetScrollBarPosition" type="client" />
+	<export function="dgsGridListSetColumnRelative" type="client" />
+	<export function="dgsGridListGetColumnRelative" type="client" />
+	<export function="dgsGridListAddColumn" type="client" />
+	<export function="dgsGridListGetColumnCount" type="client" />
+	<export function="dgsGridListRemoveColumn" type="client" />
+	<export function="dgsGridListGetColumnAllLength" type="client" />
+	<export function="dgsGridListGetColumnLength" type="client" />
+	<export function="dgsGridListGetColumnTitle" type="client" />
+	<export function="dgsGridListSetColumnTitle" type="client" />
+	<export function="dgsGridListAddRow" type="client" />
+	<export function="dgsGridListRemoveRow" type="client" />
+	<export function="dgsGridListClearRow" type="client" />
+	<export function="dgsGridListGetRowCount" type="client" />
+	<export function="dgsGridListSetItemText" type="client" />
+	<export function="dgsGridListGetItemText" type="client" />
+	<export function="dgsGridListGetSelectedItem" type="client" />
+	<export function="dgsGridListSetSelectedItem" type="client" />
+	<export function="dgsGridListSetItemColor" type="client" />
+	<export function="dgsGridListGetItemColor" type="client" />
+	<export function="dgsGridListGetRowBackGroundImage" type="client" />
+	<export function="dgsGridListSetRowBackGroundImage" type="client" />
+	<export function="dgsGridListSetRowBackGroundColor" type="client" />
+	<export function="dgsGridListGetRowBackGroundColor" type="client" />
+	<export function="dgsGridListGetItemData" type="client" />
+	<export function="dgsGridListSetItemData" type="client" />
+	<export function="dgsGridListSetRowAsSection" type="client" />
+	<export function="dgsGridListGetItemImage" type="client" />
+	<export function="dgsGridListSetItemImage" type="client" />
+	<export function="dgsGridListRemoveItemImage" type="client" />
+	
+	<export function="dgsCreateEDA" type="client" />
+	<export function="dgsEDASetDebugModeEnabled" type="client" />
+	<export function="dgsEDAGetDebugModeEnabled" type="client" />
+	
+	<!--OLD Functions-->
 	<export function="dgsDxGUIGetProperty" type="client" />
 	<export function="dgsDxGUISetProperty" type="client" />
 	<export function="dgsDxGUIGetProperties" type="client" />
@@ -83,7 +271,6 @@
 	<export function="dgsDxGUISetSide" type="client" />
 	<export function="dgsDxGUIGetAlpha" type="client" />
 	<export function="dgsDxGUISetAlpha" type="client" />
-	<export function="dgsSetBottom" type="client" />
 	<export function="dgsDxGUIGetFont" type="client" />
 	<export function="dgsDxGUISetFont" type="client" />
 	<export function="dgsDxGUISetText" type="client" />
@@ -91,9 +278,6 @@
 	<export function="dgsDxGUICreateFont" type="client" />
 	<export function="dgsDxGUIBringToFront" type="client" />
 	<export function="dgsDxGetMouseEnterGUI" type="client" />
-	<export function="dgsGetDxGUIFromResource" type="client" />
-	<export function="dgsGetDxGUINoParent" type="client" />
-	
 
 	<export function="dgsDxCreateWindow" type="client" />
 	<export function="dgsDxWindowSetSizable" type="client" />
@@ -134,8 +318,6 @@
 	<export function="dgsDxCreateCmd" type="client" />
 	<export function="dgsDxCmdSetMode" type="client" />
 	<export function="dgsDxEventCmdSetPreName" type="client" />
-	<export function="outputCmdMessage" type="client" />
-	<export function="dgsGetChars" type="client" />
 	<export function="dgsDxCmdGetEdit" type="client" />
 	<export function="dgsDxCmdAddEventToWhiteList" type="client" />
 	<export function="dgsDxCmdRemoveEventFromWhiteList" type="client" />
@@ -240,6 +422,9 @@
 	<export function="dgsDxGridListGetItemData" type="client" />
 	<export function="dgsDxGridListSetItemData" type="client" />
 	<export function="dgsDxGridListSetRowAsSection" type="client" />
+	<export function="dgsDxGridListGetItemImage" type="client" />
+	<export function="dgsDxGridListSetItemImage" type="client" />
+	<export function="dgsDxGridListRemoveItemImage" type="client" />
 	
 	<export function="dgsDxCreateEDA" type="client" />
 	<export function="dgsDxEDASetDebugModeEnabled" type="client" />

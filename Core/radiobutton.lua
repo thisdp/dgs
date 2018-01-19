@@ -4,13 +4,13 @@ radioButton_s.true_ = dxCreateTexture("image/radiobutton/rb_t.png")
 radioButton_s.false_cli = dxCreateTexture("image/radiobutton/rb_f_s.png")
 radioButton_s.true_cli = dxCreateTexture("image/radiobutton/rb_t_s.png")
 
-function dgsDxCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t)
-	assert(tonumber(x),"Bad argument @dgsDxCreateRadioButton at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsDxCreateRadioButton at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsDxCreateRadioButton at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsDxCreateRadioButton at argument 4, expect number got "..type(sy))
+function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t)
+	assert(tonumber(x),"Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y))
+	assert(tonumber(sx),"Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx))
+	assert(tonumber(sy),"Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy))
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsDxCreateRadioButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateRadioButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
@@ -48,21 +48,21 @@ function dgsDxCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,
 	dgsSetData(rb,"colorcoded",false)
 	dgsSetData(rb,"rightbottom",{"left","center"})
 	insertResourceDxGUI(sourceResource,rb)
-	triggerEvent("onClientDgsDxGUIPreCreate",rb)
+	triggerEvent("onDgsPreCreate",rb)
 	calculateGuiPositionSize(rb,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onClientDgsDxGUICreate",rb)
+	triggerEvent("onDgsCreate",rb)
 	return rb
 end
 
-function dgsDxRadioButtonGetSelected(rb)
-	assert(dgsGetType(rb) == "dgs-dxradiobutton","Bad argument @dgsDxRadioButtonGetSelected at argument 1, expect dgs-dxradiobutton got "..dgsGetType(rb))
+function dgsRadioButtonGetSelected(rb)
+	assert(dgsGetType(rb) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonGetSelected at argument 1, expect dgs-dxradiobutton got "..dgsGetType(rb))
 	local _parent = dgsGetParent(rb)
 	local parent = dgsIsDxElement(_parent) and _parent or resourceRoot
 	return dgsGetData(parent,"RadioButton") == rb
 end
 
-function dgsDxRadioButtonSetSelected(rb,state)
-	assert(dgsGetType(rb) == "dgs-dxradiobutton","Bad argument @dgsDxRadioButtonSetSelected at argument 1, expect dgs-dxradiobutton got "..dgsGetType(rb))
+function dgsRadioButtonSetSelected(rb,state)
+	assert(dgsGetType(rb) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonSetSelected at argument 1, expect dgs-dxradiobutton got "..dgsGetType(rb))
 	state = state and true or false
 	local _parent = dgsGetParent(rb)
 	local parent = dgsIsDxElement(_parent) and _parent or resourceRoot
@@ -71,14 +71,14 @@ function dgsDxRadioButtonSetSelected(rb,state)
 		if rb ~= _rb then
 			dgsSetData(parent,"RadioButton",rb)
 			if dgsIsDxElement(_rb) then
-				triggerEvent("onClientDgsDxRadioButtonChange",_rb,false)
+				triggerEvent("onDgsRadioButtonChange",_rb,false)
 			end
-			triggerEvent("onClientDgsDxRadioButtonChange",rb,true)
+			triggerEvent("onDgsRadioButtonChange",rb,true)
 		end
 		return true
 	else
 		dgsSetData(parent,"RadioButton",false)
-		triggerEvent("onClientDgsDxRadioButtonChange",rb,false)
+		triggerEvent("onDgsRadioButtonChange",rb,false)
 		return true
 	end
 end

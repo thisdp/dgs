@@ -167,7 +167,7 @@ function dgsSetData(element,key,value,check)
 					local maxLength = dgsElementData[element].maxLength
 					dgsElementData[element][""..key..""] = utf8.sub(value,0,maxLength)
 				end
-				triggerEvent("onClientDgsDxGUITextChange",element,value)
+				triggerEvent("onDgsTextChange",element,value)
 			elseif dgsGetType(element) == "dgs-dxscrollbar" and tostring(key) == "length" then
 				local w,h = dgsGetSize(element,false)
 				local voh = dgsElementData[element]["voh"]
@@ -176,7 +176,7 @@ function dgsSetData(element,key,value,check)
 				end
 			elseif tostring(key) == "position" then
 				if oldValue and oldValue ~= value then
-					triggerEvent("onClientDgsDxScrollBarScrollPositionChange",element,value,oldValue)
+					triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
 				end
 			elseif (dgsType == "dgs-dxgridlist" or dgsType == "dgs-dxscrollpane") then
 				if key == "scrollBarThick" then
@@ -203,11 +203,11 @@ function dgsSetData(element,key,value,check)
 					local scrollbar = dgsElementData[element]["scrollbar"]
 					configComboBox_Box(dgsElementData[element].myBox)
 				elseif key == "listState" then
-					triggerEvent("onClientDgsDxComboBoxStateChange",element,value == 1 and true or false)
+					triggerEvent("onDgsComboBoxStateChange",element,value == 1 and true or false)
 				end
 			elseif dgsType == "dgs-dxtabpanel" then
 				if key == "selected" then
-					triggerEvent("onClientDgsDxTabPanelTabSelect",element,dgsElementData[element]["selected"],value)
+					triggerEvent("onDgsTabPanelTabSelect",element,dgsElementData[element]["selected"],value)
 				elseif key == "tabsidesize" then
 					local width = dgsElementData[element]["absSize"][1]
 					local change = value[2] and value[1]*width or value[1]
@@ -251,7 +251,47 @@ function dgsSetData(element,key,value,check)
 				end
 			elseif dgsType == "dgs-dxprogressbar" then
 				if key == "progress" then
-					triggerEvent("onClientDgsDxProgressBarChange",element,value,oldValue)
+					triggerEvent("onDgsProgressBarChange",element,value,oldValue)
+				end
+			end
+			if key == "visible" and value == false then
+				for k,v in ipairs(getElementsByType("dgs-dxedit")) do
+					local parent = v
+					for i=1,500 do
+						if dgsElementType[parent] == "dgs-dxtab" then
+							parent = dgsElementData[parent].parent
+						else
+							parent = FatherTable[parent]
+						end
+						if parent then
+							if parent == element then
+								local edit = dgsElementData[v].edit
+								guiSetVisible(edit,false)
+								break
+							end
+						else
+							break
+						end
+					end
+				end
+				for k,v in ipairs(getElementsByType("dgs-dxmemo")) do
+					local parent = v
+					for i=1,500 do
+						if dgsElementType[parent] == "dgs-dxtab" then
+							parent = dgsElementData[parent].parent
+						else
+							parent = FatherTable[parent]
+						end
+						if parent then
+							if parent == element then
+								local memo = dgsElementData[v].memo
+								guiSetVisible(memo,false)
+								break
+							end
+						else
+							break
+						end
+					end
 				end
 			end
 		end
@@ -284,6 +324,7 @@ end
 -----------------------------dx-GUI
 MouseData = {}
 MouseData.enter = false
+MouseData.lastEnter = false
 MouseData.enterData = false
 MouseData.scrollPane = false
 MouseData.hit = false
@@ -354,11 +395,13 @@ function GUIRender()
 	MouseData.hit = false
 	DGSShow = 0
 	local dgsData = dgsElementData
-	for k,v in ipairs(BottomFatherTable) do
+	for i=1,#BottomFatherTable do
+		local v = BottomFatherTable[i]
 		local eleData = dgsData[v]
 		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
 	end
-	for k,v in ipairs(MaxFatherTable) do
+	for i=1,#MaxFatherTable do
+		local v = MaxFatherTable[i]
 		local eleData = dgsData[v]
 		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
 	end
@@ -373,11 +416,11 @@ function GUIRender()
 		MouseData.Scale = false
 		MouseData.scrollPane = false
 	end
-	dgsDxCheckHit(MouseData.hit,mx,my)
-	triggerEvent("onClientDgsDxRender",root)
+	dgsCheckHit(MouseData.hit,mx,my)
+	triggerEvent("onDgsRender",root)
 	if DEBUG_MODE then
 		local ticks = getTickCount()-tk
-		local version = getElementData(resourceRoot,"Version") or "N/A"
+		local version = getElementData(resourceRoot,"Version")
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,black)
 		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-115)
 		dxDrawText("Version: "..version,6,sH*0.4-99,sW,sH,black)
@@ -409,7 +452,23 @@ function GUIRender()
 		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4-10,sW,sH)
 		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,black)	
 		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+5,sW,sH)
-	
+		local anim = table.count(animGUIList)
+		local move = table.count(moveGUIList)
+		local size = table.count(sizeGUIList)
+		local alp = table.count(alphaGUIList)
+		local all = anim+move+size+alp
+		dxDrawText("Running Animation("..all.."):",201,sH*0.4-114,sW,sH,black)
+		dxDrawText("Running Animation("..all.."):",200,sH*0.4-115)
+		
+		dxDrawText("Anim:"..anim,201,sH*0.4-99,sW,sH,black)
+		dxDrawText("Anim:"..anim,200,sH*0.4-100)
+		dxDrawText("Move:"..move,201,sH*0.4-84,sW,sH,black)
+		dxDrawText("Move:"..move,200,sH*0.4-85)
+		dxDrawText("Size:"..size,201,sH*0.4-69,sW,sH,black)
+		dxDrawText("Size:"..size,200,sH*0.4-70)
+		dxDrawText("Alpha:"..alp,201,sH*0.4-54,sW,sH,black)
+		dxDrawText("Alpha:"..alp,200,sH*0.4-55)
+		
 		Resource = 0
 		ResCount = 0
 		for ka,va in pairs(resourceDxGUI) do
@@ -458,7 +517,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		local x,y = dgsGetPosition(v,false,true)
 		local siz = eleData.absSize or {}
 		local w,h = siz[1],siz[2]
-		triggerEvent("onClientDgsPreRender",v,x,y,w,h)
+		triggerEvent("onDgsPreRender",v,x,y,w,h)
 		local isRenderTarget = (not rndtgt) and true or false
 		self = v
 		local rendSet = not DEBUG_MODE and isRenderTarget
@@ -469,6 +528,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				color = applyColorAlpha(color,galpha)
 				local titimg,titcolor,titsize = eleData.titimage,eleData.titcolor,eleData.titlesize
 				titcolor = applyColorAlpha(titcolor,galpha)
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if img then
 					dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,not DEBUG_MODE)
 				else
@@ -484,6 +551,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				titnamecolor = applyColorAlpha(titnamecolor,galpha)
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
 				dxDrawText(eleData.text,x,y,x+w,y+titsize,titnamecolor,txtSizX,txtSizY,systemFont,"center","center",true,false,not DEBUG_MODE,eleData.colorcoded)
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= x and mx<= x+w and my >= y and my <= y+h then
 						MouseData.hit = v
@@ -527,6 +602,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					finalcolor = applyColorAlpha(colors[colorimgid],galpha)
 				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if imgs[colorimgid] then
 					dxDrawImage(x,y,w,h,imgs[colorimgid],0,0,0,finalcolor,rendSet)
 				else
@@ -536,12 +619,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if #text ~= 0 then
 					local font = eleData.font or systemFont
 					local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
-					local txtoffsets = {0,0}
+					local txtoffsetsX,txtoffsetsY = 0,0
 					local clip = eleData.clip
 					local wordbreak = eleData.wordbreak
 					local colorcoded = eleData.colorcoded
 					if colorimgid == 3 then
-						txtoffsets = eleData.clickoffset
+						txtoffsetsX,txtoffsetsY = eleData.clickoffset[1],eleData.clickoffset[2]
 					end
 					local tplt = eleData.rightbottom
 					local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
@@ -550,10 +633,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
-						dxDrawText(text,x+txtoffsets[1]+shadowoffx,y+txtoffsets[2]+shadowoffy,x+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
+						dxDrawText(text,x+txtoffsetsX+shadowoffx,y+txtoffsetsY+shadowoffy,x+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 					end
-					dxDrawText(text,x+txtoffsets[1],y+txtoffsets[2],x+w-1,y+h-1,applyColorAlpha(eleData.textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
+					dxDrawText(text,x+txtoffsetsX,y+txtoffsetsY,x+w-1,y+h-1,applyColorAlpha(eleData.textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -566,7 +657,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if enabled[1] then
-					if dgsDxCheckRadius(v,mx,my) then
+					------------------------------------
+					if eleData.functionRunBefore then
+						local fnc = eleData.functions
+						if type(fnc) == "table" then
+							fnc[1](unpack(fnc[2]))
+						end
+					end
+					------------------------------------
+					if dgsCheckRadius(v,mx,my) then
 						MouseData.hit = v
 					end
 					if eleData.debug then
@@ -589,6 +688,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							dxDrawImage(x,y,w,h,debugShader,0,0,0,white,not DEBUG_MODE)
 						end
 					end
+					------------------------------------
+					if not eleData.functionRunBefore then
+						local fnc = eleData.functions
+						if type(fnc) == "table" then
+							fnc[1](unpack(fnc[2]))
+						end
+					end
+					------------------------------------
 				end
 			else
 				visible = false
@@ -598,16 +705,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			if x and y then
 				local colors,imgs = eleData.color,eleData.image
 				colors = applyColorAlpha(colors,galpha)
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if colors >= 16777216 or colors < 0 then
 					if imgs then
 						local sx,sy = eleData.imagesize[1],eleData.imagesize[2]
 						local px,py = eleData.imagepos[1],eleData.imagepos[2]
 						local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
 						local rot = eleData.rotation or 0
-						local fnc = eleData.functions
-						if type(fnc) == "table" then
-							fnc[1](unpack(fnc[2]))
-						end
 						if not sx or not sy or not px or not py then
 							dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,rendSet)
 						else
@@ -639,6 +750,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
 					end
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -696,6 +815,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					finalcolor = applyColorAlpha(color[colorimgid],galpha)
 				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if image[colorimgid] then
 					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,finalcolor,rendSet)
 				else
@@ -719,6 +846,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawText(eleData.text,px+shadowoffx,y+shadowoffy,px+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -780,6 +915,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					finalcolor = applyColorAlpha(color[colorimgid],galpha)
 				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if image[colorimgid] then
 					dxDrawImage(x,y+h/2-buttonSize/2,buttonSize,buttonSize,image[colorimgid],0,0,0,finalcolor,rendSet)
 				else
@@ -803,6 +946,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawText(eleData.text,px+shadowoffx,y+shadowoffy,px+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textcolor,galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -832,9 +983,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				guiSetSize(edit,w,h,false)
 				local text = eleData.text
 				local fnc = eleData.functions
-				if type(fnc) == "table" then
-					text = fnc[1](unpack(fnc[2]))
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						text = fnc[1](unpack(fnc[2])) or text
+					end
 				end
+				------------------------------------
 				guiSetText(edit,text)
 				if eleData.masked then
 					text = string.rep(eleData.maskText,utf8.len(text))
@@ -851,6 +1007,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				guiEditSetCaretIndex(edit,cursorPos)
 				guiSetProperty(edit,"SelectionStart",cursorPos)
 				guiSetProperty(edit,"SelectionLength",selectFro-cursorPos)
+				guiSetVisible(edit,visible)
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
 				local renderTarget = eleData.renderTarget
@@ -872,11 +1029,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						tlen = dxGetTextWidth(text,txtSizX,font)
 						tlen = w/2-tlen/2-showPos/2
 					end
-					if selectMode then
+					if selectMode and selx ~= 0 then
 						dxDrawRectangle(width+showPos+tlen,2,selx,h-4,selectcolor)
 					end
 					dxDrawText(text,showPos,0,w,h,textcolor,txtSizX,txtSizY,font,eleData.center and "center" or "left","center",false,false,false,false)
-					if not selectMode then
+					if not selectMode and selx ~= 0 then
 						dxDrawRectangle(width+showPos+tlen,2,selx,h-4,selectcolor)
 					end
 					dxSetRenderTarget(rndtgt)
@@ -941,6 +1098,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawLine(x+w-side/2,y,x+w-side/2,y+h,sidecolor,side,isRenderTarget)
 					dxDrawLine(x,y+h-side/2,x+w,y+h-side/2,sidecolor,side,isRenderTarget)
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -982,6 +1147,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2]
 				local renderTarget = eleData.renderTarget
 				local fontHeight = dxGetFontHeight(eleData.textsize[2],font)
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if isElement(renderTarget) then
 					local selectMode = eleData.selectmode
 					local textcolor = eleData.textcolor
@@ -1103,6 +1276,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawLine(x+w-side/2,y,x+w-side/2,y+h,sidecolor,side,isRenderTarget)
 					dxDrawLine(x,y+h-side/2,x+w,y+h-side/2,sidecolor,side,isRenderTarget)
 				end
+				
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
 						MouseData.hit = v
@@ -1134,6 +1316,26 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 				OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position/100 or 0
 				OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position/100 or 0
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				if eleData.PixelInt then
+					x,y,w,h = math.floor(x),math.floor(y),math.floor(w),math.floor(h)
+				end
+				dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.scrollPane = v
@@ -1145,10 +1347,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						enabled[1] = false
 					end
 				end
-				if eleData.PixelInt then
-					x,y,w,h = math.floor(x),math.floor(y),math.floor(w),math.floor(h)
-				end
-				dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
 			end
 		elseif dxType == "dgs-dxscrollbar" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
@@ -1228,6 +1426,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if voh then
 					if imgs[3] then
 						dxDrawImage(x+arrowPos,y,w-2*arrowPos,h,imgs[3],0,0,0,colors[1][3],rendSet)
@@ -1259,6 +1465,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawRectangle(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,colors[colorimgid[2]][2],rendSet)
 					end
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -1284,13 +1498,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local clip = eleData.clip
 				local wordbreak = eleData.wordbreak
 				local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
-				local text
+				local text = eleData.text
 				local fnc = eleData.functions
-				if type(fnc) == "table" then
-					text = fnc[1](unpack(fnc[2]))
-				else
-					text = eleData.text
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						text = fnc[1](unpack(fnc[2])) or text
+					end
 				end
+				------------------------------------
 				local colorcoded = eleData.colorcoded
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
 				if eleData.PixelInt then
@@ -1306,6 +1523,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						MouseData.hit = v
 					end
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 			else
 				visible = false
 			end
@@ -1325,6 +1550,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					MouseData.enterData = false
 				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if bgimg then
 					dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgimg,0,0,0,bgcolor,rendSet)
 				else
@@ -1431,6 +1664,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 										local _x = _x+offset
 										local _sx = _x+(cpos[id+1] or w)-10
 										local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
+										if lc_rowData[id][7] then
+											local imageData = lc_rowData[id][7]
+											if isElement(imageData[1]) then
+												dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2])
+											else
+												dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
+											end
+										end
 										if shadow then
 											if colorcoded then
 												text = text:gsub("#%x%x%x%x%x%x","") or text
@@ -1537,6 +1778,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								local __x = __x+offset
 								local __sx = __x+(cpos[id+1] or w)-10
 								local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
+								if lc_rowData[id][7] then
+									local imageData = lc_rowData[id][7]
+									if isElement(imageData[1]) then
+										dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2])
+									else
+										dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
+									end
+								end
 								if shadow then
 									if colorcoded then
 										text = text:gsub("#%x%x%x%x%x%x","") or text
@@ -1548,6 +1797,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -1570,6 +1827,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local lrspace = eleData.lrspace
 				local udvalue = udspace[2] and udspace[1]*h or udspace[1]
 				local lrvalue = lrspace[2] and lrspace[1]*w or lrspace[1]
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if bgimg then
 					dxDrawImage(x,y,w,h,bgimg,0,0,0,bgcolor,rendSet)
 				else
@@ -1590,6 +1855,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					dxDrawRectangle(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barcolor,rendSet)
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -1644,6 +1917,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					finalcolor = applyColorAlpha(colors[colorimgid],galpha)
 				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if imgs[colorimgid] then
 					dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[colorimgid],0,0,0,finalcolor,postgui)
 				else
@@ -1690,6 +1971,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textcolor,galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui,colorcoded)
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -1713,6 +2002,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local whichRowToEnd = whichRowToStart+math.floor(h/itemHeight)+1
 				DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #itemData and whichRowToEnd or #itemData}
 				local renderTarget = dgsElementData[combo].renderTarget
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if isElement(renderTarget) then
 					dxSetRenderTarget(renderTarget,true)
 					local rb_l = dgsElementData[combo].rightbottomList
@@ -1769,6 +2066,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxSetRenderTarget()
 					dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					local height = #itemData*itemHeight
 					if height > h then
@@ -1792,6 +2097,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local tabs = eleData["tabs"]
 				local height = eleData["tabheight"][2] and eleData["tabheight"][1]*h or eleData["tabheight"][1]
 				local font = eleData.font or systemFont
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if selected == -1 then
 					dxDrawRectangle(x,y+height,w,h-height,eleData["defbackground"],not DEBUG_MODE)
 				else
@@ -1862,6 +2175,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if MouseData.hit == hits then
 						if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
@@ -1882,6 +2203,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			if x and y then
 				local colors,imgs = eleData.bgcolor,eleData.bgimage
 				colors = applyColorAlpha(colors,galpha)
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if imgs then
 					dxDrawImage(x,y,w,h,imgs,0,0,0,colors,rendSet)
 				else
@@ -1891,7 +2220,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local canshow = math.floor(h/eleData.hangju)-1
 				local rowoffset = 0
 				local readyToRenderTable = {}
-				local font = eleData.font or dsm
+				local font = eleData.font
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
 				for i=1,#cmdtexts do
 					local movex = 0
@@ -1915,6 +2244,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local width = dxGetTextWidth(readyToRenderTable[i],txtSizX,font)
 					dxDrawText(readyToRenderTable[i],x+5,y+(i-1)*hangju,x+width+5,y+i*hangju,white,txtSizX,txtSizY,font,"left","bottom",false,true,rendSet)
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -1924,13 +2261,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				visible = false
 			end
 		end
-		triggerEvent("onClientDgsRender",v,x,y,w,h)
+		triggerEvent("onDgsRender",v,x,y,w,h)
 		if not eleData.hitoutofparent then
 			if MouseData.hit ~= v then
 				enabled[1] = false
 			end
 		end
-		for k,child in ipairs(children) do
+		for i=1,#children do
+			local child = children[i]
 			renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		end
 	end
@@ -1998,23 +2336,23 @@ function checkEditCursor(button,state)
 		elseif dgsGetType(MouseData.enter) == "dgs-dxgridlist" then
 			if MouseData.enterData then
 				local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
-				if dgsDxGUIGetVisible(scrollbar) then
+				if dgsGetVisible(scrollbar) then
 					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 				end
 			end
 		elseif dgsGetType(MouseData.enter) == "dgs-dxmemo" then
 				local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
-				if dgsDxGUIGetVisible(scrollbar) then
+				if dgsGetVisible(scrollbar) then
 					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 				end
 		elseif isElement(MouseData.scrollPane) then
 			local scrollbar1 = dgsElementData[MouseData.scrollPane].scrollbars[1]
 			local scrollbar2 = dgsElementData[MouseData.scrollPane].scrollbars[2]
 			local sbr
-			if dgsDxGUIGetVisible(scrollbar1) then
+			if dgsGetVisible(scrollbar1) then
 				sbr = scrollbar1
 			end
-			if dgsDxGUIGetVisible(scrollbar2) then
+			if dgsGetVisible(scrollbar2) then
 				sbr = scrollbar2
 			end
 			if sbr then
@@ -2038,7 +2376,7 @@ function checkEditCursor(button,state)
 		elseif dgsGetType(MouseData.enter) == "dgs-dxcombobox-Box" then
 			local combo = dgsElementData[MouseData.enter].myCombo
 			local scrollbar = dgsElementData[combo].scrollbar
-			if dgsDxGUIGetVisible(scrollbar) then
+			if dgsGetVisible(scrollbar) then
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		end
@@ -2050,7 +2388,7 @@ function checkEditCursor(button,state)
 			local cmd = dgsElementData[MouseData.nowShow].mycmd
 			local shift = getKeyState("lshift") or getKeyState("rshift")
 			if button == "arrow_l" then
-				dgsDxEditMoveCaret(MouseData.nowShow,-1,shift)
+				dgsEditMoveCaret(MouseData.nowShow,-1,shift)
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -2062,7 +2400,7 @@ function checkEditCursor(button,state)
 						MouseData.Timer["editMove"] = setTimer(function()
 							local shift = getKeyState("lshift") or getKeyState("rshift")
 							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-								dgsDxEditMoveCaret(MouseData.nowShow,-1,shift)
+								dgsEditMoveCaret(MouseData.nowShow,-1,shift)
 								MouseData.editCursorMoveOffset = -1
 							else
 								killTimer(MouseData.Timer["editMove"])
@@ -2071,7 +2409,7 @@ function checkEditCursor(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_r" then
-				dgsDxEditMoveCaret(MouseData.nowShow,1,shift)
+				dgsEditMoveCaret(MouseData.nowShow,1,shift)
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -2083,7 +2421,7 @@ function checkEditCursor(button,state)
 						MouseData.Timer["editMove"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsDxEditMoveCaret(MouseData.nowShow,1,shift)
+								dgsEditMoveCaret(MouseData.nowShow,1,shift)
 								MouseData.editCursorMoveOffset = 1
 							else
 								killTimer(MouseData.Timer["editMove"])
@@ -2098,8 +2436,8 @@ function checkEditCursor(button,state)
 					if history[int+1] then
 						int = int+1
 						dgsSetData(cmd,"cmdCurrentHistory",int)
-						dgsDxGUISetText(MouseData.nowShow,history[int])
-						dgsDxEditSetCaretPosition(MouseData.nowShow,#history[int])
+						dgsSetText(MouseData.nowShow,history[int])
+						dgsEditSetCaretPosition(MouseData.nowShow,#history[int])
 					end
 				end
 			elseif button == "arrow_d" then
@@ -2109,17 +2447,17 @@ function checkEditCursor(button,state)
 					if history[int-1] then
 						int = int-1
 						dgsSetData(cmd,"cmdCurrentHistory",int)
-						dgsDxGUISetText(MouseData.nowShow,history[int])
-						dgsDxEditSetCaretPosition(MouseData.nowShow,#history[int])
+						dgsSetText(MouseData.nowShow,history[int])
+						dgsEditSetCaretPosition(MouseData.nowShow,#history[int])
 					end
 				end
 			elseif button == "home" then
-				dgsDxEditSetCaretPosition(MouseData.nowShow,0,getKeyState("lshift") or getKeyState("rshift"))
+				dgsEditSetCaretPosition(MouseData.nowShow,0,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "end" then
-				dgsDxEditSetCaretPosition(MouseData.nowShow,#text,getKeyState("lshift") or getKeyState("rshift"))
+				dgsEditSetCaretPosition(MouseData.nowShow,#text,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "tab" then
 				cancelEvent()
-				triggerEvent("onClientDgsDxEditPreSwitch",MouseData.nowShow)
+				triggerEvent("onDgsEditPreSwitch",MouseData.nowShow)
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -2130,7 +2468,7 @@ function checkEditCursor(button,state)
 					if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 						MouseData.Timer["editMove"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-								triggerEvent("onClientDgsDxEditPreSwitch",MouseData.nowShow)
+								triggerEvent("onDgsEditPreSwitch",MouseData.nowShow)
 							else
 								killTimer(MouseData.Timer["editMove"])
 							end
@@ -2154,7 +2492,7 @@ function checkEditCursor(button,state)
 			local cmd = dgsElementData[MouseData.nowShow].mycmd
 			local shift = getKeyState("lshift") or getKeyState("rshift")
 			if button == "arrow_l" then
-				dgsDxMemoMoveCaret(MouseData.nowShow,-1,0,shift)
+				dgsMemoMoveCaret(MouseData.nowShow,-1,0,shift)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -2166,7 +2504,7 @@ function checkEditCursor(button,state)
 						MouseData.Timer["memoMove"] = setTimer(function()
 							local shift = getKeyState("lshift") or getKeyState("rshift")
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-								dgsDxMemoMoveCaret(MouseData.nowShow,-1,0,shift)
+								dgsMemoMoveCaret(MouseData.nowShow,-1,0,shift)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -2174,7 +2512,7 @@ function checkEditCursor(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_r" then
-				dgsDxMemoMoveCaret(MouseData.nowShow,1,0,shift)
+				dgsMemoMoveCaret(MouseData.nowShow,1,0,shift)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -2186,7 +2524,7 @@ function checkEditCursor(button,state)
 						MouseData.Timer["memoMove"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsDxMemoMoveCaret(MouseData.nowShow,1,0,shift)
+								dgsMemoMoveCaret(MouseData.nowShow,1,0,shift)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -2194,7 +2532,7 @@ function checkEditCursor(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_u" then
-				dgsDxMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
+				dgsMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -2206,7 +2544,7 @@ function checkEditCursor(button,state)
 						MouseData.Timer["memoMove"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsDxMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
+								dgsMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -2214,7 +2552,7 @@ function checkEditCursor(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_d" then
-				dgsDxMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
+				dgsMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -2226,7 +2564,7 @@ function checkEditCursor(button,state)
 						MouseData.Timer["memoMove"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsDxMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
+								dgsMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -2238,7 +2576,7 @@ function checkEditCursor(button,state)
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					tarline = 1
 				end
-				dgsDxMemoSetCaretPosition(MouseData.nowShow,0,tarline,getKeyState("lshift") or getKeyState("rshift"))
+				dgsMemoSetCaretPosition(MouseData.nowShow,0,tarline,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "end" then
 				local text = dgsElementData[MouseData.nowShow].text
 				local line = dgsElementData[MouseData.nowShow].cursorposXY[2]
@@ -2246,24 +2584,24 @@ function checkEditCursor(button,state)
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					tarline = #text
 				end
-				dgsDxMemoSetCaretPosition(MouseData.nowShow,utf8.len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
+				dgsMemoSetCaretPosition(MouseData.nowShow,utf8.len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "delete" then
 				local cpos = dgsElementData[MouseData.nowShow].cursorposXY
 				local spos = dgsElementData[MouseData.nowShow].selectfrom
 				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
-					dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
+					dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
 					dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
 				else
-					local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
-					dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+					local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
+					dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
 					MouseData.Timer["memoMoveDelay"] = setTimer(function()
 						if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 							MouseData.Timer["memoMove"] = setTimer(function()
 								if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 									local cpos = dgsElementData[MouseData.nowShow].cursorposXY
 									local spos = dgsElementData[MouseData.nowShow].selectfrom
-									local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
-									dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+									local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
+									dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
 								else
 									killTimer(MouseData.Timer["memoMove"])
 								end
@@ -2275,19 +2613,19 @@ function checkEditCursor(button,state)
 				local cpos = dgsElementData[MouseData.nowShow].cursorposXY
 				local spos = dgsElementData[MouseData.nowShow].selectfrom
 				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
-					dgsDxMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
+					dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
 					dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
 				else
-					local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
-					dgsDxMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+					local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
+					dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
 					MouseData.Timer["memoMoveDelay"] = setTimer(function()
 						if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 							MouseData.Timer["memoMove"] = setTimer(function()
 								if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 									local cpos = dgsElementData[MouseData.nowShow].cursorposXY
 									local spos = dgsElementData[MouseData.nowShow].selectfrom
-									local tarindex,tarline = dgsDxMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
-									dgsDxMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+									local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
+									dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
 								else
 									killTimer(MouseData.Timer["memoMove"])
 								end
@@ -2299,7 +2637,7 @@ function checkEditCursor(button,state)
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					local cpos = dgsElementData[MouseData.nowShow].cursorposXY
 					local spos = dgsElementData[MouseData.nowShow].selectfrom
-					local theText = dgsDxMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],button == "x")
+					local theText = dgsMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],button == "x")
 					setClipboard(theText)
 				end
 			end
@@ -2323,12 +2661,12 @@ addEventHandler("onClientKey",root,checkEditCursor)
 		if guitype == "gui-edit" then
 			local edit = dgsElementData[source].dxedit
 			if isElement(edit) then
-				dgsDxGUIBringToFront(edit,"left")
+				dgsBringToFront(edit,"left")
 			end
 		elseif guitype == "gui-memo" then
 			local memo = dgsElementData[source].dxmemo
 			if isElement(memo) then
-				dgsDxGUIBringToFront(memo,"left")
+				dgsBringToFront(memo,"left")
 			end
 		end
 	end
@@ -2370,7 +2708,7 @@ function scrollScrollBar(scrollbar,button)
 	dgsSetData(scrollbar,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
 end
 
-addEventHandler("onClientDgsDxGUITextChange",root,function(text)
+addEventHandler("onDgsTextChange",root,function(text)
 	local gui = dgsElementData[source].edit
 	if isElement(gui) then
 		local gtext = guiGetText(gui)
@@ -2416,27 +2754,27 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 				if getKeyState("delete") then
 					if sele ~= 0 then
 						if sele > 0 then
-							dgsDxEditSetCaretPosition(myedit,from-sele)
+							dgsEditSetCaretPosition(myedit,from-sele)
 						else
-							dgsDxEditSetCaretPosition(myedit,from)
+							dgsEditSetCaretPosition(myedit,from)
 						end
 					end
 				elseif getKeyState("backspace") then
 					if sele == 0 then
-						dgsDxEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
+						dgsEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
 					else
 						if sele > 0 then
-							dgsDxEditSetCaretPosition(myedit,pos)
+							dgsEditSetCaretPosition(myedit,pos)
 						else
-							dgsDxEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
+							dgsEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
 						end
 					end
 				else
-					dgsDxEditSetCaretPosition(myedit,pos+offset)
+					dgsEditSetCaretPosition(myedit,pos+offset)
 				end
 				local pos = dgsElementData[myedit].cursorpos
 				if pos > utf8.len(text_new) then
-					dgsDxEditSetCaretPosition(myedit,utf8.len(text_new))
+					dgsEditSetCaretPosition(myedit,utf8.len(text_new))
 				end
 			end
 		end
@@ -2449,7 +2787,7 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 				if #text ~= 0 and not cool then
 					local cursorposXY = dgsElementData[mymemo].cursorposXY
 					local selectfrom = dgsElementData[mymemo].selectfrom
-					dgsDxMemoDeleteText(mymemo,cursorposXY[1],cursorposXY[2],selectfrom[1],selectfrom[2])
+					dgsMemoDeleteText(mymemo,cursorposXY[1],cursorposXY[2],selectfrom[1],selectfrom[2])
 					handleDxMemoText(mymemo,utf8.sub(text,1,utf8.len(text)-1))
 					dgsElementData[mymemo].CoolTime = true
 					guiSetText(source,"")
@@ -2461,11 +2799,11 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 end)
 
 
-function dgsDxCheckHit(hits,mx,my)
+function dgsCheckHit(hits,mx,my)
 	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.clickData == 2) then
 		if MouseData.enter ~= hits then
 			if isElement(MouseData.enter) then
-				triggerEvent("onClientDgsDxMouseLeave",MouseData.enter,mx,my,hits)
+				triggerEvent("onDgsMouseLeave",MouseData.enter,mx,my,hits)
 				if dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" then
 					if isTimer(MouseData.Timer[MouseData.clickl]) then
 						killTimer(MouseData.Timer[MouseData.clickl])
@@ -2479,14 +2817,15 @@ function dgsDxCheckHit(hits,mx,my)
 				end
 			end
 			if isElement(hits) then
-				triggerEvent("onClientDgsDxMouseEnter",hits,mx,my,MouseData.enter)
+				triggerEvent("onDgsMouseEnter",hits,mx,my,MouseData.enter)
 			end
+			MouseData.lastEnter = MouseData.enter
 			MouseData.enter = hits
 		end
 	end
 	if isElement(MouseData.clickl) then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
-			triggerEvent("onClientDgsDxGUICursorMove",MouseData.clickl,mx,my)
+			triggerEvent("onDgsCursorMove",MouseData.clickl,mx,my)
 		end
 		if MouseData.Move then
 			if dgsGetType(MouseData.clickl) == "dgs-dxwindow" then
@@ -2564,15 +2903,15 @@ function dgsDxCheckHit(hits,mx,my)
 	end
 end
 
-addEventHandler("onClientDgsDxMouseClick",root,function(button,state)
+addEventHandler("onDgsMouseClick",root,function(button,state)
 	local parent = dgsGetParent(source)
 	if state == "down" then
-		dgsDxGUIBringToFront(source,button)
+		dgsBringToFront(source,button)
 		local guitype = dgsGetType(source)
 		if guitype == "dgs-dxscrollpane" then
 			local scrollbar = dgsElementData[source].scrollbars
-			dgsDxGUIBringToFront(scrollbar[1],"left",_,true)
-			dgsDxGUIBringToFront(scrollbar[2],"left",_,true)
+			dgsBringToFront(scrollbar[1],"left",_,true)
+			dgsBringToFront(scrollbar[2],"left",_,true)
 		end
 		if button == "left" then
 			if guitype == "dgs-dxwindow" then
@@ -2665,14 +3004,14 @@ addEventHandler("onClientDgsDxMouseClick",root,function(button,state)
 					local preSelect = dgsElementData[source].preSelect
 					local oldSelect = dgsElementData[source].select
 					dgsElementData[source].select = preSelect
-					triggerEvent("onClientDgsDxGridListSelect",source,preSelect,oldSelect)
+					triggerEvent("onDgsGridListSelect",source,preSelect,oldSelect)
 				end
 			elseif guitype == "dgs-dxcombobox-Box" then
 				local combobox = dgsElementData[source].myCombo
 				local preSelect = dgsElementData[combobox].preSelect
 				local oldSelect = dgsElementData[combobox].select
 				dgsElementData[combobox].select = preSelect
-				triggerEvent("onClientDgsDxComboBoxSelect",combobox,preSelect,oldSelect)
+				triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 			elseif guitype == "dgs-dxtabpanel" then
 				if dgsElementData[source]["preselect"] ~= -1 then
 					dgsSetData(source,"selected",dgsElementData[source]["preselect"])
@@ -2687,9 +3026,12 @@ addEventHandler("onClientDgsDxMouseClick",root,function(button,state)
 				if isElement(parent) then
 					local closebutton = dgsElementData[parent].closeButton
 					if closebutton == source then
+						triggerEvent("onDgsWindowClose",parent,closebutton)
+						local canceled = wasEventCancelled()
 						triggerEvent("onClientDgsDxWindowClose",parent,closebutton)
-						if not wasEventCancelled() then
-							destroyElement(parent)
+						local canceled2 = wasEventCancelled()
+						if not canceled and not canceled2 then
+							return destroyElement(parent)
 						end
 					end
 				end	
@@ -2701,7 +3043,7 @@ end)
 addEventHandler("onClientElementDestroy",resourceRoot,function()
 	local parent = dgsGetParent(source) or root
 	if dgsIsDxElement(source) then
-		triggerEvent("onClientDgsDxGUIDestroy",source)
+		triggerEvent("onDgsDestroy",source)
 		local child = ChildrenTable[source] or {}
 		for i=1,#child do
 			if isElement(child[1]) then
@@ -2834,78 +3176,78 @@ function checkScale()
 	MouseData.Scale = offsets
 	return true
 end
-
-DoubleClick = false
-GirdListDoubleClick = false
+DoubleClick = {}
+DoubleClick.down = false
+DoubleClick.up = false
+GirdListDoubleClick = {}
+GirdListDoubleClick.down = false
+GirdListDoubleClick.up = false
 
 addEventHandler("onClientClick",root,function(button,state,x,y)
-	local guiele = dgsDxGetMouseEnterGUI()
+	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
 		if state == "down" then
 			if button == "left" then
 				local gtype = dgsGetType(guiele)
 				if gtype == "dgs-dxradiobutton" then
-					dgsDxRadioButtonSetSelected(guiele,true)
+					dgsRadioButtonSetSelected(guiele,true)
 				elseif gtype == "dgs-dxcheckbox" then
 					local state = dgsElementData[guiele].CheckBoxState
-					dgsDxCheckBoxSetSelected(guiele,not state)
+					dgsCheckBoxSetSelected(guiele,not state)
 				end
-			end
-			if DoubleClick and isTimer(DoubleClick.timer) and DoubleClick.ele == guiele and DoubleClick.but == button then
-				triggerEvent("onClientDgsDxMouseDoubleClick",guiele,button,x,y)
-				killTimer(DoubleClick.timer)
-				DoubleClick = {}
-			else
-				if DoubleClick then
-					if isTimer(DoubleClick.timer) then
-						killTimer(DoubleClick.timer)
-					end
-				end
-				DoubleClick = {}
-				DoubleClick.ele = guiele
-				DoubleClick.but = button
-				DoubleClick.timer = setTimer(function()
-					DoubleClick = false
-				end,500,1)
 			end
 		end
-		triggerEvent("onClientDgsDxMouseClick",guiele,button,state,x,y)
-		if state == "down" then
-			if GirdListDoubleClick and isTimer(GirdListDoubleClick.timer) then
-				local item = dgsElementData[guiele].select
-				if dgsGetType(guiele) == "dgs-dxgridlist" and GirdListDoubleClick.gridlist == guiele and GirdListDoubleClick.but == button and GirdListDoubleClick.item == item then
-					triggerEvent("onClientDgsDxGridListItemDoubleClick",guiele,item)
+		triggerEvent("onDgsMouseClick",guiele,button,state,x,y)
+		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
+			triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)
+			killTimer(DoubleClick[state].timer)
+			DoubleClick[state] = {}
+		else
+			if DoubleClick[state] then
+				if isTimer(DoubleClick[state].timer) then
+					killTimer(DoubleClick[state].timer)
 				end
-				killTimer(GirdListDoubleClick.timer)
-				GirdListDoubleClick = {}
-			else
-				if GirdListDoubleClick then
-					if isTimer(GirdListDoubleClick.timer) then
-						killTimer(GirdListDoubleClick.timer)
-					end
+			end
+			DoubleClick[state] = {}
+			DoubleClick[state].ele = guiele
+			DoubleClick[state].but = button
+			DoubleClick[state].timer = setTimer(function()
+				DoubleClick[state] = false
+			end,500,1)
+		end
+		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
+			local item = dgsElementData[guiele].select
+			if dgsGetType(guiele) == "dgs-dxgridlist" and GirdListDoubleClick[state].gridlist == guiele and GirdListDoubleClick[state].but == button and GirdListDoubleClick[state].item == item then
+				triggerEvent("onDgsGridListItemDoubleClick",guiele,GirdListDoubleClick[state].but,state,item)
+			end
+			killTimer(GirdListDoubleClick[state].timer)
+			GirdListDoubleClick[state] = {}
+		else
+			if GirdListDoubleClick[state] then
+				if isTimer(GirdListDoubleClick[state].timer) then
+					killTimer(GirdListDoubleClick[state].timer)
 				end
-				if dgsGetType(guiele) == "dgs-dxgridlist" then
-					if dgsElementData[guiele].select ~= -1 then
-						GirdListDoubleClick = {}
-						GirdListDoubleClick.item = dgsElementData[guiele].select
-						GirdListDoubleClick.gridlist = guiele
-						GirdListDoubleClick.but = button
-						GirdListDoubleClick.timer = setTimer(function()
-							GirdListDoubleClick.gridlist = false
-						end,500,1)
-					end
+			end
+			if dgsGetType(guiele) == "dgs-dxgridlist" then
+				if dgsElementData[guiele].select ~= -1 then
+					GirdListDoubleClick[state] = {}
+					GirdListDoubleClick[state].item = dgsElementData[guiele].select
+					GirdListDoubleClick[state].gridlist = guiele
+					GirdListDoubleClick[state].but = button
+					GirdListDoubleClick[state].timer = setTimer(function()
+						GirdListDoubleClick[state].gridlist = false
+					end,500,1)
 				end
 			end
 		end
 	elseif state == "down" then
-		if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-			local gui = guiCreateLabel(0,0,0,0,"",false)
-			guiBringToFront(gui)
-			destroyElement(gui)
+		local dgsType = dgsGetType(MouseData.nowShow)
+		if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
+			blurEditMemo()
 		end
 		MouseData.nowShow = false
 		if isElement(lastFront) then
-			triggerEvent("onClientDgsDxBlur",lastFront,false)
+			triggerEvent("onDgsBlur",lastFront,false)
 			lastFront = false
 		end
 	end
@@ -2931,11 +3273,11 @@ function simulationClick(guiele,button)
 	local x,y = dgsGetPosition(guiele,false)
 	local sx,sy = dgsGetSize(guiele,false)
 	local x,y = x+sx*0.5,y+sy*0.5
-	triggerEvent("onClientDgsDxMouseClick",guiele,button,"down",x,y)
-	triggerEvent("onClientDgsDxMouseClick",guiele,button,"up",x,y)
+	triggerEvent("onDgsMouseClick",guiele,button,"down",x,y)
+	triggerEvent("onDgsMouseClick",guiele,button,"up",x,y)
 end
 
-addEventHandler("onClientDgsDxGUIPositionChange",root,function(oldx,oldy)
+addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	local parent = dgsGetParent(source)
 	if isElement(parent) then
 		if dgsGetType(parent) == "dgs-dxscrollpane" then
@@ -2976,7 +3318,7 @@ addEventHandler("onClientDgsDxGUIPositionChange",root,function(oldx,oldy)
 	end
 end)
 
-addEventHandler("onClientDgsDxGUISizeChange",root,function()
+addEventHandler("onDgsSizeChange",root,function()
 	for k,v in ipairs(ChildrenTable[source] or {}) do
 		local relativePos,relativeSize = unpack(dgsElementData[v].relative)
 		local x,y,sx,sy
@@ -3010,11 +3352,15 @@ addEventHandler("onClientDgsDxGUISizeChange",root,function()
 	end
 end)
 
-function dgsDxGetMouseEnterGUI()
+function dgsGetMouseEnterGUI()
 	return MouseData.enter
 end
 
-function dgsDxGetMouseClickGUI(button)
+function dgsGetMouseLeaveGUI()
+	return MouseData.lastEnter
+end
+
+function dgsGetMouseClickGUI(button)
 	if button == "left" then
 		return MouseData.clickl
 	elseif button == "middle" then
@@ -3022,6 +3368,10 @@ function dgsDxGetMouseClickGUI(button)
 	else
 		return MouseData.clickr
 	end
+end
+
+function dgsGetFocusedGUI()
+	return MouseData.nowShow
 end
 
 dgsElementData[resourceRoot] = {}

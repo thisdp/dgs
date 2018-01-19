@@ -45,6 +45,11 @@ function removeEasingFunction(name)
 	return false
 end
 
+function isEasingFunctionExists(name)
+	assert(type(name) == "string","Bad at argument @isEasingFunctionExists at argument 1, expected a string got "..type(name))
+	return builtins[name] or (SelfEasing[name] and true)
+end	
+
 function insertResourceDxGUI(res,gui)
 	if res and isElement(gui) then
 		resourceDxGUI[res] = resourceDxGUI[res] or {}
@@ -126,13 +131,15 @@ function dgsSetSize(gui,x,y,bool)
 	return false,"not a dx-gui"
 end
 
-function dgsDxGUISetProperty(dxgui,key,value,...)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsSetProperty(dxgui,key,value,...)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if key == "functions" then
-		value = {loadstring(value),{...}}
+		local fnc = loadstring(value)
+		assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
+		value = {fnc,{...}}
 	elseif key == "textcolor" then
 		if not tonumber(value) then
-			assert(false,"Bad argument @dgsDxGUISetProperty at argument 3, expect a number got "..type(value))
+			assert(false,"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 		end
 	elseif key == "text" then
 		local dgsType = dgsGetType(dxgui)
@@ -150,10 +157,10 @@ function dgsDxGUISetProperty(dxgui,key,value,...)
 	return dgsSetData(dxgui,tostring(key),value)
 end
 
-function dgsDxGUISetProperties(dxgui,theTable,additionArg)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	assert(type(theTable)=="table","Bad argument @dgsDxGUISetProperties at argument 2, expect a table got "..type(theTable))
-	assert(additionArg and type(additionArg)=="table","Bad argument @dgsDxGUISetProperties at argument 3, expect a table or none got "..type(additionArg))
+function dgsSetProperties(dxgui,theTable,additionArg)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(type(theTable)=="table","Bad argument @dgsSetProperties at argument 2, expect a table got "..type(theTable))
+	assert(additionArg and type(additionArg)=="table","Bad argument @dgsSetProperties at argument 3, expect a table or none got "..type(additionArg))
 	local success = true
 	local dgsType = dgsGetType(dxgui)
 	for key,value in pairs(theTable) do
@@ -162,7 +169,7 @@ function dgsDxGUISetProperties(dxgui,theTable,additionArg)
 			value = {loadstring(value),additionArg.functions or {}}
 		elseif key == "textcolor" then
 			if not tonumber(value) then
-				assert(false,"Bad argument @dgsDxGUISetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
+				assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
 			end
 		elseif key == "text" then
 			if dgsType == "dgs-dxtab" then
@@ -184,18 +191,27 @@ function dgsDxGUISetProperties(dxgui,theTable,additionArg)
 	return success
 end
 
-function dgsDxGUIGetProperty(dxgui,key)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetProperty(dxgui,key)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsElementData[dxgui] then
 		return dgsElementData[dxgui][key]
 	end
 	return false
 end
 
-function dgsDxGUIGetProperties(dxgui)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetProperties(dxgui,properties)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(not properties or type(properties) == "table","Bad argument @dgsGetProperties at argument 2, expect none or table got "..type(properties))
 	if dgsElementData[dxgui] then
-		return dgsElementData[dxgui]
+		if not properties then
+			return dgsElementData[dxgui]
+		else
+			local data = {}
+			for k,v in ipairs(properties) do
+				data[v] = dgsElementData[dxgui][v]
+			end
+			return data
+		end
 	end
 	return false
 end
@@ -219,8 +235,8 @@ function dgsGUIApplyVisible(parent,visible)
 	end
 end
 
-function dgsDxGUISetVisible(dxgui,visible)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsSetVisible(dxgui,visible)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsGetType(dxgui) == "dgs-dxedit" then
 		local edit = dgsGetData(dxgui,"edit")
 		guiSetVisible(edit,visible)
@@ -230,24 +246,30 @@ function dgsDxGUISetVisible(dxgui,visible)
 	return dgsSetData(dxgui,"visible",visible and true or false)
 end
 
-function dgsDxGUIGetVisible(dxgui)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetVisible(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsElementData[dxgui]["visible"]
 end
 
-function dgsDxGUISetSide(dxgui,side,topleft)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsSetSide(dxgui,side,topleft)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsSetData(dxgui,topleft and "tob" or "lor",side)
 end
 
-function dgsDxGUIGetSide(dxgui,topleft)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetSide(dxgui,topleft)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsGetData(dxgui,topleft and "tob" or "lor")
 end
 
+function blurEditMemo()
+	local gui = guiCreateLabel(0,0,0,0,"",false)
+	guiBringToFront(gui)
+	destroyElement(gui)
+end
+
 lastFront = false
-function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIBringToFront at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	local parent = dgsGetParent(dxgui)
 	local mouse = mouse or "left"
 	if not dontChangeData then
@@ -260,10 +282,11 @@ function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 				local edit = dgsElementData[dxgui].edit
 				guiBringToFront(edit)
 			end
-		elseif dgsGetType(oldShow) == "dgs-dxedit" and dxgui ~= oldShow then
-			local gui = guiCreateLabel(0,0,0,0,"",false)
-			guiBringToFront(gui)
-			destroyElement(gui)
+		elseif dxgui ~= oldShow then
+			local dgsType = dgsGetType(oldShow)
+			if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
+				blurEditMemo()
+			end
 		end
 		if isElement(oldShow) and dgsElementData[oldShow].clearSelection then
 			dgsSetData(oldShow,"selectfrom",dgsElementData[oldShow].cursorpos)
@@ -287,8 +310,8 @@ function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 					table.insert(children,parents)
 					if dgsGetType(parents) == "dgs-dxscrollpane" then
 						local scrollbar = dgsGetData(parents,"scrollbars")
-						dgsDxGUIBringToFront(scrollbar[1],"left",_,true)
-						dgsDxGUIBringToFront(scrollbar[2],"left",_,true)
+						dgsBringToFront(scrollbar[1],"left",_,true)
+						dgsBringToFront(scrollbar[2],"left",_,true)
 					end
 				end
 				parents = uparents
@@ -299,8 +322,8 @@ function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 					table.insert(MaxFatherTable,parents)
 					if dgsGetType(parents) == "dgs-dxscrollpane" then
 						local scrollbar = dgsGetData(parents,"scrollbars")
-						dgsDxGUIBringToFront(scrollbar[1],"left",_,true)
-						dgsDxGUIBringToFront(scrollbar[2],"left",_,true)
+						dgsBringToFront(scrollbar[1],"left",_,true)
+						dgsBringToFront(scrollbar[2],"left",_,true)
 					end
 				end
 				break
@@ -311,9 +334,9 @@ function dgsDxGUIBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 		end
 	end
 	if isElement(lastFront) and lastFront ~= dxgui then
-		triggerEvent("onClientDgsDxBlur",lastFront,dxgui)
+		triggerEvent("onDgsBlur",lastFront,dxgui)
 	end
-	triggerEvent("onClientDgsDxFocus",dxgui,lastFront)
+	triggerEvent("onDgsFocus",dxgui,lastFront)
 	lastFront = dxgui
 	if mouse == "left" then
 		MouseData.clickl = dxgui
@@ -360,7 +383,7 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		dgsSetData(gui,"rltPos",{relatx,relaty})
 		dgsSetData(gui,"relative",{relativep,oldRelativeSize})
 		if not notrigger then
-			triggerEvent("onClientDgsDxGUIPositionChange",gui,oldPosAbsx,oldPosAbsy,oldPosRltx,oldPosRlty)
+			triggerEvent("onDgsPositionChange",gui,oldPosAbsx,oldPosAbsy,oldPosRltx,oldPosRlty)
 		end
 	end
 	if sx and sy then
@@ -378,39 +401,39 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		dgsSetData(gui,"rltSize",{relatsx,relatsy})
 		dgsSetData(gui,"relative",{oldRelativePos,relatives})
 		if not notrigger then
-			triggerEvent("onClientDgsDxGUISizeChange",gui,oldSizeAbsx,oldSizeAbsy,oldSizeRltx,oldSizeRlty)
+			triggerEvent("onDgsSizeChange",gui,oldSizeAbsx,oldSizeAbsy,oldSizeRltx,oldSizeRlty)
 		end
 	end
 	return true
 end
 
-function dgsDxGUISetAlpha(dxgui,alpha)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	assert(type(alpha) == "number","Bad argument @dgsDxGUISetAlpha at argument 2, expect a number got "..type(alpha))
+function dgsSetAlpha(dxgui,alpha)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	assert(type(alpha) == "number","Bad argument @dgsSetAlpha at argument 2, expect a number got "..type(alpha))
 	return dgsSetData(dxgui,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 end
 
-function dgsDxGUIGetAlpha(dxgui)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetAlpha(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsGetData(dxgui,"alpha")
 end
 
-function dgsDxGUISetEnabled(dxgui,enabled)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))	
-	assert(type(enabled) == "boolean","Bad argument @dgsDxGUISetEnabled at argument 2, expect a boolean element got "..type(enabled))	
+function dgsSetEnabled(dxgui,enabled)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))	
+	assert(type(enabled) == "boolean","Bad argument @dgsSetEnabled at argument 2, expect a boolean element got "..type(enabled))	
 	return dgsSetData(dxgui,"enabled",enabled)
 end
 
-function dgsDxGUIGetEnabled(dxgui)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetEnabled(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsGetData(dxgui,"enabled")
 end
 
-function dgsDxGUICreateFont(path,...)
-	assert(type(path) == "string","Bad argument @dgsDxGUICreateFont at argument 1, expect string got "..type(path))
+function dgsCreateFont(path,...)
+	assert(type(path) == "string","Bad argument @dgsCreateFont at argument 1, expect string got "..type(path))
 	if not fileExists(":"..getResourceName(getThisResource()).."/"..path) and not fileExists(path) then
 		if not fileExists(path) then
-			assert(false,"Bad argument @dgsDxGUICreateFont at argument 1,couldn't find such file '"..path.."'")
+			assert(false,"Bad argument @dgsCreateFont at argument 1,couldn't find such file '"..path.."'")
 		end
 		local filename = split(path,"/")
 		fileCopy(path,":"..getResourceName(getThisResource()).."/"..filename[#filename])
@@ -420,40 +443,74 @@ function dgsDxGUICreateFont(path,...)
 	return font
 end
 
-function dgsDxGUISetFont(dxgui,font)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsSetFont(dxgui,font)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if font then
 		dgsSetData(dxgui,"font",font)	
 	end
 end
 
-function dgsDxGUIGetFont(dxgui)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetFont(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsIsDxElement(dxgui) then
 		return dgsGetData(dxgui,"font")	
 	end
 end
 
-function dgsDxGUISetText(dxgui,text)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUISetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsDxGUISetProperty(dxgui,"text",tostring(text))
+function dgsSetText(dxgui,text)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	return dgsSetProperty(dxgui,"text",tostring(text))
 end
 
-function dgsDxGUIGetText(dxgui)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDxGUIGetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetText(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	local dxtype = dgsGetType(dxgui)
 	if dxtype == "dgs-dxmemo" then
-		return dgsDxMemoGetPartOfText(dxgui)
+		return dgsMemoGetPartOfText(dxgui)
 	else
 		return dgsElementData[dxgui].text
 	end
 end
 
-function dgsDxSetShaderValue(...)
+function dgsSetShaderValue(...)
 	return dxSetShaderValue(...)
 end
 
-addEventHandler("onClientDgsDxGUIPreCreate",root,function()
+defaultRoundUpPoints = 3
+function dgsRoundUp(num,points)
+	if points then
+		assert(type(points) == "number","Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..dgsGetType(points))
+		assert(points%1 == 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got float")
+		assert(points > 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..points)
+	end
+	local points = points or defaultRoundUpPoints
+	local s_num = tostring(num)
+	local from,to = utf8.find(s_num,"%.")
+	if from then
+		local single = s_num:sub(from+points,from+points)
+		local single = tonumber(single) or 0
+		local a = s_num:sub(0,from+points-1)
+		if single >= 5 then
+			a = a+10^(-points+1)
+		end
+		return tonumber(a)
+	end
+	return num
+end
+
+function dgsGetRoundUpPoints()
+	return defaultRoundUpPoints
+end
+
+function dgsSetRoundUpPoints(points)
+	assert(type(points) == "number","Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got "..dgsGetType(points))
+	assert(points%1 == 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got float")
+	assert(points > 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got 0")
+	defaultRoundUpPoints = points
+	return true
+end
+
+addEventHandler("onDgsPreCreate",root,function()
 	dgsSetData(source,"lor","left")
 	dgsSetData(source,"tob","top")
 	dgsSetData(source,"visible",true)
@@ -463,6 +520,7 @@ addEventHandler("onClientDgsDxGUIPreCreate",root,function()
 	dgsSetData(source,"alpha",1)
 	dgsSetData(source,"hitoutofparent",false)
 	dgsSetData(source,"PixelInt",true)
+	dgsSetData(source,"functionRunBefore",true) --true : after render; false : before render
 	dgsSetData(source,"disabledColor",schemeColor.disabledColor)
 	dgsSetData(source,"disabledColorPercent",schemeColor.disabledColorPercent)
 end)
