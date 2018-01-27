@@ -54,7 +54,9 @@ transfer["onDgsEditPreSwitch"] = 	"onClientDgsDxEditPreSwitch"
 transfer["onDgsEditSwitched"] = 	"onClientDgsDxEditSwitched"
 function eventTransfer(...)
 	if transfer[eventName] then
-		triggerEvent(transfer[eventName],source,...)
+		if isElement(source) then
+			triggerEvent(transfer[eventName],source,...)
+		end
 	end
 end
 addEventHandler("onDgsMouseLeave",root,eventTransfer)

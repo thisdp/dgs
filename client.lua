@@ -333,6 +333,7 @@ MouseData.Timer2 = {}
 MouseData.nowShow = false
 MouseData.editCursor = false
 MouseData.editCursorMoveOffset = false
+MouseData.gridlistMultiSelection = false
 MouseData.lastPos = {-1,-1}
 
 MouseData.EditTimer = setTimer(function()
@@ -523,6 +524,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		local rendSet = not DEBUG_MODE and isRenderTarget
 		if dxType == "dgs-dxwindow" then
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local img = eleData.image
 				local color = eleData.color
 				color = applyColorAlpha(color,galpha)
@@ -537,20 +541,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				------------------------------------
 				if img then
-					dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,not DEBUG_MODE)
+					dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,rendSet)
 				else
-					dxDrawRectangle(x,y+titsize,w,h-titsize,color,not DEBUG_MODE)
+					dxDrawRectangle(x,y+titsize,w,h-titsize,color,rendSet)
 				end
 				if titimg then
-					dxDrawImage(x,y,w,titsize,titimg,0,0,0,titcolor,not DEBUG_MODE)
+					dxDrawImage(x,y,w,titsize,titimg,0,0,0,titcolor,rendSet)
 				else
-					dxDrawRectangle(x,y,w,titsize,titcolor,not DEBUG_MODE)
+					dxDrawRectangle(x,y,w,titsize,titcolor,rendSet)
 				end
 				local font = eleData.font or systemFont
 				local titnamecolor = eleData.titnamecolor
 				titnamecolor = applyColorAlpha(titnamecolor,galpha)
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
-				dxDrawText(eleData.text,x,y,x+w,y+titsize,titnamecolor,txtSizX,txtSizY,systemFont,"center","center",true,false,not DEBUG_MODE,eleData.colorcoded)
+				dxDrawText(eleData.text,x,y,x+w,y+titsize,titnamecolor,txtSizX,txtSizY,systemFont,"center","center",true,false,rendSet,eleData.colorcoded)
 				------------------------------------
 				if not eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -570,6 +574,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxbutton" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local colors,imgs = eleData.color,eleData.image
 				local colorimgid = 1
 				if MouseData.enter == v then
@@ -656,6 +663,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxeda" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				if enabled[1] then
 					------------------------------------
 					if eleData.functionRunBefore then
@@ -703,6 +713,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dximage" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local colors,imgs = eleData.color,eleData.image
 				colors = applyColorAlpha(colors,galpha)
 				------------------------------------
@@ -769,6 +782,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxradiobutton" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local image_f = eleData.image_f
 				local color_f = eleData.color_f
 				local image_t = eleData.image_t
@@ -865,6 +881,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxcheckbox" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local image_f = eleData.image_f
 				local color_f = eleData.color_f
 				local image_t = eleData.image_t
@@ -965,6 +984,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxedit" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local bgimage = eleData.bgimage
 				local bgcolor = eleData.bgcolor
 				bgcolor = applyColorAlpha(bgcolor,galpha)
@@ -1117,6 +1139,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxmemo" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local bgimage = eleData.bgimage
 				local bgcolor = eleData.bgcolor
 				bgcolor = setColorAlpha(bgcolor,getColorAlpha(bgcolor)*galpha)
@@ -1296,6 +1321,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxscrollpane" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local postgui = isRenderTarget
 				if rndtgt then
 					if rndtgt == eleData.renderTarget_parent then
@@ -1351,6 +1379,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxscrollbar" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local ax,ay = dgsGetPosition(v,false)
 				local voh = eleData.voh
 				local imgs = eleData.imgs
@@ -1484,6 +1515,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxlabel" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local rightbottom = eleData.rightbottom
 				local colors,imgs = eleData.textcolor,eleData.image
 				colors = applyColorAlpha(colors,galpha)
@@ -1537,9 +1571,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxgridlist" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				local nx,ny,nw,nh = x,y,w,h
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local DataTab = eleData
 				local bgcolor,bgimg = DataTab.bgcolor,DataTab.bgimage
 				local columncolor,columnimg = DataTab.columncolor,DataTab.columnimage
+				local columnFont = DataTab.columnFont
 				columncolor = applyColorAlpha(columncolor,galpha)
 				bgcolor = applyColorAlpha(bgcolor,galpha)
 				local columnHeight = DataTab.columnHeight
@@ -1580,14 +1619,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local shadow = DataTab.rowShadow
 				dxSetRenderTarget()
 				local rowMoveOffset = DataTab.rowMoveOffset
-				local columnMoveOffset = DataTab.columnMoveOffset
+				local columnOffset = DataTab.columnOffset
+				local columnMoveOffset = eleData.PixelInt and DataTab.columnMoveOffset-DataTab.columnMoveOffset%1
 				local fnc = eleData.functions
 				local rowtextx,rowtexty = DataTab.rowtextsize[1],DataTab.rowtextsize[2] or DataTab.rowtextsize[1]
 				local columntextx,columntexty = DataTab.columntextsize[1],DataTab.columntextsize[2] or DataTab.columntextsize[1]
+				local selectionMode = DataTab.selectionMode
 				if type(fnc) == "table" then
 					fnc[1](unpack(fnc[2]))
 				end
 				local clip = eleData.clip
+				local mouseInsideGridList = mx >= cx and mx <= cx+w and my >= cy+columnHeight and my <= cy+h-scbThick
 				if not mode then
 					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+1
 					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThick+rowHeight*2)/rowHeight)-1
@@ -1597,72 +1639,101 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxSetRenderTarget(renderTarget[1],true)
 						local sizex,sizey = DataTab.columntextsize[1],DataTab.columntextsize[2]
 						local cpos = {}
-						local multipiler = columnRelt and (w-scbThick) or 1
+						local multiplier = columnRelt and (w-scbThick) or 1
+						local tempColumnOffset = columnMoveOffset+columnOffset
+						local mouseColumnPos = mx-cx
+						local mouseSelectColumn = -1
 						for id,data in ipairs(columnData) do
-							local textxSize = data[2]*multipiler
-							cpos[id] = eleData.PixelInt and math.floor(columnData[id][3]*multipiler) or columnData[id][3]*multipiler
-							if isDraw1 then
-								if DataTab.columnShadow then
-									dxDrawText(data[1],2+cpos[id]+columnMoveOffset,1,sW,columnHeight,black,columntextx,columntexty,font,"left","center",clip,false,false,false,true)
+							local tempCpos = data[3]*multiplier
+							local _tempStartx = tempCpos+tempColumnOffset
+							local _tempEndx = _tempStartx+data[2]*multiplier
+							if _tempStartx <= w and _tempEndx >= 0 then
+								cpos[id] = tempCpos
+								if isDraw1 then
+									local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
+									if DataTab.columnShadow then
+										dxDrawText(data[1],_tempStartx+1,1,_tempEndx,columnHeight,black,columntextx,columntexty,columnFont,"left","center",clip,false,false,false,true)
+									end
+									dxDrawText(data[1],_tempStartx,0,_tempEndx,columnHeight,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,false,false,true)
 								end
-								dxDrawText(data[1],1+cpos[id]+columnMoveOffset,0,sW,columnHeight,columnTextColor,columntextx,columntexty,font,"left","center",clip,false,false,false,true)
+								if mouseInsideGridList and mouseSelectColumn == -1 then
+									if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
+										mouseSelectColumn = id
+									end
+								end
 							end
 						end
 					dxSetRenderTarget(renderTarget[2],true)
 						if MouseData.enter == v then		-------PreSelect
-							local ypcolumn = cy+columnHeight
-							if mx >= cx and mx <= cx+w and my >= ypcolumn and my <= cy+h-scbThick then
+							if mouseInsideGridList then
 								local toffset = (whichRowToStart*rowHeight)+DataTab.rowMoveOffset
-								sid = math.floor((my-ypcolumn-toffset)/rowHeight)+whichRowToStart+1
+								sid = math.floor((my-cy-columnHeight-toffset)/rowHeight)+whichRowToStart+1
 								if sid <= #rowData then
 									DataTab.oPreSelect = sid
 									if rowData[sid][-2] then
-										DataTab.preSelect = sid
-										MouseData.enterData = true
+										DataTab.preSelect = {sid,mouseSelectColumn}
 									else
-										DataTab.preSelect = -1
+										DataTab.preSelect = {-1,mouseSelectColumn}
 									end
+									MouseData.enterData = true
 								else
-									DataTab.preSelect = -1
+									DataTab.preSelect = {-1,mouseSelectColumn}
 								end
 							else
-								DataTab.preSelect = -1
+								DataTab.preSelect = {-1,-1}
 							end
 						end
 						local preSelect = DataTab.preSelect
-						local Select = DataTab.select
+						local Select = DataTab.rowSelect
 						local sectionFont = eleData.sectionFont or font
 						for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 							local lc_rowData = rowData[i]
-							local image = lc_rowData[-3]
-							local columnOffset = lc_rowData[-4]
-							local isSection = lc_rowData[-5]
-							local color = lc_rowData[0]
-							local rowState = 1
-							if i == preSelect then
-								rowState = 2
-							end
-							if i == Select then
-								rowState = 3
-							end
+							local image,columnOffset,isSection,color = lc_rowData[-3],lc_rowData[-4],lc_rowData[-5],lc_rowData[0]
 							if isDraw2 then
 								local rowpos = i*rowHeight
 								local rowpos_1 = rowpos-rowHeight
-								local _x,_y,_sx,_sy = columnMoveOffset+columnOffset,rowpos_1+rowMoveOffset,sW,rowpos+rowMoveOffset
-								if #image > 0 then
-									dxDrawImage(0,_y,w,rowHeight,image[rowState],0,0,0,color[rowState])
-								else
-									dxDrawRectangle(0,_y,w,rowHeight,color[rowState])
+								local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1+rowMoveOffset,sW,rowpos+rowMoveOffset
+								if eleData.PixelInt then
+									_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 								end
-								for id=1,#columnData do
+								for id,v in pairs(cpos) do
 									local text = lc_rowData[id][1]
 									local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
 									local _txtScalex = lc_rowData[id][4] or rowtextx
 									local _txtScaley = lc_rowData[id][5] or rowtexty
+									local rowState = 1
+									if selectionMode == 1 then
+										if i == preSelect[1] then
+											rowState = 2
+										end
+										if Select[i] and Select[i][1] then
+											rowState = 3
+										end
+									elseif selectionMode == 2 then
+										if id == preSelect[2] then
+											rowState = 2
+										end
+										if Select[1] and Select[1][id] then
+											rowState = 3
+										end
+									elseif selectionMode == 3 then
+										if i == preSelect[1] and id == preSelect[2] then
+											rowState = 2
+										end
+										if Select[i] and Select[i][id] then
+											rowState = 3
+										end
+									end
+									local offset = cpos[id]
+									local _x = _x+offset
+									local _sx = _x+(cpos[id+1] or w)
+									local backgroundLength = columnData[id][2]*multiplier
+									if #image > 0 then
+										dxDrawImage(_x,_y,backgroundLength,rowHeight,image[rowState],0,0,0,color[rowState])
+									else
+										dxDrawRectangle(_x,_y,backgroundLength,rowHeight,color[rowState])
+									end
 									if text then
-										local offset = cpos[id]
-										local _x = _x+offset
-										local _sx = _x+(cpos[id+1] or w)-10
 										local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
 										if lc_rowData[id][7] then
 											local imageData = lc_rowData[id][7]
@@ -1695,88 +1766,127 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThick+rowHeight*2)/rowHeight)-3
 					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #rowData and whichRowToEnd or #rowData}
 					local _rowMoveOffset = math.floor(rowMoveOffset/rowHeight)*rowHeight
-					
-					local whichColumnToStart,whichColumnToEnd = 0,0
+					local whichColumnToStart,whichColumnToEnd = -1,-1
 					local cpos = {}
-					local multipiler = columnRelt and (w-scbThick) or 1
+					local multiplier = columnRelt and (w-scbThick) or 1
 					local ypcolumn = cy+columnHeight
 					local _y,_sx = ypcolumn+_rowMoveOffset,cx+w-scbThick
-					local column_x
+					local column_x = columnOffset
 					local allColumnWidth = columnData[#columnData][2]+columnData[#columnData][3]
 					local scrollbar = eleData.scrollbars[2]
 					local scrollPos = dgsElementData[scrollbar].position/100
+					local mouseSelectColumn = -1
+					local does = false
 					for id,data in ipairs(columnData) do
-						local textxSize = data[2]*multipiler
-						cpos[id] = data[3]*multipiler
-						local nextone = 0
-						if columnData[id+1] then
-							nextone = columnData[id+1][3]/multipiler
-						end
-						if (data[3]+data[2])/allColumnWidth >= scrollPos then
-							whichColumnToStart = whichColumnToStart ~= 0 and whichColumnToStart or id
-							whichColumnToEnd = whichColumnToEnd <= whichColumnToStart and whichColumnToStart or id
-							if cpos[id]+scrollPos*(allColumnWidth-w+scbThick+10) <= w then
+						cpos[id] = data[3]*multiplier
+						if (data[3]+data[2])*multiplier-columnOffset >= scrollPos*allColumnWidth*multiplier then
+							if (data[3]+data[2])*multiplier-scrollPos*allColumnWidth*multiplier <= w-scbThick then
+								whichColumnToStart = whichColumnToStart ~= -1 and whichColumnToStart or id
+								whichColumnToEnd = whichColumnToEnd <= whichColumnToStart and whichColumnToStart or id
 								whichColumnToEnd = id
+								does = true
+							else
+								break
 							end
 						end
 					end
-					column_x = cx-cpos[whichColumnToStart]+cpos[1]
+					if not does then
+						whichColumnToStart,whichColumnToEnd = #columnData,#columnData
+					end
+					column_x = cx-cpos[whichColumnToStart]+cpos[1]+columnOffset
 					local column_sx = cx+w-scbThick
 					for i=whichColumnToStart,whichColumnToEnd or #columnData do
 						local posx = column_x+cpos[i]
 						if DataTab.columnShadow then
-							dxDrawText(columnData[i][1],1+posx,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,font,"left","center",clip,false,rendSet,false,true)
+							dxDrawText(columnData[i][1],1+posx,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
 						end
-						dxDrawText(columnData[i][1],posx,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,font,"left","center",clip,false,rendSet,false,true)
+						dxDrawText(columnData[i][1],posx,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+						if mouseInsideGridList and mouseSelectColumn == -1 then
+							backgroundLength = columnData[i][2]*multiplier
+							if backgroundLength+posx-x >= w or whichColumnToEnd == i then
+								backgroundLength = w-posx+x
+							end
+							local _tempStartx = posx
+							local _tempEndx = _tempStartx+backgroundLength
+							if mx >= _tempStartx and mx <= _tempEndx then
+								mouseSelectColumn = i
+							end
+						end
 					end
 					if MouseData.enter == v then		-------PreSelect
-						if mx >= cx and mx <= cx+w and my >= ypcolumn and my <= cy+h-scbThick then
-							local toffset = (whichRowToStart*rowHeight)+_rowMoveOffset
-							sid = math.floor((my-ypcolumn-toffset)/rowHeight)+whichRowToStart+1
+						if mouseInsideGridList then
+							local toffset = (whichRowToStart*rowHeight)+DataTab.rowMoveOffset
+							sid = math.floor((my-cy-columnHeight-toffset)/rowHeight)+whichRowToStart+1
 							if sid <= #rowData then
 								DataTab.oPreSelect = sid
 								if rowData[sid][-2] then
-									DataTab.preSelect = sid
-									MouseData.enterData = true
+									DataTab.preSelect = {sid,mouseSelectColumn}
 								else
-									DataTab.preSelect = -1
+									DataTab.preSelect = {-1,mouseSelectColumn}
 								end
+								MouseData.enterData = true
 							else
-								DataTab.preSelect = -1
+								DataTab.preSelect = {-1,mouseSelectColumn}
 							end
 						else
-							DataTab.preSelect = -1
+							DataTab.preSelect = {-1,-1}
 						end
 					end
+					local preSelect = DataTab.preSelect
+					local Select = DataTab.rowSelect
+					local sectionFont = eleData.sectionFont or font
 					for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 						local lc_rowData = rowData[i]
 						local image = lc_rowData[-3]
 						local color = lc_rowData[0]
 						local columnOffset = lc_rowData[-4]
 						local isSection = lc_rowData[-5]
-						local rowState = 1
-						if i == DataTab.preSelect then
-							rowState = 2
-						end
-						if i == DataTab.select then
-							rowState = 3
-						end
 						local rowpos = i*rowHeight
-						local __x,__y,__sx,__sy = column_x+columnOffset,_y+rowpos-rowHeight,_sx,_y+rowpos
-						if #image > 0 then
-							dxDrawImage(cx,__y,w,rowHeight,image[rowState],0,0,0,color[rowState],rendSet)
-						else
-							dxDrawRectangle(cx,__y,w,rowHeight,color[rowState],rendSet)
+						local _x,_y,_sx,_sy = column_x+columnOffset,_y+rowpos-rowHeight,_sx,_y+rowpos
+						if eleData.PixelInt then
+							_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 						end
 						for id=whichColumnToStart,whichColumnToEnd do
 							local text = lc_rowData[id][1]
 							local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
 							local _txtScalex = lc_rowData[id][4] or rowtextx
 							local _txtScaley = lc_rowData[id][5] or rowtexty
+							local rowState = 1
+							if selectionMode == 1 then
+								if i == preSelect[1] then
+									rowState = 2
+								end
+								if Select[i] and Select[i][1] then
+									rowState = 3
+								end
+							elseif selectionMode == 2 then
+								if id == preSelect[2] then
+									rowState = 2
+								end
+								if Select[1] and Select[1][id] then
+									rowState = 3
+								end
+							elseif selectionMode == 3 then
+								if i == preSelect[1] and id == preSelect[2] then
+									rowState = 2
+								end
+								if Select[i] and Select[i][id] then
+									rowState = 3
+								end
+							end
+							local offset = cpos[id]
+							local _x = _x+offset
+							local _sx = _x+(cpos[id+1] or w)
+							local backgroundLength = columnData[id][2]*multiplier
+							if backgroundLength+_x-x >= w or whichColumnToEnd == id then
+								backgroundLength = w-_x+x
+							end
+							if #image > 0 then
+								dxDrawImage(_x,_y,backgroundLength,rowHeight,image[rowState],0,0,0,color[rowState],rendSet)
+							else
+								dxDrawRectangle(_x,_y,backgroundLength,rowHeight,color[rowState],rendSet)
+							end
 							if text ~= "" then
-								local offset = cpos[id]
-								local __x = __x+offset
-								local __sx = __x+(cpos[id+1] or w)-10
 								local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
 								if lc_rowData[id][7] then
 									local imageData = lc_rowData[id][7]
@@ -1790,9 +1900,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 									if colorcoded then
 										text = text:gsub("#%x%x%x%x%x%x","") or text
 									end
-									dxDrawText(text,__x+shadow[1],__y+shadow[2],__sx+shadow[1],__sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,rendSet,false,true)
+									dxDrawText(text,_x+shadow[1],_y+shadow[2],_sx+shadow[1],_sy+shadow[2],shadow[3],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,rendSet,false,true)
 								end
-								dxDrawText(lc_rowData[id][1],__x,__y,__sx,__sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,rendSet,colorcoded,true)
+								dxDrawText(lc_rowData[id][1],_x,_y,_sx,_sy,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,"left","center",clip,false,rendSet,colorcoded,true)
 							end
 						end
 					end
@@ -1816,6 +1926,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxprogressbar" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local bgcolor = eleData.bgcolor
 				local barcolor = eleData.barcolor
 				bgcolor = applyColorAlpha(bgcolor,galpha)
@@ -1874,6 +1987,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType =="dgs-dxcombobox" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local postgui = rendSet
 				local colors,imgs = eleData.color,eleData.image
 				local colorimgid = 1
@@ -1993,6 +2109,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			local w,h = eleData.absSize[1],eleData.absSize[2]
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,v,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local DataTab = dgsElementData[combo]
 				local itemData = DataTab.itemData
 				local scbThick = dgsElementData[combo].scrollBarThick
@@ -2090,6 +2209,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			local hits = MouseData.hit
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local tabheight,relat = eleData["tabheight"][1],eleData["tabheight"][2]
 				local tabheight = relat and tabheight*y or tabheight
 				local preselected = -1
@@ -2201,6 +2323,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		elseif dxType == "dgs-dxcmd" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
 				local colors,imgs = eleData.bgcolor,eleData.bgimage
 				colors = applyColorAlpha(colors,galpha)
 				------------------------------------
@@ -2813,7 +2938,7 @@ function dgsCheckHit(hits,mx,my)
 					end
 				end
 				if dgsGetType(MouseData.enter) == "dgs-dxgridlist" then
-					dgsSetData(MouseData.enter,"preSelect",-1)
+					dgsSetData(MouseData.enter,"preSelect",{-1,-1})
 				end
 			end
 			if isElement(hits) then
@@ -2905,9 +3030,9 @@ end
 
 addEventHandler("onDgsMouseClick",root,function(button,state)
 	local parent = dgsGetParent(source)
+	local guitype = dgsGetType(source)
 	if state == "down" then
 		dgsBringToFront(source,button)
-		local guitype = dgsGetType(source)
 		if guitype == "dgs-dxscrollpane" then
 			local scrollbar = dgsElementData[source].scrollbars
 			dgsBringToFront(scrollbar[1],"left",_,true)
@@ -3001,10 +3126,83 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 				local oPreSelect = dgsElementData[source].oPreSelect
 				local rowData = dgsElementData[source].rowData
 				if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
+					local old1,old2
+					local selectionMode = dgsElementData[source].selectionMode
+					local multiSelection = dgsElementData[source].multiSelection
 					local preSelect = dgsElementData[source].preSelect
-					local oldSelect = dgsElementData[source].select
-					dgsElementData[source].select = preSelect
-					triggerEvent("onDgsGridListSelect",source,preSelect,oldSelect)
+					local clicked = dgsElementData[source].itemClick
+					local pass = true
+					local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
+					if selectionMode == 1 then
+						if multiSelection then
+							if ctrl then
+								local selected = dgsGridListItemIsSelected(source,preSelect[1],1)
+								dgsGridListSelectItem(source,preSelect[1],1,not selected)
+							elseif shift then
+								if clicked and #clicked == 2 then
+									dgsGridListSetSelectedItem(source,-1,-1)
+									local startRow,endRow = math.min(clicked[1],preSelect[1]),math.max(clicked[1],preSelect[1])
+									for row = startRow,endRow do
+										dgsGridListSelectItem(source,row,1,true)
+									end
+									dgsElementData[source].itemClick = clicked
+								end
+							else
+								dgsGridListSetSelectedItem(source,preSelect[1],1)
+								dgsElementData[source].itemClick = preSelect
+							end
+						else
+							dgsGridListSetSelectedItem(source,preSelect[1],1)
+							dgsElementData[source].itemClick = preSelect
+						end
+					elseif selectionMode == 2 then
+						if multiSelection then
+							if ctrl then
+								local selected = dgsGridListItemIsSelected(source,1,preSelect[2])
+								dgsGridListSelectItem(source,1,preSelect[2],not selected)
+							elseif shift then
+								if clicked and #clicked == 2 then
+									dgsGridListSetSelectedItem(source,-1,-1)
+									local startColumn,endColumn = math.min(clicked[2],preSelect[2]),math.max(clicked[2],preSelect[2])
+									for column = startColumn, endColumn do
+										dgsGridListSelectItem(source,1,column,true)
+									end
+									dgsElementData[source].itemClick = clicked
+								end
+							else
+								dgsGridListSetSelectedItem(source,1,preSelect[2])
+								dgsElementData[source].itemClick = preSelect
+							end
+						else
+							dgsGridListSetSelectedItem(source,1,preSelect[2])
+							dgsElementData[source].itemClick = preSelect
+						end
+					elseif selectionMode == 3 then
+						if multiSelection then
+							if ctrl then
+								local selected = dgsGridListItemIsSelected(source,preSelect[1],preSelect[2])
+								dgsGridListSelectItem(source,preSelect[1],preSelect[2],not selected)
+							elseif shift then
+								if clicked and #clicked == 2 then
+									dgsGridListSetSelectedItem(source,-1,-1)
+									local startRow,endRow = math.min(clicked[1],preSelect[1]),math.max(clicked[1],preSelect[1])
+									local startColumn,endColumn = math.min(clicked[2],preSelect[2]),math.max(clicked[2],preSelect[2])
+									for row = startRow,endRow do
+										for column = startColumn, endColumn do
+											dgsGridListSelectItem(source,row,column,true)
+										end
+									end
+									dgsElementData[source].itemClick = clicked
+								end
+							else
+								dgsGridListSetSelectedItem(source,preSelect[1],preSelect[2])
+								dgsElementData[source].itemClick = preSelect
+							end
+						else
+							dgsGridListSetSelectedItem(source,preSelect[1],preSelect[2])
+							dgsElementData[source].itemClick = preSelect
+						end
+					end
 				end
 			elseif guitype == "dgs-dxcombobox-Box" then
 				local combobox = dgsElementData[source].myCombo
@@ -3216,9 +3414,26 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			end,500,1)
 		end
 		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
-			local item = dgsElementData[guiele].select
-			if dgsGetType(guiele) == "dgs-dxgridlist" and GirdListDoubleClick[state].gridlist == guiele and GirdListDoubleClick[state].but == button and GirdListDoubleClick[state].item == item then
-				triggerEvent("onDgsGridListItemDoubleClick",guiele,GirdListDoubleClick[state].but,state,item)
+			local clicked = dgsElementData[guiele].itemClick
+			local selectionMode = dgsElementData[guiele].selectionMode
+			if dgsGetType(guiele) == "dgs-dxgridlist" and GirdListDoubleClick[state].gridlist == guiele and GirdListDoubleClick[state].but == button then
+				local pass = true
+				if selectionMode == 1 then
+					if GirdListDoubleClick[state].item ~= clicked[1] then
+						pass = false
+					end
+				elseif selectionMode == 2 then
+					if GirdListDoubleClick[state].column ~= clicked[2] then
+						pass = false
+					end
+				elseif selectionMode == 3 then
+					if GirdListDoubleClick[state].item ~= clicked[1] or GirdListDoubleClick[state].column ~= clicked[2] then
+						pass = false
+					end
+				end
+				if pass then
+					triggerEvent("onDgsGridListItemDoubleClick",guiele,GirdListDoubleClick[state].but,state,clicked[1],clicked[2])
+				end
 			end
 			killTimer(GirdListDoubleClick[state].timer)
 			GirdListDoubleClick[state] = {}
@@ -3229,9 +3444,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				end
 			end
 			if dgsGetType(guiele) == "dgs-dxgridlist" then
-				if dgsElementData[guiele].select ~= -1 then
+				local clicked = dgsElementData[guiele].itemClick
+				if clicked[1] ~= -1 and clicked[2] ~= -1 then
 					GirdListDoubleClick[state] = {}
-					GirdListDoubleClick[state].item = dgsElementData[guiele].select
+					GirdListDoubleClick[state].item,GirdListDoubleClick[state].column = clicked[1],clicked[2]
 					GirdListDoubleClick[state].gridlist = guiele
 					GirdListDoubleClick[state].but = button
 					GirdListDoubleClick[state].timer = setTimer(function()

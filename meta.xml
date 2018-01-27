@@ -222,7 +222,7 @@
 	<export function="dgsScrollBarSetColor" type="client" />
 
 	<export function="dgsCreateGridList" type="client" />
-	<export function="dgsScrollPaneGetScrollBar" type="client" />
+	<export function="dgsGridListGetScrollBar" type="client" />
 	<export function="dgsGridListResetScrollBarPosition" type="client" />
 	<export function="dgsGridListSetColumnRelative" type="client" />
 	<export function="dgsGridListGetColumnRelative" type="client" />
@@ -241,6 +241,8 @@
 	<export function="dgsGridListGetItemText" type="client" />
 	<export function="dgsGridListGetSelectedItem" type="client" />
 	<export function="dgsGridListSetSelectedItem" type="client" />
+	<export function="dgsGridListGetSelectedItems" type="client" />
+	<export function="dgsGridListSetSelectedItems" type="client" />
 	<export function="dgsGridListSetItemColor" type="client" />
 	<export function="dgsGridListGetItemColor" type="client" />
 	<export function="dgsGridListGetRowBackGroundImage" type="client" />
@@ -253,6 +255,13 @@
 	<export function="dgsGridListGetItemImage" type="client" />
 	<export function="dgsGridListSetItemImage" type="client" />
 	<export function="dgsGridListRemoveItemImage" type="client" />
+	<export function="dgsGridListSelectItem" type="client" />
+	<export function="dgsGridListItemIsSelected" type="client" />
+	<export function="dgsGridListSetMultiSelectionEnabled" type="client" />
+	<export function="dgsGridListGetMultiSelectionEnabled" type="client" />
+	<export function="dgsGridListSetSelectionMode" type="client" />
+	<export function="dgsGridListGetSelectionMode" type="client" />
+	
 	
 	<export function="dgsCreateEDA" type="client" />
 	<export function="dgsEDASetDebugModeEnabled" type="client" />
@@ -394,7 +403,7 @@
 	<export function="dgsDxScrollBarSetColor" type="client" />
 
 	<export function="dgsDxCreateGridList" type="client" />
-	<export function="dgsDxScrollPaneGetScrollBar" type="client" />
+	<export function="dgsDxGridListGetScrollBar" type="client" />
 	<export function="dgsDxGridListResetScrollBarPosition" type="client" />
 	<export function="dgsDxGridListSetColumnRelative" type="client" />
 	<export function="dgsDxGridListGetColumnRelative" type="client" />

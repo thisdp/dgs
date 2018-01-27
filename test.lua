@@ -113,16 +113,26 @@ function edatest()
 	dgsEDASetDebugMode(eda,true)
 end
 function gridlistTest()
-	gridlist = dgsCreateGridList(300,300,300,100,false)
-	dgsGridListAddColumn(gridlist,"test",0.7)
-	for i=1,10 do
+	gridlist = dgsCreateGridList(300,50,600,600,false)
+	dgsSetProperty(gridlist,"mode",true)
+	dgsGridListAddColumn(gridlist,"test1",0.3)
+	dgsGridListAddColumn(gridlist,"test2",0.1)
+	dgsGridListAddColumn(gridlist,"test3",0.3)
+	dgsGridListAddColumn(gridlist,"test4",0.2)
+	dgsGridListAddColumn(gridlist,"test5",0.5)
+	dgsGridListAddColumn(gridlist,"test6",0.1)
+	dgsGridListAddColumn(gridlist,"test7",0.4)
+	for i=1,50 do
 		local row = dgsGridListAddRow(gridlist)
-		dgsGridListSetItemText(gridlist,row,1,tostring(i))
+		dgsGridListSetItemText(gridlist,row,1,tostring(i).."aaaaa")
 	end
-	
-	addEventHandler("onDgsGridListItemDoubleClick",gridlist,function(button,state)
-		outputChatBox(button.."  "..state)
-	end)
+	dgsGridListSetSelectionMode(gridlist,3)
+	dgsGridListSetMultiSelectionEnabled(gridlist,true)
+	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
+	setTimer(function()
+	local items = dgsGridListGetSelectedItems(gridlist)
+		iprint(items)
+	end,1000,0)
 end
 
 function centerEdit()
