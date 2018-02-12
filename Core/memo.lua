@@ -53,7 +53,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
-	local renderTarget = dxCreateRenderTarget(abx-4,sy,true)
+	local renderTarget = dxCreateRenderTarget(abx-4,aby,true)
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
@@ -625,7 +625,6 @@ function syncScrollBars(dxgui,which)
 	if which == 1 or not which then
 		local fontHeight = dxGetFontHeight(dgsElementData[dxgui].textsize[2],font)
 		local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
-		print(#text,canHold)
 		local new = (#text-canHold) == 0 and 0 or (dgsElementData[dxgui].showLine-1)*100/(#text-canHold)
 		dgsScrollBarSetScrollBarPosition(scrollbars[1],new)
 	end

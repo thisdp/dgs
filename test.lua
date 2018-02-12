@@ -1,5 +1,5 @@
 ﻿function createTest()
-addEasingFunction("Pre_line",[[
+addEasingFunction("test_line",[[
 	return math.abs(value^2-0.5)*2
 ]])
 
@@ -7,7 +7,7 @@ wind = dgsCreateWindow(math.floor(0.2*sW),math.floor(0.3*sH),math.floor(0.4*sW),
 --pane = dgsCreateScrollPane(0,0,1,1,true,wind)
 gdlt = dgsCreateImage(0,0,0.7,0.7,_,true,wind,tocolor(255,255,255,255))
 gdlt2 = dgsCreateImage(0,0,0.7,0.7,_,true,gdlt,tocolor(0,255,255,255))
-dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"line",1000)
+dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 
 function createTest2()
@@ -99,13 +99,11 @@ function editTest4()
 	window = dgsCreateWindow(200,200,800,600,"",false)
 	tabp = dgsCreateTabPanel(400,200,400,400,false,window)
 	tab1 = dgsCreateTab("DGS",tabp)
+	tab1 = dgsCreateTab("DGS",tabp)
+	tab1 = dgsCreateTab("DGS",tabp)
 	edit = dgsCreateEdit(0.1,0.3,0.8,0.5,"123123",true,tab1)
-	setTimer(function()
-		dgsSetVisible(window,false)
-	end,1000,1)
-	setTimer(function()
-		dgsSetVisible(window,true)
-	end,2000,1)
+	addEventHandler("onDgsTabPanelTabSelect",tabp,function(new,old,newEle,oldEle)
+	end)
 end
 
 function edatest()
@@ -114,25 +112,17 @@ function edatest()
 end
 function gridlistTest()
 	gridlist = dgsCreateGridList(300,50,600,600,false)
+	dgsSetProperty(gridlist,"clip",false)
 	dgsSetProperty(gridlist,"mode",true)
-	dgsGridListAddColumn(gridlist,"test1",0.3)
+	dgsGridListAddColumn(gridlist,"test1",0.2)
 	dgsGridListAddColumn(gridlist,"test2",0.1)
-	dgsGridListAddColumn(gridlist,"test3",0.3)
-	dgsGridListAddColumn(gridlist,"test4",0.2)
-	dgsGridListAddColumn(gridlist,"test5",0.5)
-	dgsGridListAddColumn(gridlist,"test6",0.1)
-	dgsGridListAddColumn(gridlist,"test7",0.4)
-	for i=1,50 do
+	for i=1,500 do
 		local row = dgsGridListAddRow(gridlist)
-		dgsGridListSetItemText(gridlist,row,1,tostring(i).."aaaaa")
+		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
+		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
-	dgsGridListSetSelectionMode(gridlist,3)
 	dgsGridListSetMultiSelectionEnabled(gridlist,true)
 	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
-	setTimer(function()
-	local items = dgsGridListGetSelectedItems(gridlist)
-		iprint(items)
-	end,1000,0)
 end
 
 function centerEdit()
@@ -160,7 +150,7 @@ function gridlistImageTest()
 end
 
 function dgsAnimTest()
-	if not isEasingFunctionExists("shadowOffset") then
+	if not easingFunctionExists("shadowOffset") then
 		addEasingFunction("shadowOffset",[[
 			local old = setting[3] or {}
 			local new = setting[2]
@@ -171,7 +161,38 @@ function dgsAnimTest()
 			return {offsetX+(tofX-offsetX)*value,offsetY+(tofY-offsetY)*value,new[3]}
 		]])
 	end
-	
 	local label = dgsCreateLabel(500,500,400,20,"Testttttttttttttttttttt",false)
 	dgsAnimTo(label,"shadow",{100,100,tocolor(0,0,0,255)},"shadowOffset",10000)
+end
+
+
+
+function GridListSortingTest()
+	local sortfnc = [[
+		local arg = {...}
+		local column = dgsElementData[self].sortColumn
+		return arg[1][column][1] < arg[2][column][1]
+	]]
+
+	--Be More Clear
+	local sortfnc = [[
+		local arg = {...}
+		local a = arg[1]
+		local b = arg[2]
+		local column = dgsElementData[self].sortColumn
+		local texta,textb = a[column][1],b[column][1]
+		return texta < textb
+	]]
+	
+	gridlist = dgsCreateGridList(300,50,600,600,false)
+	dgsGridListAddColumn(gridlist,"test1",0.2)
+	dgsGridListAddColumn(gridlist,"test2",0.1)
+	for i=1,500 do
+		local row = dgsGridListAddRow(gridlist)
+		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
+		dgsGridListSetItemText(gridlist,row,2,tostring(500-i).." Test DGS")
+	end
+	dgsGridListSetSortEnabled(gridlist,false) --disable click sorting
+	dgsGridListSetSortFunction(gridlist,sortfnc)
+	dgsGridListSetSortColumn(gridlist,2)
 end

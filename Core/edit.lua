@@ -31,7 +31,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"font",systemFont)
 	dgsSetData(edit,"side",0)
 	dgsSetData(edit,"sidecolor",schemeColor.edit.sidecolor)
-	dgsSetData(edit,"useFloor",false)
 	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
 	dgsSetData(edit,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
@@ -148,7 +147,6 @@ function dgsEditSetCaretPosition(edit,pos,selectText)
 	elseif nowLen+showPos < 0 then
 		dgsSetData(edit,"showPos",-nowLen)
 	end
-	--print(nowLen+showPos)
 	return true
 end
 
@@ -324,7 +322,7 @@ addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
 			local theFirst
 			for k,v in ipairs(theTable) do
 				local editCounts = dgsElementData[v].editCounts
-				if editCounts then
+				if editCounts and dgsElementData[v].enabled and dgsElementData[v].visible and not dgsElementData[v].readOnly then
 					if id ~= editCounts and dgsGetType(v) == "dgs-dxedit" and dgsElementData[v].enableTabSwitch then
 						if editCounts < id then
 							theFirst = theFirst and (dgsElementData[theFirst].editCounts > editCounts and v or theFirst) or v

@@ -449,7 +449,7 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local maxPos = math.floor((speedSend[0] or 0)*1.2)
 			for i=1,#speedSend-1 do
 				local nextone = speedSend[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/maxPos),x+sx-sx*(i-1)/20,y+sy-sy*(speedSend[i]/maxPos),tocolor(80,180,255,255),1,true)
+				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/maxPos),x+sx-sx*(i-1)/20,y+sy-sy*(speedSend[i]/maxPos),tocolor(80,180,255,255),1,not DEBUG_MODE)
 			end
 			dgsSetText(netSystem["picture_sen_max"],maxPos.."Byte/s")
 		end)
@@ -460,7 +460,7 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local maxPos = math.floor((speedRecv[0] or 0)*1.2)
 			for i=1,#speedRecv-1 do
 				local nextone = speedRecv[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/maxPos),x+sx-sx*(i-1)/20,y+sy-sy*(speedRecv[i]/maxPos),tocolor(80,180,255,255),1,true)
+				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/maxPos),x+sx-sx*(i-1)/20,y+sy-sy*(speedRecv[i]/maxPos),tocolor(80,180,255,255),1,not DEBUG_MODE)
 			end
 			dgsSetText(netSystem["picture_rec_max"],maxPos.."Byte/s")
 		end)
@@ -470,7 +470,7 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local sx,sy = dgsGetSize(source,false)
 			for i=1,#percentLoss-1 do
 				local nextone = percentLoss[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/100),x+sx-sx*(i-1)/20,y+sy-sy*(percentLoss[i]/100),tocolor(80,180,255,255),1,true)
+				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/100),x+sx-sx*(i-1)/20,y+sy-sy*(percentLoss[i]/100),tocolor(80,180,255,255),1,not DEBUG_MODE)
 			end
 		end)
 		

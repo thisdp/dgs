@@ -14,7 +14,7 @@ function dgsAnimTo(gui,property,value,easing,thetime)
 	assert(type(property) == "string","Bad argument @dgsAnimTo at argument 2, expect string got "..type(property))
 	assert(thetime,"Bad argument @dgsAnimTo at argument 6, expect number got "..type(thetime))
 	local easing = easing or "Linear"
-	assert(isEasingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
+	assert(easingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	assert(not(type(value) ~= "number" and builtins[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
 	dgsSetData(gui,"anim",{[0]=getTickCount(),property,value,dgsElementData[gui][property],easing,thetime})
 	if not animGUIList[gui] then
@@ -46,7 +46,7 @@ function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 	assert(y,"Bad argument @dgsMoveTo at argument 3, expect number got "..type(y))
 	assert(torvx,"Bad argument @dgsMoveTo at argument 7, expect number got "..type(torvx))
 	local easing = easing or "Linear"
-	assert(isEasingFunctionExists(easing),"Bad argument @dgsMoveTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
+	assert(easingFunctionExists(easing),"Bad argument @dgsMoveTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetPosition(gui,relative or false)
 	dgsSetData(gui,"move",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not moveGUIList[gui] then
@@ -78,7 +78,7 @@ function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 	assert(y,"Bad argument @dgsSizeTo at argument 3, expect number got "..type(y))
 	assert(torvx,"Bad argument @dgsSizeTo at argument 7, expect number got "..type(torvx))
 	local easing = easing or "Linear"
-	assert(isEasingFunctionExists(easing),"Bad argument @dgsSizeTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
+	assert(easingFunctionExists(easing),"Bad argument @dgsSizeTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetSize(gui,relative or false)
 	dgsSetData(gui,"size",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not sizeGUIList[gui] then
@@ -109,7 +109,7 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 	assert(toalpha,"Bad argument @dgsAlphaTo at argument 2, expect number got "..type(toalpha))
 	assert(torv,"Bad argument @dgsAlphaTo at argument 5, expect number got "..type(torv))
 	local easing = easing or "Linear"
-	assert(isEasingFunctionExists(easing),"Bad argument @dgsAlphaTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
+	assert(easingFunctionExists(easing),"Bad argument @dgsAlphaTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	local toalpha = (toalpha > 1 and 1) or (toalpha < 0 and 0) or toalpha
 	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsGetData(gui,"alpha")-toalpha,toalpha,movetype,easing,torv})
 	if not alphaGUIList[gui] then

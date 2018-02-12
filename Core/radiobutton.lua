@@ -18,7 +18,6 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,sc
 	defimg_f = defimg_f or radioButton_s.false_
 	hovimg_f = hovimg_f or radioButton_s.false_cli
 	cliimg_f = cliimg_f or hovimg_f
-	print(schemeColor.radiobutton.defcolor_f)
 	defcolor_f = defcolor_f or schemeColor.radiobutton.defcolor_f[1]
 	hovcolor_f = hovcolor_f or schemeColor.radiobutton.defcolor_f[2]
 	clicolor_f = clicolor_f or schemeColor.radiobutton.defcolor_f[3]

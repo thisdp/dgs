@@ -52,7 +52,7 @@
 	<script src="oldFunctions.lua" type="client" />
 	
 	<export function="addEasingFunction" type="client" />
-	<export function="isEasingFunctionExists" type="client" />
+	<export function="easingFunctionExists" type="client" />
 	<export function="removeEasingFunction" type="client" />
 	<export function="setSystemFont" type="client" />
 	<export function="getSystemFont" type="client" />
@@ -261,6 +261,15 @@
 	<export function="dgsGridListGetMultiSelectionEnabled" type="client" />
 	<export function="dgsGridListSetSelectionMode" type="client" />
 	<export function="dgsGridListGetSelectionMode" type="client" />
+	<export function="dgsGridListSetSortFunction" type="client" />
+	<export function="dgsGridListSetAutoSortEnabled" type="client" />
+	<export function="dgsGridListGetAutoSortEnabled" type="client" />
+	<export function="dgsGridListSetSortEnabled" type="client" />
+	<export function="dgsGridListGetSortEnabled" type="client" />
+	<export function="dgsGridListSetSortColumn" type="client" />
+	<export function="dgsGridListGetSortColumn" type="client" />
+	<export function="dgsGridListSort" type="client" />
+	<export function="dgsGridListGetEnterColumn" type="client" />
 	
 	
 	<export function="dgsCreateEDA" type="client" />

@@ -45,8 +45,8 @@ function removeEasingFunction(name)
 	return false
 end
 
-function isEasingFunctionExists(name)
-	assert(type(name) == "string","Bad at argument @isEasingFunctionExists at argument 1, expected a string got "..type(name))
+function easingFunctionExists(name)
+	assert(type(name) == "string","Bad at argument @easingFunctionExists at argument 1, expected a string got "..type(name))
 	return builtins[name] or (SelfEasing[name] and true)
 end	
 
@@ -160,7 +160,7 @@ end
 function dgsSetProperties(dxgui,theTable,additionArg)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	assert(type(theTable)=="table","Bad argument @dgsSetProperties at argument 2, expect a table got "..type(theTable))
-	assert(additionArg and type(additionArg)=="table","Bad argument @dgsSetProperties at argument 3, expect a table or none got "..type(additionArg))
+	assert((additionArg and type(additionArg)=="table") or additionArg == nil,"Bad argument @dgsSetProperties at argument 3, expect a table or nil/none got "..type(additionArg))
 	local success = true
 	local dgsType = dgsGetType(dxgui)
 	for key,value in pairs(theTable) do
@@ -276,12 +276,10 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 		local oldShow = MouseData.nowShow
 		MouseData.nowShow = dxgui
 		if dgsGetType(dxgui) == "dgs-dxedit" then
-			if mouse == "left" then
-				MouseData.editCursor = true
-				resetTimer(MouseData.EditTimer)
-				local edit = dgsElementData[dxgui].edit
-				guiBringToFront(edit)
-			end
+			MouseData.editCursor = true
+			resetTimer(MouseData.EditTimer)
+			local edit = dgsElementData[dxgui].edit
+			guiBringToFront(edit)
 		elseif dxgui ~= oldShow then
 			local dgsType = dgsGetType(oldShow)
 			if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
