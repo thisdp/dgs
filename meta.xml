@@ -183,6 +183,23 @@
 	<export function="dgsMemoInsertText" type="client" />
 	<export function="dgsMemoGetScrollBar" type="client" />
 
+	<export function="dgsCreateMediaBrowser" type="client" />
+	<export function="dgsMediaLoadMedia" type="client" />
+	<export function="dgsMediaGetMediaPath" type="client" />
+	<export function="dgsMediaClearMedia" type="client" />
+	<export function="dgsMediaPlay" type="client" />
+	<export function="dgsMediaPause" type="client" />
+	<export function="dgsMediaStop" type="client" />
+	<export function="dgsMediaSetSize" type="client" />
+	<export function="dgsMediaSetFilled" type="client" />
+	<export function="dgsMediaGetFilled" type="client" />
+	<export function="dgsMediaSetFullScreen" type="client" />
+	<export function="dgsMediaGetDuration" type="client" />
+	<export function="dgsMediaGetCurrentPosition" type="client" />
+	<export function="dgsMediaSetCurrentPosition" type="client" />
+	<export function="dgsMediaGetLooped" type="client" />
+	<export function="dgsMediaSetLooped" type="client" />
+
 	<export function="dgsCreateImage" type="client" />
 	<export function="dgsImageSetImage" type="client" />
 	<export function="dgsImageGetImage" type="client" />

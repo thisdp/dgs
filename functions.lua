@@ -143,14 +143,7 @@ function dgsSetProperty(dxgui,key,value,...)
 		end
 	elseif key == "text" then
 		local dgsType = dgsGetType(dxgui)
-		if dgsType == "dgs-dxtab" then
-			local tabpanel = dgsElementData[dxgui]["parent"]
-			local font = dgsElementData[tabpanel]["font"]
-			local wid = min(max(dxGetTextWidth(value,dgsElementData[dxgui]["textsize"][1],font),dgsElementData[tabpanel]["tabminwidth"]),dgsElementData[tabpanel]["tabmaxwidth"])
-			local owid = dgsElementData[tab]["width"]
-			dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel]["allleng"]-owid+wid)
-			dgsSetData(dxgui,"width",wid)
-		elseif dgsType == "dgs-dxmemo" then
+		if dgsType == "dgs-dxmemo" then
 			return handleDxMemoText(dxgui,value)
 		end
 	end

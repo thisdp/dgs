@@ -196,3 +196,11 @@ function GridListSortingTest()
 	dgsGridListSetSortFunction(gridlist,sortfnc)
 	dgsGridListSetSortColumn(gridlist,2)
 end
+
+function Plugin_media()
+	bro = dgsCreateMediaBrowser(600,600)
+	img = dgsCreateImage(400,200,600,600,bro,false)
+	dgsMediaLoadMedia(bro,"test.webm","VIDEO") -- Give a video file PLZ! (Only .webm file)
+	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
+	dgsMediaPlay(bro)
+end

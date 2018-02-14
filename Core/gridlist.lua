@@ -675,8 +675,8 @@ end
 
 function dgsGridListGetSelectedItem(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetSelectedItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local row,data = next(dgsElementData[gridlist].rowSelect)
-	local column,bool = next(data)
+	local row,data = next(dgsElementData[gridlist].rowSelect or {})
+	local column,bool = next(data or {})
 	return row or -1,column or -1
 end
 

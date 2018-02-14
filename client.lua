@@ -163,21 +163,17 @@ function dgsSetData(element,key,value,check)
 		local oldValue = dgsElementData[element][key]
 		dgsElementData[element][key] = value
 		if not check then
-			if key == "text" then
-				if dgsType == "dgs-dxedit" then
-					local maxLength = dgsElementData[element].maxLength
-					dgsElementData[element][key] = utf8.sub(value,0,maxLength)
-				end
-				triggerEvent("onDgsTextChange",element,value)
-			elseif dgsType == "dgs-dxscrollbar" and key == "length" then
-				local w,h = dgsGetSize(element,false)
-				local voh = dgsElementData[element]["voh"]
-				if (value[2] and value[1]*(voh and w-h*2 or h-w*2) or value[1]) < 20 then
-					dgsElementData[element][""..key..""] = {10,false}
-				end
-			elseif key == "position" then
-				if oldValue and oldValue ~= value then
-					triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
+			if dgsType == "dgs-dxscrollbar" then
+				if key == "length" then
+					local w,h = dgsGetSize(element,false)
+					local voh = dgsElementData[element]["voh"]
+					if (value[2] and value[1]*(voh and w-h*2 or h-w*2) or value[1]) < 20 then
+						dgsElementData[element][""..key..""] = {10,false}
+					end
+				elseif key == "position" then
+					if oldValue and oldValue ~= value then
+						triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
+					end
 				end
 			elseif (dgsType == "dgs-dxgridlist" or dgsType == "dgs-dxscrollpane") then
 				if key == "scrollBarThick" then
@@ -193,11 +189,11 @@ function dgsSetData(element,key,value,check)
 					else
 						configScrollPane(element)
 					end
-				elseif key == "columnHeight" then
+				elseif key == "columnHeight" and dgsType == "dgs-dxgridlist" then
 					configGridList(element)
-				elseif key == "mode" then
+				elseif key == "mode" and dgsType == "dgs-dxgridlist" then
 					configGridList(element)
-				elseif key == "rowData" then
+				elseif key == "rowData" and dgsType == "dgs-dxgridlist" then
 					if dgsElementData[element].autoSort then
 						dgsElementData[element].nextRenderSort = true
 					end
@@ -230,6 +226,30 @@ function dgsSetData(element,key,value,check)
 					local allleng = dgsElementData[element]["allleng"]+(change-old)*math.max((#tabs-1),1)
 					dgsSetData(element,"allleng",allleng)
 				end
+			elseif dgsType == "dgs-dxtab" then
+				if key == "text" then
+					local absrltWidth = dgsElementData[element].absrltWidth
+					if absrltWidth[1] < 0 then
+						local tabpanel = dgsElementData[element].parent
+						local font = dgsElementData[tabpanel]["font"]
+						local wh = dgsElementData[tabpanel].absSize
+						local w,h = wh[1],wh[2]
+						local minwidth = dgsElementData[tabpanel]["tabminwidth"][2] and dgsElementData[tabpanel]["tabminwidth"][1]*w or dgsElementData[tabpanel]["tabminwidth"][1]
+						local maxwidth = dgsElementData[tabpanel]["tabmaxwidth"][2] and dgsElementData[tabpanel]["tabmaxwidth"][1]*w or dgsElementData[tabpanel]["tabmaxwidth"][1]
+						local textsizex = dgsElementData[element].textsize[1]
+						local wid = math.min(math.max(dxGetTextWidth(tostring(value),textsizex,font),minwidth),maxwidth)
+						dgsSetData(element,"width",wid)
+					end
+				elseif key == "width" then
+					local absrltWidth = dgsElementData[element].absrltWidth
+					if absrltWidth[1] < 0 then
+						local tabpanel = dgsElementData[element].parent
+						local allleng = dgsElementData[tabpanel]["allleng"]+(value-oldValue)
+						dgsSetData(tabpanel,"allleng",allleng)
+					end
+				elseif key == "absrltWidth" then
+					
+				end
 			elseif dgsType == "dgs-dxedit" then
 				if key == "maxLength" then
 					local value = tonumber(value)
@@ -246,6 +266,9 @@ function dgsSetData(element,key,value,check)
 					else
 						return false
 					end
+				elseif key == "text" then
+					local maxLength = dgsElementData[element].maxLength
+					dgsElementData[element][key] = utf8.sub(value,0,maxLength)
 				end
 			elseif dgsType == "dgs-dxmemo" then
 				if key == "readOnly" then
@@ -260,6 +283,9 @@ function dgsSetData(element,key,value,check)
 				if key == "progress" then
 					triggerEvent("onDgsProgressBarChange",element,value,oldValue)
 				end
+			end
+			if key == "text" then
+				triggerEvent("onDgsTextChange",element,value)
 			end
 			if key == "visible" and value == false then
 				for k,v in ipairs(getElementsByType("dgs-dxedit")) do
@@ -1774,7 +1800,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 												dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 											end
 										end
-										textBuffer[id] = {lc_rowData[id][1],_x,_sx,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded}
+										textBuffer[id] = {lc_rowData[id][1],_x-_x%1,_sx-_sx%1,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded}
 									end
 								end
 								for k,v in pairs(textBuffer) do
@@ -1831,16 +1857,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local column_sx = cx+w-scbThick
 					for i=whichColumnToStart,whichColumnToEnd or columnCount do
 						local posx = column_x+cpos[i]
+						local tPosX = posx-posx%1
 						if sortColumn == i and sortIcon then
 							if DataTab.columnShadow then
-								dxDrawText(sortIcon,posx+1-10,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+								dxDrawText(sortIcon,tPosX+1-10,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
 							end
-							dxDrawText(sortIcon,posx-10,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+							dxDrawText(sortIcon,tPosX-10,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
 						end
 						if DataTab.columnShadow then
-							dxDrawText(columnData[i][1],1+posx,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+							dxDrawText(columnData[i][1],1+tPosX,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
 						end
-						dxDrawText(columnData[i][1],posx,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+						dxDrawText(columnData[i][1],tPosX,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
 						if mouseInsideGridList and mouseSelectColumn == -1 then
 							backgroundLength = columnData[i][2]*multiplier
 							if backgroundLength+posx-x >= w or whichColumnToEnd == i then
@@ -2500,18 +2527,19 @@ end
 
 function checkEditCursor(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
+		local dgsType = dgsGetType(MouseData.enter)
 		local scroll = button == "mouse_wheel_down" and 1 or -1
 		local scrollbar = MouseData.enter
 		if dgsGetType(scrollbar) == "dgs-dxscrollbar" then
 			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
-		elseif dgsGetType(MouseData.enter) == "dgs-dxgridlist" then
+		elseif dgsType == "dgs-dxgridlist" then
 			if MouseData.enterData then
 				local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
 				if dgsGetVisible(scrollbar) then
 					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 				end
 			end
-		elseif dgsGetType(MouseData.enter) == "dgs-dxmemo" then
+		elseif dgsType == "dgs-dxmemo" then
 				local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
 				if dgsGetVisible(scrollbar) then
 					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
@@ -2529,22 +2557,26 @@ function checkEditCursor(button,state)
 			if sbr then
 				scrollScrollBar(sbr,button == "mouse_wheel_down" or false)
 			end
-		elseif dgsGetType(MouseData.enter) == "dgs-dxtabpanel" then
-			local width = dgsElementData[MouseData.enter]["allleng"]
-			local w,h = dgsElementData[MouseData.enter]["absSize"][1],dgsElementData[MouseData.enter]["absSize"][2]
+		elseif dgsType == "dgs-dxtabpanel" or dgsType == "dgs-dxtab" then
+			local tabpanel = MouseData.enter
+			if dgsType == "dgs-dxtab" then
+				tabpanel = dgsElementData[MouseData.enter].parent
+			end
+			local width = dgsElementData[tabpanel]["allleng"]
+			local w,h = dgsElementData[tabpanel]["absSize"][1],dgsElementData[tabpanel]["absSize"][2]
 			if width > w then
 				local mx,my = getCursorPosition()
 				mx,my = (mx or -1)*sW,(my or -1)*sH
-				local y = dgsElementData[MouseData.enter]["absPos"][2]
-				local height = dgsElementData[MouseData.enter]["tabheight"][2] and dgsElementData[MouseData.enter]["tabheight"][1]*h or dgsElementData[MouseData.enter]["tabheight"][1]
+				local y = dgsElementData[tabpanel]["absPos"][2]
+				local height = dgsElementData[tabpanel]["tabheight"][2] and dgsElementData[tabpanel]["tabheight"][1]*h or dgsElementData[tabpanel]["tabheight"][1]
 				if my < y+height then
-					local speed = dgsElementData[MouseData.enter]["scrollSpeed"][2] and dgsElementData[MouseData.enter]["scrollSpeed"][1] or dgsElementData[MouseData.enter]["scrollSpeed"][1]/width
-					local orgoff = dgsElementData[MouseData.enter]["taboffperc"]
+					local speed = dgsElementData[tabpanel]["scrollSpeed"][2] and dgsElementData[tabpanel]["scrollSpeed"][1] or dgsElementData[tabpanel]["scrollSpeed"][1]/width
+					local orgoff = dgsElementData[tabpanel]["taboffperc"]
 					orgoff = math.max(math.min(orgoff+scroll*speed,1),0)
-					dgsSetData(MouseData.enter,"taboffperc",orgoff)
+					dgsSetData(tabpanel,"taboffperc",orgoff)
 				end
 			end
-		elseif dgsGetType(MouseData.enter) == "dgs-dxcombobox-Box" then
+		elseif dgsType == "dgs-dxcombobox-Box" then
 			local combo = dgsElementData[MouseData.enter].myCombo
 			local scrollbar = dgsElementData[combo].scrollbar
 			if dgsGetVisible(scrollbar) then

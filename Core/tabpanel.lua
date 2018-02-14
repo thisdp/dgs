@@ -41,20 +41,23 @@ function dgsCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..(dgsGetType(tabpanel) or type(tabpanel)))
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
-	dgsSetData(tab,"text",text)
+	dgsSetData(tab,"text",text,true)
 	dgsSetData(tab,"parent",tabpanel)
 	local tabs = dgsElementData[tabpanel].tabs
 	local id = #tabs+1
 	table.insert(tabs,id,tab)
 	dgsSetData(tab,"id",id)
+	local wh = dgsElementData[tabpanel].absSize
+	local w,h = wh[1],wh[2]
 	local font = dgsElementData[tabpanel]["font"]
-	local minwidth = dgsElementData[tabpanel]["tabminwidth"][2] and dgsElementData[tabpanel]["tabminwidth"][1]*h or dgsElementData[tabpanel]["tabminwidth"][1]
-	local maxwidth = dgsElementData[tabpanel]["tabmaxwidth"][2] and dgsElementData[tabpanel]["tabmaxwidth"][1]*h or dgsElementData[tabpanel]["tabmaxwidth"][1]
+	local minwidth = dgsElementData[tabpanel]["tabminwidth"][2] and dgsElementData[tabpanel]["tabminwidth"][1]*w or dgsElementData[tabpanel]["tabminwidth"][1]
+	local maxwidth = dgsElementData[tabpanel]["tabmaxwidth"][2] and dgsElementData[tabpanel]["tabmaxwidth"][1]*w or dgsElementData[tabpanel]["tabmaxwidth"][1]
 	local wid = math.min(math.max(dxGetTextWidth(text,textsizex or 1,font),minwidth),maxwidth)
 	local tabsidesize = dgsElementData[tabpanel]["tabsidesize"][2] and dgsElementData[tabpanel]["tabsidesize"][1]*w or dgsElementData[tabpanel]["tabsidesize"][1]
 	local gap = dgsElementData[tabpanel]["tabgapsize"][2] and dgsElementData[tabpanel]["tabgapsize"][1]*w or dgsElementData[tabpanel]["tabgapsize"][1]
 	dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel]["allleng"]+wid+tabsidesize*2+gap*math.min(#tabs,1))
-	dgsSetData(tab,"width",wid)
+	dgsSetData(tab,"width",wid,true)
+	dgsSetData(tab,"absrltWidth",{-1,false},false)
 	dgsSetData(tab,"textcolor",tonumber(textcolor) or schemeColor.tab.textcolor)
 	dgsSetData(tab,"textsize",{textsizex or 1,textsizey or 1})
 	dgsSetData(tab,"bgcolor",tonumber(bgcolor) or schemeColor.tab.bgcolor)

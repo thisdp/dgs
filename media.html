@@ -1,60 +1,128 @@
 <html>
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="imagetoolbar" content="no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 	<style type="text/css">
-	*{
-	margin:0px;
-	padding:0px;
-	}
+		*{
+		margin:0px;
+		padding:0px;
+		}
 
-	body{
-	height:100%;
-	width:100%;
-	}
+		body{
+		height:100%;
+		width:100%;
+		}
 	</style>
 	<head>
 		<meta charset="utf-8" />
 		<script type="text/javascript">
+			function createListener(element)
+			{
+				if(element!=null)  
+				{
+					element.addEventListener('play',function(){
+						mta.triggerEvent("onDgsMediaPlay",element.currentTime)
+					});
+					element.addEventListener('pause',function(){
+						mta.triggerEvent("onDgsMediaPause",element.currentTime)
+					});
+					element.addEventListener('ended',function(){
+						mta.triggerEvent("onDgsMediaStop",element.currentTime)
+					});
+					element.addEventListener('timeupdate',function(){
+						mta.triggerEvent("onDgsMediaTimeUpdate",element.currentTime)
+					});
+				}
+				else
+				{
+					mta.triggerEvent("onDgsMediaBrowserReturn",1)
+				}
+			}
+			function mediaSetCurrentTime(time)
+			{
+				var element = document.getElementById("element");
+				if(element!=null)
+				{
+					element.currentTime = time;
+				}
+			}
+			function mediaLoop(state)
+			{
+				var element = document.getElementById("element");
+				if(element!=null)
+				{
+					element.loop = state;
+				}
+			}
 			function stopMedia()
 			{
 				var element = document.getElementById("element");
-				if(element!=null)  
-				{  
-					if(element.stop)  
+				if(element!=null)
+				{
+					if(element.stop)
 						element.stop();
 				}
 			}
 			function playMedia()
 			{
 				var element = document.getElementById("element");
-				if(element!=null)  
-				{  
-					if(element.play)  
+				if(element!=null)
+				{
+					if(element.play)
+					try {
 						element.play();
+					} catch (error) {
+					}
 				}
 			}
 			function pauseMedia()
 			{
 				var element = document.getElementById("element");
-				if(element!=null)  
-				{  
-					if(element.pause)  
+				if(element!=null)
+				{
+					if(element.pause)
 						element.pause();
 				}
 			}
-			
+			function resizeMedia(w,h)
+			{
+				var element = document.getElementById("element");
+				if(element!=null)
+				{
+					element.width = w;
+					element.height = h;
+				}
+			}
 			function clearMedia()
 			{
 				var element = document.getElementById("element");
-				if(element!=null)  
+				if(element!=null)
 					element.parentNode.removeChild(element);
 			}
-			
-			function getRootPath_dc() {
-				var pathName = window.location.pathname.substring(1);
-				var webName = pathName == '' ? '' : pathName.substring(0, pathName.indexOf('/'));
-				if (webName == "") {
-					return window.location.protocol + '//' + window.location.host;
-				}else{
-					return window.location.protocol + '//' + window.location.host + '/' + webName;
+			function mediaFill(state)
+			{
+				var element = document.getElementById("element");
+				if(state)
+				{
+					element.style.cssText = "object-fit: fill;";
+				}
+				else
+				{
+					element.style.cssText = "object-fit: none;";
+				}
+			}
+			function mediaFullScreen(state)
+			{
+				if(state)
+				{
+					var element = document.getElementById('element');
+					element.webkitRequestFullScreen();
+				}
+				else
+				{
+					document.webkitExitFullscreen();
 				}
 			}
 		</script>

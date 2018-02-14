@@ -3,24 +3,41 @@ javaScript.clearelement = "clearMedia()"
 javaScript.playelement = "playMedia()"
 javaScript.pauseelement = "pauseMedia()"
 javaScript.stopelement = "stopMedia()"
+javaScript.fullscreen = "mediaFullScreen(REP1)"
+javaScript.setFill = "mediaFill(REP1)"
+javaScript.setSize = "resizeMedia(REP1,REP2)"
+javaScript.setLoop = "mediaLoop(REP1)"
+javaScript.setTime = "mediaSetCurrentTime(REP1)"
 setDevelopmentMode(true,true)
 addEvent("onDgsMediaPlay",true)
 addEvent("onDgsMediaPause",true)
-addEvent("onDgsMediaPlay",true)
+addEvent("onDgsMediaStop",true)
+addEvent("onDgsMediaDurationGet",true)
+addEvent("onDgsMediaTimeUpdate",true)
+
+addEvent("onDgsMediaBrowserReturn",true)
+--[[
+1: failed to create listner
+]]
+
 --Media Element won't be rendered by DGS render, so it should be set into other dgs element(Such as dgs-dximage).
 --Media Element is "cef"(browser element), but if you want to manage it well, please use the functions dgs offered.
-function dgsCreateMedia(w,h)
-	assert(type(w) == "number","Bad argument @dgsCreateMedia at argument 1, expect number got "..type(w))
-	assert(type(h) == "number","Bad argument @dgsCreateMedia at argument 2, expect number got "..type(h))
-	local browser = guiCreateBrowser(100,100,w,h,true,false,false)
-	local media = guiGetBrowser(browser)
+function dgsCreateMediaBrowser(w,h)
+	assert(type(w) == "number","Bad argument @dgsCreateMediaBrowser at argument 1, expect number got "..type(w))
+	assert(type(h) == "number","Bad argument @dgsCreateMediaBrowser at argument 2, expect number got "..type(h))
+	local media = createBrowser(w,h,true,true)
 	dgsSetType(media,"dgs-dxmedia")
 	dgsSetData(media,"size",{w,h})
 	dgsSetData(media,"sourcePath",false)
+	dgsSetData(media,"fullscreen",false)
+	dgsSetData(media,"filled",true)
+	dgsSetData(media,"looped",false)
 	dgsSetData(media,"functionBuffer",{})
+	dgsElementData[media].duration = false
+	dgsElementData[media].current = false
 	insertResourceDxGUI(sourceResource,media)
-	triggerEvent("onClientDgsDxGUIPreCreate",media)
-	triggerEvent("onClientDgsDxGUICreate",media)
+	triggerEvent("onDgsPreCreate",media)
+	triggerEvent("onDgsCreate",media)
 	return media
 end
 
@@ -40,35 +57,60 @@ addEventHandler("onClientBrowserDocumentReady",resourceRoot,function()
 	end
 end)
 
-function dgsMediaLoadMedia(media,path,theType,loop,autoplay)
+function dgsMediaLoadMedia(media,path,theType,sourceRes)
 	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaLoadMedia at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
 	assert(type(path) == "string","Bad argument @dgsMediaLoadMedia at argument 2, expect string got "..type(path))
+	local sR = sourceResource or sourceRes or getThisResource()
+	print(getResourceName(sR))
+	local name = getResourceName(sR)
+	if not path:find(":") then
+		local firstOne = path:sub(1,1)
+		if firstOne == "/" then
+			path = path:sub(2)
+		end
+		path = ":"..name.."/"..path
+	end
 	assert(fileExists(path),"Bad argument @dgsMediaLoadMedia at argument 2, file doesn't exist("..path..")")
 	assert(theType == "VIDEO" or theType == "AUDIO","Bad argument @dgsMediaLoadMedia at argument 3, expect string('VIDEO' or 'AUDIO') got "..tostring(theType))
-	loop = tostring(loop and true or false)
-	autoplay = tostring(autoplay == false and false or true)
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
-		table.insert(buffer,{[0]=dgsMediaLoadMedia,media,path,theType,loop,autoplay})
+		table.insert(buffer,{[0]=dgsMediaLoadMedia,media,path,theType,sR})
 	else
 		dgsMediaClearMedia(media)
 		dgsSetData(media,"sourcePath",path)
 		local size = dgsElementData[media].size
+		local filled = dgsElementData[media].filled
 		local str = [[
 			var element = document.createElement("]]..theType..[[");
 			element.id = "element";
 			element.width = ]]..size[1]..[[;
 			element.height = ]]..size[2]..[[;
-			element.loop = ]]..loop..[[;
-			element.autoplay = ]]..autoplay..[[;
+			createListener(element);
 			document.body.appendChild(element);
 			var source = document.createElement("source");
-			source.src = getRootPath_dc()+"/]]..path..[[";
+			source.src = "http://mta/]] ..path:sub(2).. [[";
 			element.appendChild(source);
+			mta.triggerEvent("onDgsMediaDurationGet",element.duration)
 		]]
-		return executeBrowserJavascript(media,str)
+		local executed = executeBrowserJavascript(media,str)
+		dgsMediaSetFullScreen(media,dgsElementData[media].fullscreen)
+		dgsMediaSetFilled(media,dgsElementData[media].filled)
+		dgsMediaSetLooped(media,dgsElementData[media].looped)
+		return executed
 	end
 end
+
+addEventHandler("onDgsMediaDurationGet",resourceRoot,function(duration)
+	if dgsElementType[source] == "dgs-dxmedia" and duration then
+		dgsElementData[source].duration = duration
+	end
+end)
+
+addEventHandler("onDgsMediaTimeUpdate",resourceRoot,function(current)
+	if dgsElementType[source] == "dgs-dxmedia" and current then
+		dgsElementData[source].current = current
+	end
+end)
 
 function dgsMediaGetMediaPath(media)
 	return dgsSetData(media,"sourcePath",path)
@@ -81,6 +123,7 @@ function dgsMediaClearMedia(media)
 		table.insert(buffer,{[0]=dgsMediaClearMedia,media})
 	else
 		dgsSetData(media,"sourcePath",false)
+		dgsElementData[media].duration = false
 		return executeBrowserJavascript(media,javaScript.clearelement)
 	end
 end
@@ -115,5 +158,100 @@ function dgsMediaStop(media)
 	else
 		assert(dgsElementData[media].sourcePath,"Bad argument @dgsMediaStop, no media source loaded in dgs-dxmedia")
 		return executeBrowserJavascript(media,javaScript.stopelement)
+	end
+end
+
+function dgsMediaSetFullScreen(media,state)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetFullScreen at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	if not dgsElementData[media].started then
+		local buffer = dgsElementData[media].functionBuffer
+		table.insert(buffer,{[0]=dgsMediaSetFullScreen,media,state})
+	else
+		assert(dgsElementData[media].sourcePath,"Bad argument @dgsMediaSetFullScreen, no media source loaded in dgs-dxmedia")
+		local str = string.gsub(javaScript.fullscreen,"REP1",tostring(state))
+		dgsSetData(media,"fullscreen",state)
+		return executeBrowserJavascript(media,str)
+	end
+end
+
+function dgsMediaGetFullScreen(media)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetFullScreen at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	return dgsElementData[media].fullscreen
+end
+
+function dgsMediaSetFilled(media,state)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetFilled at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	if not dgsElementData[media].started then
+		local buffer = dgsElementData[media].functionBuffer
+		table.insert(buffer,{[0]=dgsMediaSetFilled,media,state})
+	else
+		assert(dgsElementData[media].sourcePath,"Bad argument @dgsMediaSetFilled, no media source loaded in dgs-dxmedia")
+		local str = string.gsub(javaScript.setFill,"REP1",tostring(state))
+		dgsSetData(media,"filled",state)
+		return executeBrowserJavascript(media,str)
+	end
+end
+
+function dgsMediaGetFilled(media)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetFilled at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	return dgsElementData[media].filled
+end
+
+function dgsMediaGetLooped(media)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetLooped at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	return dgsElementData[media].loop
+end
+
+function dgsMediaSetLooped(media,state)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetLooped at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	if not dgsElementData[media].started then
+		local buffer = dgsElementData[media].functionBuffer
+		table.insert(buffer,{[0]=dgsMediaSetLooped,media,state})
+	else
+		assert(dgsElementData[media].sourcePath,"Bad argument @dgsMediaSetLooped, no media source loaded in dgs-dxmedia")
+		local str = string.gsub(javaScript.setLoop,"REP1",tostring(state))
+		dgsSetData(media,"looped",state)
+		return executeBrowserJavascript(media,str)
+	end
+end
+
+function dgsMediaSetSize(media,w,h)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetSize at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(type(w) == "number" and w > 0,"Bad argument @dgsMediaSetSize at argument 2, expect number ( > 0 ) got "..type(w).."("..tostring(w)..")")
+	assert(type(h) == "number" and h > 0,"Bad argument @dgsMediaSetSize at argument 3, expect number ( > 0 ) got "..type(h).."("..tostring(h)..")")
+	if not dgsElementData[media].started then
+		local buffer = dgsElementData[media].functionBuffer
+		table.insert(buffer,{[0]=dgsMediaSetSize,media,w,h})
+	else
+		resizeBrowser(media,w,h)
+		local str = javaScript.setSize
+		local str = str:gsub("REP1",w)
+		local str = str:gsub("REP2",h)
+		dgsSetData(media,"size",{w,h})
+		return executeBrowserJavascript(media,str)
+	end
+end
+
+function dgsMediaGetDuration(media)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetDuration at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	return dgsElementData[media].duration
+end
+
+function dgsMediaGetCurrentPosition(media)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetCurrentPosition at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	return dgsElementData[media].current
+end
+
+function dgsMediaSetCurrentPosition(media,position) --Failed to Set current position ( IDK Why it will go back to 0 !)
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetCurrentPosition at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(type(position) == "number" and position >= 0,"Bad argument @dgsMediaSetCurrentPosition at argument 2, expect number ( >= 0 ) got "..type(position).."("..tostring(position)..")")
+	if not dgsElementData[media].started then
+		local buffer = dgsElementData[media].functionBuffer
+		table.insert(buffer,{[0]=dgsMediaSetCurrentPosition,media,position})
+	else
+		assert(dgsElementData[media].sourcePath,"Bad argument @dgsMediaSetCurrentPosition, no media source loaded in dgs-dxmedia")
+		local str = javaScript.setTime
+		local str = str:gsub("REP1",position)
+		return executeBrowserJavascript(media,str)
 	end
 end
