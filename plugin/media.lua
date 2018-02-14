@@ -8,7 +8,7 @@ javaScript.setFill = "mediaFill(REP1)"
 javaScript.setSize = "resizeMedia(REP1,REP2)"
 javaScript.setLoop = "mediaLoop(REP1)"
 javaScript.setTime = "mediaSetCurrentTime(REP1)"
-setDevelopmentMode(true,true)
+--setDevelopmentMode(true,true)
 addEvent("onDgsMediaPlay",true)
 addEvent("onDgsMediaPause",true)
 addEvent("onDgsMediaStop",true)
@@ -44,7 +44,7 @@ end
 addEventHandler("onClientBrowserCreated",resourceRoot,function()
 	if dgsGetType(source) == "dgs-dxmedia" then
 		loadBrowserURL(source,"http://mta/"..getResourceName(getThisResource()).."/media.html")
-		toggleBrowserDevTools(source,true)
+		--toggleBrowserDevTools(source,true)
 	end
 end)
 
