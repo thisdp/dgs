@@ -939,3 +939,24 @@ function dgsGridListGetScrollBar(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetScrollBar at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return dgsElementData[gridlist].scrollbars
 end
+
+function dgsGridListSetScrollPosition(gridlist,vertical,horizontal)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsGridListSetScrollPosition at at argument 2, expect nil, none or number∈[0,100] got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsGridListSetScrollPosition at at argument 3,  expect nil, none or number∈[0,100] got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	local scb = dgsElementData[gridlist].scrollbars
+	local state1,state2 = true,true
+	if dgsElementData[scb[1]].visible then
+		state1 = dgsScrollBarSetScrollBarPosition(scb[1],vertical)
+	end
+	if dgsElementData[scb[2]].visible then
+		state2 = dgsScrollBarSetScrollBarPosition(scb[2],horizontal)
+	end
+	return state1 and state2
+end
+
+function dgsGridListGetScrollPosition(gridlist)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	local scb = dgsElementData[gridlist].scrollbars
+	return dgsScrollBarGetScrollBarPosition(scb[1]),dgsScrollBarGetScrollBarPosition(scb[2])
+end

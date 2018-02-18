@@ -635,3 +635,24 @@ function syncScrollBars(dxgui,which)
 		dgsScrollBarSetScrollBarPosition(scrollbars[2],new)
 	end
 end
+
+function dgsMemoSetScrollPosition(memo,vertical,horizontal)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsMemoSetScrollPosition at at argument 2, expect nil, none or number∈[0,100] got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsMemoSetScrollPosition at at argument 3,  expect nil, none or number∈[0,100] got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	local scb = dgsElementData[memo].scrollbars
+	local state1,state2 = true,true
+	if dgsElementData[scb[1]].visible then
+		state1 = dgsScrollBarSetScrollBarPosition(scb[1],vertical)
+	end
+	if dgsElementData[scb[2]].visible then
+		state2 = dgsScrollBarSetScrollBarPosition(scb[2],horizontal)
+	end
+	return state1 and state2
+end
+
+function dgsMemoGetScrollPosition(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	local scb = dgsElementData[memo].scrollbars
+	return dgsScrollBarGetScrollBarPosition(scb[1]),dgsScrollBarGetScrollBarPosition(scb[2])
+end
