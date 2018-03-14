@@ -32,6 +32,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(memo,"readOnlyCaretShow",false)
 	dgsSetData(memo,"editmemoSign",true)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
+	dgsSetData(memo,"caretColor",schemeColor.memo.caretcolor)
 	local gmemo = guiCreateMemo(0,0,0,0,"",false)
 	dgsSetData(memo,"memo",gmemo)
 	dgsSetData(gmemo,"dxmemo",memo)
@@ -101,7 +102,7 @@ function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 		dgsSetData(memo,"showLine",line)
 		syncScrollBars(memo,1)
 	end
-	dgsSetData(memo,"cursorposXY",{pos,line})	
+	dgsSetData(memo,"cursorposXY",{pos,line})
 	local isReadOnlyShow = true
 	if dgsElementData[memo].readOnly then
 		isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
@@ -245,7 +246,7 @@ function searchMemoMousePosition(dxmemo,posx,posy)
 		local x,y = dgsGetPosition(dxmemo,false,true)
 		local allText = dgsElementData[dxmemo].text
 		local selLine = math.floor((posy-y)/fontHeight)+showLine
-		selLine = selLine > #allText and #allText or selLine 
+		selLine = selLine > #allText and #allText or selLine
 		local text = dgsElementData[dxmemo].text[selLine] or ""
 		local pos = posx-x-offset
 		local sfrom,sto,templen = 0,utf8.len(text),0
@@ -565,7 +566,7 @@ function configMemo(source)
 	local visible1,visible2 = dgsElementData[scrollbars[1]].visible, dgsElementData[scrollbars[2]].visible
 	dgsSetVisible(scrollbars[1],false)
 	dgsSetVisible(scrollbars[2],false)
-	
+
 	dgsSetVisible(scrollbars[2],dgsElementData[source].rightLength[1] > size[1])
 	local scbTakes2 = dgsElementData[scrollbars[2]].visible and scbThick or 0
 	local canHold = math.floor((size[2]-scbTakes2)/fontHeight)

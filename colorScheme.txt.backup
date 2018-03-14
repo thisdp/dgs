@@ -29,11 +29,13 @@ schemeColor.edit = {}
 schemeColor.edit.bgcolor = tocolor(200,200,200,255)
 schemeColor.edit.textcolor = tocolor(0,0,0,255)
 schemeColor.edit.sidecolor = tocolor(0,0,0,255)
+schemeColor.edit.caretсolor = tocolor(0,0,0,255)
 
 schemeColor.memo = {}
 schemeColor.memo.bgcolor = tocolor(200,200,200,255)
 schemeColor.memo.textcolor = tocolor(0,0,0,255)
 schemeColor.memo.sidecolor = tocolor(0,0,0,255)
+schemeColor.edit.caretсolor = tocolor(0,0,0,255)
 
 schemeColor.progressbar = {}
 schemeColor.progressbar.bgcolor = tocolor(100,100,100,200)

@@ -34,6 +34,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
 	dgsSetData(edit,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
+	dgsSetData(edit,"caretColor",schemeColor.edit.caretcolor)
 	local gedit = guiCreateEdit(0,0,0,0,tostring(text) or "",false,GlobalEditParent)
 	guiSetProperty(gedit,"ClippedByParent","False")
 	dgsSetData(edit,"edit",gedit)
@@ -231,7 +232,7 @@ function searchEditMousePosition(dxedit,posx,posy)
 		local txtSizX = dgsElementData[dxedit].textsize[1]
 		local offset = dgsElementData[dxedit].showPos
 		local x = dgsGetPosition(dxedit,false,true)
-		local center = dgsElementData[dxedit].center 
+		local center = dgsElementData[dxedit].center
 		local sideWhite = dgsElementData[dxedit].sideWhite
 		local startX = sideWhite[1]
 		if center then
