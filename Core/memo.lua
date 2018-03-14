@@ -32,7 +32,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(memo,"readOnlyCaretShow",false)
 	dgsSetData(memo,"editmemoSign",true)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
-	dgsSetData(edit,"caretColor",schemeColor.edit.caretcolor)
+	dgsSetData(memo,"caretColor",schemeColor.edit.caretcolor)
 	local gmemo = guiCreateMemo(0,0,0,0,"",false)
 	dgsSetData(memo,"memo",gmemo)
 	dgsSetData(gmemo,"dxmemo",memo)
