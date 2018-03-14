@@ -128,7 +128,7 @@ function dgsSetParent(erzi,baba,nocheckfather)
 				table.remove(parentTable,id)
 			end
 			FatherTable[id] = nil
-			table.insert(MaxFatherTable,erzi) 
+			table.insert(MaxFatherTable,erzi)
 		end
 		return true
 	end
@@ -248,7 +248,7 @@ function dgsSetData(element,key,value,check)
 						dgsSetData(tabpanel,"allleng",allleng)
 					end
 				elseif key == "absrltWidth" then
-					
+
 				end
 			elseif dgsType == "dgs-dxedit" then
 				if key == "maxLength" then
@@ -342,7 +342,7 @@ function table.find(tab,ke,num)
 		else
 			if v == ke then
 				return k
-			end	
+			end
 		end
 	end
 	return false
@@ -484,7 +484,7 @@ function GUIRender()
 		end
 		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4-9,sW,sH,black)
 		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4-10,sW,sH)
-		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,black)	
+		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,black)
 		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+5,sW,sH)
 		local anim = table.count(animGUIList)
 		local move = table.count(moveGUIList)
@@ -493,7 +493,7 @@ function GUIRender()
 		local all = anim+move+size+alp
 		dxDrawText("Running Animation("..all.."):",301,sH*0.4-114,sW,sH,black)
 		dxDrawText("Running Animation("..all.."):",300,sH*0.4-115)
-		
+
 		dxDrawText("Anim:"..anim,301,sH*0.4-99,sW,sH,black)
 		dxDrawText("Anim:"..anim,300,sH*0.4-100)
 		dxDrawText("Move:"..move,301,sH*0.4-84,sW,sH,black)
@@ -502,7 +502,7 @@ function GUIRender()
 		dxDrawText("Size:"..size,300,sH*0.4-70)
 		dxDrawText("Alpha:"..alp,301,sH*0.4-54,sW,sH,black)
 		dxDrawText("Alpha:"..alp,300,sH*0.4-55)
-		
+
 		Resource = 0
 		ResCount = 0
 		for ka,va in pairs(resourceDxGUI) do
@@ -929,7 +929,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.CheckBoxState == true then
 					image = image_t
 					color = color_t
-				elseif eleData.CheckBoxState == false then 
+				elseif eleData.CheckBoxState == false then
 					image = image_f
 					color = color_f
 				else
@@ -1123,7 +1123,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							if cursorStyle == 0 then
 								if -showPos <= width then
 									local selStartY = y+thei
-									dxDrawLine(selStartX,selStartY,selStartX,y+h-thei*2,black,eleData.cursorThick,isRenderTarget)
+									dxDrawLine(selStartX,selStartY,selStartX,y+h-thei*2,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 								end
 							elseif cursorStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(text,cursorPos+1,cursorPos+1),txtSizX,font)
@@ -1133,7 +1133,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								if -showPos-cursorWidth <= width then
 									local offset = eleData.cursorOffset
 									local selStartY = y+h-thei*2
-									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,black,eleData.cursorThick,isRenderTarget)
+									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 								end
 							end
 						end
@@ -1309,19 +1309,19 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							local showPos = eleData.showPos
 							local cursorStyle = eleData.cursorStyle
 							if cursorStyle == 0 then
-								dxDrawLine(x+width+showPos+2,y+lineStart+1,x+width+showPos+2,y+lineStart+fontHeight-2,black,eleData.cursorThick,isRenderTarget)
+								dxDrawLine(x+width+showPos+2,y+lineStart+1,x+width+showPos+2,y+lineStart+fontHeight-2,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 							elseif cursorStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 								if cursorWidth == 0 then
 									cursorWidth = txtSizX*8
 								end
 								local offset = eleData.cursorOffset
-								dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,black,eleData.cursorThick,isRenderTarget)
+								dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 							end
 						end
-					end	
+					end
 				end
-				
+
 				local side = eleData.side
 				if side ~= 0 then
 					local sidecolor = eleData.sidecolor
@@ -1330,7 +1330,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawLine(x+w-side/2,y,x+w-side/2,y+h,sidecolor,side,isRenderTarget)
 					dxDrawLine(x,y+h-side/2,x+w,y+h-side/2,sidecolor,side,isRenderTarget)
 				end
-				
+
 				------------------------------------
 				if not eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -3217,7 +3217,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 					end
 				end
 				--------
-				if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
+				if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then
 					local old1,old2
 					local selectionMode = dgsElementData[source].selectionMode
 					local multiSelection = dgsElementData[source].multiSelection
@@ -3327,7 +3327,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 							return destroyElement(parent)
 						end
 					end
-				end	
+				end
 			end
 		end
 	end
@@ -3612,7 +3612,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 					for k,v in ipairs(ChildrenTable[parent] or {}) do
 						local pos = dgsElementData[source].absPos
 						local size = dgsElementData[source].absSize
-						ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]	
+						ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]
 					end
 				end
 				dgsSetData(parent,"maxChildSize",{ntempx or maxSize[1],ntempy or maxSize[2]})
