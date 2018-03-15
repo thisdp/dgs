@@ -1123,7 +1123,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							if cursorStyle == 0 then
 								if -showPos <= width then
 									local selStartY = y+thei
-									dxDrawLine(selStartX,selStartY,selStartX,y+h-thei*2,black,eleData.cursorThick,isRenderTarget)
+									dxDrawLine(selStartX,selStartY,selStartX,y+h-thei*2,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 								end
 							elseif cursorStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(text,cursorPos+1,cursorPos+1),txtSizX,font)
@@ -1133,7 +1133,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								if -showPos-cursorWidth <= width then
 									local offset = eleData.cursorOffset
 									local selStartY = y+h-thei*2
-									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,black,eleData.cursorThick,isRenderTarget)
+									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 								end
 							end
 						end
@@ -1309,14 +1309,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							local showPos = eleData.showPos
 							local cursorStyle = eleData.cursorStyle
 							if cursorStyle == 0 then
-								dxDrawLine(x+width+showPos+2,y+lineStart+1,x+width+showPos+2,y+lineStart+fontHeight-2,black,eleData.cursorThick,isRenderTarget)
+								dxDrawLine(x+width+showPos+2,y+lineStart+1,x+width+showPos+2,y+lineStart+fontHeight-2,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 							elseif cursorStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 								if cursorWidth == 0 then
 									cursorWidth = txtSizX*8
 								end
 								local offset = eleData.cursorOffset
-								dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,black,eleData.cursorThick,isRenderTarget)
+								dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 							end
 						end
 					end	

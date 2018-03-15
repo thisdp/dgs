@@ -138,6 +138,8 @@
 	<export function="dgsComboBoxSetBoxHeight" type="client" />
 	<export function="dgsComboBoxGetBoxHeight" type="client" />
 	<export function="dgsComboBoxGetScrollBar" type="client" />
+	<export function="dgsComboBoxSetScrollPosition" type="client" />
+	<export function="dgsComboBoxGetScrollPosition" type="client" />
 	
 	<export function="dgsCreateButton" type="client" />
 
@@ -182,6 +184,8 @@
 	<export function="dgsMemoDeleteText" type="client" />
 	<export function="dgsMemoInsertText" type="client" />
 	<export function="dgsMemoGetScrollBar" type="client" />
+	<export function="dgsMemoSetScrollPosition" type="client" />
+	<export function="dgsMemoGetScrollPosition" type="client" />
 
 	<export function="dgsCreateMediaBrowser" type="client" />
 	<export function="dgsMediaLoadMedia" type="client" />
@@ -231,12 +235,16 @@
 	<export function="dgsTabPanelGetTabFromID" type="client" />
 	<export function="dgsTabPanelMoveTab" type="client" />
 	<export function="dgsTabPanelGetTabID" type="client" />
+	<export function="dgsGetSelectedTab" type="client" />
+	<export function="dgsSetSelectedTab" type="client" />
 	<export function="dgsDeleteTab" type="client" />
 	
 	<export function="dgsCreateScrollBar" type="client" />
 	<export function="dgsScrollBarSetScrollBarPosition" type="client" />
 	<export function="dgsScrollBarGetScrollBarPosition" type="client" />
 	<export function="dgsScrollBarSetColor" type="client" />
+	<export function="dgsScrollBarSetScrollPosition" type="client" />
+	<export function="dgsScrollBarGetScrollPosition" type="client" />
 
 	<export function="dgsCreateGridList" type="client" />
 	<export function="dgsGridListGetScrollBar" type="client" />
@@ -287,11 +295,24 @@
 	<export function="dgsGridListGetSortColumn" type="client" />
 	<export function="dgsGridListSort" type="client" />
 	<export function="dgsGridListGetEnterColumn" type="client" />
+	<export function="dgsGridListSetScrollPosition" type="client" />
+	<export function="dgsGridListGetScrollPosition" type="client" />
 	
 	
 	<export function="dgsCreateEDA" type="client" />
 	<export function="dgsEDASetDebugModeEnabled" type="client" />
 	<export function="dgsEDAGetDebugModeEnabled" type="client" />
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	<!--OLD Functions-->
 	<export function="dgsDxGUIGetProperty" type="client" />
