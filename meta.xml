@@ -261,6 +261,7 @@
 	<export function="dgsGridListAddRow" type="client" />
 	<export function="dgsGridListRemoveRow" type="client" />
 	<export function="dgsGridListClearRow" type="client" />
+	<export function="dgsGridListClear" type="client" />
 	<export function="dgsGridListGetRowCount" type="client" />
 	<export function="dgsGridListSetItemText" type="client" />
 	<export function="dgsGridListGetItemText" type="client" />
