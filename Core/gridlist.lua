@@ -567,7 +567,22 @@ function dgsGridListClearRow(gridlist,notresetSelected)
 	if not notresetSelected then
 		 dgsGridListSetSelectedItem(gridlist,-1)
 	end
-	return table.remove(rowData) and dgsSetData(gridlist,"rowData",{})
+	return dgsSetData(gridlist,"rowData",{})
+end
+
+function dgsGridListClear(gridlist)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListClear at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+ 	local scrollbars = dgsElementData[gridlist].scrollbars
+	dgsSetData(scrollbars[1],"length",{0,true})
+	dgsSetData(scrollbars[1],"position",0)
+	dgsSetData(scrollbars[2],"length",{0,true})
+	dgsSetData(scrollbars[2],"position",0)
+	dgsSetVisible(scrollbars[1],false)
+	dgsSetVisible(scrollbars[2],false)
+	dgsGridListSetSelectedItem(gridlist,-1)
+	dgsSetData(gridlist,"rowData",{})
+	dgsSetData(gridlist,"columnData",{})
+	return true
 end
 
 function dgsGridListGetRowCount(gridlist)
