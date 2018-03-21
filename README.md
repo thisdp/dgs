@@ -6,7 +6,7 @@ Everything is refer to original GUI (gui*). BUT the difference between them is t
 
 Sry for the bad design of default style. But with property system, you can change it into your OWN style.
 
-See more information: http://wiki.mtasa.com/wiki/dgs
+See more information: http://wiki.mtasa.com/wiki/dgs : https://wiki.multitheftauto.com/wiki/AR/Dgs : https://wiki.multitheftauto.com/wiki/ZH-CN/Dgs
 
 Auto Completion For N++ (Thanks To Ahmed Ly): http://www.mediafire.com/file/m6dm7815d5dihax/lua.zip
 
