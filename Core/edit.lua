@@ -20,7 +20,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"masked",false)
 	dgsSetData(edit,"maskText","*")
 	dgsSetData(edit,"showPos",0)
-	dgsSetData(edit,"sideWhite",{2,0})
+	dgsSetData(edit,"sideWhite",{2,2})
 	dgsSetData(edit,"center",false)
 	dgsSetData(edit,"cursorStyle",0)
 	dgsSetData(edit,"cursorThick",1.2)
@@ -33,6 +33,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"sidecolor",schemeColor.edit.sidecolor)
 	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"caretColor",schemeColor.edit.caretcolor)
+	dgsSetData(edit,"caretHeight",1)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
 	dgsSetData(edit,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
 	local gedit = guiCreateEdit(0,0,0,0,tostring(text) or "",false,GlobalEditParent)
