@@ -12,6 +12,7 @@ schemeColor.radiobutton = {}
 schemeColor.radiobutton.defcolor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
 schemeColor.radiobutton.defcolor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
 schemeColor.radiobutton.textcolor = tocolor(255,255,255,255)
+
 schemeColor.cmd = {}
 schemeColor.cmd.bgcolor = tocolor(0,0,0,150)
 
@@ -28,13 +29,13 @@ schemeColor.edit = {}
 schemeColor.edit.bgcolor = tocolor(200,200,200,255)
 schemeColor.edit.textcolor = tocolor(0,0,0,255)
 schemeColor.edit.sidecolor = tocolor(0,0,0,255)
-schemeColor.edit.caretсolor = tocolor(0,0,0,255)
+schemeColor.edit.caretcolor = tocolor(0,0,0,255)
 
 schemeColor.memo = {}
 schemeColor.memo.bgcolor = tocolor(200,200,200,255)
 schemeColor.memo.textcolor = tocolor(0,0,0,255)
 schemeColor.memo.sidecolor = tocolor(0,0,0,255)
-schemeColor.memo.caretсolor = tocolor(0,0,0,255)
+schemeColor.memo.caretcolor = tocolor(0,0,0,255)
 
 schemeColor.progressbar = {}
 schemeColor.progressbar.bgcolor = tocolor(100,100,100,200)

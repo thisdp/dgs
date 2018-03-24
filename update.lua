@@ -94,9 +94,6 @@ function checkFiles()
 	for k,v in pairs(xmlNodeGetChildren(xml)) do
 		if xmlNodeGetName(v) == "script" or xmlNodeGetName(v) == "file" then
 			local path = xmlNodeGetAttribute(v,"src")
-			if path == "colorScheme.txt" and fileExists(path) then
-				path = "colorScheme.txt.backup"
-			end
 			local sha = ""
 			if fileExists(path) then
 				local file = fileOpen(path)
@@ -108,7 +105,7 @@ function checkFiles()
 			outputDebugString("[DGS]Checking File ("..preFetch.."): "..path)
 			fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
 				FetchCount = FetchCount+1
-				if sha ~= data then
+				if sha ~= data or path == "colorScheme.txt" then
 					outputDebugString("[DGS]Need Update ("..path..")")
 					table.insert(preUpdate,path)
 				end
@@ -131,17 +128,68 @@ function DownloadFiles()
 	fetchRemote(dgsConfig.updateCheckURL.."/dgs/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
 			local size = 0
-			if fileExists(path) then
-				local file = fileOpen(path)
-				size = fileGetSize(file)
+			if path == "colorScheme.txt" then
+				if not fileExists(path) then
+					local file = fileCreate(path)
+					fileWrite(file,data)
+					local newsize = fileGetSize(file)
+					fileClose(file)
+					outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
+				else
+					schemeColor = {}
+					local file = fileOpen(path)
+					local str = fileRead(file,fileGetSize(file))
+					local size = fileGetSize(file)
+					fileClose(file)
+					if fileExists(path..".bak") then
+						fileDelete(path..".bak")
+					end
+					fileRename(path,path..".bak")
+					loadstring(data)()
+					loadstring(str)()
+					local newData = ""
+					local newData_ = ""
+					for k,v in pairs(schemeColor) do
+						if type(v) == "table" then
+							newData = newData.."schemeColor."..k.." = {}".."\n"
+							for a,b in pairs(v) do
+								if type(b) == "table" then
+									local pstr = ""
+									for i = 1,#b do
+										local cr,cg,cb,ca = fromcolor(b[i])
+										pstr = pstr.."tocolor("..cr..","..cg..","..cb..","..ca.."),"
+									end
+									local pstr = pstr:sub(1,#pstr-1)
+									newData = newData.."schemeColor."..k.."."..a.." = {"..pstr.."}".."\n"
+								else
+									local cr,cg,cb,ca = fromcolor(b)
+									newData = newData.."schemeColor."..k.."."..a.." = tocolor("..cr..","..cg..","..cb..","..ca..")\n"
+								end
+							end
+							newData = newData.."\n"
+						else
+							newData_ = newData_.."schemeColor."..k.." = "..tostring(v).."\n"
+						end
+					end
+					local file = fileCreate(path)
+					fileWrite(file,newData..newData_)
+					local newsize = fileGetSize(file)
+					fileClose(file)
+					outputDebugString("[DGS]Color Scheme Updated ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
+				end
+			else
+				if fileExists(path) then
+					local file = fileOpen(path)
+					size = fileGetSize(file)
+					fileClose(file)
+					fileDelete(path)
+				end
+				local file = fileCreate(path)
+				fileWrite(file,data)
+				local newsize = fileGetSize(file)
 				fileClose(file)
-				fileDelete(path)
+				outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 			end
-			local file = fileCreate(path)
-			fileWrite(file,data)
-			local newsize = fileGetSize(file)
-			fileClose(file)
-			outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 		else
 			outputDebugString("[DGS]Download Failed: "..path.." ("..err..")")
 		end
@@ -198,3 +246,17 @@ addCommandHandler("dgsver",function(pla,cmd)
 		end
 	end
 end)
+
+function fromcolor(int)
+	local a,r,g,b
+	b,g,r,a = bitExtract(int,0,8),bitExtract(int,8,8),bitExtract(int,16,8),bitExtract(int,24,8)
+	return r,g,b,a
+end
+
+function tocolor(r,g,b,a)
+	local color = a*256^3+r*256^2+g*256+b
+	if color > 2147483647 then
+		color = color-0xFFFFFFFF-1
+	end
+	return color
+end
