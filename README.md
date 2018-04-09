@@ -8,10 +8,15 @@ Sry for the bad design of default style. But with property system, you can chang
 
 See more information: 
 EN:
+
 http://wiki.mtasa.com/wiki/dgs
-AR
+
+AR:
+
 https://wiki.mtasa.com/wiki/AR/Dgs
+
 ZH-CN:
+
 https://wiki.mtasa.com/wiki/ZH-CN/Dgs
 
 Auto Completion For N++ (Thanks To Ahmed Ly): http://www.mediafire.com/file/m6dm7815d5dihax/lua.zip
