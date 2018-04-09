@@ -278,6 +278,8 @@ function dgsSetData(element,key,value,check)
 					else
 						return false
 					end
+				elseif key == "text" then
+					handleDxMemoText(element,value)
 				end
 			elseif dgsType == "dgs-dxprogressbar" then
 				if key == "progress" then
@@ -1215,7 +1217,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local selectMode = eleData.selectmode
 					local textcolor = eleData.textcolor
 					local showLine = eleData.showLine
-					local caretHeight = eleData.caretHeight
+					local caretHeight = eleData.caretHeight-1
 					local canHoldLines = math.floor((h-4)/fontHeight)
 					canHoldLines = canHoldLines > allLine and allLine or canHoldLines
 					local selPosStart,selPosEnd,selStart,selEnd
@@ -1241,7 +1243,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							end
 							local startx = dxGetTextWidth(utf8.sub(text[selStart],0,selPosStart),txtSizX,font)
 							local selx = dxGetTextWidth(utf8.sub(text[selStart],selPosStart+1,selPosEnd),txtSizX,font)
-							dxDrawRectangle(offset+startx,2+(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*caretHeight-4,selectcolor)
+							dxDrawRectangle(offset+startx,2+(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
 						else
 							if selectFro[2]>cursorPos[2] then
 								selStart = cursorPos[2]
@@ -1258,13 +1260,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							for i=selStart > showLine and selStart or showLine,selEnd < toShowLine and selEnd or toShowLine do
 								if i ~= selStart and i ~= selEnd then
 									local selx = dxGetTextWidth(text[i],txtSizX,font)
-									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*caretHeight-4,selectcolor)
+									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
 								elseif i == selStart then
 									local selx = dxGetTextWidth(utf8.sub(text[i],selPosStart+1),txtSizX,font)
-									dxDrawRectangle(offset+startx,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*caretHeight-4,selectcolor)
+									dxDrawRectangle(offset+startx,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
 								elseif i == selEnd then
 									local selx = dxGetTextWidth(utf8.sub(text[i],0,selPosEnd),txtSizX,font)
-									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*caretHeight-4,selectcolor)
+									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
 								end
 							end
 						end
@@ -1304,7 +1306,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							CaretShow = eleData.readOnlyCaretShow
 						end
 						if CaretShow then
-							local theText = text[cursorPos[2]]
+							local theText = text[cursorPos[2]] or ""
 							local cursorPX = cursorPos[1]
 							local showLine = eleData.showLine
 							local currentLine = eleData.cursorposXY[2]
@@ -1829,7 +1831,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					if isElement(renderTarget[1]) then
 						dxDrawImage(x,y,w,columnHeight,renderTarget[1],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					end
-				else
+				elseif columnCount >= 1 then
 					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+2
 					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThick+rowHeight*2)/rowHeight)-3
 					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
@@ -2997,7 +2999,7 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 					local cursorposXY = dgsElementData[mymemo].cursorposXY
 					local selectfrom = dgsElementData[mymemo].selectfrom
 					dgsMemoDeleteText(mymemo,cursorposXY[1],cursorposXY[2],selectfrom[1],selectfrom[2])
-					handleDxMemoText(mymemo,utf8.sub(text,1,utf8.len(text)-1))
+					handleDxMemoText(mymemo,utf8.sub(text,1,utf8.len(text)-1),true)
 					dgsElementData[mymemo].CoolTime = true
 					guiSetText(source,"")
 					dgsElementData[mymemo].CoolTime = false
