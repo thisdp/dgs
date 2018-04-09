@@ -6,7 +6,8 @@ Everything is refer to original GUI (gui*). BUT the difference between them is t
 
 Sry for the bad design of default style. But with property system, you can change it into your OWN style.
 
-See more information: 
+See more information:
+
 EN:
 
 http://wiki.mtasa.com/wiki/dgs
