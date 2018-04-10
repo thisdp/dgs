@@ -216,7 +216,6 @@ end
 
 function dgsMemoSetReadOnly(memo,state)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	local guimemo = dgsElementData[memo].memo
 	return dgsSetData(memo,"readOnly",state and true or false)
 end
 
