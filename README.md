@@ -1,31 +1,23 @@
 # Thisdp's Dx Graphical User Interface System (MTA:SA Dx Lib)
 
-This is a dx gui lib of MTASA that is designed with dx functions. 
+This is a dxGUI library for [Multi Theft Auto: San Andreas](https://mtasa.com/) and is designed for the usage of dx functions.
 
-Everything is refer to original GUI (gui*). BUT the difference between them is that DGS have a STRONG property system that can freshen your dxgui looks even design the style with shaders by yourself.
+**MTA:SA Forum Topic:** https://forum.mtasa.com/topic/95964-releasethisdps-dx-gui-system/
 
-Sry for the bad design of default style. But with property system, you can change it into your OWN style.
+All function names refer simiularly to the original MTA:SA ones. This library uses a strong property system that can freshen up your user interfaces and provides a high level of customization.
 
-See more information:
+*(Sorry for the bad design of the default style though you are free to adjust everything in the colorScheme file.)*
 
-EN:
+For a full list of functions and event handlers, check the DGS wiki:
+* **English:** http://wiki.mtasa.com/wiki/dgs
+* **Arabic (عربى):** https://wiki.mtasa.com/wiki/AR/Dgs
+* **Chinese:** https://wiki.mtasa.com/wiki/ZH-CN/Dgs
 
-http://wiki.mtasa.com/wiki/dgs
+Auto Completion For [Notepad++](https://notepad-plus-plus.org/) *(Thanks To Ahmed Ly)*: http://www.mediafire.com/file/m6dm7815d5dihax/lua.zip
 
-AR:
+To prevent bugs and issues with the resource, keep the resource names as **dgs**.
 
-https://wiki.mtasa.com/wiki/AR/Dgs
+Keep up to date with the latest changelog available here: http://angel.mtaip.cn:233/dgsUpdate/
 
-ZH-CN:
-
-https://wiki.mtasa.com/wiki/ZH-CN/Dgs
-
-Auto Completion For N++ (Thanks To Ahmed Ly): http://www.mediafire.com/file/m6dm7815d5dihax/lua.zip
-
-If you don't want more bugs, Plz let the resource name to be *dgs*.
-
-To know what I have done with dgs, Plz see the update logs, click here: http://angel.mtaip.cn:233/dgsUpdate/
-
-The reason why I release DGS is that I am ready to leave MTA. This is my only one contribution to MTA.
-
-At last, I am glad you to use DGS. And if there is someone want to make it better, just do it, editing the code, adding functions and events......
+The reason why I released DGS is because I am ready to leave MTA. This is my one contribution to the MTA community.
+Finally, I am glad to provide the DGS resource, and everyone is welcome to adjust the code and help make it better by editting the code, adding functions or events.
