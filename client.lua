@@ -261,8 +261,8 @@ function dgsSetData(element,key,value,check)
 					end
 				elseif key == "readOnly" then
 					local gedit = dgsElementData[element].edit
-					if value and isElement(gedit) then
-						return guiEditSetReadOnly(gedit,value)
+					if isElement(gedit) then
+						return guiEditSetReadOnly(gedit,value and true or false)
 					else
 						return false
 					end
@@ -273,8 +273,8 @@ function dgsSetData(element,key,value,check)
 			elseif dgsType == "dgs-dxmemo" then
 				if key == "readOnly" then
 					local gmemo = dgsElementData[element].memo
-					if value and isElement(gmemo) then
-						return guiMemoSetReadOnly(gmemo,value)
+					if isElement(gmemo) then
+						return guiMemoSetReadOnly(gmemo,value and true or false)
 					else
 						return false
 					end
