@@ -1,0 +1,70 @@
+schemeColor.checkbox = {}
+schemeColor.checkbox.defcolor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.defcolor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.defcolor_i = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.textcolor = tocolor(255,255,255,255)
+
+schemeColor.progressbar = {}
+schemeColor.progressbar.bgcolor = tocolor(230,230,230,255)
+schemeColor.progressbar.barcolor = tocolor(6,176,37,255)
+
+schemeColor.edit = {}
+schemeColor.edit.caretcolor = tocolor(0,0,0,255)
+schemeColor.edit.textcolor = tocolor(0,0,0,255)
+schemeColor.edit.bgcolor = tocolor(255,255,255,255)
+schemeColor.edit.sidecolor = tocolor(0,0,0,255)
+
+schemeColor.window = {}
+schemeColor.window.titcolor = tocolor(255,255,255,255)
+schemeColor.window.titnamecolor = tocolor(0,0,0,255)
+schemeColor.window.color = tocolor(255,255,255,255)
+
+schemeColor.tab = {}
+schemeColor.tab.tabcolor = {tocolor(40,40,40,180),tocolor(80,80,80,190),tocolor(0,0,0,200)}
+schemeColor.tab.textcolor = tocolor(255,255,255,255)
+schemeColor.tab.bgcolor = tocolor(0,0,0,200)
+
+schemeColor.cmd = {}
+schemeColor.cmd.bgcolor = tocolor(0,0,0,150)
+
+schemeColor.memo = {}
+schemeColor.memo.caretcolor = tocolor(0,0,0,255)
+schemeColor.memo.textcolor = tocolor(0,0,0,255)
+schemeColor.memo.bgcolor = tocolor(255,255,255,255)
+schemeColor.memo.sidecolor = tocolor(0,0,0,255)
+
+schemeColor.tabpanel = {}
+schemeColor.tabpanel.defbackground = tocolor(0,0,0,180)
+
+schemeColor.radiobutton = {}
+schemeColor.radiobutton.defcolor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.radiobutton.defcolor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.radiobutton.textcolor = tocolor(255,255,255,255)
+
+schemeColor.button = {}
+schemeColor.button.color = {tocolor(255,255,255,255),tocolor(229,240,251,255),tocolor(204,228,247,255)}
+schemeColor.button.textcolor = tocolor(0,0,0,255)
+
+schemeColor.gridlist = {}
+schemeColor.gridlist.bgcolor = tocolor(255,255,255,255)
+schemeColor.gridlist.columncolor = tocolor(255,255,255,255)
+schemeColor.gridlist.rowtextcolor = tocolor(0,0,0,255)
+schemeColor.gridlist.rowcolor = {tocolor(255,255,255,255),tocolor(204,232,255,255),tocolor(217,217,217,255)}
+schemeColor.gridlist.columntextcolor = tocolor(0,0,0,255)
+
+schemeColor.scrollbar = {}
+schemeColor.scrollbar.colorc = {tocolor(180,180,180,255),tocolor(96,96,96,255)}
+schemeColor.scrollbar.colorn = {tocolor(240,240,240,255),tocolor(205,205,205,255),tocolor(240,240,240,255)}
+schemeColor.scrollbar.colore = {tocolor(218,218,218,255),tocolor(192,192,192,255)}
+
+schemeColor.combobox = {}
+schemeColor.combobox.textcolor = tocolor(0,0,0,255)
+schemeColor.combobox.itemColor = {tocolor(255,255,255,255),tocolor(51,153,255,255),tocolor(51,153,255,255)}
+schemeColor.combobox.listtextcolor = tocolor(0,0,0,255)
+schemeColor.combobox.color = {tocolor(255,255,255,255),tocolor(229,243,251,255),tocolor(204,228,247,255)}
+schemeColor.combobox.combobgColor = tocolor(255,255,255,255)
+schemeColor.combobox.arrowOutSideColor = tocolor(255,255,255,255)
+schemeColor.combobox.arrowColor = tocolor(50,50,50,255)
+
+schemeColor.disabledColorPercent = 0.8
+schemeColor.disabledColor = true
