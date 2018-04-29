@@ -50,7 +50,7 @@ end
 
 function dgsImageSetImageSize(gui,sx,sy)
 	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImageSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
-	local texture = dgsSetData(gui,"image")
+	local texture = dgsGetData(gui,"image")
 	local mx,my = dxGetMaterialSize(texture)
 	sx = tonumber(sx) or mx
 	sy = tonumber(sy) or my
