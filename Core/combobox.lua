@@ -24,7 +24,7 @@ function dgsCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scalex
 	end
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true) or table.insert(MaxFatherTable,1,combobox)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true) or table.insert(CenterFatherTable,1,combobox)
 	defcolor,hovcolor,clicolor = defcolor or schemeColor.combobox.color[1],hovcolor or schemeColor.combobox.color[2],clicolor or schemeColor.combobox.color[3]
 	dgsSetData(combobox,"image",{defimg,hovimg,cliimg})
 	dgsSetData(combobox,"color",{defcolor,hovcolor,clicolor})
@@ -223,7 +223,7 @@ function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
 	assert(tonumber(sy),"Bad argument @dgsComboBoxCreateBox at argument 4, expect number got "..type(sy))
 	assert(dgsGetType(parent) == "dgs-dxcombobox","Bad argument @dgsComboBoxCreateBox at argument 6, expect dgs-dxcombobox got "..dgsGetType(parent))
 	local box = createElement("dgs-dxcombobox-Box")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true) or table.insert(MaxFatherTable,1,box)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true) or table.insert(CenterFatherTable,1,box)
 	dgsSetType(box,"dgs-dxcombobox-Box")	
 	insertResourceDxGUI(sourceResource,box)
 	triggerEvent("onDgsPreCreate",box)

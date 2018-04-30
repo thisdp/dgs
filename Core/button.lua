@@ -8,7 +8,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	end
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true) or table.insert(MaxFatherTable,1,button)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true) or table.insert(CenterFatherTable,1,button)
 	defcolor,selcolor,clicolor = defcolor or schemeColor.button.color[1],selcolor or schemeColor.button.color[2],clicolor or schemeColor.button.color[3]
 	dgsSetData(button,"image",{defimg,selimg,cliimg})
 	dgsSetData(button,"color",{defcolor,selcolor,clicolor})

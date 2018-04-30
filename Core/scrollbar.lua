@@ -20,7 +20,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,
 	if isElement(parent) then
 		dgsSetParent(scrollbar,parent)
 	else
-		table.insert(MaxFatherTable,scrollbar)
+		table.insert(CenterFatherTable,scrollbar)
 	end
 	triggerEvent("onDgsPreCreate",scrollbar)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
@@ -29,27 +29,21 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,
 end
 
 function dgsScrollBarSetScrollBarPosition(scrollbar,pos)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsSetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsSetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	assert(type(pos) == "number","Bad argument @dgsSetScrollBarPosition at argument at 2, expect number got "..type(pos))
 	dgsSetData(scrollbar,"position",pos)
 end
 
 function dgsScrollBarGetScrollBarPosition(scrollbar)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsGetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
-	return dgsGetData(scrollbar,"position")
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsGetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	return dgsElementData[scrollbar].position
 end
 
-function dgsScrollBarSetColor(scrollbar,colorn1,colorncursor,colornmid,colore1,colorecursor,colorc1,colorccursor)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetColor at argument at 1, expect dgs-dxscrollbar got "..tostring(dgsGetType(scrollbar) or type(scrollbar)))
-	local colorn = dgsGetData(scrollbar,"colorn")
-	local colore = dgsGetData(scrollbar,"colore")
-	local colorc = dgsGetData(scrollbar,"colorc")
-	colorn[1] = colorn1 or colorn[1]
-	colorn[2] = colorncursor or colorn[2]
-	colorn[3] = colornmid or colorn[3]
-	colore[1] = colore1 or colore[1]
-	colore[2] = colorecursor or colore[2]
-	colorc[1] = colorc1 or colorc[1]
-	colorc[2] = colorccursor or colorc[2]
-	return true
+function scrollScrollBar(scrollbar,button)
+	local length,lrlt = dgsElementData[scrollbar].length[1],dgsElementData[scrollbar].length[2]
+	local scrollMultiplier,rltPos = dgsElementData[scrollbar].scrollmultiplier[1],dgsElementData[scrollbar].scrollmultiplier[2]
+	local pos = dgsElementData[scrollbar].position
+	local offsetPos = (rltPos and scrollMultiplier*cursorRange*0.01 or scrollMultiplier)
+	local gpos = button and pos+offsetPos or pos-offsetPos
+	dgsSetData(scrollbar,"position",math.restrict(0,100,gpos))
 end

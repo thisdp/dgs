@@ -29,7 +29,7 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgcol
 	if isElement(parent) then
 		dgsSetParent(cmd,parent)
 	else
-		table.insert(MaxFatherTable,cmd)
+		table.insert(CenterFatherTable,cmd)
 	end
 	insertResourceDxGUI(sourceResource,cmd)
 	triggerEvent("onDgsPreCreate",cmd)

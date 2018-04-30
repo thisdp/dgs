@@ -1,3 +1,4 @@
+GlobalEditParent = guiCreateLabel(0,0,0,0,"",false)
 local editsCount = 1
 function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bgimage,bgcolor,selectmode)
 	assert(type(x) == "number","Bad argument @dgsCreateEdit at argument 1, expect number got "..type(x))
@@ -47,7 +48,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	if isElement(parent) then
 		dgsSetParent(edit,parent)
 	else
-		table.insert(MaxFatherTable,edit)
+		table.insert(CenterFatherTable,edit)
 	end
 	insertResourceDxGUI(sourceResource,edit)
 	triggerEvent("onDgsPreCreate",edit)
@@ -143,7 +144,7 @@ function dgsEditSetCaretPosition(edit,pos,selectText)
 		local alllen = dxGetTextWidth(text,txtSizX,font)
 		startX = sx/2-alllen/2-showPos/2
 	end
-	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsGetData(edit,"textsize")[1],font)+startX
+	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textsize[1],font)+startX
 	if nowLen+showPos > sx-sideWhite[1] then
 		dgsSetData(edit,"showPos",sx-sideWhite[1]-nowLen)
 	elseif nowLen+showPos < 0 then
@@ -194,11 +195,20 @@ end
 
 function dgsEditGetReadOnly(edit)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetReadOnly at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	return dgsGetData(edit,"readOnly")
+	return dgsElementData[edit].readOnly
+end
+
+function dgsEditSetWhiteList(edit,str)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetWhiteList at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	if type(str) == "string" then
+		dgsSetData(edit,"whiteList",str)
+	else
+		dgsSetData(edit,"whiteList",nil)
+	end
 end
 
 function configEdit(source)
-	local myedit = dgsGetData(source,"edit")
+	local myedit = dgsElementData[source].edit
 	local x,y = unpack(dgsGetData(source,"absSize"))
 	guiSetSize(myedit,x,y,false)
 	local sideWhite = dgsElementData[source].sideWhite
@@ -291,9 +301,9 @@ end
 addEventHandler("onDgsMouseClick",root,checkEditMousePosition)
 
 addEventHandler("onClientGUIAccepted",root,function()
-	local mydxedit = dgsGetData(source,"dxedit")
+	local mydxedit = dgsElementData[source].dxedit
 	if dgsGetType(mydxedit) == "dgs-dxedit" then
-		local cmd = dgsGetData(mydxedit,"mycmd")
+		local cmd = dgsElementData[mydxedit].mycmd
 		if dgsGetType(cmd) == "dgs-dxcmd" then
 			local text = guiGetText(source)
 			if text ~= "" then
@@ -304,20 +314,11 @@ addEventHandler("onClientGUIAccepted",root,function()
 	end
 end)
 
-function dgsEditSetWhiteList(edit,str)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetWhiteList at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	if type(str) == "string" then
-		dgsSetData(edit,"whiteList",str)
-	else
-		dgsSetData(edit,"whiteList",nil)
-	end
-end
-
 addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
 	if not wasEventCancelled() then
 		if not dgsElementData[source].enableTabSwitch then return end
 		local parent = FatherTable[source]
-		local theTable = isElement(parent) and ChildrenTable[parent] or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or MaxFatherTable)
+		local theTable = isElement(parent) and ChildrenTable[parent] or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or CenterFatherTable)
 		local id = dgsElementData[source].editCounts
 		if id then
 			local theNext
@@ -338,6 +339,59 @@ addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
 			if theFinal then
 				dgsBringToFront(theFinal)
 				triggerEvent("onDgsEditSwitched",theFinal,source)
+			end
+		end
+	end
+end)
+
+addEventHandler("onClientGUIChanged",resourceRoot,function()
+	if not dgsElementData[source] then return end
+	if getElementType(source) == "gui-edit" then
+		local myedit = dgsElementData[source].dxedit
+		if isElement(myedit) then
+			if source == dgsElementData[myedit].edit then
+				MouseData.editCursor = true
+				resetTimer(MouseData.EditTimer)
+				local text_old = dgsElementData[myedit].text
+				local text_new = guiGetText(source)
+				local whiteListText = string.gsub(text_new,dgsElementData[myedit].whiteList or "","")
+				if whiteListText ~= text_new then
+					guiSetText(source,whiteListText)
+					return
+				end
+				local prepos = dgsElementData[myedit].cursorpos
+				local prefrom = dgsElementData[myedit].selectfrom
+				local presele = prefrom-prepos
+				local offset = presele > 0 and 1 or utf8.len(text_new)-utf8.len(text_old)
+				dgsSetData(myedit,"text",text_new)
+				local pos = dgsElementData[myedit].cursorpos
+				local from = dgsElementData[myedit].selectfrom
+				local sele = from-pos
+				if getKeyState("delete") then
+					if sele ~= 0 then
+						if sele > 0 then
+							dgsEditSetCaretPosition(myedit,from-sele)
+						else
+							dgsEditSetCaretPosition(myedit,from)
+						end
+					end
+				elseif getKeyState("backspace") then
+					if sele == 0 then
+						dgsEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
+					else
+						if sele > 0 then
+							dgsEditSetCaretPosition(myedit,pos)
+						else
+							dgsEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
+						end
+					end
+				else
+					dgsEditSetCaretPosition(myedit,pos+offset)
+				end
+				local pos = dgsElementData[myedit].cursorpos
+				if pos > utf8.len(text_new) then
+					dgsEditSetCaretPosition(myedit,utf8.len(text_new))
+				end
 			end
 		end
 	end

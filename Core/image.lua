@@ -23,7 +23,7 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	if isElement(parent) then
 		dgsSetParent(image,parent)
 	else
-		table.insert(MaxFatherTable,image)
+		table.insert(CenterFatherTable,image)
 	end
 	insertResourceDxGUI(sourceResource,image)
 	triggerEvent("onDgsPreCreate",image)

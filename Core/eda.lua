@@ -11,7 +11,7 @@ function dgsCreateEDA(x,y,sx,sy,relative,parent)
 	if isElement(parent) then
 		dgsSetParent(eda,parent)
 	else
-		table.insert(MaxFatherTable,eda)
+		table.insert(CenterFatherTable,eda)
 	end
 	insertResourceDxGUI(sourceResource,eda)
 	triggerEvent("onDgsPreCreate",eda)

@@ -27,7 +27,7 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgimg,bgcolor,barimg,bar
 	if isElement(parent) then
 		dgsSetParent(progressbar,parent)
 	else
-		table.insert(MaxFatherTable,progressbar)
+		table.insert(CenterFatherTable,progressbar)
 	end
 	insertResourceDxGUI(sourceResource,progressbar)
 	triggerEvent("onDgsPreCreate",progressbar)

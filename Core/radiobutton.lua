@@ -14,7 +14,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,sc
 	end
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true) or table.insert(MaxFatherTable,1,rb)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true) or table.insert(CenterFatherTable,1,rb)
 	defimg_f = defimg_f or radioButton_s.false_
 	hovimg_f = hovimg_f or radioButton_s.false_cli
 	cliimg_f = cliimg_f or hovimg_f

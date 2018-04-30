@@ -41,7 +41,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	dgsSetData(gridlist,"sortColumn",false)
 	dgsSetData(gridlist,"sectionColumnOffset",-10)
 	dgsSetData(gridlist,"defaultColumnOffset",0)
-	dgsSetData(gridlist,"backgroundOffset",0)
+	dgsSetData(gridlist,"backgroundOffset",-5)
 	dgsSetData(gridlist,"font",systemFont)
 	dgsSetData(gridlist,"sectionFont",systemFont)
 	dgsSetData(gridlist,"columnShadow",false)
@@ -62,7 +62,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	if isElement(parent) then
 		dgsSetParent(gridlist,parent)
 	else
-		table.insert(MaxFatherTable,gridlist)
+		table.insert(CenterFatherTable,gridlist)
 	end
 	triggerEvent("onDgsPreCreate",gridlist)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
@@ -437,6 +437,8 @@ end
 
 function dgsGridListAddRow(gridlist,row,...)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListAddRow at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	local columnData = dgsElementData[gridlist].columnData
+	assert(#columnData > 0 ,"Bad argument @dgsGridListAddRow, no columns in the grid list")
 	local rowData = dgsElementData[gridlist].rowData
 	local rowLength = 0
 	row = row or #rowData+1
@@ -574,8 +576,8 @@ function dgsGridListClear(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListClear at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
  	local scrollbars = dgsElementData[gridlist].scrollbars
 	dgsSetData(scrollbars[1],"length",{0,true})
-	dgsSetData(scrollbars[1],"position",0)
 	dgsSetData(scrollbars[2],"length",{0,true})
+	dgsSetData(scrollbars[1],"position",0)
 	dgsSetData(scrollbars[2],"position",0)
 	dgsSetVisible(scrollbars[1],false)
 	dgsSetVisible(scrollbars[2],false)
@@ -649,10 +651,14 @@ function dgsGridListSetItemText(gridlist,row,column,text,image)
 	assert(rowData[row],"Bad argument @dgsGridListSetItemText at argument 2, row "..row.." doesn't exist")
 	if column <= -5 then
 		rowData[row][column] = text
+		return true
 	else
-		rowData[row][column][1] = tostring(text)
+		if rowData[row][column] then
+			rowData[row][column][1] = tostring(text)
+			return true
+		end
 	end
-	return dgsSetData(gridlist,"rowData",rowData)
+	return false
 end
 
 function dgsGridListSetRowAsSection(gridlist,row,enabled,enableMouseClickAndSelect)
@@ -712,7 +718,17 @@ function dgsGridListSetSelectedItem(gridlist,row,column,notClear)
 		if dgsElementData[gridlist].multiSelection then
 			old1 = dgsGridListGetSelectedItems(gridlist)
 		else
-			old1,old2 = dgsGridListGetSelectedItems(gridlist)
+			data = dgsGridListGetSelectedItems(gridlist)
+			if not next(data) then
+				old1 = -1
+				old2 = -1
+			else
+				for k,v in pairs(data) do
+					old1 = k
+					old2 = v
+					break
+				end
+			end
 		end
 		local selectionMode = dgsElementData[gridlist].selectionMode
 		if selectionMode == 1 then
@@ -733,7 +749,7 @@ function dgsGridListSetSelectedItem(gridlist,row,column,notClear)
 		if dgsElementData[gridlist].multiSelection then
 			triggerEvent("onDgsGridListSelect",gridlist,row,column,old1)
 		else
-			triggerEvent("onDgsGridListSelect",gridlist,row,column,old1,old2)
+			triggerEvent("onDgsGridListSelect",gridlist,row or -1,column or -1,old1 or -1,old2 or -1)
 		end
 		dgsElementData[gridlist].itemClick = {row,column}
 		return true

@@ -43,7 +43,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	if isElement(parent) then
 		dgsSetParent(memo,parent)
 	else
-		table.insert(MaxFatherTable,memo)
+		table.insert(CenterFatherTable,memo)
 	end
 	insertResourceDxGUI(sourceResource,memo)
 	triggerEvent("onDgsPreCreate",memo)
@@ -382,7 +382,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 				dgsMemoSetCaretPosition(memo,index+offset-1,line)
 			end
 		end
-		triggerEvent("onDgsTextChange",memo,str)
+		triggerEvent("onDgsTextChange",memo)
 	end
 end
 
@@ -479,6 +479,7 @@ function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
 			dgsMemoSetCaretPosition(memo,fromindex,fromline)
 		end
 	end
+	triggerEvent("onDgsTextChange",memo)
 end
 
 function dgsMemoClearText(memo)
@@ -489,6 +490,7 @@ function dgsMemoClearText(memo)
 	dgsSetData(memo,"selectfrom",{0,1})
 	dgsSetData(memo,"rightLength",{0,1})
 	configMemo(memo)
+	triggerEvent("onDgsTextChange",memo)
 	return true
 end
 
@@ -673,3 +675,25 @@ function dgsMemoGetScrollPosition(memo)
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarGetScrollBarPosition(scb[1]),dgsScrollBarGetScrollBarPosition(scb[2])
 end
+
+addEventHandler("onClientGUIChanged",resourceRoot,function()
+	if not dgsElementData[source] then return end
+	if getElementType(source) == "gui-memo" then
+		local mymemo = dgsElementData[source].dxmemo
+		if isElement(mymemo) then
+			if source == dgsElementData[mymemo].memo then
+				local text = guiGetText(source)
+				local cool = dgsElementData[mymemo].CoolTime
+				if #text ~= 0 and not cool then
+					local cursorposXY = dgsElementData[mymemo].cursorposXY
+					local selectfrom = dgsElementData[mymemo].selectfrom
+					dgsMemoDeleteText(mymemo,cursorposXY[1],cursorposXY[2],selectfrom[1],selectfrom[2])
+					handleDxMemoText(mymemo,utf8.sub(text,1,utf8.len(text)-1),true)
+					dgsElementData[mymemo].CoolTime = true
+					guiSetText(source,"")
+					dgsElementData[mymemo].CoolTime = false
+				end
+			end
+		end
+	end
+end)

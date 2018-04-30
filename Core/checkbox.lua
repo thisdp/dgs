@@ -19,7 +19,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scalex
 	end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true) or table.insert(MaxFatherTable,1,cb)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true) or table.insert(CenterFatherTable,1,cb)
 	defimg_f = defimg_f or checkBox.false_
 	hovimg_f = hovimg_f or checkBox.false_cli
 	cliimg_f = cliimg_f or hovimg_f

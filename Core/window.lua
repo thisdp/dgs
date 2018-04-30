@@ -5,7 +5,7 @@ function dgsCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,ti
 	assert(tonumber(sy),"Bad argument @dgsCreateWindow at argument 4, expect number got "..type(sy))
 	local window = createElement("dgs-dxwindow")
 	dgsSetType(window,"dgs-dxwindow")
-	table.insert(MaxFatherTable,window)
+	table.insert(CenterFatherTable,window)
 	dgsSetData(window,"titimage",titimg)
 	dgsSetData(window,"titnamecolor",tonumber(titnamecolor) or schemeColor.window.titnamecolor)
 	dgsSetData(window,"titcolor",tonumber(titcolor) or schemeColor.window.titcolor)
@@ -28,11 +28,14 @@ function dgsCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,ti
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
 	triggerEvent("onDgsCreate",window)
 	if not nooffbutton then
-		local buttonOff = dgsCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
+		print(schemeColor.window.closeButtonColor)
+		local buttonOff = dgsCreateButton(40,0,40,24,"×",false,window,_,_,_,_,_,_,schemeColor.window.closeButtonColor[1],schemeColor.window.closeButtonColor[2],schemeColor.window.closeButtonColor[3],true)
 		dgsSetData(window,"closeButton",buttonOff)
 		dgsSetSide(buttonOff,"right",false)
 		dgsSetData(buttonOff,"ignoreParentTitle",true)
-		dgsSetPosition(buttonOff,30,0,false)
+		dgsSetData(buttonOff,"font","default-bold")
+		dgsSetData(buttonOff,"rightbottom",{"center","center"})
+		dgsSetPosition(buttonOff,40,0,false)
 	end
 	return window
 end
