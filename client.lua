@@ -82,6 +82,10 @@ MouseData.MemoTimer = setTimer(function()
 end,500,0)
 
 function GUIRender()
+  local bottomTableSize = #BottomFatherTable
+  local centerTableSize = #CenterFatherTable
+  local topTableSize = #TopFatherTable
+  if bottomTableSize == 0 and centerTableSize == 0 and topTableSize == 0 then return end
 	local tk = getTickCount()
 	local mx,my = getCursorPosition()
 	mx,my = (mx or -1)*sW,(my or -1)*sH
@@ -97,17 +101,17 @@ function GUIRender()
 	MouseData.hit = false
 	DGSShow = 0
 	local dgsData = dgsElementData
-	for i=1,#BottomFatherTable do
+	for i=1,bottomTableSize do
 		local v = BottomFatherTable[i]
 		local eleData = dgsData[v]
 		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
 	end
-	for i=1,#CenterFatherTable do
+	for i=1,centerTableSize do
 		local v = CenterFatherTable[i]
 		local eleData = dgsData[v]
 		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
 	end
-	for i=1,#TopFatherTable do
+	for i=1,topTableSize do
 		local v = TopFatherTable[i]
 		local eleData = dgsData[v]
 		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
