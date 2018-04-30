@@ -121,7 +121,10 @@
 
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
-	
+	<export function="dgsScrollPaneSetScrollPosition" type="client" />
+	<export function="dgsScrollPaneGetScrollPosition" type="client" />
+	<export function="dgsScrollPaneGetScrollBar" type="client" />
+	 
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
 	<export function="dgsRadioButtonSetSelected" type="client" />
