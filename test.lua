@@ -19,7 +19,7 @@ function createTest2()
 	end
 	gdlt2 = dgsCreateButton(10,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
 end
-
+createTest2()
 function createTest3()
 	local rb1= dgsCreateRadioButton(500,500,200,30,"aaaa",false)
 	local rb2 = dgsCreateRadioButton(500,520,200,30,"bbbb",false)
@@ -81,7 +81,7 @@ function createTestMemo()
 	10]],false)
 	--dgsMemoSetReadOnly(memo,true)
 end
-
+createTestMemo()
 function editTest() --Test Tab Switch for edit.
 	edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	setTimer(function()

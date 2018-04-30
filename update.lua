@@ -94,25 +94,28 @@ function checkFiles()
 	for k,v in pairs(xmlNodeGetChildren(xml)) do
 		if xmlNodeGetName(v) == "script" or xmlNodeGetName(v) == "file" then
 			local path = xmlNodeGetAttribute(v,"src")
-			local sha = ""
-			if fileExists(path) then
-				local file = fileOpen(path)
-				local text = fileRead(file,fileGetSize(file))
-				fileClose(file)
-				sha = hash("sha256",text)
+			if path ~= "colorScheme.txt"  then
+				local sha = ""
+				if fileExists(path) then
+					local file = fileOpen(path)
+					local text = fileRead(file,fileGetSize(file))
+					fileClose(file)
+					sha = hash("sha256",text)
+				end
+				preFetch = preFetch+1
+				outputDebugString("[DGS]Checking File ("..preFetch.."): "..path)
+				fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
+					FetchCount = FetchCount+1
+					if sha ~= data then
+						outputDebugString("[DGS]Need Update ("..path..")")
+						table.insert(preUpdate,path)
+					end
+					if FetchCount == preFetch then
+						table.insert(preUpdate,"colorScheme.txt")
+						DownloadFiles()
+					end
+				end,"",false,path,sha)
 			end
-			preFetch = preFetch+1
-			outputDebugString("[DGS]Checking File ("..preFetch.."): "..path)
-			fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
-				FetchCount = FetchCount+1
-				if sha ~= data or path == "colorScheme.txt" then
-					outputDebugString("[DGS]Need Update ("..path..")")
-					table.insert(preUpdate,path)
-				end
-				if FetchCount == preFetch then
-					DownloadFiles()
-				end
-			end,"",false,path,sha)
 		end
 	end
 	outputDebugString("[DGS]Please Wait...")
@@ -136,45 +139,7 @@ function DownloadFiles()
 					fileClose(file)
 					outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 				else
-					schemeColor = {}
-					local file = fileOpen(path)
-					local str = fileRead(file,fileGetSize(file))
-					local size = fileGetSize(file)
-					fileClose(file)
-					if fileExists(path..".bak") then
-						fileDelete(path..".bak")
-					end
-					fileRename(path,path..".bak")
-					loadstring(data)()
-					loadstring(str)()
-					local newData = ""
-					local newData_ = ""
-					for k,v in pairs(schemeColor) do
-						if type(v) == "table" then
-							newData = newData.."schemeColor."..k.." = {}".."\n"
-							for a,b in pairs(v) do
-								if type(b) == "table" then
-									local pstr = ""
-									for i = 1,#b do
-										local cr,cg,cb,ca = fromcolor(b[i])
-										pstr = pstr.."tocolor("..cr..","..cg..","..cb..","..ca.."),"
-									end
-									local pstr = pstr:sub(1,#pstr-1)
-									newData = newData.."schemeColor."..k.."."..a.." = {"..pstr.."}".."\n"
-								else
-									local cr,cg,cb,ca = fromcolor(b)
-									newData = newData.."schemeColor."..k.."."..a.." = tocolor("..cr..","..cg..","..cb..","..ca..")\n"
-								end
-							end
-							newData = newData.."\n"
-						else
-							newData_ = newData_.."schemeColor."..k.." = "..tostring(v).."\n"
-						end
-					end
-					local file = fileCreate(path)
-					fileWrite(file,newData..newData_)
-					local newsize = fileGetSize(file)
-					fileClose(file)
+					local newsize,size = updateColorScheme(path,data)
 					outputDebugString("[DGS]Color Scheme Updated ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 				end
 			else
@@ -199,6 +164,54 @@ function DownloadFiles()
 			DownloadFinish()
 		end
 	end,"",false,preUpdate[UpdateCount])
+end
+
+function updateColorScheme(path,data)
+	schemeColor = {}
+	local file = fileOpen("colorSchemeIndex.txt")
+	local str = fileRead(file,fileGetSize(file))
+	local size = fileGetSize(file)
+	fileClose(file)
+	loadstring(str)()
+	-------------------------------------
+	local file = fileOpen(path)
+	local str = fileRead(file,fileGetSize(file))
+	local size = fileGetSize(file)
+	fileClose(file)
+	if fileExists(path..".bak") then
+		fileDelete(path..".bak")
+	end
+	fileRename(path,path..".bak")
+	loadstring(data)()
+	loadstring(str)()
+	local newData = ""
+	local newData_ = ""
+	for k,v in pairs(schemeColor) do
+		if type(v) == "table" then
+			for a,b in pairs(v) do
+				if type(b) == "table" then
+					local pstr = ""
+					for i = 1,#b do
+						local cr,cg,cb,ca = fromcolor(b[i])
+						pstr = pstr.."tocolor("..cr..","..cg..","..cb..","..ca.."),"
+					end
+					local pstr = pstr:sub(1,#pstr-1)
+					newData = newData.."schemeColor."..k.."."..a.." = {"..pstr.."}".."\n"
+				else
+					local cr,cg,cb,ca = fromcolor(b)
+					newData = newData.."schemeColor."..k.."."..a.." = tocolor("..cr..","..cg..","..cb..","..ca..")\n"
+				end
+			end
+			newData = newData.."\n"
+		else
+			newData_ = newData_.."schemeColor."..k.." = "..tostring(v).."\n"
+		end
+	end
+	local file = fileCreate(path)
+	fileWrite(file,newData..newData_)
+	local newsize = fileGetSize(file)
+	fileClose(file)
+	return newsize,size
 end
 
 function DownloadFinish()

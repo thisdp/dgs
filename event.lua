@@ -16,6 +16,7 @@ addEvent("onDgsCreate",true)
 addEvent("onDgsPreCreate",true)
 addEvent("onDgsPreRender",true)
 addEvent("onDgsRender",true)
+addEvent("onDgsElementRender",true)
 addEvent("onDgsFocus",true)
 addEvent("onDgsBlur",true)
 addEvent("onDgsCursorMove",true)
@@ -31,12 +32,24 @@ addEvent("onDgsEditSwitched",true)
 addEvent("giveIPBack",true)
 
 
--------
-GlobalEditParent = guiCreateLabel(0,0,0,0,"",false)
-function table.find(tabl,value)
-	for k,v in pairs(tabl) do
-		if v == value then
-			return k
+-------DEBUG
+addCommandHandler("debugdgs",function()
+	DEBUG_MODE = not getElementData(localPlayer,"DGS-DEBUG")
+	setElementData(localPlayer,"DGS-DEBUG",DEBUG_MODE,false)
+end)
+
+DEBUG_MODE = getElementData(localPlayer,"DGS-DEBUG")
+--------------------------------Table Utility
+function table.find(tab,ke,num)
+	for k,v in pairs(tab) do
+		if num then
+			if v[num] == ke then
+				return k
+			end
+		else
+			if v == ke then
+				return k
+			end	
 		end
 	end
 	return false
@@ -81,14 +94,26 @@ function table.complement(theall,...)
 	return newtable
 end
 
+function table.deepcopy(obj)      
+    local InTable = {}
+    local function Func(obj)  
+        if type(obj) ~= "table" then
+            return obj
+        end
+        local NewTable = {}
+        InTable[obj] = NewTable
+        for k,v in pairs(obj) do
+            NewTable[Func(k)] = Func(v)  
+        end
+        return setmetatable(NewTable, getmetatable(obj))
+    end
+    return Func(obj)
+end
+
+--------------------------------String Utility
 function string.count(str)
 	local _,count = string.gsub(str,"[^\128-\193]","")
 	return count
-end
-
-function findRotation(x1,y1,x2,y2) 
-	local t = -math.deg(math.atan2(x2-x1,y2-y1))
-	return t<0 and t+360 or t
 end
 
 function string.split(s, delim, mode)
@@ -126,6 +151,29 @@ function string.split(s, delim, mode)
 	end
 end
 
+--------------------------------Math Utility
+function findRotation(x1,y1,x2,y2) 
+	local t = -math.deg(math.atan2(x2-x1,y2-y1))
+	return t<0 and t+360 or t
+end
+
+function math.restrict(n_min,n_max,value)
+	if value <= n_min then
+		return n_min
+	elseif value >= n_max then
+		return n_max
+	else
+		return value
+	end
+end
+
+function math.inRange(n_min,n_max,value)
+	if value >= n_min and value <= n_max then
+		return true
+	end
+	return false
+end
+--------------------------------Color Utility
 function fromcolor(int,useMath)
 	local a,r,g,b
 	if useMath then
@@ -136,18 +184,20 @@ function fromcolor(int,useMath)
 	return r,g,b,a
 end
 
-function table.deepcopy(obj)      
-    local InTable = {}
-    local function Func(obj)  
-        if type(obj) ~= "table" then
-            return obj
-        end
-        local NewTable = {}
-        InTable[obj] = NewTable
-        for k,v in pairs(obj) do
-            NewTable[Func(k)] = Func(v)  
-        end
-        return setmetatable(NewTable, getmetatable(obj))
-    end
-    return Func(obj)
+function getColorAlpha(color)
+	return bitExtract(color,24,8)
+end
+
+function setColorAlpha(color,alpha)
+	return bitReplace(color,alpha,24,8)
+end
+
+function applyColorAlpha(color,alpha)
+	return bitReplace(color,bitExtract(color,24,8)*alpha,24,8)
+end
+--------------------------------Other Utility
+function dgsRunString(func,...)
+	local fnc = loadstring(func)
+	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
+	return fnc(...)
 end

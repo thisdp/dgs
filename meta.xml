@@ -1,6 +1,7 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
 	<file src="dsm.ttf" />
+	<file src="colorSchemeIndex.txt" type="client"/>
 	<file src="colorScheme.txt" />
 	<file src="image/combobox/arrow.fx" />
 	<file src="image/eda/ellipse.fx" />
@@ -26,6 +27,10 @@
 	<script src="Core/combobox.lua" type="client" />
 	<script src="Core/memo.lua" type="client" />
 	<script src="Core/checkbox.lua" type="client" />
+	
+	<script src="PropertyManager.lua" type="client" />
+	<script src="ParentManager.lua" type="client" />
+	<script src="TypeManager.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
 	<script src="client.lua" type="client" />
@@ -90,10 +95,12 @@
 	<export function="dgsGetAlpha" type="client" />
 	<export function="dgsSetAlpha" type="client" />
 	<export function="dgsSetBottom" type="client" />
+	<export function="dgsSetCenter" type="client" />
+	<export function="dgsSetTop" type="client" />
 	<export function="dgsGetFont" type="client" />
 	<export function="dgsSetFont" type="client" />
-	<export function="dgsSetText" type="client" />
 	<export function="dgsGetText" type="client" />
+	<export function="dgsSetText" type="client" />
 	<export function="dgsCreateFont" type="client" />
 	<export function="dgsBringToFront" type="client" />
 	<export function="dgsGetMouseEnterGUI" type="client" />
@@ -243,7 +250,6 @@
 	<export function="dgsCreateScrollBar" type="client" />
 	<export function="dgsScrollBarSetScrollBarPosition" type="client" />
 	<export function="dgsScrollBarGetScrollBarPosition" type="client" />
-	<export function="dgsScrollBarSetColor" type="client" />
 	<export function="dgsScrollBarSetScrollPosition" type="client" />
 	<export function="dgsScrollBarGetScrollPosition" type="client" />
 

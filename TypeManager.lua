@@ -1,0 +1,41 @@
+dgsElementType = {}
+dgsType = {
+	"dgs-dxbutton",
+	"dgs-dxcmd",
+	"dgs-dxedit",
+	"dgs-dxmemo",
+	"dgs-dxeda",
+	"dgs-dxgridlist",
+	"dgs-dximage",
+	"dgs-dxradiobutton",
+	"dgs-dxcheckbox",
+	"dgs-dxlabel",
+	"dgs-dxscrollbar",
+	"dgs-dxscrollpane",
+	"dgs-dxwindow",
+	"dgs-dxprogressbar",
+	"dgs-dxtabpanel",
+	"dgs-dxtab",
+	"dgs-dxcombobox",
+	"dgs-dxcombobox-Box",
+}
+
+function dgsGetType(dgsGUI)
+	if isElement(dgsGUI) then
+		return tostring(dgsElementType[dgsGUI] or getElementType(dgsGUI))
+	else
+		return type(dgsGUI)
+	end
+end
+
+function dgsSetType(dgsGUI,myType)
+	if isElement(dgsGUI) and type(myType) == "string" then
+		dgsElementType[dgsGUI] = myType
+		return true
+	end
+	return false
+end
+
+function dgsIsDxElement(element)
+	return (dgsElementType[element] or ""):sub(1,6) == "dgs-dx"
+end

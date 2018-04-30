@@ -1,0 +1,13 @@
+schemeColor.button = {}
+schemeColor.checkbox = {}
+schemeColor.radiobutton = {}
+schemeColor.cmd = {}
+schemeColor.combobox = {}
+schemeColor.edit = {}
+schemeColor.memo = {}
+schemeColor.progressbar = {}
+schemeColor.gridlist = {}
+schemeColor.scrollbar = {}
+schemeColor.tabpanel = {}
+schemeColor.tab = {}
+schemeColor.window = {}

@@ -50,312 +50,6 @@ function getSystemFont()
 	return systemFont
 end
 
------------------------------------------------------Core-----------------------------------------------------
-dgsElementType = {}
-BottomFatherTable = {}		--Store Save Bottom Father Element
-FatherTable = {}		--Store Save Father Element
-ChildrenTable = {}		--Store Children Element
-MaxFatherTable = {}		--Topest
-dgsElementData = {}		--Store The Data
-
-function dgsGetType(shenMeGui)
-	if isElement(shenMeGui) then
-		return tostring(dgsElementType[shenMeGui] or getElementType(shenMeGui))
-	else
-		return type(shenMeGui)
-	end
-end
-
-function dgsSetType(shenMeGui,myType)
-	if isElement(shenMeGui) and type(myType) == "string" then
-		dgsElementType[shenMeGui] = myType
-		return true
-	end
-	return false
-end
-
-function dgsSetBottom(shenMeGUI)
-	local id = table.find(MaxFatherTable,shenMeGUI)
-	if id then
-		dgsSetData(sheMeGUI,"alwaysOnBottom",true)
-		table.remove(MaxFatherTable,id)
-		table.insert(BottomFatherTable,shenMeGUI)
-	end
-end
-
-function dgsGetChild(baba,id)
-	return ChildrenTable[baba][id] or false
-end
-
-function dgsGetChildren(baba)
-	return ChildrenTable[baba] or {}
-end
-
-function dgsGetParent(erzi)
-	return FatherTable[erzi] or false
-end
-
-function dgsGetDxGUIFromResource(res)
-	local res = res or sourceResource
-	if res then
-		return resourceDxGUI[res] or {}
-	end
-end
-
-function dgsGetDxGUINoParent(alwaysBottom)
-	return alwaysBottom and BottomFatherTable or MaxFatherTable
-end
-
-function dgsSetParent(erzi,baba,nocheckfather)
-	if isElement(erzi) then
-		local parent = FatherTable[erzi]
-		local parentTable = isElement(parent) and ChildrenTable[parent] or MaxFatherTable
-		if isElement(baba) then
-			if not dgsIsDxElement(baba) then return end
-			if not nocheckfather then
-				local id = table.find(parentTable,erzi)
-				if id then
-					table.remove(parentTable,id)
-					--parentTable[id] = nil
-				end
-			end
-			FatherTable[erzi] = baba
-			ChildrenTable[baba] = ChildrenTable[baba] or {}
-			table.insert(ChildrenTable[baba],erzi)
-		else
-			local id = table.find(parentTable,erzi)
-			if id then
-				table.remove(parentTable,id)
-			end
-			FatherTable[id] = nil
-			table.insert(MaxFatherTable,erzi) 
-		end
-		return true
-	end
-	return false
-end
-
-function dgsGetData(element,key)
-	if isElement(element) then
-		if dgsElementData[element] then
-			if key then
-				if dgsElementData[element][key] then
-					return dgsElementData[element][key]
-				end
-			else
-				return dgsElementData[element]
-			end
-		else
-			return getElementType(element)
-		end
-	else
-		return type(element)
-	end
-end
-
-function dgsSetData(element,key,value,check)
-	local key = tostring(key)
-	local dgsType = dgsGetType(element)
-	if isElement(element) and dgsType then
-		if not dgsElementData[element] then
-			dgsElementData[element] = {}
-		end
-		local oldValue = dgsElementData[element][key]
-		dgsElementData[element][key] = value
-		if not check then
-			if dgsType == "dgs-dxscrollbar" then
-				if key == "length" then
-					local w,h = dgsGetSize(element,false)
-					local voh = dgsElementData[element]["voh"]
-					if (value[2] and value[1]*(voh and w-h*2 or h-w*2) or value[1]) < 20 then
-						dgsElementData[element][""..key..""] = {10,false}
-					end
-				elseif key == "position" then
-					if oldValue and oldValue ~= value then
-						triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
-					end
-				end
-			elseif (dgsType == "dgs-dxgridlist" or dgsType == "dgs-dxscrollpane") then
-				if key == "scrollBarThick" then
-					assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
-					local scrollbars = dgsElementData[element]["scrollbars"]
-					local size = dgsElementData[element]["absSize"]
-					dgsSetPosition(scrollbars[1],size[1]-value,0,false)
-					dgsSetSize(scrollbars[1],value,size[2]-value,false)
-					dgsSetPosition(scrollbars[2],0,size[2]-value,false)
-					dgsSetSize(scrollbars[2],size[1]-value,value,false)
-					if dgsType == "dgs-dxgridlist" then
-						configGridList(element)
-					else
-						configScrollPane(element)
-					end
-				elseif key == "columnHeight" and dgsType == "dgs-dxgridlist" then
-					configGridList(element)
-				elseif key == "mode" and dgsType == "dgs-dxgridlist" then
-					configGridList(element)
-				elseif key == "rowData" and dgsType == "dgs-dxgridlist" then
-					if dgsElementData[element].autoSort then
-						dgsElementData[element].nextRenderSort = true
-					end
-				end
-			elseif dgsType == "dgs-dxcombobox" then
-				if key == "scrollBarThick" then
-					assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
-					local scrollbar = dgsElementData[element]["scrollbar"]
-					configComboBox_Box(dgsElementData[element].myBox)
-				elseif key == "listState" then
-					triggerEvent("onDgsComboBoxStateChange",element,value == 1 and true or false)
-				end
-			elseif dgsType == "dgs-dxtabpanel" then
-				if key == "selected" then
-					local old,new = oldValue,value
-					local tabs = dgsElementData[element]["tabs"]
-					triggerEvent("onDgsTabPanelTabSelect",element,new,old,tabs[new],tabs[old])
-				elseif key == "tabsidesize" then
-					local width = dgsElementData[element]["absSize"][1]
-					local change = value[2] and value[1]*width or value[1]
-					local old = oldValue[2] and oldValue[1]*width or oldValue[1]
-					local tabs = dgsElementData[element]["tabs"]
-					local allleng = dgsElementData[element]["allleng"]+(change-old)*#tabs*2
-					dgsSetData(element,"allleng",allleng)
-				elseif key == "tabgapsize" then
-					local width = dgsElementData[element]["absSize"][1]
-					local change = value[2] and value[1]*width or value[1]
-					local old = oldValue[2] and oldValue[1]*width or oldValue[1]
-					local tabs = dgsElementData[element]["tabs"]
-					local allleng = dgsElementData[element]["allleng"]+(change-old)*math.max((#tabs-1),1)
-					dgsSetData(element,"allleng",allleng)
-				end
-			elseif dgsType == "dgs-dxtab" then
-				if key == "text" then
-					local absrltWidth = dgsElementData[element].absrltWidth
-					if absrltWidth[1] < 0 then
-						local tabpanel = dgsElementData[element].parent
-						local font = dgsElementData[tabpanel]["font"]
-						local wh = dgsElementData[tabpanel].absSize
-						local w,h = wh[1],wh[2]
-						local minwidth = dgsElementData[tabpanel]["tabminwidth"][2] and dgsElementData[tabpanel]["tabminwidth"][1]*w or dgsElementData[tabpanel]["tabminwidth"][1]
-						local maxwidth = dgsElementData[tabpanel]["tabmaxwidth"][2] and dgsElementData[tabpanel]["tabmaxwidth"][1]*w or dgsElementData[tabpanel]["tabmaxwidth"][1]
-						local textsizex = dgsElementData[element].textsize[1]
-						local wid = math.min(math.max(dxGetTextWidth(tostring(value),textsizex,font),minwidth),maxwidth)
-						dgsSetData(element,"width",wid)
-					end
-				elseif key == "width" then
-					local absrltWidth = dgsElementData[element].absrltWidth
-					if absrltWidth[1] < 0 then
-						local tabpanel = dgsElementData[element].parent
-						local allleng = dgsElementData[tabpanel]["allleng"]+(value-oldValue)
-						dgsSetData(tabpanel,"allleng",allleng)
-					end
-				elseif key == "absrltWidth" then
-					
-				end
-			elseif dgsType == "dgs-dxedit" then
-				if key == "maxLength" then
-					local value = tonumber(value)
-					local gedit = dgsElementData[element].edit
-					if value and isElement(gedit) then
-						return guiEditSetMaxLength(gedit,value)
-					else
-						return false
-					end
-				elseif key == "readOnly" then
-					local gedit = dgsElementData[element].edit
-					if isElement(gedit) then
-						return guiEditSetReadOnly(gedit,value and true or false)
-					else
-						return false
-					end
-				elseif key == "text" then
-					local maxLength = dgsElementData[element].maxLength
-					dgsElementData[element][key] = utf8.sub(value,0,maxLength)
-				end
-			elseif dgsType == "dgs-dxmemo" then
-				if key == "readOnly" then
-					local gmemo = dgsElementData[element].memo
-					if isElement(gmemo) then
-						return guiMemoSetReadOnly(gmemo,value and true or false)
-					else
-						return false
-					end
-				elseif key == "text" then
-					handleDxMemoText(element,value)
-				end
-			elseif dgsType == "dgs-dxprogressbar" then
-				if key == "progress" then
-					triggerEvent("onDgsProgressBarChange",element,value,oldValue)
-				end
-			end
-			if key == "text" then
-				triggerEvent("onDgsTextChange",element,value)
-			end
-			if key == "visible" and value == false then
-				for k,v in ipairs(getElementsByType("dgs-dxedit")) do
-					local parent = v
-					for i=1,500 do
-						if dgsElementType[parent] == "dgs-dxtab" then
-							parent = dgsElementData[parent].parent
-						else
-							parent = FatherTable[parent]
-						end
-						if parent then
-							if parent == element then
-								local edit = dgsElementData[v].edit
-								guiSetVisible(edit,false)
-								break
-							end
-						else
-							break
-						end
-					end
-				end
-				for k,v in ipairs(getElementsByType("dgs-dxmemo")) do
-					local parent = v
-					for i=1,500 do
-						if dgsElementType[parent] == "dgs-dxtab" then
-							parent = dgsElementData[parent].parent
-						else
-							parent = FatherTable[parent]
-						end
-						if parent then
-							if parent == element then
-								local memo = dgsElementData[v].memo
-								guiSetVisible(memo,false)
-								break
-							end
-						else
-							break
-						end
-					end
-				end
-			end
-		end
-		return true
-	end
-	return false
-end
-
-function table.find(tab,ke,num)
-	for k,v in pairs(tab) do
-		if num then
-			if v[num] == ke then
-				return k
-			end
-		else
-			if v == ke then
-				return k
-			end	
-		end
-	end
-	return false
-end
-
-function dgsIsDxElement(element)
-	if string.sub(dgsGetType(element) or "",1,6) == "dgs-dx" then
-		return true
-	end
-	return false
-end
 -----------------------------dx-GUI
 MouseData = {}
 MouseData.enter = false
@@ -387,34 +81,6 @@ MouseData.MemoTimer = setTimer(function()
 	end
 end,500,0)
 
-dgsType = {
-"dgs-dxbutton",
-"dgs-dxcmd",
-"dgs-dxedit",
-"dgs-dxmemo",
-"dgs-dxeda",
-"dgs-dxgridlist",
-"dgs-dximage",
-"dgs-dxradiobutton",
-"dgs-dxcheckbox",
-"dgs-dxlabel",
-"dgs-dxscrollbar",
-"dgs-dxscrollpane",
-"dgs-dxwindow",
-"dgs-dxprogressbar",
-"dgs-dxtabpanel",
-"dgs-dxtab",
-"dgs-dxcombobox",
-"dgs-dxcombobox-Box",
-}
-
-addCommandHandler("debugdgs",function()
-	DEBUG_MODE = not getElementData(localPlayer,"DGS-DEBUG")
-	setElementData(localPlayer,"DGS-DEBUG",DEBUG_MODE,false)
-end)
-
-DEBUG_MODE = getElementData(localPlayer,"DGS-DEBUG")
-
 function GUIRender()
 	local tk = getTickCount()
 	local mx,my = getCursorPosition()
@@ -436,8 +102,13 @@ function GUIRender()
 		local eleData = dgsData[v]
 		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
 	end
-	for i=1,#MaxFatherTable do
-		local v = MaxFatherTable[i]
+	for i=1,#CenterFatherTable do
+		local v = CenterFatherTable[i]
+		local eleData = dgsData[v]
+		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+	end
+	for i=1,#TopFatherTable do
+		local v = TopFatherTable[i]
 		local eleData = dgsData[v]
 		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
 	end
@@ -519,18 +190,6 @@ function GUIRender()
 		dxDrawText("Resource Elements("..ResCount.."):",300,sH*0.4+15)
 	end
 	MouseData.hit = false
-end
-
-function getColorAlpha(color)
-	return bitExtract(color,24,8)
-end
-
-function setColorAlpha(color,alpha)
-	return bitReplace(color,alpha,24,8)
-end
-
-function applyColorAlpha(color,alpha)
-	return bitReplace(color,bitExtract(color,24,8)*alpha,24,8)
 end
 
 function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
@@ -820,20 +479,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local image_f = eleData.image_f
-				local color_f = eleData.color_f
-				local image_t = eleData.image_t
-				local color_t = eleData.color_t
+				local image_f,image_t = eleData.image_f,eleData.image_t
+				local color_f,color_t = eleData.color_f,eleData.color_t
 				local rbParent = eleData.rbParent
 				local image,color
 				local _buttonSize = eleData.buttonsize
 				local buttonSize = _buttonSize[2] and _buttonSize[1]*h or _buttonSize[1]
 				if dgsElementData[rbParent].RadioButton == v then
-					image = image_t
-					color = color_t
+					image,color = image_t,color_t
 				else
-					image = image_f
-					color = color_f
+					image,color = image_f,color_f
 				end
 				local colorimgid = 1
 				if MouseData.enter == v then
@@ -919,24 +574,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local image_f = eleData.image_f
-				local color_f = eleData.color_f
-				local image_t = eleData.image_t
-				local color_t = eleData.color_t
-				local image_i = eleData.image_i
-				local color_i = eleData.color_i
+				local image_f,image_t,image_i = eleData.image_f,eleData.image_t,eleData.image_i
+				local color_f,color_t,color_i = eleData.color_f,eleData.color_t,eleData.color_i
 				local image,color
 				local _buttonSize = eleData.buttonsize
 				local buttonSize = _buttonSize[2] and _buttonSize[1]*h or _buttonSize[1]
 				if eleData.CheckBoxState == true then
-					image = image_t
-					color = color_t
+					image,color = image_t,color_t
 				elseif eleData.CheckBoxState == false then 
-					image = image_f
-					color = color_f
+					image,color = image_f,color_f
 				else
-					image = image_i
-					color = color_i
+					image,color = image_i,color_i
 				end
 				local colorimgid = 1
 				if MouseData.enter == v then
@@ -2134,6 +1782,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawRectangle(x+w-buttonLen,y,buttonLen,h,finalcolor,postgui)
 				end
 				local arrowColor = eleData.arrowColor
+				local arrowOutSideColor = eleData.arrowOutSideColor
 				local arrowWidth = eleData.arrowWidth
 				local arrowDistance = eleData.arrowDistance/2*buttonLen
 				local arrowHeight = eleData.arrowHeight/2*h
@@ -2152,9 +1801,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.arrowSettings then
 					dxSetShaderValue(shader,eleData.arrowSettings[1],eleData.arrowSettings[2]*eleData.listStateAnim)
 				end
-				dxSetShaderValue(shader,"_color",{1,1,1,galpha})
-				dxSetShaderValue(shader,"ocolor",{1,0,0,galpha})
-				dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,applyColorAlpha(arrowColor,galpha),postgui)
+				local r,g,b,a = fromcolor(arrowColor,true)
+				dxSetShaderValue(shader,"_color",{r/255,g/255,b/255,a/255*galpha})
+				local r,g,b,a = fromcolor(arrowOutSideColor,true)
+				dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*galpha})
+				dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,postgui)
 				if textbox then
 					local textSide = eleData.comboTextSide
 					local font = eleData.font or systemFont
@@ -2580,7 +2231,7 @@ function checkEditCursor(button,state)
 				if my < y+height then
 					local speed = dgsElementData[tabpanel]["scrollSpeed"][2] and dgsElementData[tabpanel]["scrollSpeed"][1] or dgsElementData[tabpanel]["scrollSpeed"][1]/width
 					local orgoff = dgsElementData[tabpanel]["taboffperc"]
-					orgoff = math.max(math.min(orgoff+scroll*speed,1),0)
+					orgoff = math.restrict(0,1,orgoff+scroll*speed)
 					dgsSetData(tabpanel,"taboffperc",orgoff)
 				end
 			end
@@ -2910,17 +2561,9 @@ addEventHandler("onClientGUIBlur",resourceRoot,function()
 	end
 end)
 
-function scrollScrollBar(scrollbar,button)
-	local length,lrlt = unpack(dgsElementData[scrollbar].length)
-	local scrollMultiplier,rltPos = unpack(dgsElementData[scrollbar].scrollmultiplier)
-	local pos = dgsElementData[scrollbar].position
-	local offsetPos = (rltPos and scrollMultiplier*cursorRange*0.01 or scrollMultiplier)
-	local gpos = button and pos+offsetPos or pos-offsetPos
-	dgsSetData(scrollbar,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
-end
-
-addEventHandler("onDgsTextChange",root,function(text)
+addEventHandler("onDgsTextChange",root,function()
 	local gui = dgsElementData[source].edit
+	local text = dgsElementData[source].text
 	if isElement(gui) then
 		local gtext = guiGetText(gui)
 		if gtext ~= text then
@@ -2933,76 +2576,6 @@ addEventHandler("onDgsTextChange",root,function(text)
 				local history = dgsElementData[parent].cmdHistory
 				if history[hisid] ~= text then
 					dgsSetData(parent,"cmdCurrentHistory",0)
-				end
-			end
-		end
-	end
-end)
-addEventHandler("onClientGUIChanged",resourceRoot,function()
-	if not dgsElementData[source] then return end
-	local guitype = getElementType(source)
-	if guitype == "gui-edit" then
-		local myedit = dgsElementData[source].dxedit
-		if isElement(myedit) then
-			if source == dgsElementData[myedit].edit then
-				MouseData.editCursor = true
-				resetTimer(MouseData.EditTimer)
-				local text_old = dgsElementData[myedit].text
-				local text_new = guiGetText(source)
-				local whiteListText = string.gsub(text_new,dgsElementData[myedit].whiteList or "","")
-				if whiteListText ~= text_new then
-					guiSetText(source,whiteListText)
-					return
-				end
-				local prepos = dgsElementData[myedit].cursorpos
-				local prefrom = dgsElementData[myedit].selectfrom
-				local presele = prefrom-prepos
-				local offset = presele > 0 and 1 or utf8.len(text_new)-utf8.len(text_old)
-				dgsSetData(myedit,"text",text_new)
-				local pos = dgsElementData[myedit].cursorpos
-				local from = dgsElementData[myedit].selectfrom
-				local sele = from-pos
-				if getKeyState("delete") then
-					if sele ~= 0 then
-						if sele > 0 then
-							dgsEditSetCaretPosition(myedit,from-sele)
-						else
-							dgsEditSetCaretPosition(myedit,from)
-						end
-					end
-				elseif getKeyState("backspace") then
-					if sele == 0 then
-						dgsEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
-					else
-						if sele > 0 then
-							dgsEditSetCaretPosition(myedit,pos)
-						else
-							dgsEditSetCaretPosition(myedit,pos+utf8.len(text_new)-utf8.len(text_old))
-						end
-					end
-				else
-					dgsEditSetCaretPosition(myedit,pos+offset)
-				end
-				local pos = dgsElementData[myedit].cursorpos
-				if pos > utf8.len(text_new) then
-					dgsEditSetCaretPosition(myedit,utf8.len(text_new))
-				end
-			end
-		end
-	elseif guitype == "gui-memo" then
-		local mymemo = dgsElementData[source].dxmemo
-		if isElement(mymemo) then
-			if source == dgsElementData[mymemo].memo then
-				local text = guiGetText(source)
-				local cool = dgsElementData[mymemo].CoolTime
-				if #text ~= 0 and not cool then
-					local cursorposXY = dgsElementData[mymemo].cursorposXY
-					local selectfrom = dgsElementData[mymemo].selectfrom
-					dgsMemoDeleteText(mymemo,cursorposXY[1],cursorposXY[2],selectfrom[1],selectfrom[2])
-					handleDxMemoText(mymemo,utf8.sub(text,1,utf8.len(text)-1),true)
-					dgsElementData[mymemo].CoolTime = true
-					guiSetText(source,"")
-					dgsElementData[mymemo].CoolTime = false
 				end
 			end
 		end
@@ -3314,6 +2887,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 				triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 			elseif guitype == "dgs-dxtab" then
 				local tabpanel = dgsElementData[source].parent
+				dgsBringToFront(tabpanel)
 				if dgsElementData[tabpanel]["preSelect"] ~= -1 then
 					dgsSetData(tabpanel,"selected",dgsElementData[tabpanel]["preSelect"])
 				end
@@ -3407,9 +2981,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 		local parent = dgsGetParent(source)
 		if not isElement(parent) then
-			local id = table.find(MaxFatherTable,source)
+			local id = table.find(CenterFatherTable,source)
 			if id then
-				table.remove(MaxFatherTable,id)
+				table.remove(CenterFatherTable,id)
 			end
 			local id = table.find(BottomFatherTable,source)
 			if id then
@@ -3588,14 +3162,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 	end
 end)
 
-function simulationClick(guiele,button)
-	local x,y = dgsGetPosition(guiele,false)
-	local sx,sy = dgsGetSize(guiele,false)
-	local x,y = x+sx*0.5,y+sy*0.5
-	triggerEvent("onDgsMouseClick",guiele,button,"down",x,y)
-	triggerEvent("onDgsMouseClick",guiele,button,"up",x,y)
-end
-
 addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	local parent = dgsGetParent(source)
 	if isElement(parent) then
@@ -3671,32 +3237,4 @@ addEventHandler("onDgsSizeChange",root,function()
 	end
 end)
 
-function dgsGetMouseEnterGUI()
-	return MouseData.enter
-end
-
-function dgsGetMouseLeaveGUI()
-	return MouseData.lastEnter
-end
-
-function dgsGetMouseClickGUI(button)
-	if button == "left" then
-		return MouseData.clickl
-	elseif button == "middle" then
-		return MouseData.clickm
-	else
-		return MouseData.clickr
-	end
-end
-
-function dgsGetFocusedGUI()
-	return MouseData.nowShow
-end
-
 dgsElementData[resourceRoot] = {}
-
-function dgsRunString(func,...)
-	local fnc = loadstring(func)
-	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
-	return fnc(...)
-end

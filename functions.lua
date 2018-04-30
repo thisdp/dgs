@@ -131,84 +131,6 @@ function dgsSetSize(gui,x,y,bool)
 	return false,"not a dx-gui"
 end
 
-function dgsSetProperty(dxgui,key,value,...)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	if key == "functions" then
-		local fnc = loadstring(value)
-		assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
-		value = {fnc,{...}}
-	elseif key == "textcolor" then
-		if not tonumber(value) then
-			assert(false,"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
-		end
-	elseif key == "text" then
-		local dgsType = dgsGetType(dxgui)
-		if dgsType == "dgs-dxmemo" then
-			return handleDxMemoText(dxgui,value)
-		end
-	end
-	return dgsSetData(dxgui,tostring(key),value)
-end
-
-function dgsSetProperties(dxgui,theTable,additionArg)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	assert(type(theTable)=="table","Bad argument @dgsSetProperties at argument 2, expect a table got "..type(theTable))
-	assert((additionArg and type(additionArg)=="table") or additionArg == nil,"Bad argument @dgsSetProperties at argument 3, expect a table or nil/none got "..type(additionArg))
-	local success = true
-	local dgsType = dgsGetType(dxgui)
-	for key,value in pairs(theTable) do
-		local skip = false
-		if key == "functions" then
-			value = {loadstring(value),additionArg.functions or {}}
-		elseif key == "textcolor" then
-			if not tonumber(value) then
-				assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
-			end
-		elseif key == "text" then
-			if dgsType == "dgs-dxtab" then
-				local tabpanel = dgsElementData[dxgui]["parent"]
-				local font = dgsElementData[tabpanel]["font"]
-				local wid = min(max(dxGetTextWidth(value,dgsElementData[dxgui]["textsize"][1],font),dgsElementData[tabpanel]["tabminwidth"]),dgsElementData[tabpanel]["tabmaxwidth"])
-				local owid = dgsElementData[tab]["width"]
-				dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel]["allleng"]-owid+wid)
-				dgsSetData(dxgui,"width",wid)
-			elseif dgsType == "dgs-dxmemo" then
-				success = success and handleDxMemoText(dxgui,value)
-				skip = true
-			end
-		end
-		if not skip then
-			success = success and dgsSetData(dxgui,tostring(key),value)
-		end
-	end
-	return success
-end
-
-function dgsGetProperty(dxgui,key)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	if dgsElementData[dxgui] then
-		return dgsElementData[dxgui][key]
-	end
-	return false
-end
-
-function dgsGetProperties(dxgui,properties)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	assert(not properties or type(properties) == "table","Bad argument @dgsGetProperties at argument 2, expect none or table got "..type(properties))
-	if dgsElementData[dxgui] then
-		if not properties then
-			return dgsElementData[dxgui]
-		else
-			local data = {}
-			for k,v in ipairs(properties) do
-				data[v] = dgsElementData[dxgui][v]
-			end
-			return data
-		end
-	end
-	return false
-end
-
 function getType(thing)
 	if isElement(thing) then
 		return dgsGetType(thing)
@@ -252,90 +174,6 @@ end
 function dgsGetSide(dxgui,topleft)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsGetData(dxgui,topleft and "tob" or "lor")
-end
-
-function blurEditMemo()
-	local gui = guiCreateLabel(0,0,0,0,"",false)
-	guiBringToFront(gui)
-	destroyElement(gui)
-end
-
-lastFront = false
-function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	local parent = dgsGetParent(dxgui)
-	local mouse = mouse or "left"
-	if not dontChangeData then
-		local oldShow = MouseData.nowShow
-		MouseData.nowShow = dxgui
-		if dgsGetType(dxgui) == "dgs-dxedit" then
-			MouseData.editCursor = true
-			resetTimer(MouseData.EditTimer)
-			local edit = dgsElementData[dxgui].edit
-			guiBringToFront(edit)
-		elseif dxgui ~= oldShow then
-			local dgsType = dgsGetType(oldShow)
-			if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
-				blurEditMemo()
-			end
-		end
-		if isElement(oldShow) and dgsElementData[oldShow].clearSelection then
-			dgsSetData(oldShow,"selectfrom",dgsElementData[oldShow].cursorpos)
-		end
-	end
-	if not isElement(parent) then
-		local id = table.find(MaxFatherTable,dxgui)
-		if id then
-			table.remove(MaxFatherTable,id)
-			table.insert(MaxFatherTable,dxgui)
-		end
-	else
-		local parents = dxgui
-		while true do
-			local uparents = dgsGetParent(parents)
-			if isElement(uparents) then
-				local children = dgsGetChildren(uparents)
-				local id = table.find(children,parents)
-				if id then
-					table.remove(children,id)
-					table.insert(children,parents)
-					if dgsGetType(parents) == "dgs-dxscrollpane" then
-						local scrollbar = dgsGetData(parents,"scrollbars")
-						dgsBringToFront(scrollbar[1],"left",_,true)
-						dgsBringToFront(scrollbar[2],"left",_,true)
-					end
-				end
-				parents = uparents
-			else
-				local id = table.find(MaxFatherTable,parents)
-				if id then
-					table.remove(MaxFatherTable,id)
-					table.insert(MaxFatherTable,parents)
-					if dgsGetType(parents) == "dgs-dxscrollpane" then
-						local scrollbar = dgsGetData(parents,"scrollbars")
-						dgsBringToFront(scrollbar[1],"left",_,true)
-						dgsBringToFront(scrollbar[2],"left",_,true)
-					end
-				end
-				break
-			end
-			if dontMoveParent then
-				break
-			end
-		end
-	end
-	if isElement(lastFront) and lastFront ~= dxgui then
-		triggerEvent("onDgsBlur",lastFront,dxgui)
-	end
-	triggerEvent("onDgsFocus",dxgui,lastFront)
-	lastFront = dxgui
-	if mouse == "left" then
-		MouseData.clickl = dxgui
-		MouseData.clickData = nil
-	elseif mouse == "right" then
-		MouseData.clickr = dxgui
-	end
-	return true
 end
 
 function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
@@ -396,6 +234,14 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		end
 	end
 	return true
+end
+
+function simulationClick(dgsGUI,button)
+	local x,y = dgsGetPosition(dgsGUI,false)
+	local sx,sy = dgsGetSize(dgsGUI,false)
+	local x,y = x+sx*0.5,y+sy*0.5
+	triggerEvent("onDgsMouseClick",dgsGUI,button,"down",x,y)
+	triggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
 function dgsSetAlpha(dxgui,alpha)
@@ -467,6 +313,29 @@ function dgsSetShaderValue(...)
 	return dxSetShaderValue(...)
 end
 
+function dgsGetMouseEnterGUI()
+	return MouseData.enter
+end
+
+function dgsGetMouseLeaveGUI()
+	return MouseData.lastEnter
+end
+
+function dgsGetMouseClickGUI(button)
+	if button == "left" then
+		return MouseData.clickl
+	elseif button == "middle" then
+		return MouseData.clickm
+	else
+		return MouseData.clickr
+	end
+end
+
+function dgsGetFocusedGUI()
+	return MouseData.nowShow
+end
+
+------------Round Up Functions
 defaultRoundUpPoints = 3
 function dgsRoundUp(num,points)
 	if points then
