@@ -6,6 +6,7 @@
 	<file src="image/combobox/arrow.fx" />
 	<file src="image/eda/ellipse.fx" />
 	<file src="media.html" />
+	<file src="meta.xml" />
 
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -31,6 +32,7 @@
 	<script src="PropertyManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
 	<script src="TypeManager.lua" type="client" />
+	<script src="dgsExportedFunction.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
 	<script src="client.lua" type="client" />
@@ -121,10 +123,7 @@
 
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
-	<export function="dgsScrollPaneSetScrollPosition" type="client" />
-	<export function="dgsScrollPaneGetScrollPosition" type="client" />
-	<export function="dgsScrollPaneGetScrollBar" type="client" />
-	 
+	
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
 	<export function="dgsRadioButtonSetSelected" type="client" />
@@ -313,6 +312,10 @@
 	<export function="dgsCreateEDA" type="client" />
 	<export function="dgsEDASetDebugModeEnabled" type="client" />
 	<export function="dgsEDAGetDebugModeEnabled" type="client" />
+	
+	
+	<export function="dgsGetExportedFunctionName" type="client" />
+	<export function="dgsImportFunction" type="client" />
 	
 	
 	
