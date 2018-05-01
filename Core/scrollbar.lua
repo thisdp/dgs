@@ -28,13 +28,13 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,
 	return scrollbar
 end
 
-function dgsScrollBarSetScrollBarPosition(scrollbar,pos)
+function dgsScrollBarSetScrollPosition(scrollbar,pos)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsSetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	assert(type(pos) == "number","Bad argument @dgsSetScrollBarPosition at argument at 2, expect number got "..type(pos))
 	dgsSetData(scrollbar,"position",pos)
 end
 
-function dgsScrollBarGetScrollBarPosition(scrollbar)
+function dgsScrollBarGetScrollPosition(scrollbar)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsGetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	return dgsElementData[scrollbar].position
 end
