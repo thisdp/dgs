@@ -10,6 +10,17 @@ gdlt2 = dgsCreateImage(0,0,0.7,0.7,_,true,gdlt,tocolor(0,255,255,255))
 dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 
+function testLayer()
+	wind1 = dgsCreateWindow(100,100,200,200,"test1",false)
+	wind2 = dgsCreateWindow(200,100,200,200,"test2",false)
+	wind3 = dgsCreateWindow(300,100,200,200,"test3",false)
+	wind4 = dgsCreateWindow(400,100,200,200,"test4",false)
+	print(dgsGetLayer(wind1))
+	showCursor(true)
+	fadeCamera(true)
+end
+testLayer()
+
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
 	tab1 = dgsCreateTab("DGS",tabp)
@@ -19,7 +30,7 @@ function createTest2()
 	end
 	gdlt2 = dgsCreateButton(10,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
 end
-createTest2()
+
 function createTest3()
 	local rb1= dgsCreateRadioButton(500,500,200,30,"aaaa",false)
 	local rb2 = dgsCreateRadioButton(500,520,200,30,"bbbb",false)
@@ -81,7 +92,7 @@ function createTestMemo()
 	10]],false)
 	--dgsMemoSetReadOnly(memo,true)
 end
-createTestMemo()
+
 function editTest() --Test Tab Switch for edit.
 	edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	setTimer(function()

@@ -5,61 +5,63 @@ TopFatherTable = {}			--Store Top Father Element
 FatherTable = {}			--Store Father Element
 ChildrenTable = {}			--Store Children Element
 
-function dgsSetBottom(dgsGUI)
-	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsSetBottom at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
-	local arrange = dgsElementData[dgsGUI].alwaysOn
-	if arrange == "Bottom" then return false end
-	if arrange == "Top" then
-		local id = table.find(TopFatherTable,dgsGUI)
+LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
+
+function dgsSetLayer(dgsGUI,layer,forceDetatch)
+	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsSetLayer at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
+	if dgsElementType[dgsGUI] == "dgs-dxtab" then return false end
+	assert(layer == "center" or layer == "top" or layer == "bottom","Bad argument @dgsSetLayer at argument 2, expect a string(top/center/bottom) got "..dgsGetType(layer))
+	local hasParent = isElement(FatherTable[dgsGUI])
+	if hasParent and not forceDetatch then return false end
+	if hasParent then
+		local id = table.find(ChildrenTable[FatherTable[dgsGUI]],dgsGUI)
 		if id then
-			table.remove(TopFatherTable,id)
+			table.remove(ChildrenTable[FatherTable[dgsGUI]],id)
 		end
-	elseif not arrange then
-		local id = table.find(CenterFatherTable,dgsGUI)
-		if id then
-			table.remove(CenterFatherTable,id)
-		end
+		FatherTable[dgsGUI] = nil
 	end
-	dgsSetData(dgsGUI,"alwaysOn","Bottom")
-	table.insert(BottomFatherTable,dgsGUI)
+	local oldLayer = dgsElementData[dgsGUI].alwaysOn or "center"
+	if oldLayer == layer then return false end
+	local id = table.find(LayerCastTable[oldLayer],dgsGUI)
+	if id then
+		table.remove(LayerCastTable[oldLayer],id)
+	end
+	dgsSetData(dgsGUI,"alwaysOn",layer == "center" and false or layer)
+	table.insert(LayerCastTable[layer],dgsGUI)
+	return true
 end
 
-function dgsSetTop(dgsGUI)
-	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsSetTop at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
-	local arrange = dgsElementData[dgsGUI].alwaysOn
-	if arrange == "Top" then return false end
-	if arrange == "Bottom" then
-		local id = table.find(BottomFatherTable,dgsGUI)
-		if id then
-			table.remove(BottomFatherTable,id)
-		end
-	elseif not arrange then
-		local id = table.find(CenterFatherTable,dgsGUI)
-		if id then
-			table.remove(CenterFatherTable,id)
-		end
-	end
-	dgsSetData(dgsGUI,"alwaysOn","Bottom")
-	table.insert(TopFatherTable,dgsGUI)
+function dgsGetLayer(dgsGUI)
+	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsGetLayer at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
+	return dgsElementData[dgsGUI].alwaysOn or "center"
 end
 
-function dgsSetCenter(dgsGUI)
-	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsSetCenter at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
-	local arrange = dgsElementData[dgsGUI].alwaysOn
-	if not arrange then return false end
-	if arrange == "Bottom" then
-		local id = table.find(BottomFatherTable,dgsGUI)
-		if id then
-			table.remove(BottomFatherTable,id)
-		end
-	elseif arrange == "Top" then
-		local id = table.find(TopFatherTable,dgsGUI)
-		if id then
-			table.remove(TopFatherTable,id)
-		end
+function dgsSetCurrentLayerIndex(dgsGUI,index)
+	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsSetCurrentLayerIndex at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
+	assert(type(index) == "number" ,"Bad argument @dgsSetCurrentLayerIndex at argument 2, expect a number got "..dgsGetType(index))
+	local layer = dgsElementData[dgsGUI].alwaysOn or "center"
+	local hasParent = isElement(FatherTable[dgsGUI])
+	local theTable = hasParent and ChildrenTable[FatherTable[dgsGUI]] or LayerCastTable[layer]
+	local index = math.restrict(1,#theTable+1,index)
+	local id = table.find(theTable,dgsGUI)
+	if id then
+		table.remove(theTable,id)
 	end
-	dgsSetData(dgsGUI,"alwaysOn",false)
-	table.insert(CenterFatherTable,dgsGUI)
+	table.insert(theTable,index,dgsGUI)
+	return true
+end
+
+function dgsGetCurrentLayerIndex(dgsGUI)
+	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsGetCurrentLayerIndex at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
+	local layer = dgsElementData[dgsGUI].alwaysOn or "center"
+	local hasParent = isElement(FatherTable[dgsGUI])
+	local theTable = hasParent and ChildrenTable[FatherTable[dgsGUI]] or LayerCastTable[layer]
+	return table.find(theTable,dgsGUI) or false
+end
+
+function dgsGetLayerElements(layer)
+	assert(layer == "center" or layer == "top" or layer == "bottom","Bad argument @dgsGetLayerElements at argument 1, expect a string(top/center/bottom) got "..dgsGetType(layer))
+	return #LayerCastTable[layer] or false
 end
 
 function dgsGetChild(parent,id)

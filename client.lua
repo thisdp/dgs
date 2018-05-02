@@ -82,10 +82,10 @@ MouseData.MemoTimer = setTimer(function()
 end,500,0)
 
 function GUIRender()
-  local bottomTableSize = #BottomFatherTable
-  local centerTableSize = #CenterFatherTable
-  local topTableSize = #TopFatherTable
-  if bottomTableSize == 0 and centerTableSize == 0 and topTableSize == 0 then return end
+	local bottomTableSize = #BottomFatherTable
+	local centerTableSize = #CenterFatherTable
+	local topTableSize = #TopFatherTable
+	if bottomTableSize == 0 and centerTableSize == 0 and topTableSize == 0 then return end
 	local tk = getTickCount()
 	local mx,my = getCursorPosition()
 	mx,my = (mx or -1)*sW,(my or -1)*sH
@@ -2999,6 +2999,11 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				table.remove(ChildrenTable[parent] or {},id)
 			end
 		end
+		dgsStopAniming(source)
+		dgsStopMoving(source)
+		dgsStopSizing(source)
+		dgsStopAlphaing(source)
+		dgsElementData[source] = nil
 	end
 end)
 
