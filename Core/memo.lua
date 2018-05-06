@@ -645,13 +645,13 @@ function syncScrollBars(memo,which)
 		local fontHeight = dxGetFontHeight(dgsElementData[memo].textsize[2],font)
 		local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
 		local new = (#text-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(#text-canHold)
-		dgsScrollBarSetScrollBarPosition(scrollbars[1],new)
+		dgsScrollBarSetScrollPosition(scrollbars[1],new)
 	end
 	if which == 2 or not which then
 		local len = dgsElementData[memo].rightLength[1]
 		local canHold = math.floor(len-size[1]+scbTakes1+2)/100
 		local new = -dgsElementData[memo].showPos/canHold
-		dgsScrollBarSetScrollBarPosition(scrollbars[2],new)
+		dgsScrollBarSetScrollPosition(scrollbars[2],new)
 	end
 end
 
@@ -662,10 +662,10 @@ function dgsMemoSetScrollPosition(memo,vertical,horizontal)
 	local scb = dgsElementData[memo].scrollbars
 	local state1,state2 = true,true
 	if dgsElementData[scb[1]].visible then
-		state1 = dgsScrollBarSetScrollBarPosition(scb[1],vertical)
+		state1 = dgsScrollBarSetScrollPosition(scb[1],vertical)
 	end
 	if dgsElementData[scb[2]].visible then
-		state2 = dgsScrollBarSetScrollBarPosition(scb[2],horizontal)
+		state2 = dgsScrollBarSetScrollPosition(scb[2],horizontal)
 	end
 	return state1 and state2
 end
@@ -673,7 +673,7 @@ end
 function dgsMemoGetScrollPosition(memo)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	local scb = dgsElementData[memo].scrollbars
-	return dgsScrollBarGetScrollBarPosition(scb[1]),dgsScrollBarGetScrollBarPosition(scb[2])
+	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
 end
 
 addEventHandler("onClientGUIChanged",resourceRoot,function()

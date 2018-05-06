@@ -958,10 +958,10 @@ function dgsGridListResetScrollBarPosition(gridlist,vertical,horizontal)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListResetScrollBarPosition at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local scrollbars = dgsElementData[gridlist].scrollbars
 	if not vertical then
-		dgsScrollBarSetScrollBarPosition(scrollbars[1],0)
+		dgsScrollBarSetScrollPosition(scrollbars[1],0)
 	end
 	if not horizontal then
-		dgsScrollBarSetScrollBarPosition(scrollbars[2],0)
+		dgsScrollBarSetScrollPosition(scrollbars[2],0)
 	end
 	return true
 end
@@ -978,10 +978,10 @@ function dgsGridListSetScrollPosition(gridlist,vertical,horizontal)
 	local scb = dgsElementData[gridlist].scrollbars
 	local state1,state2 = true,true
 	if dgsElementData[scb[1]].visible then
-		state1 = dgsScrollBarSetScrollBarPosition(scb[1],vertical)
+		state1 = dgsScrollBarSetScrollPosition(scb[1],vertical)
 	end
 	if dgsElementData[scb[2]].visible then
-		state2 = dgsScrollBarSetScrollBarPosition(scb[2],horizontal)
+		state2 = dgsScrollBarSetScrollPosition(scb[2],horizontal)
 	end
 	return state1 and state2
 end
@@ -989,5 +989,5 @@ end
 function dgsGridListGetScrollPosition(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local scb = dgsElementData[gridlist].scrollbars
-	return dgsScrollBarGetScrollBarPosition(scb[1]),dgsScrollBarGetScrollBarPosition(scb[2])
+	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
 end

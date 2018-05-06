@@ -227,10 +227,10 @@ function dgsScrollPaneSetScrollPosition(scrollpane,vertical,horizontal)
 	local scb = dgsElementData[scrollpane].scrollbars
 	local state1,state2 = true,true
 	if dgsElementData[scb[1]].visible then
-		state1 = dgsScrollBarSetScrollBarPosition(scb[1],vertical)
+		state1 = dgsScrollBarSetScrollPosition(scb[1],vertical)
 	end
 	if dgsElementData[scb[2]].visible then
-		state2 = dgsScrollBarSetScrollBarPosition(scb[2],horizontal)
+		state2 = dgsScrollBarSetScrollPosition(scb[2],horizontal)
 	end
 	return state1 and state2
 end
@@ -238,5 +238,5 @@ end
 function dgsScrollPaneGetScrollPosition(scrollpane)
 	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetScrollPosition at at argument 1, expect dgs-dxscrollpane got "..dgsGetType(scrollpane))
 	local scb = dgsElementData[scrollpane].scrollbars
-	return dgsScrollBarGetScrollBarPosition(scb[1]),dgsScrollBarGetScrollBarPosition(scb[2])
+	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
 end

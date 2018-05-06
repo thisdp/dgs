@@ -305,7 +305,7 @@ function dgsComboBoxSetScrollPosition(combobox,vertical)
 	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsComboBoxSetScrollPosition at at argument 2, expect nil, none or number∈[0,100] got "..dgsGetType(vertical).."("..tostring(vertical)..")")
 	local scb = dgsElementData[combobox].scrollbar
 	if dgsElementData[scb].visible then
-		return dgsScrollBarSetScrollBarPosition(scb,vertical)
+		return dgsScrollBarSetScrollPosition(scb,vertical)
 	end
 	return true
 end
@@ -313,5 +313,5 @@ end
 function dgsComboBoxGetScrollPosition(combobox)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetScrollPosition at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	local scb = dgsElementData[combobox].scrollbar
-	return dgsScrollBarGetScrollBarPosition(scb)
+	return dgsScrollBarGetScrollPosition(scb)
 end
