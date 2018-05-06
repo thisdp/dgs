@@ -184,12 +184,14 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 	local titleOffset = 0
 	if isElement(parent) then
 		if dgsGetType(parent) == "dgs-dxtab" then
-			local tabpanel = dgsElementData[parent]["parent"]
-			psx,psy = unpack(dgsElementData[tabpanel].absSize)
-			local height = dgsElementData[tabpanel]["tabheight"][2] and dgsElementData[tabpanel]["tabheight"][1]*psx or dgsElementData[tabpanel]["tabheight"][1]
+			local tabpanel = dgsElementData[parent].parent
+			local size = dgsElementData[tabpanel].absSize
+			psx,psy = size[1],size[2]
+			local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*psx or dgsElementData[tabpanel].tabheight[1]
 			psy = psy-height
 		else
-			psx,psy = unpack(dgsElementData[parent].absSize)
+			local size = dgsElementData[parent].absSize
+			psx,psy = size[1],size[2]
 		end
 		if dgsElementData[gui].ignoreParentTitle or dgsElementData[parent].ignoreTitleSize then
 			titleOffset = 0
@@ -198,8 +200,10 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		end
 	end
 	if x and y then
-		local oldPosAbsx,oldPosAbsy = unpack(dgsElementData[gui].absPos or {})
-		local oldPosRltx,oldPosRlty = unpack(dgsElementData[gui].rltPos or {})
+		local absPos = dgsElementData[gui].absPos or {}
+		local oldPosAbsx,oldPosAbsy = absPos[1],absPos[2]
+		local rltPos = dgsElementData[gui].rltPos or {}
+		local oldPosRltx,oldPosRlty = rltPos[1],rltPos[2]
 		x,y = relativep and x*psx or x,relativep and y*(psy-titleOffset) or y
 		local abx,aby,relatx,relaty = x,y+titleOffset,x/psx,y/(psy-titleOffset)
 		if psx == 0 then
@@ -216,8 +220,10 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		end
 	end
 	if sx and sy then
-		local oldSizeAbsx,oldSizeAbsy = unpack(dgsElementData[gui].absSize or {})
-		local oldSizeRltx,oldSizeRlty = unpack(dgsElementData[gui].rltSize or {})
+		local absSize = dgsElementData[gui].absSize or {}
+		local oldSizeAbsx,oldSizeAbsy = absSize[1],absSize[2]
+		local rltSize = dgsElementData[gui].rltSize or {}
+		local oldSizeRltx,oldSizeRlty = rltSize[1],rltSize[2]
 		sx,sy = relatives and sx*psx or sx,relatives and sy*(psy-titleOffset) or sy
 		local absx,absy,relatsx,relatsy = sx,sy,sx/psx,sy/(psy-titleOffset)
 		if psx == 0 then
@@ -234,14 +240,6 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		end
 	end
 	return true
-end
-
-function simulationClick(dgsGUI,button)
-	local x,y = dgsGetPosition(dgsGUI,false)
-	local sx,sy = dgsGetSize(dgsGUI,false)
-	local x,y = x+sx*0.5,y+sy*0.5
-	triggerEvent("onDgsMouseClick",dgsGUI,button,"down",x,y)
-	triggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
 function dgsSetAlpha(dxgui,alpha)
@@ -311,6 +309,14 @@ end
 
 function dgsSetShaderValue(...)
 	return dxSetShaderValue(...)
+end
+
+function simulationClick(dgsGUI,button)
+	local x,y = dgsGetPosition(dgsGUI,false)
+	local sx,sy = dgsGetSize(dgsGUI,false)
+	local x,y = x+sx*0.5,y+sy*0.5
+	triggerEvent("onDgsMouseClick",dgsGUI,button,"down",x,y)
+	triggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
 function dgsGetMouseEnterGUI()
@@ -384,3 +390,71 @@ addEventHandler("onDgsPreCreate",root,function()
 	dgsSetData(source,"disabledColor",schemeColor.disabledColor)
 	dgsSetData(source,"disabledColorPercent",schemeColor.disabledColorPercent)
 end)
+
+function dgsClear(theType,res)
+	if res == true then
+		if not theType then
+			for theRes,guiTable in pairs(resourceDxGUI) do
+				for k,v in pairs(guiTable) do
+					local ele = v
+					guiTable[k] = ""
+					if isElement(ele) then
+						destroyElement(ele)
+					end
+				end
+				resourceDxGUI[theRes] = nil
+			end
+			return true
+		else
+			for theRes,guiTable in pairs(resourceDxGUI) do
+				local rubbishRecycle = {}
+				local cnt = 1
+				for k,v in pairs(guiTable) do
+					local ele = v
+					if dgsElementType[v] == theType then
+						rubbishRecycle[cnt] = v
+						cnt = cnt+1
+						if isElement(ele) then
+							destroyElement(ele)
+						end
+					end
+				end
+				for k,v in ipairs(rubbishRecycle) do
+					resourceDxGUI[theRes][v] = nil
+				end
+			end
+			return true
+		end
+	else
+		local res = res or sourceResource
+		if not theType then
+			for k,v in pairs(resourceDxGUI[res]) do
+				local ele = v
+				resourceDxGUI[res][k] = ""
+				if isElement(ele) then
+					destroyElement(ele)
+				end
+			end
+			resourceDxGUI[res] = nil
+			return true
+		else
+			local rubbishRecycle = {}
+			local cnt = 1
+			for k,v in pairs(resourceDxGUI[res]) do
+				local ele = v
+				if dgsElementType[v] == theType then
+					rubbishRecycle[cnt] = v
+					cnt = cnt+1
+					if isElement(ele) then
+						destroyElement(ele)
+					end
+				end
+			end
+			for k,v in ipairs(rubbishRecycle) do
+				resourceDxGUI[res][v] = nil
+			end
+			return true
+		end
+	end
+	return false
+end

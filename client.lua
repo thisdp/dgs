@@ -732,16 +732,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local showPos = eleData.showPos
 					dxSetRenderTarget(renderTarget,true)
 					local sideWhite = eleData.sideWhite
-					local tlen,thei = sideWhite[1]-sideWhite[1]%1,sideWhite[2]-sideWhite[2]%1
+					local sidelength,sideheight = sideWhite[1]-sideWhite[1]%1,sideWhite[2]-sideWhite[2]%1
 					local selectRectOffset = 0
 					if eleData.center then
 						selectRectOffset = dxGetTextWidth(text,txtSizX,font)
-						selectRectOffset = w/2-tlen/2-showPos/2
+						selectRectOffset = w/2-sidelength/2-showPos/2
 					end
 					if selx ~= 0 then
 						local caretHeight = eleData.caretHeight
-						local selStartY = thei+(h-thei*2)*(1-caretHeight)
-						local selEndY = (h-thei*2)*caretHeight-thei-selStartY
+						local selStartY = sideheight+(h-sideheight*2)*(1-caretHeight)
+						local selEndY = (h-sideheight*2)*caretHeight-sideheight
 						dxDrawRectangle(width+showPos+selectRectOffset,selStartY,selx,selEndY,selectcolor)
 					end
 					dxDrawText(text,showPos,0,w,h,textcolor,txtSizX,txtSizY,font,eleData.center and "center" or "left","center",false,false,false,false)
@@ -765,7 +765,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					else
 						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 					end
-					local px,py,pw,ph = x+tlen,y+thei,w-tlen*2,h-thei*2
+					local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					
 					if MouseData.nowShow == v and MouseData.editCursor then
@@ -776,12 +776,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						if CaretShow then
 							local caretHeight = eleData.caretHeight
 							local cursorStyle = eleData.cursorStyle
-							local selStartX = x+width+showPos+tlen
+							local selStartX = x+width+showPos+sidelength
 							if cursorStyle == 0 then
 								if -showPos <= width then
-									local selStartY = y+thei+(h-thei*2)*(1-caretHeight)
-									local selEndY = y+(h-thei*2)*caretHeight-thei
-									dxDrawLine(selStartX,selStartY,selStartX,selEndY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
+									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
+									local selEndY = (h-sideheight*2)*caretHeight
+									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 								end
 							elseif cursorStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(text,cursorPos+1,cursorPos+1),txtSizX,font)
@@ -790,7 +790,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								end
 								if -showPos-cursorWidth <= width then
 									local offset = eleData.cursorOffset
-									local selStartY = y+h-thei*2
+									local selStartY = y+h-sideheight*2
 									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 								end
 							end

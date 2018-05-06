@@ -96,9 +96,11 @@
 	<export function="dgsSetSide" type="client" />
 	<export function="dgsGetAlpha" type="client" />
 	<export function="dgsSetAlpha" type="client" />
-	<export function="dgsSetBottom" type="client" />
-	<export function="dgsSetCenter" type="client" />
-	<export function="dgsSetTop" type="client" />
+	<export function="dgsSetLayer" type="client" />
+	<export function="dgsGetLayer" type="client" />
+	<export function="dgsSetCurrentLayerIndex" type="client" />
+	<export function="dgsGetCurrentLayerIndex" type="client" />
+	<export function="dgsGetLayerElements" type="client" />
 	<export function="dgsGetFont" type="client" />
 	<export function="dgsSetFont" type="client" />
 	<export function="dgsGetText" type="client" />
@@ -113,6 +115,7 @@
 	<export function="dgsRoundUp" type="client" />
 	<export function="dgsSetRoundUpPoints" type="client" />
 	<export function="dgsGetRoundUpPoints" type="client" />
+	<export function="dgsClear" type="client" />
 
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
@@ -250,8 +253,6 @@
 	<export function="dgsDeleteTab" type="client" />
 	
 	<export function="dgsCreateScrollBar" type="client" />
-	<export function="dgsScrollBarSetScrollBarPosition" type="client" />
-	<export function="dgsScrollBarGetScrollBarPosition" type="client" />
 	<export function="dgsScrollBarSetScrollPosition" type="client" />
 	<export function="dgsScrollBarGetScrollPosition" type="client" />
 

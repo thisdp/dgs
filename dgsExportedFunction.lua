@@ -2,6 +2,40 @@ dgsExportedFunctionName = {}
 dgsResName = getResourceName(getThisResource())
 local metafile = xmlLoadFile("meta.xml")
 local nodes = xmlNodeGetChildren(metafile)
+
+local dgsHead = [[
+if not dgsImportHead then
+	local getResourceRootElement = getResourceRootElement
+	local call = call
+	local getResourceFromName = getResourceFromName
+	local tostring = tostring
+	local outputDebugString = outputDebugString
+	local DGSCallMT = {}
+	dgsImportHead = {}
+	dgsImportHead.dgsName = "]]..dgsResName..[["
+	dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
+
+	function DGSCallMT:__index(k)
+		if type(k) ~= 'string' then k = tostring(k) end
+		self[k] = function(...)
+			assert(dgsImportHead,"DGS is not running")
+			if type(dgsImportHead.dgsResource) == 'userdata' and getResourceRootElement(dgsImportHead.dgsResource) then
+				return call(dgsImportHead.dgsResource, k, ...)
+			else
+				dgsImportHead = nil
+				return nil
+			end
+		end
+		return self[k]
+	end
+	DGS = setmetatable({}, DGSCallMT)
+	
+	function unloadDGSFunction()
+		
+	end
+end
+]]
+
 for k,v in ipairs(nodes) do
 	if xmlNodeGetName(v) == "export" then
 		local func = xmlNodeGetAttribute(v,"function")
@@ -22,14 +56,14 @@ end
 
 function dgsImportFunction(name,nameAs)
 	if not name then
-		local allCode = ""
+		local allCode = dgsHead
 		for k,v in pairs(dgsExportedFunctionName) do
-			allCode = allCode.."\n "..k.." = exports."..dgsResName.."."..k..";"
+			allCode = allCode.."\n "..k.." = DGS."..k..";"
 		end
 		return allCode
 	else
 		assert(dgsExportedFunctionName[name],"Bad Argument @dgsImportFunction at argument 1, the function is undefined")
 		nameAs = nameAs or name
-		return nameAs.." = exports."..dgsResName.."."..name..";"
+		return nameAs.." = DGS."..name..";"
 	end
 end
