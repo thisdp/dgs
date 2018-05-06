@@ -4,6 +4,8 @@ This is a dxGUI library for [Multi Theft Auto: San Andreas](https://mtasa.com/) 
 
 **MTA:SA Forum Topic:** https://forum.mtasa.com/topic/95964-releasethisdps-dx-gui-system/
 
+**Discord Topic:** https://discord.gg/QEs8q6W
+
 All function names refer simiularly to the original MTA:SA ones. This library uses a strong property system that can freshen up your user interfaces and provides a high level of customization.
 
 *(Sorry for the bad design of the default style though you are free to adjust everything in the colorScheme file.)*
