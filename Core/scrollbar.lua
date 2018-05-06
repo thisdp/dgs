@@ -5,6 +5,10 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollBar at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
+	assert(type(x) == "number","Bad argument @dgsCreateScrollBar at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateScrollBar at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateScrollBar at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy))
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
 	dgsSetData(scrollbar,"imgs",{img1 or scrollBarSettings.arrow,imgcursor,imgmid})
@@ -23,6 +27,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,
 		table.insert(CenterFatherTable,scrollbar)
 	end
 	triggerEvent("onDgsPreCreate",scrollbar)
+	print("xxx",sx,sy)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar)
 	return scrollbar

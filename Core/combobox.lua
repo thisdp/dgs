@@ -279,7 +279,7 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 	if dgsGetType(parent) == "dgs-dxcombobox-Box" then
 		local combobox = dgsElementData[parent].myCombo
 		local scrollBar = dgsElementData[combobox].scrollbar
-		local sx,sy = unpack(dgsElementData[parent].absSize)
+		local sx,sy = dgsElementData[parent].absSize[1],dgsElementData[parent].absSize[2]
 		if source == scrollBar then
 			local itemLength = #dgsElementData[combobox].itemData*dgsElementData[combobox].itemHeight
 			local temp = -new*(itemLength-sy)/100
