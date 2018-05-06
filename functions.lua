@@ -120,7 +120,8 @@ end
 
 function dgsGetSize(gui,bool)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsGetSize at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
-	return unpack(dgsElementData[gui][bool and "rltSize" or "absSize"])
+	local size = dgsElementData[gui][bool and "rltSize" or "absSize"]
+	return size[1],size[2]
 end
 
 function dgsSetSize(gui,x,y,bool)
@@ -180,7 +181,8 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 	local parent = dgsGetParent(gui)
 	local px,py = 0,0
 	local psx,psy = sW,sH
-	local oldRelativePos,oldRelativeSize = unpack(dgsElementData[gui].relative or {relativep,relatives})
+	local relt = dgsElementData[gui].relative or {relativep,relatives}
+	local oldRelativePos,oldRelativeSize = relt[1],relt[2]
 	local titleOffset = 0
 	if isElement(parent) then
 		if dgsGetType(parent) == "dgs-dxtab" then
@@ -220,6 +222,7 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		end
 	end
 	if sx and sy then
+		print(sx,sy)
 		local absSize = dgsElementData[gui].absSize or {}
 		local oldSizeAbsx,oldSizeAbsy = absSize[1],absSize[2]
 		local rltSize = dgsElementData[gui].rltSize or {}

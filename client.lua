@@ -334,7 +334,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local tplt = eleData.rightbottom
 					local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
 					if eleData.PixelInt then
-						x,y,w,h = math.floor(x),math.floor(y),math.floor(w),math.floor(h)
+						x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 					end
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
@@ -549,7 +549,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
  				local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
 				local px = x+buttonSize+textImageSpace
 				if eleData.PixelInt then
-					px,y,w,h = math.floor(px),math.floor(y),math.floor(w),math.floor(h)
+					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
 				end
 				if shadowoffx and shadowoffy and shadowc then
 					shadowc = applyColorAlpha(shadowc,galpha)
@@ -645,7 +645,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
  				local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
 				local px = x+buttonSize+textImageSpace
 				if eleData.PixelInt then
-					px,y,w,h = math.floor(px),math.floor(y),math.floor(w),math.floor(h)
+					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
 				end
 				if shadowoffx and shadowoffy and shadowc then
 					shadowc = applyColorAlpha(shadowc,galpha)
@@ -1042,7 +1042,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				------------------------------------
 				if eleData.PixelInt then
-					x,y,w,h = math.floor(x),math.floor(y),math.floor(w),math.floor(h)
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
 				dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
 				------------------------------------
@@ -1234,7 +1234,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local colorcoded = eleData.colorcoded
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
 				if eleData.PixelInt then
-					x,y,w,h = math.floor(x),math.floor(y),math.floor(w),math.floor(h)
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
 				if shadowoffx and shadowoffy and shadowc then
 					shadowc = applyColorAlpha(shadowc,galpha)
@@ -1974,26 +1974,26 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				if selected == -1 then
-					dxDrawRectangle(x,y+height,w,h-height,eleData["defbackground"],not DEBUG_MODE)
+					dxDrawRectangle(x,y+height,w,h-height,eleData.defbackground,not DEBUG_MODE)
 				else
-					local rendt = eleData["renderTarget"]
+					local rendt = eleData.renderTarget
 					if isElement(rendt) then
 						dxSetRenderTarget(rendt,true)
-						local tabsidesize = eleData["tabsidesize"][2] and eleData["tabsidesize"][1]*w or eleData["tabsidesize"][1]
-						local tabsize = -eleData["taboffperc"]*(eleData["allleng"]-w)
-						local gap = eleData["tabgapsize"][2] and eleData["tabgapsize"][1]*w or eleData["tabgapsize"][1]
+						local tabsidesize = eleData.tabsidesize[2] and eleData.tabsidesize[1]*w or eleData.tabsidesize[1]
+						local tabsize = -eleData.taboffperc*(eleData.allleng-w)
+						local gap = eleData.tabgapsize[2] and eleData.tabgapsize[1]*w or eleData.tabgapsize[1]
 						if eleData.PixelInt then
-							x,y,w,height = math.floor(x),math.floor(y),math.floor(w),math.floor(height)
+							x,y,w,height = x-x%1,y-y%1,w-w%1,height-height%1
 						end
 						for d,t in ipairs(tabs) do
-							local width = dgsElementData[t]["width"]+tabsidesize*2
+							local width = dgsElementData[t].width+tabsidesize*2
 							local _width = 0
 							if tabs[d+1] then
-								_width = dgsElementData[tabs[d+1]]["width"]+tabsidesize*2
+								_width = dgsElementData[tabs[d+1]].width+tabsidesize*2
 							end
 							if tabsize+width >= 0 and tabsize <= w then
-								local tabimg = dgsElementData[t]["tabimg"]
-								local tabcolor = dgsElementData[t]["tabcolor"]
+								local tabimg = dgsElementData[t].tabimg
+								local tabcolor = dgsElementData[t].tabcolor
 								local selectstate = 1
 								if selected == d then
 									selectstate = 3
@@ -2019,11 +2019,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								else
 									dxDrawRectangle(tabsize,0,width,height,finalcolor)
 								end
-								local textsize = dgsElementData[t]["textsize"]
+								local textsize = dgsElementData[t].textsize
 								if eleData.PixelInt then
-									_tabsize,_width = math.floor(tabsize),math.floor(width+tabsize)
+									_tabsize,_width = tabsize-tabsize%1,math.floor(width+tabsize)
 								end
-								dxDrawText(dgsElementData[t]["text"],_tabsize,0,_width,height,dgsElementData[t]["textcolor"],textsize[1],textsize[2],font,"center","center",false,false,false,colorcoded,true)
+								dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textcolor,textsize[1],textsize[2],font,"center","center",false,false,false,colorcoded,true)
 								if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and dgsElementData[t].enabled and enabled[2] then
 									eleData.rndPreSelect = d
 									MouseData.hit = t
@@ -2034,9 +2034,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						eleData.preSelect = -1
 						dxSetRenderTarget()
 						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),not DEBUG_MODE)
-						local colors = applyColorAlpha(dgsElementData[tabs[selected]]["bgcolor"],galpha)
-						if dgsElementData[tabs[selected]]["bgimg"] then
-							dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]]["bgimg"],0,0,0,colors,not DEBUG_MODE)
+						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgcolor,galpha)
+						if dgsElementData[tabs[selected]].bgimg then
+							dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgimg,0,0,0,colors,not DEBUG_MODE)
 						else
 							dxDrawRectangle(x,y+height,w,h-height,colors,not DEBUG_MODE)
 						end
@@ -2174,8 +2174,8 @@ function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)
 		local py,psy = 0,sH
 		if hasParent then
 			if P_dgsType == "dgs-dxtab" then
-				local tabpanel = dgsElementData[parent]["parent"]
-				local height = dgsElementData[tabpanel]["tabheight"][2] and dgsElementData[tabpanel]["tabheight"][1]*psx or dgsElementData[tabpanel]["tabheight"][1]
+				local tabpanel = dgsElementData[parent].parent
+				local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*psx or dgsElementData[tabpanel].tabheight[1]
 				psy = dgsElementData[tabpanel].absSize[2]-height
 				py = dgsElementData[parent].absPos[2]+height
 			else
@@ -2225,16 +2225,16 @@ function checkEditCursor(button,state)
 			if dgsType == "dgs-dxtab" then
 				tabpanel = dgsElementData[MouseData.enter].parent
 			end
-			local width = dgsElementData[tabpanel]["allleng"]
-			local w,h = dgsElementData[tabpanel]["absSize"][1],dgsElementData[tabpanel]["absSize"][2]
+			local width = dgsElementData[tabpanel].allleng
+			local w,h = dgsElementData[tabpanel].absSize[1],dgsElementData[tabpanel].absSize[2]
 			if width > w then
 				local mx,my = getCursorPosition()
 				mx,my = (mx or -1)*sW,(my or -1)*sH
-				local y = dgsElementData[tabpanel]["absPos"][2]
-				local height = dgsElementData[tabpanel]["tabheight"][2] and dgsElementData[tabpanel]["tabheight"][1]*h or dgsElementData[tabpanel]["tabheight"][1]
+				local y = dgsElementData[tabpanel].absPos[2]
+				local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*h or dgsElementData[tabpanel].tabheight[1]
 				if my < y+height then
-					local speed = dgsElementData[tabpanel]["scrollSpeed"][2] and dgsElementData[tabpanel]["scrollSpeed"][1] or dgsElementData[tabpanel]["scrollSpeed"][1]/width
-					local orgoff = dgsElementData[tabpanel]["taboffperc"]
+					local speed = dgsElementData[tabpanel].scrollSpeed[2] and dgsElementData[tabpanel].scrollSpeed[1] or dgsElementData[tabpanel].scrollSpeed[1]/width
+					local orgoff = dgsElementData[tabpanel].taboffperc
 					orgoff = math.restrict(0,1,orgoff+scroll*speed)
 					dgsSetData(tabpanel,"taboffperc",orgoff)
 				end
@@ -2637,8 +2637,8 @@ function dgsCheckHit(hits,mx,my)
 				siz[2] = siz[2]*relat[2]
 				local endr = pos[1] + siz[1]
 				local endd = pos[2] + siz[2]
-				local maxSizeX,maxSizeY = unpack(dgsElementData[MouseData.clickl].maxSize)
-				local minSizeX,minSizeY = unpack(dgsElementData[MouseData.clickl].minSize)
+				--local maxSizeX,maxSizeY = dgsElementData[MouseData.clickl].maxSize[1],dgsElementData[MouseData.clickl].maxSize[2]
+				local minSizeX,minSizeY = dgsElementData[MouseData.clickl].minSize[1],dgsElementData[MouseData.clickl].minSize[2]
 				if MouseData.Scale[5] == 1 then
 					local old = pos[1]
 					siz[1] = (siz[1]-(mx-MouseData.Scale[1]-old))
@@ -2718,7 +2718,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 				local w,h = dgsGetSize(source,false)
 				local voh = dgsElementData[source].voh
 				local pos = dgsElementData[source].position
-				local length,lrlt = unpack(dgsElementData[source].length)
+				local length,lrlt = dgsElementData[source].length[1],dgsElementData[source].length[2]
 				local slotRange
 				local arrowPos = 0
 				if voh then
@@ -2738,7 +2738,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 				end
 				if scrollArrow then
 					if MouseData.clickData == 1 then
-						local moveMultiplier,rltPos = unpack(dgsElementData[source].multiplier)
+						local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
 						local movePos = dgsElementData[source].position
 						local gpos = movePos-(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
 						dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
@@ -2748,7 +2748,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 									if not isTimer(MouseData.Timer[source]) then
 										MouseData.Timer[source] = setTimer(function(source)
 											if MouseData.clickData == 1 then
-												local moveMultiplier,rltPos = unpack(dgsElementData[source].multiplier)
+												local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
 												local movePos = dgsElementData[source].position
 												local gpos = movePos-(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
 												dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
@@ -2762,7 +2762,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 						end
 					end
 					if MouseData.clickData == 4 then
-						local moveMultiplier,rltPos = unpack(dgsElementData[source].multiplier)
+						local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
 						local movePos = dgsElementData[source].position
 						local gpos = movePos+(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
 						dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
@@ -2772,7 +2772,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 									if not isTimer(MouseData.Timer[source]) then
 										MouseData.Timer[source] = setTimer(function(source)
 											if MouseData.clickData == 4 then
-												local moveMultiplier,rltPos = unpack(dgsElementData[source].multiplier)
+												local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
 												local movePos = dgsElementData[source].position
 												local gpos = movePos+(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
 												dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
@@ -3010,12 +3010,12 @@ end)
 function checkMove()
 	local mx,my = getCursorPosition()
 	mx,my = (mx or -1)*sW,(my or -1)*sH
-	local x,y = unpack(dgsElementData[source].absPos)
+	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local offsetx,offsety = mx-x,my-y
 	if dgsGetType(source) == "dgs-dxwindow" then
 		local movable = dgsElementData[source].movable
 		if not movable then return end
-		local sx,sy = unpack(dgsElementData[source].absSize)
+		local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 		local titsize = dgsElementData[source].movetyp and sy or dgsElementData[source].titlesize
 		if offsety > titsize then return end
 	end
@@ -3025,7 +3025,7 @@ end
 function checkScrollBar(py,sd)
 	local mx,my = getCursorPosition()
 	mx,my = (mx or -1)*sW,(my or -1)*sH
-	local x,y = unpack(dgsElementData[source].absPos)
+	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local offsetx,offsety = mx-x,my-y
 	MouseData.Move = {sd and offsetx-py or offsetx,sd and offsety or offsety-py}
 end
@@ -3033,8 +3033,8 @@ end
 function checkScale()
 	local mx,my = getCursorPosition()
 	mx,my = (mx or -1)*sW,(my or -1)*sH
-	local x,y = unpack(dgsElementData[source].absPos)
-	local w,h = unpack(dgsElementData[source].absSize)
+	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
+	local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	local offsets = {mx-x,my-y,mx-x-w,my-y-h}
 	local left
 	local right
@@ -3178,8 +3178,8 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 			local abspos = dgsElementData[source].absPos
 			local abssize = dgsElementData[source].absSize
 			if abspos and abssize then
-				local x,y = unpack(abspos)
-				local sx,sy = unpack(abssize)
+				local x,y = abspos[1],abspos[2]
+				local sx,sy = abssize[1],abssize[2]
 				local maxSize = dgsElementData[parent].maxChildSize
 				local ntempx,ntempy
 				if maxSize[1] <= sx then
@@ -3203,10 +3203,11 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 		end
 	end
 	for k,v in ipairs(ChildrenTable[source] or {}) do
-		local relativePos,relativeSize = unpack(dgsElementData[v].relative)
+		local relt = dgsElementData[v].relative
+		local relativePos,relativeSize = relt[1],relt[2]
 		local x,y
 		if relativePos then
-			x,y = unpack(dgsElementData[v].rltPos)
+			x,y = dgsElementData[v].rltPos[1],dgsElementData[v].rltPos[2]
 		end
 		calculateGuiPositionSize(v,x,y,relativePos)
 	end
@@ -3214,13 +3215,14 @@ end)
 
 addEventHandler("onDgsSizeChange",root,function()
 	for k,v in ipairs(ChildrenTable[source] or {}) do
-		local relativePos,relativeSize = unpack(dgsElementData[v].relative)
+		local relt = dgsElementData[v].relative
+		local relativePos,relativeSize = relt[1],relt[2]
 		local x,y,sx,sy
 		if relativePos then
-			x,y = unpack(dgsElementData[v].rltPos)
+			x,y = dgsElementData[v].rltPos[1],dgsElementData[v].rltPos[2]
 		end
 		if relativeSize then
-			sx,sy = unpack(dgsElementData[v].rltSize)
+			sx,sy = dgsElementData[v].rltSize[1],dgsElementData[v].rltSize[2]
 		end
 		calculateGuiPositionSize(v,x,y,relativePos,sx,sy,relativeSize)
 	end

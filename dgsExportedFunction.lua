@@ -4,6 +4,8 @@ local metafile = xmlLoadFile("meta.xml")
 local nodes = xmlNodeGetChildren(metafile)
 
 local dgsHead = [[
+--Check Error Message Above
+
 if not dgsImportHead then
 	local getResourceRootElement = getResourceRootElement
 	local call = call

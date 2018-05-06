@@ -150,19 +150,38 @@ function dgsSetData(element,key,value,check)
 end
 
 function dgsSetProperty(dxgui,key,value,...)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	if key == "functions" then
-		local fnc = loadstring(value)
-		assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
-		value = {fnc,{...}}
-	elseif key == "textcolor" then
-		assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
-	elseif key == "text" then
-		if dgsElementType[dxgui] == "dgs-dxmemo" then
-			return handleDxMemoText(dxgui,value)
+	local isTable = type(dxgui) == "table"
+	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
+	if isTable then
+		for k,v in ipairs(dxgui) do
+			if key == "functions" then
+				local fnc = loadstring(value)
+				assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
+				value = {fnc,{...}}
+			elseif key == "textcolor" then
+				assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
+			elseif key == "text" then
+				if dgsElementType[v] == "dgs-dxmemo" then
+					return handleDxMemoText(v,value)
+				end
+			end
+			dgsSetData(dxgui,tostring(v),value)
 		end
+		return true
+	else
+		if key == "functions" then
+			local fnc = loadstring(value)
+			assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
+			value = {fnc,{...}}
+		elseif key == "textcolor" then
+			assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
+		elseif key == "text" then
+			if dgsElementType[dxgui] == "dgs-dxmemo" then
+				return handleDxMemoText(dxgui,value)
+			end
+		end
+		return dgsSetData(dxgui,tostring(key),value)
 	end
-	return dgsSetData(dxgui,tostring(key),value)
 end
 
 function dgsGetProperty(dxgui,key)
@@ -172,37 +191,71 @@ function dgsGetProperty(dxgui,key)
 end
 
 function dgsSetProperties(dxgui,theTable,additionArg)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	local isTable = type(dxgui) == "table"
+	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	assert(type(theTable)=="table","Bad argument @dgsSetProperties at argument 2, expect a table got "..type(theTable))
 	assert((additionArg and type(additionArg)=="table") or additionArg == nil,"Bad argument @dgsSetProperties at argument 3, expect a table or nil/none got "..type(additionArg))
-	local success = true
-	local dgsType = dgsElementType[dxgui]
-	for key,value in pairs(theTable) do
-		local skip = false
-		if key == "functions" then
-			value = {loadstring(value),additionArg.functions or {}}
-		elseif key == "textcolor" then
-			if not tonumber(value) then
-				assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
-			end
-		elseif key == "text" then
-			if dgsType == "dgs-dxtab" then
-				local tabpanel = dgsElementData[dxgui].parent
-				local minW,maxW = dgsElementData[tabpanel].tabminwidth,dgsElementData[tabpanel].tabmaxwidth
-				local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[dxgui].textsize[1],dgsElementData[tabpanel].font))
-				local owid = dgsElementData[tab].width
-				dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
-				dgsSetData(dxgui,"width",wid)
-			elseif dgsType == "dgs-dxmemo" then
-				success = success and handleDxMemoText(dxgui,value)
-				skip = true
+	if isTable then
+		local success = true
+		for k,v in ipairs(dxgui) do
+			local dgsType = dgsElementType[v]
+			for key,value in pairs(theTable) do
+				local skip = false
+				if key == "functions" then
+					value = {loadstring(value),additionArg.functions or {}}
+				elseif key == "textcolor" then
+					if not tonumber(value) then
+						assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
+					end
+				elseif key == "text" then
+					if dgsType == "dgs-dxtab" then
+						local tabpanel = dgsElementData[v].parent
+						local minW,maxW = dgsElementData[tabpanel].tabminwidth,dgsElementData[tabpanel].tabmaxwidth
+						local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[v].textsize[1],dgsElementData[tabpanel].font))
+						local owid = dgsElementData[tab].width
+						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
+						dgsSetData(v,"width",wid)
+					elseif dgsType == "dgs-dxmemo" then
+						success = success and handleDxMemoText(v,value)
+						skip = true
+					end
+				end
+				if not skip then
+					success = success and dgsSetData(v,tostring(key),value)
+				end
 			end
 		end
-		if not skip then
-			success = success and dgsSetData(dxgui,tostring(key),value)
+		return success
+	else
+		local success = true
+		local dgsType = dgsElementType[dxgui]
+		for key,value in pairs(theTable) do
+			local skip = false
+			if key == "functions" then
+				value = {loadstring(value),additionArg.functions or {}}
+			elseif key == "textcolor" then
+				if not tonumber(value) then
+					assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
+				end
+			elseif key == "text" then
+				if dgsType == "dgs-dxtab" then
+					local tabpanel = dgsElementData[dxgui].parent
+					local minW,maxW = dgsElementData[tabpanel].tabminwidth,dgsElementData[tabpanel].tabmaxwidth
+					local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[dxgui].textsize[1],dgsElementData[tabpanel].font))
+					local owid = dgsElementData[tab].width
+					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
+					dgsSetData(dxgui,"width",wid)
+				elseif dgsType == "dgs-dxmemo" then
+					success = success and handleDxMemoText(dxgui,value)
+					skip = true
+				end
+			end
+			if not skip then
+				success = success and dgsSetData(dxgui,tostring(key),value)
+			end
 		end
+		return success
 	end
-	return success
 end
 
 function dgsGetProperties(dxgui,properties)
