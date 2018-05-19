@@ -131,7 +131,7 @@ function centerEdit()
 	edit = dgsCreateEdit(100,300,300,100,"Test",false)
 	--dgsSetProperty(edit,"center",true)
 end
-centerEdit()
+
 
 function mediaTest()
 	local media = dgsCreateMedia(600,600)
@@ -207,7 +207,6 @@ function Plugin_media()
 	dgsMediaPlay(bro)
 end
 
-requestBrowserDomains({"www.baidu.com"})
 function testBrowser()
 	local browser = dgsCreateBrowser(200,200,400,400,false,_,false,true)
 	
@@ -216,4 +215,3 @@ function testBrowser()
 		loadBrowserURL(browser,"http://www.baidu.com")
 	end)
 end
-testBrowser()
