@@ -65,7 +65,6 @@ function dgsCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scalex
 	local shader = dxCreateShader("image/combobox/arrow.fx")
 	dgsSetData(combobox,"arrow",shader)
 	insertResourceDxGUI(sourceResource,combobox)
-	triggerEvent("onDgsPreCreate",combobox)
 	calculateGuiPositionSize(combobox,x,y,relative or false,sx,sy,relative or false,true)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
 	dgsSetData(combobox,"myBox",box)

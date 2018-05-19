@@ -10,17 +10,6 @@ gdlt2 = dgsCreateImage(0,0,0.7,0.7,_,true,gdlt,tocolor(0,255,255,255))
 dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 
-function testLayer()
-	wind1 = dgsCreateWindow(100,100,200,200,"test1",false)
-	wind2 = dgsCreateWindow(200,100,200,200,"test2",false)
-	wind3 = dgsCreateWindow(300,100,200,200,"test3",false)
-	wind4 = dgsCreateWindow(400,100,200,200,"test4",false)
-	print(dgsGetLayer(wind1))
-	showCursor(true)
-	fadeCamera(true)
-end
-testLayer()
-
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
 	tab1 = dgsCreateTab("DGS",tabp)
@@ -104,6 +93,8 @@ function editTest() --Test Tab Switch for edit.
 	dgsEditSetReadOnly(edit4,true)
 	dgsBringToFront(edit,"left")
 	dgsEditSetCaretPosition (edit, 1)
+
+	dgsSetProperty(edit,"bgcolor",tocolor(255,255,255,0))
 end
 
 function editTest4()
@@ -137,10 +128,10 @@ function gridlistTest()
 end
 
 function centerEdit()
-	edit = dgsCreateEdit(300,300,300,100,"Test",false)
+	edit = dgsCreateEdit(100,300,300,100,"Test",false)
 	--dgsSetProperty(edit,"center",true)
 end
---centerEdit()
+centerEdit()
 
 function mediaTest()
 	local media = dgsCreateMedia(600,600)
@@ -215,3 +206,14 @@ function Plugin_media()
 	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
 	dgsMediaPlay(bro)
 end
+
+requestBrowserDomains({"www.baidu.com"})
+function testBrowser()
+	local browser = dgsCreateBrowser(200,200,400,400,false,_,false,true)
+	
+	addEventHandler("onClientBrowserCreated",browser,function()
+		
+		loadBrowserURL(browser,"http://www.baidu.com")
+	end)
+end
+testBrowser()

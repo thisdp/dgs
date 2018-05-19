@@ -64,7 +64,6 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scalex
 	dgsSetData(cb,"CheckBoxState",state)
 	dgsSetData(cb,"rightbottom",{"left","center"})
 	insertResourceDxGUI(sourceResource,cb)
-	triggerEvent("onDgsPreCreate",cb)
 	calculateGuiPositionSize(cb,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",cb)
 	return cb

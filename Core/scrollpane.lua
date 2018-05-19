@@ -10,18 +10,17 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true) or table.insert(CenterFatherTable,1,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	dgsSetData(scrollpane,"scrollBarThick",20,true)
-	triggerEvent("onDgsPreCreate",scrollpane)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
-	local sx,sy = unpack(dgsGetData(scrollpane,"absSize"))
-	local x,y = unpack(dgsGetData(scrollpane,"absPos"))
+	local sx,sy = dgsElementData[scrollpane].absSize
+	local x,y = dgsElementData[scrollpane].absPos
 	local renderTarget = dxCreateRenderTarget(sx,sy,true)
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	local scrbThick = 20
 	local titleOffset = 0
 	if isElement(parent) then
-		if dgsGetData(scrollpane,"withoutTitle") then
-			titleOffset = dgsGetData(parent,"titlesize") or 0
+		if dgsElementData[scrollpane].withoutTitle then
+			titleOffset = dgsElementData[parent].titlesize or 0
 		end
 	end
 	local scrollbar1 = dgsCreateScrollBar(x+sx-scrbThick,y-titleOffset,scrbThick,sy-scrbThick,false,false,parent)

@@ -24,13 +24,8 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgimg,bgcolor,barimg,bar
 	dgsSetData(progressbar,"udspace",{5,false})
 	dgsSetData(progressbar,"lrspace",{5,false})
 	dgsSetData(progressbar,"progress",0)
-	if isElement(parent) then
-		dgsSetParent(progressbar,parent)
-	else
-		table.insert(CenterFatherTable,progressbar)
-	end
+	local _ = dgsIsDxElement(parent) and dgsSetParent(progressbar,parent,true) or table.insert(CenterFatherTable,1,progressbar)
 	insertResourceDxGUI(sourceResource,progressbar)
-	triggerEvent("onDgsPreCreate",progressbar)
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(barimg) then

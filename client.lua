@@ -82,13 +82,11 @@ MouseData.MemoTimer = setTimer(function()
 end,500,0)
 
 function GUIRender()
+	MouseData.hit = false
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
 	local topTableSize = #TopFatherTable
-	if bottomTableSize == 0 and centerTableSize == 0 and topTableSize == 0 then return end
 	local tk = getTickCount()
-	local mx,my = getCursorPosition()
-	mx,my = (mx or -1)*sW,(my or -1)*sH
 	if not isCursorShowing() then
 		MouseData.Move = false
 		MouseData.clickData = false
@@ -100,35 +98,38 @@ function GUIRender()
 	end
 	MouseData.hit = false
 	DGSShow = 0
-	local dgsData = dgsElementData
-	for i=1,bottomTableSize do
-		local v = BottomFatherTable[i]
-		local eleData = dgsData[v]
-		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+	if bottomTableSize+centerTableSize+topTableSize ~= 0 then
+		local mx,my = getCursorPosition()
+		mx,my = (mx or -1)*sW,(my or -1)*sH
+		local dgsData = dgsElementData
+		for i=1,bottomTableSize do
+			local v = BottomFatherTable[i]
+			local eleData = dgsData[v]
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+		end
+		for i=1,centerTableSize do
+			local v = CenterFatherTable[i]
+			local eleData = dgsData[v]
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+		end
+		for i=1,topTableSize do
+			local v = TopFatherTable[i]
+			local eleData = dgsData[v]
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+		end
+		dxSetRenderTarget()
+		if not isCursorShowing() then
+			MouseData.hit = false
+			MouseData.Move = false
+			MouseData.clickData = false
+			MouseData.clickl = false
+			MouseData.clickr = false
+			MouseData.clickm = false
+			MouseData.Scale = false
+			MouseData.scrollPane = false
+		end
+		--triggerEvent("onDgsRender",root)
 	end
-	for i=1,centerTableSize do
-		local v = CenterFatherTable[i]
-		local eleData = dgsData[v]
-		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
-	end
-	for i=1,topTableSize do
-		local v = TopFatherTable[i]
-		local eleData = dgsData[v]
-		renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
-	end
-	dxSetRenderTarget()
-	if not isCursorShowing() then
-		MouseData.hit = false
-		MouseData.Move = false
-		MouseData.clickData = false
-		MouseData.clickl = false
-		MouseData.clickr = false
-		MouseData.clickm = false
-		MouseData.Scale = false
-		MouseData.scrollPane = false
-	end
-	dgsCheckHit(MouseData.hit,mx,my)
-	triggerEvent("onDgsRender",root)
 	if DEBUG_MODE then
 		local ticks = getTickCount()-tk
 		local version = getElementData(resourceRoot,"Version")
@@ -193,8 +194,12 @@ function GUIRender()
 		dxDrawText("Resource Elements("..ResCount.."):",301,sH*0.4+16,sW,sH,black)
 		dxDrawText("Resource Elements("..ResCount.."):",300,sH*0.4+15)
 	end
-	MouseData.hit = false
+	
 end
+
+addEventHandler("onClientCursorMove",root,function(_,_,mx,my)
+	dgsCheckHit(MouseData.hit,mx,my)
+end)
 
 function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 	if DEBUG_MODE then
@@ -333,9 +338,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					local tplt = eleData.rightbottom
 					local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
-					if eleData.PixelInt then
-						x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
-					end
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
 						dxDrawText(text,x+txtoffsetsX+shadowoffx,y+txtoffsetsY+shadowoffy,x+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
@@ -682,16 +684,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					destroyElement(v)
 					return
 				end
-				local _ = isMainMenuActive() and guiSetVisible(edit,false) or guiSetVisible(edit,true)
 				if MouseData.nowShow == v then
 					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 						MouseData.nowShow = false
 					end
 				end
-				guiSetPosition(edit,cx,cy,false)
-				guiSetSize(edit,w,h,false)
 				local text = eleData.text
-				local fnc = eleData.functions
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -745,6 +743,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawRectangle(width+showPos+selectRectOffset,selStartY,selx,selEndY,selectcolor)
 					end
 					dxDrawText(text,showPos,0,w,h,textcolor,txtSizX,txtSizY,font,eleData.center and "center" or "left","center",false,false,false,false)
+					if eleData.underline then
+						local textHeight = dxGetFontHeight(txtSizY,font)
+						local lineOffset = eleData.underlineOffset+h/2+textHeight/2
+						local lineWidth = eleData.underlineWidth
+						local textFontLen = eleData.textFontLen
+						dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textcolor,lineWidth)
+					end
 					dxSetRenderTarget(rndtgt)
 					local finalcolor
 					if not enabled[1] and not enabled[2] then
@@ -781,7 +786,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								if -showPos <= width then
 									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
 									local selEndY = (h-sideheight*2)*caretHeight
-									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
+									dxDrawLine(selStartX-1,selStartY,selStartX-1,selEndY+selStartY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 								end
 							elseif cursorStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(text,cursorPos+1,cursorPos+1),txtSizX,font)
@@ -834,14 +839,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if not isElement(memo) then
 					destroyElement(v)
 				end
-				local _ = isMainMenuActive() and guiSetVisible(memo,false) or guiSetVisible(memo,true)
 				if MouseData.nowShow == v then
 					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 						MouseData.nowShow = false
 					end
 				end
-				guiSetPosition(memo,cx,cy,false)
-				guiSetSize(memo,w,h,false)
 				local text = eleData.text
 				local allLine = #text
 				if MouseData.nowShow == v then
@@ -969,14 +971,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							if cursorStyle == 0 then
 								local selStartY = y+lineStart+1+fontHeight*(1-caretHeight)
 								local selEndY = y+lineStart+fontHeight*caretHeight-2
-								dxDrawLine(x+width+showPos+2,selStartY,x+width+showPos+2,selEndY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
+								dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 							elseif cursorStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 								if cursorWidth == 0 then
 									cursorWidth = txtSizX*8
 								end
 								local offset = eleData.cursorOffset
-								dxDrawLine(x+width+showPos+2,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
+								dxDrawLine(x+width+showPos+1,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 							end
 						end
 					end	
@@ -1041,9 +1043,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if eleData.PixelInt then
-					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
-				end
 				dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
 				------------------------------------
 				if not eleData.functionRunBefore then
@@ -1222,7 +1221,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local wordbreak = eleData.wordbreak
 				local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
 				local text = eleData.text
-				local fnc = eleData.functions
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -1233,9 +1231,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				------------------------------------
 				local colorcoded = eleData.colorcoded
 				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
-				if eleData.PixelInt then
-					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
-				end
 				if shadowoffx and shadowoffy and shadowc then
 					shadowc = applyColorAlpha(shadowc,galpha)
 					dxDrawText(colorcoded and text:gsub('#%x%x%x%x%x%x','') or text,x+shadowoffx,y+shadowoffy,x+w,y+h,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,false,true)
@@ -2056,6 +2051,38 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			else
 				visible = false
 			end
+		elseif dxType == "dgs-dxbrowser" then
+			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
+				local color = applyColorAlpha(eleData.color,galpha)
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						text = fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				dxDrawImage(x,y,w,h,v,0,0,0,color,not DEBUG_MODE)
+				if enabled[1] then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+						MouseData.hit = v
+					end
+				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+			else
+				visible = false
+			end
 		elseif dxType == "dgs-dxcmd" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
@@ -2614,10 +2641,12 @@ function dgsCheckHit(hits,mx,my)
 		local parent = dgsElementData[hits].parent
 		dgsElementData[parent].preSelect = dgsElementData[parent].rndPreSelect
 	end
-	if isElement(MouseData.clickl) then
+	if isElement(hits) then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
-			triggerEvent("onDgsCursorMove",MouseData.clickl,mx,my)
+			triggerEvent("onDgsCursorMove",hits,mx,my)
 		end
+	end
+	if isElement(MouseData.clickl) then
 		if MouseData.Move then
 			if dgsGetType(MouseData.clickl) == "dgs-dxwindow" then
 				local pos = dgsElementData[MouseData.clickl].absPos
@@ -3070,9 +3099,9 @@ GirdListDoubleClick.up = false
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
+		local gtype = dgsGetType(guiele)
 		if state == "down" then
 			if button == "left" then
-				local gtype = dgsGetType(guiele)
 				if gtype == "dgs-dxradiobutton" then
 					dgsRadioButtonSetSelected(guiele,true)
 				elseif gtype == "dgs-dxcheckbox" then
@@ -3080,6 +3109,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					dgsCheckBoxSetSelected(guiele,not state)
 				end
 			end
+		end
+		if gtype == "dgs-dxbrowser" then
+			dgsFocusBrowser(guiele)
+		else
+			dgsBlurBrowser()
 		end
 		triggerEvent("onDgsMouseClick",guiele,button,state,x,y)
 		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then

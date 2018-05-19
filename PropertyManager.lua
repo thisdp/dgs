@@ -4,13 +4,13 @@ function dgsGetData(element,key)
 	return dgsElementData[element] and dgsElementData[element][key] or false
 end
 
-function dgsSetData(element,key,value,check)
+function dgsSetData(element,key,value,nocheck)
 	local dgsType,key = dgsGetType(element),tostring(key)
 	if isElement(element) and dgsType then
 		dgsElementData[element] = dgsElementData[element] or {}
 		local oldValue = dgsElementData[element][key]
 		dgsElementData[element][key] = value
-		if not check then
+		if not nocheck then
 			if dgsType == "dgs-dxscrollbar" then
 				if key == "length" then
 					local w,h = dgsGetSize(element,false)
@@ -103,6 +103,13 @@ function dgsSetData(element,key,value,check)
 					return guiEditSetReadOnly(gedit,value and true or false)
 				elseif key == "text" then
 					dgsElementData[element].text = utf8.sub(value,0,dgsElementData[element].maxLength)
+					local txtSize = dgsElementData[element].textsize
+					dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,txtSize[1],dgsElementData[element].font)
+				elseif key == "textsize" then
+					dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,value[1],dgsElementData[element].font)
+				elseif key == "font" then
+					local txtSize = dgsElementData[element].textsize
+					dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,txtSize[1],dgsElementData[element].font)
 				end
 			elseif dgsType == "dgs-dxmemo" then
 				if key == "readOnly" then

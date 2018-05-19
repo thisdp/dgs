@@ -19,7 +19,6 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,s
 	dgsSetData(label,"rightbottom",{right or "left",bottom or "top"})
 	dgsSetData(label,"font",systemFont)
 	insertResourceDxGUI(sourceResource,label)
-	triggerEvent("onDgsPreCreate",label)
 	calculateGuiPositionSize(label,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",label)
 	return label

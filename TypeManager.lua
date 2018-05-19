@@ -18,6 +18,7 @@ dgsType = {
 	"dgs-dxtab",
 	"dgs-dxcombobox",
 	"dgs-dxcombobox-Box",
+	"dgs-dxbrowser",
 }
 
 function dgsGetType(dgsGUI)

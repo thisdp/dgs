@@ -1,4 +1,4 @@
-GlobalEditParent = guiCreateLabel(0,0,0,0,"",false)
+GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
 local editsCount = 1
 function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bgimage,bgcolor,selectmode)
 	assert(type(x) == "number","Bad argument @dgsCreateEdit at argument 1, expect number got "..type(x))
@@ -13,9 +13,10 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetData(edit,"bgimage",bgimage)
 	dgsSetData(edit,"bgcolor",bgcolor or schemeColor.edit.bgcolor)
+	dgsSetData(edit,"textsize",{scalex or 1, scaley or 1},true)
+	dgsSetData(edit,"font",systemFont,true)
 	dgsSetData(edit,"text",tostring(text) or "")
 	dgsSetData(edit,"textcolor",textcolor or schemeColor.edit.textcolor)
-	dgsSetData(edit,"textsize",{scalex or 1,scaley or 1})
 	dgsSetData(edit,"cursorpos",0)
 	dgsSetData(edit,"selectfrom",0)
 	dgsSetData(edit,"masked",false)
@@ -29,7 +30,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"readOnly",false)
 	dgsSetData(edit,"readOnlyCaretShow",false)
 	dgsSetData(edit,"clearSelection",true)
-	dgsSetData(edit,"font",systemFont)
 	dgsSetData(edit,"side",0)
 	dgsSetData(edit,"sidecolor",schemeColor.edit.sidecolor)
 	dgsSetData(edit,"enableTabSwitch",true)
@@ -37,7 +37,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"caretHeight",1)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
 	dgsSetData(edit,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
-	local gedit = guiCreateEdit(0,0,0,0,tostring(text) or "",false,GlobalEditParent)
+	local gedit = guiCreateEdit(0,0,0,0,tostring(text) or "",true,GlobalEditParent)
 	guiSetProperty(gedit,"ClippedByParent","False")
 	dgsSetData(edit,"edit",gedit)
 	dgsSetData(gedit,"dxedit",edit)
@@ -45,13 +45,8 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"maxLength",guiGetProperty(gedit,"MaxTextLength"))
 	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
 	editsCount = editsCount+1
-	if isElement(parent) then
-		dgsSetParent(edit,parent)
-	else
-		table.insert(CenterFatherTable,edit)
-	end
+	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true) or table.insert(CenterFatherTable,1,edit)
 	insertResourceDxGUI(sourceResource,edit)
-	triggerEvent("onDgsPreCreate",edit)
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",edit)
 	local sx,sy = dgsGetSize(edit,false)
@@ -99,8 +94,8 @@ function dgsEditMoveCaret(edit,offset,selectText)
 		startX = sx/2-alllen/2-showPos/2
 	end
 	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textsize[1],font)+startX
-	if nowLen+showPos > sx-sideWhite[1] then
-		dgsSetData(edit,"showPos",sx-sideWhite[1]-nowLen)
+	if nowLen+showPos > sx-sideWhite[1]*2 then
+		dgsSetData(edit,"showPos",sx-sideWhite[1]*2-nowLen)
 	elseif nowLen+showPos < 0 then
 		dgsSetData(edit,"showPos",-nowLen)
 	end
@@ -145,8 +140,8 @@ function dgsEditSetCaretPosition(edit,pos,selectText)
 		startX = sx/2-alllen/2-showPos/2
 	end
 	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textsize[1],font)+startX
-	if nowLen+showPos > sx-sideWhite[1] then
-		dgsSetData(edit,"showPos",sx-sideWhite[1]-nowLen)
+	if nowLen+showPos > sx-sideWhite[1]*2 then
+		dgsSetData(edit,"showPos",sx-sideWhite[1]*2-nowLen)
 	elseif nowLen+showPos < 0 then
 		dgsSetData(edit,"showPos",-nowLen)
 	end
@@ -210,9 +205,9 @@ end
 function configEdit(source)
 	local myedit = dgsElementData[source].edit
 	local x,y = unpack(dgsGetData(source,"absSize"))
-	guiSetSize(myedit,x,y,false)
 	local sideWhite = dgsElementData[source].sideWhite
-	local px,py = math.floor(x-sideWhite[1]*2), math.floor(y-sideWhite[2]*2)
+	local px,py = x-sideWhite[1]*2,y-sideWhite[2]*2
+	px,py = px-px%1,py-py%1
 	local renderTarget = dxCreateRenderTarget(px,py,true)
 	dgsSetData(source,"renderTarget",renderTarget)
 	local oldPos = dgsEditGetCaretPosition(source)

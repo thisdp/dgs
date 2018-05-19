@@ -20,13 +20,8 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	dgsSetData(image,"sideSize",0)
 	dgsSetData(image,"rotationCenter",{0,0}) --0~1
 	dgsSetData(image,"rotation",0) --0~360
-	if isElement(parent) then
-		dgsSetParent(image,parent)
-	else
-		table.insert(CenterFatherTable,image)
-	end
+	local _x = dgsIsDxElement(parent) and dgsSetParent(image,parent,true) or table.insert(CenterFatherTable,1,image)
 	insertResourceDxGUI(sourceResource,image)
-	triggerEvent("onDgsPreCreate",image)
 	calculateGuiPositionSize(image,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(texture) and not getElementType(texture) == "shader" then

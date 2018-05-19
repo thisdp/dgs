@@ -134,6 +134,11 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 			resetTimer(MouseData.EditTimer)
 			local edit = dgsElementData[dxgui].edit
 			guiBringToFront(edit)
+		elseif dgsElementType[dxgui] == "dgs-dxmemo" then
+			MouseData.editCursor = true
+			resetTimer(MouseData.MemoTimer)
+			local memo = dgsElementData[dxgui].memo
+			guiBringToFront(memo)
 		elseif dxgui ~= oldShow then
 			local dgsType = dgsGetType(oldShow)
 			if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then

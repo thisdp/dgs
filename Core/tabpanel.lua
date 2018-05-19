@@ -8,11 +8,7 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	assert(tonumber(sy),"Bad argument @dgsCreateTabPanel at argument 4, expect number got "..type(sy))
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
-	if isElement(parent) then
-		dgsSetParent(tabpanel,parent)
-	else
-		table.insert(CenterFatherTable,tabpanel)
-	end
+	local _ = dgsIsDxElement(parent) and dgsSetParent(tabpanel,parent,true) or table.insert(CenterFatherTable,1,tabpanel)
 	dgsSetData(tabpanel,"tabheight",{tabheight or 20,false})
 	dgsSetData(tabpanel,"tabmaxwidth",{10000,false})
 	dgsSetData(tabpanel,"tabminwidth",{10,false})
@@ -27,9 +23,8 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	dgsSetData(tabpanel,"taboffperc",0)
 	dgsSetData(tabpanel,"allleng",0)
 	insertResourceDxGUI(sourceResource,tabpanel)
-	triggerEvent("onDgsPreCreate",tabpanel)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
-	local abx,aby = unpack(dgsGetData(tabpanel,"absSize"))
+	local abx,aby = dgsElementData[tabpanel].absSize
 	local rendertarget = dxCreateRenderTarget(abx,tabheight or 20,true)
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
 	triggerEvent("onDgsCreate",tabpanel)

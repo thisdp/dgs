@@ -21,13 +21,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,
 	dgsSetData(scrollbar,"multiplier",{1,false})
 	dgsSetData(scrollbar,"scrollmultiplier",{5,false})
 	dgsSetData(scrollbar,"scrollArrow",true)
-	if isElement(parent) then
-		dgsSetParent(scrollbar,parent)
-	else
-		table.insert(CenterFatherTable,scrollbar)
-	end
-	triggerEvent("onDgsPreCreate",scrollbar)
-	print("xxx",sx,sy)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true) or table.insert(CenterFatherTable,1,scrollbar)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar)
 	return scrollbar

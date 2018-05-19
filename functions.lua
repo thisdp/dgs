@@ -140,13 +140,13 @@ function getType(thing)
 	end
 end
 
-function dgsGUIApplyVisible(parent,visible)
+function dgsApplyVisible(parent,visible)
 	for k,v in pairs(ChildrenTable[parent] or {}) do
 		if dgsElementType[v] == "dgs-dxedit" then
 			local edit = dgsElementData[v]["edit"]
 			guiSetVisible(edit,visible)
 		else
-			dgsGUIApplyVisible(v,visible)
+			dgsApplyVisible(v,visible)
 		end
 	end
 end
@@ -154,17 +154,17 @@ end
 function dgsSetVisible(dxgui,visible)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if dgsGetType(dxgui) == "dgs-dxedit" then
-		local edit = dgsGetData(dxgui,"edit")
+		local edit = dgsElementData[dxgui].edit
 		guiSetVisible(edit,visible)
 	else
-		dgsGUIApplyVisible(dxgui,false)
+		dgsApplyVisible(dxgui,false)
 	end
 	return dgsSetData(dxgui,"visible",visible and true or false)
 end
 
 function dgsGetVisible(dxgui)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsElementData[dxgui]["visible"]
+	return dgsElementData[dxgui].visible
 end
 
 function dgsSetSide(dxgui,side,topleft)
@@ -174,10 +174,11 @@ end
 
 function dgsGetSide(dxgui,topleft)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsGetData(dxgui,topleft and "tob" or "lor")
+	return dgsElementData[dxgui][topleft and "tob" or "lor"]
 end
 
 function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
+	dgsElementData[gui] = dgsElementData[gui] or {}
 	local parent = dgsGetParent(gui)
 	local px,py = 0,0
 	local psx,psy = sW,sH
@@ -222,7 +223,6 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		end
 	end
 	if sx and sy then
-		print(sx,sy)
 		local absSize = dgsElementData[gui].absSize or {}
 		local oldSizeAbsx,oldSizeAbsy = absSize[1],absSize[2]
 		local rltSize = dgsElementData[gui].rltSize or {}
@@ -379,7 +379,7 @@ function dgsSetRoundUpPoints(points)
 	return true
 end
 
-addEventHandler("onDgsPreCreate",root,function()
+addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"lor","left")
 	dgsSetData(source,"tob","top")
 	dgsSetData(source,"visible",true)

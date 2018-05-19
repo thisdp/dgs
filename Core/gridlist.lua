@@ -59,14 +59,10 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	dgsSetData(gridlist,"itemClick",{})
 	dgsSetData(gridlist,"selectedColumn",-1)
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
-	if isElement(parent) then
-		dgsSetParent(gridlist,parent)
-	else
-		table.insert(CenterFatherTable,gridlist)
-	end
-	triggerEvent("onDgsPreCreate",gridlist)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true) or table.insert(CenterFatherTable,1,gridlist)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
-	local abx,aby = unpack(dgsElementData[gridlist].absSize)
+	local aSize = dgsElementData[gridlist].absSize
+	local abx,aby = aSize[1],aSize[2]
 	local columnRender = dxCreateRenderTarget(abx,columnHeight or 20,true)
 	local rowRender = dxCreateRenderTarget(abx,aby-(columnHeight or 20)-20,true)
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
@@ -263,20 +259,22 @@ function dgsGridListAddColumn(gridlist,name,len,pos)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListAddColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(len) == "number","Bad argument @dgsGridListAddColumn at argument 2, expect number got "..dgsGetType(len))
 	local columnData = dgsElementData[gridlist].columnData
-	pos = tonumber(pos) or #columnData+1
-	if pos > #columnData+1 then
-		pos = #columnData+1
+	local columnDataCount = #columnData
+	pos = tonumber(pos) or columnDataCount+1
+	if pos > columnDataCount+1 then
+		pos = columnDataCount+1
 	end
-	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local aSize = dgsElementData[gridlist].absSize
+	local sx,sy = aSize[1],aSize[2]
 	local scrollBarThick = dgsElementData[gridlist].scrollBarThick
 	local multiplier = dgsElementData[gridlist].columnRelative and sx-scrollBarThick or 1
 	local oldLen = 0
-	if #columnData > 0 then
-		oldLen = columnData[#columnData][3]+columnData[#columnData][2]
+	if columnDataCount > 0 then
+		oldLen = columnData[columnDataCount][3]+columnData[columnDataCount][2]
 	end
 	table.insert(columnData,pos,{name,len,oldLen})
 
-	for i=pos+1,#columnData do
+	for i=pos+1,columnDataCount+1 do
 		columnData[i] = {columnData[i][1],columnData[i][2],dgsGridListGetColumnAllLength(gridlist,i-1)}
 	end
 	dgsSetData(gridlist,"columnData",columnData)
@@ -454,7 +452,8 @@ function dgsGridListAddRow(gridlist,row,...)
 	end
 	table.insert(rowData,row,rowTable)
  	local scrollbars = dgsElementData[gridlist].scrollbars
-	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local aSize = dgsElementData[gridlist].absSize
+	local sx,sy = aSize[1],aSize[2]
 	local scbThick = dgsElementData[gridlist].scrollBarThick
 	local columnHeight = dgsElementData[gridlist].columnHeight
 	if row*dgsElementData[gridlist].rowHeight > (sy-scbThick-columnHeight) then

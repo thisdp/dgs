@@ -111,7 +111,7 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 	local easing = easing or "Linear"
 	assert(easingFunctionExists(easing),"Bad argument @dgsAlphaTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	local toalpha = (toalpha > 1 and 1) or (toalpha < 0 and 0) or toalpha
-	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsGetData(gui,"alpha")-toalpha,toalpha,movetype,easing,torv})
+	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsElementData[gui].alpha-toalpha,toalpha,movetype,easing,torv})
 	if not alphaGUIList[gui] then
 		alphaGUIList[gui] = true
 		return true

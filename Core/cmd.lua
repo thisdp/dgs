@@ -32,7 +32,6 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgcol
 		table.insert(CenterFatherTable,cmd)
 	end
 	insertResourceDxGUI(sourceResource,cmd)
-	triggerEvent("onDgsPreCreate",cmd)
 	calculateGuiPositionSize(cmd,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",cmd)
 	local sx,sy = dgsGetSize(cmd,false)

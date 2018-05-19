@@ -34,19 +34,13 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(memo,"readOnlyCaretShow",false)
 	dgsSetData(memo,"editmemoSign",true)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
-	local gmemo = guiCreateMemo(0,0,0,0,"",false)
+	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
 	dgsSetData(memo,"memo",gmemo)
 	dgsSetData(gmemo,"dxmemo",memo)
 	guiSetAlpha(gmemo,0)
-	guiSetProperty(gmemo,"AlwaysOnTop","True")
 	dgsSetData(memo,"maxLength",guiGetProperty(gmemo,"MaxTextLength"))
-	if isElement(parent) then
-		dgsSetParent(memo,parent)
-	else
-		table.insert(CenterFatherTable,memo)
-	end
+	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true) or table.insert(CenterFatherTable,1,memo)
 	insertResourceDxGUI(sourceResource,memo)
-	triggerEvent("onDgsPreCreate",memo)
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = unpack(dgsElementData[memo].absSize)
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
@@ -575,7 +569,6 @@ function configMemo(source)
 	if dgsElementData[source].disableScrollBar then return end
 	local mymemo = dgsElementData[source].memo
 	local size = dgsElementData[source].absSize
-	guiSetSize(mymemo,size[1],size[2],false)
 	local text = dgsElementData[source].text
 	local font = dgsElementData[source].font
 	local textsize = dgsElementData[source].textsize

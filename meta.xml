@@ -28,6 +28,7 @@
 	<script src="Core/combobox.lua" type="client" />
 	<script src="Core/memo.lua" type="client" />
 	<script src="Core/checkbox.lua" type="client" />
+	<script src="Core/browser.lua" type="client" />
 	
 	<script src="PropertyManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
@@ -182,6 +183,8 @@
 	<export function="dgsEditGetReadOnly" type="client" />
 	<export function="dgsEditSetMasked" type="client" />
 	<export function="dgsEditGetMasked" type="client" />
+	<export function="dgsEditSetUnderlined" type="client" />
+	<export function="dgsEditGetUnderlined" type="client" />
 	
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />
@@ -204,6 +207,7 @@
 	<export function="dgsMediaLoadMedia" type="client" />
 	<export function="dgsMediaGetMediaPath" type="client" />
 	<export function="dgsMediaClearMedia" type="client" />
+	<export function="dgsMediaIsStreamMedia" type="client" />
 	<export function="dgsMediaPlay" type="client" />
 	<export function="dgsMediaPause" type="client" />
 	<export function="dgsMediaStop" type="client" />
@@ -309,6 +313,8 @@
 	<export function="dgsGridListSetScrollPosition" type="client" />
 	<export function="dgsGridListGetScrollPosition" type="client" />
 	
+	<export function="dgsCreateBrowser" type="client" />
+	<export function="dgsBlurBrowser" type="client" />
 	
 	<export function="dgsCreateEDA" type="client" />
 	<export function="dgsEDASetDebugModeEnabled" type="client" />

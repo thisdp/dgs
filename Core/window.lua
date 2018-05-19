@@ -24,11 +24,9 @@ function dgsCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,ti
 	dgsSetData(window,"minSize",{60,60})
 	dgsSetData(window,"maxSize",{20000,20000})
 	insertResourceDxGUI(sourceResource,window)
-	triggerEvent("onDgsPreCreate",window)
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
 	triggerEvent("onDgsCreate",window)
 	if not nooffbutton then
-		print(schemeColor.window.closeButtonColor)
 		local buttonOff = dgsCreateButton(40,0,40,24,"×",false,window,_,_,_,_,_,_,schemeColor.window.closeButtonColor[1],schemeColor.window.closeButtonColor[2],schemeColor.window.closeButtonColor[3],true)
 		dgsSetData(window,"closeButton",buttonOff)
 		dgsSetSide(buttonOff,"right",false)
