@@ -2,6 +2,7 @@
 white = tocolor(255,255,255,255)
 black = tocolor(0,0,0,255)
 sW,sH = guiGetScreenSize()
+dgsRenderPriority = "normal"
 fontSize = {}
 fontDxHave = {
 ["default"]=true,
@@ -16,8 +17,8 @@ fontDxHave = {
 }
 systemFont = "default"
 
-function setSystemFont(font,size,bold,quality)
-	assert(type(font) == "string","Bad argument @setSystemFont at argument 1, expect a string got "..dgsGetType(font))
+function dgsSetSystemFont(font,size,bold,quality)
+	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
 	if fontDxHave[font] then
 		systemFont = font
 		return true
@@ -30,15 +31,15 @@ function setSystemFont(font,size,bold,quality)
 			else
 				path = font
 			end
-			assert(fileExists(path),"Bad argument @setSystemFont at argument 1,couldn't find such file '"..path.."'")
+			assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
 			local filename = split(path,"/")
 			local pathindgs = ":"..getResourceName(getThisResource()).."/Third/"..filename[#filename]
+			if isElement(systemFont) then
+				destroyElement(systemFont)
+			end
 			fileCopy(path,pathindgs,true)
 			local font = dxCreateFont(pathindgs,size,bold,quality)
 			if isElement(font) then
-				if isElement(systemFont) then
-					destroyElement(systemFont)
-				end
 				systemFont = font
 			end
 		end
@@ -46,7 +47,7 @@ function setSystemFont(font,size,bold,quality)
 	return false
 end
 
-function getSystemFont()
+function dgsGetSystemFont()
 	return systemFont
 end
 
@@ -81,7 +82,8 @@ MouseData.MemoTimer = setTimer(function()
 	end
 end,500,0)
 
-function GUIRender()
+function dgsCoreRender()
+	triggerEvent("onDgsPreRender",root)
 	MouseData.hit = false
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
@@ -128,7 +130,8 @@ function GUIRender()
 			MouseData.Scale = false
 			MouseData.scrollPane = false
 		end
-		--triggerEvent("onDgsRender",root)
+		triggerEvent("onDgsRender",root)
+		dgsCheckHit(MouseData.hit,mx,my)
 	end
 	if DEBUG_MODE then
 		local ticks = getTickCount()-tk
@@ -198,7 +201,7 @@ function GUIRender()
 end
 
 addEventHandler("onClientCursorMove",root,function(_,_,mx,my)
-	dgsCheckHit(MouseData.hit,mx,my)
+	--dgsCheckHit(MouseData.hit,mx,my)
 end)
 
 function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
@@ -221,7 +224,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		local x,y = dgsGetPosition(v,false,true)
 		local siz = eleData.absSize or {}
 		local w,h = siz[1],siz[2]
-		triggerEvent("onDgsPreRender",v,x,y,w,h)
 		local isRenderTarget = (not rndtgt) and true or false
 		self = v
 		local rendSet = not DEBUG_MODE and isRenderTarget
@@ -443,8 +445,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local sideColor = eleData.sideColor
 				local sideSize = eleData.sideSize
-				sideSize = applyColorAlpha(sideSize,galpha)
 				if sideColor >= 16777216 or sideColor < 0 and sideSize ~= 0 then
+					sideSize = applyColorAlpha(sideSize,galpha)
 					local renderState = eleData.sideState
 					if renderState == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
@@ -1236,6 +1238,28 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawText(colorcoded and text:gsub('#%x%x%x%x%x%x','') or text,x+shadowoffx,y+shadowoffy,x+w,y+h,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,false,true)
 				end
 				dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded,true)
+				local sideColor = eleData.sideColor
+				local sideSize = eleData.sideSize
+				if sideColor >= 16777216 or sideColor < 0 and sideSize ~= 0 then
+					sideSize = applyColorAlpha(sideSize,galpha)
+					local renderState = eleData.sideState
+					if renderState == "in" then
+						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+					elseif renderState == "center" then
+						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+					elseif renderState == "out" then
+						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+					end
+				end
 				if enabled[1] then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
@@ -1817,7 +1841,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local selection = eleData.select
 					local itemData = eleData.itemData
 					local sele = itemData[selection]
-					local text = sele and sele[1] or ""
+					local text = sele and sele[1] or eleData.defaultText
 					local nx,ny,nw,nh = x+textSide[1],y,x+textBoxLen-textSide[2],y+h
 					if shadow then
 						dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui)
@@ -2149,7 +2173,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				visible = false
 			end
 		end
-		triggerEvent("onDgsRender",v,x,y,w,h)
+		if eleData.renderEventCall then
+			triggerEvent("onDgsElementRender",v,x,y,w,h)
+		end
 		if not eleData.hitoutofparent then
 			if MouseData.hit ~= v then
 				enabled[1] = false
@@ -2161,7 +2187,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		end
 	end
 end
-addEventHandler("onClientRender",root,GUIRender)
+addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderPriority)
+
+function dgsSetRenderPriority(priority)
+	assert(type(priority)=="string","Bad Argument @dgsSetRenderPriority at argument 1, expected a string got "..dgsGetType(priority))
+	removeEventHandler("onClientRender",root,dgsCoreRender)
+	local success = addEventHandler("onClientRender",root,dgsCoreRender,false,priority)
+	if not success then
+		addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderPriority)
+	else
+		dgsRenderPriority = priority
+	end
+	assert(success,"Bad Argument @dgsSetRenderPriority at argument 1, failed to set the priority")
+	return true
+end
+
+function dgsGetRenderProprity()
+	return dgsRenderPriority
+end
 
 function removeColorCodeFromString(str)
 	repeat
@@ -3022,6 +3065,10 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if id then
 				table.remove(BottomFatherTable,id)
 			end
+			local id = table.find(TopFatherTable,source)
+			if id then
+				table.remove(TopFatherTable,id)
+			end
 		else
 			local id = table.find(ChildrenTable[parent] or {},source)
 			if id then
@@ -3098,6 +3145,19 @@ GirdListDoubleClick.up = false
 
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
+	if isElement(MouseData.nowShow) then
+		local theType = dgsGetType(MouseData.nowShow)
+		if theType == "dgs-dxcombobox-Box" then
+			local combobox = dgsElementData[MouseData.nowShow].myCombo
+			if MouseData.nowShow ~= guiele and MouseData.nowShow ~= dgsElementData[guiele].myCombo then
+				dgsComboBoxSetState(combobox,false)
+			end
+		elseif theType == "dgs-dxcombobox" then
+			if MouseData.nowShow ~= guiele and MouseData.nowShow ~= dgsElementData[guiele].myBox then
+				dgsComboBoxSetState(MouseData.nowShow,false)
+			end
+		end
+	end
 	if isElement(guiele) then
 		local gtype = dgsGetType(guiele)
 		if state == "down" then
@@ -3111,11 +3171,12 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			end
 		end
 		if gtype == "dgs-dxbrowser" then
-			dgsFocusBrowser(guiele)
+			focusBrowser(guiele)
 		else
-			dgsBlurBrowser()
+			focusBrowser()
 		end
 		triggerEvent("onDgsMouseClick",guiele,button,state,x,y)
+		if not isElement(guiele) then return end
 		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
 			triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)
 			killTimer(DoubleClick[state].timer)
@@ -3133,6 +3194,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				DoubleClick[state] = false
 			end,500,1)
 		end
+		if not isElement(guiele) then return end
 		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
 			local clicked = dgsElementData[guiele].itemClick
 			local selectionMode = dgsElementData[guiele].selectionMode
