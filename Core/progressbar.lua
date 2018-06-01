@@ -61,8 +61,8 @@ function dgsProgressBarGetMode(gui)
 	return dgsElementData[gui].barmode
 end
 
-function dgsProgressBarGetUpDownDistance(gui,forcerelative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetUpDownDistance at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
+function dgsProgressBarGetVerticalSide(gui,forcerelative)
+	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetVerticalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
 	if forcerelative == false then
 		local value = dgsElementData[gui].udspace[1]
 		if dgsElementData[gui].udspace[2] == true then
@@ -82,8 +82,8 @@ function dgsProgressBarGetUpDownDistance(gui,forcerelative)
 	end
 end
 
-function dgsProgressBarGetLeftRightDistance(gui,forcerelative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetLeftRightDistance at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
+function dgsProgressBarGetHorizontalSide(gui,forcerelative)
+	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetHorizontalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
 	if forcerelative == false then
 		local value = dgsElementData[gui].lrspace[1]
 		if dgsElementData[gui].lrspace[2] == true then
@@ -103,16 +103,14 @@ function dgsProgressBarGetLeftRightDistance(gui,forcerelative)
 	end
 end
 
-function dgsProgressBarSetUpDownDistance(gui,value,relative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetUpDownDistance at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	assert(type(value) == "number","Bad argument @dgsProgressBarSetUpDownDistance at argument 2, expect number got "..type(value))
-	assert(type(relative) == "boolean","Bad argument @dgsProgressBarSetUpDownDistance at argument 3, expect boolean got "..type(relative))
-	return dgsSetData(gui,"udspace",{value,relative})
+function dgsProgressBarSetVerticalSide(gui,value,relative)
+	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetVerticalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
+	assert(type(value) == "number","Bad argument @dgsProgressBarSetVerticalSide at argument 2, expect number got "..type(value))
+	return dgsSetData(gui,"udspace",{value,relative and true or false})
 end
 
-function dgsProgressBarSetLeftRightDistance(gui,value,relative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetLeftRightDistance at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	assert(type(value) == "number","Bad argument @dgsProgressBarSetLeftRightDistance at argument 2, expect number got "..type(value))
-	assert(type(relative) == "boolean","Bad argument @dgsProgressBarSetLeftRightDistance at argument 3, expect boolean got "..type(relative))
-	return dgsSetData(gui,"lrspace",{value,relative})
+function dgsProgressBarSetHorizontalSide(gui,value,relative)
+	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetHorizontalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
+	assert(type(value) == "number","Bad argument @dgsProgressBarSetHorizontalSide at argument 2, expect number got "..type(value))
+	return dgsSetData(gui,"lrspace",{value,relative and true or false})
 end

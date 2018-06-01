@@ -24,7 +24,7 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	dgsSetData(tabpanel,"allleng",0)
 	insertResourceDxGUI(sourceResource,tabpanel)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
-	local abx,aby = dgsElementData[tabpanel].absSize
+	local abx = dgsElementData[tabpanel].absSize[1]
 	local rendertarget = dxCreateRenderTarget(abx,tabheight or 20,true)
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
 	triggerEvent("onDgsCreate",tabpanel)

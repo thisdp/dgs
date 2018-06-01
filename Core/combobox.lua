@@ -62,6 +62,7 @@ function dgsCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scalex
 	dgsSetData(combobox,"FromTo",{0,0})
 	dgsSetData(combobox,"itemMoveOffset",0)
 	dgsSetData(combobox,"scrollFloor",true)
+	dgsSetData(combobox,"defaultText","")
 	local shader = dxCreateShader("image/combobox/arrow.fx")
 	dgsSetData(combobox,"arrow",shader)
 	insertResourceDxGUI(sourceResource,combobox)
@@ -80,6 +81,17 @@ function dgsCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scalex
 	triggerEvent("onDgsCreate",combobox)
 	dgsSetData(combobox,"hitoutofparent",true)
 	return combobox
+end
+
+function dgsComboBoxSetDefaultText(combobox,str)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(str) == "string","Bad argument @dgsComboBoxSetDefaultText at argument 2, expect string got "..type(str))
+	return dgsSetData(combobox,"defaultText",str)
+end
+
+function dgsComboBoxGetDefaultText(combobox)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	return dgsElementData[combobox].defaultText
 end
 
 function dgsComboBoxSetBoxHeight(combobox,height,relative)
@@ -225,7 +237,6 @@ function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
 	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true) or table.insert(CenterFatherTable,1,box)
 	dgsSetType(box,"dgs-dxcombobox-Box")	
 	insertResourceDxGUI(sourceResource,box)
-	triggerEvent("onDgsPreCreate",box)
 	calculateGuiPositionSize(box,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",box)
 	return box
@@ -233,6 +244,7 @@ end
 
 function dgsComboBoxSetSelectedItem(combobox,id)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetSelectedItem at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(id) == "number","Bad argument @dgsComboBoxSetSelectedItem at argument 2, expect number got "..type(id))
 	local itemData = dgsElementData[combobox].itemData
 	local old = dgsElementData[combobox].select
 	if not id or id == -1 then

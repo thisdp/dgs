@@ -305,13 +305,12 @@ function dgsGridListRemoveColumn(gridlist,pos)
 	local columnData = dgsElementData[gridlist].columnData
 	assert(columnData[pos],"Bad argument @dgsGridListRemoveColumn at argument 2, column index is out of range [max "..#columnData..", got "..pos.."]")
 	local oldLen = columnData[pos][3]
-    local pLen = columnData[pos][2]
 	table.remove(columnData,pos)
 	local lastColumnLen = 0
 	for k,v in ipairs(columnData) do
 		if k >= pos then
-			columnData[k] = v[2]-oldLen
-			lastColumnLen = columnData[k]
+			columnData[k][3] = v[3]-oldLen
+			lastColumnLen = columnData[k][3]+columnData[k][2]
 		end
 	end
 	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[gridlist].absSize[2]
@@ -322,7 +321,47 @@ function dgsGridListRemoveColumn(gridlist,pos)
 	else
 		dgsSetVisible(scrollbars[2],false)
 	end
-	dgsSetData(scrollbars[2],"length",{(sx-scrollBarThick)/pLen,true})
+	dgsSetData(scrollbars[2],"length",{(sx-scrollBarThick)/lastColumnLen,true})
+	dgsSetData(scrollbars[2],"position",dgsElementData[scrollbars[2]].position)
+	return true
+end
+
+function dgsGridListSetColumnLength(gridlist,pos,length,relative)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetColumnLength at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsGridListSetColumnLength at argument 2, expect number got "..dgsGetType(pos))
+	assert(type(length) == "number","Bad argument @dgsGridListSetColumnLength at argument 3, expect number got "..dgsGetType(length))
+	local columnData = dgsElementData[gridlist].columnData
+	assert(columnData[pos],"Bad argument @dgsGridListSetColumnLength at argument 2, column index is out of range [max "..#columnData..", got "..pos.."]")
+	local rlt = dgsElementData[gridlist].columnRelative
+	relative = relative == nil and dgsElementData[gridlist].columnRelative or false
+	local scbThick = dgsElementData[gridlist].scrollBarThick
+	local columnSize = dgsElementData[gridlist].absSize[1]-scbThick
+	if rlt then
+		if not relative then
+			length = length/columnSize
+		end
+	else
+		if relative then
+			length = length*columnSize
+		end
+	end
+	local differ = length-columnData[pos][2]
+	columnData[pos][2] = length
+	local lastColumnLen = 0
+	for k,v in ipairs(columnData) do
+		if k > pos then
+			columnData[k][3] = v[3]+differ
+			lastColumnLen = columnData[k][3]+columnData[k][2]
+		end
+	end
+	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[gridlist].absSize[2]
+	local scrollbars = dgsElementData[gridlist].scrollbars
+	if lastColumnLen > (sx-scbThick) then
+		dgsSetVisible(scrollbars[2],true)
+	else
+		dgsSetVisible(scrollbars[2],false)
+	end
+	dgsSetData(scrollbars[2],"length",{(sx-scbThick)/lastColumnLen,true})
 	dgsSetData(scrollbars[2],"position",dgsElementData[scrollbars[2]].position)
 	return true
 end

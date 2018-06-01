@@ -295,9 +295,10 @@ function checkEditMousePosition(button,state,x,y)
 end
 addEventHandler("onDgsMouseClick",root,checkEditMousePosition)
 
-addEventHandler("onClientGUIAccepted",root,function()
+addEventHandler("onClientGUIAccepted",resourceRoot,function()
 	local mydxedit = dgsElementData[source].dxedit
 	if dgsGetType(mydxedit) == "dgs-dxedit" then
+		triggerEvent("onDgsEditAccepted",mydxedit)
 		local cmd = dgsElementData[mydxedit].mycmd
 		if dgsGetType(cmd) == "dgs-dxcmd" then
 			local text = guiGetText(source)

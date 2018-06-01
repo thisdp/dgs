@@ -7,7 +7,7 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateBrowser at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local browser = createBrowser(0,0,isLocal and true or false,transparent and true or false)
-	assert(isElement(browser),"Bad argument @dgsFocusBrowser, can't create browser with 'createBrowser' !")
+	assert(isElement(browser),"Bad argument @dgsCreateBrowser, can't create browser with 'createBrowser' !")
 	dgsSetType(browser,"dgs-dxbrowser")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(browser,parent,true) or table.insert(CenterFatherTable,1,browser)
 	dgsSetData(browser,"color",color or tocolor(255,255,255,255))
@@ -42,15 +42,3 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state)
 		end 
 	end
 end)
-
-function dgsBlurBrowser()
-	local browser = createBrowser(0,0,true,true)
-	focusBrowser(browser)
-	destroyElement(browser)
-	return true
-end
-
-function dgsFocusBrowser(browser)
-	assert(dgsGetType(browser) == "dgs-dxbrowser","Bad argument @dgsFocusBrowser at argument 1, expect dgs-dxbrowser got "..dgsGetType(browser))
-	return focusBrowser(browser)
-end

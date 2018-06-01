@@ -11,20 +11,21 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	dgsSetData(scrollpane,"scrollBarThick",20,true)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
-	local sx,sy = dgsElementData[scrollpane].absSize
-	local x,y = dgsElementData[scrollpane].absPos
+	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
+	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local renderTarget = dxCreateRenderTarget(sx,sy,true)
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	local scrbThick = 20
 	local titleOffset = 0
 	if isElement(parent) then
-		if dgsElementData[scrollpane].withoutTitle then
+		if not dgsElementData[scrollpane].withoutTitle then
 			titleOffset = dgsElementData[parent].titlesize or 0
 		end
 	end
 	local scrollbar1 = dgsCreateScrollBar(x+sx-scrbThick,y-titleOffset,scrbThick,sy-scrbThick,false,false,parent)
 	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scrbThick-titleOffset,sx-scrbThick,scrbThick,true,false,parent)
+	
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollbar1,"length",{0,true})
@@ -32,6 +33,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(scrollbar1,"parent_sp",scrollpane)
 	dgsSetData(scrollbar2,"parent_sp",scrollpane)
+	dgsSetData(scrollbar1,"scrollType","Vertical")
+	dgsSetData(scrollbar2,"scrollType","Horizontal")
 	triggerEvent("onDgsCreate",scrollpane)
 	return scrollpane
 end
@@ -167,7 +170,7 @@ function configScrollPane(source)
 		local parent = dgsGetParent(source)
 		local titleOffset = 0
 		if isElement(parent) then
-			if dgsGetData(source,"withoutTitle") then
+			if not dgsElementData[source].withoutTitle then
 				titleOffset = dgsGetData(parent,"titlesize") or 0
 			end
 		end
@@ -239,3 +242,12 @@ function dgsScrollPaneGetScrollPosition(scrollpane)
 	local scb = dgsElementData[scrollpane].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
 end
+
+addEventHandler("onDgsScrollBarScrollPositionChange",resourceRoot,function(new,old)
+	local parent = dgsElementData[source].parent_sp
+	if parent and dgsGetType(parent) == "dgs-dxscrollpane" then
+		local scrollbars = dgsElementData[parent].scrollbars
+		local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
+		triggerEvent("onDgsScrollPaneScroll",parent,pos1,pos2)
+	end
+end)
