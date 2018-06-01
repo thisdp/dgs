@@ -13,7 +13,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetData(edit,"bgimage",bgimage)
 	dgsSetData(edit,"bgcolor",bgcolor or schemeColor.edit.bgcolor)
-	dgsSetData(edit,"textsize",{scalex or 1,scaley or 1},true)
+	dgsSetData(edit,"textsize",{scalex or 1, scaley or 1},true)
 	dgsSetData(edit,"font",systemFont,true)
 	dgsSetData(edit,"text",tostring(text) or "")
 	dgsSetData(edit,"textcolor",textcolor or schemeColor.edit.textcolor)
@@ -22,7 +22,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"masked",false)
 	dgsSetData(edit,"maskText","*")
 	dgsSetData(edit,"showPos",0)
-	dgsSetData(edit,"sideWhite",{10,2})
+	dgsSetData(edit,"sideWhite",{2,2})
 	dgsSetData(edit,"center",false)
 	dgsSetData(edit,"cursorStyle",0)
 	dgsSetData(edit,"cursorThick",1.2)
@@ -35,9 +35,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"caretColor",schemeColor.edit.caretcolor)
 	dgsSetData(edit,"caretHeight",1)
-	dgsSetData(edit,"underline",false)
-	dgsSetData(edit,"underlineOffset",0)
-	dgsSetData(edit,"underlineWidth",1)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
 	dgsSetData(edit,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
 	local gedit = guiCreateEdit(0,0,0,0,tostring(text) or "",true,GlobalEditParent)
@@ -48,11 +45,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"maxLength",guiGetProperty(gedit,"MaxTextLength"))
 	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
 	editsCount = editsCount+1
-	if isElement(parent) then
-		dgsSetParent(edit,parent)
-	else
-		table.insert(CenterFatherTable,edit)
-	end
+	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true) or table.insert(CenterFatherTable,1,edit)
 	insertResourceDxGUI(sourceResource,edit)
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",edit)
@@ -63,16 +56,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"renderTarget",renderTarget)
 	dgsEditSetCaretPosition(edit,utf8.len(tostring(text) or ""))
 	return edit
-end
-
-function dgsEditSetUnderlined(edit,underline)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetUnderlined at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	return dgsSetData(edit,"underline",underline and true or false)
-end
-
-function dgsEditGetUnderlined(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetUnderlined at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	return dgsElementData[edit].underline
 end
 
 function dgsEditSetMasked(edit,masked)
@@ -312,9 +295,10 @@ function checkEditMousePosition(button,state,x,y)
 end
 addEventHandler("onDgsMouseClick",root,checkEditMousePosition)
 
-addEventHandler("onClientGUIAccepted",root,function()
+addEventHandler("onClientGUIAccepted",resourceRoot,function()
 	local mydxedit = dgsElementData[source].dxedit
 	if dgsGetType(mydxedit) == "dgs-dxedit" then
+		triggerEvent("onDgsEditAccepted",mydxedit)
 		local cmd = dgsElementData[mydxedit].mycmd
 		if dgsGetType(cmd) == "dgs-dxcmd" then
 			local text = guiGetText(source)
