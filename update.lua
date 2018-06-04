@@ -13,7 +13,8 @@ ManualUpdate = false
 updateTimer = false
 updatePeriodTimer = false
 function checkUpdate()
-	fetchRemote(dgsConfig.updateCheckURL.."/dgs/update.cfg",function(data,err)
+	outputDebugString("[DGS]Connecting to github...")
+	fetchRemote(dgsConfig.updateCheckURL.."/update.cfg",function(data,err)
 		if err == 0 then
 			RemoteVersion = tonumber(data)
 			if not ManualUpdate then
@@ -30,7 +31,7 @@ function checkUpdate()
 						end
 					end,dgsConfig.updateCheckNoticeInterval*60000,0)
 				else
-					outputDebugString("[DGS]Current Version("..allstr..") is latest!")
+					outputDebugString("[DGS]Current Version("..allstr..") is the latest!")
 				end
 			else
 				startUpdate()
@@ -69,26 +70,52 @@ end)
 function startUpdate()
 	ManualUpdate = false
 	setTimer(function()
-		outputDebugString("[DGS]Downloading meta.xml")
-		fetchRemote(dgsConfig.updateCheckURL.."/dgs/meta.xml",function(data,err)
-			if err == 0 then
+		outputDebugString("[DGS]Requesting Update Data (From github)...")
+		fetchRemote("https://api.github.com/repos/thisdp/dgs/contents/meta.xml",{},function(data,err)
+			if err.success then
+				local theTable = fromJSON(data)
+				local content = base64Decode(theTable.content)
 				local meta = fileCreate("updated/meta.xml")
-				fileWrite(meta,data)
+				fileWrite(meta,content)
 				fileClose(meta)
-				checkFiles()
-				outputDebugString("[DGS]Preparing For Checking Files")
+				outputDebugString("[DGS]Requesting verification...")
+				getGitHubTree()
 			else
-				outputDebugString("[DGS]Can't Get meta.xml, Update Failed ("..err..")",2)
+				outputDebugString("[DGS]Can't Get Remote Update Data, Update Failed ("..err..")",2)
 			end
 		end)
 	end,50,1)
 end
 
 preUpdate = {}
+fileHash = {}
 preUpdateCount = 0
 UpdateCount = 0
 FetchCount = 0
 preFetch = 0
+folderGetting = {}
+function getGitHubTree(path,nextPath)
+	nextPath = nextPath or ""
+	fetchRemote(path or "https://api.github.com/repos/thisdp/dgs/git/trees/master",{},function(data,err)
+		if err.success then
+			local theTable = fromJSON(data)
+			folderGetting[theTable.sha] = nil
+			for k,v in pairs(theTable.tree) do
+				local thePath = nextPath..(v.path)
+				if v.mode == "040000" then
+					folderGetting[v.sha] = true
+					getGitHubTree(v.url,thePath.."/")
+				else
+					fileHash[thePath] = v.sha
+				end
+			end
+			if not next(folderGetting) then
+				checkFiles()
+			end
+		end
+	end)
+end
+
 function checkFiles()
 	local xml = xmlLoadFile("updated/meta.xml")
 	for k,v in pairs(xmlNodeGetChildren(xml)) do
@@ -98,27 +125,24 @@ function checkFiles()
 				local sha = ""
 				if fileExists(path) then
 					local file = fileOpen(path)
-					local text = fileRead(file,fileGetSize(file))
+					local size = fileGetSize(file)
+					local text = fileRead(file,size)
 					fileClose(file)
-					sha = hash("sha256",text)
+					sha = hash("sha1","blob " .. size .. "\0" ..text)
 				end
 				preFetch = preFetch+1
-				outputDebugString("[DGS]Checking File ("..preFetch.."): "..path)
-				fetchRemote(dgsConfig.updateCheckURL.."/dgsUpdate.php?path="..path,function(data,err,path,sha)
-					FetchCount = FetchCount+1
-					if sha ~= data then
-						outputDebugString("[DGS]Need Update ("..path..")")
-						table.insert(preUpdate,path)
-					end
-					if FetchCount == preFetch then
-						table.insert(preUpdate,"colorScheme.txt")
-						DownloadFiles()
-					end
-				end,"",false,path,sha)
+				FetchCount = FetchCount+1
+				if sha ~= fileHash[path] then
+					outputDebugString("[DGS]Update Required: ("..path..")")
+					table.insert(preUpdate,path)
+				end
+				if FetchCount == preFetch then
+					table.insert(preUpdate,"colorScheme.txt")
+					--DownloadFiles()
+				end
 			end
 		end
 	end
-	outputDebugString("[DGS]Please Wait...")
 end
 
 function DownloadFiles()
@@ -128,7 +152,7 @@ function DownloadFiles()
 		return
 	end
 	outputDebugString("[DGS]Download ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]).."")
-	fetchRemote(dgsConfig.updateCheckURL.."/dgs/"..preUpdate[UpdateCount],function(data,err,path)
+	fetchRemote(dgsConfig.updateCheckURL.."/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
 			local size = 0
 			if path == "colorScheme.txt" then
