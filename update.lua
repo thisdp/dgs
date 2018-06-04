@@ -134,19 +134,15 @@ function checkFiles()
 					fileClose(file)
 					sha = hash("sha1","blob " .. size .. "\0" ..text)
 				end
-				preFetch = preFetch+1
-				FetchCount = FetchCount+1
 				if sha ~= fileHash[path] then
 					outputDebugString("[DGS]Update Required: ("..path..")")
 					table.insert(preUpdate,path)
 				end
-				if FetchCount == preFetch then
-					table.insert(preUpdate,"colorScheme.txt")
-					DownloadFiles()
-				end
 			end
 		end
 	end
+	table.insert(preUpdate,"colorScheme.txt")
+	DownloadFiles()
 end
 
 function DownloadFiles()
