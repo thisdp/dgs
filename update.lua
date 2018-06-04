@@ -138,7 +138,7 @@ function checkFiles()
 				end
 				if FetchCount == preFetch then
 					table.insert(preUpdate,"colorScheme.txt")
-					--DownloadFiles()
+					DownloadFiles()
 				end
 			end
 		end
@@ -151,8 +151,8 @@ function DownloadFiles()
 		DownloadFinish()
 		return
 	end
-	outputDebugString("[DGS]Download ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]).."")
-	fetchRemote(dgsConfig.updateCheckURL.."/"..preUpdate[UpdateCount],function(data,err,path)
+	outputDebugString("[DGS]Requesting ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]).."")
+	fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
 			local size = 0
 			if path == "colorScheme.txt" then
