@@ -14,7 +14,7 @@ updateTimer = false
 updatePeriodTimer = false
 function checkUpdate()
 	outputDebugString("[DGS]Connecting to github...")
-	fetchRemote(dgsConfig.updateCheckURL.."/update.cfg",function(data,err)
+	fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/update.cfg",function(data,err)
 		if err == 0 then
 			RemoteVersion = tonumber(data)
 			if not ManualUpdate then

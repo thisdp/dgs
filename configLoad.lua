@@ -2,7 +2,6 @@ dgsConfig = {}
 dgsConfig.updateCheckAuto			= true										-- Enable:true;Disable:false
 dgsConfig.updateCheckInterval		= 60										-- Minutes
 dgsConfig.updateCheckNoticeInterval	= 5											-- Minutes
-dgsConfig.updateCheckURL			= "http://angel.mtaip.cn:233/dgsUpdate"		-- URL
 dgsConfig.backup					= true										-- Whether to make a backup for current dgs before updating
 dgsConfig.backupMax					= 10										-- How many backup can dgs store in maximum.
 

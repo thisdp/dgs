@@ -1,4 +1,3 @@
-dgsConfig.updateCheckURL = "http://angel.mtaip.cn:233/dgsUpdate"
 dgsConfig.backupMax = 10
 dgsConfig.updateCheckNoticeInterval = 5
 dgsConfig.updateCheckAuto = true
