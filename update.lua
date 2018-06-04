@@ -71,18 +71,19 @@ function startUpdate()
 	ManualUpdate = false
 	setTimer(function()
 		outputDebugString("[DGS]Requesting Update Data (From github)...")
-		fetchRemote("https://api.github.com/repos/thisdp/dgs/contents/meta.xml",{},function(data,err)
-			if err.success then
-				local theTable = fromJSON(data)
+		fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/meta.xml",function(data,err)
+			if err == 0 then
 				outputDebugString("[DGS]Update Data Acquired")
-				local content = base64Decode(theTable.content)
+				if fileExists("updated/meta.xml") then
+					fileDelete("updated/meta.xml")
+				end
 				local meta = fileCreate("updated/meta.xml")
-				fileWrite(meta,content)
+				fileWrite(meta,data)
 				fileClose(meta)
 				outputDebugString("[DGS]Requesting Verification Data...")
 				getGitHubTree()
 			else
-				outputDebugString("[DGS]!Can't Get Remote Update Data, Please Try Again Later (API Cool Down 60 mins)!",2)
+				outputDebugString("[DGS]!Can't Get Remote Update Data (ERROR:"..err..")",2)
 			end
 		end)
 	end,50,1)
@@ -113,6 +114,8 @@ function getGitHubTree(path,nextPath)
 			if not next(folderGetting) then
 				checkFiles()
 			end
+		else
+			outputDebugString("[DGS]!Failed To Get Verification Data, Please Try Again Later (API Cool Down 60 mins)!",2)
 		end
 	end)
 end
