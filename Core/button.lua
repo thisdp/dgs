@@ -1,4 +1,4 @@
-function dgsCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg,selimg,cliimg,defcolor,selcolor,clicolor)
+function dgsCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg,selimg,cliimg,defcolor,hovcolor,clicolor)
 	assert(tonumber(x),"Bad argument @dgsCreateButton at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateButton at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateButton at argument 3, expect number got "..type(sx))
@@ -9,9 +9,9 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true) or table.insert(CenterFatherTable,1,button)
-	defcolor,selcolor,clicolor = defcolor or schemeColor.button.color[1],selcolor or schemeColor.button.color[2],clicolor or schemeColor.button.color[3]
+	defcolor,hovcolor,clicolor = defcolor or schemeColor.button.color[1],hovcolor or schemeColor.button.color[2],clicolor or schemeColor.button.color[3]
 	dgsSetData(button,"image",{defimg,selimg,cliimg})
-	dgsSetData(button,"color",{defcolor,selcolor,clicolor})
+	dgsSetData(button,"color",{defcolor,hovcolor,clicolor})
 	dgsSetData(button,"text",tostring(text))
 	dgsSetData(button,"textcolor",textcolor or schemeColor.button.textcolor)
 	dgsSetData(button,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
