@@ -7,11 +7,12 @@
 	<file src="image/eda/ellipse.fx" />
 	<file src="media.html" />
 	<file src="meta.xml" />
-
+	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
 	<script src="colorSchemeLoad.lua" type="client" />
-
+	
+	
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
 	<script src="Core/eda.lua" type="client" />
@@ -59,11 +60,11 @@
 	<file src="image/scrollbar/scrollbar_arrow.png" type="client" />
 	<script src="oldFunctions.lua" type="client" />
 	
-	<export function="addEasingFunction" type="client" />
-	<export function="easingFunctionExists" type="client" />
-	<export function="removeEasingFunction" type="client" />
-	<export function="setSystemFont" type="client" />
-	<export function="getSystemFont" type="client" />
+	<export function="dgsAddEasingFunction" type="client" />
+	<export function="dgsEasingFunctionExists" type="client" />
+	<export function="dgsRemoveEasingFunction" type="client" />
+	<export function="dgsSetSystemFont" type="client" />
+	<export function="dgsGetSystemFont" type="client" />
 	<export function="dgsGetPosition" type="client" />
 	<export function="dgsSetPosition" type="client" />
 	<export function="dgsSetParent" type="client" />
@@ -117,7 +118,10 @@
 	<export function="dgsSetRoundUpPoints" type="client" />
 	<export function="dgsGetRoundUpPoints" type="client" />
 	<export function="dgsClear" type="client" />
-
+	<export function="dgsSetRenderPriority" type="client" />
+	<export function="dgsGetRenderPriority" type="client" />
+	<export function="dgsSimulateClick" type="client" />
+	
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
 	<export function="dgsWindowSetMovable" type="client" />
@@ -153,6 +157,8 @@
 	<export function="dgsComboBoxGetScrollBar" type="client" />
 	<export function="dgsComboBoxSetScrollPosition" type="client" />
 	<export function="dgsComboBoxGetScrollPosition" type="client" />
+	<export function="dgsComboBoxSetDefaultText" type="client" />
+	<export function="dgsComboBoxGetDefaultText" type="client" />
 	
 	<export function="dgsCreateButton" type="client" />
 
@@ -234,10 +240,10 @@
 	<export function="dgsProgressBarSetProgress" type="client" />
 	<export function="dgsProgressBarGetMode" type="client" />
 	<export function="dgsProgressBarSetMode" type="client" />
-	<export function="dgsProgressBarGetUpDownDistance" type="client" />
-	<export function="dgsProgressBarSetUpDownDistance" type="client" />
-	<export function="dgsProgressBarGetLeftRightDistance" type="client" />
-	<export function="dgsProgressBarSetLeftRightDistance" type="client" />
+	<export function="dgsProgressBarGetVerticalSide" type="client" />
+	<export function="dgsProgressBarSetVerticalSide" type="client" />
+	<export function="dgsProgressBarGetHorizontalSide" type="client" />
+	<export function="dgsProgressBarSetHorizontalSide" type="client" />
 
 	<export function="dgsCreateLabel" type="client" />
 	<export function="dgsLabelGetColor" type="client" />
@@ -270,6 +276,7 @@
 	<export function="dgsGridListRemoveColumn" type="client" />
 	<export function="dgsGridListGetColumnAllLength" type="client" />
 	<export function="dgsGridListGetColumnLength" type="client" />
+	<export function="dgsGridListSetColumnLength" type="client" />
 	<export function="dgsGridListGetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnTitle" type="client" />
 	<export function="dgsGridListAddRow" type="client" />
@@ -314,7 +321,6 @@
 	<export function="dgsGridListGetScrollPosition" type="client" />
 	
 	<export function="dgsCreateBrowser" type="client" />
-	<export function="dgsBlurBrowser" type="client" />
 	
 	<export function="dgsCreateEDA" type="client" />
 	<export function="dgsEDASetDebugModeEnabled" type="client" />
@@ -506,6 +512,6 @@
 	<export function="dgsDxCreateEDA" type="client" />
 	<export function="dgsDxEDASetDebugModeEnabled" type="client" />
 	<export function="dgsDxEDAGetDebugModeEnabled" type="client" />
-	<min_mta_version server="1.4.0" />
+	<min_mta_version server="1.5.4-9.11342" />
 	<download_priority_group>999</download_priority_group>
 </meta>
