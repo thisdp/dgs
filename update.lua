@@ -62,8 +62,8 @@ addCommandHandler("updatedgs",function(player)
 			checkUpdate()
 		end
 	else
-		outputChatBox("[DGS]Access Denined!",player,255,0,0)
-		outputDebugString("[DGS]Player "..getPlayerName(player).." attempt to update dgs (Denied)",2)
+		outputChatBox("[DGS]!Access Denined!",player,255,0,0)
+		outputDebugString("[DGS]!Player "..getPlayerName(player).." attempt to update dgs (Denied)!",2)
 	end
 end)
 
@@ -74,14 +74,15 @@ function startUpdate()
 		fetchRemote("https://api.github.com/repos/thisdp/dgs/contents/meta.xml",{},function(data,err)
 			if err.success then
 				local theTable = fromJSON(data)
+				outputDebugString("[DGS]Update Data Acquired")
 				local content = base64Decode(theTable.content)
 				local meta = fileCreate("updated/meta.xml")
 				fileWrite(meta,content)
 				fileClose(meta)
-				outputDebugString("[DGS]Requesting verification...")
+				outputDebugString("[DGS]Requesting Verification Data...")
 				getGitHubTree()
 			else
-				outputDebugString("[DGS]Can't Get Remote Update Data, Update Failed ("..err..")",2)
+				outputDebugString("[DGS]!Can't Get Remote Update Data, Please Try Again Later (API Cool Down 60 mins)!",2)
 			end
 		end)
 	end,50,1)
@@ -180,7 +181,7 @@ function DownloadFiles()
 				outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 			end
 		else
-			outputDebugString("[DGS]Download Failed: "..path.." ("..err..")")
+			outputDebugString("[DGS]!Download Failed: "..path.." ("..err..")!",2)
 		end
 		if preUpdate[UpdateCount+1] then
 			DownloadFiles()
