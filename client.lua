@@ -1358,6 +1358,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxSetRenderTarget(renderTarget[1],true)
 						local sizex,sizey = DataTab.columntextsize[1],DataTab.columntextsize[2]
 						local cpos = {}
+						local cend = {}
 						local multiplier = columnRelt and (w-scbThick) or 1
 						local tempColumnOffset = columnMoveOffset+columnOffset
 						local mouseColumnPos = mx-cx
@@ -1368,6 +1369,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							local _tempEndx = _tempStartx+data[2]*multiplier
 							if _tempStartx <= w and _tempEndx >= 0 then
 								cpos[id] = tempCpos
+								cend[id] = _tempEndx
 								if isDraw1 then
 									local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
 									if sortColumn == id and sortIcon then
@@ -1455,12 +1457,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 									end
 									local offset = cpos[id]
 									local _x = _x+offset
-									local _sx = _x+(cpos[id+1] or w)
-									local backgroundLength = columnData[id][2]*multiplier
+									local _sx = cend[id]
+									local _backgroundLength = columnData[id][2]*multiplier
 									local _bgX = _x
 									if id == 1 then
 										_bgX = _x+DataTab.backgroundOffset
-										backgroundLength = backgroundLength-DataTab.backgroundOffset
+										backgroundLength = _backgroundLength-DataTab.backgroundOffset
 									elseif backgroundLength+_x-x >= w or columnCount == id then
 										backgroundLength = w-_x+x
 									end
@@ -1626,7 +1628,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							end
 							local offset = cpos[id]
 							local _x = _x+offset
-							local _sx = _x+(cpos[id+1] or w)
+							local _sx = cpos[id+1] or w
 							local backgroundLength = columnData[id][2]*multiplier
 							local _bgX = _x
 							if id == 1 then
