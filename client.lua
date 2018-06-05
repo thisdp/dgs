@@ -1,4 +1,4 @@
-﻿------------Copyrights thisdp's DirectX Graphical User Interface System
+------------Copyrights thisdp's DirectX Graphical User Interface System
 white = tocolor(255,255,255,255)
 black = tocolor(0,0,0,255)
 sW,sH = guiGetScreenSize()
@@ -2300,8 +2300,6 @@ function checkEditCursor(button,state)
 				tabpanel = dgsElementData[MouseData.enter].parent
 			end
 			local width = dgsTabPanelGetWidth(tabpanel)
-			print(dgsTabPanelGetWidth(tabpanel),dgsTabPanelGetWidth(tabpanel,true))
-			--local width = dgsElementData[tabpanel].allleng
 			local w,h = dgsElementData[tabpanel].absSize[1],dgsElementData[tabpanel].absSize[2]
 			if width > w then
 				local mx,my = getCursorPosition()
