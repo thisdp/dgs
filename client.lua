@@ -1999,56 +1999,58 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					if isElement(rendt) then
 						dxSetRenderTarget(rendt,true)
 						local tabsidesize = eleData.tabsidesize[2] and eleData.tabsidesize[1]*w or eleData.tabsidesize[1]
-						local tabsize = -eleData.taboffperc*(eleData.allleng-w)
+						local tabsize = -eleData.taboffperc*(dgsTabPanelGetWidth(v)-w)
 						local gap = eleData.tabgapsize[2] and eleData.tabgapsize[1]*w or eleData.tabgapsize[1]
 						if eleData.PixelInt then
 							x,y,w,height = x-x%1,y-y%1,w-w%1,height-height%1
 						end
 						for d,t in ipairs(tabs) do
-							local width = dgsElementData[t].width+tabsidesize*2
-							local _width = 0
-							if tabs[d+1] then
-								_width = dgsElementData[tabs[d+1]].width+tabsidesize*2
-							end
-							if tabsize+width >= 0 and tabsize <= w then
-								local tabimg = dgsElementData[t].tabimg
-								local tabcolor = dgsElementData[t].tabcolor
-								local selectstate = 1
-								if selected == d then
-									selectstate = 3
-								elseif eleData.preSelect == d then
-									selectstate = 2
+							if dgsElementData[t].visible then
+								local width = dgsElementData[t].width+tabsidesize*2
+								local _width = 0
+								if tabs[d+1] then
+									_width = dgsElementData[tabs[d+1]].width+tabsidesize*2
 								end
-								local finalcolor
-								if not enabled[2] then
-									if type(eleData.disabledColor) == "number" then
-										finalcolor = applyColorAlpha(eleData.disabledColor,galpha)
-									elseif eleData.disabledColor == true then
-										local r,g,b,a = fromcolor(tabcolor[1],true)
-										local average = (r+g+b)/3*eleData.disabledColorPercent
-										finalcolor = tocolor(average,average,average,a*galpha)
-									else
-										finalcolor = tabcolor[selectstate]
+								if tabsize+width >= 0 and tabsize <= w then
+									local tabimg = dgsElementData[t].tabimg
+									local tabcolor = dgsElementData[t].tabcolor
+									local selectstate = 1
+									if selected == d then
+										selectstate = 3
+									elseif eleData.preSelect == d then
+										selectstate = 2
 									end
-								else
-									finalcolor = applyColorAlpha(tabcolor[selectstate],galpha)
+									local finalcolor
+									if not enabled[2] then
+										if type(eleData.disabledColor) == "number" then
+											finalcolor = applyColorAlpha(eleData.disabledColor,galpha)
+										elseif eleData.disabledColor == true then
+											local r,g,b,a = fromcolor(tabcolor[1],true)
+											local average = (r+g+b)/3*eleData.disabledColorPercent
+											finalcolor = tocolor(average,average,average,a*galpha)
+										else
+											finalcolor = tabcolor[selectstate]
+										end
+									else
+										finalcolor = applyColorAlpha(tabcolor[selectstate],galpha)
+									end
+									if tabimg[selectstate] then
+										dxDrawImage(tabsize,0,width,height,tabimg[selectstate],0,0,0,finalcolor)
+									else
+										dxDrawRectangle(tabsize,0,width,height,finalcolor)
+									end
+									local textsize = dgsElementData[t].textsize
+									if eleData.PixelInt then
+										_tabsize,_width = tabsize-tabsize%1,math.floor(width+tabsize)
+									end
+									dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textcolor,textsize[1],textsize[2],font,"center","center",false,false,false,colorcoded,true)
+									if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and dgsElementData[t].enabled and enabled[2] then
+										eleData.rndPreSelect = d
+										MouseData.hit = t
+									end
 								end
-								if tabimg[selectstate] then
-									dxDrawImage(tabsize,0,width,height,tabimg[selectstate],0,0,0,finalcolor)
-								else
-									dxDrawRectangle(tabsize,0,width,height,finalcolor)
-								end
-								local textsize = dgsElementData[t].textsize
-								if eleData.PixelInt then
-									_tabsize,_width = tabsize-tabsize%1,math.floor(width+tabsize)
-								end
-								dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textcolor,textsize[1],textsize[2],font,"center","center",false,false,false,colorcoded,true)
-								if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and dgsElementData[t].enabled and enabled[2] then
-									eleData.rndPreSelect = d
-									MouseData.hit = t
-								end
+								tabsize = tabsize+width+gap
 							end
-							tabsize = tabsize+width+gap
 						end
 						eleData.preSelect = -1
 						dxSetRenderTarget()
@@ -2295,7 +2297,9 @@ function checkEditCursor(button,state)
 			if dgsType == "dgs-dxtab" then
 				tabpanel = dgsElementData[MouseData.enter].parent
 			end
-			local width = dgsElementData[tabpanel].allleng
+			local width = dgsTabPanelGetWidth(tabpanel)
+			print(dgsTabPanelGetWidth(tabpanel),dgsTabPanelGetWidth(tabpanel,true))
+			--local width = dgsElementData[tabpanel].allleng
 			local w,h = dgsElementData[tabpanel].absSize[1],dgsElementData[tabpanel].absSize[2]
 			if width > w then
 				local mx,my = getCursorPosition()
