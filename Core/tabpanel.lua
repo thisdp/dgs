@@ -69,6 +69,33 @@ function dgsCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,
 	return tab
 end
 
+function dgsTabPanelGetWidth(tabpanel,includeInvisible)
+	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelGetWidth at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
+	local wid = 0
+	local tabs = dgsElementData[tabpanel].tabs
+	local t_sideSize = dgsElementData[tabpanel].tabsidesize
+	local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
+	local t_gapSize = dgsElementData[tabpanel].tabgapsize
+	local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
+	local cnt = 0
+	if includeInvisible then
+		for k,v in ipairs(tabs) do
+			local width = dgsElementData[v].width
+			wid = wid+width
+			cnt=cnt+1
+		end
+	else
+		for k,v in ipairs(tabs) do
+			if dgsElementData[v].visible then
+				local width = dgsElementData[v].width
+				wid = wid+width
+				cnt=cnt+1
+			end
+		end
+	end
+	return wid+(cnt-1)*gapsize+sidesize*2*cnt
+end
+
 function dgsTabPanelGetTabFromID(tabpanel,id)
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelGetTabFromID at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
 	assert(type(id) == "number","Bad argument @dgsTabPanelGetTabFromID at at argument 2, expect number got "..type(id))
