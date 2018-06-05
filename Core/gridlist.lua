@@ -728,7 +728,11 @@ function dgsGridListGetItemText(gridlist,row,column)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemText at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListGetItemText at argument 2, expect number got "..type(row))
 	assert(type(column) == "number","Bad argument @dgsGridListGetItemText at argument 3, expect number got "..type(column))
+	row,column = row-row%1,column-column%1
+	assert(row >= 1,"Bad argument @dgsGridListGetItemText at argument 2, expect number >= 1 got "..row)
+	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListGetItemText at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
+	assert(rowData[row],"Bad argument @dgsGridListGetItemText at argument 2, row "..row.." doesn't exist")
 	return rowData[row][column][1],rowData[row][column][7]
 end
 
