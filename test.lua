@@ -3,7 +3,6 @@ addEasingFunction("test_line",[[
 	return math.abs(value^2-0.5)*2
 ]])
 
-	
 wind = dgsCreateWindow(math.floor(0.2*sW),math.floor(0.3*sH),math.floor(0.4*sW),math.floor(0.4*sH),"Example Scroll Pane (exclude this window)",false)
 --pane = dgsCreateScrollPane(0,0,1,1,true,wind)
 gdlt = dgsCreateImage(0,0,0.7,0.7,_,true,wind,tocolor(255,255,255,255))
