@@ -24,20 +24,20 @@ SEInterface = [[
 local args = {...};
 local value,setting = args[1],args[2];
 ]]
-function addEasingFunction(name,str)
-	assert(type(name) == "string","Bad at argument @addEasingFunction at argument 1, expected a string got "..type(name))
-	assert(type(str) == "string","Bad at argument @addEasingFunction at argument 2, expected a string got "..type(str))
-	assert(not builtins[name],"Bad at argument @addEasingFunction at argument 1, duplicated name with builtins ("..name..")")
-	assert(not SelfEasing[name],"Bad at argument @addEasingFunction at argument 1, this name has been used ("..name..")")
+function dgsAddEasingFunction(name,str)
+	assert(type(name) == "string","Bad at argument @dgsAddEasingFunction at argument 1, expected a string got "..type(name))
+	assert(type(str) == "string","Bad at argument @dgsAddEasingFunction at argument 2, expected a string got "..type(str))
+	assert(not builtins[name],"Bad at argument @dgsAddEasingFunction at argument 1, duplicated name with builtins ("..name..")")
+	assert(not SelfEasing[name],"Bad at argument @dgsAddEasingFunction at argument 1, this name has been used ("..name..")")
 	local str = SEInterface..str
 	local fnc = loadstring(str)
-	assert(type(fnc) == "function","Bad at argument @addEasingFunction at argument 2, failed to load the code")
+	assert(type(fnc) == "function","Bad at argument @dgsAddEasingFunction at argument 2, failed to load the code")
 	SelfEasing[name] = fnc
 	return true
 end
 
-function removeEasingFunction(name)
-	assert(type(name) == "string","Bad at argument @removeEasingFunction at argument 1, expected a string got "..type(name))
+function dgsRemoveEasingFunction(name)
+	assert(type(name) == "string","Bad at argument @dgsRemoveEasingFunction at argument 1, expected a string got "..type(name))
 	if SelfEasing[name] then
 		SelfEasing[name] = nil
 		return true
@@ -45,8 +45,8 @@ function removeEasingFunction(name)
 	return false
 end
 
-function easingFunctionExists(name)
-	assert(type(name) == "string","Bad at argument @easingFunctionExists at argument 1, expected a string got "..type(name))
+function dgsEasingFunctionExists(name)
+	assert(type(name) == "string","Bad at argument @dgsEasingFunctionExists at argument 1, expected a string got "..type(name))
 	return builtins[name] or (SelfEasing[name] and true)
 end	
 
