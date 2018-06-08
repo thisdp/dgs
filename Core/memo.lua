@@ -30,7 +30,6 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(memo,"font",systemFont)
 	dgsSetData(memo,"side",0)
 	dgsSetData(memo,"sidecolor",schemeColor.memo.sidecolor)
-	dgsSetData(memo,"useFloor",false)
 	dgsSetData(memo,"readOnlyCaretShow",false)
 	dgsSetData(memo,"editmemoSign",true)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
