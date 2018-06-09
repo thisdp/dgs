@@ -285,7 +285,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx and mx then
 					if mx >= x and mx<= x+w and my >= y and my <= y+h then
 						MouseData.hit = v
 					end
@@ -371,7 +371,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -385,15 +385,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				if enabled[1] then
-					------------------------------------
-					if eleData.functionRunBefore then
-						local fnc = eleData.functions
-						if type(fnc) == "table" then
-							fnc[1](unpack(fnc[2]))
-						end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
 					end
-					------------------------------------
+				end
+				------------------------------------
+				if enabled[1] and mx then
 					if dgsCheckRadius(v,mx,my) then
 						MouseData.hit = v
 					end
@@ -490,7 +490,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -585,7 +585,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -681,7 +681,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -837,7 +837,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1020,7 +1020,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
 						MouseData.hit = v
 					end
@@ -1071,7 +1071,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.scrollPane = v
 						MouseData.hit = v
@@ -1211,7 +1211,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1277,11 +1277,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
 					end
 				end
-				if enabled[1] then
-					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-						MouseData.hit = v
-					end
-				end
 				------------------------------------
 				if not eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -1290,6 +1285,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
+				if enabled[1] and mx then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+						MouseData.hit = v
+					end
+				end
 			else
 				visible = false
 			end
@@ -1753,7 +1753,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1875,7 +1875,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -1973,7 +1973,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					local height = #itemData*itemHeight
 					if height > h then
 						height = h
@@ -2006,7 +2006,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -2112,11 +2112,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				------------------------------------
 				dxDrawImage(x,y,w,h,v,0,0,0,color,not DEBUG_MODE)
-				if enabled[1] then
-					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-						MouseData.hit = v
-					end
-				end
 				------------------------------------
 				if not eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -2125,6 +2120,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
+				if enabled[1] and mx then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+						MouseData.hit = v
+					end
+				end
 			else
 				visible = false
 			end
@@ -2185,7 +2185,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if enabled[1] then
+				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.hit = v
 					end
@@ -2231,8 +2231,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				
-				if enabled[1] then
+				if enabled[1] and mx then
 					if hit then
 						MouseData.hit = v
 						mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
