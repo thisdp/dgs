@@ -219,7 +219,7 @@ function resetEdit(x,y)
 	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 		if MouseData.nowShow == MouseData.clickl then
 			local edit = dgsElementData[MouseData.nowShow].edit
-			local pos = searchEditMousePosition(MouseData.nowShow,x*sW,y*sH)
+			local pos = searchEditMousePosition(MouseData.nowShow,MouseX or x*sW, MouseY or y*sH)
 			dgsEditSetCaretPosition(MouseData.nowShow,pos,true)
 		end
 	end

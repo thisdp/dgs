@@ -30,7 +30,9 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(memo,"font",systemFont)
 	dgsSetData(memo,"side",0)
 	dgsSetData(memo,"sidecolor",schemeColor.memo.sidecolor)
+	dgsSetData(memo,"useFloor",false)
 	dgsSetData(memo,"readOnlyCaretShow",false)
+	dgsSetData(memo,"editmemoSign",true)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
 	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
 	dgsSetData(memo,"memo",gmemo)
@@ -219,7 +221,7 @@ end
 function resetMemo(x,y)
 	if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 		if MouseData.nowShow == MouseData.clickl then
-			local pos,line = searchMemoMousePosition(MouseData.nowShow,x*sW,y*sH)
+			local pos,line = searchMemoMousePosition(MouseData.nowShow,MouseX or x*sW, MouseY or y*sH)
 			dgsMemoSetCaretPosition(MouseData.nowShow,pos,line,true)
 		end
 	end
