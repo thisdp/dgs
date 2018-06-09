@@ -30,6 +30,7 @@
 	<script src="Core/memo.lua" type="client" />
 	<script src="Core/checkbox.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
+	<script src="Core/3dinterface.lua" type="client" />
 	
 	<script src="PropertyManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
@@ -129,6 +130,8 @@
 	<export function="dgsWindowSetCloseButtonEnabled" type="client" />
 	<export function="dgsWindowGetCloseButtonEnabled" type="client" />
 
+	<export function="dgsCreate3DInterface" type="client" />
+	
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
 	

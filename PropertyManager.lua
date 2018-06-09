@@ -123,6 +123,15 @@ function dgsSetData(element,key,value,nocheck)
 				if key == "progress" then
 					triggerEvent("onDgsProgressBarChange",element,value,oldValue)
 				end
+			elseif dgsType == "dgs-dx3dinterface" then
+				if key == "size" then
+					local temprt = dgsElementData[element].renderTarget
+					if isElement(temprt) then
+						destroyElement(temprt)
+					end
+					local renderTarget = dxCreateRenderTarget(value[1],value[2],true)
+					dgsSetData(element,"renderTarget",renderTarget)
+				end
 			end
 			if key == "text" then
 				triggerEvent("onDgsTextChange",element)

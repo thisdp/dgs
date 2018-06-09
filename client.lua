@@ -88,8 +88,18 @@ function dgsCoreRender()
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
 	local topTableSize = #TopFatherTable
+	local dx3DInterfaceTableSize = #dx3DInterfaceTable
 	local tk = getTickCount()
-	if not isCursorShowing() then
+	MouseData.hit = false
+	DGSShow = 0
+	wX,wY,wZ = nil,nil,nil
+	local mx,my
+	if isCursorShowing() then
+		mx,my = getCursorPosition()
+		mx,my = mx*sW,my*sH
+		wX,wY,wZ = getWorldFromScreenPosition(mx,my,1)
+		MouseX,MouseY = mx,my
+	else
 		MouseData.Move = false
 		MouseData.clickData = false
 		MouseData.clickl = false
@@ -98,12 +108,15 @@ function dgsCoreRender()
 		MouseData.Scale = false
 		MouseData.scrollPane = false
 	end
-	MouseData.hit = false
-	DGSShow = 0
-	if bottomTableSize+centerTableSize+topTableSize ~= 0 then
-		local mx,my = getCursorPosition()
-		mx,my = (mx or -1)*sW,(my or -1)*sH
+	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize ~= 0 then
 		local dgsData = dgsElementData
+		dxSetRenderTarget()
+		for i=1,dx3DInterfaceTableSize do
+			local v = dx3DInterfaceTable[i]
+			local eleData = dgsData[v]
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+		end
+		dxSetRenderTarget()
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
 			local eleData = dgsData[v]
@@ -129,9 +142,10 @@ function dgsCoreRender()
 			MouseData.clickm = false
 			MouseData.Scale = false
 			MouseData.scrollPane = false
+			MouseX,MouseY = nil,nil
 		end
 		triggerEvent("onDgsRender",root)
-		dgsCheckHit(MouseData.hit,mx,my)
+		dgsCheckHit(MouseData.hit,MouseX,MouseY)
 	end
 	if DEBUG_MODE then
 		local ticks = getTickCount()-tk
@@ -221,7 +235,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		end
 		local parent,children,galpha = FatherTable[v] or false,ChildrenTable[v] or {},eleData.alpha*galpha
 		dxSetRenderTarget(rndtgt)
-		local x,y = dgsGetPosition(v,false,true)
+		local x,y
+		if eleData.absPos then
+			x,y = dgsGetPosition(v,false,true)
+		end
 		local siz = eleData.absSize or {}
 		local w,h = siz[1],siz[2]
 		local isRenderTarget = (not rndtgt) and true or false
@@ -2176,6 +2193,55 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			else
 				visible = false
 			end
+		elseif dxType == "dgs-dx3dinterface" then
+			local pos = eleData.position
+			local size = eleData.size
+			local faceTo = eleData.faceTo
+			local x,y,z,w,h,fx,fy,fz = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3]
+			rndtgt = eleData.renderTarget_parent
+			if x and y and z and w and h then
+				local colors = eleData.color
+				colors = applyColorAlpha(colors,galpha)
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				local lnVec,lnPnt
+				local camX,camY,camZ = getCameraMatrix()
+				if not fx or not fy or not fz then
+					fx,fy,fz = camX,camY,camZ
+				end
+				if wX and wY and wZ then
+					lnVec = {wX-camX,wY-camY,wZ-camZ}
+					lnPnt = {camX,camY,camZ}
+				end
+				local hit,hitX,hitY
+				if ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5 <= eleData.maxDistance then
+					hit,hitX,hitY = dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,rndtgt,w,h,colors,lnVec,lnPnt)
+				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				
+				if enabled[1] then
+					if hit then
+						MouseData.hit = v
+						mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
+						MouseX,MouseY = mx,my
+					end
+				end
+			else
+				visible = false
+			end
 		end
 		if eleData.renderEventCall then
 			triggerEvent("onDgsElementRender",v,x,y,w,h)
@@ -2228,7 +2294,7 @@ function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)
 	local P_dgsType = dgsElementType[parent]
 	if P_dgsType == "dgs-dxscrollpane" then
 		local psiz = dgsElementData[parent].absSize
-		local siz = dgsElementData[parent].absSize
+		local siz = dgsElementData[gui].absSize
 		local psx,psy,sx,sy = psiz[1],psiz[2],siz[1],siz[2]
 		if x > psx-offsetx or y > psy-offsety or x+sx < -offsetx or y+sy < -offsety then
 			ccax = ccax+1
@@ -2713,7 +2779,6 @@ function dgsCheckHit(hits,mx,my)
 				siz[2] = siz[2]*relat[2]
 				local endr = pos[1] + siz[1]
 				local endd = pos[2] + siz[2]
-				--local maxSizeX,maxSizeY = dgsElementData[MouseData.clickl].maxSize[1],dgsElementData[MouseData.clickl].maxSize[2]
 				local minSizeX,minSizeY = dgsElementData[MouseData.clickl].minSize[1],dgsElementData[MouseData.clickl].minSize[2]
 				if MouseData.Scale[5] == 1 then
 					local old = pos[1]
@@ -3005,21 +3070,22 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				destroyElement(child[1])
 			end
 		end
-		if dgsGetType(source) == "dgs-dxedit" then
+		local dgsType = dgsGetType(source)
+		if dgsType == "dgs-dxedit" then
 			local edit = dgsElementData[source].edit
 			destroyElement(edit)
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
-		elseif dgsGetType(source) == "dgs-dxmemo" then
+		elseif dgsType == "dgs-dxmemo" then
 			local memo = dgsElementData[source].memo
 			destroyElement(memo)
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
-		elseif dgsGetType(source) == "dgs-dxgridlist" then
+		elseif dgsType == "dgs-dxgridlist" then
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg[1]) then
 				destroyElement(rentarg[1])
@@ -3027,7 +3093,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(rentarg[2]) then
 				destroyElement(rentarg[2])
 			end
-		elseif dgsGetType(source) == "dgs-dxscrollpane" then
+		elseif dgsType == "dgs-dxscrollpane" then
 			local rentarg = dgsElementData[source].renderTarget_parent
 			destroyElement(rentarg)
 			local scrollbar = dgsElementData[source].scrollbars
@@ -3037,7 +3103,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(scrollbar[2]) then
 				destroyElement(scrollbar[2])
 			end
-		elseif dgsGetType(source) == "dgs-dxtabpanel" then
+		elseif dgsType == "dgs-dxtabpanel" then
 			local rentarg = dgsElementData[source].renderTarget
 			for k,v in pairs(dgsElementData[source].tabs or {}) do
 				destroyElement(v)
@@ -3045,8 +3111,13 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
-		elseif dgsGetType(source) == "dgs-dxcombobox" then
+		elseif dgsType == "dgs-dxcombobox" then
 			local rentarg = dgsElementData[source].renderTarget
+			if isElement(rentarg) then
+				destroyElement(rentarg)
+			end
+		elseif dgsType == "dgs-dx3dinterface" then
+			local rentarg = dgsElementData[source].renderTarget_parent
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
@@ -3059,37 +3130,47 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				table.remove(resourceDxGUI[tresource],id)
 			end
 		end
-		local parent = dgsGetParent(source)
-		if not isElement(parent) then
-			local id = table.find(CenterFatherTable,source)
-			if id then
-				table.remove(CenterFatherTable,id)
-			end
-			local id = table.find(BottomFatherTable,source)
-			if id then
-				table.remove(BottomFatherTable,id)
-			end
-			local id = table.find(TopFatherTable,source)
-			if id then
-				table.remove(TopFatherTable,id)
-			end
-		else
-			local id = table.find(ChildrenTable[parent] or {},source)
-			if id then
-				table.remove(ChildrenTable[parent] or {},id)
-			end
-		end
 		dgsStopAniming(source)
 		dgsStopMoving(source)
 		dgsStopSizing(source)
 		dgsStopAlphaing(source)
 		dgsElementData[source] = nil
+		if dgsType == "dgs-dx3dinterface" then
+			local id = table.find(dx3DInterfaceTable,source)
+			if id then
+				table.remove(dx3DInterfaceTable,id)
+			end
+		else
+			local parent = dgsGetParent(source)
+			if not isElement(parent) then
+				local id = table.find(CenterFatherTable,source)
+				if id then
+					table.remove(CenterFatherTable,id)
+					return
+				end
+				local id = table.find(BottomFatherTable,source)
+				if id then
+					table.remove(BottomFatherTable,id)
+					return
+				end
+				local id = table.find(TopFatherTable,source)
+				if id then
+					table.remove(TopFatherTable,id)
+					return
+				end
+			else
+				local id = table.find(ChildrenTable[parent] or {},source)
+				if id then
+					table.remove(ChildrenTable[parent] or {},id)
+				end
+			end
+		end
 	end
 end)
 
 function checkMove()
 	local mx,my = getCursorPosition()
-	mx,my = (mx or -1)*sW,(my or -1)*sH
+	mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local offsetx,offsety = mx-x,my-y
 	if dgsGetType(source) == "dgs-dxwindow" then
@@ -3104,7 +3185,7 @@ end
 
 function checkScrollBar(py,sd)
 	local mx,my = getCursorPosition()
-	mx,my = (mx or -1)*sW,(my or -1)*sH
+	mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local offsetx,offsety = mx-x,my-y
 	MouseData.Move = {sd and offsetx-py or offsetx,sd and offsety or offsety-py}
@@ -3179,7 +3260,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		else
 			focusBrowser()
 		end
-		triggerEvent("onDgsMouseClick",guiele,button,state,x,y)
+		triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
 		if not isElement(guiele) then return end
 		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
 			triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)

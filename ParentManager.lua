@@ -1,6 +1,7 @@
 BottomFatherTable = {}		--Store Bottom Father Element
 CenterFatherTable = {}		--Store Center Father Element (Default)
 TopFatherTable = {}			--Store Top Father Element
+dx3DInterfaceTable = {}
 
 FatherTable = {}			--Store Father Element
 ChildrenTable = {}			--Store Children Element

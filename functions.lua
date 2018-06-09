@@ -88,14 +88,15 @@ function getParentLocation(baba,rndsup,x,y)
 	local baba = FatherTable[baba]
 	if not isElement(baba) or (rndsup and dgsElementData[baba].renderTarget_parent) then return x,y end
 	if dgsElementType[baba] == "dgs-dxtab" then
-		baba = dgsElementData[baba]["parent"]
+		baba = dgsElementData[baba].parent
 		local h = dgsElementData[baba].absSize[2]
-		local tabheight = dgsElementData[baba]["tabheight"][2] and dgsElementData[baba]["tabheight"][1]*h or dgsElementData[baba]["tabheight"][1]
+		local tabheight = dgsElementData[baba].tabheight[2] and dgsElementData[baba].tabheight[1]*h or dgsElementData[baba].tabheight[1]
 		x = x+dgsElementData[baba].absPos[1]
 		y = y+dgsElementData[baba].absPos[2]+tabheight
 	else
-		x = x+dgsElementData[baba].absPos[1]
-		y = y+dgsElementData[baba].absPos[2]
+		local absPos = dgsElementData[baba].absPos or {0,0}
+		x = x+absPos[1]
+		y = y+absPos[2]
 	end
 	return getParentLocation(baba,rndsup,x,y)
 end
@@ -111,11 +112,9 @@ function dgsGetPosition(gui,bool,includeParent,rndsupport)
 end
 
 function dgsSetPosition(gui,x,y,bool)
-	if dgsIsDxElement(gui) then
-		calculateGuiPositionSize(gui,x,y,bool or false)
-		return true
-	end
-	return false,"not a dx-gui"
+	assert(dgsIsDxElement(gui),"Bad argument @dgsSetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	calculateGuiPositionSize(gui,x,y,bool or false)
+	return true
 end
 
 function dgsGetSize(gui,bool)
@@ -125,11 +124,9 @@ function dgsGetSize(gui,bool)
 end
 
 function dgsSetSize(gui,x,y,bool)
-	if dgsIsDxElement(gui) then
-		calculateGuiPositionSize(gui,_,_,_,x,y,bool or false)
-		return true
-	end
-	return false,"not a dx-gui"
+	assert(dgsIsDxElement(gui),"Bad argument @dgsSetSize at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	calculateGuiPositionSize(gui,_,_,_,x,y,bool or false)
+	return true
 end
 
 function getType(thing)
@@ -178,34 +175,36 @@ function dgsGetSide(dxgui,topleft)
 end
 
 function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
-	dgsElementData[gui] = dgsElementData[gui] or {}
+	local eleData = dgsElementData[gui]
+	eleData = eleData or {}
 	local parent = dgsGetParent(gui)
 	local px,py = 0,0
 	local psx,psy = sW,sH
-	local relt = dgsElementData[gui].relative or {relativep,relatives}
+	local relt = eleData.relative or {relativep,relatives}
 	local oldRelativePos,oldRelativeSize = relt[1],relt[2]
 	local titleOffset = 0
 	if isElement(parent) then
+		local parentData = dgsElementData[parent]
 		if dgsGetType(parent) == "dgs-dxtab" then
-			local tabpanel = dgsElementData[parent].parent
+			local tabpanel = parentData.parent
 			local size = dgsElementData[tabpanel].absSize
 			psx,psy = size[1],size[2]
 			local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*psx or dgsElementData[tabpanel].tabheight[1]
 			psy = psy-height
 		else
-			local size = dgsElementData[parent].absSize
+			local size = parentData.absSize or parentData.size
 			psx,psy = size[1],size[2]
 		end
-		if dgsElementData[gui].ignoreParentTitle or dgsElementData[parent].ignoreTitleSize then
+		if eleData.ignoreParentTitle or parentData.ignoreTitleSize then
 			titleOffset = 0
 		else
-			titleOffset = dgsElementData[parent].titlesize or 0
+			titleOffset = parentData.titlesize or 0
 		end
 	end
 	if x and y then
-		local absPos = dgsElementData[gui].absPos or {}
+		local absPos = eleData.absPos or {}
 		local oldPosAbsx,oldPosAbsy = absPos[1],absPos[2]
-		local rltPos = dgsElementData[gui].rltPos or {}
+		local rltPos = eleData.rltPos or {}
 		local oldPosRltx,oldPosRlty = rltPos[1],rltPos[2]
 		x,y = relativep and x*psx or x,relativep and y*(psy-titleOffset) or y
 		local abx,aby,relatx,relaty = x,y+titleOffset,x/psx,y/(psy-titleOffset)
@@ -223,9 +222,9 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		end
 	end
 	if sx and sy then
-		local absSize = dgsElementData[gui].absSize or {}
+		local absSize = eleData.absSize or {}
 		local oldSizeAbsx,oldSizeAbsy = absSize[1],absSize[2]
-		local rltSize = dgsElementData[gui].rltSize or {}
+		local rltSize = eleData.rltSize or {}
 		local oldSizeRltx,oldSizeRlty = rltSize[1],rltSize[2]
 		sx,sy = relatives and sx*psx or sx,relatives and sy*(psy-titleOffset) or sy
 		local absx,absy,relatsx,relatsy = sx,sy,sx/psx,sy/(psy-titleOffset)

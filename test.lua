@@ -148,12 +148,11 @@ function gridlistImageTest()
 		dgsGridListSetItemImage(gridlist,row,1,checkBox.inde_)
 		dgsGridListRemoveItemImage(gridlist,row,1)
 	end
-	iprint(dgsElementData[gridlist].rowData[1][1][7])
 end
 
 function dgsAnimTest()
-	if not easingFunctionExists("shadowOffset") then
-		addEasingFunction("shadowOffset",[[
+	if not dgsEasingFunctionExists("shadowOffset") then
+		dgsAddEasingFunction("shadowOffset",[[
 			local old = setting[3] or {}
 			local new = setting[2]
 			local offsetX = old[1] or 0
@@ -214,4 +213,10 @@ function testBrowser()
 		
 		loadBrowserURL(browser,"http://www.baidu.com")
 	end)
+end
+
+function test3DInterface()
+	material = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),0,1,0)
+	edit1 = dgsCreateEdit(0,0,200,50,"DGS 3D Interface Edit 1",false,material)
+	edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
 end

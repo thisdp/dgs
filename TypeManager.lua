@@ -1,5 +1,6 @@
 dgsElementType = {}
 dgsType = {
+	"dgs-dx3dinterface",
 	"dgs-dxbutton",
 	"dgs-dxcmd",
 	"dgs-dxedit",

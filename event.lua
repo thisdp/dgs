@@ -1,3 +1,6 @@
+local cos,sin,rad,atan2 = math.cos,math.sin,math.rad,math.atan2
+local gsub,sub,len,find,format = string.gsub,string.sub,string.len,string.find,string.format
+local insert = table.insert
 dgs = exports[getResourceName(getThisResource())]
 addEvent("onDgsMouseLeave",true)
 addEvent("onDgsMouseEnter",true)
@@ -113,12 +116,12 @@ end
 
 --------------------------------String Utility
 function string.count(str)
-	local _,count = string.gsub(str,"[^\128-\193]","")
+	local _,count = gsub(str,"[^\128-\193]","")
 	return count
 end
 
 function string.split(s, delim, mode)
-    if type(delim) ~= "string" or string.len(delim) <= 0 then
+    if type(delim) ~= "string" or len(delim) <= 0 then
         return
     end
 	if mode then
@@ -126,28 +129,28 @@ function string.split(s, delim, mode)
 		local t = {}
 		local index = 1
 		while true do
-			local pos = string.find (s, delim, start, true)
+			local pos = find (s, delim, start, true)
 			if not pos then
 			  break
 			end
-			t[index] = string.sub(s,start,pos-1)
-			start = pos + string.len(delim)
+			t[index] = sub(s,start,pos-1)
+			start = pos + len(delim)
 			index = index+1
 		end
-		t[index] = string.sub(s,start)
+		t[index] = sub(s,start)
 		return t
 	else
 		local start = 1
 		local t = {}
 		while true do
-			local pos = string.find (s, delim, start, true)
+			local pos = find (s, delim, start, true)
 			if not pos then
 			  break
 			end
-			table.insert (t, string.sub (s, start, pos - 1))
-			start = pos + string.len (delim)
+			insert (t, sub (s, start, pos - 1))
+			start = pos + len (delim)
 		end
-		table.insert (t, string.sub (s, start))
+		insert (t, sub (s, start))
 		return t
 	end
 end
@@ -180,7 +183,7 @@ function fromcolor(int,useMath)
 	if useMath then
 		b,g,r,a = bitExtract(int,0,8),bitExtract(int,8,8),bitExtract(int,16,8),bitExtract(int,24,8)
 	else
-		a,r,g,b = getColorFromString(string.format("#%.8x",int))
+		a,r,g,b = getColorFromString(format("#%.8x",int))
 	end
 	return r,g,b,a
 end
