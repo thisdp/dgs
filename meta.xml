@@ -255,7 +255,8 @@
 	<export function="dgsLabelSetVerticalAlign" type="client" />
 	<export function="dgsLabelGetHorizontalAlign" type="client" />
 	<export function="dgsLabelGetVerticalAlign" type="client" />
-	
+	<export function="dgsLabelGetTextExtent" type="client" />
+
 	<export function="dgsCreateTabPanel" type="client" />
 	<export function="dgsCreateTab" type="client" />
 	<export function="dgsTabPanelGetTabFromID" type="client" />
