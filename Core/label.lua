@@ -28,7 +28,7 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,s
 end
 
 function dgsLabelSetColor(label,r,g,b,a)
-	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetColor at at argument 1, except a dgs-dxlabel got "..(dgsGetType(label) or type(label)))
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetColor at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	if tonumber(r) and g == true then
 		return dgsSetData(label,"textcolor",r)
 	else
@@ -38,7 +38,7 @@ function dgsLabelSetColor(label,r,g,b,a)
 end
 
 function dgsLabelGetColor(label,notSplit)
-	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetColor at at argument 1, except a dgs-dxlabel got "..(dgsGetType(label) or type(label)))
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetColor at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	return notSplit and dgsElementData[label].textcolor or fromcolor(dgsElementData[label].textcolor)
 end
 
@@ -52,27 +52,36 @@ VerticalAlign.center = true
 VerticalAlign.bottom = true
 
 function dgsLabelSetHorizontalAlign(label,align)
-	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetHorizontalAlign at at argument 1, except a dgs-dxlabel got "..(dgsGetType(label) or type(label)))
-	assert(HorizontalAlign[align],"Bad argument @dgsLabelSetHorizontalAlign at at argument 2, except a string [left/center/right], got"..tostring(align))
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetHorizontalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
+	assert(HorizontalAlign[align],"Bad argument @dgsLabelSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
 	local rightbottom = dgsElementData[label].rightbottom
 	return dgsSetData(label,"rightbottom",{align,rightbottom[2]})
 end
 
 function dgsLabelSetVerticalAlign(label,align)
-	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetVerticalAlign at at argument 1, except a dgs-dxlabel got "..(dgsGetType(label) or type(label)))
-	assert(VerticalAlign[align],"Bad argument @dgsLabelSetVerticalAlign at at argument 2, except a string [top/center/bottom], got"..tostring(align))
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetVerticalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
+	assert(VerticalAlign[align],"Bad argument @dgsLabelSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
 	local rightbottom = dgsElementData[label].rightbottom
 	return dgsSetData(label,"rightbottom",{rightbottom[1],align})
 end
 
 function dgsLabelGetHorizontalAlign(label)
-	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetHorizontalAlign at at argument 1, except a dgs-dxlabel got "..(dgsGetType(label) or type(label)))
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetHorizontalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	local rightbottom = dgsElementData[label].rightbottom
 	return rightbottom[1]
 end
 
 function dgsLabelGetVerticalAlign(label)
-	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetVerticalAlign at at argument 1, except a dgs-dxlabel got "..(dgsGetType(label) or type(label)))
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetVerticalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	local rightbottom = dgsElementData[label].rightbottom
 	return rightbottom[2]
+end
+
+function dgsLabelGetTextExtent ( label )
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetTextExtent at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
+	local font = dgsElementData[label].font or systemFont
+	local textSizeX = dgsElementData[label].textsize[1]
+	local text = dgsElementData[label].text
+	local colorcoded = dgsElementData[label].colorcoded
+	return dxGetTextWidth(text,textSizeX,font.colorcoded)
 end
