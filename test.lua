@@ -1,6 +1,6 @@
 ﻿function createTest()
 addEasingFunction("test_line",[[
-	return math.abs(value^2-0.5)*2
+	return math.abs(progress^2-0.5)*2
 ]])
 
 wind = dgsCreateWindow(math.floor(0.2*sW),math.floor(0.3*sH),math.floor(0.4*sW),math.floor(0.4*sH),"Example Scroll Pane (exclude this window)",false)
@@ -159,7 +159,7 @@ function dgsAnimTest()
 			local offsetY = old[2] or 0
 			local offsetColor = old[3] or tocolor(0,0,0,255)
 			local tofX,tofY = new[1],new[2]
-			return {offsetX+(tofX-offsetX)*value,offsetY+(tofY-offsetY)*value,new[3]}
+			return {offsetX+(tofX-offsetX)*progress,offsetY+(tofY-offsetY)*progress,new[3]}
 		]])
 	end
 	local label = dgsCreateLabel(500,500,400,20,"Testttttttttttttttttttt",false)
@@ -211,7 +211,7 @@ function testBrowser()
 	
 	addEventHandler("onClientBrowserCreated",browser,function()
 		
-		loadBrowserURL(browser,"http://www.baidu.com")
+		loadBrowserURL(browser,"http://www.youtube.com")
 	end)
 end
 
