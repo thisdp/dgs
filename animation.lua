@@ -144,7 +144,7 @@ addEventHandler("onClientRender",root,function()
 					dgsSetProperty(v,propertyName,percent)
 				else
 					if SelfEasing[easing] then
-						local value = SelfEasing[easing](changeTime/thetime,{propertyName,targetValue,oldValue})
+						local value = SelfEasing[easing](changeTime/thetime,{propertyName,targetValue,oldValue},v)
 						dgsSetProperty(v,propertyName,value)
 					else
 						animGUIList[v] = nil
@@ -172,7 +172,7 @@ addEventHandler("onClientRender",root,function()
 				if builtins[easing] then
 					percentx,percenty = getEasingValue(percentxo,easing)*percentxo,getEasingValue(percentyo,easing)*percentyo
 				else
-					percentx,percenty = getEasingValue2(percentxo,easing,settings)*percentxo,getEasingValue2(percentyo,easing,settings)*percentyo
+					percentx,percenty = getEasingValue2(percentxo,easing,settings,v)*percentxo,getEasingValue2(percentyo,easing,settings,v)*percentyo
 				end
 				if percentxo >= 1 and percentyo >= 1 then
 					compMove = true
@@ -186,7 +186,7 @@ addEventHandler("onClientRender",root,function()
 				if builtins[easing] then
 					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 				else
-					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings)
+					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
 				end
 				if temp >= 1 then
 					compMove = true
@@ -217,7 +217,7 @@ addEventHandler("onClientRender",root,function()
 				if builtins[easing] then
 					percentx,percenty = getEasingValue(percentxo,easing)*percentxo,getEasingValue(percentyo,easing)*percentyo
 				else
-					percentx,percenty = getEasingValue2(percentxo,easing,settings)*percentxo,getEasingValue2(percentyo,easing,settings)*percentyo
+					percentx,percenty = getEasingValue2(percentxo,easing,settings,v)*percentxo,getEasingValue2(percentyo,easing,settings,v)*percentyo
 				end
 				if percentxo >= 1 and percentyo >= 1 then
 					compSize = true
@@ -231,7 +231,7 @@ addEventHandler("onClientRender",root,function()
 				if builtins[easing] then
 					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 				else
-					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings)
+					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
 				end
 				if temp >= 1 then
 					compSize = true
@@ -262,7 +262,7 @@ addEventHandler("onClientRender",root,function()
 				if builtins[easing] then
 					percentalp = getEasingValue(percentalpo,easing or "Linear")*percentalpo
 				else
-					percentalp = getEasingValue2(percentalpo,easing,settings)*percentalpo
+					percentalp = getEasingValue2(percentalpo,easing,settings,v)*percentalpo
 				end
 				if percentalpo >= 1 then
 					compAlpha = true
@@ -276,7 +276,7 @@ addEventHandler("onClientRender",root,function()
 				if builtins[easing] then
 					percentalp = interpolateBetween(endalpha+allDistance,0,0,endalpha,0,0,temp,easing or "Linear")
 				else
-					percentalp = interpolateBetween2(endalpha+allDistance,0,0,endalpha,0,0,temp,easing,settings)
+					percentalp = interpolateBetween2(endalpha+allDistance,0,0,endalpha,0,0,temp,easing,settings,v)
 				end
 				if temp >= 1 then
 					compAlpha = true
@@ -294,10 +294,10 @@ addEventHandler("onClientRender",root,function()
 	tickCount = getTickCount()
 end)
 
-function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings)
+function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings,self)
 	if SelfEasing[easing] then
 		local nx,ny,nz = 0,0,0
-		local temp = SelfEasing[easing](percent,settings)
+		local temp = SelfEasing[easing](percent,settings,self)
 		local diff = {tx-x,ty-y,tz-z}
 		if diff[1] ~= 0 then
 			nx = temp*diff[1]+x
@@ -313,8 +313,8 @@ function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings)
 	return false
 end
 
-function getEasingValue2(percent,easing,settings)
+function getEasingValue2(percent,easing,settings,self)
 	if SelfEasing[easing] then
-		return SelfEasing[easing](percent,settings)
+		return SelfEasing[easing](percent,settings,self)
 	end
 end
