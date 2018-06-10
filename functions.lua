@@ -22,7 +22,7 @@ builtins.CosineCurve = true
 SelfEasing = {}
 SEInterface = [[
 local args = {...};
-local value,setting = args[1],args[2];
+local progress,setting = args[1],args[2];
 ]]
 function dgsAddEasingFunction(name,str)
 	assert(type(name) == "string","Bad at argument @dgsAddEasingFunction at argument 1, expected a string got "..type(name))
