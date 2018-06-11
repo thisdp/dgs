@@ -115,7 +115,7 @@ function dgsCoreRender()
 	MouseData.hit = false
 	DGSShow = 0
 	wX,wY,wZ = nil,nil,nil
-	local mx,my
+	local mx,my = -1000,-1000
 	if isCursorShowing() then
 		mx,my = getCursorPosition()
 		mx,my = mx*sW,my*sH
