@@ -354,6 +354,10 @@ function dgsGetFocusedGUI()
 	return MouseData.nowShow
 end
 
+function dgsGetScreenSize()
+	return guiGetScreenSize()
+end
+
 ------------Round Up Functions
 defaultRoundUpPoints = 3
 function dgsRoundUp(num,points)
