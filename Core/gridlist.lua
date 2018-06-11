@@ -597,17 +597,39 @@ function dgsGridListRemoveRow(gridlist,row)
 	return true
 end
 
-function dgsGridListClearRow(gridlist,notresetSelected)
+function dgsGridListClearRow(gridlist,notResetSelected,notResetScrollBar)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListClearRow at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	local rowData = dgsElementData[gridlist].rowData
  	local scrollbars = dgsElementData[gridlist].scrollbars
-	dgsSetData(scrollbars[1],"length",{0,true})
-	dgsSetData(scrollbars[1],"position",0)
-	dgsSetVisible(scrollbars[1],false)
-	if not notresetSelected then
+	if not notResetScrollBar then
+		dgsSetData(scrollbars[1],"length",{0,true})
+		dgsSetData(scrollbars[1],"position",0)
+		dgsSetVisible(scrollbars[1],false)
+	end
+	if not notResetSelected then
 		 dgsGridListSetSelectedItem(gridlist,-1)
 	end
 	return dgsSetData(gridlist,"rowData",{})
+end
+
+function dgsGridListClearColumn(gridlist,notResetSelected,notResetScrollBar)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListClearColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+ 	local scrollbars = dgsElementData[gridlist].scrollbars
+	local rowData = dgsElementData[gridlist].rowData
+ 	local scrollbars = dgsElementData[gridlist].scrollbars
+	if not notResetScrollBar then
+		dgsSetData(scrollbars[2],"length",{0,true})
+		dgsSetData(scrollbars[2],"position",0)
+		dgsSetVisible(scrollbars[2],false)
+	end
+	if not notResetSelected then
+		 dgsGridListSetSelectedItem(gridlist,-1)
+	end
+	for i=1,#rowData do
+		for a=1,#rowData[i] do
+			rowData[i][a] = nil
+		end
+	end
+	return dgsSetData(gridlist,"rowData",rowData)
 end
 
 function dgsGridListClear(gridlist)
