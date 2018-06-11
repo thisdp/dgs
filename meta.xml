@@ -124,6 +124,7 @@
 	<export function="dgsSetRenderSetting" type="client" />
 	<export function="dgsGetRenderSetting" type="client" />
 	<export function="dgsSimulateClick" type="client" />
+	<export function="dgsGetScreenSize" type="client" />
 	
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
