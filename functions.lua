@@ -310,6 +310,16 @@ function dgsGetText(dxgui)
 	end
 end
 
+function dgsSetPostGUI(dxgui,state)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetPostGUI at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	return dgsSetProperty(dxgui,"postGUI",state)
+end
+
+function dgsGetPostGUI(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetPostGUI at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	return dgsElementData[dxgui].postGUI
+end
+
 function dgsSetShaderValue(...)
 	return dxSetShaderValue(...)
 end
@@ -392,6 +402,7 @@ addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"functionRunBefore",true) --true : after render; false : before render
 	dgsSetData(source,"disabledColor",schemeColor.disabledColor)
 	dgsSetData(source,"disabledColorPercent",schemeColor.disabledColorPercent)
+	dgsSetData(source,"postGUI",dgsRenderSetting.postGUI == nil and true or false)
 end)
 
 function dgsClear(theType,res)

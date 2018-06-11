@@ -1,21 +1,24 @@
 ------------Copyrights thisdp's DirectX Graphical User Interface System
+sW,sH = guiGetScreenSize()
 white = tocolor(255,255,255,255)
 black = tocolor(0,0,0,255)
-sW,sH = guiGetScreenSize()
-dgsRenderPriority = "normal"
 fontSize = {}
-fontDxHave = {
-["default"]=true,
-["default-bold"]=true,
-["clear"]=true,
-["arial"]=true,
-["sans"]=true,
-["pricedown"]=true,
-["bankgothic"]=true,
-["diploma"]=true,
-["beckett"]=true,
-}
 systemFont = "default"
+fontDxHave = {
+	["default"]=true,
+	["default-bold"]=true,
+	["clear"]=true,
+	["arial"]=true,
+	["sans"]=true,
+	["pricedown"]=true,
+	["bankgothic"]=true,
+	["diploma"]=true,
+	["beckett"]=true,
+}
+dgsRenderSetting = {
+	postGUI = nil,
+	renderPriority = "normal",
+}
 
 function dgsSetSystemFont(font,size,bold,quality)
 	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
@@ -49,6 +52,25 @@ end
 
 function dgsGetSystemFont()
 	return systemFont
+end
+
+
+function dgsGetRenderSetting(name)
+	return dgsRenderSetting[name]
+end
+
+function dgsSetRenderSetting(name,value)
+	if name == "renderPriority" then
+		assert(type(value)=="string","Bad Argument @dgsSetRenderSetting at argument 2, expected a string got "..dgsGetType(value))
+		removeEventHandler("onClientRender",root,dgsCoreRender)
+		local success = addEventHandler("onClientRender",root,dgsCoreRender,false,value)
+		if not success then
+			addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
+		end
+		assert(success,"Bad Argument @dgsSetRenderSetting at argument 2, failed to set the priority")
+	end
+	dgsRenderSetting[name] = value
+	return true
 end
 
 -----------------------------dx-GUI
@@ -243,7 +265,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		local w,h = siz[1],siz[2]
 		local isRenderTarget = (not rndtgt) and true or false
 		self = v
-		local rendSet = not DEBUG_MODE and isRenderTarget
+		local rendSet = not DEBUG_MODE and isRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
 		if dxType == "dgs-dxwindow" then
 			if x and y then
 				if eleData.PixelInt then
@@ -2256,24 +2278,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		end
 	end
 end
-addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderPriority)
+addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 
-function dgsSetRenderPriority(priority)
-	assert(type(priority)=="string","Bad Argument @dgsSetRenderPriority at argument 1, expected a string got "..dgsGetType(priority))
-	removeEventHandler("onClientRender",root,dgsCoreRender)
-	local success = addEventHandler("onClientRender",root,dgsCoreRender,false,priority)
-	if not success then
-		addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderPriority)
-	else
-		dgsRenderPriority = priority
-	end
-	assert(success,"Bad Argument @dgsSetRenderPriority at argument 1, failed to set the priority")
-	return true
-end
-
-function dgsGetRenderProprity()
-	return dgsRenderPriority
-end
 
 function removeColorCodeFromString(str)
 	repeat

@@ -108,6 +108,8 @@
 	<export function="dgsSetFont" type="client" />
 	<export function="dgsGetText" type="client" />
 	<export function="dgsSetText" type="client" />
+	<export function="dgsGetPostGUI" type="client" />
+	<export function="dgsSetPostGUI" type="client" />
 	<export function="dgsCreateFont" type="client" />
 	<export function="dgsBringToFront" type="client" />
 	<export function="dgsGetMouseEnterGUI" type="client" />
@@ -119,8 +121,8 @@
 	<export function="dgsSetRoundUpPoints" type="client" />
 	<export function="dgsGetRoundUpPoints" type="client" />
 	<export function="dgsClear" type="client" />
-	<export function="dgsSetRenderPriority" type="client" />
-	<export function="dgsGetRenderPriority" type="client" />
+	<export function="dgsSetRenderSetting" type="client" />
+	<export function="dgsGetRenderSetting" type="client" />
 	<export function="dgsSimulateClick" type="client" />
 	
 	<export function="dgsCreateWindow" type="client" />
