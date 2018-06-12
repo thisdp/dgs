@@ -205,7 +205,7 @@ arg[1]
 	columnData Struct:
 	  1									2									N
 	  column1							column2								columnN
-	{{text1,Length,AllLengthFront},		{text1,Length,AllLengthFront},		{text1,Length,AllLengthFront}, ...}
+	{{text1,Width,AllWidthFront},		{text1,Width,AllWidthFront},		{text1,Width,AllWidthFront}, ...}
 
 ]]
 
@@ -275,7 +275,7 @@ function dgsGridListAddColumn(gridlist,name,len,pos)
 	table.insert(columnData,pos,{name,len,oldLen})
 
 	for i=pos+1,columnDataCount+1 do
-		columnData[i] = {columnData[i][1],columnData[i][2],dgsGridListGetColumnAllLength(gridlist,i-1)}
+		columnData[i] = {columnData[i][1],columnData[i][2],dgsGridListGetColumnAllWidth(gridlist,i-1)}
 	end
 	dgsSetData(gridlist,"columnData",columnData)
 	oldLen = multiplier*oldLen
@@ -326,27 +326,27 @@ function dgsGridListRemoveColumn(gridlist,pos)
 	return true
 end
 
-function dgsGridListSetColumnLength(gridlist,pos,length,relative)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetColumnLength at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(pos) == "number","Bad argument @dgsGridListSetColumnLength at argument 2, expect number got "..dgsGetType(pos))
-	assert(type(length) == "number","Bad argument @dgsGridListSetColumnLength at argument 3, expect number got "..dgsGetType(length))
+function dgsGridListSetColumnWidth(gridlist,pos,width,relative)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetColumnWidth at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsGridListSetColumnWidth at argument 2, expect number got "..dgsGetType(pos))
+	assert(type(width) == "number","Bad argument @dgsGridListSetColumnWidth at argument 3, expect number got "..dgsGetType(width))
 	local columnData = dgsElementData[gridlist].columnData
-	assert(columnData[pos],"Bad argument @dgsGridListSetColumnLength at argument 2, column index is out of range [max "..#columnData..", got "..pos.."]")
+	assert(columnData[pos],"Bad argument @dgsGridListSetColumnWidth at argument 2, column index is out of range [max "..#columnData..", got "..pos.."]")
 	local rlt = dgsElementData[gridlist].columnRelative
 	relative = relative == nil and dgsElementData[gridlist].columnRelative or false
 	local scbThick = dgsElementData[gridlist].scrollBarThick
 	local columnSize = dgsElementData[gridlist].absSize[1]-scbThick
 	if rlt then
 		if not relative then
-			length = length/columnSize
+			width = width/columnSize
 		end
 	else
 		if relative then
-			length = length*columnSize
+			width = width*columnSize
 		end
 	end
-	local differ = length-columnData[pos][2]
-	columnData[pos][2] = length
+	local differ = width-columnData[pos][2]
+	columnData[pos][2] = width
 	local lastColumnLen = 0
 	for k,v in ipairs(columnData) do
 		if k > pos then
@@ -369,9 +369,9 @@ end
 --[[
 mode Fast(true)/Slow(false)
 --]]
-function dgsGridListGetColumnAllLength(gridlist,pos,relative,mode)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetColumnAllLength at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(pos) == "number","Bad argument @dgsGridListGetColumnAllLength at argument 2, expect number got "..dgsGetType(pos))
+function dgsGridListGetColumnAllWidth(gridlist,pos,relative,mode)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetColumnAllWidth at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsGridListGetColumnAllWidth at argument 2, expect number got "..dgsGetType(pos))
 	local columnData = dgsElementData[gridlist].columnData
 	local scbThick = dgsElementData[gridlist].scrollBarThick
 	local columnSize = dgsElementData[gridlist].absSize[1]-scbThick
@@ -408,9 +408,9 @@ function dgsGridListGetColumnAllLength(gridlist,pos,relative,mode)
 	return false
 end
 
-function dgsGridListGetColumnLength(gridlist,pos,relative)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetColumnLength at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(pos) == "number","Bad argument @dgsGridListGetColumnLength at argument 2, expect number got "..dgsGetType(pos))
+function dgsGridListGetColumnWidth(gridlist,pos,relative)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetColumnWidth at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsGridListGetColumnWidth at argument 2, expect number got "..dgsGetType(pos))
 	local columnData = dgsElementData[gridlist].columnData
 	if pos > 0 and pos <= #columnData then
 		local scbThick = dgsElementData[gridlist].scrollBarThick
@@ -662,7 +662,7 @@ function dgsGridListSetItemImage(gridlist,row,column,image,color,offx,offy,w,h)
 		local color = color or imageData[2] or white
 		local offx = offx or imageData[3] or 0
 		local offy = offy or imageData[4] or 0
-		local w,h = w or imageData[5] or dgsGridListGetColumnLength(gridlist,column,false),h or imageData[6] or dgsElementData[gridlist].rowHeight
+		local w,h = w or imageData[5] or dgsGridListGetColumnWidth(gridlist,column,false),h or imageData[6] or dgsElementData[gridlist].rowHeight
 		imageData[1] = image
 		imageData[2] = color
 		imageData[3] = offx
@@ -956,9 +956,9 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 			dgsSetData(parent,"rowMoveOffset",temp)
 		elseif source == scrollBars[2] then
 			local columnCount =  dgsGridListGetColumnCount(parent)
-			local columnLength = dgsGridListGetColumnAllLength(parent,columnCount)
+			local columnWidth = dgsGridListGetColumnAllWidth(parent,columnCount)
 			local columnOffset = dgsElementData[parent].columnOffset
-			local temp = -new*(columnLength-sx+dgsElementData[parent].scrollBarThick+columnOffset)/100
+			local temp = -new*(columnWidth-sx+dgsElementData[parent].scrollBarThick+columnOffset)/100
 			local temp = dgsElementData[parent].scrollFloor[2] and math.floor(temp) or temp
 			dgsSetData(parent,"columnMoveOffset",temp)
 		end
@@ -980,8 +980,8 @@ function configGridList(source)
 		local maxColumn = dgsGridListGetColumnCount(source)
 		local columnData = dgsElementData[source].columnData
 		local columnCount =  dgsGridListGetColumnCount(source)
-		local columnLength = dgsGridListGetColumnAllLength(source,columnCount,false,true)
-		if columnLength > relSizX then
+		local columnWidth = dgsGridListGetColumnAllWidth(source,columnCount,false,true)
+		if columnWidth > relSizX then
 			dgsSetVisible(scrollbar[2],true)
 		else
 			dgsSetVisible(scrollbar[2],false)
@@ -999,7 +999,7 @@ function configGridList(source)
 		local scroll2 = dgsElementData[scrollbar[2]].position
 		dgsSetData(source,"rowMoveOffset",-scroll1*(rowLength-relSizY+columnHeight)/100)
 		dgsSetData(scrollbar[1],"length",{rowShowRange/rowLength,true})
-		dgsSetData(scrollbar[2],"length",{relSizX/(columnLength+scbThick),true})
+		dgsSetData(scrollbar[2],"length",{relSizX/(columnWidth+scbThick),true})
 	end
 	local rentarg = dgsElementData[source].renderTarget
 	if rentarg then
