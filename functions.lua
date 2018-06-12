@@ -358,6 +358,10 @@ function dgsGetScreenSize()
 	return guiGetScreenSize()
 end
 
+function dgsGetRootElement()
+	return resourceRoot
+end
+
 ------------Round Up Functions
 defaultRoundUpPoints = 3
 function dgsRoundUp(num,points)
