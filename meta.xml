@@ -281,9 +281,9 @@
 	<export function="dgsGridListAddColumn" type="client" />
 	<export function="dgsGridListGetColumnCount" type="client" />
 	<export function="dgsGridListRemoveColumn" type="client" />
-	<export function="dgsGridListGetColumnAllLength" type="client" />
-	<export function="dgsGridListGetColumnLength" type="client" />
-	<export function="dgsGridListSetColumnLength" type="client" />
+	<export function="dgsGridListGetColumnAllWidth" type="client" />
+	<export function="dgsGridListGetColumnWidth" type="client" />
+	<export function="dgsGridListSetColumnWidth" type="client" />
 	<export function="dgsGridListGetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnTitle" type="client" />
 	<export function="dgsGridListAddRow" type="client" />

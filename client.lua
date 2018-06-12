@@ -1497,18 +1497,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 									local offset = cpos[id]
 									local _x = _x+offset
 									local _sx = cend[id]
-									local _backgroundLength = columnData[id][2]*multiplier
+									local _backgroundWidth = columnData[id][2]*multiplier
 									local _bgX = _x
 									if id == 1 then
 										_bgX = _x+DataTab.backgroundOffset
-										backgroundLength = _backgroundLength-DataTab.backgroundOffset
-									elseif backgroundLength+_x-x >= w or columnCount == id then
-										backgroundLength = w-_x+x
+										backgroundWidth = _backgroundWidth-DataTab.backgroundOffset
+									elseif backgroundWidth+_x-x >= w or columnCount == id then
+										backgroundWidth = w-_x+x
 									end
 									if #image > 0 then
-										dxDrawImage(_bgX,_y,backgroundLength,rowHeight,image[rowState],0,0,0,color[rowState])
+										dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,image[rowState],0,0,0,color[rowState])
 									else
-										dxDrawRectangle(_bgX,_y,backgroundLength,rowHeight,color[rowState])
+										dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,color[rowState])
 									end
 									if text then
 										local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
@@ -1589,12 +1589,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 						dxDrawText(columnData[i][1],tPosX,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
 						if mouseInsideGridList and mouseSelectColumn == -1 then
-							backgroundLength = columnData[i][2]*multiplier
-							if backgroundLength+posx-x >= w or whichColumnToEnd == i then
-								backgroundLength = w-posx+x
+							backgroundWidth = columnData[i][2]*multiplier
+							if backgroundWidth+posx-x >= w or whichColumnToEnd == i then
+								backgroundWidth = w-posx+x
 							end
 							local _tempStartx = posx
-							local _tempEndx = _tempStartx+backgroundLength
+							local _tempEndx = _tempStartx+backgroundWidth
 							if mx >= _tempStartx and mx <= _tempEndx then
 								mouseSelectColumn = i
 							end
@@ -1668,18 +1668,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							local offset = cpos[id]
 							local _x = _x+offset
 							local _sx = cpos[id+1] or w
-							local backgroundLength = columnData[id][2]*multiplier
+							local backgroundWidth = columnData[id][2]*multiplier
 							local _bgX = _x
 							if id == 1 then
 								_bgX = _x+DataTab.backgroundOffset
-								backgroundLength = backgroundLength-DataTab.backgroundOffset
-							elseif backgroundLength+_x-x >= w or whichColumnToEnd == id then
-								backgroundLength = w-_x+x
+								backgroundWidth = backgroundWidth-DataTab.backgroundOffset
+							elseif backgroundWidth+_x-x >= w or whichColumnToEnd == id then
+								backgroundWidth = w-_x+x
 							end
 							if #image > 0 then
-								dxDrawImage(_bgX,_y,backgroundLength,rowHeight,image[rowState],0,0,0,color[rowState],rendSet)
+								dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,image[rowState],0,0,0,color[rowState],rendSet)
 							else
-								dxDrawRectangle(_bgX,_y,backgroundLength,rowHeight,color[rowState],rendSet)
+								dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,color[rowState],rendSet)
 							end
 							if text ~= "" then
 								local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
