@@ -16,6 +16,7 @@ if not dgsImportHead then
 	dgsImportHead = {}
 	dgsImportHead.dgsName = "]]..dgsResName..[["
 	dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
+	dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
 
 	function DGSCallMT:__index(k)
 		if type(k) ~= 'string' then k = tostring(k) end
