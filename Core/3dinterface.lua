@@ -19,6 +19,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"maxDistance",distance or 100)
 	local rndTgt = dxCreateRenderTarget(resolX,resolY,true)
 	dgsSetData(interface,"renderTarget_parent",rndTgt)
+	insertResourceDxGUI(sourceResource,interface)
 	triggerEvent("onDgsCreate",interface)
 	return interface
 end
