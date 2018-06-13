@@ -164,8 +164,8 @@
 	<export function="dgsComboBoxGetScrollBar" type="client" />
 	<export function="dgsComboBoxSetScrollPosition" type="client" />
 	<export function="dgsComboBoxGetScrollPosition" type="client" />
-	<export function="dgsComboBoxSetDefaultText" type="client" />
-	<export function="dgsComboBoxGetDefaultText" type="client" />
+	<export function="dgsComboBoxSetCaptionText" type="client" />
+	<export function="dgsComboBoxGetCaptionText" type="client" />
 	
 	<export function="dgsCreateButton" type="client" />
 
