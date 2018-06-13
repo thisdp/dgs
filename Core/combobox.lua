@@ -83,15 +83,15 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textcolo
 	return combobox
 end
 
-function dgsComboBoxSetDefaultText(combobox,str)
+function dgsComboBoxSetCaptionText(combobox,str)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(str) == "string","Bad argument @dgsComboBoxSetDefaultText at argument 2, expect string got "..type(str))
-	return dgsSetData(combobox,"defaultText",str)
+	return dgsSetData(combobox,"caption",str)
 end
 
-function dgsComboBoxGetDefaultText(combobox)
+function dgsComboBoxGetCaptionText(combobox)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	return dgsElementData[combobox].defaultText
+	return dgsElementData[combobox].caption
 end
 
 function dgsComboBoxSetBoxHeight(combobox,height,relative)
