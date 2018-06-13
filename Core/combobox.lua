@@ -14,7 +14,7 @@ index:	-2			-1					0					1
 }
 ]]
 
-function dgsCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scalex,scaley,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor)
+function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textcolor,scalex,scaley,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor)
 	assert(tonumber(x),"Bad argument @dgsCreateComboBox at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateComboBox at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateComboBox at argument 3, expect number got "..type(sx))
@@ -62,7 +62,7 @@ function dgsCreateComboBox(x,y,sx,sy,relative,parent,itemheight,textcolor,scalex
 	dgsSetData(combobox,"FromTo",{0,0})
 	dgsSetData(combobox,"itemMoveOffset",0)
 	dgsSetData(combobox,"scrollFloor",true)
-	dgsSetData(combobox,"defaultText","")
+	dgsSetData(combobox,"caption",caption or "")
 	local shader = dxCreateShader("image/combobox/arrow.fx")
 	dgsSetData(combobox,"arrow",shader)
 	insertResourceDxGUI(sourceResource,combobox)
