@@ -26,7 +26,7 @@ function createTest3()
 end
 
 function createTest4()
-	rb1 = dgsCreateComboBox(500,400,200,30,false)
+	rb1 = dgsCreateComboBox(500,400,200,30,"test",false)
 	for i=1,20 do
 		dgsComboBoxAddItem(rb1,i)
 	end
