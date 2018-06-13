@@ -1882,7 +1882,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local selection = eleData.select
 					local itemData = eleData.itemData
 					local sele = itemData[selection]
-					local text = sele and sele[1] or eleData.defaultText
+					local text = sele and sele[1] or eleData.caption
 					local nx,ny,nw,nh = x+textSide[1],y,x+textBoxLen-textSide[2],y+h
 					if shadow then
 						dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui)
