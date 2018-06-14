@@ -105,7 +105,7 @@ MouseData.MemoTimer = setTimer(function()
 end,500,0)
 
 function dgsCoreRender()
-	triggerEvent("onDgsPreRender",root)
+	triggerEvent("onDgsPreRender",resourceRoot)
 	MouseData.hit = false
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
@@ -166,7 +166,7 @@ function dgsCoreRender()
 			MouseData.scrollPane = false
 			MouseX,MouseY = nil,nil
 		end
-		triggerEvent("onDgsRender",root)
+		triggerEvent("onDgsRender",resourceRoot)
 		dgsCheckHit(MouseData.hit,MouseX,MouseY)
 	end
 	if DEBUG_MODE then
@@ -2034,7 +2034,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				if selected == -1 then
-					dxDrawRectangle(x,y+height,w,h-height,eleData.defbackground,not DEBUG_MODE)
+					dxDrawRectangle(x,y+height,w,h-height,eleData.defbackground,rendSet)
 				else
 					local rendt = eleData.renderTarget
 					if isElement(rendt) then
@@ -2095,12 +2095,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 						eleData.preSelect = -1
 						dxSetRenderTarget()
-						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),not DEBUG_MODE)
+						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),rendSet)
 						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgcolor,galpha)
 						if dgsElementData[tabs[selected]].bgimg then
-							dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgimg,0,0,0,colors,not DEBUG_MODE)
+							dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgimg,0,0,0,colors,rendSet)
 						else
-							dxDrawRectangle(x,y+height,w,h-height,colors,not DEBUG_MODE)
+							dxDrawRectangle(x,y+height,w,h-height,colors,rendSet)
 						end
 						for cid,child in ipairs(dgsGetChildren(tabs[selected])) do
 							renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
@@ -2245,6 +2245,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5 <= eleData.maxDistance then
 					hit,hitX,hitY = dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,rndtgt,w,h,colors,lnVec,lnPnt)
 				end
+				dxSetRenderTarget(rndtgt,true)
+				dxSetRenderTarget()
 				------------------------------------
 				if not eleData.functionRunBefore then
 					local fnc = eleData.functions
