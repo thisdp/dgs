@@ -33,6 +33,8 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"side",0)
 	dgsSetData(edit,"sidecolor",schemeColor.edit.sidecolor)
 	dgsSetData(edit,"enableTabSwitch",true)
+	dgsSetData(edit,"savePositionSwitch",false)
+	dgsSetData(edit,"lastSwitchPosition",-1)
 	dgsSetData(edit,"caretColor",schemeColor.edit.caretcolor)
 	dgsSetData(edit,"caretHeight",1)
 	dgsSetData(edit,"selectmode",selectmode and false or true) ----true->选择色在文字底层;false->选择色在文字顶层
@@ -331,10 +333,21 @@ addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
 					end
 				end
 			end
-			local theFinal = theNext or theFirst
-			if theFinal then
-				dgsBringToFront(theFinal)
-				triggerEvent("onDgsEditSwitched",theFinal,source)
+			local theResult = theNext or theFirst
+			if theResult then
+				if dgsElementData[source].savePositionSwitch then
+					dgsSetData(source,"lastSwitchPosition",dgsEditGetCaretPosition(source))
+					
+				else
+					dgsSetData(source,"lastSwitchPosition",-1)
+				end
+				dgsBringToFront(theResult)
+				if dgsElementData[theResult].savePositionSwitch and dgsElementData[theResult].lastSwitchPosition >= 0 then
+					dgsEditSetCaretPosition(theResult,dgsElementData[theResult].lastSwitchPosition)
+				else
+					dgsEditSetCaretPosition(theResult,utf8.len(dgsElementData[theResult].text or ""))
+				end
+				triggerEvent("onDgsEditSwitched",theResult,source)
 			end
 		end
 	end
