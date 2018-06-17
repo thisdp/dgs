@@ -28,6 +28,7 @@ function dgsStopAniming(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if animGUIList[gui] then
 		dgsSetData(gui,"anim",false)
+		triggerEvent("onDgsElementStopAniming",gui)
 		animGUIList[gui] = nil
 		return true
 	end
@@ -60,6 +61,7 @@ function dgsStopMoving(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if moveGUIList[gui] then
 		dgsSetData(gui,"move",false)
+		triggerEvent("onDgsElementStopMoving",gui)
 		moveGUIList[gui] = nil
 		return true
 	end
@@ -92,6 +94,7 @@ function dgsStopSizing(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if sizeGUIList[gui] then
 		dgsSetData(gui,"size",false)
+		triggerEvent("onDgsElementStopSizing",gui)
 		sizeGUIList[gui] = nil
 		return true
 	end
@@ -123,6 +126,7 @@ function dgsStopAlphaing(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if alphaGUIList[gui] then
 		dgsSetData(gui,"calpha",false)
+		triggerEvent("onDgsElementStopAlphaing",gui)
 		alphaGUIList[gui] = nil
 		return true
 	end
@@ -147,12 +151,12 @@ addEventHandler("onClientRender",root,function()
 						local value = SelfEasing[easing](changeTime/thetime,{propertyName,targetValue,oldValue},v)
 						dgsSetProperty(v,propertyName,value)
 					else
-						animGUIList[v] = nil
+						dgsStopAniming(v)
 						assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
 					end
 				end
 			else
-				animGUIList[v] = nil
+				dgsStopAniming(v)
 			end
 		end
 	end
