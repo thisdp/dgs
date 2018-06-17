@@ -32,6 +32,10 @@ addEvent("onDgsComboBoxStateChange",true)
 addEvent("onDgsEditPreSwitch",true)
 addEvent("onDgsEditSwitched",true)
 addEvent("onDgsEditAccepted",true)
+addEvent("onDgsStopMoving",true)
+addEvent("onDgsStopSizing",true)
+addEvent("onDgsStopAlphaing",true)
+addEvent("onDgsStopAniming",true)
 -------
 addEvent("giveIPBack",true)
 
