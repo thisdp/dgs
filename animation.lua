@@ -16,7 +16,7 @@ function dgsAnimTo(gui,property,value,easing,thetime)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	assert(not(type(value) ~= "number" and builtins[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
-	dgsSetData(gui,"anim",{[0]=getTickCount(),property,value,DgsData[gui][property],easing,thetime})
+	dgsSetData(gui,"anim",{[0]=getTickCount(),property,value,dgsElementData[gui][property],easing,thetime})
 	if not animGUIList[gui] then
 		animGUIList[gui] = true
 		return true
@@ -114,7 +114,7 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAlphaTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	local toalpha = (toalpha > 1 and 1) or (toalpha < 0 and 0) or toalpha
-	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),DgsData[gui].alpha-toalpha,toalpha,movetype,easing,torv})
+	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsElementData[gui].alpha-toalpha,toalpha,movetype,easing,torv})
 	if not alphaGUIList[gui] then
 		alphaGUIList[gui] = true
 		return true
@@ -137,7 +137,7 @@ addEventHandler("onClientRender",root,function()
 	local tickCount = getTickCount()
 	for v,value in pairs(animGUIList) do
 		if not dgsIsDxElement(v) or not value then animGUIList[v] = nil end
-		local data = DgsData[v].anim
+		local data = dgsElementData[v].anim
 		if not data then animGUIList[v] = nil end
 		if animGUIList[v] then
 			local propertyName,targetValue,oldValue,easing,thetime = data[1],data[2],data[3],data[4],data[5]
@@ -162,7 +162,7 @@ addEventHandler("onClientRender",root,function()
 	end
 	for v,value in pairs(moveGUIList) do
 		if not dgsIsDxElement(v) or not value then moveGUIList[v] = nil end
-		local data = DgsData[v].move
+		local data = dgsElementData[v].move
 		if not data then moveGUIList[v] = nil end
 		if moveGUIList[v] then
 			local allDistance,ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[-1]
@@ -252,10 +252,10 @@ addEventHandler("onClientRender",root,function()
 	end
 	for v,value in pairs(alphaGUIList) do
 		if not dgsIsDxElement(v) or not value then alphaGUIList[v] = nil end
-		local data = DgsData[v].calpha
+		local data = dgsElementData[v].calpha
 		if not data then alphaGUIList[v] = nil end
 		local allDistance,endalpha,mtype,easing,torv,settings = data[1],data[2],data[3],data[4],data[5],data[-1]
-		local alp = DgsData[v].alpha
+		local alp = dgsElementData[v].alpha
 		if not alp then alphaGUIList[v] = nil end
 		if alphaGUIList[v] then
 			local talp
