@@ -8,7 +8,7 @@ function dgsIsAniming(gui)
 	return moveGUIList[gui] or false
 end
 
-function dgsAnimTo(gui,property,value,easing,thetime)
+function dgsAnimTo(gui, property, value, easing, thetime, callback)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsAnimTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	local thetime = tonumber(thetime)
 	assert(type(property) == "string","Bad argument @dgsAnimTo at argument 2, expect string got "..type(property))
@@ -16,7 +16,7 @@ function dgsAnimTo(gui,property,value,easing,thetime)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	assert(not(type(value) ~= "number" and builtins[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
-	dgsSetData(gui,"anim",{[0]=getTickCount(),property,value,dgsElementData[gui][property],easing,thetime})
+	dgsSetData(gui,"anim",{[0]=getTickCount(), property, value, DgsData[gui][property], easing, thetime, ["callback"] = callback})
 	if not animGUIList[gui] then
 		animGUIList[gui] = true
 		return true
@@ -27,9 +27,11 @@ end
 function dgsStopAniming(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if animGUIList[gui] then
+		local callback = dgsGetData(gui,"anim")["callback"]
 		dgsSetData(gui,"anim",false)
 		triggerEvent("onDgsStopAniming",gui)
 		animGUIList[gui] = nil
+		callback()
 		return true
 	end
 	return false
