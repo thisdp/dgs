@@ -21,6 +21,10 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"renderTarget_parent",rndTgt)
 	insertResourceDxGUI(sourceResource,interface)
 	triggerEvent("onDgsCreate",interface)
+	if not isElement(rndTgt) then
+		destroyElement(interface)
+		return false
+	end
 	return interface
 end
 
