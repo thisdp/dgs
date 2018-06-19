@@ -1,4 +1,4 @@
-﻿self = false
+self = false
 --[[
 Selection Mode
 1-> Row Selection
@@ -585,7 +585,7 @@ function dgsGridListRemoveRow(gridlist,row)
 	end
 	table.remove(rowData,row)
  	local scrollbars = dgsElementData[gridlist].scrollbars
-	local sx,sy = unpack(dgsElementData[gridlist].absSize)
+	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[source].absSize[2]
 	local scbThick = dgsElementData[gridlist].scrollBarThick
 	if (row-1)*dgsElementData[gridlist].rowHeight > (sy-scbThick-dgsElementData[gridlist].columnHeight) then
 		dgsSetVisible(scrollbars[1],true)
@@ -948,7 +948,7 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxgridlist" then
 		local scrollBars = dgsElementData[parent].scrollbars
-		local sx,sy = unpack(dgsElementData[parent].absSize)
+		local sx,sy = dgsElementData[parent].absSize[1],dgsElementData[parent].absSize[2]
 		if source == scrollBars[1] then
 			local rowLength = #dgsElementData[parent].rowData*dgsElementData[parent].rowHeight
 			local temp = -new*(rowLength-(sy-dgsElementData[parent].scrollBarThick-dgsElementData[parent].columnHeight))/100
@@ -967,7 +967,7 @@ end)
 
 function configGridList(source)
 	local scrollbar = dgsElementData[source].scrollbars
-	local sx,sy = unpack(dgsElementData[source].absSize)
+	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	local columnHeight = dgsElementData[source].columnHeight
 	local rowHeight = dgsElementData[source].rowHeight
 	local scbThick = dgsElementData[source].scrollBarThick
