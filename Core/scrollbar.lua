@@ -46,3 +46,33 @@ function scrollScrollBar(scrollbar,button)
 	local gpos = button and pos+offsetPos or pos-offsetPos
 	dgsSetData(scrollbar,"position",math.restrict(0,100,gpos))
 end
+
+function dgsScrollBarSetScrollSize(scrollbar,size,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetScrollSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	return dgsSetData(scrollbar,"length",{size,relative or false})
+end
+
+function dgsScrollBarGetScrollSize(scrollbar,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetScrollSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	local relative = relative or false
+	local eleData = dgsElementData[scrollbar]
+	local length,lrlt = eleData.length[1],eleData.length[2]
+	local slotRange
+	local scrollArrow =  eleData.scrollArrow
+	local arrowPos = 0
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	if voh then
+		if scrollArrow then
+			arrowPos = h
+		end
+		slotRange = w-arrowPos*2
+	else
+		if scrollArrow then
+			arrowPos = w
+		end
+		slotRange = h-arrowPos*2
+	end
+	local cursorRange = lrlt and length*slotRange or (length <= slotRange and length or 0)
+	local csRange = slotRange-cursorRange
+	return relative and csRange/slotRange or csRange
+end
