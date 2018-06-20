@@ -1691,7 +1691,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 										dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 									end
 								end
-								textBuffer[id] = {lc_rowData[id][1],_x,_sx,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded}
+								textBuffer[id] = {lc_rowData[id][1],_x,_sx+_x,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded}
 							end
 						end
 						for k,v in pairs(textBuffer) do
@@ -3127,6 +3127,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			local rentarg = dgsElementData[source].renderTarget_parent
 			if isElement(rentarg) then
 				destroyElement(rentarg)
+				print("a")
 			end
 		end
 		table.remove(ChildrenTable[source] or {})
