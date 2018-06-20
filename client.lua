@@ -1418,9 +1418,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 										dxDrawText(sortIcon,_tempStartx-10,0,_tempEndx,columnHeight,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,false,false,true)
 									end
 									if DataTab.columnShadow then
-										dxDrawText(data[1],_tempStartx+1,1,_tempEndx,columnHeight,black,columntextx,columntexty,columnFont,"left","center",clip,false,false,false,true)
+										dxDrawText(data[1],_tempStartx+1,1,_tempEndx,columnHeight,black,columntextx,columntexty,columnFont,data[4],"center",clip,false,false,false,true)
 									end
-									dxDrawText(data[1],_tempStartx,0,_tempEndx,columnHeight,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,false,false,true)
+									dxDrawText(data[1],_tempStartx,0,_tempEndx,columnHeight,columnTextColor,columntextx,columntexty,columnFont,data[4],"center",clip,false,false,false,true)
 								end
 								if mouseInsideGridList and mouseSelectColumn == -1 then
 									if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
@@ -1520,7 +1520,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 												dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 											end
 										end
-										textBuffer[id] = {lc_rowData[id][1],_x-_x%1,_sx-_sx%1,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded}
+										textBuffer[id] = {lc_rowData[id][1],_x-_x%1,_sx-_sx%1,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
 									end
 								end
 								for k,v in pairs(textBuffer) do
@@ -1530,9 +1530,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 										if colorcoded then
 											text = text:gsub("#%x%x%x%x%x%x","") or text
 										end
-										dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],"left","center",v[8],false,false,false,true)
+										dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,false,false,true)
 									end
-									dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],"left","center",v[8],false,false,colorcoded,true)
+									dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],v[10],"center",v[8],false,false,colorcoded,true)
 								end
 							end
 						end
@@ -1574,8 +1574,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						whichColumnToStart,whichColumnToEnd = columnCount,columnCount
 					end
 					column_x = cx-cpos[whichColumnToStart]+columnOffset
-					local column_sx = cx+w-scbThick
 					for i=whichColumnToStart,whichColumnToEnd or columnCount do
+						local column_sx = column_x+cpos[i]+columnData[i][2]*multiplier-scbThick
 						local posx = column_x+cpos[i]
 						local tPosX = posx-posx%1
 						if sortColumn == i and sortIcon then
@@ -1585,9 +1585,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							dxDrawText(sortIcon,tPosX-10,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
 						end
 						if DataTab.columnShadow then
-							dxDrawText(columnData[i][1],1+tPosX,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+							dxDrawText(columnData[i][1],1+tPosX,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,columnData[i][4],"center",clip,false,rendSet,false,true)
 						end
-						dxDrawText(columnData[i][1],tPosX,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+						dxDrawText(columnData[i][1],tPosX,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,columnData[i][4],"center",clip,false,rendSet,false,true)
 						if mouseInsideGridList and mouseSelectColumn == -1 then
 							backgroundWidth = columnData[i][2]*multiplier
 							if backgroundWidth+posx-x >= w or whichColumnToEnd == i then
@@ -1667,7 +1667,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							end
 							local offset = cpos[id]
 							local _x = _x+offset
-							local _sx = cpos[id+1] or w
+							local _sx = cpos[id+1] or (columnData[id][2])*multiplier
 							local backgroundWidth = columnData[id][2]*multiplier
 							local _bgX = _x
 							if id == 1 then
@@ -1691,7 +1691,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 										dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 									end
 								end
-								textBuffer[id] = {lc_rowData[id][1],_x,_sx+_x,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded}
+								textBuffer[id] = {lc_rowData[id][1],_x,_sx+_x,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
 							end
 						end
 						for k,v in pairs(textBuffer) do
@@ -1701,9 +1701,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								if colorcoded then
 									text = text:gsub("#%x%x%x%x%x%x","") or text
 								end
-								dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],"left","center",v[8],false,true,false,true)
+								dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,true,false,true)
 							end
-							dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],"left","center",v[8],false,true,colorcoded,true)
+							dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],v[10],"center",v[8],false,true,colorcoded,true)
 						end
 					end
 				end
