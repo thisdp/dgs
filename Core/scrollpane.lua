@@ -102,6 +102,8 @@ function dgsScrollPaneUpdateScrollBar(scrollpane,ntempx,ntempy)
 			local ntmpx,ntmpy = dgsElementData[scrollpane].maxChildSize[1],dgsElementData[scrollpane].maxChildSize[2]
 			ntempx,ntempy = ntempx or ntmpx,ntempy or ntmpy
 			local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
+			local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
+			local scrbThick = dgsElementData[scrollpane].scrollBarThick
 			local scbstate = {dgsGetVisible(scrollbar[1]),dgsGetVisible(scrollbar[2])}
 			local scbThick = dgsElementData[scrollpane].scrollBarThick
 			local xthick,ythick = scbstate[1] and scbThick or 0,scbstate[2] and scbThick or 0
@@ -120,6 +122,19 @@ function dgsScrollPaneUpdateScrollBar(scrollpane,ntempx,ntempy)
 					dgsSetVisible(scrollbar[1],false)
 				end
 			end
+			local parent = dgsGetParent(scrollpane)
+			local titleOffset = 0
+			if isElement(parent) then
+				if not dgsElementData[scrollpane].withoutTitle then
+					titleOffset = dgsElementData[parent].titlesize or 0
+				end
+			end
+			local xthick = dgsGetVisible(scrollbar[1]) and scrbThick or 0
+			local ythick = dgsGetVisible(scrollbar[2]) and scrbThick or 0
+			dgsSetPosition(scrollbar[1],x+sx-scrbThick,y-titleOffset,false)
+			dgsSetPosition(scrollbar[2],x,y+sy-scrbThick-titleOffset,false)
+			dgsSetSize(scrollbar[1],scrbThick,sy-ythick,false)
+			dgsSetSize(scrollbar[2],sx-xthick,scrbThick,false)
 		end
 	end
 end
@@ -168,23 +183,19 @@ function configScrollPane(source)
 	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local scrbThick = dgsElementData[source].scrollBarThick
 	local scrollbar = dgsElementData[source].scrollbars
-	local xthick,ythick = 0,0
-	dgsScrollPaneUpdateScrollBar(source)
-	if scrollbar then
-		local parent = dgsGetParent(source)
-		local titleOffset = 0
-		if isElement(parent) then
-			if not dgsElementData[source].withoutTitle then
-				titleOffset = dgsElementData[parent].titlesize or 0
-			end
+	local parent = dgsGetParent(source)
+	local titleOffset = 0
+	if isElement(parent) then
+		if not dgsElementData[source].withoutTitle then
+			titleOffset = dgsElementData[parent].titlesize or 0
 		end
-		xthick = dgsGetVisible(scrollbar[1]) and scrbThick or 0
-		ythick = dgsGetVisible(scrollbar[2]) and scrbThick or 0
-		dgsSetPosition(scrollbar[1],x+sx-scrbThick,y-titleOffset,false)
-		dgsSetPosition(scrollbar[2],x,y+sy-scrbThick-titleOffset,false)
-		dgsSetSize(scrollbar[1],scrbThick,sy-scrbThick,false)
-		dgsSetSize(scrollbar[2],sx-scrbThick,scrbThick,false)
 	end
+	local xthick = dgsGetVisible(scrollbar[1]) and scrbThick or 0
+	local ythick = dgsGetVisible(scrollbar[2]) and scrbThick or 0
+	dgsSetPosition(scrollbar[1],x+sx-scrbThick,y-titleOffset,false)
+	dgsSetPosition(scrollbar[2],x,y+sy-scrbThick-titleOffset,false)
+	dgsSetSize(scrollbar[1],scrbThick,sy-ythick,false)
+	dgsSetSize(scrollbar[2],sx-xthick,scrbThick,false)
 	local renderTarget = dxCreateRenderTarget(sx-xthick,sy-ythick,true)
 	dgsSetData(source,"renderTarget_parent",renderTarget)
 end
