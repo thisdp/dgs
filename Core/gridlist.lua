@@ -205,7 +205,7 @@ arg[1]
 	columnData Struct:
 	  1									2									N
 	  column1							column2								columnN
-	{{text1,Width,AllWidthFront},		{text1,Width,AllWidthFront},		{text1,Width,AllWidthFront}, ...}
+	{{text1,Width,AllWidthFront,Alignment},		{text1,Width,AllWidthFront,alignment},		{text1,Width,AllWidthFront,alignment }, ...}
 
 ]]
 
@@ -255,7 +255,7 @@ function dgsGridListGetColumnRelative(gridlist)
 	return dgsElementData[gridlist].columnRelative
 end
 
-function dgsGridListAddColumn(gridlist,name,len,pos)
+function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListAddColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(len) == "number","Bad argument @dgsGridListAddColumn at argument 2, expect number got "..dgsGetType(len))
 	local columnData = dgsElementData[gridlist].columnData
@@ -272,10 +272,10 @@ function dgsGridListAddColumn(gridlist,name,len,pos)
 	if columnDataCount > 0 then
 		oldLen = columnData[columnDataCount][3]+columnData[columnDataCount][2]
 	end
-	table.insert(columnData,pos,{name,len,oldLen})
+	table.insert(columnData,pos,{name,len,oldLen,alignment or "left"})
 
 	for i=pos+1,columnDataCount+1 do
-		columnData[i] = {columnData[i][1],columnData[i][2],dgsGridListGetColumnAllWidth(gridlist,i-1)}
+		columnData[i] = {columnData[i][1],columnData[i][2],dgsGridListGetColumnAllWidth(gridlist,i-1),columnData[i][4]}
 	end
 	dgsSetData(gridlist,"columnData",columnData)
 	oldLen = multiplier*oldLen
