@@ -1,5 +1,5 @@
-﻿function createTest()
-addEasingFunction("test_line",[[
+function createTest()
+dgsAddEasingFunction("test_line",[[
 	return math.abs(progress^2-0.5)*2
 ]])
 
