@@ -2260,7 +2260,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if enabled[1] and mx then
 					if hit then
 						local oldPos = MouseData.interfaceHit
-						local distance = (x-camX)^2+(y-camY)^2+(z-camZ)^2)^0.5
+						local distance = ((x-camX)^2+(y-camY)^2+(z-camZ)^2)^0.5
 						if oldPos[4] then
 							if distance <= oldPos[4] then
 								MouseData.hit = v
