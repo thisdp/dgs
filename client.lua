@@ -87,6 +87,7 @@ MouseData.editCursor = false
 MouseData.editCursorMoveOffset = false
 MouseData.gridlistMultiSelection = false
 MouseData.lastPos = {-1,-1}
+MouseData.interfaceHit = {}
 
 MouseData.EditTimer = setTimer(function()
 	if isElement(MouseData.nowShow) then
@@ -133,6 +134,7 @@ function dgsCoreRender()
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize ~= 0 then
 		local dgsData = dgsElementData
 		dxSetRenderTarget()
+		MouseData.interfaceHit = {}
 		for i=1,dx3DInterfaceTableSize do
 			local v = dx3DInterfaceTable[i]
 			local eleData = dgsData[v]
@@ -2243,7 +2245,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local hit,hitX,hitY
 				if ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5 <= eleData.maxDistance then
-					hit,hitX,hitY = dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,rndtgt,w,h,colors,lnVec,lnPnt)
+					hit,hitX,hitY,x,y,z = dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,rndtgt,w,h,colors,lnVec,lnPnt)
 				end
 				dxSetRenderTarget(rndtgt,true)
 				dxSetRenderTarget()
@@ -2257,9 +2259,21 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				------------------------------------
 				if enabled[1] and mx then
 					if hit then
-						MouseData.hit = v
-						mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
-						MouseX,MouseY = mx,my
+						local oldPos = MouseData.interfaceHit
+						local distance = (x-camX)^2+(y-camY)^2+(z-camZ)^2)^0.5
+						if oldPos[4] then
+							if distance <= oldPos[4] then
+								MouseData.hit = v
+								mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
+								MouseX,MouseY = mx,my
+								MouseData.interfaceHit = {x,y,z,distance}
+							end
+						else
+							MouseData.interfaceHit = {x,y,z,distance}
+							MouseData.hit = v
+							mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
+							MouseX,MouseY = mx,my
+						end
 					end
 				end
 			else
