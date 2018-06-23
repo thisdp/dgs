@@ -47,7 +47,7 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt)
 		local hit = false
 		local angle = (x-lnPnt[1])*lnVec[1]+(y-lnPnt[2])*lnVec[2]+(z-lnPnt[3])*lnVec[3]
 		local inSide = _x>=0 and _x<=1 and _y>=0 and _y <=1
-		return (angle > 0) and inSide,_x,_y
+		return (angle > 0) and inSide,_x,_y,px,py,pz
 	end
 end
 
