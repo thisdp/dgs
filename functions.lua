@@ -141,7 +141,7 @@ end
 function dgsApplyVisible(parent,visible)
 	for k,v in pairs(ChildrenTable[parent] or {}) do
 		if dgsElementType[v] == "dgs-dxedit" then
-			local edit = dgsElementData[v]["edit"]
+			local edit = dgsElementData[v].edit
 			guiSetVisible(edit,visible)
 		else
 			dgsApplyVisible(v,visible)
@@ -151,13 +151,14 @@ end
 
 function dgsSetVisible(dxgui,visible)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	local visible = visible and true or false
 	if dgsGetType(dxgui) == "dgs-dxedit" then
 		local edit = dgsElementData[dxgui].edit
 		guiSetVisible(edit,visible)
 	else
-		dgsApplyVisible(dxgui,false)
+		dgsApplyVisible(dxgui,visible)
 	end
-	return dgsSetData(dxgui,"visible",visible and true or false)
+	return dgsSetData(dxgui,"visible",visible)
 end
 
 function dgsGetVisible(dxgui)
