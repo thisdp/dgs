@@ -31,6 +31,7 @@
 	<script src="Core/checkbox.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
+	<script src="Core/arrowlist.lua" type="client" />
 	
 	<script src="PropertyManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />

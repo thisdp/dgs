@@ -12,6 +12,7 @@ defcolor.gridlist = {}
 defcolor.scrollbar = {}
 defcolor.tabpanel = {}
 defcolor.tab = {}
+defcolor.arrowlist = {}
 defcolor.disabledColor = true
 defcolor.disabledColorPercent = 0.8
 defcolor.button.color = {tocolor(0,120,200,200),tocolor(0,90,255,200),tocolor(50,90,250,200)}
@@ -58,6 +59,7 @@ defcolor.window.titnamecolor = tocolor(255,255,255,255)
 defcolor.window.titcolor = tocolor(20,20,20,200)
 defcolor.window.color = tocolor(20,20,20,150)
 defcolor.window.closeButtonColor = {tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255)}
+defcolor.arrowlist.itemColor = {tocolor(200,200,200,255),tocolor(160,160,160,255),tocolor(130,130,130,255)}
 
 function loadColorScheme()
 	local schemeIndex = fileOpen("colorSchemeIndex.txt")
