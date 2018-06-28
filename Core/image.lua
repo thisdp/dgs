@@ -12,6 +12,7 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	if type(img) == "string" then
 		texture = dxCreateTexture(img)
 		if not isElement(texture) then return false end
+		dgsSetData(texture,"parent",image)
 	end
 	dgsSetData(image,"image",texture)
 	dgsSetData(image,"color",color or tocolor(255,255,255,255))
