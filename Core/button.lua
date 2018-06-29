@@ -18,6 +18,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,
 	dgsSetData(button,"shadow",{_,_,_})
 	dgsSetData(button,"font",systemFont)
 	dgsSetData(button,"clickoffset",{0,0})
+	dgsSetData(button,"textOffset",{0,0,false})
 	dgsSetData(button,"clip",false)
 	dgsSetData(button,"clickType",1)
 	dgsSetData(button,"wordbreak",false)
