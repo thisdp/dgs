@@ -3498,7 +3498,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			killTimer(MouseData.Timer2[button])
 		end
 	end
-	--print("[DGS] Sry for this debug (Click respond tick "..getTickCount()-_tick..")")
+	if not firstClick then
+		print("[DGS] Sry for this debug ( First Click respond tick "..getTickCount()-_tick..") ")
+		firstClick = true
+	end
 end)
 
 addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
