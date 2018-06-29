@@ -372,15 +372,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if #text ~= 0 then
 					local font = eleData.font or systemFont
 					local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
-					local txtoffsetsX,txtoffsetsY = 0,0
 					local clip = eleData.clip
 					local wordbreak = eleData.wordbreak
 					local colorcoded = eleData.colorcoded
+					local tplt = eleData.rightbottom
+					local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
+					local textOffset = eleData.textOffset
+					local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
+					local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
 					if colorimgid == 3 then
 						txtoffsetsX,txtoffsetsY = eleData.clickoffset[1],eleData.clickoffset[2]
 					end
-					local tplt = eleData.rightbottom
-					local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
 						dxDrawText(text,x+txtoffsetsX+shadowoffx,y+txtoffsetsY+shadowoffy,x+w+shadowoffx-2,y+h+shadowoffy-1,tocolor(0,0,0,255*galpha),txtSizX,txtSizY,font,tplt[1],tplt[2],clip,wordbreak,rendSet,colorcoded)
@@ -3374,6 +3376,7 @@ GirdListDoubleClick.down = false
 GirdListDoubleClick.up = false
 
 addEventHandler("onClientClick",root,function(button,state,x,y)
+	local _tick = getTickCount()
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(MouseData.nowShow) then
 		local theType = dgsGetType(MouseData.nowShow)
@@ -3495,6 +3498,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			killTimer(MouseData.Timer2[button])
 		end
 	end
+	print("[DGS] Sry for this debug (Click respond tick "..getTickCount()-_tick..")")
 end)
 
 addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
