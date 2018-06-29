@@ -381,7 +381,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 					local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
 					if colorimgid == 3 then
-						txtoffsetsX,txtoffsetsY = eleData.clickoffset[1],eleData.clickoffset[2]
+						txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickoffset[1],txtoffsetsY+eleData.clickoffset[2]
 					end
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
