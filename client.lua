@@ -3264,7 +3264,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		elseif dgsType == "dgs-dximage" then
 			local image = dgsElementData[source].image
 			if isElement(image) then
-				if dgsElementData[image].parent == image then
+				if dgsElementData[image] and dgsElementData[image].parent == image then
 					destroyElement(image)
 				end
 			end
