@@ -3498,7 +3498,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			killTimer(MouseData.Timer2[button])
 		end
 	end
-	print("[DGS] Sry for this debug (Click respond tick "..getTickCount()-_tick..")")
+	--print("[DGS] Sry for this debug (Click respond tick "..getTickCount()-_tick..")")
 end)
 
 addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
