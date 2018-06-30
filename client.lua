@@ -1337,7 +1337,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configGridList(v)
-				dgsSetData(gridlist,"configNextFrame",false)
+				dgsSetData(v,"configNextFrame",false)
 			end
 			if x and y then
 				local nx,ny,nw,nh = x,y,w,h
