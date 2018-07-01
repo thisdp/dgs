@@ -139,6 +139,10 @@
 	
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
+	<export function="dgsScrollPaneSetScrollBarState" type="client" />
+	<export function="dgsScrollPaneGetScrollBarState" type="client" />
+	<export function="dgsScrollPaneSetScrollPosition" type="client" />
+	<export function="dgsScrollPaneGetScrollPosition" type="client" />
 	
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
@@ -336,6 +340,20 @@
 	<export function="dgsEDASetDebugModeEnabled" type="client" />
 	<export function="dgsEDAGetDebugModeEnabled" type="client" />
 	
+	<export function="dgsCreateArrowList" type="client" />
+	<export function="dgsArrowListAddItem" type="client" />
+	<export function="dgsArrowListRemoveItem" type="client" />
+	<export function="dgsArrowListSetItemText" type="client" />
+	<export function="dgsArrowListGetItemText" type="client" />
+	<export function="dgsArrowListSetItemValue" type="client" />
+	<export function="dgsArrowListGetItemValue" type="client" />
+	<export function="dgsArrowListSetItemRange" type="client" />
+	<export function="dgsArrowListGetItemRange" type="client" />
+	<export function="dgsArrowListSetItemTranslationTable" type="client" />
+	<export function="dgsArrowListGetItemTranslationTable" type="client" />
+	<export function="dgsArrowListSetItemStep" type="client" />
+	<export function="dgsArrowListGetItemStep" type="client" />
+	<export function="dgsArrowListGetItemTranslatedValue" type="client" />
 	
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
