@@ -1,3 +1,4 @@
+focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 sW,sH = guiGetScreenSize()
 white = tocolor(255,255,255,255)
@@ -83,6 +84,7 @@ MouseData.hit = false
 MouseData.Timer = {}
 MouseData.Timer2 = {}
 MouseData.nowShow = false
+MouseData.arrowListEnter = false
 MouseData.editCursor = false
 MouseData.editCursorMoveOffset = false
 MouseData.gridlistMultiSelection = false
@@ -130,6 +132,12 @@ function dgsCoreRender()
 		MouseData.clickm = false
 		MouseData.Scale = false
 		MouseData.scrollPane = false
+		if MouseData.arrowListEnter then
+			if isElement(MouseData.arrowListEnter[1]) then
+				dgsSetData(MouseData.arrowListEnter[1],"arrowListClick",false)
+			end
+		end
+		MouseData.arrowListEnter = false
 	end
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize ~= 0 then
 		local dgsData = dgsElementData
@@ -166,6 +174,12 @@ function dgsCoreRender()
 			MouseData.clickm = false
 			MouseData.Scale = false
 			MouseData.scrollPane = false
+			if MouseData.arrowListEnter then
+				if isElement(MouseData.arrowListEnter[1]) then
+					dgsSetData(MouseData.arrowListEnter[1],"arrowListClick",false)
+				end
+			end
+			MouseData.arrowListEnter = false
 			MouseX,MouseY = nil,nil
 		end
 		triggerEvent("onDgsRender",resourceRoot)
@@ -1070,6 +1084,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			end
 		elseif dxType == "dgs-dxscrollpane" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			if eleData.configNextFrame then
+				configScrollPane(v)
+				dgsSetData(v,"configNextFrame",false)
+			end
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2323,6 +2341,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				else
 					dxDrawRectangle(x,y,w,h,color,rendSet)
 				end
+				local sid
 				local itemData = eleData.itemData
 				if not eleData.mode then
 					dxSetRenderTarget(rendTarget,true)
@@ -2337,8 +2356,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local scbcheck = eleData.visible and scbThick or 0
 					if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
 						local toffset = (whichRowToStart*itemHeight+(whichRowToStart-1)*leading)+itemMoveOffset
-						sid = math.floor((my+2-cy-toffset)/(itemHeight+leading))+whichRowToStart+1
-						if sid <= #itemData then
+						local mouseTemp = (my-cy-toffset)
+						sid = math.floor(mouseTemp/(itemHeight+leading))+whichRowToStart+1
+						if sid <= #itemData and my-cy > (sid-1)*(itemHeight+leading)+itemMoveOffset then
 							eleData.select = sid
 							MouseData.enterData = true
 						else
@@ -2365,7 +2385,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						dxDrawText(iData[1],iConfig[7],itemY,rndtgtWidth,itemY+itemHeight,iConfig[3],iConfig[4][1],iConfig[4][2],iConfig[11],iConfig[6],"center")
 						local operatorLen = dxGetTextWidth("<",iConfig[4][1],"default-bold")
 						if iConfig[12] == "right" then
-							local selectorColor = iConfig[9][1]
 							local currentSelected = iData[6]
 							if iData[5] and iData[5][currentSelected] then
 								currentSelected = iData[5][currentSelected]
@@ -2373,13 +2392,33 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							local textLength = iConfig[14] or dxGetTextWidth(currentSelected,iConfig[10][1],iConfig[11])
 							local initialXPos = rndtgtWidth-iConfig[13]-operatorLen
 							local distance = iConfig[16]
-							---
-							local selectorR_sx,selectR_ex = initialXPos,initialXPos+operatorLen
-							local selectorL_sx,selectL_ex = initialXPos-textLength-operatorLen-distance*2,initialXPos-textLength-distance*2
-							local selectorText_sx,selectorText_ex = initialXPos-textLength-operatorLen-distance,initialXPos-textLength-distance
-							dxDrawText(">",selectorR_sx,itemY,selectR_ex,itemY+itemHeight,selectorColor,iConfig[4][1],iConfig[4][2],"default-bold","left","center")
-							dxDrawText(currentSelected,selectorText_sx,itemY,selectorText_ex,itemY+itemHeight,selectorColor,iConfig[4][1],iConfig[4][2],"default-bold","left","center")
-							dxDrawText("<",selectorL_sx,itemY,selectL_ex,itemY+itemHeight,selectorColor,iConfig[4][1],iConfig[4][2],"default-bold","left","center")
+							local selectorR_sx,selectorR_ex = initialXPos,initialXPos+operatorLen
+							local selectorL_sx,selectorL_ex = initialXPos-textLength-operatorLen-distance*2,initialXPos-textLength-distance*2
+							local selectorText_sx,selectorText_ex = initialXPos-textLength-distance,initialXPos-distance
+							local selectStateL,selectStateR = 1,1
+							if eleData.select == i then
+								local mouseX,mouseY = mx-cx,my-cy
+								if mouseX > selectorL_sx and mouseX < selectorL_ex then
+									selectStateL = 2
+									MouseData.arrowListEnter = {v,i,"left"}
+									if eleData.arrowListClick and eleData.arrowListClick[1] == i and eleData.arrowListClick[2] == "left" then
+										selectStateL = 3
+									end
+								elseif mouseX > selectorR_sx and mouseX < selectorR_ex then
+									selectStateR = 2
+									MouseData.arrowListEnter = {v,i,"right"}
+									if eleData.arrowListClick and eleData.arrowListClick[1] == i and eleData.arrowListClick[2] == "right" then
+										selectStateR = 3
+									end
+								else
+									MouseData.arrowListEnter = {v,i}
+								end
+							end
+							local selectorColorLeft = iConfig[9][selectStateL]
+							local selectorColorRight = iConfig[9][selectStateR]
+							dxDrawText(">",selectorR_sx,itemY,selectorR_ex,itemY+itemHeight,selectorColorRight,iConfig[4][1],iConfig[4][2],"default-bold","center","center")
+							dxDrawText(currentSelected,selectorText_sx,itemY,selectorText_ex,itemY+itemHeight,iConfig[17],iConfig[4][1],iConfig[4][2],iConfig[11],"center","center")
+							dxDrawText("<",selectorL_sx,itemY,selectorL_ex,itemY+itemHeight,selectorColorLeft,iConfig[4][1],iConfig[4][2],"default-bold","center","center")
 						elseif iConfig[12] == "left" then
 							
 						end
@@ -3165,6 +3204,18 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 				local oldSelect = dgsElementData[combobox].select
 				dgsElementData[combobox].select = preSelect
 				triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
+			elseif guitype == "dgs-dxarrowlist" then
+				local alEnter = MouseData.arrowListEnter
+				if alEnter and alEnter[1] == source then
+					dgsSetData(source,"arrowListClick",{alEnter[2],alEnter[3]})
+					local id = alEnter[2]
+					local itemData = dgsElementData[source].itemData
+					local sItemData = itemData[id]
+					if alEnter[3] then
+						local mathSymbol = alEnter[3] == "left" and -1 or 1
+						sItemData[6] = math.restrict(sItemData[2],sItemData[3],sItemData[6]+sItemData[4]*mathSymbol)
+					end
+				end
 			elseif guitype == "dgs-dxtab" then
 				local tabpanel = dgsElementData[source].parent
 				dgsBringToFront(tabpanel)
@@ -3177,6 +3228,12 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 		end
 	else
 		if button == "left" then
+			if MouseData.arrowListEnter then
+				if isElement(MouseData.arrowListEnter[1]) then
+					dgsSetData(MouseData.arrowListEnter[1],"arrowListClick",false)
+				end
+			end
+			MouseData.arrowListEnter = false
 			if MouseData.clickl == source then
 				if isElement(parent) then
 					local closebutton = dgsElementData[parent].closeButton
@@ -3376,7 +3433,6 @@ GirdListDoubleClick.down = false
 GirdListDoubleClick.up = false
 
 addEventHandler("onClientClick",root,function(button,state,x,y)
-	local _tick = getTickCount()
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(MouseData.nowShow) then
 		local theType = dgsGetType(MouseData.nowShow)
@@ -3497,10 +3553,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		if isTimer(MouseData.Timer2[button]) then
 			killTimer(MouseData.Timer2[button])
 		end
-	end
-	if not firstClick then
-		print("[DGS] Sry for this debug ( First Click respond tick "..getTickCount()-_tick..") ")
-		firstClick = true
 	end
 end)
 

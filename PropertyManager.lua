@@ -24,28 +24,17 @@ function dgsSetData(element,key,value,nocheck)
 							triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
 						end
 					end
-				elseif (dgsType == "dgs-dxgridlist" or dgsType == "dgs-dxscrollpane") then
-					if key == "scrollBarThick" then
-						assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
-						local scb = dgsElementData[element].scrollbars
-						local size = dgsElementData[element].absSize
-						dgsSetPosition(scb[1],size[1]-value,0,false)
-						dgsSetSize(scb[1],value,size[2]-value,false)
-						dgsSetPosition(scb[2],0,size[2]-value,false)
-						dgsSetSize(scb[2],size[1]-value,value,false)
-						if dgsType == "dgs-dxgridlist" then
-							configGridList(element)
-						else
-							configScrollPane(element)
+				elseif dgsType == "dgs-dxgridlist" then
+					if key == "columnHeight" or key == "mode" or key== "scrollBarThick" then
+						configGridList(element)
+					elseif key == "rowData" then
+						if dgsElementData[element].autoSort then
+							dgsElementData[element].nextRenderSort = true
 						end
-					elseif dgsType == "dgs-dxgridlist" then
-						if key == "columnHeight" or key == "mode" then
-							configGridList(element)
-						elseif key == "rowData" then
-							if dgsElementData[element].autoSort then
-								dgsElementData[element].nextRenderSort = true
-							end
-						end
+					end
+				elseif dgsType == "dgs-dxscrollpane" then
+					if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" then
+						configScrollPane(element)
 					end
 				elseif dgsType == "dgs-dxcombobox" then
 					if key == "scrollBarThick" then
