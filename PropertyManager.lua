@@ -172,7 +172,7 @@ function dgsSetProperty(dxgui,key,value,...)
 					return handleDxMemoText(v,value)
 				end
 			end
-			dgsSetData(dxgui,tostring(v),value)
+			dgsSetData(v,tostring(v),value)
 		end
 		return true
 	else
