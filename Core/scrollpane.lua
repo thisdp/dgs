@@ -18,6 +18,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
 	dgsSetData(scrollpane,"configNextFrame",false)
+	dgsSetData(scrollpane,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	--dgsSetData(scrollpane,"scrollBarOffset",{{20,false},{0,false}},true)
 	local scrbThick = 20
 	local titleOffset = 0
@@ -34,12 +35,14 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollpane,"scrollbars",{scrollbar1,scrollbar2})
-	dgsSetData(scrollbar1,"parent_sp",scrollpane)
-	dgsSetData(scrollbar2,"parent_sp",scrollpane)
+	dgsSetData(scrollbar1,"attachedToParent",scrollpane)
+	dgsSetData(scrollbar2,"attachedToParent",scrollpane)
 	dgsSetData(scrollbar1,"hitoutofparent",true)
 	dgsSetData(scrollbar2,"hitoutofparent",true)
 	dgsSetData(scrollbar1,"scrollType","Vertical")
 	dgsSetData(scrollbar2,"scrollType","Horizontal")
+	dgsSetData(scrollbar1,"scrollmultiplier",{0.1,true})
+	dgsSetData(scrollbar2,"scrollmultiplier",{0.1,true})
 	triggerEvent("onDgsCreate",scrollpane)
 	if not isElement(renderTarget) then
 		destroyElement(scrollpane)
@@ -264,7 +267,7 @@ function dgsScrollPaneGetScrollBarState(scrollpane)
 end
 
 addEventHandler("onDgsScrollBarScrollPositionChange",resourceRoot,function(new,old)
-	local parent = dgsElementData[source].parent_sp
+	local parent = dgsElementData[source].attachedToParent
 	if parent and dgsGetType(parent) == "dgs-dxscrollpane" then
 		local scrollbars = dgsElementData[parent].scrollbars
 		local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position

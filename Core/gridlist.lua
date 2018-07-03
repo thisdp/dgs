@@ -58,6 +58,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	dgsSetData(gridlist,"preSelect",{})
 	dgsSetData(gridlist,"rowSelect",{})
 	dgsSetData(gridlist,"itemClick",{})
+	dgsSetData(gridlist,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
 	dgsSetData(gridlist,"configNextFrame",false)
 	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true) or table.insert(CenterFatherTable,1,gridlist)
@@ -68,11 +69,15 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	local rowRender = dxCreateRenderTarget(abx,aby-(columnHeight or 20)-20,true)
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,gridlist)
+	dgsSetData(scrollbar1,"attachedToParent",gridlist)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,gridlist)
+	dgsSetData(scrollbar2,"attachedToParent",gridlist)
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
+	dgsSetData(scrollbar1,"scrollmultiplier",{0.1,true})
+	dgsSetData(scrollbar2,"scrollmultiplier",{0.1,true})
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
 	triggerEvent("onDgsCreate",gridlist)
 	return gridlist

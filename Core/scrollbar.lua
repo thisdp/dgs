@@ -1,7 +1,7 @@
 scrollBarSettings = {}
 scrollBarSettings.arrow = "image/scrollbar/scrollbar_arrow.png"
 
-function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,colorn1,colornmid,colorncursor,colore1,colorecursor,colorc1,colorccursor)
+function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollBar at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
@@ -11,15 +11,15 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,img1,imgmid,imgcursor,
 	assert(type(sy) == "number","Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy))
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
-	dgsSetData(scrollbar,"imgs",{img1 or scrollBarSettings.arrow,imgcursor,imgmid})
-	dgsSetData(scrollbar,"colorn",{colorn1 or schemeColor.scrollbar.colorn[1],colorncursor or schemeColor.scrollbar.colorn[2],colornmid or schemeColor.scrollbar.colorn[3]})
-	dgsSetData(scrollbar,"colore",{colore1 or schemeColor.scrollbar.colore[1],colorecursor or schemeColor.scrollbar.colore[2]})
-	dgsSetData(scrollbar,"colorc",{colorc1 or schemeColor.scrollbar.colorc[1],colorccursor or schemeColor.scrollbar.colorc[2]})
-	dgsSetData(scrollbar,"voh",voh or false)
+	dgsSetData(scrollbar,"image",{arrowImage or scrollBarSettings.arrow,cursorImage,troughImage})
+	dgsSetData(scrollbar,"arrowColor",{arrowColorNormal or schemeColor.scrollbar.arrowColor[1],arrowColorHover or schemeColor.scrollbar.arrowColor[2],arrowColorClick or schemeColor.scrollbar.arrowColor[3]})
+	dgsSetData(scrollbar,"cursorColor",{cursorColorNormal or schemeColor.scrollbar.cursorColor[1],cursorColorHover or schemeColor.scrollbar.cursorColor[2],cursorColorClick or schemeColor.scrollbar.cursorColor[3]})
+	dgsSetData(scrollbar,"troughColor",troughColor or schemeColor.scrollbar.troughColor)
+	dgsSetData(scrollbar,"voh",voh or false) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
 	dgsSetData(scrollbar,"length",{30,false},true)
 	dgsSetData(scrollbar,"multiplier",{1,false})
-	dgsSetData(scrollbar,"scrollmultiplier",{5,false})
+	dgsSetData(scrollbar,"scrollmultiplier",{1,false})
 	dgsSetData(scrollbar,"scrollArrow",true)
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true) or table.insert(CenterFatherTable,1,scrollbar)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
@@ -39,10 +39,27 @@ function dgsScrollBarGetScrollPosition(scrollbar)
 end
 
 function scrollScrollBar(scrollbar,button)
-	local length,lrlt = dgsElementData[scrollbar].length[1],dgsElementData[scrollbar].length[2]
-	local scrollMultiplier,rltPos = dgsElementData[scrollbar].scrollmultiplier[1],dgsElementData[scrollbar].scrollmultiplier[2]
+	local eleData = dgsElementData[scrollbar]
+	local length,lrlt = eleData.length[1],eleData.length[2]
+	local scrollMultiplier,rltPos = eleData.scrollmultiplier[1],eleData.scrollmultiplier[2]
+	local slotRange
+	local scrollArrow = eleData.scrollArrow
+	local arrowPos = 0
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	if voh then
+		if scrollArrow then
+			arrowPos = h
+		end
+		slotRange = w-arrowPos*2
+	else
+		if scrollArrow then
+			arrowPos = w
+		end
+		slotRange = h-arrowPos*2
+	end
+	local cursorRange = lrlt and length*slotRange or (length <= slotRange and length or 0)
 	local pos = dgsElementData[scrollbar].position
-	local offsetPos = (rltPos and scrollMultiplier*cursorRange*0.01 or scrollMultiplier)
+	local offsetPos = (rltPos and scrollMultiplier*cursorRange*0.5 or scrollMultiplier)
 	local gpos = button and pos+offsetPos or pos-offsetPos
 	dgsSetData(scrollbar,"position",math.restrict(0,100,gpos))
 end
