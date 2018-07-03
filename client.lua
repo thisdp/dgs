@@ -266,7 +266,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		visible = eleData.visible
 		local dxType = dgsGetType(v)
 		if dxType == "dgs-dxscrollbar" then
-			local pnt = eleData.parent_sp
+			local pnt = eleData.attachedToParent
 			if pnt and not dgsElementData[pnt].visible then
 				return
 			end
@@ -1149,20 +1149,21 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local ax,ay = dgsGetPosition(v,false)
 				local voh = eleData.voh
-				local imgs = eleData.imgs
+				local image = eleData.image
 				local pos = eleData.position
 				local length,lrlt = eleData.length[1],eleData.length[2]
 				local colors = {eleData.colorn,eleData.colore,eleData.colorc}
-				local newColor_a = {}
-				for c_k,c_v in pairs(colors) do
-					local newColor_b = {}
-					for c_kk,c_vv in pairs(c_v) do
-						newColor_b[c_kk] = applyColorAlpha(c_vv,galpha)
-					end
-					newColor_a[c_k] = newColor_b
+				local cursorColor,arrowColor,troughColor = eleData.cursorColor,eleData.arrowColor,eleData.troughColor
+				local tempCursorColor = {}
+				local tempArrowColor = {}
+				for key,color in pairs(cursorColor) do
+					tempCursorColor[key] = applyColorAlpha(color,galpha)
 				end
-				colors = newColor_a
-				local colorimgid = {1,1,1,1}
+				for key,color in pairs(arrowColor) do
+					tempArrowColor[key] = applyColorAlpha(color,galpha)
+				end
+				local tempTroughColor = applyColorAlpha(troughColor,galpha)
+				local colorImageIndex = {1,1,1,1}
 				local slotRange
 				local scrollArrow =  eleData.scrollArrow
 				local arrowPos = 0
@@ -1204,10 +1205,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							end
 						end
 						if MouseData.enterData then
-							colorimgid[MouseData.enterData] = 2
+							colorImageIndex[MouseData.enterData] = 2
 						end
 					else
-						colorimgid[MouseData.clickData] = 3
+						colorImageIndex[MouseData.clickData] = 3
 						if MouseData.clickData == 2 then
 							local position
 							local mvx,mvy = MouseData.Move[1],MouseData.Move[2]
@@ -1231,34 +1232,34 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				------------------------------------
 				if voh then
-					if imgs[3] then
-						dxDrawImage(x+arrowPos,y,w-2*arrowPos,h,imgs[3],0,0,0,colors[1][3],rendSet)
+					if image[3] then
+						dxDrawImage(x+arrowPos,y,w-2*arrowPos,h,image[3],0,0,0,tempTroughColor,rendSet)
 					else
-						dxDrawRectangle(x+arrowPos,y,w-2*arrowPos,h,colors[1][3],rendSet)
+						dxDrawRectangle(x+arrowPos,y,w-2*arrowPos,h,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
-						dxDrawImage(x,y,h,h,imgs[1],270,0,0,colors[colorimgid[1]][1],rendSet)
-						dxDrawImage(x+w-h,y,h,h,imgs[1],90,0,0,colors[colorimgid[4]][1],rendSet)
+						dxDrawImage(x,y,h,h,image[1],270,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+w-h,y,h,h,image[1],90,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
-					if imgs[2] then
-						dxDrawImage(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,imgs[2],270,0,0,colors[colorimgid[2]][2],rendSet)
+					if image[2] then
+						dxDrawImage(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
-						dxDrawRectangle(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,colors[colorimgid[2]][2],rendSet)
+						dxDrawRectangle(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
 				else
-					if imgs[3] then
-						dxDrawImage(x,y+arrowPos,w,h-2*arrowPos,imgs[3],0,0,0,colors[1][3],rendSet)
+					if image[3] then
+						dxDrawImage(x,y+arrowPos,w,h-2*arrowPos,image[3],0,0,0,tempTroughColor,rendSet)
 					else
-						dxDrawRectangle(x,y+arrowPos,w,h-2*arrowPos,colors[1][3],rendSet)
+						dxDrawRectangle(x,y+arrowPos,w,h-2*arrowPos,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
-						dxDrawImage(x,y,w,w,imgs[1],0,0,0,colors[colorimgid[1]][1],rendSet)
-						dxDrawImage(x,y+h-w,w,w,imgs[1],180,0,0,colors[colorimgid[4]][1],rendSet)
+						dxDrawImage(x,y,w,w,image[1],0,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x,y+h-w,w,w,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
-					if imgs[2] then
-						dxDrawImage(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,imgs[2],270,0,0,colors[colorimgid[2]][2],rendSet)
+					if image[2] then
+						dxDrawImage(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
-						dxDrawRectangle(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,colors[colorimgid[2]][2],rendSet)
+						dxDrawRectangle(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
 				end
 				------------------------------------
@@ -2514,7 +2515,7 @@ function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)
 	return x+offsetx,y+offsety,(rndtgt and cx or x)+offsetx,(rndtgt and cy or y)+offsety
 end
 
-function checkEditCursor(button,state)
+function onClientKeyCheck(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
 		local dgsType = dgsGetType(MouseData.enter)
 		local scroll = button == "mouse_wheel_down" and 1 or -1
@@ -2523,28 +2524,40 @@ function checkEditCursor(button,state)
 			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 		elseif dgsType == "dgs-dxgridlist" then
 			if MouseData.enterData then
-				local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
-				if dgsGetVisible(scrollbar) then
+				local scrollbar
+				local scrollbar1,scrollbar2 = dgsElementData[MouseData.enter].scrollbars[1],dgsElementData[MouseData.enter].scrollbars[2]
+				local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+				if visibleScb1 and not visibleScb2 then
+					scrollbar = scrollbar1
+				elseif visibleScb2 and not visibleScb1 then
+					scrollbar = scrollbar2
+				elseif visibleScb1 and visibleScb2 then
+					local whichScrollBar = dgsElementData[MouseData.enter].mouseWheelScrollBar and 2 or 1
+					scrollbar = dgsElementData[MouseData.enter].scrollbars[whichScrollBar]
+				end
+				if scrollbar then
 					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 				end
 			end
 		elseif dgsType == "dgs-dxmemo" then
-				local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
-				if dgsGetVisible(scrollbar) then
-					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
-				end
+			local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
+			if dgsGetVisible(scrollbar) then
+				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+			end
 		elseif isElement(MouseData.scrollPane) then
-			local scrollbar1 = dgsElementData[MouseData.scrollPane].scrollbars[1]
-			local scrollbar2 = dgsElementData[MouseData.scrollPane].scrollbars[2]
-			local sbr
-			if dgsGetVisible(scrollbar1) then
-				sbr = scrollbar1
+			local scrollbar
+			local scrollbar1,scrollbar2 = dgsElementData[MouseData.scrollPane].scrollbars[1],dgsElementData[MouseData.scrollPane].scrollbars[2]
+			local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+			if visibleScb1 and not visibleScb2 then
+				scrollbar = scrollbar1
+			elseif visibleScb2 and not visibleScb1 then
+				scrollbar = scrollbar2
+			elseif visibleScb1 and visibleScb2 then
+				local whichScrollBar = dgsElementData[MouseData.scrollPane].mouseWheelScrollBar and 2 or 1
+				scrollbar = dgsElementData[MouseData.scrollPane].scrollbars[whichScrollBar]
 			end
-			if dgsGetVisible(scrollbar2) then
-				sbr = scrollbar2
-			end
-			if sbr then
-				scrollScrollBar(sbr,button == "mouse_wheel_down" or false)
+			if scrollbar then
+				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxtabpanel" or dgsType == "dgs-dxtab" then
 			local tabpanel = MouseData.enter
@@ -2850,7 +2863,7 @@ function checkEditCursor(button,state)
 		end
 	end
 end
-addEventHandler("onClientKey",root,checkEditCursor)
+addEventHandler("onClientKey",root,onClientKeyCheck)
 
 addEventHandler("onClientGUIBlur",resourceRoot,function()
 	local guitype = getElementType(source)
@@ -3103,6 +3116,14 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 				end
 				local py =  pos*0.01*(slotRange-cursorRange)
 				checkScrollBar(py,voh)
+				local parent = dgsElementData[source].attachedToParent
+				if isElement(parent) then
+					if source == dgsElementData[parent].scrollbars[1] then
+						dgsSetData(parent,"mouseWheelScrollBar",false)
+					elseif source == dgsElementData[parent].scrollbars[2] then
+						dgsSetData(parent,"mouseWheelScrollBar",true)
+					end
+				end
 			elseif guitype == "dgs-dxgridlist" then
 				local oPreSelect = dgsElementData[source].oPreSelect
 				local rowData = dgsElementData[source].rowData
@@ -3288,7 +3309,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		elseif dgsType == "dgs-dxscrollpane" then
 			local rentarg = dgsElementData[source].renderTarget_parent
 			destroyElement(rentarg)
-			local scrollbar = dgsElementData[source].scrollbars
+			local scrollbar = dgsElementData[source].scrollbars or {}
 			if isElement(scrollbar[1]) then
 				destroyElement(scrollbar[1])
 			end
