@@ -19,7 +19,5 @@ Auto Completion For [Notepad++](https://notepad-plus-plus.org/) *(Thanks To Ahme
 
 To prevent bugs and issues with the resource, keep the resource names as **dgs**.
 
-Keep up to date with the latest changelog available here: http://angel.mtaip.cn:233/dgsUpdate/
-
 The reason why I released DGS is because I am ready to leave MTA. This is my one contribution to the MTA community.
 Finally, I am glad to provide the DGS resource, and everyone is welcome to adjust the code and help make it better by editting the code, adding functions or events.
