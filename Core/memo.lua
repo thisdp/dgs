@@ -32,6 +32,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(memo,"sidecolor",schemeColor.memo.sidecolor)
 	dgsSetData(memo,"useFloor",false)
 	dgsSetData(memo,"readOnlyCaretShow",false)
+	dgsSetData(memo,"scrollBarState",{nil,nil})
 	dgsSetData(memo,"editmemoSign",true)
 	dgsSetData(memo,"selectcolor",selectmode and tocolor(50,150,255,100) or tocolor(50,150,255,200))
 	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
@@ -49,6 +50,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
+	dgsSetData(scrollbar1,"scrollmultiplier",{0.1,true})
+	dgsSetData(scrollbar2,"scrollmultiplier",{0.1,true})
 	local renderTarget = dxCreateRenderTarget(abx-4,aby,true)
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
@@ -564,9 +567,8 @@ function seekMaxLengthLine(memo)
 	end
 	return line,lineLen
 end
-
+	
 function configMemo(source)
-	if dgsElementData[source].disableScrollBar then return end
 	local mymemo = dgsElementData[source].memo
 	local size = dgsElementData[source].absSize
 	local text = dgsElementData[source].text
@@ -574,32 +576,36 @@ function configMemo(source)
 	local textsize = dgsElementData[source].textsize
 	local fontHeight = dxGetFontHeight(dgsElementData[source].textsize[2],font)
 	local scbThick = dgsElementData[source].scrollBarThick
-	local scrollbars = dgsElementData[source].scrollbars
-	local visible1,visible2 = dgsElementData[scrollbars[1]].visible, dgsElementData[scrollbars[2]].visible
-	dgsSetVisible(scrollbars[1],false)
-	dgsSetVisible(scrollbars[2],false)
-	dgsSetVisible(scrollbars[2],dgsElementData[source].rightLength[1] > size[1])
-	local scbTakes2 = dgsElementData[scrollbars[2]].visible and scbThick or 0
+	local scrollbar = dgsElementData[source].scrollbars
+	local visible1,visible2 = dgsElementData[scrollbar[1]].visible, dgsElementData[scrollbar[2]].visible
+	dgsSetVisible(scrollbar[1],false)
+	dgsSetVisible(scrollbar[2],false)
+	dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1])
+	local scbTakes2 = dgsElementData[scrollbar[2]].visible and scbThick or 0
 	local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
-	dgsSetVisible(scrollbars[1], #text > canHold )
-	local scbTakes1 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4
-	dgsSetVisible(scrollbars[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
-	local scbTakes2 = dgsElementData[scrollbars[2]].visible and scbThick or 0
+	dgsSetVisible(scrollbar[1], #text > canHold )
+	local scbTakes1 = dgsElementData[scrollbar[1]].visible and scbThick or 0
+	dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
+	local scbTakes2 = dgsElementData[scrollbar[2]].visible and scbThick or 0
+	
+	dgsSetPosition(scrollbar[1],size[1]-scbThick,0,false)
+	dgsSetPosition(scrollbar[2],0,size[2]-scbThick,false)
+	dgsSetSize(scrollbar[1],scbThick,size[2]-scbTakes2,false)
+	dgsSetSize(scrollbar[2],size[1]-scbTakes1,scbThick,false)
+	
 	local higLen = #text/(#text-canHold)/4
 	higLen = higLen >= 0.95 and 0.95 or higLen
-	dgsSetData(scrollbars[1],"length",{higLen,true})
-	local widLen = dgsElementData[source].rightLength[1]/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1)/4
+	dgsSetData(scrollbar[1],"length",{higLen,true})
+	local widLen = dgsElementData[source].rightLength[1]/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/4
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	dgsSetData(scrollbars[2],"length",{widLen,true})
-	if visible1 ~= dgsElementData[scrollbars[1]].visible or visible2 ~= dgsElementData[scrollbars[2]].visible then
-		local px,py = math.floor(size[1]), math.floor(size[2])
-		local rnd = dgsElementData[source].renderTarget
-		if isElement(rnd) then
-			destroyElement(rnd)
-		end
-		local renderTarget = dxCreateRenderTarget(px-scbTakes1,py-scbTakes2,true)
-		dgsSetData(source,"renderTarget",renderTarget)
+	dgsSetData(scrollbar[2],"length",{widLen,true})
+	local px,py = math.floor(size[1]), math.floor(size[2])
+	local rnd = dgsElementData[source].renderTarget
+	if isElement(rnd) then
+		destroyElement(rnd)
 	end
+	local renderTarget = dxCreateRenderTarget(px-scbTakes1,py-scbTakes2,true)
+	dgsSetData(source,"renderTarget",renderTarget)
 end
 
 addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
