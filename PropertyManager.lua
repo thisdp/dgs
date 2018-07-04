@@ -108,6 +108,8 @@ function dgsSetData(element,key,value,nocheck)
 						return guiMemoSetReadOnly(gmemo,value and true or false)
 					elseif key == "text" then
 						return handleDxMemoText(element,value)
+					elseif key== "scrollBarThick" then
+						configMemo(element)
 					end
 				elseif dgsType == "dgs-dxprogressbar" then
 					if key == "progress" then
