@@ -2820,34 +2820,37 @@ function onClientKeyCheck(button,state)
 					end,500,1)
 				end
 			elseif button == "backspace" then
-				local cpos = dgsElementData[MouseData.nowShow].cursorposXY
-				local spos = dgsElementData[MouseData.nowShow].selectfrom
-				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
-					dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
-					dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
-				else
-					local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
-					dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
-					MouseData.Timer["memoMoveDelay"] = setTimer(function()
-						if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-							MouseData.Timer["memoMove"] = setTimer(function()
-								if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-									local cpos = dgsElementData[MouseData.nowShow].cursorposXY
-									local spos = dgsElementData[MouseData.nowShow].selectfrom
-									local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
-									dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
-								else
-									killTimer(MouseData.Timer["memoMove"])
-								end
-							end,50,0)
-						end
-					end,500,1)
+				if not dgsElementData[MouseData.nowShow].readOnly then
+					local cpos = dgsElementData[MouseData.nowShow].cursorposXY
+					local spos = dgsElementData[MouseData.nowShow].selectfrom
+					if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
+						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
+						dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
+					else
+						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
+						dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+						MouseData.Timer["memoMoveDelay"] = setTimer(function()
+							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+								MouseData.Timer["memoMove"] = setTimer(function()
+									if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+										local cpos = dgsElementData[MouseData.nowShow].cursorposXY
+										local spos = dgsElementData[MouseData.nowShow].selectfrom
+										local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
+										dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+									else
+										killTimer(MouseData.Timer["memoMove"])
+									end
+								end,50,0)
+							end
+						end,500,1)
+					end
 				end
 			elseif button == "c" or button == "x" then
 				if getKeyState("lctrl") or getKeyState("rctrl") then
+					local deleteText = button == "x" and not dgsElementData[MouseData.nowShow].readOnly
 					local cpos = dgsElementData[MouseData.nowShow].cursorposXY
 					local spos = dgsElementData[MouseData.nowShow].selectfrom
-					local theText = dgsMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],button == "x")
+					local theText = dgsMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],deleteText)
 					setClipboard(theText)
 				end
 			end
