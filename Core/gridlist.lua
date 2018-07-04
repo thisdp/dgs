@@ -58,6 +58,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	dgsSetData(gridlist,"preSelect",{})
 	dgsSetData(gridlist,"rowSelect",{})
 	dgsSetData(gridlist,"itemClick",{})
+	dgsSetData(gridlist,"scrollBarState",{nil,nil})
 	dgsSetData(gridlist,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
 	dgsSetData(gridlist,"configNextFrame",false)
@@ -1009,6 +1010,13 @@ function configGridList(source)
 	end
 	if scbStateV == nil then
 		scbStateV = scbStateH
+	end
+	local forceState = dgsElementData[source].scrollBarState
+	if forceState[1] ~= nil then
+		scbStateV = forceState[1]
+	end
+	if forceState[2] ~= nil then
+		scbStateH = forceState[2]
 	end
 	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
 	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
