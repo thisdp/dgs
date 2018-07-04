@@ -24,7 +24,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(memo,"cursorThick",1.2)
 	dgsSetData(memo,"caretColor",schemeColor.memo.caretcolor)
 	dgsSetData(memo,"caretHeight",1)
-	dgsSetData(memo,"scrollBarThick",20)
+	dgsSetData(memo,"scrollBarThick",20,true)
 	dgsSetData(memo,"cursorOffset",{0,0})
 	dgsSetData(memo,"readOnly",false)
 	dgsSetData(memo,"font",systemFont)
