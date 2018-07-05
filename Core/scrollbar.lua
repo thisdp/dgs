@@ -46,6 +46,7 @@ function scrollScrollBar(scrollbar,button)
 	local scrollArrow = eleData.scrollArrow
 	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local voh = eleData.voh
 	if voh then
 		if scrollArrow then
 			arrowPos = h
