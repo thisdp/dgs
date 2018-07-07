@@ -1365,9 +1365,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local DataTab = eleData
 				local bgcolor,bgimg = DataTab.bgcolor,DataTab.bgimage
-				local columncolor,columnimg = DataTab.columncolor,DataTab.columnimage
+				local columncolor,columnimg = DataTab.columnColor,DataTab.columnImage
 				local font = DataTab.font or systemFont
-				local columnFont = DataTab.columnFont or font
 				columncolor = applyColorAlpha(columncolor,galpha)
 				bgcolor = applyColorAlpha(bgcolor,galpha)
 				local columnHeight = DataTab.columnHeight
@@ -1405,7 +1404,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				local mode = DataTab.mode
-				local columnTextColor = DataTab.columntextcolor
+				local columnTextColor = DataTab.columnTextColor
 				local columnRelt = DataTab.columnRelative
 				local rowData = DataTab.rowData
 				local rowHeight = DataTab.rowHeight
@@ -1421,8 +1420,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local columnOffset = DataTab.columnOffset
 				local columnMoveOffset = eleData.PixelInt and DataTab.columnMoveOffset-DataTab.columnMoveOffset%1
 				local fnc = eleData.functions
-				local rowtextx,rowtexty = DataTab.rowtextsize[1],DataTab.rowtextsize[2] or DataTab.rowtextsize[1]
-				local columntextx,columntexty = DataTab.columntextsize[1],DataTab.columntextsize[2] or DataTab.columntextsize[1]
+				local rowTextSx,rowTextSy = DataTab.rowTextSize[1],DataTab.rowTextSize[2] or DataTab.rowTextSize[1]
+				local columnTextSx,columnTextSy = DataTab.columnTextSize[1],DataTab.columnTextSize[2] or DataTab.columnTextSize[1]
 				local selectionMode = DataTab.selectionMode
 				local clip = eleData.clip
 				local mouseInsideGridList = mx >= cx and mx <= cx+w and my >= cy and my <= cy+h-scbThickH
@@ -1438,7 +1437,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local renderTarget = DataTab.renderTarget
 					local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
 					dxSetRenderTarget(renderTarget[1],true)
-						local sizex,sizey = DataTab.columntextsize[1],DataTab.columntextsize[2]
 						local cpos = {}
 						local cend = {}
 						local multiplier = columnRelt and (w-scbThickV) or 1
@@ -1446,6 +1444,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						local mouseColumnPos = mx-cx
 						local mouseSelectColumn = -1
 						for id,data in ipairs(columnData) do
+							local _columnTextColor = data[5] or columnTextColor
+							local _columnTextColorCoded = data[6] or colorcoded
+							local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
+							local _columnFont = data[9] or font
 							local tempCpos = data[3]*multiplier
 							local _tempStartx = tempCpos+tempColumnOffset
 							local _tempEndx = _tempStartx+data[2]*multiplier
@@ -1456,14 +1458,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 									local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
 									if sortColumn == id and sortIcon then
 										if DataTab.columnShadow then
-											dxDrawText(sortIcon,_tempStartx+1-10,1,_tempEndx,columnHeight,black,columntextx,columntexty,columnFont,"left","center",clip,false,false,false,true)
+											dxDrawText(sortIcon,_tempStartx+1-10,1,_tempEndx,columnHeight,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
 										end
-										dxDrawText(sortIcon,_tempStartx-10,0,_tempEndx,columnHeight,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,false,false,true)
+										dxDrawText(sortIcon,_tempStartx-10,0,_tempEndx,columnHeight,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
 									end
 									if DataTab.columnShadow then
-										dxDrawText(data[1],_tempStartx+1,1,_tempEndx,columnHeight,black,columntextx,columntexty,columnFont,data[4],"center",clip,false,false,false,true)
+										dxDrawText(data[1],_tempStartx+1,1,_tempEndx,columnHeight,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,false,true)
 									end
-									dxDrawText(data[1],_tempStartx,0,_tempEndx,columnHeight,columnTextColor,columntextx,columntexty,columnFont,data[4],"center",clip,false,false,false,true)
+									dxDrawText(data[1],_tempStartx,0,_tempEndx,columnHeight,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,_columnTextColorCoded,true)
 								end
 								if mouseInsideGridList and mouseSelectColumn == -1 then
 									if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
@@ -1512,8 +1514,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 								for id,v in pairs(cpos) do
 									local text = lc_rowData[id][1]
 									local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
-									local _txtScalex = lc_rowData[id][4] or rowtextx
-									local _txtScaley = lc_rowData[id][5] or rowtexty
+									local _txtScalex = lc_rowData[id][4] or rowTextSx
+									local _txtScaley = lc_rowData[id][5] or rowTextSy
 									local rowState = 1
 									if selectionMode == 1 then
 										if i == preSelect[1] then
@@ -1619,21 +1621,26 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					column_x = cx-cpos[whichColumnToStart]+columnOffset
 					for i=whichColumnToStart,whichColumnToEnd or columnCount do
-						local column_sx = column_x+cpos[i]+columnData[i][2]*multiplier-scbThickV
+						local data = columnData[i]
+						local _columnTextColor = data[5] or columnTextColor
+						local _columnTextColorCoded = data[6] or colorcoded
+						local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
+						local _columnFont = data[9] or font
+						local column_sx = column_x+cpos[i]+data[2]*multiplier-scbThickV
 						local posx = column_x+cpos[i]
 						local tPosX = posx-posx%1
 						if sortColumn == i and sortIcon then
 							if DataTab.columnShadow then
-								dxDrawText(sortIcon,tPosX+1-10,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+								dxDrawText(sortIcon,tPosX+1-10,1+cy,column_sx,ypcolumn,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
 							end
-							dxDrawText(sortIcon,tPosX-10,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,"left","center",clip,false,rendSet,false,true)
+							dxDrawText(sortIcon,tPosX-10,cy,column_sx,ypcolumn,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
 						end
 						if DataTab.columnShadow then
-							dxDrawText(columnData[i][1],1+tPosX,1+cy,column_sx,ypcolumn,black,columntextx,columntexty,columnFont,columnData[i][4],"center",clip,false,rendSet,false,true)
+							dxDrawText(data[1],1+tPosX,1+cy,column_sx,ypcolumn,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,rendSet,false,true)
 						end
-						dxDrawText(columnData[i][1],tPosX,cy,column_sx,ypcolumn,columnTextColor,columntextx,columntexty,columnFont,columnData[i][4],"center",clip,false,rendSet,false,true)
+						dxDrawText(data[1],tPosX,cy,column_sx,ypcolumn,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,rendSet,false,true)
 						if mouseInsideGridList and mouseSelectColumn == -1 then
-							backgroundWidth = columnData[i][2]*multiplier
+							backgroundWidth = data[2]*multiplier
 							if backgroundWidth+posx-x >= w or whichColumnToEnd == i then
 								backgroundWidth = w-posx+x
 							end
@@ -1684,8 +1691,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						for id=whichColumnToStart,whichColumnToEnd do
 							local text = lc_rowData[id][1]
 							local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
-							local _txtScalex = lc_rowData[id][4] or rowtextx
-							local _txtScaley = lc_rowData[id][5] or rowtexty
+							local _txtScalex = lc_rowData[id][4] or rowTextSx
+							local _txtScaley = lc_rowData[id][5] or rowTextSy
 							local rowState = 1
 							if selectionMode == 1 then
 								if i == preSelect[1] then
