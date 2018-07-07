@@ -1366,7 +1366,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local DataTab = eleData
 				local bgcolor,bgimg = DataTab.bgcolor,DataTab.bgimage
 				local columncolor,columnimg = DataTab.columncolor,DataTab.columnimage
-				local columnFont = DataTab.columnFont
+				local font = DataTab.font or systemFont
+				local columnFont = DataTab.columnFont or font
 				columncolor = applyColorAlpha(columncolor,galpha)
 				bgcolor = applyColorAlpha(bgcolor,galpha)
 				local columnHeight = DataTab.columnHeight
@@ -1405,7 +1406,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local mode = DataTab.mode
 				local columnTextColor = DataTab.columntextcolor
-				local font = DataTab.font or systemFont
 				local columnRelt = DataTab.columnRelative
 				local rowData = DataTab.rowData
 				local rowHeight = DataTab.rowHeight
