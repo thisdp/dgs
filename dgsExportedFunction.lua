@@ -21,7 +21,7 @@ if not dgsImportHead then
 	function DGSCallMT:__index(k)
 		if type(k) ~= 'string' then k = tostring(k) end
 		self[k] = function(...)
-			assert(dgsImportHead,"DGS is not running")
+			assert(dgsImportHead,"DGS import data is missing or DGS is not running, please reimport dgs functions")
 			if type(dgsImportHead.dgsResource) == 'userdata' and getResourceRootElement(dgsImportHead.dgsResource) then
 				return call(dgsImportHead.dgsResource, k, ...)
 			else
