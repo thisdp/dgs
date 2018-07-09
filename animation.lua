@@ -5,7 +5,7 @@ alphaGUIList = {}
 
 function dgsIsAniming(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsIsAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
-	return moveGUIList[gui] or false
+	return animGUIList[gui] or false
 end
 
 function dgsAnimTo(gui, property, value, easing, thetime, callback)
@@ -16,22 +16,42 @@ function dgsAnimTo(gui, property, value, easing, thetime, callback)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	assert(not(type(value) ~= "number" and builtins[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
-	dgsSetData(gui,"anim",{[0]=getTickCount(), property, value, dgsElementData[gui][property], easing, thetime, ["callback"] = callback})
-	if not animGUIList[gui] then
-		animGUIList[gui] = true
+	if not dgsElementData[gui].anim then
+		dgsElementData[gui].anim = {}
+	end
+	if not dgsElementData[gui].anim[property] then
+		dgsElementData[gui].anim[property] = {[-1]=index,[0]=getTickCount(),property, value, dgsElementData[gui][property],easing,thetime,callback = callback}
+		if not animGUIList[gui] then
+			animGUIList[gui] = true
+		end
 		return true
 	end
 	return false
 end
 
-function dgsStopAniming(gui)
+function dgsStopAniming(gui,property)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if animGUIList[gui] then
-		local callback = dgsGetData(gui,"anim")["callback"]
-		dgsSetData(gui,"anim",false)
-		triggerEvent("onDgsStopAniming",gui)
-		animGUIList[gui] = nil
-		if callback then callback() end
+		local animList = dgsElementData[gui].anim or {}
+		if property then
+			if animList[property] then
+				local callback = animList[property]["callback"]
+				triggerEvent("onDgsStopAniming",gui,property)
+				animList[property] = nil
+				if not next(animList) then
+					animGUIList[gui] = nil
+				end
+				if callback then callback(gui) end
+			end
+		else
+			for k,v in pairs(animList) do
+				local callback = v["callback"]
+				triggerEvent("onDgsStopAniming",gui,k)
+				if callback then callback() end
+			end
+			animGUIList[gui] = nil
+			dgsSetData(gui,"anim",{})
+		end
 		return true
 	end
 	return false
@@ -139,26 +159,27 @@ addEventHandler("onClientRender",root,function()
 	local tickCount = getTickCount()
 	for v,value in pairs(animGUIList) do
 		if not dgsIsDxElement(v) or not value then animGUIList[v] = nil end
-		local data = dgsElementData[v].anim
-		if not data then animGUIList[v] = nil end
+		local animList = dgsElementData[v].anim
 		if animGUIList[v] then
-			local propertyName,targetValue,oldValue,easing,thetime = data[1],data[2],data[3],data[4],data[5]
-			local changeTime = tickCount-data[0]
-			if changeTime <= thetime then
-				if builtins[easing] then
-					local percent = oldValue+getEasingValue(changeTime/thetime,easing)*(targetValue-oldValue)
-					dgsSetProperty(v,propertyName,percent)
-				else
-					if SelfEasing[easing] then
-						local value = SelfEasing[easing](changeTime/thetime,{propertyName,targetValue,oldValue},v)
-						dgsSetProperty(v,propertyName,value)
+			for _,data in pairs(animList) do
+				local propertyName,targetValue,oldValue,easing,thetime = data[1],data[2],data[3],data[4],data[5]
+				local changeTime = tickCount-data[0]
+				if changeTime <= thetime then
+					if builtins[easing] then
+						local percent = oldValue+getEasingValue(changeTime/thetime,easing)*(targetValue-oldValue)
+						dgsSetProperty(v,propertyName,percent)
 					else
-						dgsStopAniming(v)
-						assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
+						if SelfEasing[easing] then
+							local value = SelfEasing[easing](changeTime/thetime,{propertyName,targetValue,oldValue},v)
+							dgsSetProperty(v,propertyName,value)
+						else
+							dgsStopAniming(v,propertyName)
+							assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
+						end
 					end
+				else
+					dgsStopAniming(v,propertyName)
 				end
-			else
-				dgsStopAniming(v)
 			end
 		end
 	end
