@@ -16,7 +16,7 @@ function dgsAnimTo(gui, property, value, easing, thetime, callback)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	assert(not(type(value) ~= "number" and builtins[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
-	dgsSetData(gui,"anim",{[0]=getTickCount(), property, value, DgsData[gui][property], easing, thetime, ["callback"] = callback})
+	dgsSetData(gui,"anim",{[0]=getTickCount(), property, value, dgsElementData[gui][property], easing, thetime, ["callback"] = callback})
 	if not animGUIList[gui] then
 		animGUIList[gui] = true
 		return true
