@@ -31,7 +31,7 @@ function dgsStopAniming(gui)
 		dgsSetData(gui,"anim",false)
 		triggerEvent("onDgsStopAniming",gui)
 		animGUIList[gui] = nil
-		callback()
+		if callback then callback() end
 		return true
 	end
 	return false
