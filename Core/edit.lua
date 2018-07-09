@@ -233,8 +233,8 @@ function searchEditMousePosition(dxedit,posx,posy)
 	if isElement(edit) then
 		local text = guiGetText(edit)
 		local sfrom,sto = 0,utf8.len(text)
-		if dgsElementData[edit].masked then
-			text = string.rep(dgsElementData[edit].maskText,sto)
+		if dgsElementData[dxedit].masked then
+			text = string.rep(dgsElementData[dxedit].maskText,sto)
 		end
 		local font = dgsElementData[dxedit].font or systemFont
 		local txtSizX = dgsElementData[dxedit].textsize[1]
