@@ -2070,6 +2070,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local selected = eleData["selected"]
 				local tabs = eleData["tabs"]
 				local height = eleData["tabheight"][2] and eleData["tabheight"][1]*h or eleData["tabheight"][1]
+				local defbackground = eleData.defbackground
 				local font = eleData.font or systemFont
 				------------------------------------
 				if eleData.functionRunBefore then
