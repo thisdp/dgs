@@ -156,8 +156,8 @@ function configTabPanel(source)
 	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	local tabHeight = dgsElementData[source].tabheight
 	local rentarg = dgsElementData[source].renderTarget
-	if isElement(rentarg[1]) then
-		destroyElement(rentarg[1])
+	if isElement(rentarg) then
+		destroyElement(rentarg)
 	end
 	local tabRender = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true)
 	dgsSetData(source,"renderTarget",tabRender)
