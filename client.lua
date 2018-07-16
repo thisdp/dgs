@@ -3238,6 +3238,9 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 				local oldSelect = dgsElementData[combobox].select
 				dgsElementData[combobox].select = preSelect
 				triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
+				if dgsElementData[combobox].autoHideWhenSelecting then
+					dgsSetData(combobox,"listState",-1)
+				end
 			elseif guitype == "dgs-dxarrowlist" then
 				local alEnter = MouseData.arrowListEnter
 				if alEnter and alEnter[1] == source then
@@ -3468,19 +3471,6 @@ GirdListDoubleClick.up = false
 
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
-	if isElement(MouseData.nowShow) then
-		local theType = dgsGetType(MouseData.nowShow)
-		if theType == "dgs-dxcombobox-Box" then
-			local combobox = dgsElementData[MouseData.nowShow].myCombo
-			if MouseData.nowShow ~= guiele and MouseData.nowShow ~= dgsElementData[guiele].myCombo then
-				dgsComboBoxSetState(combobox,false)
-			end
-		elseif theType == "dgs-dxcombobox" then
-			if MouseData.nowShow ~= guiele and MouseData.nowShow ~= dgsElementData[guiele].myBox then
-				dgsComboBoxSetState(MouseData.nowShow,false)
-			end
-		end
-	end
 	if isElement(guiele) then
 		local gtype = dgsGetType(guiele)
 		if state == "down" then
@@ -3490,6 +3480,21 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				elseif gtype == "dgs-dxcheckbox" then
 					local state = dgsElementData[guiele].CheckBoxState
 					dgsCheckBoxSetSelected(guiele,not state)
+				end
+			end
+			if isElement(lastFront) then
+				if guiele ~= lastFront then
+					local theType = dgsGetType(lastFront)
+					if theType == "dgs-dxcombobox" then
+						if dgsElementData[guiele].myCombo ~= lastFront then
+							dgsComboBoxSetState(lastFront,false)
+						end
+					else
+						local combobox = dgsElementData[lastFront].myCombo
+						if dgsElementData[guiele].myCombo ~= combobox then
+							dgsComboBoxSetState(combobox,false)
+						end
+					end
 				end
 			end
 		end
@@ -3568,6 +3573,13 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		MouseData.nowShow = false
 		if isElement(lastFront) then
+			local theType = dgsGetType(lastFront)
+			if theType == "dgs-dxcombobox" then
+				dgsComboBoxSetState(lastFront,false)
+			else
+				local combobox = dgsElementData[lastFront].myCombo
+				dgsComboBoxSetState(combobox,false)
+			end
 			triggerEvent("onDgsBlur",lastFront,false)
 			lastFront = false
 		end
