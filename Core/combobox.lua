@@ -63,6 +63,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textcolo
 	dgsSetData(combobox,"itemMoveOffset",0)
 	dgsSetData(combobox,"scrollFloor",true)
 	dgsSetData(combobox,"caption",caption or "")
+	dgsSetData(combobox,"autoHideWhenSelecting",true)
 	local shader = dxCreateShader("image/combobox/arrow.fx")
 	dgsSetData(combobox,"arrow",shader)
 	insertResourceDxGUI(sourceResource,combobox)
@@ -75,6 +76,8 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textcolo
 	dgsSetData(combobox,"renderTarget",rendertarget)
 	local scrollbar = dgsCreateScrollBar(boxsiz[1]-20,0,20,boxsiz[2],false,false,box)
 	dgsSetData(scrollbar,"length",{0,true})
+	dgsSetData(scrollbar,"scrollmultiplier",{0.1,true})
+	dgsSetData(scrollbar,"myCombo",combobox)
 	dgsSetVisible(scrollbar,false)
 	dgsSetVisible(box,false)
 	dgsSetData(combobox,"scrollbar",scrollbar)
@@ -283,6 +286,9 @@ function configComboBox_Box(box)
 	local sb = dgsElementData[combobox].scrollbar
 	dgsSetPosition(sb,boxsiz[1]-sbt,0,false)
 	dgsSetSize(sb,sbt,boxsiz[2],false)
+	local itemData = dgsElementData[combobox].itemData
+	local itemHeight = dgsElementData[combobox].itemHeight
+	dgsSetData(sb,"length",{boxsiz[2]/(itemHeight*#itemData),true})
 end
 
 addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
