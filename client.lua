@@ -3491,7 +3491,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						end
 					else
 						local combobox = dgsElementData[lastFront].myCombo
-						if dgsElementData[guiele].myCombo ~= combobox then
+						if isElement(combobox) and dgsElementData[guiele].myCombo ~= combobox then
 							dgsComboBoxSetState(combobox,false)
 						end
 					end
@@ -3578,7 +3578,9 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				dgsComboBoxSetState(lastFront,false)
 			else
 				local combobox = dgsElementData[lastFront].myCombo
-				dgsComboBoxSetState(combobox,false)
+				if isElement(combobox) then
+					dgsComboBoxSetState(combobox,false)
+				end
 			end
 			triggerEvent("onDgsBlur",lastFront,false)
 			lastFront = false
