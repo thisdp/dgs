@@ -34,6 +34,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsSetData(arrowlist,"selectorColor",{tocolor(0,0,0,255),tocolor(200,200,200,255),tocolor(100,100,100,255)})
 	dgsSetData(arrowlist,"itemColor",{idefcolor or schemeColor.arrowlist.itemColor[1],ihovcolor or schemeColor.arrowlist.itemColor[2]})
 	dgsSetData(arrowlist,"itemImage",{idefimage,ihovimage})
+	dgsSetData(arrowlist,"configNextFrame",false)
 	insertResourceDxGUI(sourceResource,arrowlist)
 	calculateGuiPositionSize(arrowlist,x,y,relative,sx,sy,relative,true)
 	local aSize = dgsElementData[arrowlist].absSize
@@ -69,7 +70,7 @@ translateTable = {
 
 ]]
 function dgsArrowListAddItem(arrowlist,text,rangeStart,rangeEnd,step,translationTable,pos)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListAddItem at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListAddItem at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(type(text) == "string","Bad argument @dgsArrowListAddItem at argument 2, expect string got "..dgsGetType(text))
 	assert(tonumber(rangeStart),"Bad argument @dgsArrowListAddItem at argument 3, expect number got "..type(rangeStart))
 	assert(tonumber(rangeEnd),"Bad argument @dgsArrowListAddItem at argument 4, expect number got "..type(rangeEnd))
@@ -112,34 +113,24 @@ function dgsArrowListAddItem(arrowlist,text,rangeStart,rangeEnd,step,translation
 		[7] = configTable
 	}
 	table.insert(itemData,pos or itemCount,tab)
-	local itemHeight = dgsElementData[arrowlist].itemHeight
-	local leading = dgsElementData[arrowlist].leading
-	local scrollBarVisible = itemCount*itemHeight+(itemCount-1)*leading > size[2]
-	local scrollBar = dgsElementData[arrowlist].scrollbar
-	dgsSetVisible(scrollBar,scrollBarVisible)
-	local sbt = scrollBarVisible and dgsElementData[arrowlist].scrollBarThick or 0
-	local rendertarget = dgsElementData[arrowlist].renderTarget
-	if isElement(rendertarget) then
-		destroyElement(rendertarget)
-	end
-	local rendertarget = dxCreateRenderTarget(size[1]-sbt,size[2],true)
-	dgsSetData(arrowlist,"renderTarget",rendertarget)
+	dgsSetData(arrowlist,"configNextFrame",true)
 	return pos or itemCount
 end
 
 function dgsArrowListRemoveItem(arrowlist,index)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListRemoveItem at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListRemoveItem at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListRemoveItem at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
 		table.remove(itemData,index)
 		return true
 	end
+	dgsSetData(arrowlist,"configNextFrame",true)
 	return false
 end
 
 function dgsArrowListSetItemText(arrowlist,index,text)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemText at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemText at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListSetItemText at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
@@ -150,7 +141,7 @@ function dgsArrowListSetItemText(arrowlist,index,text)
 end
 
 function dgsArrowListGetItemText(arrowlist,index)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemText at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemText at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListGetItemText at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
@@ -160,7 +151,7 @@ function dgsArrowListGetItemText(arrowlist,index)
 end
 
 function dgsArrowListGetItemValue(arrowlist,index)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemValue at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemValue at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListGetItemValue at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
@@ -170,7 +161,7 @@ function dgsArrowListGetItemValue(arrowlist,index)
 end
 
 function dgsArrowListSetItemValue(arrowlist,index,value)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemValue at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemValue at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListSetItemValue at argument 2, expect number got "..type(index))
 	assert(tonumber(value),"Bad argument @dgsArrowListSetItemValue at argument 3, expect number got "..type(value))
 	local itemData = dgsElementData[arrowlist].itemData
@@ -181,7 +172,7 @@ function dgsArrowListSetItemValue(arrowlist,index,value)
 end
 
 function dgsArrowListGetItemRange(arrowlist,index)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemRange at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemRange at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListGetItemRange at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
@@ -191,7 +182,7 @@ function dgsArrowListGetItemRange(arrowlist,index)
 end
 
 function dgsArrowListSetItemRange(arrowlist,index,rangeStart,rangeEnd)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemRange at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemRange at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListSetItemRange at argument 2, expect number got "..type(index))
 	assert(tonumber(rangeStart),"Bad argument @dgsArrowListSetItemRange at argument 3, expect number got "..type(rangeStart))
 	assert(tonumber(rangeEnd),"Bad argument @dgsArrowListSetItemRange at argument 4, expect number got "..type(rangeEnd))
@@ -206,7 +197,7 @@ function dgsArrowListSetItemRange(arrowlist,index,rangeStart,rangeEnd)
 end
 
 function dgsArrowListGetItemTranslationTable(arrowlist,index)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemTranslationTable at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemTranslationTable at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListGetItemTranslationTable at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
@@ -216,7 +207,7 @@ function dgsArrowListGetItemTranslationTable(arrowlist,index)
 end
 
 function dgsArrowListSetItemTranslationTable(arrowlist,index,translationTable)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemTranslationTable at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemTranslationTable at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListSetItemTranslationTable at argument 2, expect number got "..type(index))
 	assert(type(translationTable) == "table","Bad argument @dgsArrowListSetItemTranslationTable at argument 3, expect table got "..type(translationTable))
 	local itemData = dgsElementData[arrowlist].itemData
@@ -228,7 +219,7 @@ function dgsArrowListSetItemTranslationTable(arrowlist,index,translationTable)
 end
 
 function dgsArrowListSetItemStep(arrowlist,index,step)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemStep at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListSetItemStep at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListSetItemStep at argument 2, expect number got "..type(index))
 	assert(tonumber(step),"Bad argument @dgsArrowListSetItemStep at argument 3, expect number got "..type(step))
 	assert(step >= 0,"Bad argument @dgsArrowListSetItemStep at argument 3, step should be greater than or equal to 0, got "..step)
@@ -240,7 +231,7 @@ function dgsArrowListSetItemStep(arrowlist,index,step)
 end
 
 function dgsArrowListGetItemStep(arrowlist,index)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemStep at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemStep at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListGetItemStep at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
@@ -250,7 +241,7 @@ function dgsArrowListGetItemStep(arrowlist,index)
 end
 
 function dgsArrowListGetItemTranslatedValue(arrowlist,index)
-	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemTranslatedValue at argument 1, expect number got "..dgsGetType(arrowlist))
+	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListGetItemTranslatedValue at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
 	assert(tonumber(index),"Bad argument @dgsArrowListGetItemTranslatedValue at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
@@ -258,6 +249,12 @@ function dgsArrowListGetItemTranslatedValue(arrowlist,index)
 		return translationTable[ itemData[index][6] ] or itemData[index][6]
 	end
 	return false
+end
+
+function dgsArrowListClear(arrowlist)
+	assert(dgsGetType(arrowlist)=="dgs-dxarrowlist","Bad argument @dgsArrowListClear at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
+	dgsSetData(arrowlist,"itemData",{})
+	dgsSetData(arrowlist,"configNextFrame",true)
 end
 
 addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
