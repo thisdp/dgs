@@ -343,6 +343,7 @@
 	<export function="dgsCreateArrowList" type="client" />
 	<export function="dgsArrowListAddItem" type="client" />
 	<export function="dgsArrowListRemoveItem" type="client" />
+	<export function="dgsArrowListClear" type="client" />
 	<export function="dgsArrowListSetItemText" type="client" />
 	<export function="dgsArrowListGetItemText" type="client" />
 	<export function="dgsArrowListSetItemValue" type="client" />
