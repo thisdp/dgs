@@ -14,7 +14,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsSetData(arrowlist,"bgimage",nil)
 	dgsSetData(arrowlist,"scrollBarThick",20,true)
 	dgsSetData(arrowlist,"itemData",{})
-	dgsSetData(arrowlist,"leading",10)
+	dgsSetData(arrowlist,"leading",0)
 	dgsSetData(arrowlist,"itemHeight",itemHeight or 20)
 	dgsSetData(arrowlist,"itemMoveOffset",0)
 	dgsSetData(arrowlist,"itemTextShadow",nil)
