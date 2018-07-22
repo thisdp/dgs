@@ -2361,7 +2361,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local leading = eleData.leading
 					local itemHeight = eleData.itemHeight
 					local itemMoveOffset = eleData.itemMoveOffset
-					local whichRowToStart = -math.floor((itemMoveOffset+itemHeight+leading)/itemHeight)+1
+					local whichRowToStart = -math.floor((itemMoveOffset+itemHeight+leading)/(itemHeight+leading))+1
 					local whichRowToEnd = whichRowToStart+math.floor(h/(itemHeight+leading))+1
 					eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #itemData and whichRowToEnd or #itemData}
 					local scbThick = eleData.scrollBarThick
