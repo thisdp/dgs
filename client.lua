@@ -2329,11 +2329,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			else
 				visible = false
 			end
-		elseif dxType == "dgs-dxarrowlist" then	
-			if eleData.configNextFrame then
-				configArrowList(v)
-				dgsSetData(v,"configNextFrame",false)
-			end
+		elseif dxType == "dgs-dxarrowlist" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
@@ -2361,7 +2357,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					local leading = eleData.leading
 					local itemHeight = eleData.itemHeight
 					local itemMoveOffset = eleData.itemMoveOffset
-					local whichRowToStart = -math.floor((itemMoveOffset+itemHeight+leading)/(itemHeight+leading))+1
+					local whichRowToStart = -math.floor((itemMoveOffset+itemHeight+leading)/itemHeight)+1
 					local whichRowToEnd = whichRowToStart+math.floor(h/(itemHeight+leading))+1
 					eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #itemData and whichRowToEnd or #itemData}
 					local scbThick = eleData.scrollBarThick
@@ -3254,7 +3250,9 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 					local sItemData = itemData[id]
 					if alEnter[3] then
 						local mathSymbol = alEnter[3] == "left" and -1 or 1
+						local old = sItemData[6]
 						sItemData[6] = math.restrict(sItemData[2],sItemData[3],sItemData[6]+sItemData[4]*mathSymbol)
+						triggerEvent("onDgsArrowListValueChange",alEnter,id,sItemData[6],old)
 					end
 				end
 			elseif guitype == "dgs-dxtab" then
