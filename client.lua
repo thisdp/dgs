@@ -3256,7 +3256,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 						local mathSymbol = alEnter[3] == "left" and -1 or 1
 						local old = sItemData[6]
 						sItemData[6] = math.restrict(sItemData[2],sItemData[3],sItemData[6]+sItemData[4]*mathSymbol)
-						triggerEvent("onDgsArrowListValueChange",alEnter,id,sItemData[6],old)
+						triggerEvent("onDgsArrowListValueChange",source,id,sItemData[6],old)
 					end
 				end
 			elseif guitype == "dgs-dxtab" then
