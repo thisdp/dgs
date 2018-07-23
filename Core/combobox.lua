@@ -82,7 +82,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textcolo
 	dgsSetVisible(box,false)
 	dgsSetData(combobox,"scrollbar",scrollbar)
 	triggerEvent("onDgsCreate",combobox)
-	dgsSetData(box,"hitoutofparent",true)
+	dgsSetData(combobox,"hitoutofparent",true)
 	return combobox
 end
 
