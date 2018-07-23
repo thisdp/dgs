@@ -2964,6 +2964,9 @@ function dgsCheckHit(hits,mx,my)
 		end
 	end
 	if isElement(MouseData.clickl) then
+		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
+			triggerEvent("onDgsCursorDrag",MouseData.clickl,mx,my)
+		end
 		if MouseData.Move then
 			if dgsGetType(MouseData.clickl) == "dgs-dxwindow" then
 				local pos = dgsElementData[MouseData.clickl].absPos
@@ -3037,6 +3040,7 @@ function dgsCheckHit(hits,mx,my)
 			MouseData.clickr = false
 		end
 	end
+	MouseData.lastPos = {mx,my}
 end
 
 addEventHandler("onDgsMouseClick",root,function(button,state)
