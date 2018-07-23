@@ -2331,6 +2331,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			end
 		elseif dxType == "dgs-dxarrowlist" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			if eleData.configNextFrame then
+				configArrowList(v)
+				dgsSetData(v,"configNextFrame",false)
+			end
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
