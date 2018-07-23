@@ -38,6 +38,7 @@ addEvent("onDgsStopSizing",true)
 addEvent("onDgsStopAlphaing",true)
 addEvent("onDgsStopAniming",true)
 addEvent("onDgsArrowListValueChange",true)
+addEvent("onDgsCursorDrag",true)
 -------
 addEvent("giveIPBack",true)
 
