@@ -19,7 +19,7 @@ function checkUpdate()
 			RemoteVersion = tonumber(data)
 			if not ManualUpdate then
 				if RemoteVersion > Version then
-					outputDebugString("[DGS]Remote Version Got [Remote:"..data.." Current:"..allstr.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
+					outputDebugString("[DGS]Remote Version Got [Remote:"..data.." Current:"..allstr.."].")
 					outputDebugString("[DGS]Update? Command: updatedgs")
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
