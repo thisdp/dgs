@@ -10,8 +10,7 @@
                           \////////////       \////////////      \///////////     
              
 ```
-# Thisdp's DirectX Graphical User Interface System
-**Multi Theft Auto : San Andreas DirectX Library**
+# Thisdp's Dx Graphical User Interface System (MTA:SA Dx Lib)
 
 This is a dxGUI library for [Multi Theft Auto: San Andreas](https://mtasa.com/) and is designed for the usage of dx functions.
 
