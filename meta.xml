@@ -134,6 +134,7 @@
 	<export function="dgsCloseWindow" type="client" />
 	<export function="dgsWindowSetCloseButtonEnabled" type="client" />
 	<export function="dgsWindowGetCloseButtonEnabled" type="client" />
+	<export function="dgsWindowGetCloseButton" type="client" />
 
 	<export function="dgsCreate3DInterface" type="client" />
 	
