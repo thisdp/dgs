@@ -74,6 +74,13 @@ function dgsWindowSetSizable(window,bool)
 	return false
 end
 
+function dgsWindowGetCloseButton(window)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowGetCloseButton at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+	if dgsWindowGetCloseButtonEnabled(window) then
+		return dgsElementData[window].closeButton
+	end
+end
+
 function dgsWindowSetMovable(window,bool)
 	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetMovable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
     if dgsGetType(window) == "dgs-dxwindow" then
