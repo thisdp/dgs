@@ -16,6 +16,7 @@
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
 	<script src="Core/eda.lua" type="client" />
+	<script src="Core/detectarea.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
 	<script src="Core/gridlist.lua" type="client" />
 	<script src="Core/image.lua" type="client" />
@@ -340,6 +341,9 @@
 	<export function="dgsCreateEDA" type="client" />
 	<export function="dgsEDASetDebugModeEnabled" type="client" />
 	<export function="dgsEDAGetDebugModeEnabled" type="client" />
+	
+	<export function="dgsCreateDetectArea" type="client" />
+	<export function="dgsDetectAreaSetFunction" type="client" />
 	
 	<export function="dgsCreateArrowList" type="client" />
 	<export function="dgsArrowListAddItem" type="client" />

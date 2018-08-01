@@ -457,15 +457,46 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							dxDrawImage(x,y,w,h,debugShader,0,0,0,white,rendSet)
 						end
 					end
-					------------------------------------
-					if not eleData.functionRunBefore then
-						local fnc = eleData.functions
-						if type(fnc) == "table" then
-							fnc[1](unpack(fnc[2]))
-						end
-					end
-					------------------------------------
 				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+			else
+				visible = false
+			end
+		elseif dxType == "dgs-dxdetectarea" then
+			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				if enabled[1] and mx then
+					local checkFnc = eleData.checkFunction
+					if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
+						MouseData.hit = v
+					end
+				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
 			else
 				visible = false
 			end
@@ -2474,7 +2505,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 
-
 function removeColorCodeFromString(str)
 	repeat
 		local temp = str
@@ -2581,7 +2611,7 @@ function onClientKeyCheck(button,state)
 			if width > w then
 				local mx,my = getCursorPosition()
 				mx,my = (mx or -1)*sW,(my or -1)*sH
-				local y = dgsElementData[tabpanel].absPos[2]
+				local _,y = dgsGetPosition(tabpanel,false,true)
 				local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*h or dgsElementData[tabpanel].tabheight[1]
 				if my < y+height then
 					local speed = dgsElementData[tabpanel].scrollSpeed[2] and dgsElementData[tabpanel].scrollSpeed[1] or dgsElementData[tabpanel].scrollSpeed[1]/width

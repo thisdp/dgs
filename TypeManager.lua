@@ -7,6 +7,7 @@ dgsType = {
 	"dgs-dxedit",
 	"dgs-dxmemo",
 	"dgs-dxeda",
+	"dgs-dxdetectarea",
 	"dgs-dxgridlist",
 	"dgs-dximage",
 	"dgs-dxradiobutton",
