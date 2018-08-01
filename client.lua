@@ -41,6 +41,9 @@ function dgsSetSystemFont(font,size,bold,quality)
 			if isElement(systemFont) then
 				destroyElement(systemFont)
 			end
+			if fileExists(pathindgs) then
+				fileDelete(pathindgs)
+			end
 			fileCopy(path,pathindgs,true)
 			local font = dxCreateFont(pathindgs,size,bold,quality)
 			if isElement(font) then
