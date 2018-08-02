@@ -30,8 +30,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,bg
 	dgsSetData(edit,"readOnly",false)
 	dgsSetData(edit,"readOnlyCaretShow",false)
 	dgsSetData(edit,"clearSelection",true)
-	dgsSetData(edit,"side",0)
-	dgsSetData(edit,"sidecolor",schemeColor.edit.sidecolor)
 	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"savePositionSwitch",false)
 	dgsSetData(edit,"lastSwitchPosition",-1)

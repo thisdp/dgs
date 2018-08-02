@@ -19,6 +19,9 @@ function dgsCreateWindow(x,y,sx,sy,title,relative,titnamecolor,titsize,titimg,ti
 	dgsSetData(window,"ignoreTitleSize",false)
 	dgsSetData(window,"colorcoded",false)
 	dgsSetData(window,"movable",true)
+	dgsSetData(window,"clip",true)
+	dgsSetData(window,"wordbreak",false)
+	dgsSetData(window,"rightbottom",{"center","center"})
 	dgsSetData(window,"movetyp",false) --false only title;true are all
 	dgsSetData(window,"font",systemFont)
 	dgsSetData(window,"minSize",{60,60})

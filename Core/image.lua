@@ -15,9 +15,6 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	end
 	dgsSetData(image,"image",texture)
 	dgsSetData(image,"color",color or tocolor(255,255,255,255))
-	dgsSetData(image,"sideColor",tocolor(255,255,255,255))
-	dgsSetData(image,"sideState","in") --in/out/center
-	dgsSetData(image,"sideSize",0)
 	dgsSetData(image,"rotationCenter",{0,0}) --0~1
 	dgsSetData(image,"rotation",0) --0~360
 	local _x = dgsIsDxElement(parent) and dgsSetParent(image,parent,true) or table.insert(CenterFatherTable,1,image)
