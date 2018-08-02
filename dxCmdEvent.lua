@@ -13,6 +13,7 @@ addCommandHandler("cmd",function()
 	guiSetInputMode("no_binds_when_editing")
 	if not isElement(cmdSystem["window"]) then
 		cmdSystem["window"] = dgsCreateWindow(sW*0.5-20,sH*0.5,40,25,"CMD",false,tocolor(255,0,0,255),_,_,tocolor(80,140,200,255))
+		dgsSetProperty(cmdSystem["window"],"outline",{"out",5,tocolor(255,255,255,255)})
 		dgsSetFont(cmdSystem["window"],dsm)
 		dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.5,false,false,"OutQuad",300)
 		dgsSizeTo(cmdSystem["window"],sW*0.5,25,false,false,"OutQuad",300)

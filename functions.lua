@@ -412,6 +412,7 @@ addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"disabledColor",schemeColor.disabledColor)
 	dgsSetData(source,"disabledColorPercent",schemeColor.disabledColorPercent)
 	dgsSetData(source,"postGUI",dgsRenderSetting.postGUI == nil and true or false)
+	dgsSetData(source,"outline",false) --{side,width,color}
 end)
 
 function dgsClear(theType,res)

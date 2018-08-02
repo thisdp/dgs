@@ -1,5 +1,5 @@
 dgsConfig.backupMax = 10
-dgsConfig.updateCheckNoticeInterval = 30 --minutes
+dgsConfig.updateCheckNoticeInterval = 5
 dgsConfig.updateCheckAuto = true
 dgsConfig.backup = true
-dgsConfig.updateCheckInterval = 60  --minutes
+dgsConfig.updateCheckInterval = 60

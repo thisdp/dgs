@@ -1,13 +1,13 @@
 function createTest()
-dgsAddEasingFunction("test_line",[[
-	return math.abs(progress^2-0.5)*2
-]])
-
-wind = dgsCreateWindow(math.floor(0.2*sW),math.floor(0.3*sH),math.floor(0.4*sW),math.floor(0.4*sH),"Example Scroll Pane (exclude this window)",false)
---pane = dgsCreateScrollPane(0,0,1,1,true,wind)
-gdlt = dgsCreateImage(0,0,0.7,0.7,_,true,wind,tocolor(255,255,255,255))
-gdlt2 = dgsCreateImage(0,0,0.7,0.7,_,true,gdlt,tocolor(0,255,255,255))
-dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
+	dgsAddEasingFunction("test_line",[[
+		return math.abs(progress^2-0.5)*2
+	]])
+	
+	wind = dgsCreateWindow(math.floor(0.2*sW),math.floor(0.3*sH),math.floor(0.4*sW),math.floor(0.4*sH),"Example Scroll Pane (exclude this window)",false)
+	--pane = dgsCreateScrollPane(0,0,1,1,true,wind)
+	gdlt = dgsCreateImage(0,0,0.7,0.7,_,true,wind,tocolor(255,255,255,255))
+	gdlt2 = dgsCreateImage(0,0,0.7,0.7,_,true,gdlt,tocolor(0,255,255,255))
+	dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 
 function createTest2()
@@ -18,6 +18,7 @@ function createTest2()
 		dgsCreateTab(i.."Panel",tabp)
 	end
 	gdlt2 = dgsCreateButton(10,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
+	dgsSetProperty(gdlt2,"shadow",{1,1,tocolor(0,0,0,255),true})
 end
 
 function createTest3()
@@ -219,4 +220,15 @@ function test3DInterface()
 	material = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),0,1,0)
 	edit1 = dgsCreateEdit(0,0,200,50,"DGS 3D Interface Edit 1",false,material)
 	edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+end
+
+function exampleDetectArea()
+	local image = dgsCreateImage(200,200,100,100,_,false)
+	local da = dgsCreateDetectArea(0,0,100,100,false,image)
+	dgsDetectAreaSetFunction(da,[[
+		if mxRlt^2+myRlt^2 < 0.5 then
+			return true
+		end
+
+	]])
 end
