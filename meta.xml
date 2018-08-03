@@ -38,15 +38,16 @@
 	<script src="ParentManager.lua" type="client" />
 	<script src="TypeManager.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
-	
-	<script src="server.lua" type="server" />
+	<script src="functions.lua" type="client" />
 	<script src="client.lua" type="client" />
 	<script src="plugin/shader.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
-	<script src="functions.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="test.lua" type="client" />
+	<script src="oopClass.lua" type="client" />
+	
+	<script src="server.lua" type="server" />
 
 	<script src="update.lua" type="server" />
 	<file src="image/checkbox/cb_t.png" type="client" />
@@ -175,20 +176,6 @@
 	<export function="dgsComboBoxGetCaptionText" type="client" />
 	
 	<export function="dgsCreateButton" type="client" />
-
-	<export function="dgsCreateCmd" type="client" />
-	<export function="dgsCmdSetMode" type="client" />
-	<export function="dgsEventCmdSetPreName" type="client" />
-	<export function="outputCmdMessage" type="client" />
-	<export function="dgsGetChars" type="client" />
-	<export function="dgsCmdGetEdit" type="client" />
-	<export function="dgsCmdAddEventToWhiteList" type="client" />
-	<export function="dgsCmdRemoveEventFromWhiteList" type="client" />
-	<export function="dgsCmdRemoveAllEvents" type="client" />
-	<export function="dgsCmdIsInWhiteList" type="client" />
-	<export function="dgsCmdAddCommandHandler" type="client" />
-	<export function="dgsCmdRemoveCommandHandler" type="client" />
-	<export function="dgsCmdClearText" type="client" />
 
 	<export function="dgsCreateEdit" type="client" />
 	<export function="dgsEditMoveCaret" type="client" />
@@ -363,7 +350,7 @@
 	
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
-	
+	<export function="dgsImportOOPClass" type="client" />
 	
 	
 	

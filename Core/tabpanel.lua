@@ -36,6 +36,7 @@ function dgsCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
+	dgsSetParent(tab,tabpanel,true)
 	dgsSetData(tab,"text",text,true)
 	dgsSetData(tab,"parent",tabpanel)
 	local tabs = dgsElementData[tabpanel].tabs
@@ -148,6 +149,7 @@ function dgsDeleteTab(tab)
 	for k,v in pairs(dgsGetChildren(tab)) do
 		destroyElement(v)
 	end
+	dgsElementData[tab].isRemove = true
 	destroyElement(tab)
 	return true
 end

@@ -1,7 +1,7 @@
-schemeColor.checkbox.defcolor_i = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
 schemeColor.checkbox.textcolor = tocolor(255,255,255,255)
-schemeColor.checkbox.defcolor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
 schemeColor.checkbox.defcolor_t = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.defcolor_f = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
+schemeColor.checkbox.defcolor_i = {tocolor(255,255,255,255),tocolor(255,255,255,255),tocolor(180,180,180,255)}
 
 schemeColor.progressbar.bgcolor = tocolor(100,100,100,200)
 schemeColor.progressbar.barcolor = tocolor(40,60,200,200)
@@ -54,12 +54,12 @@ schemeColor.scrollbar.colorn = {tocolor(240,240,240,255),tocolor(192,192,192,255
 schemeColor.scrollbar.arrowColor = {tocolor(240,240,240,255),tocolor(218,218,218,255),tocolor(180,180,180,255)}
 
 schemeColor.combobox.textcolor = tocolor(0,0,0,255)
-schemeColor.combobox.itemColor = {tocolor(200,200,200,255),tocolor(160,160,160,255),tocolor(130,130,130,255)}
 schemeColor.combobox.listtextcolor = tocolor(0,0,0,255)
+schemeColor.combobox.itemColor = {tocolor(200,200,200,255),tocolor(160,160,160,255),tocolor(130,130,130,255)}
 schemeColor.combobox.color = {tocolor(0,120,200,200),tocolor(0,90,255,200),tocolor(50,90,250,200)}
-schemeColor.combobox.combobgColor = tocolor(200,200,200,200)
 schemeColor.combobox.arrowOutSideColor = tocolor(255,255,255,255)
+schemeColor.combobox.combobgColor = tocolor(200,200,200,200)
 schemeColor.combobox.arrowColor = tocolor(255,255,255,255)
 
-schemeColor.disabledColor = true
 schemeColor.disabledColorPercent = 0.8
+schemeColor.disabledColor = true

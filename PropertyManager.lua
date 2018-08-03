@@ -173,6 +173,14 @@ function dgsSetProperty(dxgui,key,value,...)
 				if dgsElementType[v] == "dgs-dxmemo" then
 					return handleDxMemoText(v,value)
 				end
+			elseif key == "absPos" then
+				dgsSetPosition(v,value[1],value[2],false)
+			elseif key == "rltPos" then
+				dgsSetPosition(v,value[1],value[2],true)
+			elseif key == "absSize" then
+				dgsSetSize(v,value[1],value[2],false)
+			elseif key == "rltSize" then
+				dgsSetSize(v,value[1],value[2],true)
 			end
 			dgsSetData(v,tostring(key),value)
 		end
@@ -188,6 +196,14 @@ function dgsSetProperty(dxgui,key,value,...)
 			if dgsElementType[dxgui] == "dgs-dxmemo" then
 				return handleDxMemoText(dxgui,value)
 			end
+		elseif key == "absPos" then
+			dgsSetPosition(dxgui,value[1],value[2],false)
+		elseif key == "rltPos" then
+			dgsSetPosition(dxgui,value[1],value[2],true)
+		elseif key == "absSize" then
+			dgsSetSize(dxgui,value[1],value[2],false)
+		elseif key == "rltSize" then
+			dgsSetSize(dxgui,value[1],value[2],true)
 		end
 		return dgsSetData(dxgui,tostring(key),value)
 	end
@@ -228,6 +244,14 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 						success = success and handleDxMemoText(v,value)
 						skip = true
 					end
+				elseif key == "absPos" then
+					dgsSetPosition(v,value[1],value[2],false)
+				elseif key == "rltPos" then
+					dgsSetPosition(v,value[1],value[2],true)
+				elseif key == "absSize" then
+					dgsSetSize(v,value[1],value[2],false)
+				elseif key == "rltSize" then
+					dgsSetSize(v,value[1],value[2],true)
 				end
 				if not skip then
 					success = success and dgsSetData(v,tostring(key),value)
@@ -258,6 +282,14 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 					success = success and handleDxMemoText(dxgui,value)
 					skip = true
 				end
+			elseif key == "absPos" then
+				dgsSetPosition(dxgui,value[1],value[2],false)
+			elseif key == "rltPos" then
+				dgsSetPosition(dxgui,value[1],value[2],true)
+			elseif key == "absSize" then
+				dgsSetSize(dxgui,value[1],value[2],false)
+			elseif key == "rltSize" then
+				dgsSetSize(dxgui,value[1],value[2],true)
 			end
 			if not skip then
 				success = success and dgsSetData(dxgui,tostring(key),value)

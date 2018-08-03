@@ -212,3 +212,5 @@ function dgsRunString(func,...)
 	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
 	return fnc(...)
 end
+
+--------------------------------OOP Utility

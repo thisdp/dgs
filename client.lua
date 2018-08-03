@@ -3872,6 +3872,26 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
+		elseif dgsType == "dgs-dxtab" then
+			local isRemove = dgsElementData[source].isRemove
+			if not isRemove then
+				local tabpanel = dgsElementData[source].parent
+				if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
+					local tp_w = dgsElementData[tabpanel].absSize[1]
+					local wid = dgsElementData[source].width
+					local tabs = dgsElementData[tabpanel].tabs
+					local t_sideSize = dgsElementData[tabpanel].tabsidesize
+					local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
+					local t_gapSize = dgsElementData[tabpanel].tabgapsize
+					local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
+					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-wid-sidesize*2-gapsize*math.min(#tabs,1))
+					local id = dgsElementData[source].id
+					for i=id,#tabs do
+						dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
+					end
+					table.remove(tabs,id)
+				end
+			end
 		elseif dgsType == "dgs-dxcombobox" then
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then

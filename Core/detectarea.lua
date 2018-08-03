@@ -1,4 +1,4 @@
-function dgsCreateDetectArea(x,y,sx,sy,relative,parent,color)
+function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	assert(tonumber(x),"Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx))
