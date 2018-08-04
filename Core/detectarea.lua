@@ -9,6 +9,7 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	local detectarea = createElement("dgs-dxdetectarea")
 	dgsSetType(detectarea,"dgs-dxdetectarea")
 	dgsSetData(detectarea,"checkFunction",dgsDetectAreaDefaultFunction)
+	dgsSetData(detectarea,"debug",false)
 	if isElement(parent) then
 		dgsSetParent(detectarea,parent)
 	else
@@ -32,8 +33,17 @@ end
 
 function dgsDetectAreaSetFunction(detectarea,fncStr)
 	assert(dgsGetType(detectarea) == "dgs-dxdetectarea","Bad argument @dgsDetectAreaSetFunction at argument 1, except dgs-dxdetectarea got "..dgsGetType(detectarea))
-	assert(type(fncStr) == "string","Bad argument @dgsDetectAreaSetFunction at argument 2, expect string got "..type(fncStr))
-	local fnc = loadstring(detectAreaPreDefine..fncStr)
-	assert(type(fnc) == "function","Bad argument @dgsDetectAreaSetFunction at argument 2, failed to load function")
-	return dgsSetData(detectarea,"checkFunction",fnc)
+	assert(type(fncStr) == "string" or (isElement(fncStr) and getElementType(fncStr) == "texture"),"Bad argument @dgsDetectAreaSetFunction at argument 2, expect string/texture got "..dgsGetType(fncStr))
+	if type(fncStr) == "string" then
+		local fnc = loadstring(detectAreaPreDefine..fncStr)
+		assert(type(fnc) == "function","Bad argument @dgsDetectAreaSetFunction at argument 2, failed to load function")
+		dgsSetData(detectarea,"checkFunction",fnc)
+		dgsSetData(detectarea,"checkFunctionImage",nil)
+		return true
+	else
+		local pixels = dxGetTexturePixels(fncStr)
+		dgsSetData(detectarea,"checkFunction",pixels)
+		dgsSetData(detectarea,"checkFunctionImage",fncStr)
+		return true
+	end
 end

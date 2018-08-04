@@ -5,6 +5,7 @@ dgs = exports[getResourceName(getThisResource())]
 addEvent("onDgsMouseLeave",true)
 addEvent("onDgsMouseEnter",true)
 addEvent("onDgsMouseClick",true)
+addEvent("onDgsMouseWheel",true)
 addEvent("onDgsMouseDoubleClick",true)
 addEvent("onDgsWindowClose",true)
 addEvent("onDgsPositionChange",true)

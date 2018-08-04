@@ -583,9 +583,33 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				------------------------------------
 				if enabled[1] and mx then
-					local checkFnc = eleData.checkFunction
-					if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
-						MouseData.hit = v
+					local checkPixel = eleData.checkFunction
+					if checkPixel then
+						if type(checkPixel) == "function" then
+							local checkFnc = eleData.checkFunction
+							if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
+								MouseData.hit = v
+							end
+						else
+							local _mx,_my = (mx-x)/w,(my-y)/h
+							local color = 0xFFFFFFFF
+							if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+								local px,py = dxGetPixelsSize(checkPixel)
+								local pixX,pixY = _mx*px,_my*py
+								local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
+								if r then
+									local gray = (r+g+b)/3
+									if gray >= 128 then
+										MouseData.hit = v
+										color = 0xFFFF0000
+									end
+								end
+							end
+							local detectAreaImage = eleData.checkFunctionImage
+							if eleData.debug and isElement(detectAreaImage) then
+								dxDrawImage(x,y,w,h,detectAreaImage,0,0,0,color,rendSet)
+							end
+						end
 					end
 				end
 				------------------------------------OutLine
@@ -3052,6 +3076,9 @@ end
 function onClientKeyCheck(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
 		local dgsType = dgsGetType(MouseData.enter)
+		if isElement(MouseData.enter) then
+			triggerEvent("onDgsMouseWheel",MouseData.enter,button)
+		end
 		local scroll = button == "mouse_wheel_down" and 1 or -1
 		local scrollbar = MouseData.enter
 		if dgsGetType(scrollbar) == "dgs-dxscrollbar" then
