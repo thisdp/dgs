@@ -3592,7 +3592,8 @@ function dgsCheckHit(hits,mx,my)
 	MouseData.lastPos = {mx,my}
 end
 
-function onDgsMouseClick_Internal(source,button,state,mx,my)
+addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
+	if not isElement(source) then return end
 	local parent = dgsGetParent(source)
 	local guitype = dgsGetType(source)
 	if state == "down" then
@@ -3844,7 +3845,7 @@ function onDgsMouseClick_Internal(source,button,state,mx,my)
 			end
 		end
 	end
-end
+end)
 
 addEventHandler("onClientElementDestroy",resourceRoot,function()
 	local parent = dgsGetParent(source) or root
@@ -4080,7 +4081,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		else
 			focusBrowser()
 		end
-		onDgsMouseClick_Internal(guiele,button,state,MouseX or x,MouseY or y)
 		triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
 		if not isElement(guiele) then return end
 		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
