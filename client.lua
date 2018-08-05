@@ -585,15 +585,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if enabled[1] and mx then
 					local checkPixel = eleData.checkFunction
 					if checkPixel then
-						if type(checkPixel) == "function" then
-							local checkFnc = eleData.checkFunction
-							if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
-								MouseData.hit = v
-							end
-						else
-							local _mx,_my = (mx-x)/w,(my-y)/h
-							local color = 0xFFFFFFFF
-							if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+						local color = 0xFFFFFFFF
+						local _mx,_my = (mx-x)/w,(my-y)/h
+						if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+							if type(checkPixel) == "function" then
+								local checkFnc = eleData.checkFunction
+								if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
+									MouseData.hit = v
+								end
+							else
 								local px,py = dxGetPixelsSize(checkPixel)
 								local pixX,pixY = _mx*px,_my*py
 								local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
@@ -604,10 +604,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 										color = 0xFFFF0000
 									end
 								end
-							end
-							local detectAreaImage = eleData.checkFunctionImage
-							if eleData.debug and isElement(detectAreaImage) then
-								dxDrawImage(x,y,w,h,detectAreaImage,0,0,0,color,rendSet)
+								local detectAreaImage = eleData.checkFunctionImage
+								if eleData.debug and isElement(detectAreaImage) then
+									dxDrawImage(x,y,w,h,detectAreaImage,0,0,0,color,rendSet)
+								end
 							end
 						end
 					end
@@ -3592,7 +3592,7 @@ function dgsCheckHit(hits,mx,my)
 	MouseData.lastPos = {mx,my}
 end
 
-addEventHandler("onDgsMouseClick",root,function(button,state)
+function onDgsMouseClick_Internal(source,button,state,mx,my)
 	local parent = dgsGetParent(source)
 	local guitype = dgsGetType(source)
 	if state == "down" then
@@ -3610,8 +3610,6 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 			end
 			if guitype == "dgs-dxscrollbar" then
 				local scrollArrow = dgsElementData[source].scrollArrow
-				local mx,my = getCursorPosition()
-				mx,my = (mx or -1)*sW,(my or -1)*sH
 				local x,y = dgsGetPosition(source,false,true)
 				local w,h = dgsGetSize(source,false)
 				local voh = dgsElementData[source].voh
@@ -3846,7 +3844,7 @@ addEventHandler("onDgsMouseClick",root,function(button,state)
 			end
 		end
 	end
-end)
+end
 
 addEventHandler("onClientElementDestroy",resourceRoot,function()
 	local parent = dgsGetParent(source) or root
@@ -4082,6 +4080,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		else
 			focusBrowser()
 		end
+		onDgsMouseClick_Internal(guiele,button,state,MouseX or x,MouseY or y)
 		triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
 		if not isElement(guiele) then return end
 		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
