@@ -23,6 +23,9 @@ dgsRenderSetting = {
 
 function dgsSetSystemFont(font,size,bold,quality)
 	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
+	if isElement(systemFont) then
+		destroyElement(systemFont)
+	end
 	if fontDxHave[font] then
 		systemFont = font
 		return true
@@ -36,11 +39,9 @@ function dgsSetSystemFont(font,size,bold,quality)
 				path = font
 			end
 			assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
-			local filename = split(path,"/")
-			local pathindgs = ":"..getResourceName(getThisResource()).."/Third/"..filename[#filename]
-			if isElement(systemFont) then
-				destroyElement(systemFont)
-			end
+			
+			local filename = string.sub(path,2)
+			local pathindgs = ":"..getResourceName(getThisResource()).."/Third/"..filename
 			if fileExists(pathindgs) then
 				fileDelete(pathindgs)
 			end
