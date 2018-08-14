@@ -226,8 +226,3 @@ function exampleDetectArea()
 
 	]])
 end
-
-
-
-local button = dgsCreateButton(100,100,200,100,"test",false)
-dgsAlphaTo(button,0,true,"OutQuad",1)
