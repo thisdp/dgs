@@ -155,32 +155,19 @@ function DownloadFiles()
 	fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
 			local size = 0
-			if path == "colorScheme.txt" then
-				if not fileExists(path) then
-					local file = fileCreate(path)
-					fileWrite(file,data)
-					local newsize = fileGetSize(file)
-					fileClose(file)
-					outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
-				else
-					local newsize,size = updateColorScheme(path,data)
-					outputDebugString("[DGS]Color Scheme Updated ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
-				end
-			else
-				if fileExists(path) then
-					local file = fileOpen(path)
-					size = fileGetSize(file)
-					fileClose(file)
-					fileDelete(path)
-				end
-				local file = fileCreate(path)
-				fileWrite(file,data)
-				local newsize = fileGetSize(file)
+			if fileExists(path) then
+				local file = fileOpen(path)
+				size = fileGetSize(file)
 				fileClose(file)
-				outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
+				fileDelete(path)
 			end
+			local file = fileCreate(path)
+			fileWrite(file,data)
+			local newsize = fileGetSize(file)
+			fileClose(file)
+			outputDebugString("[DGS]File Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]")
 		else
-			outputDebugString("[DGS]!Download Failed: "..path.." ("..err..")!",2)
+			outputDebugString("[DGS]Download Failed: "..path.." ("..err..")!",2)
 		end
 		if preUpdate[UpdateCount+1] then
 			DownloadFiles()
@@ -188,54 +175,6 @@ function DownloadFiles()
 			DownloadFinish()
 		end
 	end,"",false,preUpdate[UpdateCount])
-end
-
-function updateColorScheme(path,data)
-	schemeColor = {}
-	local file = fileOpen("colorSchemeIndex.txt")
-	local str = fileRead(file,fileGetSize(file))
-	local size = fileGetSize(file)
-	fileClose(file)
-	loadstring(str)()
-	-------------------------------------
-	local file = fileOpen(path)
-	local str = fileRead(file,fileGetSize(file))
-	local size = fileGetSize(file)
-	fileClose(file)
-	if fileExists(path..".bak") then
-		fileDelete(path..".bak")
-	end
-	fileRename(path,path..".bak")
-	loadstring(data)()
-	loadstring(str)()
-	local newData = ""
-	local newData_ = ""
-	for k,v in pairs(schemeColor) do
-		if type(v) == "table" then
-			for a,b in pairs(v) do
-				if type(b) == "table" then
-					local pstr = ""
-					for i = 1,#b do
-						local cr,cg,cb,ca = fromcolor(b[i])
-						pstr = pstr.."tocolor("..cr..","..cg..","..cb..","..ca.."),"
-					end
-					local pstr = pstr:sub(1,#pstr-1)
-					newData = newData.."schemeColor."..k.."."..a.." = {"..pstr.."}".."\n"
-				else
-					local cr,cg,cb,ca = fromcolor(b)
-					newData = newData.."schemeColor."..k.."."..a.." = tocolor("..cr..","..cg..","..cb..","..ca..")\n"
-				end
-			end
-			newData = newData.."\n"
-		else
-			newData_ = newData_.."schemeColor."..k.." = "..tostring(v).."\n"
-		end
-	end
-	local file = fileCreate(path)
-	fileWrite(file,newData..newData_)
-	local newsize = fileGetSize(file)
-	fileClose(file)
-	return newsize,size
 end
 
 function DownloadFinish()
