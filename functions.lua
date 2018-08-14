@@ -51,11 +51,11 @@ function dgsEasingFunctionExists(name)
 	return builtins[name] or (SelfEasing[name] and true)
 end	
 
-function insertResourceDxGUI(res,gui)
-	if res and isElement(gui) then
+function insertResourceDxGUI(res,dgsElement)
+	if res and isElement(dgsElement) then
 		resourceDxGUI[res] = resourceDxGUI[res] or {}
-		table.insert(resourceDxGUI[res],gui)
-		setElementData(gui,"resource",res)
+		table.insert(resourceDxGUI[res],dgsElement)
+		setElementData(dgsElement,"resource",res)
 	end
 end
 
@@ -73,9 +73,9 @@ addEventHandler("onClientResourceStop",root,function(res)
 	end
 end)
 
-function dgsGetGuiLocationOnScreen(baba,relative,rndsup)
-	if isElement(baba) then
-		guielex,guieley = getParentLocation(baba,rndsup,dgsElementData[baba].absPos[1],dgsElementData[baba].absPos[2])
+function dgsGetGuiLocationOnScreen(dgsElement,relative,rndsup)
+	if isElement(dgsElement) then
+		guielex,guieley = getParentLocation(dgsElement,rndsup,dgsElementData[dgsElement].absPos[1],dgsElementData[dgsElement].absPos[2])
 		if relative then
 			return guielex/sW,guieley/sH
 		else
@@ -85,48 +85,48 @@ function dgsGetGuiLocationOnScreen(baba,relative,rndsup)
 	return false
 end
 
-function getParentLocation(baba,rndsup,x,y)
-	local baba = FatherTable[baba]
-	if not isElement(baba) or (rndsup and dgsElementData[baba].renderTarget_parent) then return x,y end
-	if dgsElementType[baba] == "dgs-dxtab" then
-		baba = dgsElementData[baba].parent
-		local h = dgsElementData[baba].absSize[2]
-		local tabheight = dgsElementData[baba].tabheight[2] and dgsElementData[baba].tabheight[1]*h or dgsElementData[baba].tabheight[1]
-		x = x+dgsElementData[baba].absPos[1]
-		y = y+dgsElementData[baba].absPos[2]+tabheight
+function getParentLocation(dgsElement,rndsup,x,y)
+	local dgsElement = FatherTable[dgsElement]
+	if not isElement(dgsElement) or (rndsup and dgsElementData[dgsElement].renderTarget_parent) then return x,y end
+	if dgsElementType[dgsElement] == "dgs-dxtab" then
+		dgsElement = dgsElementData[dgsElement].parent
+		local h = dgsElementData[dgsElement].absSize[2]
+		local tabHeight = dgsElementData[dgsElement].tabHeight[2] and dgsElementData[dgsElement].tabHeight[1]*h or dgsElementData[dgsElement].tabHeight[1]
+		x = x+dgsElementData[dgsElement].absPos[1]
+		y = y+dgsElementData[dgsElement].absPos[2]+tabHeight
 	else
-		local absPos = dgsElementData[baba].absPos or {0,0}
+		local absPos = dgsElementData[dgsElement].absPos or {0,0}
 		x = x+absPos[1]
 		y = y+absPos[2]
 	end
-	return getParentLocation(baba,rndsup,x,y)
+	return getParentLocation(dgsElement,rndsup,x,y)
 end
 
-function dgsGetPosition(gui,bool,includeParent,rndsupport)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+function dgsGetPosition(dgsElement,bool,includeParent,rndsupport)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	if includeParent then
-		return dgsGetGuiLocationOnScreen(gui,bool,rndsupport)
+		return dgsGetGuiLocationOnScreen(dgsElement,bool,rndsupport)
 	else
-		local pos = dgsElementData[gui][bool and "rltPos" or "absPos"]
+		local pos = dgsElementData[dgsElement][bool and "rltPos" or "absPos"]
 		return pos[1],pos[2]
 	end
 end
 
-function dgsSetPosition(gui,x,y,bool)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsSetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
-	calculateGuiPositionSize(gui,x,y,bool or false)
+function dgsSetPosition(dgsElement,x,y,bool)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	calculateGuiPositionSize(dgsElement,x,y,bool or false)
 	return true
 end
 
-function dgsGetSize(gui,bool)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsGetSize at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
-	local size = dgsElementData[gui][bool and "rltSize" or "absSize"]
+function dgsGetSize(dgsElement,bool)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	local size = dgsElementData[dgsElement][bool and "rltSize" or "absSize"]
 	return size[1],size[2]
 end
 
-function dgsSetSize(gui,x,y,bool)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsSetSize at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
-	calculateGuiPositionSize(gui,_,_,_,x,y,bool or false)
+function dgsSetSize(dgsElement,x,y,bool)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	calculateGuiPositionSize(dgsElement,_,_,_,x,y,bool or false)
 	return true
 end
 
@@ -191,16 +191,16 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 			local tabpanel = parentData.parent
 			local size = dgsElementData[tabpanel].absSize
 			psx,psy = size[1],size[2]
-			local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*psx or dgsElementData[tabpanel].tabheight[1]
+			local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psx or dgsElementData[tabpanel].tabHeight[1]
 			psy = psy-height
 		else
 			local size = parentData.absSize or parentData.size
 			psx,psy = size[1],size[2]
 		end
-		if eleData.ignoreParentTitle or parentData.ignoreTitleSize then
+		if eleData.ignoreParentTitle or parentData.ignoretitleHeight then
 			titleOffset = 0
 		else
-			titleOffset = parentData.titlesize or 0
+			titleOffset = parentData.titleHeight or 0
 		end
 	end
 	if x and y then
@@ -325,7 +325,7 @@ function dgsSetShaderValue(...)
 	return dxSetShaderValue(...)
 end
 
-function simulationClick(dgsGUI,button)
+function dgsSimulateClick(dgsGUI,button)
 	local x,y = dgsGetPosition(dgsGUI,false)
 	local sx,sy = dgsGetSize(dgsGUI,false)
 	local x,y = x+sx*0.5,y+sy*0.5
@@ -409,8 +409,8 @@ addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"hitoutofparent",false)
 	dgsSetData(source,"PixelInt",true)
 	dgsSetData(source,"functionRunBefore",true) --true : after render; false : before render
-	dgsSetData(source,"disabledColor",schemeColor.disabledColor)
-	dgsSetData(source,"disabledColorPercent",schemeColor.disabledColorPercent)
+	dgsSetData(source,"disabledColor",styleSettings.disabledColor)
+	dgsSetData(source,"disabledColorPercent",styleSettings.disabledColorPercent)
 	dgsSetData(source,"postGUI",dgsRenderSetting.postGUI == nil and true or false)
 	dgsSetData(source,"outline",false) --{side,width,color}
 end)

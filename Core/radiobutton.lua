@@ -1,10 +1,4 @@
-local radioButton_s = {}
-radioButton_s.false_ = dxCreateTexture("image/radiobutton/rb_f.png")
-radioButton_s.true_ = dxCreateTexture("image/radiobutton/rb_t.png")
-radioButton_s.false_cli = dxCreateTexture("image/radiobutton/rb_f_s.png")
-radioButton_s.true_cli = dxCreateTexture("image/radiobutton/rb_t_s.png")
-
-function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t)
+function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t)
 	assert(tonumber(x),"Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx))
@@ -15,33 +9,38 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textcolor,scalex,sc
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true) or table.insert(CenterFatherTable,1,rb)
-	defimg_f = defimg_f or radioButton_s.false_
-	hovimg_f = hovimg_f or radioButton_s.false_cli
-	cliimg_f = cliimg_f or hovimg_f
-	defcolor_f = defcolor_f or schemeColor.radiobutton.defcolor_f[1]
-	hovcolor_f = hovcolor_f or schemeColor.radiobutton.defcolor_f[2]
-	clicolor_f = clicolor_f or schemeColor.radiobutton.defcolor_f[3]
 	
-	defimg_t = defimg_t or radioButton_s.true_
-	hovimg_t = hovimg_t or radioButton_s.true_cli
-	cliimg_t = cliimg_t or hovimg_t
+	local imageUnchecked = styleSettings.radiobutton.image_f
+	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
+	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
+	cliimg_f = cliimg_f or dgsCreateTextureFromStyle(imageUnchecked[3])
+	dgsSetData(rb,"image_f",{norimg_f,hovimg_f,cliimg_f})
+	local colorUnchecked = styleSettings.radiobutton.color_f
+	norcolor_f = norcolor_f or colorUnchecked[1]
+	hovcolor_f = hovcolor_f or colorUnchecked[2]
+	clicolor_f = clicolor_f or colorUnchecked[3]
+	dgsSetData(rb,"color_f",{norcolor_f,hovcolor_f,clicolor_f})
 	
-	defcolor_t = defcolor_t or schemeColor.radiobutton.defcolor_t[1]
-	hovcolor_t = hovcolor_t or schemeColor.radiobutton.defcolor_t[2]
-	clicolor_t = clicolor_t or schemeColor.radiobutton.defcolor_t[3]
+	local imageChecked = styleSettings.radiobutton.image_t
+	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
+	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
+	cliimg_t = cliimg_t or dgsCreateTextureFromStyle(imageChecked[3])
+	dgsSetData(rb,"image_t",{norimg_t,hovimg_t,cliimg_t})
+	local colorChecked = styleSettings.radiobutton.color_t
+	norcolor_t = norcolor_t or colorChecked[1]
+	hovcolor_t = hovcolor_t or colorChecked[2]
+	clicolor_t = clicolor_t or colorChecked[3]
+	dgsSetData(rb,"color_t",{norcolor_t,hovcolor_t,clicolor_t})
 	
 	dgsSetData(rb,"rbParent",dgsIsDxElement(parent) and parent or resourceRoot)
-	dgsSetData(rb,"image_f",{defimg_f,hovimg_f,cliimg_f})
-	dgsSetData(rb,"image_t",{defimg_t,hovimg_t,cliimg_t})
-	dgsSetData(rb,"color_f",{defcolor_f,hovcolor_f,clicolor_f})
-	dgsSetData(rb,"color_t",{defcolor_t,hovcolor_t,clicolor_t})
 	dgsSetData(rb,"text",tostring(text))
-	dgsSetData(rb,"textcolor",textcolor or schemeColor.radiobutton.textcolor)
-	dgsSetData(rb,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
-	dgsSetData(rb,"textImageSpace",{2,false})
+	dgsSetData(rb,"textColor",textColor or styleSettings.radiobutton.textColor)
+	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.radiobutton.textSize[1], tonumber(scaley) or styleSettings.radiobutton.textSize[2]
+	dgsSetData(rb,"textSize",{textSizeX,textSizeY})
+	dgsSetData(rb,"textImageSpace",styleSettings.radiobutton.textImageSpace)
+	dgsSetData(rb,"buttonSize",styleSettings.radiobutton.buttonSize)
 	dgsSetData(rb,"shadow",{_,_,_})
 	dgsSetData(rb,"font",systemFont)
-	dgsSetData(rb,"buttonsize",{16,false})
 	dgsSetData(rb,"clip",false)
 	dgsSetData(rb,"wordbreak",false)
 	dgsSetData(rb,"colorcoded",false)

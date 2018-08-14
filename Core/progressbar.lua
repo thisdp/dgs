@@ -1,4 +1,4 @@
-function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgimg,bgcolor,barimg,barcolor,barmode)
+function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode)
 	assert(tonumber(x),"Bad argument @dgsCreateProgressBar at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateProgressBar at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateProgressBar at argument 3, expect number got "..type(sx))
@@ -6,32 +6,31 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgimg,bgcolor,barimg,bar
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateProgressBar at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
-	if isElement(bgimg) then
-		local imgtyp = getElementType(bgimg)
-		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 7, expect texture got "..getElementType(bgimg))
+	if isElement(bgImage) then
+		local imgtyp = getElementType(bgImage)
+		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 7, expect texture got "..getElementType(bgImage))
 	end
-	if isElement(barimg) then
-		local imgtyp = getElementType(barimg)
-		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 9, expect texture got "..getElementType(barimg))
+	if isElement(indicatorImage) then
+		local imgtyp = getElementType(indicatorImage)
+		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 9, expect texture got "..getElementType(indicatorImage))
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
-	dgsSetData(progressbar,"bgcolor",bgcolor or schemeColor.progressbar.bgcolor)
-	dgsSetData(progressbar,"barcolor",barcolor or schemeColor.progressbar.barcolor)
-	dgsSetData(progressbar,"bgimg",bgimg)
-	dgsSetData(progressbar,"barimg",barimg)
-	dgsSetData(progressbar,"barmode",barmode and true or false)
-	dgsSetData(progressbar,"udspace",{5,false})
-	dgsSetData(progressbar,"lrspace",{5,false})
+	dgsSetData(progressbar,"bgColor",bgColor or styleSettings.progressbar.bgColor)
+	dgsSetData(progressbar,"indicatorColor",indicatorColor or styleSettings.progressbar.indicatorColor)
+	dgsSetData(progressbar,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.progressbar.bgImage))
+	dgsSetData(progressbar,"indicatorImage",indicatorImage or dgsCreateTextureFromStyle(styleSettings.progressbar.indicatorImage))
+	dgsSetData(progressbar,"indicatorMode",indicatorMode and true or false)
+	dgsSetData(progressbar,"padding",styleSettings.progressbar.padding)
 	dgsSetData(progressbar,"progress",0)
 	local _ = dgsIsDxElement(parent) and dgsSetParent(progressbar,parent,true) or table.insert(CenterFatherTable,1,progressbar)
 	insertResourceDxGUI(sourceResource,progressbar)
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
-	if isElement(barimg) then
-		mx,my = dxGetMaterialSize(barimg)
+	if isElement(indicatorImage) then
+		mx,my = dxGetMaterialSize(indicatorImage)
 	end
-	dgsSetData(progressbar,"barsize",{mx,my})
+	dgsSetData(progressbar,"indicatorUVSize",{mx,my})
 	triggerEvent("onDgsCreate",progressbar)
 	return progressbar
 end
@@ -52,65 +51,11 @@ function dgsProgressBarSetProgress(gui,progress)
 end
 
 function dgsProgressBarSetMode(gui,mode)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetBarMode at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	return dgsSetData(gui,"barmode",mode and true or false)
+	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
+	return dgsSetData(gui,"indicatorMode",mode and true or false)
 end
 
 function dgsProgressBarGetMode(gui)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetBarMode at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	return dgsElementData[gui].barmode
-end
-
-function dgsProgressBarGetVerticalSide(gui,forcerelative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetVerticalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	if forcerelative == false then
-		local value = dgsElementData[gui].udspace[1]
-		if dgsElementData[gui].udspace[2] == true then
-			local sy = dgsElementData[gui].absSize[2]
-			value = sy*value
-		end
-		return value
-	elseif forcerelative == true then
-		local value = dgsElementData[gui].udspace[1]
-		if dgsElementData[gui].udspace[2] == false then
-			local sy = dgsElementData[gui].absSize[2]
-			value = value/sy
-		end
-		return value
-	else
-		return dgsElementData[gui].udspace[1],dgsElementData[gui].udspace[2]
-	end
-end
-
-function dgsProgressBarGetHorizontalSide(gui,forcerelative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetHorizontalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	if forcerelative == false then
-		local value = dgsElementData[gui].lrspace[1]
-		if dgsElementData[gui].lrspace[2] == true then
-			local sy = dgsElementData[gui].absSize[1]
-			value = sy*value
-		end
-		return value
-	elseif forcerelative == true then
-		local value = dgsElementData[gui].lrspace[1]
-		if dgsElementData[gui].lrspace[2] == false then
-			local sy = dgsElementData[gui].absSize[1]
-			value = value/sy
-		end
-		return value
-	else
-		return dgsElementData[gui].lrspace[1],dgsElementData[gui].lrspace[2]
-	end
-end
-
-function dgsProgressBarSetVerticalSide(gui,value,relative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetVerticalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	assert(type(value) == "number","Bad argument @dgsProgressBarSetVerticalSide at argument 2, expect number got "..type(value))
-	return dgsSetData(gui,"udspace",{value,relative and true or false})
-end
-
-function dgsProgressBarSetHorizontalSide(gui,value,relative)
-	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetHorizontalSide at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
-	assert(type(value) == "number","Bad argument @dgsProgressBarSetHorizontalSide at argument 2, expect number got "..type(value))
-	return dgsSetData(gui,"lrspace",{value,relative and true or false})
+	assert(dgsGetType(gui) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(gui) or type(gui)))
+	return dgsElementData[gui].indicatorMode
 end

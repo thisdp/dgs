@@ -67,11 +67,12 @@ function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 	local x,y,torvx = tonumber(x),tonumber(y),tonumber(torvx)
 	assert(x,"Bad argument @dgsMoveTo at argument 2, expect number got "..type(x))
 	assert(y,"Bad argument @dgsMoveTo at argument 3, expect number got "..type(y))
-	assert(torvx,"Bad argument @dgsMoveTo at argument 7, expect number got "..type(torvx))
+	assert(torvx,"Bad argument @dgsMoveTo at argument 7, expect positive number got "..type(torvx))
+	assert(torvx >= 0,"Bad argument @dgsMoveTo at argument 7, expect positive number got "..torvx)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsMoveTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetPosition(gui,relative or false)
-	dgsSetData(gui,"move",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
+	dgsSetData(gui,"move",{[-1]=tab,[0]=getTickCount(),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not moveGUIList[gui] then
 		moveGUIList[gui] = true
 		return true
@@ -101,10 +102,11 @@ function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 	assert(x,"Bad argument @dgsSizeTo at argument 2, expect number got "..type(x))
 	assert(y,"Bad argument @dgsSizeTo at argument 3, expect number got "..type(y))
 	assert(torvx,"Bad argument @dgsSizeTo at argument 7, expect number got "..type(torvx))
+	assert(torvx >= 0,"Bad argument @dgsSizeTo at argument 7, expect positive number got "..torvx)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsSizeTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetSize(gui,relative or false)
-	dgsSetData(gui,"size",{[-1]=tab,[0]=getTickCount(),getDistanceBetweenPoints2D(ox,oy,x,y),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
+	dgsSetData(gui,"size",{[-1]=tab,[0]=getTickCount(),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not sizeGUIList[gui] then
 		sizeGUIList[gui] = true
 		return true
@@ -133,10 +135,11 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 	local toalpha,torv = tonumber(toalpha),tonumber(torv)
 	assert(toalpha,"Bad argument @dgsAlphaTo at argument 2, expect number got "..type(toalpha))
 	assert(torv,"Bad argument @dgsAlphaTo at argument 5, expect number got "..type(torv))
+	assert(torv >= 0,"Bad argument @dgsAlphaTo at argument 7, expect positive number got "..torv)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAlphaTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	local toalpha = (toalpha > 1 and 1) or (toalpha < 0 and 0) or toalpha
-	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsElementData[gui].alpha-toalpha,toalpha,movetype,easing,torv})
+	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsElementData[gui].alpha,toalpha,movetype,easing,torv})
 	if not alphaGUIList[gui] then
 		alphaGUIList[gui] = true
 		return true
@@ -155,8 +158,11 @@ function dgsStopAlphaing(gui)
 	return false
 end
 
+tickCount = getTickCount()
 addEventHandler("onClientRender",root,function()
-	local tickCount = getTickCount()
+	local tick = getTickCount()
+	local diff = tick-tickCount
+	tickCount = tick
 	for v,value in pairs(animGUIList) do
 		if not dgsIsDxElement(v) or not value then animGUIList[v] = nil end
 		local animList = dgsElementData[v].anim
@@ -188,25 +194,50 @@ addEventHandler("onClientRender",root,function()
 		local data = dgsElementData[v].move
 		if not data then moveGUIList[v] = nil end
 		if moveGUIList[v] then
-			local allDistance,ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[-1]
+			local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
 			local nx,ny = dgsGetPosition(v,rlt)
-			local tx,ty
 			local compMove = false
 			local percentx,percenty
 			if mtype then
 				local disx,disy = x-ox,y-oy
-				local percentxo,percentyo = disx~=0 and (nx-ox)/disx or 1,disy ~= 0 and (ny-oy)/disy or 1
-				if builtins[easing] then
-					percentx,percenty = getEasingValue(percentxo,easing)*percentxo,getEasingValue(percentyo,easing)*percentyo
-				else
-					percentx,percenty = getEasingValue2(percentxo,easing,settings,v)*percentxo,getEasingValue2(percentyo,easing,settings,v)*percentyo
+				local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
+				local speedX,speedY = torvx*diff/1000*symbolX,vy*diff/1000*symbolY
+				local finishX,finishY = false,false
+				if disx ~= 0 then
+					local progress = (nx-ox)/disx
+					if builtins[easing] then
+						percentx = getEasingValue(progress,easing)
+					else
+						percentx = getEasingValue2(progress,easing,settings,v)
+					end
+					if progress < 1 then
+						nx = nx+speedX
+						if nx*symbolX > x*symbolX then
+							nx = x
+						end
+					else
+						nx = x
+						finishX = true
+					end
 				end
-				if percentxo >= 1 and percentyo >= 1 then
-					compMove = true
-					tx,ty = x,y
-				else
-					tx,ty = nx+torvx,ny+vy
+				if disy ~= 0 then
+					local progress = (ny-oy)/disy
+					if builtins[easing] then
+						percenty = getEasingValue(progress,easing)
+					else
+						percenty = getEasingValue2(progress,easing,settings,v)
+					end
+					if progress < 1 then
+						ny = ny+speedY
+						if ny*symbolY > y*symbolY then
+							ny = y
+						end
+					else
+						ny = y
+						finishY = true
+					end
 				end
+				compMove = finishX and finishY
 			else
 				local changeTime = tickCount-data[0]
 				local temp = changeTime/torvx
@@ -217,12 +248,12 @@ addEventHandler("onClientRender",root,function()
 				end
 				if temp >= 1 then
 					compMove = true
-					tx,ty = x,y
+					nx,ny = x,y
 				else
-					tx,ty = percentx,percenty
+					nx,ny = percentx,percenty
 				end
 			end
-			dgsSetPosition(v,tx,ty,rlt)
+			dgsSetPosition(v,nx,ny,rlt)
 			if compMove then
 				dgsStopMoving(v)
 			end
@@ -233,25 +264,50 @@ addEventHandler("onClientRender",root,function()
 		local data = dgsGetData(v,"size")
 		if not data then sizeGUIList[v] = nil end
 		if sizeGUIList[v] then
-			local allDistance,ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[-1]
+			local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
 			local nx,ny = dgsGetSize(v,rlt)
-			local tx,ty
 			local compSize = false
 			local percentx,percenty
 			if mtype then
 				local disx,disy = x-ox,y-oy
-				local percentxo,percentyo = disx~=0 and (nx-ox)/disx or 1,disy ~= 0 and (ny-oy)/disy or 1
-				if builtins[easing] then
-					percentx,percenty = getEasingValue(percentxo,easing)*percentxo,getEasingValue(percentyo,easing)*percentyo
-				else
-					percentx,percenty = getEasingValue2(percentxo,easing,settings,v)*percentxo,getEasingValue2(percentyo,easing,settings,v)*percentyo
+				local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
+				local speedX,speedY = torvx*diff/1000*symbolX,vy*diff/1000*symbolY
+				local finishX,finishY = false,false
+				if disx ~= 0 then
+					local progress = (nx-ox)/disx
+					if builtins[easing] then
+						percentx = getEasingValue(progress,easing)
+					else
+						percentx = getEasingValue2(progress,easing,settings,v)
+					end
+					if progress < 1 then
+						nx = nx+speedX
+						if nx*symbolX > x*symbolX then
+							nx = x
+						end
+					else
+						nx = x
+						finishX = true
+					end
 				end
-				if percentxo >= 1 and percentyo >= 1 then
-					compSize = true
-					tx,ty = x,y
-				else
-					tx,ty = nx+torvx,ny+vy
+				if disy ~= 0 then
+					local progress = (ny-oy)/disy
+					if builtins[easing] then
+						percenty = getEasingValue(progress,easing)
+					else
+						percenty = getEasingValue2(progress,easing,settings,v)
+					end
+					if progress < 1 then
+						ny = ny+speedY
+						if ny*symbolY > y*symbolY then
+							ny = y
+						end
+					else
+						ny = y
+						finishY = true
+					end
 				end
+				compSize = finishX and finishY
 			else
 				local changeTime = tickCount-data[0]
 				local temp = changeTime/torvx
@@ -262,12 +318,12 @@ addEventHandler("onClientRender",root,function()
 				end
 				if temp >= 1 then
 					compSize = true
-					tx,ty = x,y
+					nx,ny = x,y
 				else
-					tx,ty = percentx,percenty
+					nx,ny = percentx,percenty
 				end
 			end
-			dgsSetSize(v,tx,ty,rlt)
+			dgsSetSize(v,nx,ny,rlt)
 			if compSize then
 				dgsStopSizing(v)
 			end
@@ -277,48 +333,54 @@ addEventHandler("onClientRender",root,function()
 		if not dgsIsDxElement(v) or not value then alphaGUIList[v] = nil end
 		local data = dgsElementData[v].calpha
 		if not data then alphaGUIList[v] = nil end
-		local allDistance,endalpha,mtype,easing,torv,settings = data[1],data[2],data[3],data[4],data[5],data[-1]
+		local oldAlpha,endalpha,mtype,easing,torv,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[-1]
 		local alp = dgsElementData[v].alpha
 		if not alp then alphaGUIList[v] = nil end
 		if alphaGUIList[v] then
-			local talp
 			local compAlpha = false
 			local percentalp
 			if mtype then
-				local percentalpo = alp-(endalpha+allDistance)/allDistance
-				if builtins[easing] then
-					percentalp = getEasingValue(percentalpo,easing or "Linear")*percentalpo
-				else
-					percentalp = getEasingValue2(percentalpo,easing,settings,v)*percentalpo
-				end
-				if percentalpo >= 1 then
-					compAlpha = true
-					talp = endalpha
-				else
-					talp = talp+torv+percentalp*torv
+				local disAlpha = endalpha-oldAlpha
+				local symbolAlpha = disAlpha < 0 and -1 or 1
+				local speed = torv*diff/1000*symbolAlpha
+				if disAlpha ~= 0 then
+					local progress = (alp-oldAlpha)/disAlpha
+					if builtins[easing] then
+						percentx = getEasingValue(progress,easing)
+					else
+						percentx = getEasingValue2(progress,easing,settings,v)
+					end
+					if progress < 1 then
+						alp = alp+speed
+						if alp*symbolAlpha > endalpha*symbolAlpha then
+							alp = endalpha
+						end
+					else
+						alp = endalpha
+						compAlpha = true
+					end
 				end
 			else
 				local changeTime = tickCount-data[0]
 				local temp = changeTime/torv
 				if builtins[easing] then
-					percentalp = interpolateBetween(endalpha+allDistance,0,0,endalpha,0,0,temp,easing or "Linear")
+					percentalp = interpolateBetween(oldAlpha,0,0,endalpha,0,0,temp,easing or "Linear")
 				else
-					percentalp = interpolateBetween2(endalpha+allDistance,0,0,endalpha,0,0,temp,easing,settings,v)
+					percentalp = interpolateBetween2(oldAlpha,0,0,endalpha,0,0,temp,easing,settings,v)
 				end
 				if temp >= 1 then
 					compAlpha = true
-					talp = endalpha
+					alp = endalpha
 				else
-					talp = percentalp
+					alp = percentalp
 				end
 			end
-			dgsSetData(v,"alpha",talp)
+			dgsSetData(v,"alpha",alp)
 			if compAlpha then
 				dgsStopAlphaing(v)
 			end
 		end
 	end
-	tickCount = getTickCount()
 end)
 
 function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings,self)

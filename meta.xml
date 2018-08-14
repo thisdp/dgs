@@ -1,17 +1,12 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
 	<file src="dsm.ttf" />
-	<file src="colorSchemeIndex.txt" type="client"/>
-	<file src="colorScheme.txt" />
-	<file src="image/combobox/arrow.fx" />
-	<file src="image/eda/ellipse.fx" />
 	<file src="media.html" />
 	<file src="meta.xml" />
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
-	<script src="colorSchemeLoad.lua" type="client" />
-	
+	<script src="styleManager/styleManager.lua" type="client" />
 	
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
@@ -44,26 +39,28 @@
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
-	<script src="test.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
+	<script src="oldFunctions.lua" type="client" />
+	<script src="test.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
 
 	<script src="update.lua" type="server" />
-	<file src="image/checkbox/cb_t.png" type="client" />
-	<file src="image/checkbox/cb_f.png" type="client" />
-	<file src="image/checkbox/cb_i.png" type="client" />
-	<file src="image/checkbox/cb_t_s.png" type="client" />
-	<file src="image/checkbox/cb_f_s.png" type="client" />
-	<file src="image/checkbox/cb_i_s.png" type="client" />
+	<file src="styleManager/Default/Images/combobox/arrow.fx" />
+	<file src="styleManager/Default/Images/eda/ellipse.fx" />
+	<file src="styleManager/Default/Images/checkbox/cb_t.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_f.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_i.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" type="client" />
+	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" type="client" />
+	<file src="styleManager/Default/styleSettings.txt" type="client" />
 	
-	<file src="image/radiobutton/rb_t.png" type="client" />
-	<file src="image/radiobutton/rb_f.png" type="client" />
-	<file src="image/radiobutton/rb_t_s.png" type="client" />
-	<file src="image/radiobutton/rb_f_s.png" type="client" />
-	<file src="image/scrollbar/scrollbar_arrow.png" type="client" />
-	
-	<script src="oldFunctions.lua" type="client" />
 	
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
@@ -232,10 +229,10 @@
 	<export function="dgsCreateImage" type="client" />
 	<export function="dgsImageSetImage" type="client" />
 	<export function="dgsImageGetImage" type="client" />
-	<export function="dgsImageSetImageSize" type="client" />
-	<export function="dgsImageGetImageSize" type="client" />
-	<export function="dgsImageSetImagePosition" type="client" />
-	<export function="dgsImageGetImagePosition" type="client" />
+	<export function="dgsImageSetUVSize" type="client" />
+	<export function="dgsImageGetUVSize" type="client" />
+	<export function="dgsImageSetUVPosition" type="client" />
+	<export function="dgsImageGetUVPosition" type="client" />
 
 	<export function="dgsCreateProgressBar" type="client" />
 	<export function="dgsProgressBarGetProgress" type="client" />
@@ -534,6 +531,7 @@
 	<export function="dgsDxCreateEDA" type="client" />
 	<export function="dgsDxEDASetDebugModeEnabled" type="client" />
 	<export function="dgsDxEDAGetDebugModeEnabled" type="client" />
+	<export function="test" type="server" />
 	<min_mta_version server="1.5.4-9.11342" />
 	<download_priority_group>999</download_priority_group>
 </meta>

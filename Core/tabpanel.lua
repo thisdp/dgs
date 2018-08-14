@@ -1,4 +1,4 @@
-function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
+function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateTabPanel at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
@@ -9,29 +9,29 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabheight,defbgcolor)
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(tabpanel,parent,true) or table.insert(CenterFatherTable,1,tabpanel)
-	dgsSetData(tabpanel,"tabheight",{tabheight or 20,false})
-	dgsSetData(tabpanel,"tabmaxwidth",{10000,false})
-	dgsSetData(tabpanel,"tabminwidth",{10,false})
+	dgsSetData(tabpanel,"tabHeight",{tabHeight or styleSettings.tabpanel.tabHeight,false})
+	dgsSetData(tabpanel,"tabMaxWidth",{10000,false})
+	dgsSetData(tabpanel,"tabMinWidth",{10,false})
 	dgsSetData(tabpanel,"font",systemFont)
-	dgsSetData(tabpanel,"defbackground",tonumber(defbgcolor) or schemeColor.tabpanel.defbackground)
+	dgsSetData(tabpanel,"bgColor",tonumber(defbgColor) or styleSettings.tabpanel.bgColor)
 	dgsSetData(tabpanel,"tabs",{})
 	dgsSetData(tabpanel,"selected",-1)
 	dgsSetData(tabpanel,"preSelect",-1)
-	dgsSetData(tabpanel,"tabsidesize",{4,false},true)
-	dgsSetData(tabpanel,"tabgapsize",{1,false},true)
-	dgsSetData(tabpanel,"scrollSpeed",{10,false})
+	dgsSetData(tabpanel,"tabSideSize",styleSettings.tabpanel.tabSideSize,true)
+	dgsSetData(tabpanel,"tabGapSize",styleSettings.tabpanel.tabGapSize,true)
+	dgsSetData(tabpanel,"scrollSpeed",styleSettings.tabpanel.scrollSpeed)
 	dgsSetData(tabpanel,"taboffperc",0)
 	dgsSetData(tabpanel,"allleng",0)
 	insertResourceDxGUI(sourceResource,tabpanel)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx = dgsElementData[tabpanel].absSize[1]
-	local rendertarget = dxCreateRenderTarget(abx,tabheight or 20,true)
+	local rendertarget = dxCreateRenderTarget(abx,tabHeight or 20,true)
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
 	triggerEvent("onDgsCreate",tabpanel)
 	return tabpanel
 end
 
-function dgsCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,tabdefimg,tabselimg,tabcliimg,tabdefcolor,tabselcolor,tabclicolor)
+function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor)
 	assert(type(text) == "string" or type(text) == "number","Bad argument @dgsCreateTab at argument 1, expect string/number got "..type(text))
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
 	local tab = createElement("dgs-dxtab")
@@ -45,22 +45,30 @@ function dgsCreateTab(text,tabpanel,textsizex,textsizey,textcolor,bgimg,bgcolor,
 	dgsSetData(tab,"id",id)
 	local tp_w = dgsElementData[tabpanel].absSize[1]
 	local font = dgsElementData[tabpanel].font
-	local t_minWid,t_maxWid = dgsElementData[tabpanel].tabminwidth,dgsElementData[tabpanel].tabmaxwidth
+	local t_minWid,t_maxWid = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*tp_w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*tp_w or t_maxWid[1]
-	local wid = math.restrict(minwidth,maxwidth,dxGetTextWidth(text,textsizex or 1,font))
-	local t_sideSize = dgsElementData[tabpanel].tabsidesize
+	local wid = math.restrict(minwidth,maxwidth,dxGetTextWidth(text,textSizex or 1,font))
+	local t_sideSize = dgsElementData[tabpanel].tabSideSize
 	local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
-	local t_gapSize = dgsElementData[tabpanel].tabgapsize
+	local t_gapSize = dgsElementData[tabpanel].tabGapSize
 	local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
 	dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng+wid+sidesize*2+gapsize*math.min(#tabs,1))
 	dgsSetData(tab,"width",wid,true)
-	dgsSetData(tab,"absrltWidth",{-1,false},false)
-	dgsSetData(tab,"textcolor",tonumber(textcolor) or schemeColor.tab.textcolor)
-	dgsSetData(tab,"textsize",{textsizex or 1,textsizey or 1})
-	dgsSetData(tab,"bgcolor",tonumber(bgcolor) or schemeColor.tab.bgcolor)
-	dgsSetData(tab,"bgimg",bgimg or nil)
-	dgsSetData(tab,"tabimg",{tabdefimg,tabselimg,tabcliimg})
-	dgsSetData(tab,"tabcolor",{tonumber(tabdefcolor) or schemeColor.tab.tabcolor[1],tonumber(tabselcolor) or schemeColor.tab.tabcolor[2],tonumber(tabclicolor) or schemeColor.tab.tabcolor[3]})
+	dgsSetData(tab,"textColor",tonumber(textColor) or styleSettings.tab.textColor)
+	local textSizeX,textSizeY = tonumber(textSizex) or styleSettings.tab.textSize[1], tonumber(textSizex) or styleSettings.tab.textSize[2]
+	dgsSetData(tab,"textSize",{textSizeX,textSizeY})
+	dgsSetData(tab,"bgColor",tonumber(bgColor) or styleSettings.tab.bgColor)
+	dgsSetData(tab,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.tab.bgImage))
+	
+	local tabnorimg = tabnorimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[1])
+	local tabhovimg = tabhovimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[2])
+	local tabcliimg = tabcliimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[3])
+	dgsSetData(tab,"tabImage",{tabnorimg,tabhovimg,tabcliimg})
+	
+	local tabnorcolor = tabnorcolor or styleSettings.tab.tabColor[1]
+	local tabhovcolor = tabhovcolor or styleSettings.tab.tabColor[2]
+	local tabclicolor = tabclicolor or styleSettings.tab.tabColor[3]
+	dgsSetData(tab,"tabColor",{tabnorcolor,tabhovcolor,tabclicolor})
 	insertResourceDxGUI(sourceResource,tabpanel)
 	triggerEvent("onDgsPreCreate",tab)
 	if dgsElementData[tabpanel].selected == -1 then
@@ -74,9 +82,9 @@ function dgsTabPanelGetWidth(tabpanel,includeInvisible)
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelGetWidth at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
 	local wid = 0
 	local tabs = dgsElementData[tabpanel].tabs
-	local t_sideSize = dgsElementData[tabpanel].tabsidesize
+	local t_sideSize = dgsElementData[tabpanel].tabSideSize
 	local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
-	local t_gapSize = dgsElementData[tabpanel].tabgapsize
+	local t_gapSize = dgsElementData[tabpanel].tabGapSize
 	local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
 	local cnt = 0
 	if includeInvisible then
@@ -135,9 +143,9 @@ function dgsDeleteTab(tab)
 		local tp_w = dgsElementData[tabpanel].absSize[1]
 		local wid = dgsElementData[tab].width
 		local tabs = dgsElementData[tabpanel].tabs
-		local t_sideSize = dgsElementData[tabpanel].tabsidesize
+		local t_sideSize = dgsElementData[tabpanel].tabSideSize
 		local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
-		local t_gapSize = dgsElementData[tabpanel].tabgapsize
+		local t_gapSize = dgsElementData[tabpanel].tabGapSize
 		local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
 		dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-wid-sidesize*2-gapsize*math.min(#tabs,1))
 		local id = dgsElementData[tab].id
@@ -156,7 +164,7 @@ end
 
 function configTabPanel(source)
 	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-	local tabHeight = dgsElementData[source].tabheight
+	local tabHeight = dgsElementData[source].tabHeight
 	local rentarg = dgsElementData[source].renderTarget
 	if isElement(rentarg) then
 		destroyElement(rentarg)

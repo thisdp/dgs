@@ -1,0 +1,75 @@
+styleSettings = {}
+styleManager = {}
+styleManager.currentStyle = "Default"
+styleManager.sharedTexture = {}
+styleManager.styles = {	--Add your style map here
+	--Name = "Path",
+	Default="Default",
+}
+
+function getPathFromStyle(styleName)
+	return "styleManager/"..(styleManager.styles[styleName] or "Default").."/"
+end
+
+function dgsCreateTextureFromStyle(theTable)
+	if theTable then
+		local filePath,textureType,shaderSettings = theTable[1],theTable[2],theTable[3]
+		if filePath then
+			textureType = textureType or "image"
+			local currentStyle = styleManager.currentStyle
+			local thePath = getPathFromStyle(currentStyle)..filePath
+			if textureType == "image" then
+				if styleSettings.sharedTexture then
+					if isElement(styleManager.sharedTexture[thePath]) then
+						return styleManager.sharedTexture[thePath]
+					else
+						styleManager.sharedTexture[thePath] = dxCreateTexture(thePath)
+						return styleManager.sharedTexture[thePath]
+					end
+				else
+					return dxCreateTexture(thePath)
+				end
+			elseif textureType == "shader" then
+				local shader = dxCreateShader(thePath)
+				for k,v in pairs(shaderSettings or {}) do
+					dxSetShaderValue(shader,k,v)
+				end
+				return shader
+			end
+		end
+	end
+end
+
+function checkStyle(styleName)
+	if styleName then
+		local stylePath = getPathFromStyle(styleName)
+		if stylePath then
+			assert(fileExists(stylePath.."styleSettings.txt"),"[DGS Style] Missing style setting ("..stylePath.."styleSettings.txt)")
+			local styleSettings = fileOpen(stylePath.."styleSettings.txt")
+			local str = fileRead(styleSettings,fileGetSize(styleSettings))
+			local fnc = loadstring(str)
+			assert(fnc,"[DGS Style]Error when checking "..stylePath.."styleSettings.txt")
+		end
+	else
+		for k,v in pairs(styleManager.styles) do
+			local stylePath = getPathFromStyle(k)
+			if stylePath then
+				assert(fileExists(stylePath.."styleSettings.txt"),"[DGS Style] Missing style setting ("..stylePath.."styleSettings.txt)")
+				local styleSettings = fileOpen(stylePath.."styleSettings.txt")
+				local str = fileRead(styleSettings,fileGetSize(styleSettings))
+				local fnc = loadstring(str)
+				assert(fnc,"[DGS Style]Error when checking "..stylePath.."styleSettings.txt")
+			end
+		end
+	end
+end
+
+function loadStyle(styleName)
+	local path = getPathFromStyle(styleName)
+	local styleSettings = fileOpen(path.."styleSettings.txt")
+	local str = fileRead(styleSettings,fileGetSize(styleSettings))
+	local fnc = loadstring(str)
+	assert(fnc,"Error when loading "..path.."styleSettings.txt")
+	fnc()
+end
+loadStyle("Default")

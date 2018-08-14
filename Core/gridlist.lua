@@ -5,7 +5,7 @@ Selection Mode
 2-> Column Selection
 3-> Cell Selection
 ]]
-function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,columnTextColor,columncolor,rowdefc,rowhovc,rowselc,img,columnimage,rowdefi,rowhovi,rowseli)
+function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,rownorc,rowhovc,rowselc,bgImage,columnImage,rownori,rowhovi,rowseli)
 	assert(tonumber(x),"Bad argument @dgsCreateGridList at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateGridList at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateGridList at argument 3, expect number got "..type(sx))
@@ -16,39 +16,48 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	local gridlist = createElement("dgs-dxgridlist")
 	insertResourceDxGUI(sourceResource,gridlist)
 	dgsSetType(gridlist,"dgs-dxgridlist")
-	dgsSetData(gridlist,"bgimage",img)
-	dgsSetData(gridlist,"bgcolor",bgcolor or schemeColor.gridlist.bgcolor)
-	dgsSetData(gridlist,"columnImage",columnimage)
-	dgsSetData(gridlist,"columnColor",columncolor or schemeColor.gridlist.columnColor)
-	dgsSetData(gridlist,"columnTextColor",columnTextColor or schemeColor.gridlist.columnTextColor)
-	dgsSetData(gridlist,"columnTextSize",{1,1})
-	dgsSetData(gridlist,"columnOffset",10)
+	dgsSetData(gridlist,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.gridlist.bgImage))
+	dgsSetData(gridlist,"bgColor",bgColor or styleSettings.gridlist.bgColor)
+	dgsSetData(gridlist,"columnImage",columnImage or dgsCreateTextureFromStyle(styleSettings.gridlist.columnImage))
+	dgsSetData(gridlist,"columnColor",columnColor or styleSettings.gridlist.columnColor)
+	dgsSetData(gridlist,"columnTextColor",columnTextColor or styleSettings.gridlist.columnTextColor)
+	dgsSetData(gridlist,"columnTextSize",styleSettings.gridlist.columnTextSize)
+	dgsSetData(gridlist,"columnOffset",styleSettings.gridlist.columnOffset)
 	dgsSetData(gridlist,"columnData",{})
 	dgsSetData(gridlist,"columnMoveOffset",0)
 	dgsSetData(gridlist,"columnRelative",true)
 	dgsSetData(gridlist,"columnShadow",false)
-	dgsSetData(gridlist,"columnHeight",tonumber(columnHeight) or 20,true)
+	local columnHeight = tonumber(columnHeight) or styleSettings.gridlist.columnHeight
+	dgsSetData(gridlist,"columnHeight",columnHeight,true)
 	dgsSetData(gridlist,"selectedColumn",-1)
-	dgsSetData(gridlist,"rowColor",{rowdefc or schemeColor.gridlist.rowColor[1],rowhovc or schemeColor.gridlist.rowColor[2],rowselc or schemeColor.gridlist.rowColor[3]})	--Normal/Hover/Click
-	dgsSetData(gridlist,"rowImage",{rowdefi,rowhovi,rowseli})	----Normal/Hover/Click
+	
+	local rownorc = rownorc or styleSettings.gridlist.rowColor[1]
+	local rowhovc = rowhovc or styleSettings.gridlist.rowColor[2]
+	local rowselc = rowselc or styleSettings.gridlist.rowColor[3]
+	dgsSetData(gridlist,"rowColor",{rownorc,rowhovc,rowselc})	--Normal/Hover/Selected
+	local rownori = rownori or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[1])
+	local rowhovi = rowhovi or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[2])
+	local rowseli = rowseli or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[3])
+	dgsSetData(gridlist,"rowImage",{rownori,rowhovi,rowseli})	--Normal/Hover/Selected
+	
 	dgsSetData(gridlist,"rowData",{})
-	dgsSetData(gridlist,"rowTextSize",{1,1})
-	dgsSetData(gridlist,"rowTextColor",schemeColor.gridlist.rowTextColor)
+	dgsSetData(gridlist,"rowTextSize",styleSettings.gridlist.rowTextSize)
+	dgsSetData(gridlist,"rowTextColor",styleSettings.gridlist.rowTextColor)
 	dgsSetData(gridlist,"rowShadow",false)
 	dgsSetData(gridlist,"rowMoveOffset",0)
-	dgsSetData(gridlist,"rowHeight",15)
-	dgsSetData(gridlist,"UseImage",false)
+	dgsSetData(gridlist,"rowHeight",styleSettings.gridlist.rowHeight)
 	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
 	dgsElementData[gridlist].nextRenderSort = false
 	dgsSetData(gridlist,"sortEnabled",true)
 	dgsSetData(gridlist,"autoSort",true)
 	dgsSetData(gridlist,"sortColumn",false)
-	dgsSetData(gridlist,"sectionColumnOffset",-10)
-	dgsSetData(gridlist,"defaultColumnOffset",0)
-	dgsSetData(gridlist,"backgroundOffset",-5)
+	dgsSetData(gridlist,"sectionColumnOffset",styleSettings.gridlist.sectionColumnOffset)
+	dgsSetData(gridlist,"defaultColumnOffset",styleSettings.gridlist.defaultColumnOffset)
+	dgsSetData(gridlist,"backgroundOffset",styleSettings.gridlist.backgroundOffset)
+	local scbThick = styleSettings.gridlist.scrollBarThick
+	dgsSetData(gridlist,"scrollBarThick",scbThick,true)
 	dgsSetData(gridlist,"font",systemFont)
 	dgsSetData(gridlist,"sectionFont",systemFont)
-	dgsSetData(gridlist,"scrollBarThick",20,true)
 	dgsSetData(gridlist,"colorcoded",false)
 	dgsSetData(gridlist,"selectionMode",1)
 	dgsSetData(gridlist,"multiSelection",false)
@@ -65,19 +74,19 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgcolor,column
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]
-	local columnRender = dxCreateRenderTarget(abx,columnHeight or 20,true)
-	local rowRender = dxCreateRenderTarget(abx,aby-(columnHeight or 20)-20,true)
+	local columnRender = dxCreateRenderTarget(abx,columnHeight,true)
+	local rowRender = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true)
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
-	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,gridlist)
+	local scrollbar1 = dgsCreateScrollBar(abx-scbThick,0,scbThick,aby-scbThick,false,false,gridlist)
 	dgsSetData(scrollbar1,"attachedToParent",gridlist)
-	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,gridlist)
+	local scrollbar2 = dgsCreateScrollBar(0,aby-scbThick,abx-scbThick,scbThick,true,false,gridlist)
 	dgsSetData(scrollbar2,"attachedToParent",gridlist)
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
-	dgsSetData(scrollbar1,"scrollmultiplier",{0.1,true})
-	dgsSetData(scrollbar2,"scrollmultiplier",{0.1,true})
+	dgsSetData(scrollbar1,"multiplier",{1,false})
+	dgsSetData(scrollbar2,"multiplier",{1,false})
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
 	triggerEvent("onDgsCreate",gridlist)
 	return gridlist
@@ -467,13 +476,13 @@ end
 -----------------------------Row
 --[[
 	rowData Struct:
-		-4					-3				-2				-1				0								1																													2																													...
-		columnOffset		bgImage			selectable		clickable		bgColor							column1																												column2																												...
+		-4					-3							-2				-1				0								1																													2																													...
+		columnOffset		bgImage						selectable		clickable		bgColor							column1																												column2																												...
 {
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
-	{	columnOffset,		{def,hov,sel},	true/false,		true/false,		{default,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
 	{	the same as preview table																																													},
 }
 
@@ -563,12 +572,12 @@ function dgsGridListGetItemSelectable(gridlist,row,column,state)
 	return not (rowData[row][column][8] and true or false)
 end
 
-function dgsGridListSetRowBackGroundColor(gridlist,row,colordef,colorsel,colorcli)
+function dgsGridListSetRowBackGroundColor(gridlist,row,norcolor,selcolor,clicolor)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowBackGroundColor at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetRowBackGroundColor at argument 2, expect number got "..dgsGetType(row))
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
-		rowData[row][0] = {colordef or 255,colorsel or 255,colorcli or 255}
+		rowData[row][0] = {norcolor or 255,selcolor or 255,clicolor or 255}
 		return true
 	end
 	return false
@@ -943,11 +952,11 @@ function dgsGridListGetRowBackGroundImage(gridlist,row)
 	return unpack(rowData[row][-3])
 end
 
-function dgsGridListSetRowBackGroundImage(gridlist,row,defimage,selimage,cliimage)
+function dgsGridListSetRowBackGroundImage(gridlist,row,norimage,selimage,cliimage)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowBackGroundImage at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetRowBackGroundImage at argument 2, expect number got "..type(row))
-	if defimage then
-		assert(type(defimage) == "string" or isElement(defimage) and getElementType(defimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 3, expect string/texture got "..tostring(isElement(defimage) or type(defimage)))
+	if norimage then
+		assert(type(norimage) == "string" or isElement(norimage) and getElementType(norimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 3, expect string/texture got "..tostring(isElement(norimage) or type(norimage)))
 	end
 	if selimage then
 		assert(type(selimage) == "string" or isElement(selimage) and getElementType(selimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 4, expect string/texture got "..tostring(isElement(selimage) or type(selimage)))
@@ -956,7 +965,7 @@ function dgsGridListSetRowBackGroundImage(gridlist,row,defimage,selimage,cliimag
 		assert(type(cliimage) == "string" or isElement(cliimage) and getElementType(cliimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 5, expect string/texture got "..tostring(isElement(cliimage) or type(cliimage)))
 	end
 	local rowData = dgsElementData[gridlist].rowData
-	rowData[row][-3] = {defimage,selimage,cliimage}
+	rowData[row][-3] = {norimage,selimage,cliimage}
 	return dgsSetData(gridlist,"rowData",rowData)
 end
 

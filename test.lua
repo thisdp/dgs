@@ -24,6 +24,7 @@ end
 function createTest3()
 	local rb1= dgsCreateRadioButton(500,500,200,30,"aaaa",false)
 	local rb2 = dgsCreateRadioButton(500,520,200,30,"bbbb",false)
+	local rb3 = dgsCreateRadioButton(500,540,200,30,"bbbb",false)
 end
 
 function createTest4()
@@ -34,7 +35,7 @@ function createTest4()
 end
 
 function createTest5()
-	local cb1= dgsCreateCheckBox(500,500,200,30,"test_indeterminate",false)
+	local cb1 = dgsCreateCheckBox(500,500,200,30,"test_indeterminate",false)
 	local cb2 = dgsCreateCheckBox(500,520,200,30,"test_checked",false)
 	local cb2 = dgsCreateCheckBox(500,540,200,30,"test_unchecked",false)
 	dgsCheckBoxSetSelected(cb1,nil)
@@ -43,6 +44,11 @@ end
 function testButtonDisable()
 	local button = dgsCreateButton(500,500,200,80,"test",false)
 	dgsSetEnabled(button,false)
+end
+
+function testProgressBar()
+	local pb= dgsCreateProgressBar(500,500,200,30,false)
+	dgsProgressBarSetProgress(pb,50)
 end
 
 function testButtonPerformance()
@@ -111,8 +117,9 @@ end
 
 function edatest()
 	local eda = dgsCreateEDA(400,400,300,100,false)
-	dgsEDASetDebugMode(eda,true)
+	dgsEDASetDebugModeEnabled(eda,true)
 end
+
 function gridlistTest()
 	gridlist = dgsCreateGridList(300,50,600,600,false)
 	dgsSetProperty(gridlist,"clip",false)
@@ -127,7 +134,6 @@ function gridlistTest()
 	dgsGridListSetMultiSelectionEnabled(gridlist,true)
 	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
 end
-
 function centerEdit()
 	edit = dgsCreateEdit(100,300,300,100,"Test",false)
 	--dgsSetProperty(edit,"center",true)
@@ -138,17 +144,6 @@ function mediaTest()
 	local media = dgsCreateMedia(600,600)
 	--local image = dgsCreateImage(200,100,400,400,media,false)
 	dgsMediaLoadMedia(media,"liquicity.mp4","VIDEO")
-end
-
-function gridlistImageTest()
-	gridlist = dgsCreateGridList(300,200,300,400,false)
-	dgsGridListAddColumn(gridlist,"test",0.7)
-	for i=1,10 do
-		local row = dgsGridListAddRow(gridlist)
-		dgsGridListSetItemText(gridlist,row,1,tostring(i))
-		dgsGridListSetItemImage(gridlist,row,1,checkBox.inde_)
-		dgsGridListRemoveItemImage(gridlist,row,1)
-	end
 end
 
 function dgsAnimTest()
@@ -166,7 +161,6 @@ function dgsAnimTest()
 	local label = dgsCreateLabel(500,500,400,20,"Testttttttttttttttttttt",false)
 	dgsAnimTo(label,"shadow",{100,100,tocolor(0,0,0,255)},"shadowOffset",10000)
 end
-
 
 
 function GridListSortingTest()
@@ -232,3 +226,8 @@ function exampleDetectArea()
 
 	]])
 end
+
+
+
+local button = dgsCreateButton(100,100,200,100,"test",false)
+dgsAlphaTo(button,0,true,"OutQuad",1)

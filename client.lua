@@ -189,7 +189,7 @@ function dgsCoreRender()
 		triggerEvent("onDgsRender",resourceRoot)
 		dgsCheckHit(MouseData.hit,MouseX,MouseY)
 	end
-	if DEBUG_MODE then
+	if debugMode then
 		local ticks = getTickCount()-tk
 		local version = getElementData(resourceRoot,"Version")
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,black)
@@ -257,7 +257,7 @@ end
 
 
 function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
-	if DEBUG_MODE then
+	if debugMode then
 		DGSShow = DGSShow+1
 	end
 	local eleData = dgsElementData[v]
@@ -281,7 +281,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		local w,h = siz[1],siz[2]
 		local isRenderTarget = (not rndtgt) and true or false
 		self = v
-		local rendSet = not DEBUG_MODE and isRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
+		local interrupted = false
+		local rendSet = not debugMode and isRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
 		if dxType == "dgs-dxwindow" then
 			if x and y then
 				if eleData.PixelInt then
@@ -290,8 +291,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local img = eleData.image
 				local color = eleData.color
 				color = applyColorAlpha(color,galpha)
-				local titimg,titcolor,titsize = eleData.titimage,eleData.titcolor,eleData.titlesize
-				titcolor = applyColorAlpha(titcolor,galpha)
+				local titimg,titleColor,titsize = eleData.titleImage,eleData.titleColor,eleData.titleHeight
+				titleColor = applyColorAlpha(titleColor,galpha)
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -306,14 +307,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawRectangle(x,y+titsize,w,h-titsize,color,rendSet)
 				end
 				if titimg then
-					dxDrawImage(x,y,w,titsize,titimg,0,0,0,titcolor,rendSet)
+					dxDrawImage(x,y,w,titsize,titimg,0,0,0,titleColor,rendSet)
 				else
-					dxDrawRectangle(x,y,w,titsize,titcolor,rendSet)
+					dxDrawRectangle(x,y,w,titsize,titleColor,rendSet)
 				end
 				local rightbottom = eleData.rightbottom
 				local font = eleData.font or systemFont
-				local titnamecolor = applyColorAlpha(eleData.titnamecolor,galpha)
-				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
+				local textColor = applyColorAlpha(eleData.textColor,galpha)
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local clip,wordbreak,colorcoded = eleData.clip,eleData.wordbreak,eleData.colorcoded
 				local text = eleData.text
 				if eleData.shadow then
@@ -330,7 +331,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				dxDrawText(text,x,y,x+w,y+titsize,titnamecolor,txtSizX,txtSizY,systemFont,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,eleData.colorcoded)
+				dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,systemFont,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,eleData.colorcoded)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -426,7 +427,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local text = eleData.text
 				if #text ~= 0 then
 					local font = eleData.font or systemFont
-					local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
+					local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 					local clip = eleData.clip
 					local wordbreak = eleData.wordbreak
 					local colorcoded = eleData.colorcoded
@@ -451,7 +452,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							end
 						end
 					end
-					dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(eleData.textcolor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+					dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -667,8 +668,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				------------------------------------
 				if colors >= 16777216 or colors < 0 then
 					if imgs then
-						local sx,sy = eleData.imagesize[1],eleData.imagesize[2]
-						local px,py = eleData.imagepos[1],eleData.imagepos[2]
+						local sx,sy = eleData.imageUVSize[1],eleData.imageUVSize[2]
+						local px,py = eleData.imageUVPos[1],eleData.imageUVPos[2]
 						local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
 						local rot = eleData.rotation or 0
 						if not sx or not sy or not px or not py then
@@ -731,7 +732,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local color_f,color_t = eleData.color_f,eleData.color_t
 				local rbParent = eleData.rbParent
 				local image,color
-				local _buttonSize = eleData.buttonsize
+				local _buttonSize = eleData.buttonSize
 				local buttonSizeX,buttonSizeY
 				if tonumber(_buttonSize[2]) then
 					buttonSizeX = _buttonSize[3] and _buttonSize[1]*w or _buttonSize[1]
@@ -790,7 +791,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawRectangle(x,y+h/2-buttonSizeY/2,buttonSizeX,buttonSizeY,finalcolor,rendSet)
 				end
 				local font = eleData.font or systemFont
-				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local clip = eleData.clip
 				local wordbreak = eleData.wordbreak
 				local _textImageSpace = eleData.textImageSpace
@@ -817,7 +818,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textcolor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+				dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -868,7 +869,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local image_f,image_t,image_i = eleData.image_f,eleData.image_t,eleData.image_i
 				local color_f,color_t,color_i = eleData.color_f,eleData.color_t,eleData.color_i
 				local image,color
-				local _buttonSize = eleData.buttonsize
+				local _buttonSize = eleData.buttonSize
 				local buttonSizeX,buttonSizeY
 				if tonumber(_buttonSize[2]) then
 					buttonSizeX = _buttonSize[3] and _buttonSize[1]*w or _buttonSize[1]
@@ -929,7 +930,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					dxDrawRectangle(x,y+h/2-buttonSizeY/2,buttonSizeX,buttonSizeY,finalcolor,rendSet)
 				end
 				local font = eleData.font or systemFont
-				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local clip = eleData.clip
 				local wordbreak = eleData.wordbreak
 				local _textImageSpace = eleData.textImageSpace
@@ -956,7 +957,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
-				dxDrawText(text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textcolor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+				dxDrawText(text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -1004,9 +1005,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local bgimage = eleData.bgimage
-				local bgcolor = eleData.bgcolor
-				bgcolor = applyColorAlpha(bgcolor,galpha)
+				local bgImage = eleData.bgImage
+				local bgColor = eleData.bgColor
+				bgColor = applyColorAlpha(bgColor,galpha)
 				local edit = eleData.edit
 				if not isElement(edit) then
 					destroyElement(v)
@@ -1032,33 +1033,33 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
-						dgsSetData(v,"cursorpos",0)
-						dgsSetData(v,"selectfrom",utf8.len(text))
+						dgsSetData(v,"caretPos",0)
+						dgsSetData(v,"selectFrom",utf8.len(text))
 					end
 				end
-				local cursorPos = eleData.cursorpos
-				local selectFro = eleData.selectfrom
-				local selectcolor = eleData.selectcolor
-				guiEditSetCaretIndex(edit,cursorPos)
-				guiSetProperty(edit,"SelectionStart",cursorPos)
-				guiSetProperty(edit,"SelectionLength",selectFro-cursorPos)
+				local caretPos = eleData.caretPos
+				local selectFro = eleData.selectFrom
+				local selectColor = eleData.selectColor
+				guiEditSetCaretIndex(edit,caretPos)
+				guiSetProperty(edit,"SelectionStart",caretPos)
+				guiSetProperty(edit,"SelectionLength",selectFro-caretPos)
 				guiSetVisible(edit,visible)
 				local font = eleData.font or systemFont
-				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local renderTarget = eleData.renderTarget
 				if isElement(renderTarget) then
-					local textcolor = eleData.textcolor
-					local width = dxGetTextWidth(utf8.sub(text,0,cursorPos),txtSizX,font)
+					local textColor = eleData.textColor
+					local width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
 					local selx = 0
-					if selectFro-cursorPos > 0 then
-						selx = dxGetTextWidth(utf8.sub(text,cursorPos+1,selectFro),txtSizX,font)
-					elseif selectFro-cursorPos < 0 then
-						selx = -dxGetTextWidth(utf8.sub(text,selectFro+1,cursorPos),txtSizX,font)
+					if selectFro-caretPos > 0 then
+						selx = dxGetTextWidth(utf8.sub(text,caretPos+1,selectFro),txtSizX,font)
+					elseif selectFro-caretPos < 0 then
+						selx = -dxGetTextWidth(utf8.sub(text,selectFro+1,caretPos),txtSizX,font)
 					end
 					local showPos = eleData.showPos
 					dxSetRenderTarget(renderTarget,true)
-					local sideWhite = eleData.sideWhite
-					local sidelength,sideheight = sideWhite[1]-sideWhite[1]%1,sideWhite[2]-sideWhite[2]%1
+					local padding = eleData.padding
+					local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
 					local selectRectOffset = 0
 					if eleData.center then
 						selectRectOffset = dxGetTextWidth(text,txtSizX,font)
@@ -1068,15 +1069,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						local caretHeight = eleData.caretHeight
 						local selStartY = sideheight+(h-sideheight*2)*(1-caretHeight)
 						local selEndY = (h-sideheight*2)*caretHeight-sideheight
-						dxDrawRectangle(width+showPos+selectRectOffset,selStartY,selx,selEndY,selectcolor)
+						dxDrawRectangle(width+showPos+selectRectOffset,selStartY,selx,selEndY,selectColor)
 					end
-					dxDrawText(text,showPos,0,w,h,textcolor,txtSizX,txtSizY,font,eleData.center and "center" or "left","center",false,false,false,false)
+					dxDrawText(text,showPos,0,w,h,textColor,txtSizX,txtSizY,font,eleData.center and "center" or "left","center",false,false,false,false)
 					if eleData.underline then
 						local textHeight = dxGetFontHeight(txtSizY,font)
 						local lineOffset = eleData.underlineOffset+h/2+textHeight/2
 						local lineWidth = eleData.underlineWidth
 						local textFontLen = eleData.textFontLen
-						dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textcolor,lineWidth)
+						dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
 					end
 					dxSetRenderTarget(rndtgt)
 					local finalcolor
@@ -1084,17 +1085,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						if type(eleData.disabledColor) == "number" then
 							finalcolor = eleData.disabledColor
 						elseif eleData.disabledColor == true then
-							local r,g,b,a = fromcolor(bgcolor,true)
+							local r,g,b,a = fromcolor(bgColor,true)
 							local average = (r+g+b)/3*eleData.disabledColorPercent
 							finalcolor = tocolor(average,average,average,a)
 						else
-							finalcolor = bgcolor
+							finalcolor = bgColor
 						end
 					else
-						finalcolor = bgcolor
+						finalcolor = bgColor
 					end
-					if bgimage then
-						dxDrawImage(x,y,w,h,bgimage,0,0,0,finalcolor,rendSet)
+					if bgImage then
+						dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 					else
 						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 					end
@@ -1108,23 +1109,23 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						end
 						if CaretShow then
 							local caretHeight = eleData.caretHeight
-							local cursorStyle = eleData.cursorStyle
+							local caretStyle = eleData.caretStyle
 							local selStartX = x+width+showPos+sidelength
-							if cursorStyle == 0 then
+							if caretStyle == 0 then
 								if -showPos <= width then
 									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
 									local selEndY = (h-sideheight*2)*caretHeight
-									dxDrawLine(selStartX-1,selStartY,selStartX-1,selEndY+selStartY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
+									dxDrawLine(selStartX-1,selStartY,selStartX-1,selEndY+selStartY,eleData.caretColor,eleData.caretThick,isRenderTarget)
 								end
-							elseif cursorStyle == 1 then
-								local cursorWidth = dxGetTextWidth(utf8.sub(text,cursorPos+1,cursorPos+1),txtSizX,font)
+							elseif caretStyle == 1 then
+								local cursorWidth = dxGetTextWidth(utf8.sub(text,caretPos+1,caretPos+1),txtSizX,font)
 								if cursorWidth == 0 then
 									cursorWidth = txtSizX*8
 								end
 								if -showPos-cursorWidth <= width then
-									local offset = eleData.cursorOffset
+									local offset = eleData.caretOffset
 									local selStartY = y+h-sideheight*2
-									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
+									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,eleData.caretColor,eleData.caretThick,isRenderTarget)
 								end
 							end
 						end
@@ -1177,9 +1178,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local bgimage = eleData.bgimage
-				local bgcolor = eleData.bgcolor
-				bgcolor = setColorAlpha(bgcolor,getColorAlpha(bgcolor)*galpha)
+				local bgImage = eleData.bgImage
+				local bgColor = eleData.bgColor
+				bgColor = setColorAlpha(bgColor,getColorAlpha(bgColor)*galpha)
 				local memo = eleData.memo
 				if not isElement(memo) then
 					destroyElement(v)
@@ -1193,17 +1194,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local allLine = #text
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
-						dgsSetData(v,"cursorposXY",{0,1})
-						dgsSetData(v,"selectfrom",{utf8.len(text[allLine]),allLine})
+						dgsSetData(v,"caretPos",{0,1})
+						dgsSetData(v,"selectFrom",{utf8.len(text[allLine]),allLine})
 					end
 				end
-				local cursorPos = eleData.cursorposXY
-				local selectFro = eleData.selectfrom
-				local selectcolor = eleData.selectcolor
+				local caretPos = eleData.caretPos
+				local selectFro = eleData.selectFrom
+				local selectColor = eleData.selectColor
 				local font = eleData.font or systemFont
-				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2]
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 				local renderTarget = eleData.renderTarget
-				local fontHeight = dxGetFontHeight(eleData.textsize[2],font)
+				local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -1213,8 +1214,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				------------------------------------
 				if isElement(renderTarget) then
-					local selectMode = eleData.selectmode
-					local textcolor = eleData.textcolor
+					local textColor = eleData.textColor
 					local showLine = eleData.showLine
 					local caretHeight = eleData.caretHeight-1
 					local canHoldLines = math.floor((h-4)/fontHeight)
@@ -1225,53 +1225,53 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						local toShowLine = showLine+canHoldLines
 						toShowLine = toShowLine > #text and #text or toShowLine
 						local offset = eleData.showPos
-						if cursorPos[2] == selectFro[2] then
-							if selectFro[1]>cursorPos[1] then
-								selPosStart = cursorPos[1]
+						if caretPos[2] == selectFro[2] then
+							if selectFro[1]>caretPos[1] then
+								selPosStart = caretPos[1]
 								selPosEnd = selectFro[1]
 							else
 								selPosStart = selectFro[1]
-								selPosEnd = cursorPos[1]
+								selPosEnd = caretPos[1]
 							end
-							if selectFro[2]>cursorPos[2] then
-								selStart = cursorPos[2]
+							if selectFro[2]>caretPos[2] then
+								selStart = caretPos[2]
 								selEnd = selectFro[2]
 							else
 								selStart = selectFro[2]
-								selEnd = cursorPos[2]
+								selEnd = caretPos[2]
 							end
 							local startx = dxGetTextWidth(utf8.sub(text[selStart],0,selPosStart),txtSizX,font)
 							local selx = dxGetTextWidth(utf8.sub(text[selStart],selPosStart+1,selPosEnd),txtSizX,font)
-							dxDrawRectangle(offset+startx,2+(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
+							dxDrawRectangle(offset+startx,2+(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 						else
-							if selectFro[2]>cursorPos[2] then
-								selStart = cursorPos[2]
+							if selectFro[2]>caretPos[2] then
+								selStart = caretPos[2]
 								selEnd = selectFro[2]
-								selPosStart = cursorPos[1]
+								selPosStart = caretPos[1]
 								selPosEnd = selectFro[1]
 							else
 								selStart = selectFro[2]
-								selEnd = cursorPos[2]
+								selEnd = caretPos[2]
 								selPosStart = selectFro[1]
-								selPosEnd = cursorPos[1]
+								selPosEnd = caretPos[1]
 							end
 							local startx = dxGetTextWidth(utf8.sub(text[selStart],0,selPosStart),txtSizX,font)
 							for i=selStart > showLine and selStart or showLine,selEnd < toShowLine and selEnd or toShowLine do
 								if i ~= selStart and i ~= selEnd then
 									local selx = dxGetTextWidth(text[i],txtSizX,font)
-									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
+									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 								elseif i == selStart then
 									local selx = dxGetTextWidth(utf8.sub(text[i],selPosStart+1),txtSizX,font)
-									dxDrawRectangle(offset+startx,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
+									dxDrawRectangle(offset+startx,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 								elseif i == selEnd then
 									local selx = dxGetTextWidth(utf8.sub(text[i],0,selPosEnd),txtSizX,font)
-									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectcolor)
+									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 								end
 							end
 						end
 						for i=showLine,toShowLine do
 							local ypos = (i-showLine)*fontHeight
-							dxDrawText(text[i],offset,ypos,dxGetTextWidth(text[i],txtSizX,font),fontHeight+ypos,textcolor,txtSizX,txtSizY,font,"left","top",true,false,false,false)
+							dxDrawText(text[i],offset,ypos,dxGetTextWidth(text[i],txtSizX,font),fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",true,false,false,false)
 						end
 					end
 					dxSetRenderTarget(rndtgt)
@@ -1280,17 +1280,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						if type(eleData.disabledColor) == "number" then
 							finalcolor = eleData.disabledColor
 						elseif eleData.disabledColor == true then
-							local r,g,b,a = fromcolor(bgcolor,true)
+							local r,g,b,a = fromcolor(bgColor,true)
 							local average = (r+g+b)/3*eleData.disabledColorPercent
 							finalcolor = tocolor(average,average,average,a)
 						else
-							finalcolor = bgcolor
+							finalcolor = bgColor
 						end
 					else
-						finalcolor = bgcolor
+						finalcolor = bgColor
 					end
-					if bgimage then
-						dxDrawImage(x,y,w,h,bgimage,0,0,0,finalcolor,rendSet)
+					if bgImage then
+						dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 					else
 						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 					end
@@ -1304,25 +1304,27 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 							CaretShow = eleData.readOnlyCaretShow
 						end
 						if CaretShow then
-							local theText = text[cursorPos[2]] or ""
-							local cursorPX = cursorPos[1]
 							local showLine = eleData.showLine
-							local currentLine = eleData.cursorposXY[2]
-							local lineStart = fontHeight*(currentLine-showLine)
-							local width = dxGetTextWidth(utfSub(theText,1,cursorPX),txtSizX,font)
-							local showPos = eleData.showPos
-							local cursorStyle = eleData.cursorStyle
-							if cursorStyle == 0 then
-								local selStartY = y+lineStart+1+fontHeight*(1-caretHeight)
-								local selEndY = y+lineStart+fontHeight*caretHeight-2
-								dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.cursorThick,isRenderTarget)
-							elseif cursorStyle == 1 then
-								local cursorWidth = dxGetTextWidth(utf8.sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
-								if cursorWidth == 0 then
-									cursorWidth = txtSizX*8
+							local currentLine = eleData.caretPos[2]
+							if currentLine >= showLine and currentLine <= showLine+canHoldLines then
+								local lineStart = fontHeight*(currentLine-showLine)
+								local theText = text[caretPos[2]] or ""
+								local cursorPX = caretPos[1]
+								local width = dxGetTextWidth(utfSub(theText,1,cursorPX),txtSizX,font)
+								local showPos = eleData.showPos
+								local caretStyle = eleData.caretStyle
+								if caretStyle == 0 then
+									local selStartY = y+lineStart+1+fontHeight*(1-caretHeight)
+									local selEndY = y+lineStart+fontHeight*caretHeight-2
+									dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.caretThick,isRenderTarget)
+								elseif caretStyle == 1 then
+									local cursorWidth = dxGetTextWidth(utf8.sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
+									if cursorWidth == 0 then
+										cursorWidth = txtSizX*8
+									end
+									local offset = eleData.caretOffset
+									dxDrawLine(x+width+showPos+1,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.caretThick,isRenderTarget)
 								end
-								local offset = eleData.cursorOffset
-								dxDrawLine(x+width+showPos+1,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.cursorThick,isRenderTarget)
 							end
 						end
 					end	
@@ -1621,7 +1623,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
 				local rightbottom = eleData.rightbottom
-				local colors,imgs = eleData.textcolor,eleData.image
+				local colors,imgs = eleData.textColor,eleData.image
 				colors = applyColorAlpha(colors,galpha)
 				local colorimgid = 1
 				if MouseData.enter == v then
@@ -1634,7 +1636,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local clip = eleData.clip
 				local wordbreak = eleData.wordbreak
 				local text = eleData.text
-				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2]
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -1712,11 +1714,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
 				local DataTab = eleData
-				local bgcolor,bgimg = DataTab.bgcolor,DataTab.bgimage
+				local bgColor,bgImage = DataTab.bgColor,DataTab.bgImage
 				local columncolor,columnimg = DataTab.columnColor,DataTab.columnImage
 				local font = DataTab.font or systemFont
 				columncolor = applyColorAlpha(columncolor,galpha)
-				bgcolor = applyColorAlpha(bgcolor,galpha)
+				bgColor = applyColorAlpha(bgColor,galpha)
 				local columnHeight = DataTab.columnHeight
 				if MouseData.enter == v then
 					colorimgid = 2
@@ -1733,10 +1735,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if bgimg then
-					dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgimg,0,0,0,bgcolor,rendSet)
+				if bgImage then
+					dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,rendSet)
 				else
-					dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgcolor,rendSet)
+					dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,rendSet)
 				end
 				if columnimg then
 					dxDrawImage(x,y,w,columnHeight,columnimg,0,0,0,columncolor,rendSet)
@@ -2153,17 +2155,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local bgcolor = eleData.bgcolor
-				local barcolor = eleData.barcolor
-				bgcolor = applyColorAlpha(bgcolor,galpha)
-				barcolor = applyColorAlpha(barcolor,galpha)
-				local bgimg = eleData.bgimg
-				local barimg = eleData.barimg
-				local barmode = eleData.barmode
-				local udspace = eleData.udspace
-				local lrspace = eleData.lrspace
-				local udvalue = udspace[2] and udspace[1]*h or udspace[1]
-				local lrvalue = lrspace[2] and lrspace[1]*w or lrspace[1]
+				local bgColor = eleData.bgColor
+				local indicatorColor = eleData.indicatorColor
+				bgColor = applyColorAlpha(bgColor,galpha)
+				indicatorColor = applyColorAlpha(indicatorColor,galpha)
+				local bgImage = eleData.bgImage
+				local indicatorImage = eleData.indicatorImage
+				local indicatorMode = eleData.indicatorMode
+				local padding = eleData.padding
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -2172,24 +2171,24 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				------------------------------------
-				if bgimg then
-					dxDrawImage(x,y,w,h,bgimg,0,0,0,bgcolor,rendSet)
+				if bgImage then
+					dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet)
 				else
-					dxDrawRectangle(x,y,w,h,bgcolor,rendSet)
+					dxDrawRectangle(x,y,w,h,bgColor,rendSet)
 				end
 				local percent = eleData.progress/100
-				if isElement(barimg) then
-					local sx,sy = eleData.barsize[1],eleData.barsize[2]
-					if barmode then
+				if isElement(indicatorImage) then
+					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+					if indicatorMode then
 						if not sx or not sy then
-							sx,sy = dxGetMaterialSize(barimg)
+							sx,sy = dxGetMaterialSize(indicatorImage)
 						end
-						dxDrawImageSection(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,1,1,sx*percent,sy,barimg,0,0,0,barcolor,rendSet)
+						dxDrawImageSection(x+padding[1],y+padding[2],(w-padding[1]*2)*percent,h-padding[2]*2,1,1,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet)
 					else
-						dxDrawImage(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barimg,0,0,0,barcolor,rendSet)
+						dxDrawImage(x+padding[1],y+padding[2],(w-padding[1]*2)*percent,h-padding[2]*2,indicatorImage,0,0,0,indicatorColor,rendSet)
 					end
 				else
-					dxDrawRectangle(x+lrvalue,y+udvalue,(w-lrvalue*2)*percent,h-udvalue*2,barcolor,rendSet)
+					dxDrawRectangle(x+padding[1],y+padding[2],(w-padding[1]*2)*percent,h-padding[2]*2,indicatorColor,rendSet)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -2241,12 +2240,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local postgui = rendSet
 				local colors,imgs = eleData.color,eleData.image
 				local colorimgid = 1
-				local textbox = eleData.textbox
+				local textBox = eleData.textBox
 				local buttonLen_t = eleData.buttonLen
 				local buttonLen
-				local bgcolor = eleData.combobgColor
-				local bgimg = eleData.combobgImage
-				if textbox then
+				local bgColor = eleData.bgColor
+				local bgImage = eleData.bgImage
+				if textBox then
 					buttonLen = buttonLen_t[2] and buttonLen_t[1]*h or buttonLen_t[1]
 				else
 					buttonLen = w
@@ -2296,14 +2295,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local arrowColor = eleData.arrowColor
 				local arrowOutSideColor = eleData.arrowOutSideColor
-				local arrowWidth = eleData.arrowWidth
-				local arrowDistance = eleData.arrowDistance/2*buttonLen
-				local arrowHeight = eleData.arrowHeight/2*h
 				local textBoxLen = w-buttonLen
-				if bgimg then
-					dxDrawImage(x,y,textBoxLen,h,bgimg,0,0,0,applyColorAlpha(bgcolor,galpha),postgui)
+				if bgImage then
+					dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,applyColorAlpha(bgColor,galpha),postgui)
 				else
-					dxDrawRectangle(x,y,textBoxLen,h,applyColorAlpha(bgcolor,galpha),postgui)
+					dxDrawRectangle(x,y,textBoxLen,h,applyColorAlpha(bgColor,galpha),postgui)
 				end
 				local shader = eleData.arrow
 				local listState = eleData.listState
@@ -2319,12 +2315,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local r,g,b,a = fromcolor(arrowOutSideColor,true)
 				dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*galpha})
 				dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,postgui)
-				if textbox then
+				if textBox then
 					local textSide = eleData.comboTextSide
 					local font = eleData.font or systemFont
-					local textcolor = eleData.textcolor
+					local textColor = eleData.textColor
 					local rb = eleData.rightbottom
-					local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
+					local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 					local colorcoded = eleData.colorcoded
 					local shadow = eleData.shadow
 					local wordbreak = eleData.wordbreak
@@ -2336,7 +2332,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					if shadow then
 						dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui)
 					end
-					dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textcolor,galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui,colorcoded)
+					dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,galpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,postgui,colorcoded)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -2424,17 +2420,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 					local preSelect = DataTab.preSelect
 					local Select = DataTab.select
-					local sizex,sizey = DataTab.listtextsize[1],DataTab.listtextsize[2]
 					local font = DataTab.font
-					local fontsx,fontsy = sizex,sizey or sizex
 					local shadow = dgsElementData[combo].shadow
 					local colorcoded = eleData.colorcoded
 					local wordbreak = eleData.wordbreak
 					local clip = eleData.clip
-					local textSide = dgsElementData[combo].combo_BoxTextSide
+					local textSide = dgsElementData[combo].itemTextSide
 					for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 						local lc_rowData = itemData[i]
-						local textcolor = lc_rowData[-2]
+						local textSize = lc_rowData[-3]
+						local textColor = lc_rowData[-2]
 						local image = lc_rowData[-1]
 						local color = lc_rowData[0]
 						local itemState = 1
@@ -2454,9 +2449,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW-textSide[2],rowpos+itemMoveOffset
 						local text = itemData[i][1]
 						if shadow then
-							dxDrawText(text:gsub("#%x%x%x%x%x%x",""),textSide[1]-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak)
+							dxDrawText(text:gsub("#%x%x%x%x%x%x",""),textSide[1]-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak)
 						end
-						dxDrawText(text,textSide[1],_y,_sx,_sy,textcolor,fontsx,fontsy,font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
+						dxDrawText(text,textSide[1],_y,_sx,_sy,textColor,textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
 					end
 					dxSetRenderTarget()
 					dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
@@ -2512,13 +2507,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local tabheight,relat = eleData["tabheight"][1],eleData["tabheight"][2]
-				local tabheight = relat and tabheight*y or tabheight
+				local tabHeight,relat = eleData["tabHeight"][1],eleData["tabHeight"][2]
+				local tabHeight = relat and tabHeight*y or tabHeight
 				eleData.rndPreSelect = -1
 				local selected = eleData["selected"]
 				local tabs = eleData["tabs"]
-				local height = eleData["tabheight"][2] and eleData["tabheight"][1]*h or eleData["tabheight"][1]
-				local defbackground = eleData.defbackground
+				local height = eleData["tabHeight"][2] and eleData["tabHeight"][1]*h or eleData["tabHeight"][1]
+				local bgColor = eleData.bgColor
 				local font = eleData.font or systemFont
 				------------------------------------
 				if eleData.functionRunBefore then
@@ -2534,27 +2529,27 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 					end
 				end
 				if selected == -1 then
-					dxDrawRectangle(x,y+height,w,h-height,eleData.defbackground,rendSet)
+					dxDrawRectangle(x,y+height,w,h-height,eleData.bgColor,rendSet)
 				else
 					local rendt = eleData.renderTarget
 					if isElement(rendt) then
 						dxSetRenderTarget(rendt,true)
-						local tabsidesize = eleData.tabsidesize[2] and eleData.tabsidesize[1]*w or eleData.tabsidesize[1]
+						local tabSideSize = eleData.tabSideSize[2] and eleData.tabSideSize[1]*w or eleData.tabSideSize[1]
 						local tabsize = -eleData.taboffperc*(dgsTabPanelGetWidth(v)-w)
-						local gap = eleData.tabgapsize[2] and eleData.tabgapsize[1]*w or eleData.tabgapsize[1]
+						local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
 						if eleData.PixelInt then
 							x,y,w,height = x-x%1,y-y%1,w-w%1,height-height%1
 						end
 						for d,t in ipairs(tabs) do
 							if dgsElementData[t].visible then
-								local width = dgsElementData[t].width+tabsidesize*2
+								local width = dgsElementData[t].width+tabSideSize*2
 								local _width = 0
 								if tabs[d+1] then
-									_width = dgsElementData[tabs[d+1]].width+tabsidesize*2
+									_width = dgsElementData[tabs[d+1]].width+tabSideSize*2
 								end
 								if tabsize+width >= 0 and tabsize <= w then
-									local tabimg = dgsElementData[t].tabimg
-									local tabcolor = dgsElementData[t].tabcolor
+									local tabImage = dgsElementData[t].tabImage
+									local tabColor = dgsElementData[t].tabColor
 									local selectstate = 1
 									if selected == d then
 										selectstate = 3
@@ -2566,25 +2561,25 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 										if type(eleData.disabledColor) == "number" then
 											finalcolor = applyColorAlpha(eleData.disabledColor,galpha)
 										elseif eleData.disabledColor == true then
-											local r,g,b,a = fromcolor(tabcolor[1],true)
+											local r,g,b,a = fromcolor(tabColor[1],true)
 											local average = (r+g+b)/3*eleData.disabledColorPercent
 											finalcolor = tocolor(average,average,average,a*galpha)
 										else
-											finalcolor = tabcolor[selectstate]
+											finalcolor = tabColor[selectstate]
 										end
 									else
-										finalcolor = applyColorAlpha(tabcolor[selectstate],galpha)
+										finalcolor = applyColorAlpha(tabColor[selectstate],galpha)
 									end
-									if tabimg[selectstate] then
-										dxDrawImage(tabsize,0,width,height,tabimg[selectstate],0,0,0,finalcolor)
+									if tabImage[selectstate] then
+										dxDrawImage(tabsize,0,width,height,tabImage[selectstate],0,0,0,finalcolor)
 									else
 										dxDrawRectangle(tabsize,0,width,height,finalcolor)
 									end
-									local textsize = dgsElementData[t].textsize
+									local textSize = dgsElementData[t].textSize
 									if eleData.PixelInt then
 										_tabsize,_width = tabsize-tabsize%1,math.floor(width+tabsize)
 									end
-									dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textcolor,textsize[1],textsize[2],font,"center","center",false,false,false,colorcoded,true)
+									dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textColor,textSize[1],textSize[2],font,"center","center",false,false,false,colorcoded,true)
 									if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and dgsElementData[t].enabled and enabled[2] then
 										eleData.rndPreSelect = d
 										MouseData.hit = t
@@ -2596,9 +2591,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 						eleData.preSelect = -1
 						dxSetRenderTarget()
 						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),rendSet)
-						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgcolor,galpha)
-						if dgsElementData[tabs[selected]].bgimg then
-							dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgimg,0,0,0,colors,rendSet)
+						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,galpha)
+						if dgsElementData[tabs[selected]].bgImage then
+							dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgImage,0,0,0,colors,rendSet)
 						else
 							dxDrawRectangle(x,y+height,w,h-height,colors,rendSet)
 						end
@@ -2706,7 +2701,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local colors,imgs = eleData.bgcolor,eleData.bgimage
+				local colors,imgs = eleData.bgColor,eleData.bgImage
 				colors = applyColorAlpha(colors,galpha)
 				------------------------------------
 				if eleData.functionRunBefore then
@@ -2726,7 +2721,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				local rowoffset = 0
 				local readyToRenderTable = {}
 				local font = eleData.font
-				local txtSizX,txtSizY = eleData.textsize[1],eleData.textsize[2] or eleData.textsize[1]
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				for i=1,#cmdtexts do
 					local movex = 0
 					local rndStr = ""
@@ -2862,7 +2857,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local color = applyColorAlpha(eleData.bgcolor,galpha)
+				local color = applyColorAlpha(eleData.bgColor,galpha)
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -2872,8 +2867,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				------------------------------------
 				local rendTarget = eleData.renderTarget
-				if isElement(eleData.bgimage) then
-					dxDrawImage(x,y,h,w,eleData.bgimage,0,0,0,color,rendSet)
+				if isElement(eleData.bgImage) then
+					dxDrawImage(x,y,h,w,eleData.bgImage,0,0,0,color,rendSet)
 				else
 					dxDrawRectangle(x,y,w,h,color,rendSet)
 				end
@@ -3005,6 +3000,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			else
 				visible = false
 			end
+		else
+			interrupted = true
 		end
 		if eleData.renderEventCall then
 			triggerEvent("onDgsElementRender",v,x,y,w,h)
@@ -3014,9 +3011,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				enabled[1] = false
 			end
 		end
-		for i=1,#children do
-			local child = children[i]
-			renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
+		if not interrupted then
+			for i=1,#children do
+				local child = children[i]
+				renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
+			end
 		end
 	end
 end
@@ -3061,7 +3060,7 @@ function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)
 		if hasParent then
 			if P_dgsType == "dgs-dxtab" then
 				local tabpanel = dgsElementData[parent].parent
-				local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*psx or dgsElementData[tabpanel].tabheight[1]
+				local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psx or dgsElementData[tabpanel].tabHeight[1]
 				psy = dgsElementData[tabpanel].absSize[2]-height
 				py = dgsElementData[parent].absPos[2]+height
 			else
@@ -3132,7 +3131,7 @@ function onClientKeyCheck(button,state)
 				local mx,my = getCursorPosition()
 				mx,my = (mx or -1)*sW,(my or -1)*sH
 				local _,y = dgsGetPosition(tabpanel,false,true)
-				local height = dgsElementData[tabpanel].tabheight[2] and dgsElementData[tabpanel].tabheight[1]*h or dgsElementData[tabpanel].tabheight[1]
+				local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*h or dgsElementData[tabpanel].tabHeight[1]
 				if my < y+height then
 					local speed = dgsElementData[tabpanel].scrollSpeed[2] and dgsElementData[tabpanel].scrollSpeed[1] or dgsElementData[tabpanel].scrollSpeed[1]/width
 					local orgoff = dgsElementData[tabpanel].taboffperc
@@ -3351,7 +3350,7 @@ function onClientKeyCheck(button,state)
 				dgsMemoSetCaretPosition(MouseData.nowShow,0,tarline,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "end" then
 				local text = dgsElementData[MouseData.nowShow].text
-				local line = dgsElementData[MouseData.nowShow].cursorposXY[2]
+				local line = dgsElementData[MouseData.nowShow].caretPos[2]
 				local tarline
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					tarline = #text
@@ -3359,11 +3358,11 @@ function onClientKeyCheck(button,state)
 				dgsMemoSetCaretPosition(MouseData.nowShow,utf8.len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "delete" then
 				if not dgsElementData[MouseData.nowShow].readOnly then
-					local cpos = dgsElementData[MouseData.nowShow].cursorposXY
-					local spos = dgsElementData[MouseData.nowShow].selectfrom
+					local cpos = dgsElementData[MouseData.nowShow].caretPos
+					local spos = dgsElementData[MouseData.nowShow].selectFrom
 					if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
 						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
-						dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
+						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
 					else
 						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
 						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
@@ -3371,8 +3370,8 @@ function onClientKeyCheck(button,state)
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 								MouseData.Timer["memoMove"] = setTimer(function()
 									if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-										local cpos = dgsElementData[MouseData.nowShow].cursorposXY
-										local spos = dgsElementData[MouseData.nowShow].selectfrom
+										local cpos = dgsElementData[MouseData.nowShow].caretPos
+										local spos = dgsElementData[MouseData.nowShow].selectFrom
 										local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
 										dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
 									else
@@ -3385,11 +3384,11 @@ function onClientKeyCheck(button,state)
 				end
 			elseif button == "backspace" then
 				if not dgsElementData[MouseData.nowShow].readOnly then
-					local cpos = dgsElementData[MouseData.nowShow].cursorposXY
-					local spos = dgsElementData[MouseData.nowShow].selectfrom
+					local cpos = dgsElementData[MouseData.nowShow].caretPos
+					local spos = dgsElementData[MouseData.nowShow].selectFrom
 					if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
 						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
-						dgsElementData[MouseData.nowShow].selectfrom = dgsElementData[MouseData.nowShow].cursorposXY
+						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
 					else
 						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
 						dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
@@ -3397,8 +3396,8 @@ function onClientKeyCheck(button,state)
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 								MouseData.Timer["memoMove"] = setTimer(function()
 									if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-										local cpos = dgsElementData[MouseData.nowShow].cursorposXY
-										local spos = dgsElementData[MouseData.nowShow].selectfrom
+										local cpos = dgsElementData[MouseData.nowShow].caretPos
+										local spos = dgsElementData[MouseData.nowShow].selectFrom
 										local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
 										dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
 									else
@@ -3412,8 +3411,8 @@ function onClientKeyCheck(button,state)
 			elseif button == "c" or button == "x" then
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					local deleteText = button == "x" and not dgsElementData[MouseData.nowShow].readOnly
-					local cpos = dgsElementData[MouseData.nowShow].cursorposXY
-					local spos = dgsElementData[MouseData.nowShow].selectfrom
+					local cpos = dgsElementData[MouseData.nowShow].caretPos
+					local spos = dgsElementData[MouseData.nowShow].selectFrom
 					local theText = dgsMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],deleteText)
 					setClipboard(theText)
 				end
@@ -3440,7 +3439,7 @@ addEventHandler("onClientGUIBlur",resourceRoot,function()
 			if isElement(edit) then
 				if MouseData.nowShow == edit then
 					if dgsElementData[edit].clearSelection then
-						dgsSetData(edit,"selectfrom",dgsElementData[edit].cursorpos)
+						dgsSetData(edit,"selectFrom",dgsElementData[edit].caretPos)
 					end
 					MouseData.nowShow = false
 				end
@@ -3450,7 +3449,7 @@ addEventHandler("onClientGUIBlur",resourceRoot,function()
 			if isElement(memo) then
 				if MouseData.nowShow == memo then
 					if dgsElementData[memo].clearSelection then
-						dgsSetData(memo,"selectfrom",dgsElementData[memo].cursorposXY)
+						dgsSetData(memo,"selectFrom",dgsElementData[memo].caretPos)
 					end
 					MouseData.nowShow = false
 				end
@@ -3907,9 +3906,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 					local tp_w = dgsElementData[tabpanel].absSize[1]
 					local wid = dgsElementData[source].width
 					local tabs = dgsElementData[tabpanel].tabs
-					local t_sideSize = dgsElementData[tabpanel].tabsidesize
+					local t_sideSize = dgsElementData[tabpanel].tabSideSize
 					local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
-					local t_gapSize = dgsElementData[tabpanel].tabgapsize
+					local t_gapSize = dgsElementData[tabpanel].tabGapSize
 					local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
 					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-wid-sidesize*2-gapsize*math.min(#tabs,1))
 					local id = dgsElementData[source].id
@@ -3997,7 +3996,7 @@ function checkMove()
 		local movable = dgsElementData[source].movable
 		if not movable then return end
 		local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-		local titsize = dgsElementData[source].movetyp and sy or dgsElementData[source].titlesize
+		local titsize = dgsElementData[source].movetyp and sy or dgsElementData[source].titleHeight
 		if offsety > titsize then return end
 	end
 	MouseData.Move = {offsetx,offsety}
@@ -4022,15 +4021,15 @@ function checkScale()
 	if dgsGetType(source) == "dgs-dxwindow" then
 		local sizable = dgsElementData[source].sizable
 		if not sizable then return false end
-		local sidesize = dgsElementData[source].sidesize
-		if math.abs(offsets[1]) < sidesize then
+		local borderSize = dgsElementData[source].borderSize
+		if math.abs(offsets[1]) < borderSize then
 			offsets[5] = 1
-		elseif math.abs(offsets[3]) < sidesize then
+		elseif math.abs(offsets[3]) < borderSize then
 			offsets[5] = 3
 		end
-		if math.abs(offsets[2]) < sidesize then
+		if math.abs(offsets[2]) < borderSize then
 			offsets[6] = 2
-		elseif math.abs(offsets[4]) < sidesize then
+		elseif math.abs(offsets[4]) < borderSize then
 			offsets[6] = 4
 		end
 		if not offsets[5] and not offsets[6] then

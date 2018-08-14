@@ -1,0 +1,380 @@
+---------------------------------------------------------------
+--------------------------WARNING------------------------------
+---This File Is Default Style Settings, Don't Edit This File!
+---If This File Is Broken,Update DGS To Recover!
+---------------------------------------------------------------
+---How to make your own style?
+---See: http://wiki.mtasa.com/Dgs/StyleManager
+---------------------------------------------------------------
+---------------------------------------------------------------
+
+styleSettings = {
+---------------------------------------------------------------------------------------------------General
+	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent too many the same texture element)
+	disabledColor = true,
+	disabledColorPercent = 0.8,
+---------------------------------------------------------------------------------------------------Unique
+-----------------------------------------------------------------------------------DGS Arrow List
+	arrowlist = {
+	---Color
+		bgColor = tocolor(255,255,255,200),
+		selectorTextColor = tocolor(0,0,0,255), --Selector text color ( < and > )
+		selectorColor = {	--Selector background color ( < and > )
+			tocolor(0,0,0,255),			--Normal
+			tocolor(200,200,200,255),	--Hover
+			tocolor(100,100,100,255),	--Click
+		},
+		itemColor = {	--Arrow list background color
+			tocolor(200,200,200,255),	--Normal
+			tocolor(160,160,160,255),	--Hover
+		},
+		itemTextColor = {	--Item text color
+			tocolor(0,0,0,255),
+		},
+	---Image
+		bgImage = {},
+		itemImage = {
+			{},	--Normal
+			{},	--Hover
+		},
+	---Values
+		leading = 0,
+		scrollBarThick = 20,
+		itemHeight = 20,
+		itemTextSize = {1,1},
+		itemTextOffset = 5,
+		selectorDistance = 5,
+		selectorOffset = 5,
+		selectorSize = {1,1},
+	},
+
+-----------------------------------------------------------------------------------DGS Button
+	button = {
+	---Color
+		textColor = tocolor(255,255,255,255),	--Button text color
+		color = {	--Button background color
+			tocolor(80,120,200,200),	--Normal
+			tocolor(90,135,220,200),	--Hover
+			tocolor(43,85,167,200),		--Click
+		},
+	---Image
+		image = {	--Button background color
+			{},	--Normal
+			{},	--Hover
+			{},	--Click
+		},
+	---Values
+		textSize = {1,1},
+		
+	},
+
+-----------------------------------------------------------------------------------DGS Check Box
+	checkbox = {
+	---Color
+		textColor = tocolor(255,255,255,255),	--Text Color
+		color_f = {	--Default image color when state is false ( unchecked )
+			tocolor(255,255,255,255),	--Normal
+			tocolor(255,255,255,255),	--Hover
+			tocolor(180,180,180,255),	--Click
+		},
+		color_i = {	--Default image color when state is nil ( indeterminate )
+			tocolor(255,255,255,255),	--Normal
+			tocolor(255,255,255,255),	--Hover
+			tocolor(180,180,180,255),	--Click
+		},
+		color_t = {	--Default image color when state is true ( checked )
+			tocolor(255,255,255,255),	--Normal
+			tocolor(255,255,255,255),	--Hover
+			tocolor(180,180,180,255),	--Click
+		},
+	---Image
+		image_f = {	--Default image when state is false ( unchecked )
+			{"Images/checkbox/cb_f.png"},	--Normal
+			{"Images/checkbox/cb_f_s.png"},	--Hover
+			{"Images/checkbox/cb_f.png"},	--Click
+		},
+		image_i = {	--Default image when state is nil ( indeterminate )
+			{"Images/checkbox/cb_i.png"},	--Normal
+			{"Images/checkbox/cb_i_s.png"},	--Hover
+			{"Images/checkbox/cb_i.png"},	--Click
+		},
+		image_t = {	--Default image when state is true ( checked )
+			{"Images/checkbox/cb_t.png"},	--Normal
+			{"Images/checkbox/cb_t_s.png"},	--Hover
+			{"Images/checkbox/cb_t.png"},	--Click
+			
+		},
+	---Values
+		textSize = {1,1},	--Text size
+		textImageSpace = {
+			2,		--Space
+			false,	--Relative
+		},
+		buttonSize = {
+			16,		--Button size
+			false,	--Relative
+		},
+	},
+
+-----------------------------------------------------------------------------------DGS Combo Box
+	combobox = {
+	---Color
+		bgColor = tocolor(200,200,200,200),	--Background color of the combo box
+		textColor = tocolor(0,0,0,255),		--Text color
+		color = {	--Background color of the arrow button
+			tocolor(0,120,200,200),	--Normal
+			tocolor(0,90,255,200),	--Hover
+			tocolor(50,90,250,200),	--Select
+		},
+		itemColor = {	--Background color of items
+			tocolor(200,200,200,255),	--Normal
+			tocolor(160,160,160,255),	--Hover
+			tocolor(130,130,130,255),	--Select
+		},
+		itemTextColor = tocolor(0,0,0,255),	--Item text color
+		arrowColor = tocolor(255,255,255,255),
+		arrowOutSideColor = tocolor(255,255,255,255),
+	---Image
+		arrow = {	--Arrow Image
+			"Images/combobox/arrow.fx",	--File Path
+			"shader",					--Texture type (Default is "image")
+			{},							--Shader Settings
+		},
+		image = {
+			{},	--Normal
+			{},	--Hover
+			{},	--Select
+		},
+		itemImage = {
+			{},	--Normal
+			{},	--Hover
+			{},	--Select
+		},
+		bgImage = {_},
+	---Values
+		textSize = {1,1},
+		itemTextSize = {1,1},
+		itemHeight = 20,
+		itemTextSide = {5,5},
+		comboTextSide = {5,5},
+		scrollBarThick = 20,
+	},
+	
+-----------------------------------------------------------------------------------DGS Radio Button
+	radiobutton = {
+	---Color
+		textColor = tocolor(255,255,255,255),	--Text Color
+		color_f = {	--Default image color when state is false ( unselected )
+			tocolor(255,255,255,255),	--Normal
+			tocolor(255,255,255,255),	--Hover
+			tocolor(180,180,180,255),	--Click
+		},
+		color_t = {	--Default image color when state is true ( selected )
+			tocolor(255,255,255,255),	--Normal
+			tocolor(255,255,255,255),	--Hover
+			tocolor(180,180,180,255),	--Click
+		},
+	---Image
+		image_f = {	--Default image when state is false ( unchecked )
+			{"Images/radiobutton/rb_f.png"},		--Normal
+			{"Images/radiobutton/rb_f_s.png"},	--Hover
+			{"Images/radiobutton/rb_f.png"},		--Click
+		},
+		image_t = {	--Default image when state is true ( checked )
+			{"Images/radiobutton/rb_t.png"},		--Normal
+			{"Images/radiobutton/rb_t_s.png"},	--Hover
+			{"Images/radiobutton/rb_t.png"},		--Click
+			
+		},
+	---Values
+		textSize = {1,1},	--Text size
+		textImageSpace = {
+			2,		--Space
+			false,	--Relative
+		},
+		buttonSize = {
+			16,		--Button size
+			false,	--Relative
+		},
+	},
+	
+-----------------------------------------------------------------------------------DGS Edit
+	edit = {
+	---Color
+		bgColor = tocolor(200,200,200,255),		--Background color of edit
+		textColor = tocolor(0,0,0,255),			--Text color
+		caretColor = tocolor(0,0,0,255),		--Caret color
+		selectColor = tocolor(50,150,255,200),	--Select background color
+	---Image
+		bgImage = {},
+	---Values
+		textSize = {1,1},	--Text size
+		maskText = "*",
+		padding = {2,2},
+		caretStyle = 0,
+		caretThick = 1.2,
+		caretOffset = 3,
+		caretHeight = 1,
+	},
+
+-----------------------------------------------------------------------------------DGS Grid List
+	gridlist = {
+	---Color
+		bgColor = tocolor(210,210,210,255),		--Background color of grid list
+		columnColor = tocolor(220,220,220,255),	--Background color of column
+		columnTextColor = tocolor(0,0,0,255),	--Column text color
+		rowColor = {	--Background color of row
+			tocolor(200,200,200,255),	--Normal
+			tocolor(150,150,150,255),	--Hover
+			tocolor(0,170,242,255),		--Select
+		},
+		rowTextColor = tocolor(0,0,0,255),	--Row text color
+	---Image
+		bgImage = {},
+		columnImage = {},
+		rowImage = {
+			{},
+			{},
+			{},
+		},
+		
+	---Values
+		columnTextSize = {1,1},
+		rowTextSize = {1,1},
+		columnOffset = 10,
+		columnHeight = 20,
+		rowHeight = 15,
+		sectionColumnOffset = -10,
+		defaultColumnOffset = 0,
+		backgroundOffset = -5,
+		scrollBarThick = 20,
+	},
+
+-----------------------------------------------------------------------------------DGS Label
+	label = {
+	---Color
+		textColor = tocolor(255,255,255,255),	--Label text color
+	---Image
+	
+	---Values
+		textSize = {1,1},
+	},
+
+-----------------------------------------------------------------------------------DGS Memo
+	memo = {
+	---Color
+		bgColor = tocolor(200,200,200,255),	--Background color of edit
+		textColor = tocolor(0,0,0,255),		--Text color
+		caretColor = tocolor(0,0,0,255),	--Caret color
+		selectColor = tocolor(50,150,255,200),	--Select background color
+	---Image
+		bgImage = {},
+	---Values
+		textSize = {1,1},	--Text size
+		maskText = "*",
+		caretStyle = 0,
+		caretThick = 1.2,
+		caretOffset = 3,
+		caretHeight = 1,
+		scrollBarThick = 20,
+	},
+
+-----------------------------------------------------------------------------------DGS Progress Bar
+	progressbar = {
+	---Color
+		bgColor = tocolor(5,10,20,200),		--Background color of progress bar
+		indicatorColor = tocolor(80,140,210,200),--Background color of progress bar indicator
+	---Image
+		bgImage = {},
+		indicatorImage = {},
+	---Values
+		padding = {2,2},
+	},
+
+-----------------------------------------------------------------------------------DGS Scroll Bar
+	scrollbar = {
+	---Color
+		cursorColor = {	--Cursor color
+			tocolor(192,192,192,255),	--Normal
+			tocolor(166,166,166,255),	--Hover
+			tocolor(96,96,96,255),		--Click
+		},
+		arrowColor = {	--Arrow color
+			tocolor(240,240,240,255),	--Normal
+			tocolor(218,218,218,255),	--Hover
+			tocolor(180,180,180,255),	--Click
+		},
+		troughColor = tocolor(240,240,240,255),	--Trough color
+	---Image
+		image = {
+			{"Images/scrollbar/scrollbar_arrow.png"},	--Arrow image
+			{},											--Cursor image
+			{},											--Trough image
+		},
+	---Values
+		scrollArrow = true,
+	},
+
+-----------------------------------------------------------------------------------DGS Scroll Pane
+	scrollpane = {
+	---Color
+
+	---Image
+	
+	---Values
+		scrollBarThick = 20,
+	},
+
+-----------------------------------------------------------------------------------DGS Tab Panel
+	tabpanel = {
+	---Color
+		bgColor = tocolor(0,0,0,180), --Background color of tab panel
+	---Image
+	---Values
+		tabSideSize = {4,false},
+		tabGapSize = {1,false},
+		scrollSpeed = {10,false},
+		tabHeight = 20,
+	},
+
+-----------------------------------------------------------------------------------DGS Tab
+	tab = {
+	---Color
+		textColor = tocolor(255,255,255,255),	--Text color
+		bgColor = tocolor(0,0,0,200),			--Background color of tab panel when selected(This will overwrite the background color of tab panel when selected)
+		tabColor = {	--Background color of tab
+			tocolor(40,40,40,180),	--Normal
+			tocolor(80,80,80,190),	--Hover
+			tocolor(0,0,0,200),		--Select
+		},
+	---Image
+		bgImage = {},
+		tabImage = {
+			{},
+			{},
+			{},
+		},
+	---Values
+		textSize = {1,1},
+	},
+
+-----------------------------------------------------------------------------------DGS Window
+	window = {
+	---Color
+		textColor = tocolor(255,255,255,255),	--Window title text color
+		titleColor = tocolor(20,20,20,200),			--Window title background color
+		color = tocolor(20,20,20,150),				--Window background color
+		closeButtonColor = {	--Window close button color
+			tocolor(200,50,50,255),	--Normal
+			tocolor(250,20,20,255),	--Hover
+			tocolor(150,50,50,255),	--Click
+		},
+	---Image
+		image = {},
+		textSize = {1,1},
+		titleHeight = 25,
+		borderSize = 5,
+		closeButtonText = "×",
+	},
+	
+}

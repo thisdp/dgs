@@ -1,4 +1,4 @@
-function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor,right,bottom)
+function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor,right,bottom)
 	assert(tonumber(x),"Bad argument @dgsCreateLabel at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateLabel at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateLabel at argument 3, expect number got "..type(sx))
@@ -10,17 +10,15 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textcolor,scalex,scaley,s
 	local _ = dgsIsDxElement(parent) and dgsSetParent(label,parent,true) or table.insert(CenterFatherTable,1,label)
 	dgsSetType(label,"dgs-dxlabel")
 	dgsSetData(label,"text",tostring(text))
-	dgsSetData(label,"textcolor",textcolor or tocolor(255,255,255,255))
-	dgsSetData(label,"textsize",{scalex or 1,scaley or 1})
+	dgsSetData(label,"textColor",textColor or styleSettings.label.textColor)
+	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.label.textSize[1], tonumber(scaley) or styleSettings.label.textSize[2]
+	dgsSetData(label,"textSize",{textSizeX,textSizeY})
 	dgsSetData(label,"clip",false)
 	dgsSetData(label,"wordbreak",false)
 	dgsSetData(label,"colorcoded",false)
 	dgsSetData(label,"shadow",{shadowoffsetx,shadowoffsety,shadowcolor})
 	dgsSetData(label,"rightbottom",{right or "left",bottom or "top"})
 	dgsSetData(label,"font",systemFont)
-	dgsSetData(label,"sideColor",tocolor(255,255,255,255))
-	dgsSetData(label,"sideState","in") --in/out/center
-	dgsSetData(label,"sideSize",0)
 	insertResourceDxGUI(sourceResource,label)
 	calculateGuiPositionSize(label,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",label)
@@ -30,26 +28,29 @@ end
 function dgsLabelSetColor(label,r,g,b,a)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetColor at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	if tonumber(r) and g == true then
-		return dgsSetData(label,"textcolor",r)
+		return dgsSetData(label,"textColor",r)
 	else
-		local _r,_g,_b,_a = fromcolor(dgsElementData[label].textcolor)
-		return dgsSetData(label,"textcolor",tocolor(r or _r,g or _g,b or _b,a or _a))
+		local _r,_g,_b,_a = fromcolor(dgsElementData[label].textColor)
+		return dgsSetData(label,"textColor",tocolor(r or _r,g or _g,b or _b,a or _a))
 	end
 end
 
 function dgsLabelGetColor(label,notSplit)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetColor at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
-	return notSplit and dgsElementData[label].textcolor or fromcolor(dgsElementData[label].textcolor)
+	return notSplit and dgsElementData[label].textColor or fromcolor(dgsElementData[label].textColor)
 end
 
-local HorizontalAlign = {}
-HorizontalAlign.left = true
-HorizontalAlign.center = true
-HorizontalAlign.right = true
-local VerticalAlign = {}
-VerticalAlign.top = true
-VerticalAlign.center = true
-VerticalAlign.bottom = true
+local HorizontalAlign = {
+	left = true,
+	center = true,
+	right = true,
+}
+
+local VerticalAlign = {
+	top = true,
+	center = true,
+	bottom = true,
+}
 
 function dgsLabelSetHorizontalAlign(label,align)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetHorizontalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
@@ -80,7 +81,7 @@ end
 function dgsLabelGetTextExtent ( label )
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetTextExtent at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	local font = dgsElementData[label].font or systemFont
-	local textSizeX = dgsElementData[label].textsize[1]
+	local textSizeX = dgsElementData[label].textSize[1]
 	local text = dgsElementData[label].text
 	local colorcoded = dgsElementData[label].colorcoded
 	return dxGetTextWidth(text,textSizeX,font.colorcoded)

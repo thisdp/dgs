@@ -45,12 +45,19 @@ addEvent("giveIPBack",true)
 
 
 -------DEBUG
-addCommandHandler("debugdgs",function()
-	DEBUG_MODE = not getElementData(localPlayer,"DGS-DEBUG")
-	setElementData(localPlayer,"DGS-DEBUG",DEBUG_MODE,false)
+addCommandHandler("debugdgs",function(command,arg)
+	if not arg then
+		debugMode = not getElementData(localPlayer,"DGS-DEBUG")
+		setElementData(localPlayer,"DGS-DEBUG",debugMode,false)
+	elseif arg == "c" then
+		debugMode_CompatibilityCheck = not getElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck")
+		setElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck",debugMode_CompatibilityCheck,false)
+		outputChatBox("[DGS]Compatibility Check is "..(debugMode_CompatibilityCheck and "enabled" or "disabled"),0,255,0)
+	end
 end)
 
-DEBUG_MODE = getElementData(localPlayer,"DGS-DEBUG")
+debugMode = getElementData(localPlayer,"DGS-DEBUG")
+debugMode_CompatibilityCheck = getElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck")
 --------------------------------Table Utility
 function table.find(tab,ke,num)
 	for k,v in pairs(tab) do

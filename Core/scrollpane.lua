@@ -9,7 +9,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	local scrollpane = createElement("dgs-dxscrollpane")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true) or table.insert(CenterFatherTable,1,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
-	dgsSetData(scrollpane,"scrollBarThick",20,true)
+	local scbThick = styleSettings.scrollpane.scrollBarThick
+	dgsSetData(scrollpane,"scrollBarThick",scbThick,true)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
@@ -19,16 +20,14 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
 	dgsSetData(scrollpane,"configNextFrame",false)
 	dgsSetData(scrollpane,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
-	--dgsSetData(scrollpane,"scrollBarOffset",{{20,false},{0,false}},true)
-	local scrbThick = 20
 	local titleOffset = 0
 	if isElement(parent) then
 		if not dgsElementData[scrollpane].withoutTitle then
 			titleOffset = dgsElementData[parent].titlesize or 0
 		end
 	end
-	local scrollbar1 = dgsCreateScrollBar(x+sx-scrbThick,y-titleOffset,scrbThick,sy-scrbThick,false,false,parent)
-	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scrbThick-titleOffset,sx-scrbThick,scrbThick,true,false,parent)
+	local scrollbar1 = dgsCreateScrollBar(x+sx-scbThick,y-titleOffset,scbThick,sy-scbThick,false,false,parent)
+	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scbThick-titleOffset,sx-scbThick,scbThick,true,false,parent)
 	
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
@@ -41,8 +40,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollbar2,"hitoutofparent",true)
 	dgsSetData(scrollbar1,"scrollType","Vertical")
 	dgsSetData(scrollbar2,"scrollType","Horizontal")
-	dgsSetData(scrollbar1,"scrollmultiplier",{0.1,true})
-	dgsSetData(scrollbar2,"scrollmultiplier",{0.1,true})
+	dgsSetData(scrollbar1,"multiplier",{1,true})
+	dgsSetData(scrollbar2,"multiplier",{1,true})
 	triggerEvent("onDgsCreate",scrollpane)
 	if not isElement(renderTarget) then
 		destroyElement(scrollpane)

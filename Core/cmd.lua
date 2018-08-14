@@ -1,7 +1,7 @@
 ﻿cmdBaseWhiteList = {}
 eventHandlers = {}
 
-function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgcolor)
+function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgImage,bgColor)
 	assert(tonumber(x),"Bad argument @dgsCreateCmd at argument 1, expect number [ got "..type(x).." ]")
 	assert(tonumber(y),"Bad argument @dgsCreateCmd at argument 2, expect number [ got "..type(y).." ]")
 	assert(tonumber(sx),"Bad argument @dgsCreateCmd at argument 3, expect number [ got "..type(sx).." ]")
@@ -10,12 +10,13 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgcol
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateCmd at argument 6, expect dgs-dxgui [ got "..dgsGetType(parent).." ]")
 	end
 	local cmd = createElement("dgs-dxcmd")
+	local _ = dgsIsDxElement(parent) and dgsSetParent(cmd,parent,true) or table.insert(CenterFatherTable,1,cmd)
 	scalex,scaley = tonumber(scalex) or 1,tonumber(scaley) or 1
 	dgsSetType(cmd,"dgs-dxcmd")
-	dgsSetData(cmd,"textsize",{scalex,scaley})
-	dgsSetData(cmd,"bgimg",bgimg)
+	dgsSetData(cmd,"textSize",{scalex,scaley})
+	dgsSetData(cmd,"bgImage",bgImage)
 	dgsSetData(cmd,"hangju",tonumber(hangju) or 20)
-	dgsSetData(cmd,"bgcolor",bgcolor or schemeColor.cmd.bgcolor)
+	dgsSetData(cmd,"bgColor",tocolor(0,0,0,180))
 	dgsSetData(cmd,"texts",{})
 	dgsSetData(cmd,"preName","")
 	dgsSetData(cmd,"startRow",0)
@@ -26,11 +27,6 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgimg,bgcol
 	tabl[0] = ""
 	dgsSetData(cmd,"cmdHistory",tabl)
 	dgsSetData(cmd,"cmdCurrentHistory",0)
-	if isElement(parent) then
-		dgsSetParent(cmd,parent)
-	else
-		table.insert(CenterFatherTable,cmd)
-	end
 	insertResourceDxGUI(sourceResource,cmd)
 	calculateGuiPositionSize(cmd,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",cmd)
@@ -182,7 +178,7 @@ end
 
 function configCMD(source)
 	local dxedit = dgsGetData(source,"cmdEdit")
-	local scalex,scaley = unpack(dgsGetData(source,"textsize"))
+	local scalex,scaley = unpack(dgsGetData(source,"textSize"))
 	local sx,sy = dgsGetSize(source,false)
 	dgsSetPosition(dxedit,0,sy-scaley*20,false)
 	dgsSetSize(dxedit,sx,scaley*20,false)

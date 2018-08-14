@@ -240,3 +240,65 @@ dgsDxGridListGetItemImage	=	dgsGridListGetItemImage
 dgsDxGridListSetItemImage	=	dgsGridListSetItemImage
 dgsDxGridListRemoveItemImage	=	dgsGridListRemoveItemImage
 dgsDxGetMouseEnterGUI	=	dgsGetMouseEnterGUI
+
+
+
+-----------------------------old Property
+
+oldPropertyNameTable = {
+	textcolor="textColor",
+	textsize="textSize",
+	rowtextcolor="rowTextColor",
+	rowtextsize="rowTextSize",
+	columntextcolor="columnTextColor",
+	columntextsize="columnTextSize",
+	listtextcolor="itemTextColor",
+	listtextsize="itemTextSize",
+	selectcolor="selectColor",
+	cursorStyle="caretStyle",
+	cursorThick="caretThick",
+	cursorOffset="caretOffset",
+	cursorposXY="caretPos",
+	cursorpos="caretPos",
+	buttonsize="buttonSize",
+	tabheight="tabHeight",
+	tabmaxwidth="tabMaxWidth",
+	tabminwidth="tabMinWidth",
+	tabsidesize="tabSideSize",
+	tabgapsize="tabGapSize",
+	defbackground="bgColor",
+	bgcolor="bgColor",
+	bgimage="bgImage",
+	bgimg="bgImage",
+	tabimage="tabImage",
+	tabcolor="tabColor",
+	imagepos="imageUVPos",
+	imagesize="imageUVSize",
+	titimage="titleImage",
+	titnamecolor="titleTextColor",
+	titcolor="titleColor",
+	titlesize="titleHeight",
+	sidesize="borderSize",
+	scrollmultiplier="scrollMultiplier",
+	barimg="barImage",
+	barmode="barMode",
+	barcolor="barColor",
+	barsize="barSize",
+	selectfrom="selectFrom",
+}
+--[[
+function preFunction(res,fnc,aclAllow,filename,line,dxgui,property)
+	if fnc == "dgsGetProperties" or fnc == "dgsSetProperties" then
+		for k,v in pairs(property) do
+			if oldPropertyNameTable[k] then
+				outputDebugString("[DGS]"..resName.."/"..filename..":"..line..": @"..fnc.." Property '"..k.."' will be no longer supported, use '"..oldPropertyNameTable[k].."' instead",2)
+			end
+		end
+	elseif fnc == "dgsGetProperty" or fnc == "dgsSetProperty" then
+		local resName = getResourceName(res)
+		if oldPropertyNameTable[property] then
+			outputDebugString("[DGS]"..resName.."/"..filename..":"..line..": @"..fnc.." Property '"..property.."' will be no longer supported, use '"..oldPropertyNameTable[property].."' instead",2)
+		end
+	end
+end
+addDebugHook( "preFunction", preFunction )]]

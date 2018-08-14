@@ -1,13 +1,5 @@
-checkBox = {}
-checkBox.false_ = dxCreateTexture("image/checkbox/cb_f.png")
-checkBox.true_ = dxCreateTexture("image/checkbox/cb_t.png")
-checkBox.inde_ = dxCreateTexture("image/checkbox/cb_i.png")
-checkBox.false_cli = dxCreateTexture("image/checkbox/cb_f_s.png")
-checkBox.true_cli = dxCreateTexture("image/checkbox/cb_t_s.png")
-checkBox.inde_cli = dxCreateTexture("image/checkbox/cb_i_s.png")
-
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
-function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scalex,scaley,defimg_f,hovimg_f,cliimg_f,defcolor_f,hovcolor_f,clicolor_f,defimg_t,hovimg_t,cliimg_t,defcolor_t,hovcolor_t,clicolor_t,defimg_i,hovimg_i,cliimg_i,defcolor_i,hovcolor_i,clicolor_i)
+function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
 	assert(tonumber(x),"Bad argument @dgsCreateCheckBox at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateCheckBox at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateCheckBox at argument 3, expect number got "..type(sx))
@@ -20,44 +12,49 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textcolor,scalex
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true) or table.insert(CenterFatherTable,1,cb)
-	defimg_f = defimg_f or checkBox.false_
-	hovimg_f = hovimg_f or checkBox.false_cli
-	cliimg_f = cliimg_f or hovimg_f
 	
-	defcolor_f = defcolor_f or schemeColor.checkbox.defcolor_f[1]
-	hovcolor_f = hovcolor_f or schemeColor.checkbox.defcolor_f[2]
-	clicolor_f = clicolor_f or schemeColor.checkbox.defcolor_f[3]
+	local imageUnchecked = styleSettings.checkbox.image_f
+	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
+	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
+	cliimg_f = cliimg_f or dgsCreateTextureFromStyle(imageUnchecked[3])
+	dgsSetData(cb,"image_f",{norimg_f,hovimg_f,cliimg_f})
+	local colorUnchecked = styleSettings.checkbox.color_f
+	norcolor_f = norcolor_f or colorUnchecked[1]
+	hovcolor_f = hovcolor_f or colorUnchecked[2]
+	clicolor_f = clicolor_f or colorUnchecked[3]
+	dgsSetData(cb,"color_f",{norcolor_f,hovcolor_f,clicolor_f})
 	
-	defimg_t = defimg_t or checkBox.true_
-	hovimg_t = hovimg_t or checkBox.true_cli
-	cliimg_t = cliimg_t or hovimg_t
+	local imageChecked = styleSettings.checkbox.image_t
+	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
+	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
+	cliimg_t = cliimg_t or dgsCreateTextureFromStyle(imageChecked[3])
+	dgsSetData(cb,"image_t",{norimg_t,hovimg_t,cliimg_t})
+	local colorChecked = styleSettings.checkbox.color_t
+	norcolor_t = norcolor_t or colorChecked[1]
+	hovcolor_t = hovcolor_t or colorChecked[2]
+	clicolor_t = clicolor_t or colorChecked[3]
+	dgsSetData(cb,"color_t",{norcolor_t,hovcolor_t,clicolor_t})
 	
-	defcolor_t = defcolor_t or schemeColor.checkbox.defcolor_t[1]
-	hovcolor_t = hovcolor_t or schemeColor.checkbox.defcolor_t[2]
-	clicolor_t = clicolor_t or schemeColor.checkbox.defcolor_t[3]
-	
-	defimg_i = defimg_i or checkBox.inde_
-	hovimg_i = hovimg_i or checkBox.inde_cli
-	cliimg_i = cliimg_i or hovimg_i
-	
-	defcolor_i = defcolor_i or schemeColor.checkbox.defcolor_i[1]
-	hovcolor_i = hovcolor_i or schemeColor.checkbox.defcolor_i[2]
-	clicolor_i = clicolor_i or schemeColor.checkbox.defcolor_i[3]
+	local imageIndeterminate = styleSettings.checkbox.image_i
+	norimg_i = norimg_i or dgsCreateTextureFromStyle(imageIndeterminate[1])
+	hovimg_i = hovimg_i or dgsCreateTextureFromStyle(imageIndeterminate[2])
+	cliimg_i = cliimg_i or dgsCreateTextureFromStyle(imageIndeterminate[3])
+	dgsSetData(cb,"image_i",{norimg_i,hovimg_i,cliimg_i})
+	local colorIndeterminate = styleSettings.checkbox.color_i
+	norcolor_i = norcolor_i or colorIndeterminate[1]
+	hovcolor_i = hovcolor_i or colorIndeterminate[2]
+	clicolor_i = clicolor_i or colorIndeterminate[3]
+	dgsSetData(cb,"color_i",{norcolor_i,hovcolor_i,clicolor_i})
 	
 	dgsSetData(cb,"cbParent",dgsIsDxElement(parent) and parent or resourceRoot)
-	dgsSetData(cb,"image_f",{defimg_f,hovimg_f,cliimg_f})
-	dgsSetData(cb,"image_t",{defimg_t,hovimg_t,cliimg_t})
-	dgsSetData(cb,"image_i",{defimg_i,hovimg_i,cliimg_i})
-	dgsSetData(cb,"color_f",{defcolor_f,hovcolor_f,clicolor_f})
-	dgsSetData(cb,"color_t",{defcolor_t,hovcolor_t,clicolor_t})
-	dgsSetData(cb,"color_i",{defcolor_i,hovcolor_i,clicolor_i})
 	dgsSetData(cb,"text",tostring(text))
-	dgsSetData(cb,"textcolor",textcolor or schemeColor.checkbox.textcolor)
-	dgsSetData(cb,"textsize",{tonumber(scalex) or 1,tonumber(scaley) or 1})
-	dgsSetData(cb,"textImageSpace",{2,false})
+	dgsSetData(cb,"textColor",textColor or styleSettings.checkbox.textColor)
+	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.checkbox.textSize[1], tonumber(scaley) or styleSettings.checkbox.textSize[2]
+	dgsSetData(cb,"textSize",{textSizeX,textSizeY})
+	dgsSetData(cb,"textImageSpace",styleSettings.checkbox.textImageSpace)
+	dgsSetData(cb,"buttonSize",styleSettings.checkbox.buttonSize)
 	dgsSetData(cb,"shadow",{_,_,_})
 	dgsSetData(cb,"font",systemFont)
-	dgsSetData(cb,"buttonsize",{16,false})
 	dgsSetData(cb,"clip",false)
 	dgsSetData(cb,"wordbreak",false)
 	dgsSetData(cb,"colorcoded",false)

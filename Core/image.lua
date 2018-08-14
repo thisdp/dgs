@@ -24,8 +24,8 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	if isElement(texture) and not getElementType(texture) == "shader" then
 		mx,my = dxGetMaterialSize(texture)
 	end
-	dgsSetData(image,"imagesize",{mx,my})
-	dgsSetData(image,"imagepos",{0,0})
+	dgsSetData(image,"imageUVSize",{mx,my})
+	dgsSetData(image,"imageUVPos",{0,0})
 	triggerEvent("onDgsCreate",image)
 	return image
 end
@@ -40,28 +40,28 @@ function dgsImageSetImage(gui,img)
 	return dgsSetData(gui,"image",img)
 end
 
-function dgsImageSetImageSize(gui,sx,sy)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImageSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageSetUVSize(gui,sx,sy)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetUVSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	local texture = dgsGetData(gui,"image")
 	local mx,my = dxGetMaterialSize(texture)
 	sx = tonumber(sx) or mx
 	sy = tonumber(sy) or my
-	return dgsSetData(gui,"imagesize",{sx,sy})
+	return dgsSetData(gui,"imageUVSize",{sx,sy})
 end
 
-function dgsImageGetImageSize(gui)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetImageSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
-	return dgsElementData[gui].imagesize[1],dgsElementData[gui].imagesize[2]
+function dgsImageGetUVSize(gui)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetUVSize at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+	return dgsElementData[gui].imageUVSize[1],dgsElementData[gui].imageUVSize[2]
 end
 
-function dgsImageSetImagePosition(gui,x,y)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImagePosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+function dgsImageSetUVPosition(gui,x,y)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetUVPosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
 	x = tonumber(x) or 0
 	y = tonumber(y) or 0
-	return dgsSetData(gui,"imagepos",{x,y})
+	return dgsSetData(gui,"imageUVPos",{x,y})
 end
 
-function dgsImageGetImagePosition(gui,x,y)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetImagePosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
-	return dgsElementData[gui].imagepos[1],dgsElementData[gui].imagepos[2]
+function dgsImageGetUVPosition(gui,x,y)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetUVPosition at argument 1, expect dgs-dximage got "..(dgsGetType(gui) or type(gui)))
+	return dgsElementData[gui].imageUVPos[1],dgsElementData[gui].imageUVPos[2]
 end

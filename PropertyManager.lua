@@ -49,13 +49,13 @@ function dgsSetData(element,key,value,nocheck)
 						local old,new = oldValue,value
 						local tabs = dgsElementData[element].tabs
 						triggerEvent("onDgsTabPanelTabSelect",element,new,old,tabs[new],tabs[old])
-					elseif key == "tabsidesize" then
+					elseif key == "tabSideSize" then
 						local width = dgsElementData[element].absSize[1]
 						local change = value[2] and value[1]*width or value[1]
 						local old = oldValue[2] and oldValue[1]*width or oldValue[1]
 						local tabs = dgsElementData[element].tabs
 						dgsSetData(element,"allleng",dgsElementData[element].allleng+(change-old)*#tabs*2)
-					elseif key == "tabgapsize" then
+					elseif key == "tabGapSize" then
 						local width = dgsElementData[element].absSize[1]
 						local change = value[2] and value[1]*width or value[1]
 						local old = oldValue[2] and oldValue[1]*width or oldValue[1]
@@ -68,11 +68,11 @@ function dgsSetData(element,key,value,nocheck)
 						if absrltWidth[1] < 0 then
 							local tabpanel = dgsElementData[element].parent
 							local w = dgsElementData[tabpanel].absSize[1]
-							local t_minWid = dgsElementData[tabpanel].tabminwidth
-							local t_maxWid = dgsElementData[tabpanel].tabmaxwidth
+							local t_minWid = dgsElementData[tabpanel].tabMinWidth
+							local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
 							local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
 							local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-							dgsSetData(element,"width",math.restrict(minwidth,maxwidth,dxGetTextWidth(tostring(value),dgsElementData[element].textsize[1],dgsElementData[tabpanel].font)))
+							dgsSetData(element,"width",math.restrict(minwidth,maxwidth,dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[tabpanel].font)))
 						end
 					elseif key == "width" then
 						local absrltWidth = dgsElementData[element].absrltWidth
@@ -93,12 +93,12 @@ function dgsSetData(element,key,value,nocheck)
 						return guiEditSetReadOnly(gedit,value and true or false)
 					elseif key == "text" then
 						dgsElementData[element].text = utf8.sub(value,0,dgsElementData[element].maxLength)
-						local txtSize = dgsElementData[element].textsize
+						local txtSize = dgsElementData[element].textSize
 						dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,txtSize[1],dgsElementData[element].font)
-					elseif key == "textsize" then
+					elseif key == "textSize" then
 						dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,value[1],dgsElementData[element].font)
 					elseif key == "font" then
-						local txtSize = dgsElementData[element].textsize
+						local txtSize = dgsElementData[element].textSize
 						dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,txtSize[1],dgsElementData[element].font)
 					end
 				elseif dgsType == "dgs-dxmemo" then
@@ -161,13 +161,20 @@ end
 function dgsSetProperty(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
+	if oldPropertyNameTable[key] then
+		outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+		if debugMode_CompatibilityCheck then
+			assert(false,"[DGS]Assert! Look the warning debug message above")
+		end
+		key = oldPropertyNameTable[key]
+	end
 	if isTable then
 		for k,v in ipairs(dxgui) do
 			if key == "functions" then
 				local fnc = loadstring(value)
 				assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
 				value = {fnc,{...}}
-			elseif key == "textcolor" then
+			elseif key == "textColor" then
 				assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 			elseif key == "text" then
 				if dgsElementType[v] == "dgs-dxmemo" then
@@ -190,7 +197,7 @@ function dgsSetProperty(dxgui,key,value,...)
 			local fnc = loadstring(value)
 			assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
 			value = {fnc,{...}}
-		elseif key == "textcolor" then
+		elseif key == "textColor" then
 			assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 		elseif key == "text" then
 			if dgsElementType[dxgui] == "dgs-dxmemo" then
@@ -212,6 +219,13 @@ end
 function dgsGetProperty(dxgui,key)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if not dgsElementData[dxgui] then return false end
+	if oldPropertyNameTable[key] then
+		outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)	
+		if debugMode_CompatibilityCheck then
+			assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
+		end
+		key = oldPropertyNameTable[key]
+	end
 	return dgsElementData[dxgui][key]
 end
 
@@ -225,18 +239,25 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 		for k,v in ipairs(dxgui) do
 			local dgsType = dgsElementType[v]
 			for key,value in pairs(theTable) do
+				if oldPropertyNameTable[key] then
+					outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+					if debugMode_CompatibilityCheck then
+						assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
+					end
+					key = oldPropertyNameTable[key]
+				end
 				local skip = false
 				if key == "functions" then
 					value = {loadstring(value),additionArg.functions or {}}
-				elseif key == "textcolor" then
+				elseif key == "textColor" then
 					if not tonumber(value) then
-						assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
+						assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textColor', expect a number got "..type(value))
 					end
 				elseif key == "text" then
 					if dgsType == "dgs-dxtab" then
 						local tabpanel = dgsElementData[v].parent
-						local minW,maxW = dgsElementData[tabpanel].tabminwidth,dgsElementData[tabpanel].tabmaxwidth
-						local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[v].textsize[1],dgsElementData[tabpanel].font))
+						local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
+						local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[v].textSize[1],dgsElementData[tabpanel].font))
 						local owid = dgsElementData[tab].width
 						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
 						dgsSetData(v,"width",wid)
@@ -264,17 +285,24 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 		local dgsType = dgsElementType[dxgui]
 		for key,value in pairs(theTable) do
 			local skip = false
+			if oldPropertyNameTable[key] then
+				outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+				if debugMode_CompatibilityCheck then
+					assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
+				end
+				key = oldPropertyNameTable[key]
+			end
 			if key == "functions" then
 				value = {loadstring(value),additionArg.functions or {}}
-			elseif key == "textcolor" then
+			elseif key == "textColor" then
 				if not tonumber(value) then
-					assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textcolor', expect a number got "..type(value))
+					assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textColor', expect a number got "..type(value))
 				end
 			elseif key == "text" then
 				if dgsType == "dgs-dxtab" then
 					local tabpanel = dgsElementData[dxgui].parent
-					local minW,maxW = dgsElementData[tabpanel].tabminwidth,dgsElementData[tabpanel].tabmaxwidth
-					local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[dxgui].textsize[1],dgsElementData[tabpanel].font))
+					local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
+					local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[dxgui].textSize[1],dgsElementData[tabpanel].font))
 					local owid = dgsElementData[tab].width
 					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
 					dgsSetData(dxgui,"width",wid)
@@ -307,8 +335,15 @@ function dgsGetProperties(dxgui,properties)
 		return dgsElementData[dxgui]
 	else
 		local data = {}
-		for k,v in ipairs(properties) do
-			data[v] = dgsElementData[dxgui][v]
+		for k,key in ipairs(properties) do
+			if oldPropertyNameTable[key] then
+				outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+				if debugMode_CompatibilityCheck then
+					assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
+				end
+				key = oldPropertyNameTable[key]
+			end
+			data[key] = dgsElementData[dxgui][key]
 		end
 		return data
 	end
