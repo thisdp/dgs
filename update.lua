@@ -222,17 +222,3 @@ addCommandHandler("dgsver",function(pla,cmd)
 		end
 	end
 end)
-
-function fromcolor(int)
-	local a,r,g,b
-	b,g,r,a = bitExtract(int,0,8),bitExtract(int,8,8),bitExtract(int,16,8),bitExtract(int,24,8)
-	return r,g,b,a
-end
-
-function tocolor(r,g,b,a)
-	local color = a*256^3+r*256^2+g*256+b
-	if color > 2147483647 then
-		color = color-0xFFFFFFFF-1
-	end
-	return color
-end
