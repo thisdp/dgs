@@ -125,23 +125,20 @@ function checkFiles()
 	for k,v in pairs(xmlNodeGetChildren(xml)) do
 		if xmlNodeGetName(v) == "script" or xmlNodeGetName(v) == "file" then
 			local path = xmlNodeGetAttribute(v,"src")
-			if path ~= "colorScheme.txt"  then
-				local sha = ""
-				if fileExists(path) then
-					local file = fileOpen(path)
-					local size = fileGetSize(file)
-					local text = fileRead(file,size)
-					fileClose(file)
-					sha = hash("sha1","blob " .. size .. "\0" ..text)
-				end
-				if sha ~= fileHash[path] then
-					outputDebugString("[DGS]Update Required: ("..path..")")
-					table.insert(preUpdate,path)
-				end
+			local sha = ""
+			if fileExists(path) then
+				local file = fileOpen(path)
+				local size = fileGetSize(file)
+				local text = fileRead(file,size)
+				fileClose(file)
+				sha = hash("sha1","blob " .. size .. "\0" ..text)
+			end
+			if sha ~= fileHash[path] then
+				outputDebugString("[DGS]Update Required: ("..path..")")
+				table.insert(preUpdate,path)
 			end
 		end
 	end
-	table.insert(preUpdate,"colorScheme.txt")
 	DownloadFiles()
 end
 
