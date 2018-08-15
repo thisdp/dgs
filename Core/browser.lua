@@ -32,9 +32,9 @@ addEventHandler("onDgsCursorMove",resourceRoot,function(x,y)
 	end
 end)
 
-addEventHandler("onDgsMouseWheel",resourceRoot,function(button)
+addEventHandler("onDgsMouseWheel",resourceRoot,function(upOrDown)
 	if dgsGetType(source) == "dgs-dxbrowser" then
-		injectBrowserMouseWheel(source,button == "mouse_wheel_down" and -40 or 40,0)
+		injectBrowserMouseWheel(source,upOrDown*40,0)
 	end
 end)
 
