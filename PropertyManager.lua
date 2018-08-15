@@ -48,7 +48,8 @@ function dgsSetData(element,key,value,nocheck)
 					if key == "selected" then
 						local old,new = oldValue,value
 						local tabs = dgsElementData[element].tabs
-						triggerEvent("onDgsTabPanelTabSelect",tabs[new],new,old,tabs[new],tabs[old])
+						triggerEvent("onDgsTabPanelTabSelect",element,new,old,tabs[new],tabs[old])
+						triggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
 					elseif key == "tabSideSize" then
 						local width = dgsElementData[element].absSize[1]
 						local change = value[2] and value[1]*width or value[1]
