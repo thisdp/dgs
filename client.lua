@@ -3077,7 +3077,7 @@ function onClientKeyCheck(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
 		local dgsType = dgsGetType(MouseData.enter)
 		if isElement(MouseData.enter) then
-			triggerEvent("onDgsMouseWheel",MouseData.enter,button)
+			triggerEvent("onDgsMouseWheel",MouseData.enter,button == "mouse_wheel_down" and -1 or 1)
 		end
 		local scroll = button == "mouse_wheel_down" and 1 or -1
 		local scrollbar = MouseData.enter
