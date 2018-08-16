@@ -259,7 +259,7 @@ function recoverStyleMapper()
 	local startStr = "<!----$Add Your Styles Here---->"
 	local startPos = str:find(startStr)
 	local exportPos = str:find(locator)
-	local scriptsStr = str:sub(1,startStr-1)
+	local scriptsStr = str:sub(1,startPos-1)
 	local exportsStr = str:sub(exportPos)
 	fileWrite(newMeta,scriptsStr.."\r\n"..styleBackupStr.."\r\n"..exportsStr)
 	fileClose(newMeta)
