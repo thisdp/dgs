@@ -183,9 +183,11 @@ function DownloadFinish()
 	fileWrite(file,tostring(RemoteVersion))
 	fileClose(file)
 	if fileExists("meta.xml") then
+		backupStyleMapper()
 		fileDelete("meta.xml")
 	end
 	fileRename("updated/meta.xml","meta.xml")
+	recoverStyleMapper()
 	outputDebugString("[DGS]Update Complete (Updated "..#preUpdate.." Files)")
 	outputDebugString("[DGS]Please Restart DGS")
 	outputChatBox("[DGS]Update Complete (Updated "..#preUpdate.." Files)",root,0,255,0)
@@ -219,3 +221,33 @@ addCommandHandler("dgsver",function(pla,cmd)
 		end
 	end
 end)
+
+styleBackupStr = ""
+locator = [[	<export]]
+function backupStyleMapper()
+	fileCopy("meta.xml","meta.xml.bak",true)
+	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
+	local meta = fileOpen("meta.xml")
+	local str = fileRead(meta,fileGetSize(file))
+	local startStr = "<!--Add Your Styles Here-->"
+	local endStr = "<!--^^Add Your Styles Here^^-->"
+	local startPos = str:find(startStr)
+	local endPos = str:find(endStr)
+	styleBackupStr = str:sub(startPos,endPos)..endStr
+	fileClose(file)
+end
+
+function recoverStyleMapper()
+	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
+	assert(styleBackupStr ~= "","[DGS] Failed to recover style mapper")
+	local meta = fileOpen("meta.xml")
+	local str = fileRead(meta,fileGetSize(file))
+	local startStr = "<!--Add Your Styles Here-->"
+	local endStr = "<!--^^Add Your Styles Here^^-->"
+	local startPos = str:find(startStr)
+	local endPos = str:find(endStr)
+	local exportsStr = str:sub(endPos)
+	fileSetPos(file,startPos)
+	fileWrite(file,styleBackupStr..exportsStr)
+	fileClose(file)
+end
