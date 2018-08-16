@@ -261,7 +261,7 @@ function recoverStyleMapper()
 	local exportPos = str:find(locator)
 	local scriptsStr = str:sub(1,startPos-1)
 	local exportsStr = str:sub(exportPos)
-	fileWrite(newMeta,scriptsStr.."\r\n"..styleBackupStr.."\r\n"..exportsStr)
+	fileWrite(newMeta,scriptsStr..styleBackupStr.."\r\n"..exportsStr)
 	fileClose(newMeta)
 	fileDelete("updated/meta.xml")
 end
