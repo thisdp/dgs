@@ -36,7 +36,6 @@
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
 	<script src="client.lua" type="client" />
-	<script src="plugin/shader.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
