@@ -285,6 +285,7 @@ oldPropertyNameTable = {
 	barcolor="barColor",
 	barsize="barSize",
 	selectfrom="selectFrom",
+	ignoreTitleSize="ignoreTitleHeight",
 }
 --[[
 function preFunction(res,fnc,aclAllow,filename,line,dxgui,property)
