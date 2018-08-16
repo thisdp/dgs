@@ -57,6 +57,11 @@ addEventHandler("onClientBrowserDocumentReady",resourceRoot,function()
 	end
 end)
 
+DGSMediaType = {
+"AUDIO"=true,
+"VIDEO"=true,
+"IMAGE"=true,
+}
 function dgsMediaLoadMedia(media,path,theType,sourceRes)
 	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaLoadMedia at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
 	assert(type(path) == "string","Bad argument @dgsMediaLoadMedia at argument 2, expect string got "..type(path))
@@ -71,7 +76,9 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 		path = ":"..name.."/"..path
 	end
 	assert(fileExists(path),"Bad argument @dgsMediaLoadMedia at argument 2, file doesn't exist("..path..")")
-	assert(theType == "VIDEO" or theType == "AUDIO","Bad argument @dgsMediaLoadMedia at argument 3, expect string('VIDEO' or 'AUDIO') got "..tostring(theType))
+	assert(type(theType) == "string","Bad argument @dgsMediaLoadMedia at argument 3, expect string got "..type(theType))
+	local theType = string.upper(theType)
+	assert(DGSMediaType[theType],"Bad argument @dgsMediaLoadMedia at argument 3, couldn't find such media type '"..theType.."'")
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaLoadMedia,media,path,theType,sR})
