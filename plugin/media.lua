@@ -58,9 +58,9 @@ addEventHandler("onClientBrowserDocumentReady",resourceRoot,function()
 end)
 
 DGSMediaType = {
-"AUDIO"=true,
-"VIDEO"=true,
-"IMAGE"=true,
+AUDIO=true,
+VIDEO=true,
+IMAGE=true,
 }
 function dgsMediaLoadMedia(media,path,theType,sourceRes)
 	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaLoadMedia at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
