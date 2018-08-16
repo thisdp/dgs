@@ -229,7 +229,9 @@ end)
 styleBackupStr = ""
 locator = [[	<export]]
 function backupStyleMapper()
-	fileCopy("meta.xml","meta.xml.bak",true)
+	if dgsConfig.backupMeta then
+		fileCopy("meta.xml","meta.xml.bak",true)
+	end
 	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
 	local meta = fileOpen("meta.xml")
 	local str = fileRead(meta,fileGetSize(meta))
@@ -242,9 +244,11 @@ function backupStyleMapper()
 	if fileExists("styleMapperBackup.bak") then
 		fileDelete("styleMapperBackup.bak")
 	end
-	local file = fileCreate("styleMapperBackup.bak")
-	fileWrite(file,styleBackupStr)
-	fileClose(file)
+	if dgsConfig.backupStyleMeta then
+		local file = fileCreate("styleMapperBackup.bak")
+		fileWrite(file,styleBackupStr)
+		fileClose(file)
+	end
 end
 function recoverStyleMapper()
 	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
