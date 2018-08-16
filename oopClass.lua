@@ -137,8 +137,11 @@ function dgsImportOOPClass()
 				getParent = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGetParent",self.dgsElement,...)
 				end,
-				setParent = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetParent",self.dgsElement,...)
+				setParent = function(self,parent,nocheck)
+					if type(parent) == "table" and isElement(parent.dgsElement) then
+						parent = parent.dgsElement
+					end
+					return call(dgsOOPHead.dgsRes,"dgsSetParent",self.dgsElement,parent,nocheck)
 				end,
 				getChild = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGetChild",self.dgsElement,...)
