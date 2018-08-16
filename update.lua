@@ -103,12 +103,14 @@ function getGitHubTree(path,nextPath)
 			local theTable = fromJSON(data)
 			folderGetting[theTable.sha] = nil
 			for k,v in pairs(theTable.tree) do
+				if v.path ~= "styleMapper.lua" then
 				local thePath = nextPath..(v.path)
-				if v.mode == "040000" then
-					folderGetting[v.sha] = true
-					getGitHubTree(v.url,thePath.."/")
-				else
-					fileHash[thePath] = v.sha
+					if v.mode == "040000" then
+						folderGetting[v.sha] = true
+						getGitHubTree(v.url,thePath.."/")
+					else
+						fileHash[thePath] = v.sha
+					end
 				end
 			end
 			if not next(folderGetting) then
@@ -125,17 +127,19 @@ function checkFiles()
 	for k,v in pairs(xmlNodeGetChildren(xml)) do
 		if xmlNodeGetName(v) == "script" or xmlNodeGetName(v) == "file" then
 			local path = xmlNodeGetAttribute(v,"src")
-			local sha = ""
-			if fileExists(path) then
-				local file = fileOpen(path)
-				local size = fileGetSize(file)
-				local text = fileRead(file,size)
-				fileClose(file)
-				sha = hash("sha1","blob " .. size .. "\0" ..text)
-			end
-			if sha ~= fileHash[path] then
-				outputDebugString("[DGS]Update Required: ("..path..")")
-				table.insert(preUpdate,path)
+			if not string.find(path,"styleMapper.lua") then
+				local sha = ""
+				if fileExists(path) then
+					local file = fileOpen(path)
+					local size = fileGetSize(file)
+					local text = fileRead(file,size)
+					fileClose(file)
+					sha = hash("sha1","blob " .. size .. "\0" ..text)
+				end
+				if sha ~= fileHash[path] then
+					outputDebugString("[DGS]Update Required: ("..path..")")
+					table.insert(preUpdate,path)
+				end
 			end
 		end
 	end

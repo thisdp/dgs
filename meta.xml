@@ -3,10 +3,10 @@
 	<file src="dsm.ttf" />
 	<file src="media.html" />
 	<file src="meta.xml" />
+	<file src="styleManager/styleMapper.lua"/>
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
-	<script src="styleManager/styleMapper.lua" type="shared" />
 	<script src="styleManager/styleManager.lua" type="client" />
 	
 	<script src="Core/button.lua" type="client" />
