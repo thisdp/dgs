@@ -197,7 +197,7 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 			local size = parentData.absSize or parentData.size
 			psx,psy = size[1],size[2]
 		end
-		if eleData.ignoreParentTitle or parentData.ignoretitleHeight then
+		if eleData.ignoreParentTitle or parentData.ignoreTitle then
 			titleOffset = 0
 		else
 			titleOffset = parentData.titleHeight or 0
