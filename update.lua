@@ -228,26 +228,25 @@ function backupStyleMapper()
 	fileCopy("meta.xml","meta.xml.bak",true)
 	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
 	local meta = fileOpen("meta.xml")
-	local str = fileRead(meta,fileGetSize(file))
+	local str = fileRead(meta,fileGetSize(meta))
 	local startStr = "<!--Add Your Styles Here-->"
 	local endStr = "<!--^^Add Your Styles Here^^-->"
 	local startPos = str:find(startStr)
 	local endPos = str:find(endStr)
 	styleBackupStr = str:sub(startPos,endPos)..endStr
-	fileClose(file)
+	fileClose(meta)
 end
-
 function recoverStyleMapper()
 	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
 	assert(styleBackupStr ~= "","[DGS] Failed to recover style mapper")
 	local meta = fileOpen("meta.xml")
-	local str = fileRead(meta,fileGetSize(file))
+	local str = fileRead(meta,fileGetSize(meta))
 	local startStr = "<!--Add Your Styles Here-->"
 	local endStr = "<!--^^Add Your Styles Here^^-->"
 	local startPos = str:find(startStr)
 	local endPos = str:find(endStr)
 	local exportsStr = str:sub(endPos)
-	fileSetPos(file,startPos)
-	fileWrite(file,styleBackupStr..exportsStr)
-	fileClose(file)
+	fileSetPos(meta,startPos)
+	fileWrite(meta,styleBackupStr..exportsStr)
+	fileClose(meta)
 end
