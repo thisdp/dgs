@@ -42,11 +42,10 @@
 	<script src="oopClass.lua" type="client" />
 	<script src="oldFunctions.lua" type="client" />
 	<script src="test.lua" type="client" />
-	
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
-
-	<!--Add Your Styles Here-->
+	
+	<!--$Add Your Styles Here-->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
 	
 	<!--(Default Style) Don't touch this style with your bear hand-->
@@ -68,7 +67,7 @@
 	
 	<!--(Custom Style 2) -->
 	
-	<!--^^Add Your Styles Here^^-->
+	<!--&Add Your Styles Here-->
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
 	<export function="dgsRemoveEasingFunction" type="client" />
@@ -541,4 +540,6 @@
 	<export function="test" type="server" />
 	<min_mta_version server="1.5.4-9.11342" />
 	<download_priority_group>999</download_priority_group>
+</meta>
+wnload_priority_group>999</download_priority_group>
 </meta>
