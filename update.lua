@@ -190,7 +190,7 @@ function DownloadFinish()
 		backupStyleMapper()
 		fileDelete("meta.xml")
 	end
-	fileRename("updated/meta.xml","meta.xml")
+	--fileRename("updated/meta.xml","meta.xml")
 	recoverStyleMapper()
 	outputDebugString("[DGS]Update Complete (Updated "..#preUpdate.." Files)")
 	outputDebugString("[DGS]Please Restart DGS")
@@ -239,7 +239,7 @@ function backupStyleMapper()
 	local endStr = "<!----&Add Your Styles Here---->"
 	local startPos = str:find(startStr)
 	local endPos = str:find(endStr)
-	styleBackupStr = str:sub(startPos,endPos-1).."<!--&Add Your Styles Here-->"
+	styleBackupStr = "	"..str:sub(startPos,endPos-1).."<!--&Add Your Styles Here-->"
 	fileClose(meta)
 	if fileExists("styleMapperBackup.bak") then
 		fileDelete("styleMapperBackup.bak")
@@ -251,15 +251,17 @@ function backupStyleMapper()
 	end
 end
 function recoverStyleMapper()
-	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
 	assert(styleBackupStr ~= "","[DGS] Failed to recover style mapper")
-	local meta = fileOpen("meta.xml")
+	local meta = fileOpen("updated/meta.xml")
 	local str = fileRead(meta,fileGetSize(meta))
+	fileClose(meta)
+	local newMeta = fileCreate("meta.xml")
 	local startStr = "<!----$Add Your Styles Here---->"
 	local startPos = str:find(startStr)
 	local exportPos = str:find(locator)
+	local scriptsStr = str:sub(1,startStr-1)
 	local exportsStr = str:sub(exportPos)
-	fileSetPos(meta,startPos-1)
-	fileWrite(meta,styleBackupStr.."\r\n"..exportsStr)
-	fileClose(meta)
+	fileWrite(newMeta,scriptsStr.."\r\n"..styleBackupStr.."\r\n"..exportsStr)
+	fileClose(newMeta)
+	fileDelete("updated/meta.xml")
 end
