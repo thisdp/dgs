@@ -16,7 +16,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"textSize",{textSizeX,textSizeY})
 	dgsSetData(window,"titleHeight",tonumber(titleHeight) or styleSettings.window.titleHeight)
 	dgsSetData(window,"borderSize",tonumber(borderSize) or styleSettings.window.borderSize)
-	dgsSetData(window,"ignoreTitleHeight",false)
+	dgsSetData(window,"ignoreTitle",false)
 	dgsSetData(window,"colorcoded",false)
 	dgsSetData(window,"movable",true)
 	dgsSetData(window,"sizable",true)
