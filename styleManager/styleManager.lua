@@ -1,11 +1,4 @@
 styleSettings = {}
-styleManager = {}
-styleManager.currentStyle = "Default"
-styleManager.sharedTexture = {}
-styleManager.styles = {	--Add your style map here
-	--Name = "Path",
-	Default="Default",
-}
 
 function getPathFromStyle(styleName)
 	return "styleManager/"..(styleManager.styles[styleName] or "Default").."/"
