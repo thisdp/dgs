@@ -37,6 +37,7 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt)
 	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,tocolor(255,255,255,255),x+vx,y+vy,z+vz)
 	if lnVec and lnPnt then
 		local px,py,pz = dgsGetIntersection(lnVec,lnPnt,{vx,vy,vz},{x,y,z}) --Intersection Point
+		if not px then return end
 		local model = (vx^2+vy^2+vz^2)^0.5
 		local vx,vy,vz = vx/model,vy/model,vz/model
 		local ltX,ltY,ltZ = y1*vz-vy*z1,z1*vx-vz*x1,x1*vy-vx*y1 --Left Point
