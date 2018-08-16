@@ -1,4 +1,22 @@
 styleSettings = {}
+styleManager = {}
+styleManager.currentStyle = "Default"
+styleManager.sharedTexture = {}
+styleManager.styles = {Default="Default"}
+
+function scanCustomStyle()
+	local styleMapper = fileOpen("styleManager/styleMapper.lua")
+	local str = fileRead(styleMapper,fileGetSize(styleMapper))
+	local str = "return {\n"..str.."\n}"
+	local fnc = loadstring(str)
+	assert(fnc,"Failed to load styleMapper")
+	local customStyleTable = fnc()
+	for k,v in pairs(customStyleTable) do
+		if k ~= "Default" then
+			styleManager.styles[k] = v
+		end
+	end
+end
 
 function getPathFromStyle(styleName)
 	return "styleManager/"..(styleManager.styles[styleName] or "Default").."/"
@@ -65,4 +83,5 @@ function loadStyle(styleName)
 	assert(fnc,"Error when loading "..path.."styleSettings.txt")
 	fnc()
 end
+scanCustomStyle()
 loadStyle("Default")
