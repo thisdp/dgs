@@ -6,6 +6,7 @@
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
+	<script src="styleManager/styleMapper.lua" type="shared" />
 	<script src="styleManager/styleManager.lua" type="client" />
 	
 	<script src="Core/button.lua" type="client" />
@@ -44,8 +45,12 @@
 	<script src="test.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
-
 	<script src="update.lua" type="server" />
+
+	<!--Add Your Styles Here-->
+	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
+	
+	<!--(Default Style) Don't touch this style with your bear hand-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
 	<file src="styleManager/Default/Images/eda/ellipse.fx" />
 	<file src="styleManager/Default/Images/checkbox/cb_t.png" type="client" />
@@ -60,8 +65,11 @@
 	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" type="client" />
 	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" type="client" />
 	<file src="styleManager/Default/styleSettings.txt" type="client" />
+	<!--(Custom Style 1) -->
 	
+	<!--(Custom Style 2) -->
 	
+	<!--^^Add Your Styles Here^^-->
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
 	<export function="dgsRemoveEasingFunction" type="client" />
