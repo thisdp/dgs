@@ -25,7 +25,7 @@ addEvent("onDgsMediaBrowserReturn",true)
 function dgsCreateMediaBrowser(w,h)
 	assert(type(w) == "number","Bad argument @dgsCreateMediaBrowser at argument 1, expect number got "..type(w))
 	assert(type(h) == "number","Bad argument @dgsCreateMediaBrowser at argument 2, expect number got "..type(h))
-	local media = createBrowser(w,h,true,true)
+	local media = createBrowser(w,h,true,false)
 	dgsSetType(media,"dgs-dxmedia")
 	dgsSetData(media,"size",{w,h})
 	dgsSetData(media,"sourcePath",false)
@@ -58,15 +58,14 @@ addEventHandler("onClientBrowserDocumentReady",resourceRoot,function()
 end)
 
 DGSMediaType = {
-AUDIO=true,
-VIDEO=true,
-IMAGE=true,
+AUDIO="audio",
+VIDEO="video",
+IMAGE="img",
 }
 function dgsMediaLoadMedia(media,path,theType,sourceRes)
 	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaLoadMedia at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
 	assert(type(path) == "string","Bad argument @dgsMediaLoadMedia at argument 2, expect string got "..type(path))
 	local sR = sourceResource or sourceRes or getThisResource()
-	print(getResourceName(sR))
 	local name = getResourceName(sR)
 	if not path:find(":") then
 		local firstOne = path:sub(1,1)
@@ -87,18 +86,32 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 		dgsSetData(media,"sourcePath",path)
 		local size = dgsElementData[media].size
 		local filled = dgsElementData[media].filled
-		local str = [[
-			var element = document.createElement("]]..theType..[[");
-			element.id = "element";
-			element.width = ]]..size[1]..[[;
-			element.height = ]]..size[2]..[[;
-			createListener(element);
-			document.body.appendChild(element);
-			var source = document.createElement("source");
-			source.src = "http://mta/]] ..path:sub(2).. [[";
-			element.appendChild(source);
-			mta.triggerEvent("onDgsMediaDurationGet",element.duration)
-		]]
+		local str = ""
+		if DGSMediaType[theType] == "img" then
+			str = [[
+				var element = document.createElement("]]..DGSMediaType[theType]..[[");
+				element.id = "element";
+				element.src = "http://mta/]] ..path:sub(2).. [[";
+				element.width = ]]..size[1]..[[;
+				element.height = ]]..size[2]..[[;
+				document.body.appendChild(element);
+				createListener(element);
+				mta.triggerEvent("onDgsMediaDurationGet",element.duration)
+			]]
+		else
+			str = [[
+				var element = document.createElement("]]..DGSMediaType[theType]..[[");
+				element.id = "element";
+				element.width = ]]..size[1]..[[;
+				element.height = ]]..size[2]..[[;
+				createListener(element);
+				document.body.appendChild(element);
+				var source = document.createElement("source");
+				source.src = "http://mta/]] ..path:sub(2).. [[";
+				element.appendChild(source);
+				mta.triggerEvent("onDgsMediaDurationGet",element.duration)
+			]]
+		end
 		local executed = executeBrowserJavascript(media,str)
 		dgsMediaSetFullScreen(media,dgsElementData[media].fullscreen)
 		dgsMediaSetFilled(media,dgsElementData[media].filled)
