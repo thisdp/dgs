@@ -139,6 +139,9 @@ function dgs3DInterfaceSetResolution(interface,w,h)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
 	assert(tonumber(h),"Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
+	local rndTgt = dxCreateRenderTarget(w,h,true)
+	assert(rndTgt,"Bad argument @dgs3DInterfaceSetResolution, Failed to create render target for dgs 3d interface")
+	dgsSetData(interface,"renderTarget_parent",rndTgt)
 	return dgsSetData(interface,"resolution",{w,h})
 end
 
