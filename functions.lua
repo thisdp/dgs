@@ -359,6 +359,10 @@ function dgsGetScreenSize()
 	return guiGetScreenSize()
 end
 
+function dgsSetInputEnabled(...)
+	return guiSetInputEnabled(...)
+end
+
 function dgsGetRootElement()
 	return resourceRoot
 end

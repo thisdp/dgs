@@ -134,6 +134,7 @@
 	<export function="dgsSimulateClick" type="client" />
 	<export function="dgsGetScreenSize" type="client" />
 	<export function="dgsGetRootElement" type="client" />
+	<export function="dgsSetInputEnabled" type="client" />
 	
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
@@ -144,6 +145,8 @@
 	<export function="dgsWindowGetCloseButton" type="client" />
 
 	<export function="dgsCreate3DInterface" type="client" />
+	<export function="dgs3DInterfaceGetBlendMode" type="client" />
+	<export function="dgs3DInterfaceSetBlendMode" type="client" />
 	
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />

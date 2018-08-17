@@ -215,7 +215,7 @@ function test3DInterface()
 	edit1 = dgsCreateEdit(0,0,200,50,"DGS 3D Interface Edit 1",false,material)
 	edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
 end
-
+test3DInterface()
 function exampleDetectArea()
 	local image = dgsCreateImage(200,200,100,100,_,false)
 	local da = dgsCreateDetectArea(0,0,100,100,false,image)
