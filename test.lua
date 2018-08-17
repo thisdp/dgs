@@ -226,3 +226,5 @@ function exampleDetectArea()
 
 	]])
 end
+
+--local shader = dxCreateShader("shaders/textureRelight.fx")

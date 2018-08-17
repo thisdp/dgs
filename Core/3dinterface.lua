@@ -17,6 +17,8 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"color",color or tocolor(255,255,255,255))
 	dgsSetData(interface,"resolution",{resolX,resolY})
 	dgsSetData(interface,"maxDistance",distance or 100)
+	dgsSetData(interface,"filterShader",false)
+	dgsSetData(interface,"blendMode","add")
 	local rndTgt = dxCreateRenderTarget(resolX,resolY,true)
 	dgsSetData(interface,"renderTarget_parent",rndTgt)
 	insertResourceDxGUI(sourceResource,interface)

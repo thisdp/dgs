@@ -150,7 +150,9 @@ function dgsCoreRender()
 		for i=1,dx3DInterfaceTableSize do
 			local v = dx3DInterfaceTable[i]
 			local eleData = dgsData[v]
+			dxSetBlendMode(eleData.blendMode)
 			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+			dxSetBlendMode("blend")
 		end
 		dxSetRenderTarget()
 		for i=1,bottomTableSize do
@@ -2813,6 +2815,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 				end
 				local hit,hitX,hitY
 				if ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5 <= eleData.maxDistance then
+					local filter = eleData.filterShader
+					local renderThing = rndtgt
+					if isElement(filter) then
+						dxSetShaderValue(filter,"gTexture",rndtgt)
+						renderThing = filter
+					end
 					hit,hitX,hitY,x,y,z = dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,rndtgt,w,h,colors,lnVec,lnPnt)
 				end
 				dxSetRenderTarget(rndtgt,true)

@@ -4,6 +4,7 @@
 	<file src="media.html" />
 	<file src="meta.xml" />
 	<file src="styleManager/styleMapper.lua"/>
+	<file src="shaders/textureRelight.fx" type="client" />
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -45,7 +46,7 @@
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
 	
-	<!--$Add Your Styles Here-->
+		<!--$Add Your Styles Here-->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
 	
 	<!--(Default Style) Don't touch this style with your bear hand-->
