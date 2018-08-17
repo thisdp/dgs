@@ -214,8 +214,9 @@ function test3DInterface()
 	material = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),0,1,0)
 	edit1 = dgsCreateEdit(0,0,200,50,"DGS 3D Interface Edit 1",false,material)
 	edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,0,0,1,0)
 end
-test3DInterface()
+
 function exampleDetectArea()
 	local image = dgsCreateImage(200,200,100,100,_,false)
 	local da = dgsCreateDetectArea(0,0,100,100,false,image)
@@ -226,5 +227,6 @@ function exampleDetectArea()
 
 	]])
 end
+
 
 --local shader = dxCreateShader("shaders/textureRelight.fx")

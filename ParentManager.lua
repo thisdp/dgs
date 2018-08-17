@@ -198,6 +198,9 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 	lastFront = dxgui
 	if mouse == "left" then
 		MouseData.clickl = dxgui
+		if MouseData.interfaceHit and MouseData.interfaceHit[5] then
+			MouseData.lock3DInterface = MouseData.interfaceHit[5]
+		end
 		MouseData.clickData = nil
 	elseif mouse == "right" then
 		MouseData.clickr = dxgui

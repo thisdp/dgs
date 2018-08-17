@@ -147,6 +147,17 @@
 	<export function="dgsCreate3DInterface" type="client" />
 	<export function="dgs3DInterfaceGetBlendMode" type="client" />
 	<export function="dgs3DInterfaceSetBlendMode" type="client" />
+	<export function="dgs3DInterfaceGetPosition" type="client" />
+	<export function="dgs3DInterfaceSetPosition" type="client" />
+	<export function="dgs3DInterfaceGetSize" type="client" />
+	<export function="dgs3DInterfaceSetSize" type="client" />
+	<export function="dgs3DInterfaceGetResolution" type="client" />
+	<export function="dgs3DInterfaceSetResolution" type="client" />
+	<export function="dgs3DInterfaceAttachToElement" type="client" />
+	<export function="dgs3DInterfaceIsAttached" type="client" />
+	<export function="dgs3DInterfaceDetachFromElement" type="client" />
+	<export function="dgs3DInterfaceSetAttachedOffsets" type="client" />
+	<export function="dgs3DInterfaceGetAttachedOffsets" type="client" />
 	
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />

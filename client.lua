@@ -94,6 +94,7 @@ MouseData.editCursorMoveOffset = false
 MouseData.gridlistMultiSelection = false
 MouseData.lastPos = {-1,-1}
 MouseData.interfaceHit = {}
+MouseData.lock3DInterface = false
 
 MouseData.EditTimer = setTimer(function()
 	if isElement(MouseData.nowShow) then
@@ -134,6 +135,7 @@ function dgsCoreRender()
 		MouseData.clickl = false
 		MouseData.clickr = false
 		MouseData.clickm = false
+		MouseData.lock3DInterface = false
 		MouseData.Scale = false
 		MouseData.scrollPane = false
 		if MouseData.arrowListEnter then
@@ -143,18 +145,26 @@ function dgsCoreRender()
 		end
 		MouseData.arrowListEnter = false
 	end
+	local normalMx,normalMy = mx,my
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize ~= 0 then
 		local dgsData = dgsElementData
 		dxSetRenderTarget()
 		MouseData.interfaceHit = {}
+		local dxInterfaceHitElement = false
+		local intfaceClickElementl = false
 		for i=1,dx3DInterfaceTableSize do
 			local v = dx3DInterfaceTable[i]
 			local eleData = dgsData[v]
 			dxSetBlendMode(eleData.blendMode)
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+			if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible,MouseData.clickl) then
+				intfaceClickElementl = true
+			end
 			dxSetBlendMode("blend")
 		end
+		local intfaceMx,intfaceMy = MouseX,MouseY
+		local intfaceHitElement = MouseData.hit
 		dxSetRenderTarget()
+		local mx,my = normalMx,normalMy
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
 			local eleData = dgsData[v]
@@ -170,6 +180,17 @@ function dgsCoreRender()
 			local eleData = dgsData[v]
 			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
 		end
+		if intfaceClickElementl then
+			MouseX,MouseY = intfaceMx,intfaceMy
+		else
+			if MouseData.clickl then
+				MouseX,MouseY = normalMx,normalMy
+			elseif MouseData.hit == intfaceHitElement then
+				MouseX,MouseY = intfaceMx,intfaceMy
+			else
+				MouseX,MouseY = normalMx,normalMy
+			end
+		end
 		dxSetRenderTarget()
 		if not isCursorShowing() then
 			MouseData.hit = false
@@ -178,6 +199,7 @@ function dgsCoreRender()
 			MouseData.clickl = false
 			MouseData.clickr = false
 			MouseData.clickm = false
+			MouseData.lock3DInterface = false
 			MouseData.Scale = false
 			MouseData.scrollPane = false
 			if MouseData.arrowListEnter then
@@ -257,8 +279,78 @@ function dgsCoreRender()
 	end	
 end
 
+function interfaceRender()
+	for i=1,#dx3DInterfaceTable do
+		local v = dx3DInterfaceTable[i]
+		local eleData = dgsElementData[v]
+		if eleData.visible then
+			
+			local attachTable = eleData.attachTo
+			if attachTable then
+				local element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ = attachTable[1],attachTable[2],attachTable[3],attachTable[4],attachTable[5],attachTable[6],attachTable[7]
+				if not isElement(element) then
+					eleData.attachTo = false
+				else
+					local ex,ey,ez = getElementPosition(element)
+					local tmpX,tmpY,tmpZ = getPositionFromElementOffset(element,offFaceX,offFaceY,offFaceZ)
+					eleData.position = {getPositionFromElementOffset(element,offX,offY,offZ)}
+					eleData.faceTo = {tmpX-ex,tmpY-ey,tmpZ-ez}
+				end
+			end
+			
+			local pos = eleData.position
+			local size = eleData.size
+			local faceTo = eleData.faceTo
+			local x,y,z,w,h,fx,fy,fz = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3]
+			eleData.hit = false
+			if x and y and z and w and h then
+				local colors = eleData.color
+				colors = applyColorAlpha(colors,eleData.alpha)
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				local lnVec,lnPnt
+				local camX,camY,camZ = getCameraMatrix()
+				if not fx or not fy or not fz then
+					fx,fy,fz = camX,camY,camZ
+				end
+				if wX and wY and wZ then
+					lnVec = {wX-camX,wY-camY,wZ-camZ}
+					lnPnt = {camX,camY,camZ}
+				end
+				local hit,hitX,hitY
+				local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
+				eleData.cameraDistance = cameraDistance
+				if cameraDistance <= eleData.maxDistance then
+					local filter = eleData.filterShader
+					local renderThing = eleData.renderTarget_parent
+					if isElement(filter) then
+						dxSetShaderValue(filter,"gTexture",renderThing)
+						renderThing = filter
+					end
+					eleData.hit = {dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,lnVec,lnPnt)}
+				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+			end
+		end
+	end
+end
+addEventHandler("onClientPreRender",root,interfaceRender)
 
-function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
+function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkElement)
+	local isElementInside = false
 	if debugMode then
 		DGSShow = DGSShow+1
 	end
@@ -2794,61 +2886,29 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 			local x,y,z,w,h,fx,fy,fz = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3]
 			rndtgt = eleData.renderTarget_parent
 			if x and y and z and w and h then
-				local colors = eleData.color
-				colors = applyColorAlpha(colors,galpha)
-				------------------------------------
-				if eleData.functionRunBefore then
-					local fnc = eleData.functions
-					if type(fnc) == "table" then
-						fnc[1](unpack(fnc[2]))
-					end
-				end
-				------------------------------------
-				local lnVec,lnPnt
-				local camX,camY,camZ = getCameraMatrix()
-				if not fx or not fy or not fz then
-					fx,fy,fz = camX,camY,camZ
-				end
-				if wX and wY and wZ then
-					lnVec = {wX-camX,wY-camY,wZ-camZ}
-					lnPnt = {camX,camY,camZ}
-				end
+				local intfaceHit = eleData.hit
 				local hit,hitX,hitY
-				if ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5 <= eleData.maxDistance then
-					local filter = eleData.filterShader
-					local renderThing = rndtgt
-					if isElement(filter) then
-						dxSetShaderValue(filter,"gTexture",rndtgt)
-						renderThing = filter
-					end
-					hit,hitX,hitY,x,y,z = dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,rndtgt,w,h,colors,lnVec,lnPnt)
+				if intfaceHit then
+					hit,hitX,hitY,x,y,z = intfaceHit[1],intfaceHit[2],intfaceHit[3],intfaceHit[4],intfaceHit[5]
 				end
 				dxSetRenderTarget(rndtgt,true)
 				dxSetRenderTarget()
-				------------------------------------
-				if not eleData.functionRunBefore then
-					local fnc = eleData.functions
-					if type(fnc) == "table" then
-						fnc[1](unpack(fnc[2]))
-					end
-				end
-				------------------------------------
 				if enabled[1] and mx then
 					if hit then
 						local oldPos = MouseData.interfaceHit
-						local distance = ((x-camX)^2+(y-camY)^2+(z-camZ)^2)^0.5
-						if oldPos[4] then
-							if distance <= oldPos[4] then
+						local distance = eleData.cameraDistance
+						if isElement(MouseData.lock3DInterface) then
+							if MouseData.lock3DInterface == v then
 								MouseData.hit = v
 								mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
 								MouseX,MouseY = mx,my
-								MouseData.interfaceHit = {x,y,z,distance}
+								MouseData.interfaceHit = {x,y,z,distance,v}
 							end
-						else
-							MouseData.interfaceHit = {x,y,z,distance}
+						elseif not oldPos[4] or distance <= oldPos[4] then
 							MouseData.hit = v
 							mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
 							MouseX,MouseY = mx,my
+							MouseData.interfaceHit = {x,y,z,distance,v}
 						end
 					end
 				end
@@ -3022,10 +3082,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
 		if not interrupted then
 			for i=1,#children do
 				local child = children[i]
-				renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
+				isElementInside = isElementInside or renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkElement)
 			end
 		end
 	end
+	return isElementInside or v == checkElement
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 
@@ -3592,6 +3653,7 @@ function dgsCheckHit(hits,mx,my)
 			MouseData.clickData = false
 			MouseData.Move = false
 			MouseData.Scale = false
+			MouseData.lock3DInterface = false
 		end
 		if not getKeyState("mouse2") then
 			MouseData.clickr = false
@@ -4175,6 +4237,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 	if state == "up" then
 		if button == "left" then
 			MouseData.clickl = false
+			MouseData.lock3DInterface = false
 		elseif button == "right" then
 			MouseData.clickr = false
 		end

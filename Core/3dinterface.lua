@@ -19,6 +19,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"maxDistance",distance or 100)
 	dgsSetData(interface,"filterShader",false)
 	dgsSetData(interface,"blendMode","add")
+	dgsSetData(interface,"attachTo",false)
 	local rndTgt = dxCreateRenderTarget(resolX,resolY,true)
 	dgsSetData(interface,"renderTarget_parent",rndTgt)
 	insertResourceDxGUI(sourceResource,interface)
@@ -29,13 +30,13 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	end
 	return interface
 end
-
+--[[
 function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt)
-	local rx = atan2(vz,(vx^2+vy^2)^0.5)
-	local rz = atan2(vx,vy)
+	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
+	local offFaceZ = atan2(vx,vy)
 	local _h=h
 	h=h/2
-	local x1,y1,z1 = sin(rx)*sin(rz)*h,sin(rx)*cos(rz)*h,-cos(rx)*h
+	local x1,y1,z1 = sin(offFaceX)*sin(offFaceZ)*h,sin(offFaceX)*cos(offFaceZ)*h,-cos(offFaceX)*h
 	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,tocolor(255,255,255,255),x+vx,y+vy,z+vz)
 	if lnVec and lnPnt then
 		local px,py,pz = dgsGetIntersection(lnVec,lnPnt,{vx,vy,vz},{x,y,z}) --Intersection Point
@@ -48,6 +49,32 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt)
 		local vec1X,vec1Y,vec1Z = ltX+x-px,ltY+y-py,ltZ+z-pz
 		local vec2X,vec2Y,vec2Z = px-x+x1,py-y+y1,pz-z+z1
 		local _x,_y = (vec1X*ltX+vec1Y*ltY+vec1Z*ltZ)/(ltX^2+ltY^2+ltZ^2)^0.5/w,(vec2X*x1+vec2Y*y1+vec2Z*z1)/(x1^2+y1^2+z1^2)^0.5/_h
+		local angle = (x-lnPnt[1])*lnVec[1]+(y-lnPnt[2])*lnVec[2]+(z-lnPnt[3])*lnVec[3]
+		local inSide = _x>=0 and _x<=1 and _y>=0 and _y <=1
+		return (angle > 0) and inSide,_x,_y,px,py,pz
+	end
+end]]
+
+function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt)
+	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
+	local offFaceZ = atan2(vx,vy)
+	local _h=h
+	h=h/2
+	local x1,y1,z1 = sin(offFaceX)*sin(offFaceZ)*h,sin(offFaceX)*cos(offFaceZ)*h,-cos(offFaceX)*h
+	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,tocolor(255,255,255,255),x+vx,y+vy,z+vz)
+	if lnVec and lnPnt then
+		local px,py,pz = dgsGetIntersection(lnVec,lnPnt,{vx,vy,vz},{x,y,z}) --Intersection Point
+		if not px then return end
+		local model = (vx*vx+vy*vy+vz*vz)^0.5
+		local vx,vy,vz = vx/model,vy/model,vz/model
+		local ltX,ltY,ltZ = y1*vz-vy*z1,z1*vx-vz*x1,x1*vy-vx*y1 --Left Point
+		local ltX2,ltY2,ltZ2 = ltX*ltX,ltY*ltY,ltZ*ltZ
+		local leftModel = (ltX*ltX+ltY*ltY+ltZ*ltZ)^0.5
+		local leftModel2 = leftModel*2/w
+		local ltX,ltY,ltZ = ltX/leftModel2,ltY/leftModel2,ltZ/leftModel2
+		local vec1X,vec1Y,vec1Z = ltX+x-px,ltY+y-py,ltZ+z-pz
+		local vec2X,vec2Y,vec2Z = px-x+x1,py-y+y1,pz-z+z1
+		local _x,_y = (vec1X*ltX+vec1Y*ltY+vec1Z*ltZ)/leftModel/w,(vec2X*x1+vec2Y*y1+vec2Z*z1)/(x1^2+y1^2+z1^2)^0.5/_h
 		local angle = (x-lnPnt[1])*lnVec[1]+(y-lnPnt[2])*lnVec[2]+(z-lnPnt[3])*lnVec[3]
 		local inSide = _x>=0 and _x<=1 and _y>=0 and _y <=1
 		return (angle > 0) and inSide,_x,_y,px,py,pz
@@ -107,11 +134,66 @@ function dgs3DInterfaceGetSize(interface)
 	local size = dgsElementData[interface].size
 	return size[1],size[2]
 end
---[[
+
 function dgs3DInterfaceSetResolution(interface,w,h)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
+	assert(tonumber(h),"Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
+	return dgsSetData(interface,"resolution",{w,h})
+end
+
+function dgs3DInterfaceGetResolution(interface)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
 	assert(tonumber(h),"Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
 	local size = dgsElementData[interface].resolution
 	return size[1],size[2]
-end]]
+end
+
+function dgs3DInterfaceAttachToElement(interface,element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceAttachToElement at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	assert(isElement(element),"Bad argument @dgs3DInterfaceAttachToElement at argument 2, expect an element got "..dgsGetType(element))
+	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
+	local offFaceX,offFaceY,offFaceZ = offFaceX or 0,offFaceY or 0,offFaceZ or 0
+	return dgsSetData(interface,"attachTo",{element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ})
+end
+
+function dgs3DInterfaceIsAttached(interface)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceIsAttached at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	return dgsElementData[interface].attachTo
+end
+
+function dgs3DInterfaceDetachFromElement(interface)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceDetachFromElement at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	return dgsSetData(interface,"attachTo",false)
+end
+
+function dgs3DInterfaceSetAttachedOffsets(interface,offX,offY,offZ,offFaceX,offFaceY,offFaceZ)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetAttachedOffsets at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	local attachTable = dgsElementData[interface].attachTo
+	if attachTable then
+		local offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
+		local offFaceX,offFaceY,offFaceZ = offFaceX or attachTable[5],offFaceY or attachTable[6],offFaceZ or attachTable[7]
+		return dgsSetData(interface,"attachTo",{attachTable[1],offX,offY,offZ,offFaceX,offFaceY,offFaceZ})
+	end
+	return false
+end
+
+function dgs3DInterfaceGetAttachedOffsets(interface,offX,offY,offZ,offFaceX,offFaceY,offFaceZ)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetAttachedOffsets at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	local attachTable = dgsElementData[interface].attachTo
+	if attachTable then
+		local offX,offY,offZ = attachTable[2],attachTable[3],attachTable[4]
+		local offFaceX,offFaceY,offFaceZ = attachTable[5],attachTable[6],attachTable[7]
+		return offX,offY,offZ,offFaceX,offFaceY,offFaceZ
+	end
+	return false
+end
+
+function getPositionFromElementOffset(element,offX,offY,offZ)
+    local m = getElementMatrix ( element )
+    local x = offX * m[1][1] + offY * m[2][1] + offZ * m[3][1] + m[4][1]
+    local y = offX * m[1][2] + offY * m[2][2] + offZ * m[3][2] + m[4][2]
+    local z = offX * m[1][3] + offY * m[2][3] + offZ * m[3][3] + m[4][3]
+    return x, y, z
+end
