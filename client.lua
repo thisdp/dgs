@@ -425,7 +425,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						end
 					end
 				end
-				dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,systemFont,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,eleData.colorcoded)
+				dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,eleData.colorcoded)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
