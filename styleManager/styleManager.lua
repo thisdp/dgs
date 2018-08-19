@@ -56,9 +56,9 @@ function checkStyle(styleName)
 		local stylePath = getPathFromStyle(styleName)
 		if stylePath then
 			assert(fileExists(stylePath.."styleSettings.txt"),"[DGS Style] Missing style setting ("..stylePath.."styleSettings.txt)")
-			local styleSettings = fileOpen(stylePath.."styleSettings.txt")
-			local str = fileRead(styleSettings,fileGetSize(styleSettings))
-			local fnc = loadstring(str)
+			local styleFile = fileOpen(stylePath.."styleSettings.txt")
+			local str = fileRead(styleFile,fileGetSize(styleFile))
+			local fnc = loadstring("return {\n"..str.."\n}")
 			assert(fnc,"[DGS Style]Error when checking "..stylePath.."styleSettings.txt")
 		end
 	else
@@ -66,9 +66,9 @@ function checkStyle(styleName)
 			local stylePath = getPathFromStyle(k)
 			if stylePath then
 				assert(fileExists(stylePath.."styleSettings.txt"),"[DGS Style] Missing style setting ("..stylePath.."styleSettings.txt)")
-				local styleSettings = fileOpen(stylePath.."styleSettings.txt")
-				local str = fileRead(styleSettings,fileGetSize(styleSettings))
-				local fnc = loadstring(str)
+				local styleFile = fileOpen(stylePath.."styleSettings.txt")
+				local str = fileRead(styleFile,fileGetSize(styleFile))
+				local fnc = loadstring("return {\n"..str.."\n}")
 				assert(fnc,"[DGS Style]Error when checking "..stylePath.."styleSettings.txt")
 			end
 		end
@@ -77,11 +77,25 @@ end
 
 function loadStyle(styleName)
 	local path = getPathFromStyle(styleName)
-	local styleSettings = fileOpen(path.."styleSettings.txt")
-	local str = fileRead(styleSettings,fileGetSize(styleSettings))
-	local fnc = loadstring(str)
+	local styleFile = fileOpen(path.."styleSettings.txt")
+	local str = fileRead(styleFile,fileGetSize(styleFile))
+	local fnc = loadstring("return {\n"..str.."\n}")
 	assert(fnc,"Error when loading "..path.."styleSettings.txt")
-	fnc()
+	local customStyleSettings = fnc()
+	if not next(styleSettings) then
+		styleSettings = customStyleSettings
+		return
+	end
+	for dgsType,settigs in pairs(styleSettings) do
+		if customStyleSettings[dgsType] then
+			for dgsProperty,value in pairs(settings) do
+				if customStyleSettings[dgsType][dgsProperty] then
+					styleSettings[dgsType][dgsProperty] = customStyleSettings[dgsType][dgsProperty]
+				end
+			end
+		end
+	end
 end
+
 scanCustomStyle()
 loadStyle("Default")

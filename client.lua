@@ -433,7 +433,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -555,7 +555,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -635,7 +635,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -715,7 +715,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -782,7 +782,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -920,7 +920,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -1059,7 +1059,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -1232,7 +1232,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -1430,7 +1430,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -1510,7 +1510,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -1676,7 +1676,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -1762,7 +1762,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -2209,7 +2209,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -2291,7 +2291,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -2435,7 +2435,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -2557,7 +2557,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -2703,7 +2703,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -2755,7 +2755,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -2845,7 +2845,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
@@ -3034,7 +3034,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local sideSize = outlineData[2]
 					sideSize = applyColorAlpha(sideSize,galpha)
 					local side = outlineData[1]
-					local x,y = x-1,y-1
+					--local x,y = x-1,y-1
 					if side == "in" then
 						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
 						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)

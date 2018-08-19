@@ -13,7 +13,7 @@ addCommandHandler("cmd",function()
 	guiSetInputMode("no_binds_when_editing")
 	if not isElement(cmdSystem["window"]) then
 		cmdSystem["window"] = dgsCreateWindow(sW*0.5-20,sH*0.5,40,25,"CMD",false,tocolor(255,0,0,255),_,_,tocolor(80,140,200,255))
-		dgsSetProperty(cmdSystem["window"],"outline",{"out",5,tocolor(255,255,255,255)})
+		dgsSetProperty(cmdSystem["window"],"outline",{"out",1,tocolor(100,100,100,255)})
 		dgsSetFont(cmdSystem["window"],dsm)
 		dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.5,false,false,"OutQuad",300)
 		dgsSizeTo(cmdSystem["window"],sW*0.5,25,false,false,"OutQuad",300)
@@ -374,6 +374,7 @@ function dgsCreateAnimationWindow(...)
 	tabl[3] = 60
 	tabl[4] = 25
 	local window = dgsCreateWindow(unpack(tabl))
+	dgsSetProperty(window,"outline",{"out",1,tocolor(100,100,100,255)})
 	dgsSetData(window,"animated",1)
 	dgsMoveTo(window,x,y+sy/2-12.5,false,false,"OutQuad",200)
 	dgsSizeTo(window,sx,25,false,false,"OutQuad",200)

@@ -239,7 +239,7 @@ function backupStyleMapper()
 	local endStr = "<!----&Add Your Styles Here---->"
 	local startPos = str:find(startStr)
 	local endPos = str:find(endStr)
-	styleBackupStr = "	"..str:sub(startPos,endPos-1).."<!--&Add Your Styles Here-->"
+	styleBackupStr = str:sub(startPos,endPos-1).."<!--&Add Your Styles Here-->"
 	fileClose(meta)
 	if fileExists("styleMapperBackup.bak") then
 		fileDelete("styleMapperBackup.bak")

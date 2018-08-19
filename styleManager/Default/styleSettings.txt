@@ -8,7 +8,6 @@
 ---------------------------------------------------------------
 ---------------------------------------------------------------
 
-styleSettings = {
 ---------------------------------------------------------------------------------------------------General
 	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent too many the same texture element)
 	disabledColor = true,
@@ -376,5 +375,3 @@ styleSettings = {
 		borderSize = 5,
 		closeButtonText = "×",
 	},
-	
-}
