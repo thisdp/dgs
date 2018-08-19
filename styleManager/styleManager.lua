@@ -1,6 +1,7 @@
 styleSettings = {}
 styleManager = {}
 styleManager.currentStyle = "Default"
+styleManager.customStyle = "Default"
 styleManager.sharedTexture = {}
 styleManager.styles = {Default="Default"}
 
@@ -11,10 +12,16 @@ function scanCustomStyle()
 	local fnc = loadstring(str)
 	assert(fnc,"Failed to load styleMapper")
 	local customStyleTable = fnc()
+	local customUsing = "Default"
 	for k,v in pairs(customStyleTable) do
-		if k ~= "Default" then
+		if k == "use" then
+			customUsing = v
+		elseif k ~= "Default" then
 			styleManager.styles[k] = v
 		end
+	end
+	if customStyleTable[customUsing] then
+		styleManager.customStyle = customUsing
 	end
 end
 
@@ -75,8 +82,13 @@ function checkStyle(styleName)
 	end
 end
 
-function loadStyle(styleName)
+function dgsSetCurrentStyle(styleName)
+	local styleName = styleName or "Default"
+	assert(type(styleName) == "string","Bad argument @dgsSetCurrentStyle at argument 1, expect a string got "..type(styleName))
+	assert(styleManager.styles[styleName],"Bad argument @dgsSetCurrentStyle at argument 1, Couldn't find such style "..styleName)
+	styleManager.currentStyle = styleName
 	local path = getPathFromStyle(styleName)
+	assert(fileExists(path.."styleSettings.txt"),"[DGS Style] Missing style setting ("..path.."styleSettings.txt)")
 	local styleFile = fileOpen(path.."styleSettings.txt")
 	local str = fileRead(styleFile,fileGetSize(styleFile))
 	local fnc = loadstring("return {\n"..str.."\n}")
@@ -86,7 +98,7 @@ function loadStyle(styleName)
 		styleSettings = customStyleSettings
 		return
 	end
-	for dgsType,settigs in pairs(styleSettings) do
+	for dgsType,settings in pairs(styleSettings) do
 		if customStyleSettings[dgsType] then
 			for dgsProperty,value in pairs(settings) do
 				if customStyleSettings[dgsType][dgsProperty] then
@@ -97,5 +109,21 @@ function loadStyle(styleName)
 	end
 end
 
+function dgsGetCurrentStyle()
+	return styleManager.currentStyle
+end
+
+function dgsGetLoadedStyleList()
+	return styleManager.styles
+end
+
+function dgsIsStyleAvailable(styleName)
+	assert(type(styleName) == "string","Bad argument @dgsSetCurrentStyle at argument 1, expect a string got "..type(styleName))
+	return styleManager.styles[styleName]
+end
+
 scanCustomStyle()
-loadStyle("Default")
+dgsSetCurrentStyle("Default")
+if styleManager.currentStyle ~= styleManager.customStyle then
+	dgsSetCurrentStyle(styleManager.customStyle)
+end

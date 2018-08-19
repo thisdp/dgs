@@ -135,6 +135,10 @@
 	<export function="dgsGetScreenSize" type="client" />
 	<export function="dgsGetRootElement" type="client" />
 	<export function="dgsSetInputEnabled" type="client" />
+	<export function="dgsGetCurrentStyle" type="client" />
+	<export function="dgsSetCurrentStyle" type="client" />
+	<export function="dgsIsStyleAvailable" type="client" />
+	<export function="dgsGetLoadedStyleList" type="client" />
 	
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
