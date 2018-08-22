@@ -220,7 +220,7 @@ function test3DInterface()
 		dgsComboBoxAddItem(combobox,i)
 	end
 end
-test3DInterface()
+
 function exampleDetectArea()
 	local image = dgsCreateImage(200,200,100,100,_,false)
 	local da = dgsCreateDetectArea(0,0,100,100,false,image)
