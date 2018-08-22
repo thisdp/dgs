@@ -1,13 +1,14 @@
 styleSettings = {}
 styleManager = {}
-styleManager.currentStyle = "Default"
 styleManager.customStyle = "Default"
 styleManager.sharedTexture = {}
 styleManager.styles = {Default="Default"}
+styleManager.styleHistory = {"Default"}
 
 function scanCustomStyle()
 	local styleMapper = fileOpen("styleManager/styleMapper.lua")
 	local str = fileRead(styleMapper,fileGetSize(styleMapper))
+	fileClose(styleMapper)
 	local str = "return {\n"..str.."\n}"
 	local fnc = loadstring(str)
 	assert(fnc,"Failed to load styleMapper")
@@ -29,13 +30,21 @@ function getPathFromStyle(styleName)
 	return "styleManager/"..(styleManager.styles[styleName] or "Default").."/"
 end
 
+function getAvailableFilePath(path)
+	for i=1,#styleManager.styleHistory do
+		local testPath = "styleManager/"..(styleManager.styles[styleManager.styleHistory[i]] or "Default").."/"..path
+		if fileExists(testPath) then
+			return testPath
+		end
+	end
+end
+
 function dgsCreateTextureFromStyle(theTable)
 	if theTable then
 		local filePath,textureType,shaderSettings = theTable[1],theTable[2],theTable[3]
 		if filePath then
 			textureType = textureType or "image"
-			local currentStyle = styleManager.currentStyle
-			local thePath = getPathFromStyle(currentStyle)..filePath
+			local thePath = getAvailableFilePath(filePath)
 			if textureType == "image" then
 				if styleSettings.sharedTexture then
 					if isElement(styleManager.sharedTexture[thePath]) then
@@ -65,6 +74,7 @@ function checkStyle(styleName)
 			assert(fileExists(stylePath.."styleSettings.txt"),"[DGS Style] Missing style setting ("..stylePath.."styleSettings.txt)")
 			local styleFile = fileOpen(stylePath.."styleSettings.txt")
 			local str = fileRead(styleFile,fileGetSize(styleFile))
+			fileClose(styleFile)
 			local fnc = loadstring("return {\n"..str.."\n}")
 			assert(fnc,"[DGS Style]Error when checking "..stylePath.."styleSettings.txt")
 		end
@@ -75,6 +85,7 @@ function checkStyle(styleName)
 				assert(fileExists(stylePath.."styleSettings.txt"),"[DGS Style] Missing style setting ("..stylePath.."styleSettings.txt)")
 				local styleFile = fileOpen(stylePath.."styleSettings.txt")
 				local str = fileRead(styleFile,fileGetSize(styleFile))
+				fileClose(styleFile)
 				local fnc = loadstring("return {\n"..str.."\n}")
 				assert(fnc,"[DGS Style]Error when checking "..stylePath.."styleSettings.txt")
 			end
@@ -84,25 +95,37 @@ end
 
 function dgsSetCurrentStyle(styleName)
 	local styleName = styleName or "Default"
+	local id = table.find(styleManager.styleHistory,styleName)
+	if id then
+		table.remove(styleManager.styleHistory,id)
+	end
 	assert(type(styleName) == "string","Bad argument @dgsSetCurrentStyle at argument 1, expect a string got "..type(styleName))
 	assert(styleManager.styles[styleName],"Bad argument @dgsSetCurrentStyle at argument 1, Couldn't find such style "..styleName)
-	styleManager.currentStyle = styleName
+	table.insert(styleManager.styleHistory,1,styleName)
 	local path = getPathFromStyle(styleName)
 	assert(fileExists(path.."styleSettings.txt"),"[DGS Style] Missing style setting ("..path.."styleSettings.txt)")
 	local styleFile = fileOpen(path.."styleSettings.txt")
 	local str = fileRead(styleFile,fileGetSize(styleFile))
+	fileClose(styleFile)
 	local fnc = loadstring("return {\n"..str.."\n}")
 	assert(fnc,"Error when loading "..path.."styleSettings.txt")
 	local customStyleSettings = fnc()
 	if not next(styleSettings) then
 		styleSettings = customStyleSettings
 		return
-	end
-	for dgsType,settings in pairs(styleSettings) do
-		if customStyleSettings[dgsType] then
-			for dgsProperty,value in pairs(settings) do
-				if customStyleSettings[dgsType][dgsProperty] then
-					styleSettings[dgsType][dgsProperty] = customStyleSettings[dgsType][dgsProperty]
+	else
+		for dgsType,settings in pairs(styleSettings) do
+			if customStyleSettings[dgsType] then
+				if type(settings) == "table" then
+					for dgsProperty,value in pairs(settings) do
+						if customStyleSettings[dgsType][dgsProperty] ~= nil then
+							styleSettings[dgsType][dgsProperty] = customStyleSettings[dgsType][dgsProperty]
+						end
+					end
+				else
+					if customStyleSettings[dgsType] ~= nil then
+						styleSettings[dgsType] = customStyleSettings[dgsType]
+					end
 				end
 			end
 		end
@@ -110,7 +133,7 @@ function dgsSetCurrentStyle(styleName)
 end
 
 function dgsGetCurrentStyle()
-	return styleManager.currentStyle
+	return styleManager.styleHistory[1] or "Default"
 end
 
 function dgsGetLoadedStyleList()
@@ -124,6 +147,6 @@ end
 
 scanCustomStyle()
 dgsSetCurrentStyle("Default")
-if styleManager.currentStyle ~= styleManager.customStyle then
+if dgsGetCurrentStyle() ~= styleManager.customStyle then
 	dgsSetCurrentStyle(styleManager.customStyle)
 end
