@@ -6,8 +6,8 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	assert(tonumber(y),"Bad argument @dgsCreate3DInterface at argument 3, expect a number got "..type(z))
 	assert(tonumber(w),"Bad argument @dgsCreate3DInterface at argument 4, expect a number got "..type(w))
 	assert(tonumber(h),"Bad argument @dgsCreate3DInterface at argument 5, expect a number got "..type(h))
-	assert(tonumber(resolX),"Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(w))
-	assert(tonumber(resolY),"Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(h))
+	assert(tonumber(resolX),"Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(resolX))
+	assert(tonumber(resolY),"Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(resolX))
 	local interface = createElement("dgs-dx3dinterface")
 	table.insert(dx3DInterfaceTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
@@ -20,6 +20,8 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"filterShader",false)
 	dgsSetData(interface,"blendMode","add")
 	dgsSetData(interface,"attachTo",false)
+	dgsSetData(interface,"dimension",-1)
+	dgsSetData(interface,"interior",-1)
 	local rndTgt = dxCreateRenderTarget(resolX,resolY,true)
 	dgsSetData(interface,"renderTarget_parent",rndTgt)
 	insertResourceDxGUI(sourceResource,interface)
@@ -109,6 +111,30 @@ function dgs3DInterfaceGetSize(interface)
 	return size[1],size[2]
 end
 
+function dgs3DInterfaceGetDimension(interface)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetDimension at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	return dgsElementData[interface].dimension or -1
+end
+
+function dgs3DInterfaceSetDimension(interface,dimension)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetDimension at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	assert(tonumber(dimension),"Bad argument @dgs3DInterfaceSetDimension at argument 2, expect a number got "..type(dimension))
+	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DInterfaceSetDimension at argument 2, out of range [ -1 ~ 65535 ] got "..dimension)
+	return dimension-dimension%1
+end
+
+function dgs3DInterfaceGetInterior(interface)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetInterior at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	return dgsElementData[interface].interior or -1
+end
+
+function dgs3DInterfaceSetInterior(interface,interior)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetInterior at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	assert(tonumber(interior),"Bad argument @dgs3DInterfaceSetInterior at argument 2, expect a number got "..type(interior))
+	assert(interior >= -1,"Bad argument @dgs3DInterfaceSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
+	return interior-interior%1
+end
+
 function dgs3DInterfaceSetResolution(interface,w,h)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
@@ -156,7 +182,7 @@ function dgs3DInterfaceSetAttachedOffsets(interface,offX,offY,offZ,offFaceX,offF
 	return false
 end
 
-function dgs3DInterfaceGetAttachedOffsets(interface,offX,offY,offZ,offFaceX,offFaceY,offFaceZ)
+function dgs3DInterfaceGetAttachedOffsets(interface)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetAttachedOffsets at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	local attachTable = dgsElementData[interface].attachTo
 	if attachTable then
@@ -165,12 +191,4 @@ function dgs3DInterfaceGetAttachedOffsets(interface,offX,offY,offZ,offFaceX,offF
 		return offX,offY,offZ,offFaceX,offFaceY,offFaceZ
 	end
 	return false
-end
-
-function getPositionFromElementOffset(element,offX,offY,offZ)
-    local m = getElementMatrix ( element )
-    local x = offX * m[1][1] + offY * m[2][1] + offZ * m[3][1] + m[4][1]
-    local y = offX * m[1][2] + offY * m[2][2] + offZ * m[3][2] + m[4][2]
-    local z = offX * m[1][3] + offY * m[2][3] + offZ * m[3][3] + m[4][3]
-    return x, y, z
 end

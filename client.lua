@@ -20,7 +20,7 @@ dgsRenderSetting = {
 	postGUI = nil,
 	renderPriority = "normal",
 }
-
+--[[
 function dgsSetSystemFont(font,size,bold,quality)
 	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
 	if isElement(systemFont) then
@@ -47,6 +47,34 @@ function dgsSetSystemFont(font,size,bold,quality)
 			end
 			fileCopy(path,pathindgs,true)
 			local font = dxCreateFont(pathindgs,size,bold,quality)
+			if isElement(font) then
+				systemFont = font
+			end
+		end
+	end
+	return false
+end
+]]
+
+function dgsSetSystemFont(font,size,bold,quality)
+	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
+	if isElement(systemFont) then
+		destroyElement(systemFont)
+	end
+	if fontDxHave[font] then
+		systemFont = font
+		return true
+	else
+		if sourceResource then
+			local path
+			if not string.find(font,":") then
+				local resname = getResourceName(sourceResource)
+				path = ":"..resname.."/"..font
+			else
+				path = font
+			end
+			assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
+			local font = dxCreateFont(path,size,bold,quality)
 			if isElement(font) then
 				systemFont = font
 			end
@@ -119,6 +147,7 @@ function dgsCoreRender()
 	local centerTableSize = #CenterFatherTable
 	local topTableSize = #TopFatherTable
 	local dx3DInterfaceTableSize = #dx3DInterfaceTable
+	local dx3DTextTableSize = #dx3DTextTable
 	local tk = getTickCount()
 	MouseData.hit = false
 	DGSShow = 0
@@ -146,25 +175,36 @@ function dgsCoreRender()
 		MouseData.arrowListEnter = false
 	end
 	local normalMx,normalMy = mx,my
-	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize ~= 0 then
+	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize ~= 0 then
 		local dgsData = dgsElementData
 		dxSetRenderTarget()
 		MouseData.interfaceHit = {}
 		local dxInterfaceHitElement = false
 		local intfaceClickElementl = false
+		local dimension = getElementDimension(localPlayer)
+		local interior = getCameraInterior()	
 		for i=1,dx3DInterfaceTableSize do
 			local v = dx3DInterfaceTable[i]
 			local eleData = dgsData[v]
-			dxSetBlendMode(eleData.blendMode)
-			if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible,MouseData.clickl) then
-				intfaceClickElementl = true
+			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
+				dxSetBlendMode(eleData.blendMode)
+				if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible,MouseData.clickl) then
+					intfaceClickElementl = true
+				end
 			end
-			dxSetBlendMode("blend")
 		end
+		dxSetBlendMode("blend")
 		local intfaceMx,intfaceMy = MouseX,MouseY
 		local intfaceHitElement = MouseData.hit
 		dxSetRenderTarget()
 		local mx,my = normalMx,normalMy
+		for i=1,dx3DTextTableSize do
+			local v = dx3DTextTable[i]
+			local eleData = dgsData[v]
+			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
+				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+			end
+		end
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
 			local eleData = dgsData[v]
@@ -283,8 +323,8 @@ function interfaceRender()
 	for i=1,#dx3DInterfaceTable do
 		local v = dx3DInterfaceTable[i]
 		local eleData = dgsElementData[v]
+		local dimension = eleData.dimension
 		if eleData.visible then
-			
 			local attachTable = eleData.attachTo
 			if attachTable then
 				local element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ = attachTable[1],attachTable[2],attachTable[3],attachTable[4],attachTable[5],attachTable[6],attachTable[7]
@@ -297,7 +337,6 @@ function interfaceRender()
 					eleData.faceTo = {tmpX-ex,tmpY-ey,tmpZ-ez}
 				end
 			end
-			
 			local pos = eleData.position
 			local size = eleData.size
 			local faceTo = eleData.faceTo
@@ -416,12 +455,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local textX,textY = x,y
 					if shadowoffx and shadowoffy and shadowc then
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						shadowc = applyColorAlpha(shadowc,galpha)
-						dxDrawText(text,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+						local shadowc = applyColorAlpha(shadowc,galpha)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(text,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(text,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(text,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
@@ -537,12 +576,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
 						if shadowoffx and shadowoffy and shadowc then
 							local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-							shadowc = applyColorAlpha(shadowc,galpha)
-							dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+							local shadowc = applyColorAlpha(shadowc,galpha)
+							dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 							if shadowIsOutline then
-								dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-								dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-								dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+								dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+								dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+								dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 							end
 						end
 					end
@@ -904,11 +943,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
@@ -1041,13 +1080,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
 					local textX,textY = px,y
 					if shadowoffx and shadowoffy and shadowc then
-						shadowc = applyColorAlpha(shadowc,galpha)
+						local shadowc = applyColorAlpha(shadowc,galpha)
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
@@ -1744,13 +1783,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
 					local textX,textY = x,y
 					if shadowoffx and shadowoffy and shadowc then
-						shadowc = applyColorAlpha(shadowc,galpha)
+						local shadowc = applyColorAlpha(shadowc,galpha)
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
-							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
@@ -3067,6 +3106,96 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 			else
 				visible = false
+			end
+		elseif dxType == "dgs-dx3dtext" then
+			local camX,camY,camZ = getCameraMatrix()
+			local attachTable = eleData.attachTo
+			local posTable = eleData.position
+			local wx,wy,wz = posTable[1],posTable[2],posTable[3]
+			local text = eleData.text
+			local font = eleData.font or systemFont
+			local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
+			local colorcoded = eleData.colorcode
+			local maxDistance = eleData.maxDistance
+			if attachTable then
+				if isElement(attachTable[1]) then
+					wx,wy,wz = getPositionFromElementOffset(attachTable[1],attachTable[2],attachTable[3],attachTable[4])
+					eleData.position = {wx,wy,wz}
+				else
+					eleData.attachTo = false
+				end
+			end
+			local fadeDistance = eleData.fadeDistance
+			local distance = ((wx-camX)^2+(wy-camY)^2+(wz-camZ)^2)^0.5
+			if distance <= maxDistance and distance > 0 then
+				local fadeMulti = 1
+				if maxDistance > fadeDistance and distance >= fadeDistance then
+					fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
+				end
+				local x,y = getScreenFromWorldPosition(wx,wy,wz)
+				if x and y then
+					local x,y = x-x%1,y-y%1
+					local antiDistance = 1/distance
+					local sizeX = textSizeX^2/distance*50
+					local sizeY = textSizeY^2/distance*50
+					------------------------------------
+					if eleData.functionRunBefore then
+						local fnc = eleData.functions
+						if type(fnc) == "table" then
+							fnc[1](unpack(fnc[2]))
+						end
+					end
+					------------------------------------
+					local color = applyColorAlpha(eleData.color,galpha*fadeMulti)
+					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
+					if shadowoffx and shadowoffy and shadowc then
+						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+						local shadowc = applyColorAlpha(shadowc,galpha*fadeMulti)
+						local shadowoffx,shadowoffy = shadowoffx*antiDistance*25,shadowoffy*antiDistance*25
+						dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+						if shadowIsOutline then
+							dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+							dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+							dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+						end
+					end
+					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,"center","center",false,false,false,colorcoded,true)
+					------------------------------------OutLine
+					local outlineData = eleData.outline
+					if outlineData then
+						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+						local w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
+						local x,y=x-w/2,y-h/2
+						local sideColor = outlineData[3]
+						local sideSize = outlineData[2]*antiDistance*25
+						sideColor = applyColorAlpha(sideColor,galpha*fadeMulti)
+						local side = outlineData[1]
+						if side == "in" then
+							dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize)
+							dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize)
+							dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize)
+							dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize)
+						elseif side == "center" then
+							dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize)
+							dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize)
+							dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize)
+							dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize)
+						elseif side == "out" then
+							dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize)
+							dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize)
+							dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize)
+							dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize)
+						end
+					end
+					------------------------------------
+					if not eleData.functionRunBefore then
+						local fnc = eleData.functions
+						if type(fnc) == "table" then
+							fnc[1](unpack(fnc[2]))
+						end
+					end
+					------------------------------------
+				end
 			end
 		else
 			interrupted = true

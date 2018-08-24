@@ -29,6 +29,7 @@
 	<script src="Core/checkbox.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
+	<script src="Core/3dtext.lua" type="client" />
 	<script src="Core/arrowlist.lua" type="client" />
 	
 	<script src="PropertyManager.lua" type="client" />
@@ -162,6 +163,19 @@
 	<export function="dgs3DInterfaceDetachFromElement" type="client" />
 	<export function="dgs3DInterfaceSetAttachedOffsets" type="client" />
 	<export function="dgs3DInterfaceGetAttachedOffsets" type="client" />
+	<export function="dgs3DInterfaceSetDimension" type="client" />
+	<export function="dgs3DInterfaceGetDimension" type="client" />
+	
+	<export function="dgsCreate3DText" type="client" />
+	<export function="dgs3DTextGetPosition" type="client" />
+	<export function="dgs3DTextSetPosition" type="client" />
+	<export function="dgs3DTextAttachToElement" type="client" />
+	<export function="dgs3DTextIsAttached" type="client" />
+	<export function="dgs3DTextDetachFromElement" type="client" />
+	<export function="dgs3DTextSetAttachedOffsets" type="client" />
+	<export function="dgs3DTextGetAttachedOffsets" type="client" />
+	<export function="dgs3DTextSetDimension" type="client" />
+	<export function="dgs3DTextGetDimension" type="client" />
 	
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
