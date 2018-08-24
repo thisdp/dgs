@@ -194,7 +194,7 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 			local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psx or dgsElementData[tabpanel].tabHeight[1]
 			psy = psy-height
 		else
-			local size = parentData.absSize or parentData.size
+			local size = parentData.absSize or parentData.resolution
 			psx,psy = size[1],size[2]
 		end
 		if eleData.ignoreParentTitle or parentData.ignoreTitle then
