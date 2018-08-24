@@ -239,6 +239,5 @@ function test3DText()
 	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
 	dgs3DTextAttachToElement(text,localPlayer,0,10)
 end
-test3DText()
 
 --local shader = dxCreateShader("shaders/textureRelight.fx")
