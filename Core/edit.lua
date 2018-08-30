@@ -28,7 +28,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"maskText",styleSettings.edit.maskText)
 	dgsSetData(edit,"showPos",0)
 	dgsSetData(edit,"padding",styleSettings.edit.padding)
-	dgsSetData(edit,"alignment","left")
+	dgsSetData(edit,"rightbottom",{"left","center"})
 	dgsSetData(edit,"caretStyle",styleSettings.edit.caretStyle)
 	dgsSetData(edit,"caretThick",styleSettings.edit.caretThick)
 	dgsSetData(edit,"caretOffset",styleSettings.edit.caretOffset)
@@ -125,27 +125,27 @@ function dgsEditSetCaretPosition(edit,pos,selectText)
 end
 
 function dgsEditRepositionShowPosition(edit,text)
-	local alignment = dgsElementData[edit].alignment
+	local alignment = dgsElementData[edit].rightbottom
 	local font = dgsElementData[edit].font
 	local sx = dgsElementData[edit].absSize[1]
 	local showPos = dgsElementData[edit].showPos
 	local padding = dgsElementData[edit].padding
 	local pos = dgsElementData[edit].caretPos
-	if alignment == "left" then
+	if alignment[1] == "left" then
 		local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textSize[1],font)
 		if nowLen+showPos > sx-padding[1]*2 then
 			dgsSetData(edit,"showPos",sx-padding[1]*2-nowLen)
 		elseif nowLen+showPos < 0 then
 			dgsSetData(edit,"showPos",-nowLen)
 		end
-	elseif alignment == "right" then
+	elseif alignment[1] == "right" then
 		local nowLen = dxGetTextWidth(utf8.sub(text,pos+1),dgsElementData[edit].textSize[1],font)
 		if nowLen+showPos > sx-padding[1]*2 then
 			dgsSetData(edit,"showPos",sx-padding[1]*2-nowLen)
 		elseif nowLen+showPos < 0 then
 			dgsSetData(edit,"showPos",-nowLen)
 		end
-	elseif alignment == "center" then
+	elseif alignment[1] == "center" then
 		local __width = dgsElementData[edit].textFontLen
 		local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[edit].textSize[1],font)
 		local checkCaret = sx/2+nowLen-__width/2+showPos/2
@@ -246,16 +246,16 @@ function searchEditMousePosition(dxedit,posx,posy)
 	local size = dgsElementData[dxedit].absSize
 	local offset = dgsElementData[dxedit].showPos
 	local x = dgsGetPosition(dxedit,false,true)
-	local alignment = dgsElementData[dxedit].alignment 
+	local alignment = dgsElementData[dxedit].rightbottom 
 	local padding = dgsElementData[dxedit].padding
 	local pos
 	local alllen = dgsElementData[dxedit].textFontLen
-	if alignment == "left" then
+	if alignment[1] == "left" then
 		pos = posx-x-offset-padding[1]
-	elseif alignment == "center" then
+	elseif alignment[1] == "center" then
 		local sx,sy = dgsElementData[dxedit].absSize[1],dgsElementData[dxedit].absSize[2]
 		pos = (alllen-size[1]-offset)*0.5-x+posx
-	elseif alignment == "right" then
+	elseif alignment[1] == "right" then
 		pos = alllen-(size[1]+x-posx-padding[1]-offset)
 	end
 	local templen = 0

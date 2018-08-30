@@ -1141,8 +1141,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local renderTarget = eleData.renderTarget
+				local alignment = eleData.rightbottom
 				if isElement(renderTarget) then
-					local alignment = eleData.alignment
 					local textColor = eleData.textColor
 					local selx = 0
 					if selectFro-caretPos > 0 then
@@ -1161,14 +1161,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local width
 					local selectX,selectW
 					local posFix = 0
-					if alignment == "left" then
+					if alignment[1] == "left" then
 						width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
 						textX_Left,TextX_Right = showPos,w-sidelength
 						selectX,selectW = width+showPos,selx
 						if selx ~= 0 then
 							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
 						end
-					elseif alignment == "center" then
+					elseif alignment[1] == "center" then
 						local __width = eleData.textFontLen
 						width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
 						textX_Left,TextX_Right = showPos,w-sidelength
@@ -1177,7 +1177,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
 						end
 						posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
-					elseif alignment == "right" then
+					elseif alignment[1] == "right" then
 						width = dxGetTextWidth(utf8.sub(text,caretPos+1),txtSizX,font)
 						textX_Left,TextX_Right = x,w-sidelength*2-showPos
 						selectX,selectW = TextX_Right-width,selx
@@ -1188,7 +1188,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					end
 					textX_Left = textX_Left-textX_Left%1
 					TextX_Right = TextX_Right-TextX_Right%1
-					dxDrawText(text,textX_Left,0,TextX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment,"center",false,false,false,false)
+					dxDrawText(text,textX_Left,0,TextX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 					if eleData.underline then
 						local textHeight = dxGetFontHeight(txtSizY,font)
 						local lineOffset = eleData.underlineOffset+h/2+textHeight/2
