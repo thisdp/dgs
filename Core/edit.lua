@@ -461,6 +461,33 @@ function dgsEditGetPartOfText(edit,fromindex,toindex,delete)
 	end
 	return utf8.sub(text,fromindex+1,toindex)
 end
+
+function dgsEditSetHorizontalAlign(edit,align)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetHorizontalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(HorizontalAlign[align],"Bad argument @dgsEditSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
+	local rightbottom = dgsElementData[edit].rightbottom
+	return dgsSetData(edit,"rightbottom",{align,rightbottom[2]})
+end
+
+function dgsEditSetVerticalAlign(edit,align)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetVerticalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(VerticalAlign[align],"Bad argument @dgsEditSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
+	local rightbottom = dgsElementData[edit].rightbottom
+	return dgsSetData(edit,"rightbottom",{rightbottom[1],align})
+end
+
+function dgsEditGetHorizontalAlign(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetHorizontalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	local rightbottom = dgsElementData[edit].rightbottom
+	return rightbottom[1]
+end
+
+function dgsEditGetVerticalAlign(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetVerticalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	local rightbottom = dgsElementData[edit].rightbottom
+	return rightbottom[2]
+end
+
 	
 addEventHandler("onClientGUIChanged",resourceRoot,function()
 	if not dgsElementData[source] then return end

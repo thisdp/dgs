@@ -229,6 +229,10 @@
 	<export function="dgsEditGetMasked" type="client" />
 	<export function="dgsEditSetUnderlined" type="client" />
 	<export function="dgsEditGetUnderlined" type="client" />
+	<export function="dgsEditSetHorizontalAlign" type="client" />
+	<export function="dgsEditSetVerticalAlign" type="client" />
+	<export function="dgsEditGetHorizontalAlign" type="client" />
+	<export function="dgsEditGetVerticalAlign" type="client" />
 	
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />
