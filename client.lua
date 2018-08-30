@@ -20,41 +20,6 @@ dgsRenderSetting = {
 	postGUI = nil,
 	renderPriority = "normal",
 }
---[[
-function dgsSetSystemFont(font,size,bold,quality)
-	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
-	if isElement(systemFont) then
-		destroyElement(systemFont)
-	end
-	if fontDxHave[font] then
-		systemFont = font
-		return true
-	else
-		if sourceResource then
-			local path
-			if not string.find(font,":") then
-				local resname = getResourceName(sourceResource)
-				path = ":"..resname.."/"..font
-			else
-				path = font
-			end
-			assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
-			
-			local filename = string.sub(path,2)
-			local pathindgs = ":"..getResourceName(getThisResource()).."/Third/"..filename
-			if fileExists(pathindgs) then
-				fileDelete(pathindgs)
-			end
-			fileCopy(path,pathindgs,true)
-			local font = dxCreateFont(pathindgs,size,bold,quality)
-			if isElement(font) then
-				systemFont = font
-			end
-		end
-	end
-	return false
-end
-]]
 
 function dgsSetSystemFont(font,size,bold,quality)
 	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
@@ -87,7 +52,6 @@ function dgsGetSystemFont()
 	return systemFont
 end
 
-
 function dgsGetRenderSetting(name)
 	return dgsRenderSetting[name]
 end
@@ -105,7 +69,6 @@ function dgsSetRenderSetting(name,value)
 	dgsRenderSetting[name] = value
 	return true
 end
-
 -----------------------------dx-GUI
 MouseData = {}
 MouseData.enter = false
@@ -450,8 +413,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local clip,wordbreak,colorcoded = eleData.clip,eleData.wordbreak,eleData.colorcoded
 				local text = eleData.text
-				if eleData.shadow then
-					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
+				local shadow = eleData.shadow
+				if shadow then
+					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 					local textX,textY = x,y
 					if shadowoffx and shadowoffy and shadowc then
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
@@ -470,7 +434,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -572,8 +536,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickoffset[1],txtoffsetsY+eleData.clickoffset[2]
 					end
 					local textX,textY = x+txtoffsetsX,y+txtoffsetsY
-					if eleData.shadow then
-						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
+					local shadow = eleData.shadow
+					if shadow then
+						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 						if shadowoffx and shadowoffy and shadowc then
 							local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
 							local shadowc = applyColorAlpha(shadowc,galpha)
@@ -592,7 +557,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -672,7 +637,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -752,7 +717,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -819,7 +784,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -932,13 +897,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local textImageSpace = _textImageSpace[2] and _textImageSpace[1]*w or _textImageSpace[1]
 				local colorcoded = eleData.colorcoded
 				local rightbottom = eleData.rightbottom
- 				local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
 				local px = x+buttonSizeX+textImageSpace
 				if eleData.PixelInt then
 					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
 				end			
-				if eleData.shadow then
-					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
+				local shadow = eleData.shadow
+				if shadow then
+					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 					local textX,textY = px,y
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
@@ -957,7 +922,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -1071,13 +1036,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local text = eleData.text
 				local colorcoded = eleData.colorcoded
 				local rightbottom = eleData.rightbottom
- 				local shadowoffx,shadowoffy,shadowc = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3]
 				local px = x+buttonSizeX+textImageSpace
 				if eleData.PixelInt then
 					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
 				end
-				if eleData.shadow then
-					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
+				local shadow = eleData.shadow
+				if shadow then
+					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 					local textX,textY = px,y
 					if shadowoffx and shadowoffy and shadowc then
 						local shadowc = applyColorAlpha(shadowc,galpha)
@@ -1096,7 +1061,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -1160,7 +1125,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					end
 				end
 				------------------------------------
-				guiSetText(edit,text)
 				if eleData.masked then
 					text = string.rep(eleData.maskText,utf8.len(text))
 				end
@@ -1173,16 +1137,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local caretPos = eleData.caretPos
 				local selectFro = eleData.selectFrom
 				local selectColor = eleData.selectColor
-				guiEditSetCaretIndex(edit,caretPos)
-				guiSetProperty(edit,"SelectionStart",caretPos)
-				guiSetProperty(edit,"SelectionLength",selectFro-caretPos)
 				guiSetVisible(edit,visible)
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local renderTarget = eleData.renderTarget
 				if isElement(renderTarget) then
+					local alignment = eleData.alignment
 					local textColor = eleData.textColor
-					local width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
 					local selx = 0
 					if selectFro-caretPos > 0 then
 						selx = dxGetTextWidth(utf8.sub(text,caretPos+1,selectFro),txtSizX,font)
@@ -1193,18 +1154,41 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					dxSetRenderTarget(renderTarget,true)
 					local padding = eleData.padding
 					local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
-					local selectRectOffset = 0
-					if eleData.center then
-						selectRectOffset = dxGetTextWidth(text,txtSizX,font)
-						selectRectOffset = w/2-sidelength/2-showPos/2
+					local caretHeight = eleData.caretHeight
+					local textX_Left,TextX_Right
+					local selStartY = (h-sideheight)*(1-caretHeight)
+					local selEndY = (h-sideheight)*caretHeight-sideheight
+					local width
+					local selectX,selectW
+					local posFix = 0
+					if alignment == "left" then
+						width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
+						textX_Left,TextX_Right = showPos,w-sidelength
+						selectX,selectW = width+showPos,selx
+						if selx ~= 0 then
+							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
+						end
+					elseif alignment == "center" then
+						local __width = eleData.textFontLen
+						width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
+						textX_Left,TextX_Right = showPos,w-sidelength
+						selectX,selectW = width+showPos/2+w/2-__width/2-sidelength+1,selx
+						if selx ~= 0 then
+							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
+						end
+						posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
+					elseif alignment == "right" then
+						width = dxGetTextWidth(utf8.sub(text,caretPos+1),txtSizX,font)
+						textX_Left,TextX_Right = x,w-sidelength*2-showPos
+						selectX,selectW = TextX_Right-width,selx
+						if selx ~= 0 then
+							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
+						end
+						posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
 					end
-					if selx ~= 0 then
-						local caretHeight = eleData.caretHeight
-						local selStartY = sideheight+(h-sideheight*2)*(1-caretHeight)
-						local selEndY = (h-sideheight*2)*caretHeight-sideheight
-						dxDrawRectangle(width+showPos+selectRectOffset,selStartY,selx,selEndY,selectColor)
-					end
-					dxDrawText(text,showPos,0,w,h,textColor,txtSizX,txtSizY,font,eleData.center and "center" or "left","center",false,false,false,false)
+					textX_Left = textX_Left-textX_Left%1
+					TextX_Right = TextX_Right-TextX_Right%1
+					dxDrawText(text,textX_Left,0,TextX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment,"center",false,false,false,false)
 					if eleData.underline then
 						local textHeight = dxGetFontHeight(txtSizY,font)
 						local lineOffset = eleData.underlineOffset+h/2+textHeight/2
@@ -1243,22 +1227,23 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						if CaretShow then
 							local caretHeight = eleData.caretHeight
 							local caretStyle = eleData.caretStyle
-							local selStartX = x+width+showPos+sidelength
+							local selStartX = selectX+x+sidelength
+							selStartX = selStartX-selStartX%1-1
 							if caretStyle == 0 then
-								if -showPos <= width then
+								if selStartX >= x+sidelength and selStartX <= x+w-sidelength then
 									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
 									local selEndY = (h-sideheight*2)*caretHeight
-									dxDrawLine(selStartX-1,selStartY,selStartX-1,selEndY+selStartY,eleData.caretColor,eleData.caretThick,isRenderTarget)
+									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.caretThick,isRenderTarget)
 								end
 							elseif caretStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8.sub(text,caretPos+1,caretPos+1),txtSizX,font)
 								if cursorWidth == 0 then
 									cursorWidth = txtSizX*8
 								end
-								if -showPos-cursorWidth <= width then
+								if selStartX >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 									local offset = eleData.caretOffset
 									local selStartY = y+h-sideheight*2
-									dxDrawLine(selStartX-1,selStartY-offset,selStartX+cursorWidth-1,selStartY-offset,eleData.caretColor,eleData.caretThick,isRenderTarget)
+									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,eleData.caretColor,eleData.caretThick,isRenderTarget)
 								end
 							end
 						end
@@ -1269,7 +1254,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -1467,7 +1452,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -1547,7 +1532,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -1713,7 +1698,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -1779,8 +1764,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				------------------------------------
 				local colorcoded = eleData.colorcoded
-				if eleData.shadow then
-					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
+				local shadow = eleData.shadow
+				if shadow then
+					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 					local textX,textY = x,y
 					if shadowoffx and shadowoffy and shadowc then
 						local shadowc = applyColorAlpha(shadowc,galpha)
@@ -1799,7 +1785,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -2246,7 +2232,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -2328,7 +2314,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -2472,7 +2458,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -2594,7 +2580,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -2740,7 +2726,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -2792,7 +2778,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -2882,7 +2868,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -3071,7 +3057,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if outlineData then
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]
-					sideSize = applyColorAlpha(sideSize,galpha)
+					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					--local x,y = x-1,y-1
 					if side == "in" then
@@ -3147,16 +3133,19 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					end
 					------------------------------------
 					local color = applyColorAlpha(eleData.color,galpha*fadeMulti)
-					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = eleData.shadow[1],eleData.shadow[2],eleData.shadow[3],eleData.shadow[4]
-					if shadowoffx and shadowoffy and shadowc then
-						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						local shadowc = applyColorAlpha(shadowc,galpha*fadeMulti)
-						local shadowoffx,shadowoffy = shadowoffx*antiDistance*25,shadowoffy*antiDistance*25
-						dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
-						if shadowIsOutline then
-							dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
-							dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
-							dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+					local shadow = eleData.shadow
+					if shadow then
+						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
+						if shadowoffx and shadowoffy and shadowc then
+							local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+							local shadowc = applyColorAlpha(shadowc,galpha*fadeMulti)
+							local shadowoffx,shadowoffy = shadowoffx*antiDistance*25,shadowoffy*antiDistance*25
+							dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+							if shadowIsOutline then
+								dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+								dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+								dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+							end
 						end
 					end
 					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,"center","center",false,false,false,colorcoded,true)
@@ -3352,7 +3341,7 @@ function onClientKeyCheck(button,state)
 	end
 	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 		local edit = dgsElementData[MouseData.nowShow].edit
-		local text = guiGetText(edit)
+		local text = dgsElementData[MouseData.nowShow].text
 		if state then
 			local cmd = dgsElementData[MouseData.nowShow].mycmd
 			local shift = getKeyState("lshift") or getKeyState("rshift")
@@ -3424,6 +3413,80 @@ function onClientKeyCheck(button,state)
 				dgsEditSetCaretPosition(MouseData.nowShow,0,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "end" then
 				dgsEditSetCaretPosition(MouseData.nowShow,#text,getKeyState("lshift") or getKeyState("rshift"))
+			elseif button == "delete" then
+				if not dgsElementData[MouseData.nowShow].readOnly then
+					local cpos = dgsElementData[MouseData.nowShow].caretPos
+					local spos = dgsElementData[MouseData.nowShow].selectFrom
+					if cpos ~= spos then
+						dgsEditDeleteText(MouseData.nowShow,cpos,spos)
+						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
+					else
+						local tarindex = cpos+1
+						dgsEditDeleteText(MouseData.nowShow,cpos,tarindex)
+						if isTimer(MouseData.Timer["editMove"]) then
+							killTimer(MouseData.Timer["editMove"])
+						end
+						if isTimer(MouseData.Timer["editMoveDelay"]) then
+							killTimer(MouseData.Timer["editMoveDelay"])
+						end
+						MouseData.Timer["editMoveDelay"] = setTimer(function()
+							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+								MouseData.Timer["editMove"] = setTimer(function()
+									if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+										local cpos = dgsElementData[MouseData.nowShow].caretPos
+										local spos = dgsElementData[MouseData.nowShow].selectFrom
+										local tarindex = cpos+1
+										dgsEditDeleteText(MouseData.nowShow,cpos,tarindex)
+									else
+										killTimer(MouseData.Timer["editMove"])
+									end
+								end,50,0)
+							end
+						end,500,1)
+					end
+				end
+			elseif button == "backspace" then
+				if not dgsElementData[MouseData.nowShow].readOnly then
+					local cpos = dgsElementData[MouseData.nowShow].caretPos
+					local spos = dgsElementData[MouseData.nowShow].selectFrom
+					if cpos ~= spos then
+						dgsEditDeleteText(MouseData.nowShow,cpos,spos)
+						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
+					else
+						local tarindex = cpos-1
+						dgsEditDeleteText(MouseData.nowShow,tarindex,cpos)
+						if isTimer(MouseData.Timer["editMove"]) then
+							killTimer(MouseData.Timer["editMove"])
+						end
+						if isTimer(MouseData.Timer["editMoveDelay"]) then
+							killTimer(MouseData.Timer["editMoveDelay"])
+						end
+						MouseData.Timer["editMoveDelay"] = setTimer(function()
+							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+								MouseData.Timer["editMove"] = setTimer(function()
+									if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+										local cpos = dgsElementData[MouseData.nowShow].caretPos
+										local spos = dgsElementData[MouseData.nowShow].selectFrom
+										local tarindex = cpos-1
+										dgsEditDeleteText(MouseData.nowShow,tarindex,cpos)
+									else
+										killTimer(MouseData.Timer["editMove"])
+									end
+								end,50,0)
+							end
+						end,500,1)
+					end
+				end
+			elseif button == "c" or button == "x" then
+				if dgsElementData[MouseData.nowShow].allowCopy then
+					if getKeyState("lctrl") or getKeyState("rctrl") then
+						local deleteText = button == "x" and not dgsElementData[MouseData.nowShow].readOnly
+						local cpos = dgsElementData[MouseData.nowShow].caretPos
+						local spos = dgsElementData[MouseData.nowShow].selectFrom
+						local theText = dgsEditGetPartOfText(MouseData.nowShow,cpos,spos,deleteText)
+						setClipboard(theText)
+					end
+				end
 			elseif button == "tab" then
 				cancelEvent()
 				triggerEvent("onDgsEditPreSwitch",MouseData.nowShow)
@@ -3446,7 +3509,7 @@ function onClientKeyCheck(button,state)
 				end,500,1)
 			end
 		else
-			if button == "arrow_l" or button == "arrow_r" or button == "tab" then
+			if button == "arrow_l" or button == "arrow_r" or button == "tab" or button == "backspace" or button == "delete" then
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -3564,6 +3627,12 @@ function onClientKeyCheck(button,state)
 					else
 						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
 						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+						if isTimer(MouseData.Timer["memoMove"]) then
+							killTimer(MouseData.Timer["memoMove"])
+						end
+						if isTimer(MouseData.Timer["memoMoveDelay"]) then
+							killTimer(MouseData.Timer["memoMoveDelay"])
+						end
 						MouseData.Timer["memoMoveDelay"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 								MouseData.Timer["memoMove"] = setTimer(function()
@@ -3590,6 +3659,12 @@ function onClientKeyCheck(button,state)
 					else
 						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
 						dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+						if isTimer(MouseData.Timer["memoMove"]) then
+							killTimer(MouseData.Timer["memoMove"])
+						end
+						if isTimer(MouseData.Timer["memoMoveDelay"]) then
+							killTimer(MouseData.Timer["memoMoveDelay"])
+						end
 						MouseData.Timer["memoMoveDelay"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 								MouseData.Timer["memoMove"] = setTimer(function()
@@ -3607,12 +3682,14 @@ function onClientKeyCheck(button,state)
 					end
 				end
 			elseif button == "c" or button == "x" then
-				if getKeyState("lctrl") or getKeyState("rctrl") then
-					local deleteText = button == "x" and not dgsElementData[MouseData.nowShow].readOnly
-					local cpos = dgsElementData[MouseData.nowShow].caretPos
-					local spos = dgsElementData[MouseData.nowShow].selectFrom
-					local theText = dgsMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],deleteText)
-					setClipboard(theText)
+				if dgsElementData[MouseData.nowShow].allowCopy then
+					if getKeyState("lctrl") or getKeyState("rctrl") then
+						local deleteText = button == "x" and not dgsElementData[MouseData.nowShow].readOnly
+						local cpos = dgsElementData[MouseData.nowShow].caretPos
+						local spos = dgsElementData[MouseData.nowShow].selectFrom
+						local theText = dgsMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],deleteText)
+						setClipboard(theText)
+					end
 				end
 			end
 		else
@@ -3660,10 +3737,6 @@ addEventHandler("onDgsTextChange",root,function()
 	local gui = dgsElementData[source].edit
 	local text = dgsElementData[source].text
 	if isElement(gui) then
-		local gtext = guiGetText(gui)
-		if gtext ~= text then
-			guiSetText(gui,text)
-		end
 		local parent = dgsElementData[source].mycmd
 		if isElement(parent) then
 			if dgsGetType(parent) == "dgs-dxcmd" then

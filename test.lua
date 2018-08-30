@@ -135,10 +135,9 @@ function gridlistTest()
 	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
 end
 function centerEdit()
-	edit = dgsCreateEdit(100,300,300,100,"Test",false)
-	--dgsSetProperty(edit,"center",true)
+	edit = dgsCreateEdit(100,300,300,100,"TestTestTest",false)
+	dgsSetProperty(edit,"alignment","center")
 end
-
 
 function mediaTest()
 	local media = dgsCreateMedia(600,600)
@@ -211,14 +210,13 @@ function testBrowser()
 end
 
 function test3DInterface()
-	material = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),0,1,0)
-	--edit1 = dgsCreateEdit(0,0,200,50,"DGS 3D Interface Edit 1",false,material)
+	material1 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),0,1,0)
+	material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
+	edit1 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material1)
+	edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
 	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
 	--dgs3DInterfaceAttachToElement(material,localPlayer,0,0,0,0,1,0)
-	local combobox = dgsCreateComboBox(0,0,200,50,"lol",false,material)
-		for i=1,20 do
-		dgsComboBoxAddItem(combobox,i)
-	end
+
 end
 
 function exampleDetectArea()

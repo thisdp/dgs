@@ -1,3 +1,6 @@
+----Speed UP
+local mathFloor = math.floor
+----
 function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor)
 	assert(type(x) == "number","Bad argument @dgsCreateMemo at argument 1, expect number got "..type(x))
 	assert(type(y) == "number","Bad argument @dgsCreateMemo at argument 2, expect number got "..type(y))
@@ -28,6 +31,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"caretColor",styleSettings.memo.caretColor)
 	dgsSetData(memo,"caretHeight",styleSettings.memo.caretHeight)
 	dgsSetData(memo,"scrollBarThick",styleSettings.memo.scrollBarThick,true)
+	dgsSetData(memo,"allowCopy",true)
 	dgsSetData(memo,"readOnly",false)
 	dgsSetData(memo,"readOnlyCaretShow",false)
 	dgsSetData(memo,"scrollBarState",{nil,nil})
@@ -70,7 +74,7 @@ function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 	local line = dgsElementData[memo].caretPos[2]
 	local textTable = dgsElementData[memo].text
 	local text = textTable[line] or ""
-	local pos,line = dgsMemoSeekPosition(textTable,xpos+math.floor(offset),line+math.floor(lineoffset),noMoveLine)
+	local pos,line = dgsMemoSeekPosition(textTable,xpos+mathFloor(offset),line+mathFloor(lineoffset),noMoveLine)
 	local showPos,showLine = dgsElementData[memo].showPos,dgsElementData[memo].showLine
 	local font = dgsElementData[memo].font
 	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[memo].textSize[1],font)
@@ -81,7 +85,7 @@ function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 	local scbThick = dgsElementData[memo].scrollBarThick
 	local scrollbars = dgsElementData[memo].scrollbars
 	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
-	local canHold = math.floor((size[2]-scbTakes[2])/fontHeight)
+	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
 	if targetLen > size[1]-scbTakes[1]-4 then
 		dgsSetData(memo,"showPos",size[1]-scbTakes[1]-4-nowLen)
 		syncScrollBars(memo,2)
@@ -169,7 +173,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,noselect)
 	local scbThick = dgsElementData[memo].scrollBarThick
 	local scrollbars = dgsElementData[memo].scrollbars
 	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
-	local canHold = math.floor((size[2]-scbTakes[2])/fontHeight)
+	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
 	if targetLen > size[1]-scbTakes[1]-4 then
 		dgsSetData(memo,"showPos",size[1]-scbTakes[1]-4-nowLen)
 		syncScrollBars(memo,2)
@@ -240,7 +244,7 @@ function searchMemoMousePosition(dxmemo,posx,posy)
 		local showLine = dgsElementData[dxmemo].showLine
 		local x,y = dgsGetPosition(dxmemo,false,true)
 		local allText = dgsElementData[dxmemo].text
-		local selLine = math.floor((posy-y)/fontHeight)+showLine
+		local selLine = mathFloor((posy-y)/fontHeight)+showLine
 		selLine = selLine > #allText and #allText or selLine 
 		local text = dgsElementData[dxmemo].text[selLine] or ""
 		local pos = posx-x-offset
@@ -249,9 +253,9 @@ function searchMemoMousePosition(dxmemo,posx,posy)
 			local strlen = dxGetTextWidth(utf8.sub(text,sfrom+1,sto/2+sfrom/2),txtSizX,font)
 			local len1 = strlen+templen
 			if pos < len1 then
-				sto = math.floor((sto+sfrom)/2)
+				sto = mathFloor((sto+sfrom)/2)
 			elseif pos > len1 then
-				sfrom = math.floor((sto+sfrom)/2)
+				sfrom = mathFloor((sto+sfrom)/2)
 				templen = dxGetTextWidth(utf8.sub(text,0,sfrom),txtSizX,font)
 				start = len1
 			elseif pos == len1 then
@@ -357,7 +361,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 		local scbThick = dgsElementData[memo].scrollBarThick
 		local scrollbars = dgsElementData[memo].scrollbars
 		local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
-		local canHold = math.floor((size[2]-scbTakes[2])/fontHeight)
+		local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
 		if dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] then
 			configMemo(memo)
 		else
@@ -391,6 +395,10 @@ end
 
 function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoDeleteText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(dgsGetType(fromindex) == "number","Bad argument @dgsMemoDeleteText at argument 2, expect number got "..dgsGetType(fromindex))
+	assert(dgsGetType(fromline) == "number","Bad argument @dgsMemoDeleteText at argument 3, expect number got "..dgsGetType(fromline))
+	assert(dgsGetType(toindex) == "number","Bad argument @dgsMemoDeleteText at argument 4, expect number got "..dgsGetType(toindex))
+	assert(dgsGetType(toline) == "number","Bad argument @dgsMemoDeleteText at argument 5, expect number got "..dgsGetType(toline))
 	local textTable = dgsElementData[memo].text
 	local textLen = dgsElementData[memo].textLength
 	local font = dgsElementData[memo].font
@@ -451,7 +459,7 @@ function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
 	local scbThick = dgsElementData[memo].scrollBarThick
 	local scrollbars = dgsElementData[memo].scrollbars
 	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
-	local canHold = math.floor((size[2]-scbTakes[2])/fontHeight)
+	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
 	if dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] then
 		configMemo(memo)
 	else
@@ -580,7 +588,7 @@ function configMemo(source)
 	dgsSetVisible(scrollbar[2],false)
 	dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1])
 	local scbTakes2 = dgsElementData[scrollbar[2]].visible and scbThick or 0
-	local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
+	local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
 	dgsSetVisible(scrollbar[1], #text > canHold )
 	local scbTakes1 = dgsElementData[scrollbar[1]].visible and scbThick or 0
 	dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
@@ -597,7 +605,7 @@ function configMemo(source)
 	local widLen = dgsElementData[source].rightLength[1]/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/4
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	dgsSetData(scrollbar[2],"length",{widLen,true})
-	local px,py = math.floor(size[1]), math.floor(size[2])
+	local px,py = mathFloor(size[1]), mathFloor(size[2])
 	local rnd = dgsElementData[source].renderTarget
 	if isElement(rnd) then
 		destroyElement(rnd)
@@ -618,12 +626,12 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if source == scrollbars[1] then
 			local fontHeight = dxGetFontHeight(dgsElementData[parent].textSize[2],font)
-			local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
-			local temp = math.floor((#text-canHold)*new/100)+1
+			local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
+			local temp = mathFloor((#text-canHold)*new/100)+1
 			dgsSetData(parent,"showLine",temp)
 		elseif source == scrollbars[2] then
 			local len = dgsElementData[parent].rightLength[1]
-			local canHold = math.floor(len-size[1]+scbTakes1+2)/100
+			local canHold = mathFloor(len-size[1]+scbTakes1+2)/100
 			local temp = -new*canHold
 			dgsSetData(parent,"showPos",temp)
 		end
@@ -640,13 +648,13 @@ function syncScrollBars(memo,which)
 	local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 	if which == 1 or not which then
 		local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
-		local canHold = math.floor((size[2]-scbTakes2)/fontHeight)
+		local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
 		local new = (#text-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(#text-canHold)
 		dgsScrollBarSetScrollPosition(scrollbars[1],new)
 	end
 	if which == 2 or not which then
 		local len = dgsElementData[memo].rightLength[1]
-		local canHold = math.floor(len-size[1]+scbTakes1+2)/100
+		local canHold = mathFloor(len-size[1]+scbTakes1+2)/100
 		local new = -dgsElementData[memo].showPos/canHold
 		dgsScrollBarSetScrollPosition(scrollbars[2],new)
 	end

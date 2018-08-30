@@ -93,9 +93,9 @@ function dgsSetData(element,key,value,nocheck)
 						if not isElement(gedit) then return false end
 						return guiEditSetReadOnly(gedit,value and true or false)
 					elseif key == "text" then
-						dgsElementData[element].text = utf8.sub(value,0,dgsElementData[element].maxLength)
 						local txtSize = dgsElementData[element].textSize
-						dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,txtSize[1],dgsElementData[element].font)
+						local success = handleDxEditText(element,value)
+						return success
 					elseif key == "textSize" then
 						dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,value[1],dgsElementData[element].font)
 					elseif key == "font" then
@@ -180,6 +180,8 @@ function dgsSetProperty(dxgui,key,value,...)
 			elseif key == "text" then
 				if dgsElementType[v] == "dgs-dxmemo" then
 					return handleDxMemoText(v,value)
+				elseif dgsElementType[v] == "dgs-dxedit" then
+					return handleDxEditText(v,value)
 				end
 			elseif key == "absPos" then
 				dgsSetPosition(v,value[1],value[2],false)
@@ -203,6 +205,8 @@ function dgsSetProperty(dxgui,key,value,...)
 		elseif key == "text" then
 			if dgsElementType[dxgui] == "dgs-dxmemo" then
 				return handleDxMemoText(dxgui,value)
+			elseif dgsElementType[dxgui] == "dgs-dxedit" then
+				return handleDxEditText(dxgui,value)
 			end
 		elseif key == "absPos" then
 			dgsSetPosition(dxgui,value[1],value[2],false)
@@ -265,6 +269,9 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 					elseif dgsType == "dgs-dxmemo" then
 						success = success and handleDxMemoText(v,value)
 						skip = true
+					elseif dgsType == "dgs-dxedit" then
+						success = success and handleDxEditText(v,value)
+						skip = true
 					end
 				elseif key == "absPos" then
 					dgsSetPosition(v,value[1],value[2],false)
@@ -309,6 +316,9 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 					dgsSetData(dxgui,"width",wid)
 				elseif dgsType == "dgs-dxmemo" then
 					success = success and handleDxMemoText(dxgui,value)
+					skip = true	
+				elseif dgsType == "dgs-dxedit" then
+					success = success and handleDxEditText(dxgui,value)
 					skip = true
 				end
 			elseif key == "absPos" then
