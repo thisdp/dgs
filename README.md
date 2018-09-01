@@ -35,4 +35,4 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 
 **Thanks for your support.**
 
-This resource is protected by **[[https://choosealicense.com/licenses/gpl-3.0/|GNU General Public License v3.0]]**
+This resource is protected by **[GNU General Public License v3.0](https://choosealicense.com/licenses/gpl-3.0/)**
