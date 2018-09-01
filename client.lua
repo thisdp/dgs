@@ -1884,6 +1884,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local shadow = DataTab.rowShadow
 				local columnCount = #columnData
 				local rowCount = #rowData
+				local leading = DataTab.leading
 				dxSetRenderTarget()
 				local rowMoveOffset = DataTab.rowMoveOffset
 				local columnOffset = DataTab.columnOffset
@@ -1900,8 +1901,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local sortIcon = DataTab.sortFunction == sortFunctions_lower and "▼" or (DataTab.sortFunction == sortFunctions_upper and "▲") or nil
 				local sortColumn = DataTab.sortColumn
 				if not mode then
-					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+1
-					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThickH+rowHeight*2)/rowHeight)-1
+					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/(rowHeight+leading))+1
+					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThickH+rowHeight*2)/(rowHeight+leading))-1
 					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
 					local renderTarget = DataTab.renderTarget
 					local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
@@ -1946,9 +1947,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					dxSetRenderTarget(renderTarget[2],true)
 						if MouseData.enter == v then		-------PreSelect
 							if mouseInsideRow then
-								local toffset = (whichRowToStart*rowHeight)+DataTab.rowMoveOffset
-								sid = math.floor((my-cy-columnHeight-toffset)/rowHeight)+whichRowToStart+1
-								if sid >= 1 and sid <= rowCount then
+								local toffset = (whichRowToStart*(rowHeight+leading))+DataTab.rowMoveOffset
+								sid = math.floor((my-cy-columnHeight-toffset)/(rowHeight+leading))+whichRowToStart+1
+								if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
 									DataTab.oPreSelect = sid
 									if rowData[sid][-2] then
 										DataTab.preSelect = {sid,mouseSelectColumn}
@@ -1973,9 +1974,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							local lc_rowData = rowData[i]
 							local image,columnOffset,isSection,color = lc_rowData[-3],lc_rowData[-4],lc_rowData[-5],lc_rowData[0]
 							if isDraw2 then
-								local rowpos = i*rowHeight
+								local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading
 								local rowpos_1 = rowpos-rowHeight
-								local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1+rowMoveOffset,sW,rowpos+rowMoveOffset
+								local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1,sW,rowpos
 								if eleData.PixelInt then
 									_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 								end
@@ -2059,10 +2060,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						dxDrawImage(x,y,w-scbThickV,columnHeight,renderTarget[1],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					end
 				elseif columnCount >= 1 then
-					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/rowHeight)+2
-					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThickH+rowHeight*2)/rowHeight)-3
+					local _rowMoveOffset = math.floor(rowMoveOffset/(rowHeight+leading))*(rowHeight+leading)
+					local whichRowToStart = -math.floor((_rowMoveOffset+rowHeight)/(rowHeight+leading))+1
+					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThickH+rowHeight*2)/(rowHeight+leading))-2
 					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
-					local _rowMoveOffset = math.floor(rowMoveOffset/rowHeight)*rowHeight
 					local whichColumnToStart,whichColumnToEnd = -1,-1
 					local cpos = {}
 					local multiplier = columnRelt and (w-scbThickV) or 1
@@ -2122,9 +2123,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					end
 					if MouseData.enter == v then		-------PreSelect
 						if mouseInsideRow then
-							local toffset = (whichRowToStart*rowHeight)+_rowMoveOffset
-							sid = math.floor((my-cy-columnHeight-toffset)/rowHeight)+whichRowToStart+1
-							if sid >= 1 and sid <= rowCount then
+							local toffset = (whichRowToStart*(rowHeight+leading))+_rowMoveOffset
+							sid = math.floor((my-cy-columnHeight-toffset)/(rowHeight+leading))+whichRowToStart+1
+							if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+_rowMoveOffset then
 								DataTab.oPreSelect = sid
 								if rowData[sid][-2] then
 									DataTab.preSelect = {sid,mouseSelectColumn}
@@ -2151,7 +2152,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						local color = lc_rowData[0]
 						local columnOffset = lc_rowData[-4]
 						local isSection = lc_rowData[-5]
-						local rowpos = i*rowHeight
+						local rowpos = i*rowHeight+(i-1)*leading
 						local _x,_y,_sx,_sy = column_x+columnOffset,_y+rowpos-rowHeight,_sx,_y+rowpos
 						if eleData.PixelInt then
 							_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
@@ -3271,21 +3272,19 @@ function onClientKeyCheck(button,state)
 		if dgsGetType(scrollbar) == "dgs-dxscrollbar" then
 			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 		elseif dgsType == "dgs-dxgridlist" then
-			if MouseData.enterData then
-				local scrollbar
-				local scrollbar1,scrollbar2 = dgsElementData[MouseData.enter].scrollbars[1],dgsElementData[MouseData.enter].scrollbars[2]
-				local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
-				if visibleScb1 and not visibleScb2 then
-					scrollbar = scrollbar1
-				elseif visibleScb2 and not visibleScb1 then
-					scrollbar = scrollbar2
-				elseif visibleScb1 and visibleScb2 then
-					local whichScrollBar = dgsElementData[MouseData.enter].mouseWheelScrollBar and 2 or 1
-					scrollbar = dgsElementData[MouseData.enter].scrollbars[whichScrollBar]
-				end
-				if scrollbar then
-					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
-				end
+			local scrollbar
+			local scrollbar1,scrollbar2 = dgsElementData[MouseData.enter].scrollbars[1],dgsElementData[MouseData.enter].scrollbars[2]
+			local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+			if visibleScb1 and not visibleScb2 then
+				scrollbar = scrollbar1
+			elseif visibleScb2 and not visibleScb1 then
+				scrollbar = scrollbar2
+			elseif visibleScb1 and visibleScb2 then
+				local whichScrollBar = dgsElementData[MouseData.enter].mouseWheelScrollBar and 2 or 1
+				scrollbar = dgsElementData[MouseData.enter].scrollbars[whichScrollBar]
+			end
+			if scrollbar then
+				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxmemo" then
 			local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]

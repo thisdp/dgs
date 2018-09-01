@@ -63,6 +63,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"multiSelection",false)
 	dgsSetData(gridlist,"mode",false,true)
 	dgsSetData(gridlist,"clip",true)
+	dgsSetData(gridlist,"leading",0,true)
 	dgsSetData(gridlist,"preSelect",{})
 	dgsSetData(gridlist,"rowSelect",{})
 	dgsSetData(gridlist,"itemClick",{})
@@ -977,7 +978,7 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 		local scbThick = dgsElementData[parent].scrollBarThick
 		if source == scrollBars[1] then
 			local scbThickH = dgsElementData[scrollBars[2]].visible and scbThick or 0
-			local rowLength = #dgsElementData[parent].rowData*dgsElementData[parent].rowHeight
+			local rowLength = #dgsElementData[parent].rowData*(dgsElementData[parent].rowHeight+dgsElementData[parent].leading)
 			local temp = -new*(rowLength-(sy-scbThickH-dgsElementData[parent].columnHeight))/100
 			local temp = dgsElementData[parent].scrollFloor[1] and math.floor(temp) or temp 
 			dgsSetData(parent,"rowMoveOffset",temp)
@@ -1001,7 +1002,7 @@ function configGridList(source)
 	local scbThick = dgsElementData[source].scrollBarThick
 	local columnCount =  dgsGridListGetColumnCount(source)
 	local columnWidth = dgsGridListGetColumnAllWidth(source,columnCount,false,true)
-	local rowLength = #dgsElementData[source].rowData*rowHeight
+	local rowLength = #dgsElementData[source].rowData*(rowHeight+dgsElementData[source].leading)
 	local scbX,scbY = sx-scbThick,sy-scbThick
 	local scbStateV,scbStateH
 	if columnWidth > sx then

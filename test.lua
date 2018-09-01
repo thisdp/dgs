@@ -182,14 +182,15 @@ function GridListSortingTest()
 	gridlist = dgsCreateGridList(300,50,600,600,false)
 	dgsGridListAddColumn(gridlist,"test1",0.2)
 	dgsGridListAddColumn(gridlist,"test2",0.1)
+	dgsSetProperty(gridlist,"mode",true)
 	for i=1,500 do
 		local row = dgsGridListAddRow(gridlist)
 		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
 		dgsGridListSetItemText(gridlist,row,2,tostring(500-i).." Test DGS")
 	end
-	dgsGridListSetSortEnabled(gridlist,false) --disable click sorting
-	dgsGridListSetSortFunction(gridlist,sortfnc)
-	dgsGridListSetSortColumn(gridlist,2)
+	--dgsGridListSetSortEnabled(gridlist,false) --disable click sorting
+	--dgsGridListSetSortFunction(gridlist,sortfnc)
+	--dgsGridListSetSortColumn(gridlist,2)
 end
 
 function Plugin_media()

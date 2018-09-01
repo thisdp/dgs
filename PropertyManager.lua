@@ -25,7 +25,7 @@ function dgsSetData(element,key,value,nocheck)
 						end
 					end
 				elseif dgsType == "dgs-dxgridlist" then
-					if key == "columnHeight" or key == "mode" or key== "scrollBarThick" then
+					if key == "columnHeight" or key == "mode" or key== "scrollBarThick" or key== "leading" then
 						configGridList(element)
 					elseif key == "rowData" then
 						if dgsElementData[element].autoSort then
