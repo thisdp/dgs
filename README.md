@@ -35,8 +35,4 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 
 **Thanks for your support.**
 
-This resource is protected by TOSRR ( Thisdp's Open-Sourced Resources Rules )
-What is TOSRR?
-1.You have permission to copy and use this resource on MTASA platform.
-2.You have permission to ignore all shitty default licenses and shitty rules, but you need to obey TOSRR.
-3.You have permission to edit the code to make the resource work for you, and each of edited version will be a branch of Master Version.
+This resource is protected by **GNU General Public License v3.0**
