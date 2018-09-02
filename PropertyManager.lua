@@ -81,7 +81,6 @@ function dgsSetData(element,key,value,nocheck)
 							local tabpanel = dgsElementData[element].parent
 							dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng+(value-oldValue))
 						end
-					elseif key == "absrltWidth" then
 					end
 				elseif dgsType == "dgs-dxedit" then
 					local gedit = dgsElementData[element].edit
@@ -357,5 +356,73 @@ function dgsGetProperties(dxgui,properties)
 			data[key] = dgsElementData[dxgui][key]
 		end
 		return data
+	end
+end
+
+function dgsSetPropertyInherit(dxgui,key,value,...)
+	local isTable = type(dxgui) == "table"
+	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetPropertyInherit at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
+	if oldPropertyNameTable[key] then
+		outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+		if debugMode_CompatibilityCheck then
+			assert(false,"[DGS]Assert! Look the warning debug message above")
+		end
+		key = oldPropertyNameTable[key]
+	end
+	if isTable then
+		for k,v in ipairs(dxgui) do
+			if key == "functions" then
+				local fnc = loadstring(value)
+				assert(fnc,"Bad argument @dgsSetPropertyInherit at argument 2, failed to load function")
+				value = {fnc,{...}}
+			elseif key == "textColor" then
+				assert(tonumber(value),"Bad argument @dgsSetPropertyInherit at argument 3, expect a number got "..type(value))
+			elseif key == "text" then
+				if dgsElementType[v] == "dgs-dxmemo" then
+					return handleDxMemoText(v,value)
+				elseif dgsElementType[v] == "dgs-dxedit" then
+					return handleDxEditText(v,value)
+				end
+			elseif key == "absPos" then
+				dgsSetPosition(v,value[1],value[2],false)
+			elseif key == "rltPos" then
+				dgsSetPosition(v,value[1],value[2],true)
+			elseif key == "absSize" then
+				dgsSetSize(v,value[1],value[2],false)
+			elseif key == "rltSize" then
+				dgsSetSize(v,value[1],value[2],true)
+			end
+			dgsSetData(v,tostring(key),value)
+			for index,child in ipairs(dgsGetChildren(v)) do
+				dgsSetPropertyInherit(child,key,value,...)
+			end
+		end
+		return true
+	else
+		if key == "functions" then
+			local fnc = loadstring(value)
+			assert(fnc,"Bad argument @dgsSetPropertyInherit at argument 2, failed to load function")
+			value = {fnc,{...}}
+		elseif key == "textColor" then
+			assert(tonumber(value),"Bad argument @dgsSetPropertyInherit at argument 3, expect a number got "..type(value))
+		elseif key == "text" then
+			if dgsElementType[dxgui] == "dgs-dxmemo" then
+				return handleDxMemoText(dxgui,value)
+			elseif dgsElementType[dxgui] == "dgs-dxedit" then
+				return handleDxEditText(dxgui,value)
+			end
+		elseif key == "absPos" then
+			dgsSetPosition(dxgui,value[1],value[2],false)
+		elseif key == "rltPos" then
+			dgsSetPosition(dxgui,value[1],value[2],true)
+		elseif key == "absSize" then
+			dgsSetSize(dxgui,value[1],value[2],false)
+		elseif key == "rltSize" then
+			dgsSetSize(dxgui,value[1],value[2],true)
+		end
+		dgsSetData(dxgui,tostring(key),value)
+		for index,child in ipairs(dgsGetChildren(dxgui)) do
+			dgsSetPropertyInherit(child,key,value,...)
+		end
 	end
 end

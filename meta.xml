@@ -100,6 +100,7 @@
 	<export function="dgsSetProperty" type="client" />
 	<export function="dgsGetProperties" type="client" />
 	<export function="dgsSetProperties" type="client" />
+	<export function="dgsSetPropertyInherit" type="client" />
 	<export function="dgsGetVisible" type="client" />
 	<export function="dgsSetVisible" type="client" />
 	<export function="dgsGetEnabled" type="client" />
