@@ -1230,7 +1230,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							local selStartX = selectX+x+sidelength
 							selStartX = selStartX-selStartX%1-1
 							if caretStyle == 0 then
-								if selStartX >= x+sidelength and selStartX <= x+w-sidelength then
+								if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
 									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
 									local selEndY = (h-sideheight*2)*caretHeight
 									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.caretThick,isRenderTarget)
@@ -1240,7 +1240,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								if cursorWidth == 0 then
 									cursorWidth = txtSizX*8
 								end
-								if selStartX >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
+								if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 									local offset = eleData.caretOffset
 									local selStartY = y+h-sideheight*2
 									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,eleData.caretColor,eleData.caretThick,isRenderTarget)
