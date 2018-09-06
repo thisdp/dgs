@@ -35,6 +35,8 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsSetData(arrowlist,"selectorSize",styleSettings.arrowlist.selectorSize)
 	dgsSetData(arrowlist,"selectorTextColor",styleSettings.arrowlist.selectorTextColor)
 	dgsSetData(arrowlist,"selectorColor",styleSettings.arrowlist.selectorColor)
+	dgsAttachToTranslation(arrowlist,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(arrowlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(arrowlist,"configNextFrame",false)
 	insertResourceDxGUI(sourceResource,arrowlist)
 	calculateGuiPositionSize(arrowlist,x,y,relative,sx,sy,relative,true)
@@ -104,15 +106,17 @@ function dgsArrowListAddItem(arrowlist,text,rangeStart,rangeEnd,step,translation
 	-------------
 	local tab = {}
 	local size = eleData.absSize
-	tab = {
-		[1] = text,
-		[2] = rangeStart,
-		[3] = rangeEnd,
-		[4] = step,
-		[5] = translationTable,
-		[6] = rangeStart,	--Current Selected
-		[7] = configTable
-	}
+	if type(text) == "table" then
+		tab._translationText = text
+		text = dgsTranslate(arrowlist,text,sourceResource)
+	end
+	tab[1] = text
+	tab[2] = rangeStart
+	tab[3] = rangeEnd
+	tab[4] = step
+	tab[5] = translationTable
+	tab[6] = rangeStart			--Current Selected
+	tab[7] = configTable
 	table.insert(itemData,pos or itemCount,tab)
 	dgsSetData(arrowlist,"configNextFrame",true)
 	return pos or itemCount
@@ -135,6 +139,12 @@ function dgsArrowListSetItemText(arrowlist,index,text)
 	assert(tonumber(index),"Bad argument @dgsArrowListSetItemText at argument 2, expect number got "..type(index))
 	local itemData = dgsElementData[arrowlist].itemData
 	if itemData and itemData[index] then
+		if type(text) == "table" then
+			itemData[index]._translationText = text
+			text = dgsTranslate(arrowlist,text,sourceResource)
+		else
+			itemData[index]._translationText = nil
+		end
 		itemData[index][1] = text
 		return true
 	end

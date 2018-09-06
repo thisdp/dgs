@@ -127,7 +127,6 @@ lastFront = false
 function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	local parent = FatherTable[dxgui]	--Get Parent
-	--local mouse = mouse or "left"
 	if not dontChangeData then
 		local oldShow = MouseData.nowShow
 		MouseData.nowShow = dxgui

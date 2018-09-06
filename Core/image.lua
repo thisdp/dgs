@@ -10,12 +10,6 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	dgsSetType(image,"dgs-dximage")
 	local texture = img
 	if type(img) == "string" then
-		if sourceResource then
-			if not string.find(img,":") then
-				local resname = getResourceName(sourceResource)
-				img = ":"..resname.."/"..img
-			end
-		end
 		texture = dxCreateTexture(img)
 		if not isElement(texture) then return false end
 	end

@@ -70,6 +70,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"scrollBarState",{nil,nil})
 	dgsSetData(gridlist,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
+	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(gridlist,"configNextFrame",false)
 	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true) or table.insert(CenterFatherTable,1,gridlist)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
@@ -243,7 +244,16 @@ function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 	if columnDataCount > 0 then
 		oldLen = columnData[columnDataCount][3]+columnData[columnDataCount][2]
 	end
-	table.insert(columnData,pos,{name,len,oldLen,alignment or "left"})
+	local columnTable = {}
+	if type(name) == "table" then
+		columnTable._translationText = name
+		name = dgsTranslate(gridlist,name,sourceResource)
+	end
+	columnTable[1] = tostring(name)
+	columnTable[2] = len
+	columnTable[3] = oldLen
+	columnTable[4] = alignment or "left"
+	table.insert(columnData,pos,columnTable)
 	local columnTextSize = eleData.columnTextSize
 	local columnTextColor = eleData.columnTextColor
 	local colorcoded = eleData.colorcoded
@@ -264,7 +274,7 @@ function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 end
 
 function dgsGridListSetColumnSetFont(gridlist,pos,font)
-	
+	--todo
 end
 
 function dgsGridListSetColumnRelative(gridlist,relative,transformColumn)
@@ -296,6 +306,12 @@ function dgsGridListSetColumnTitle(gridlist,column,name)
 	assert(type(column) == "number","Bad argument @dgsGridListSetColumnTitle at argument 2, expect number got "..type(column))
 	local columnData = dgsElementData[gridlist].columnData
 	if columnData[column] then
+		if type(name) == "table" then
+			columnData[column]._translationText = name
+			name = dgsTranslate(gridlist,name,sourceResource)
+		else
+			columnData[column]._translationText = nil
+		end
 		columnData[column][1] = name
 		dgsSetData(gridlist,"columnData",columnData)
 	end
@@ -498,7 +514,7 @@ function dgsGridListAddRow(gridlist,row,...)
 	assert(#columnData > 0 ,"Bad argument @dgsGridListAddRow, no columns in the grid list")
 	local rowData = eleData.rowData
 	local rowLength = 0
-	row = row or #rowData+1
+	row = tonumber(row) or #rowData+1
 	local rowTable = {}
 	local args = {...}
 	rowTable[-4] = eleData.defaultColumnOffset
@@ -511,7 +527,18 @@ function dgsGridListAddRow(gridlist,row,...)
 	local scale = eleData.rowTextSize
 	local font = eleData.font
 	for i=1,#eleData.columnData do
-		rowTable[i] = {args[i] or "",rowTxtColor,colorcoded,scale[1],scale[2],font}
+		local text = args[i]
+		rowTable[i] = {}
+		if type(text) == "table" then
+			rowTable[i]._translationText = text
+			text = dgsTranslate(gridlist,text,sourceResource)
+		end
+		rowTable[i][1] = tostring(text)
+		rowTable[i][2] = rowTxtColor
+		rowTable[i][3] = colorcoded
+		rowTable[i][4] = scale[1]
+		rowTable[i][5] = scale[2]
+		rowTable[i][6] = font
 	end
 	table.insert(rowData,row,rowTable)
  	local scrollbars = dgsElementData[gridlist].scrollbars
@@ -737,11 +764,15 @@ function dgsGridListSetItemText(gridlist,row,column,text,image)
 	if column <= -5 then
 		rowData[row][column] = text
 		return true
-	else
-		if rowData[row][column] then
-			rowData[row][column][1] = tostring(text)
-			return true
+	elseif rowData[row][column] then
+		if type(text) == "table" then
+			rowData[row][column]._translationText = text
+			text = dgsTranslate(gridlist,text,sourceResource)
+		else
+			rowData[row][column]._translationText = nil
 		end
+		rowData[row][column][1] = tostring(text)
+		return true
 	end
 	return false
 end
@@ -1046,8 +1077,10 @@ function configGridList(source)
 	local scroll1 = dgsElementData[scrollbar[1]].position
 	local scroll2 = dgsElementData[scrollbar[2]].position
 	dgsSetData(source,"rowMoveOffset",-scroll1*(rowLength-relSizY+columnHeight)/100)
-	dgsSetData(scrollbar[1],"length",{rowShowRange/rowLength,true})
-	dgsSetData(scrollbar[2],"length",{relSizX/(columnWidth+scbThick),true})
+	local length1 = rowShowRange/rowLength
+	local length2 = relSizX/(columnWidth+scbThick)
+	dgsSetData(scrollbar[1],"length",{length1 > 1 and 1 or length1,true})
+	dgsSetData(scrollbar[2],"length",{length2 > 1 and 1 or length2,true})
 
 	local rentarg = dgsElementData[source].renderTarget
 	if rentarg then

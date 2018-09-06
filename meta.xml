@@ -5,6 +5,7 @@
 	<file src="meta.xml" />
 	<file src="styleManager/styleMapper.lua"/>
 	<file src="shaders/textureRelight.fx" type="client" />
+	<file src="shaders/mta-helper.fx" type="client" />
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -141,6 +142,13 @@
 	<export function="dgsSetCurrentStyle" type="client" />
 	<export function="dgsIsStyleAvailable" type="client" />
 	<export function="dgsGetLoadedStyleList" type="client" />
+	
+	<export function="dgsTranslationTableExists" type="client" />
+	<export function="dgsSetTranslationTable" type="client" />
+	<export function="dgsAttachToTranslation" type="client" />
+	<export function="dgsDetachFromTranslation" type="client" />
+	<export function="dgsSetAttachTranslation" type="client" />
+	<export function="dgsGetTranslationLanguage" type="client" />
 	
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />

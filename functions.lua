@@ -1,3 +1,6 @@
+resourceTranslation = {}
+LanguageTranslation = {}
+LanguageTranslationAttach = {}
 resourceDxGUI = {}
 builtins = {}
 builtins.Linear = true
@@ -70,6 +73,7 @@ addEventHandler("onClientResourceStop",root,function(res)
 			end
 		end
 		resourceDxGUI[res] = nil
+		resourceTranslation[res] = nil
 	end
 end)
 
@@ -298,7 +302,7 @@ end
 
 function dgsSetText(dxgui,text)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsSetProperty(dxgui,"text",tostring(text))
+	return dgsSetData(dxgui,"text",text)
 end
 
 function dgsGetText(dxgui)
@@ -485,4 +489,154 @@ function dgsClear(theType,res)
 		end
 	end
 	return false
+end
+
+----------------------------------Multi Language Support
+
+function dgsTranslationTableExists(name)
+	assert(type(name) == "string", "Bad argument @dgsTranslationTableExists at argument 1, expect a string got "..dgsGetType(name))
+	return LanguageTranslation[name] and true or false
+end
+
+function dgsSetTranslationTable(name,tab)
+	assert(type(name) == "string", "Bad argument @dgsAddTranslationTable at argument 1, expect a string got "..dgsGetType(name))
+	assert(type(tab) == "table" or not tab,"Bad argument @dgsAddTranslationTable at argument 2, expect a table/nil got "..dgsGetType(tab))
+	if tab then
+		LanguageTranslation[name] = tab
+		LanguageTranslationAttach[name] = LanguageTranslationAttach[name] or {}
+		dgsApplyLanguageChange(name,LanguageTranslation[name],LanguageTranslationAttach[name])
+	elseif translationTableExists(name) then
+		LanguageTranslation[name] = false
+		for k,v in ipairs(LanguageTranslationAttach[name]) do
+			dgsSetData(v,"_translang",nil)
+		end
+		LanguageTranslation[name] = nil
+		LanguageTranslationAttach[name] = nil
+	end
+	return true
+end
+
+function dgsAttachToTranslation(dxgui,name)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsAttachToTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	local lastTrans = dgsElementData[dxgui]._translang
+	if lastTrans and LanguageTranslationAttach[lastTrans] then
+		local id = table.find(LanguageTranslationAttach[name])
+		if id then
+			table.remove(LanguageTranslationAttach[name])
+		end
+	end
+	dgsSetData(dxgui,"_translang",name)
+	table.insert(LanguageTranslationAttach[name],dxgui)
+end
+
+function dgsDetachFromTranslation(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsDetachFromTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	local lastTrans = dgsElementData[dxgui]._translang
+	if lastTrans and LanguageTranslationAttach[lastTrans] then
+		local id = table.find(LanguageTranslationAttach[name])
+		if id then
+			table.remove(LanguageTranslationAttach[name])
+		end
+	end
+	dgsSetData(dxgui,"_translang",nil)
+end
+
+function dgsSetAttachTranslation(name)
+	resourceTranslation[sourceResource or getThisResource()] = name
+	return true
+end
+
+function dgsGetTranslationLanguage(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetTranslationLanguage at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+	return dgsElementData[dxgui]._translang
+end
+
+--------------Translation Interior
+LanguageTranslationSupport = {
+	"dgs-dx3dtext",
+	"dgs-dxarrowlist",
+	"dgs-dxbutton",
+	"dgs-dxgridlist",
+	"dgs-dxradiobutton",
+	"dgs-dxcheckbox",
+	"dgs-dxlabel",
+	"dgs-dxwindow",
+	"dgs-dxtab",
+	"dgs-dxcombobox",
+	"dgs-dxcombobox-Box",
+}
+function dgsTranslate(dxgui,textTable,sourceResource)
+	if type(textTable) == "table" then
+		local translation = dgsElementData[dxgui]._translang or resourceTranslation[sourceResource or getThisResource()]
+		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
+		local count = 2
+		while true do
+			if not textTable[count] then break end
+			local _value = value:gsub("%%rep%%",textTable[count])
+			if _value == value then break end
+			count = count+1
+			value = _value
+		end
+		return value
+	end
+	return false
+end
+
+function dgsApplyLanguageChange(name,translation,attach)
+	for k,v in ipairs(attach) do
+		if isElement(v) then
+			local dgsType = dgsGetType(v)
+			if dgsType == "dgs-dxgridlist" then
+				local columnData = dgsElementData[v].columnData
+				for i,col in ipairs(columnData) do
+					if col._translationText then
+						local text = col._translationText
+						if text then
+							columnData[i][1] = dgsTranslate(gridlist,text,sourceResource)
+						end
+					end
+				end
+				dgsSetData(gridlist,"columnData",columnData)
+				local rowData = dgsElementData[v].rowData
+				for _r,row in ipairs(rowData) do
+					for _c,item in ipairs(row) do
+						if item._translationText then
+							local text = item._translationText
+							if text then
+								rowData[_r][_c][1] = dgsTranslate(gridlist,text,sourceResource)
+							end
+						end
+					end
+				end
+				dgsSetData(gridlist,"rowData",rowData)
+			elseif dgsType == "dgs-dxarrowlist" then
+				local itemData = dgsElementData[v].itemData
+				for i,item in ipairs(itemData) do
+					local text = itemData[i]._translationText
+					if text then
+						itemData[i][1] = dgsTranslate(v,text,sourceResource)
+					end
+				end
+				dgsSetData(v,"itemData",itemData)
+			elseif dgsType == "dgs-dxcombobox" then
+				local text = dgsElementData[v]._translationText
+				if text then
+					dgsComboBoxSetCaptionText(v,text)
+				end
+				local itemData = dgsElementData[v].itemData
+				for i,item in ipairs(itemData) do
+					local text = itemData[i]._translationText
+					if text then
+						itemData[i][1] = dgsTranslate(v,text,sourceResource)
+					end
+				end
+				dgsSetData(v,"itemData",itemData)
+			else
+				local text = dgsElementData[v]._translationText
+				if text then
+					dgsSetData(v,"text",text)
+				end
+			end
+		end
+	end
 end

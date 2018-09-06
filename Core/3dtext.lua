@@ -13,7 +13,12 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	dgsSetData(text3d,"fadeDistance",distance or 80)
 	dgsSetData(text3d,"dimension",-1)
 	dgsSetData(text3d,"interior",-1)
-	dgsSetData(text3d,"text",text)
+	dgsAttachToTranslation(text3d,resourceTranslation[sourceResource or getThisResource()])
+	if type(text) == "table" then
+		dgsElementData[text3d]._translationText = text
+		text = dgsTranslate(text3d,text,sourceResource)
+	end
+	dgsSetData(text3d,"text",tostring(text))
 	dgsSetData(text3d,"colorcode",colorcode or false)
 	insertResourceDxGUI(sourceResource,text3d)
 	triggerEvent("onDgsCreate",text3d)

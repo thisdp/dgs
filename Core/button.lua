@@ -17,6 +17,11 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	local hovimg = selimg or dgsCreateTextureFromStyle(styleSettings.button.image[2])
 	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.button.image[3])
 	dgsSetData(button,"image",{norimg,selimg,cliimg})
+	dgsAttachToTranslation(button,resourceTranslation[sourceResource or getThisResource()])
+	if type(text) == "table" then
+		dgsElementData[button]._translationText = text
+		text = dgsTranslate(button,text,sourceResource)
+	end
 	dgsSetData(button,"text",tostring(text))
 	dgsSetData(button,"textColor",tonumber(textColor) or styleSettings.button.textColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.button.textSize[1], tonumber(scaley) or styleSettings.button.textSize[2]

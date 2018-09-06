@@ -11,6 +11,11 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"titleColor",tonumber(titleColor) or styleSettings.window.titleColor)
 	dgsSetData(window,"image",image or dgsCreateTextureFromStyle(styleSettings.window.image))
 	dgsSetData(window,"color",tonumber(color) or styleSettings.window.color)
+	dgsAttachToTranslation(window,resourceTranslation[sourceResource or getThisResource()])
+	if type(text) == "table" then
+		dgsElementData[window]._translationText = text
+		text = dgsTranslate(window,text,sourceResource)
+	end
 	dgsSetData(window,"text",tostring(text) or "")
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.window.textSize[1], tonumber(scaley) or styleSettings.window.textSize[2]
 	dgsSetData(window,"textSize",{textSizeX,textSizeY})

@@ -24,7 +24,7 @@ function checkUpdate()
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
 						if RemoteVersion > Version then
-							outputDebugString("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..allstr.."]. See the update log: http://angel.mtaip.cn:233/dgsUpdate")
+							outputDebugString("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..allstr.."].")
 							outputDebugString("[DGS]Update? Command: updatedgs")
 						else
 							killTimer(updateTimer)
@@ -62,8 +62,8 @@ addCommandHandler("updatedgs",function(player)
 			checkUpdate()
 		end
 	else
-		outputChatBox("[DGS]!Access Denined!",player,255,0,0)
-		outputDebugString("[DGS]!Player "..getPlayerName(player).." attempt to update dgs (Denied)!",2)
+		outputChatBox("[DGS]Access Denined!",player,255,0,0)
+		outputDebugString("[DGS]Player "..getPlayerName(player).." attempt to update dgs (Denied)!",2)
 	end
 end)
 
@@ -117,7 +117,7 @@ function getGitHubTree(path,nextPath)
 				checkFiles()
 			end
 		else
-			outputDebugString("[DGS]!Failed To Get Verification Data, Please Try Again Later (API Cool Down 60 mins)!",2)
+			outputDebugString("[DGS]Failed To Get Verification Data, Please Try Again Later (API Cool Down 60 mins)!",2)
 		end
 	end)
 end
@@ -190,7 +190,6 @@ function DownloadFinish()
 		backupStyleMapper()
 		fileDelete("meta.xml")
 	end
-	--fileRename("updated/meta.xml","meta.xml")
 	recoverStyleMapper()
 	outputDebugString("[DGS]Update Complete (Updated "..#preUpdate.." Files)")
 	outputDebugString("[DGS]Please Restart DGS")
@@ -215,7 +214,7 @@ addCommandHandler("dgsver",function(pla,cmd)
 			outputDebugString("[DGS]Version State is damaged! Please use /updatedgs to update",1)
 		end
 	else
-			outputDebugString("[DGS]Version State is damaged! Please use /updatedgs to update",1)
+		outputDebugString("[DGS]Version State is damaged! Please use /updatedgs to update",1)
 	end
 	if getPlayerName(pla) ~= "Console" then
 		if vsdd then

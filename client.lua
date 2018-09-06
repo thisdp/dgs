@@ -1641,14 +1641,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					else
 						colorImageIndex[MouseData.clickData] = 3
 						if MouseData.clickData == 2 then
-							local position
+							local position = 0
 							local mvx,mvy = MouseData.Move[1],MouseData.Move[2]
-							if voh then
-								local gx = (mx-mvx-ax)/csRange
-								position = (gx < 0 and 0) or (gx > 1 and 1) or gx
-							else
-								local gy = (my-mvy-ay)/csRange
-								position = (gy < 0 and 0) or (gy > 1 and 1) or gy
+							if csRange ~= 0 then
+								if voh then
+									local gx = (mx-mvx-ax)/csRange
+									position = (gx < 0 and 0) or (gx > 1 and 1) or gx
+								else
+									local gy = (my-mvy-ay)/csRange
+									position = (gy < 0 and 0) or (gy > 1 and 1) or gy
+								end
 							end
 							dgsSetData(v,"position",position*100)
 						end
@@ -4224,7 +4226,6 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		dgsStopMoving(source)
 		dgsStopSizing(source)
 		dgsStopAlphaing(source)
-		dgsElementData[source] = nil
 		if dgsType == "dgs-dx3dinterface" then
 			local id = table.find(dx3DInterfaceTable,source)
 			if id then
@@ -4255,6 +4256,14 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				end
 			end
 		end
+		local lang = dgsElementData[source]._translationText
+		if lang then
+			local id = table.find(LanguageTranslationAttach,source)
+			if id then
+				table.remove(LanguageTranslationAttach,id)
+			end
+		end
+		dgsElementData[source] = nil
 	end
 end)
 

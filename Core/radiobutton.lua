@@ -33,6 +33,11 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	dgsSetData(rb,"color_t",{norcolor_t,hovcolor_t,clicolor_t})
 	
 	dgsSetData(rb,"rbParent",dgsIsDxElement(parent) and parent or resourceRoot)
+	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or getThisResource()])
+	if type(text) == "table" then
+		dgsElementData[rb]._translationText = text
+		text = dgsTranslate(rb,text,sourceResource)
+	end
 	dgsSetData(rb,"text",tostring(text))
 	dgsSetData(rb,"textColor",textColor or styleSettings.radiobutton.textColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.radiobutton.textSize[1], tonumber(scaley) or styleSettings.radiobutton.textSize[2]

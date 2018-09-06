@@ -1,12 +1,11 @@
 dgsConfig = {}
 dgsConfig.updateCheckAuto			= true										-- Enable:true;Disable:false
-dgsConfig.updateCheckInterval		= 60										-- Minutes
-dgsConfig.updateCheckNoticeInterval	= 5											-- Minutes
+dgsConfig.updateCheckInterval		= 120										-- Minutes
+dgsConfig.updateCheckNoticeInterval	= 120										-- Minutes
 dgsConfig.backupMeta				= true										-- Backup meta.xml
 dgsConfig.backupStyleMeta			= false										-- Backup style files meta index from meta.xml
 
 function loadConfig()
-	outputDebugString("[DGS]Loading Config File...")
 	if fileExists("config.txt") then
 		local file = fileOpen("config.txt")
 		if file then

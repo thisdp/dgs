@@ -32,13 +32,17 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 end
 
 function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor)
-	assert(type(text) == "string" or type(text) == "number","Bad argument @dgsCreateTab at argument 1, expect string/number got "..type(text))
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
 	dgsSetParent(tab,tabpanel,true)
-	dgsSetData(tab,"text",text,true)
 	dgsSetData(tab,"parent",tabpanel)
+	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or getThisResource()])
+	if type(text) == "table" then
+		dgsElementData[tab]._translationText = text
+		text = dgsTranslate(tab,text,sourceResource)
+	end
+	dgsSetData(tab,"text",tostring(text),true)
 	local tabs = dgsElementData[tabpanel].tabs
 	local id = #tabs+1
 	table.insert(tabs,id,tab)

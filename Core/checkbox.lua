@@ -47,6 +47,11 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	dgsSetData(cb,"color_i",{norcolor_i,hovcolor_i,clicolor_i})
 	
 	dgsSetData(cb,"cbParent",dgsIsDxElement(parent) and parent or resourceRoot)
+	dgsAttachToTranslation(cb,resourceTranslation[sourceResource or getThisResource()])
+	if type(text) == "table" then
+		dgsElementData[cb]._translationText = text
+		text = dgsTranslate(cb,text,sourceResource)
+	end
 	dgsSetData(cb,"text",tostring(text))
 	dgsSetData(cb,"textColor",textColor or styleSettings.checkbox.textColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.checkbox.textSize[1], tonumber(scaley) or styleSettings.checkbox.textSize[2]

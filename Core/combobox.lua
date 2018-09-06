@@ -77,7 +77,13 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"FromTo",{0,0})
 	dgsSetData(combobox,"itemMoveOffset",0)
 	dgsSetData(combobox,"scrollFloor",true)
-	dgsSetData(combobox,"caption",caption or "")
+	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or getThisResource()])
+	if type(caption) == "table" then
+		dgsElementData[combobox]._translationText = caption
+		print(dgsElementData[combobox]._translationText)
+		caption = dgsTranslate(combobox,caption,sourceResource)
+	end
+	dgsSetData(combobox,"caption",tostring(caption),true)
 	dgsSetData(combobox,"autoHideWhenSelecting",true)
 	dgsSetData(combobox,"arrow",dgsCreateTextureFromStyle(styleSettings.combobox.arrow))
 	insertResourceDxGUI(sourceResource,combobox)
@@ -100,10 +106,15 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	return combobox
 end
 
-function dgsComboBoxSetCaptionText(combobox,str)
+function dgsComboBoxSetCaptionText(combobox,caption)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(str) == "string","Bad argument @dgsComboBoxSetDefaultText at argument 2, expect string got "..type(str))
-	return dgsSetData(combobox,"caption",str)
+	if type(caption) == "table" then
+		dgsElementData[combobox]._translationText = caption
+		caption = dgsTranslate(combobox,caption,sourceResource)
+	else
+		dgsElementData[combobox]._translationText = nil
+	end
+	return dgsSetData(combobox,"caption",caption)
 end
 
 function dgsComboBoxGetCaptionText(combobox)
@@ -136,18 +147,21 @@ end
 
 function dgsComboBoxAddItem(combobox,text)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxAddItem at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(text) == "string" or type(text) == "number","Bad argument @dgsComboBoxAddItem at argument 2, expect number/string got "..type(text))
 	local data = dgsElementData[combobox].itemData
 	local itemHeight = dgsElementData[combobox].itemHeight
 	local box = dgsElementData[combobox].myBox
 	local size = dgsElementData[box].absSize
 	local id = #data+1
 	local tab = {}
+	if type(text) == "table" then
+		tab._translationText = text
+		text = dgsTranslate(combobox,text,sourceResource)
+	end
 	tab[-3] = dgsElementData[combobox].itemTextSize
 	tab[-2] = dgsElementData[combobox].itemTextColor
 	tab[-1] = dgsElementData[combobox].itemImage
 	tab[0] = dgsElementData[combobox].itemColor
-	tab[1] = text
+	tab[1] = tostring(text)
 	table.insert(data,id,tab)
 	if id*itemHeight > size[2] then
 		local scrollBar = dgsElementData[combobox].scrollbar
@@ -159,11 +173,16 @@ end
 function dgsComboBoxSetItemText(combobox,item,text)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemText at argument 2, expect number got "..type(item))
-	assert(type(text) == "string" or type(text) == "number","Bad argument @dgsComboBoxSetItemText at argument 3, expect number/string got "..type(text))
 	local data = dgsElementData[combobox].itemData
 	item = math.floor(item)
 	if item >= 1 and item <= #data then
-		data[item][1] = text
+		if type(text) == "table" then
+			data[item]._translationText = text
+			text = dgsTranslate(combobox,text,sourceResource)
+		else
+			data[item]._translationText = nil
+		end
+		data[item][1] = tostring(text)
 		return true
 	end
 	return false

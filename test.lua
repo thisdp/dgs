@@ -239,4 +239,60 @@ function test3DText()
 	dgs3DTextAttachToElement(text,localPlayer,0,10)
 end
 
---local shader = dxCreateShader("shaders/textureRelight.fx")
+function languageTest_ComboBox()
+	languageTab = {wtf="DGS %rep%"}
+	languageTab2 = {wtf="Test %rep% %rep%"}
+	dgsSetTranslationTable("test",languageTab)
+	dgsSetAttachTranslation("test")
+	combobox = dgsCreateComboBox(500,400,200,30,{"wtf","1"},false)
+	for i=1,20 do
+		dgsComboBoxAddItem(combobox,{"wtf",i})
+	end
+	setTimer(function()
+		dgsSetTranslationTable("test",languageTab2)
+	end,1000,1)
+end
+
+function languageTest_GridList()
+	languageTab = {wtf="DGS %rep%",test="Test Lang1"}
+	languageTab2 = {wtf="Test %rep% %rep%",test="Test Lang2"}
+	dgsSetTranslationTable("test",languageTab)
+	dgsSetAttachTranslation("test")
+	gridlist = dgsCreateGridList (0.51, 0.54, 0.16, 0.14, true )
+	dgsGridListAddColumn(gridlist,{"test"},0.5)
+	dgsGridListAddColumn(gridlist,{"test"},0.5)
+	for i=1,5000 do
+		local row = dgsGridListAddRow(gridlist)
+		dgsGridListSetItemText(gridlist,row,1,{"wtf",i,i})
+		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
+	end
+	setTimer(function()
+		dgsSetTranslationTable("test",languageTab2)
+	end,1000,1)
+end
+
+function languageTest_label()
+	languageTab = {wot="D-G-S %rep%"}
+	dgsSetTranslationTable("test",languageTab)
+	dgsSetAttachTranslation("test")
+	label = dgsCreateLabel (0.51, 0.54, 0.16, 0.14, {"wtf"}, true )
+	dgsSetText(label,{"wot","1"})
+end
+
+function languageTest_TabPanel()
+	languageTab = {wtf="DGS %rep%",test="Test Lang1"}
+	languageTab2 = {wtf="Test %rep% %rep%",test="Test Lang2"}
+	dgsSetTranslationTable("test",languageTab)
+	dgsSetAttachTranslation("test")
+	tabp = dgsCreateTabPanel(400,200,400,400,false)
+	tab1 = dgsCreateTab({"wtf"},tabp)
+	tab2 = dgsCreateTab("Tab",tabp)
+	for i=1,10 do
+		dgsCreateTab(i.."Panel",tabp)
+	end
+	gdlt2 = dgsCreateButton(10,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
+	dgsSetProperty(gdlt2,"shadow",{1,1,tocolor(0,0,0,255),true})
+	setTimer(function()
+		dgsSetTranslationTable("test",languageTab2)
+	end,1000,1)
+end

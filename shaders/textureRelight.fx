@@ -1,38 +1,49 @@
+#include "mta-helper.fx"
+
 texture gTexture;
 
-sampler mySampler = sampler_state
+SamplerState mySampler
 {
 	Texture = gTexture;
-	MinFilter = Linear;
-	MagFilter = Linear;
-	MipFilter = Linear;
-	AddressU = Wrap;
-	AddressV = Wrap;
 };
 
-struct PS_INPUT
+struct VSInput
 {
-	float2 base : TEXCOORD0;
-	float4 diffuse : COLOR0;
+	float4 Position : POSITION0;
+	float4 Diffuse : COLOR0;
+	float2 TexCoord : TEXCOORD0;
 };
 
-struct PS_OUTPUT
+struct PSInput
 {
-	vector color : COLOR0;
+	float4 Position : POSITION0;
+	float4 Diffuse : COLOR0;
+	float2 TexCoord : TEXCOORD0;
 };
 
-PS_OUTPUT myShader (PS_INPUT input)
+PSInput myVertexShader (VSInput VS)
 {
-	PS_OUTPUT PS = (PS_OUTPUT)0;
-	vector color = tex2D(mySampler,input.base);
-	PS.color = color-input.diffuse;
+	PSInput PS = (PSInput)0;
+	float4 pos = VS.Position;
+	PS.TexCoord = VS.TexCoord;
+	PS.Position=mul(pos,gWorldViewProjection);
+	PS.Diffuse = VS.Diffuse;
 	return PS;
+}
+
+float4 myPixelShader (PSInput input) : COLOR0
+{
+	float4 color = tex2D(mySampler,input.TexCoord);
+	return color*input.Diffuse;
 };
 
 technique TexReplace
 {
 	pass P0
 	{
-		PixelShader = compile ps_2_0 myShader();
+		VertexShader = compile vs_2_0 myVertexShader();
+		PixelShader = compile ps_2_0 myPixelShader();
 	}
 }
+
+
