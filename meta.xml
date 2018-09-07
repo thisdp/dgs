@@ -148,7 +148,7 @@
 	<export function="dgsAttachToTranslation" type="client" />
 	<export function="dgsDetachFromTranslation" type="client" />
 	<export function="dgsSetAttachTranslation" type="client" />
-	<export function="dgsGetTranslationLanguage" type="client" />
+	<export function="dgsGetTranslationName" type="client" />
 	
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
