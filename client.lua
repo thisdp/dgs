@@ -3861,6 +3861,8 @@ function dgsCheckHit(hits,mx,my)
 		if not getKeyState("mouse2") then
 			MouseData.clickr = false
 		end
+	else
+		MouseData.lastPos = {}
 	end
 	MouseData.lastPos = {mx,my}
 end
