@@ -26,12 +26,12 @@ function dgsImportOOPClass()
 		dgsOOPHead.NoParent = {
 			createWindow = function(self,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateWindow",...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			create3DInterface = function(self,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreate3DInterface",...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 		}
@@ -39,87 +39,87 @@ function dgsImportOOPClass()
 		dgsOOPHead.HaveParent = {
 			createButton = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateButton",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createBrowser = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateBrowser",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createCheckBox = function(self,x,y,w,h,text,state,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateCheckBox",x,y,w,h,text,state,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createRadioButton = function(self,x,y,w,h,text,state,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateRadioButton",x,y,w,h,text,state,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createComboBox = function(self,x,y,w,h,caption,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateComboBox",x,y,w,h,caption,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createEdit = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateEdit",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createDetectArea = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateDetectArea",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createGridList = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateGridList",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createImage = function(self,x,y,w,h,image,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateImage",x,y,w,h,image,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createMemo = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateMemo",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createLabel = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateLabel",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createProgressBar = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateProgressBar",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createScrollBar = function(self,x,y,w,h,voh,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateScrollBar",x,y,w,h,voh,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createScrollPane = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateScrollPane",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createTabPanel = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateTabPanel",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createArrowList = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateArrowList",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = createTableForElement(dxgui)
+				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 		}
 
-		function createTableForElement(dgsElement)
+		function dgsGetClass(dgsElement)
 			local originalClass = dgsOOPHead.dgsClass[dgsElement]
 			if originalClass then
 				if originalClass.dgsElement == dgsElement then
@@ -776,7 +776,7 @@ function dgsImportOOPClass()
 				end
 				newTable.createTab = function(self,text,...)
 					local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateTab",text,self.dgsElement,...)
-					return createTableForElement(dxgui)
+					return dgsGetClass(dxgui)
 				end
 			elseif dgsType == "dgs-dxtab" then
 				newTable.deleteTab = function(self,...)
@@ -791,7 +791,7 @@ function dgsImportOOPClass()
 
 		DGSClass = {
 			getClass = function(self,dgsElement)
-				return createTableForElement(dgsElement)
+				return dgsGetClass(dgsElement)
 			end
 		}
 		for k,v in pairs(dgsOOPHead.NoParent) do
