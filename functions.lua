@@ -546,8 +546,8 @@ function dgsSetAttachTranslation(name)
 	return true
 end
 
-function dgsGetTranslationLanguage(dxgui)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetTranslationLanguage at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetTranslationName(dxgui)
+	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetTranslationName at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	return dgsElementData[dxgui]._translang
 end
 
