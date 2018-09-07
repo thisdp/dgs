@@ -526,7 +526,9 @@ function dgsAttachToTranslation(dxgui,name)
 		end
 	end
 	dgsSetData(dxgui,"_translang",name)
-	table.insert(LanguageTranslationAttach[name],dxgui)
+	if LanguageTranslationAttach[name] then
+		table.insert(LanguageTranslationAttach[name],dxgui)
+	end
 end
 
 function dgsDetachFromTranslation(dxgui)
