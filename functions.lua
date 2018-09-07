@@ -526,7 +526,8 @@ function dgsAttachToTranslation(dxgui,name)
 		end
 	end
 	dgsSetData(dxgui,"_translang",name)
-	if LanguageTranslationAttach[name] then
+	if LanguageTranslation[name] then
+		LanguageTranslationAttach[name] = LanguageTranslationAttach[name] or {}
 		table.insert(LanguageTranslationAttach[name],dxgui)
 	end
 end
