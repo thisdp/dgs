@@ -286,11 +286,11 @@ function dgsComboBoxSetSelectedItem(combobox,id)
 	local old = dgsElementData[combobox].select
 	if not id or id == -1 then
 		dgsSetData(combobox,"select",-1)
-		triggerEvent("onDgsComboBoxSelect",combobox,old,-1)
+		triggerEvent("onDgsComboBoxSelect",combobox,-1,old)
 		return true
 	elseif id >= 1 and id <= #itemData then
 		dgsSetData(combobox,"select",id)
-		triggerEvent("onDgsComboBoxSelect",combobox,old,id)
+		triggerEvent("onDgsComboBoxSelect",combobox,id,old)
 		return true
 	end
 	return false
