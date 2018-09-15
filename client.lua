@@ -3189,6 +3189,161 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					------------------------------------
 				end
 			end
+		elseif dxType == "dgs-dxswitchbutton" then
+			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
+				local image_f,image_t = eleData.image_f,eleData.image_t
+				local color_f,color_t = eleData.color_f,eleData.color_t
+				local image,color,textColor,text
+				local cursorImage,cursorColor = eleData.cursorImage,eleData.cursorColor
+				local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
+				if eleData.state == 1 then
+					image,color,textColor,text,xAdd = image_t,color_t,eleData.textColor_t,eleData.textOn,-xAdd
+				else 
+					image,color,textColor,text = image_f,color_f,eleData.textColor_f,eleData.textOff
+				end
+				local colorImgBgID = 1
+				local colorImgID = 1
+				local cursorWidth = eleData.cursorWidth[2] and w*eleData.cursorWidth[1] or eleData.cursorWidth[1]
+				local cursorX = x+(eleData.stateAnim+1)*0.5*(w-cursorWidth)
+				if MouseData.enter == v then
+					local isHitCursor = mx >= cursorX and mx <= cursorX+cursorWidth
+					colorImgBgID = 2
+					if isHitCursor then
+						colorImgID = 2
+					end
+					if eleData.clickType == 1 then
+						if MouseData.clickl == v then
+							colorImgBgID = 3
+							if isHitCursor then
+								colorImgID = 3
+							end
+						end
+					elseif eleData.clickType == 2 then
+						if MouseData.clickr == v then
+							colorImgBgID = 3
+							if isHitCursor then
+								colorImgID = 3
+							end
+						end
+					else
+						if MouseData.clickl == v or MouseData.clickr == v then
+							colorImgBgID = 3
+							if isHitCursor then
+								colorImgID = 3
+							end
+						end
+					end
+				end
+				local cursorImage = cursorImage[colorImgID]
+				local finalcolor
+				if not enabled[1] and not enabled[2] then
+					if type(eleData.disabledColor) == "number" then
+						finalcolor = applyColorAlpha(eleData.disabledColor,galpha)
+					elseif eleData.disabledColor == true then
+						local r,g,b,a = fromcolor(color[1],true)
+						local average = (r+g+b)/3*eleData.disabledColorPercent
+						finalcolor = tocolor(average,average,average,a*galpha)
+						local r,g,b,a = fromcolor(cursorColor[1],true)
+						local average = (r+g+b)/3*eleData.disabledColorPercent
+						cursorColor = tocolor(average,average,average,a*galpha)
+					else
+						finalcolor = color[colorImgBgID]
+						cursorColor = cursorColor[colorImgID]
+					end
+				else
+					finalcolor = applyColorAlpha(color[colorImgBgID],galpha)
+					cursorColor = applyColorAlpha(cursorColor[colorImgID],galpha)
+				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				if image[colorImgBgID] then
+					dxDrawImage(x,y,w,h,image[colorImgBgID],0,0,0,finalcolor,rendSet)
+				else
+					dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
+				end
+				local font = eleData.font or systemFont
+				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
+				local clip = eleData.clip
+				local wordbreak = eleData.wordbreak
+				local colorcoded = eleData.colorcoded
+				local shadow = eleData.shadow
+				local textX,textY,textWX,textHY = x+w/2+xAdd-cursorWidth,y,x+w/2+xAdd+cursorWidth,y+h
+				if shadow then
+					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
+					if shadowoffx and shadowoffy and shadowc then
+						local shadowc = applyColorAlpha(shadowc,galpha)
+						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textWX+shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,rendSet)
+						if shadowIsOutline then
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textWX-shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textWX-shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textWX+shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,rendSet)
+						end
+					end
+				end
+				dxDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,galpha),txtSizX,txtSizY,font,"center","center",clip,wordbreak,rendSet,colorcoded)
+				----Cursor
+				if cursorImage then
+					dxDrawImage(cursorX,y,cursorWidth,h,cursorImage,0,0,0,cursorColor,rendSet)
+				else
+					dxDrawRectangle(cursorX,y,cursorWidth,h,cursorColor,rendSet)
+				end
+				
+				local state = eleData.state
+				if eleData.stateAnim ~= state then
+					local stat = eleData.stateAnim+eleData.state*eleData.cursorMoveSpeed
+					eleData.stateAnim = state == -1 and math.max(stat,state) or math.min(stat,state)
+				end
+				------------------------------------OutLine
+				local outlineData = eleData.outline
+				if outlineData then
+					local sideColor = outlineData[3]
+					local sideSize = outlineData[2]
+					sideColor = applyColorAlpha(sideColor,galpha)
+					local side = outlineData[1]
+					if side == "in" then
+						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+					elseif side == "center" then
+						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+					elseif side == "out" then
+						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+					end
+				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				if enabled[1] and mx then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+						MouseData.hit = v
+					end
+				end
+			else
+				visible = false
+			end
 		else
 			interrupted = true
 		end
@@ -3877,6 +4032,15 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 			local scrollbar = dgsElementData[source].scrollbars
 			dgsBringToFront(scrollbar[1],"left",_,true)
 			dgsBringToFront(scrollbar[2],"left",_,true)
+		elseif guitype == "dgs-dxswitchbutton" then
+			local clickType = dgsElementData[source].clickType
+			if clickType == 1 and button == "left" then
+				dgsSetData(source,"state", -dgsElementData[source].state)
+			elseif clickType == 2 and button == "middle" then
+				dgsSetData(source,"state", -dgsElementData[source].state)
+			elseif clickType == 3 and buutton == "right" then
+				dgsSetData(source,"state", -dgsElementData[source].state)
+			end
 		end
 		if button == "left" then
 			if guitype == "dgs-dxwindow" then

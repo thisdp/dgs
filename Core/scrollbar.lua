@@ -20,6 +20,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	dgsSetData(scrollbar,"length",{30,false},true)
 	dgsSetData(scrollbar,"multiplier",{1,false})
 	dgsSetData(scrollbar,"scrollArrow",true)
+	dgsSetData(scrollbar,"locked",false)
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true) or table.insert(CenterFatherTable,1,scrollbar)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar)
@@ -35,6 +36,17 @@ end
 function dgsScrollBarGetScrollPosition(scrollbar)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsGetScrollBarPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	return dgsElementData[scrollbar].position
+end
+
+function dgsScrollBarSetLocked(scrollbar,state)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetLocked at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	local state = state and true or false
+	return dgsSetData(scrollbar,"locked",state)
+end
+
+function dgsScrollBarGetLocked(scrollbar)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetLocked at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	return dgsElementData[scrollbar].locked
 end
 
 function scrollScrollBar(scrollbar,button)

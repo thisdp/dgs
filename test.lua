@@ -296,3 +296,7 @@ function languageTest_TabPanel()
 		dgsSetTranslationTable("test",languageTab2)
 	end,1000,1)
 end
+
+function test_switchButton()
+	local button = dgsCreateSwitchButton(200,200,100,25,"on","off",false)
+end

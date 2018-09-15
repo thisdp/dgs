@@ -16,6 +16,7 @@ dgsType = {
 	"dgs-dxlabel",
 	"dgs-dxscrollbar",
 	"dgs-dxscrollpane",
+	"dgs-dxswitchbutton",
 	"dgs-dxwindow",
 	"dgs-dxprogressbar",
 	"dgs-dxtabpanel",

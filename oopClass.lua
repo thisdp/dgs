@@ -117,6 +117,11 @@ function dgsImportOOPClass()
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
+			createSwitchButton = function(self,x,y,w,h,textOn,textOff,relative,...)
+				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateSwitchButton",x,y,w,h,textOn,textOff,relative,self.dgsElement,...)
+				local dxguiTable = dgsGetClass(dxgui)
+				return dxguiTable
+			end,
 		}
 
 		function dgsGetClass(dgsElement)
@@ -742,6 +747,12 @@ function dgsImportOOPClass()
 				newTable.getScrollSize = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetScrollSize",self.dgsElement,...)
 				end
+				newTable.setLocked = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetLocked",self.dgsElement,...)
+				end
+				newTable.getLocked = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetLocked",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxscrollpane" then
 				newTable.getScrollBar = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetScrollBar",self.dgsElement,...)
@@ -757,6 +768,19 @@ function dgsImportOOPClass()
 				end
 				newTable.getScrollBarState = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetScrollBarState",self.dgsElement,...)
+				end
+			elseif dgsType == "dgs-dxswitchbutton" then
+				newTable.getState = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonGetState",self.dgsElement,...)
+				end
+				newTable.setState = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonSetState",self.dgsElement,...)
+				end
+				newTable.setText = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonSetText",self.dgsElement,...)
+				end
+				newTable.getText = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonGetText",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxtabpanel" then
 				newTable.getSelectedTab = function(self,...)

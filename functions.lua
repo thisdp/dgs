@@ -634,6 +634,10 @@ function dgsApplyLanguageChange(name,translation,attach)
 					end
 				end
 				dgsSetData(v,"itemData",itemData)
+			elseif dgsType == "dgs-dxswitchbutton" then
+				local textOn = dgsElementData[v]._translationtextOn
+				local textOff = dgsElementData[v]._translationtextOff
+				dgsSwitchButtonSetText(v,textOn,textOff)
 			else
 				local text = dgsElementData[v]._translationText
 				if text then

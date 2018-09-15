@@ -20,8 +20,12 @@ function dgsSetData(element,key,value,nocheck)
 							dgsElementData[element].length = {10,false}
 						end
 					elseif key == "position" then
-						if oldValue and oldValue ~= value then
-							triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
+						if not dgsElementData[element].locked then
+							if oldValue and oldValue ~= value then
+								triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
+							end
+						else
+							dgsElementData[element][key] = oldValue
 						end
 					end
 				elseif dgsType == "dgs-dxgridlist" then
@@ -36,6 +40,9 @@ function dgsSetData(element,key,value,nocheck)
 					if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" then
 						configScrollPane(element)
 					end
+				elseif dgsType == "dgs-dxswitchbutton" then
+					local oldState = dgsElementData[element].state
+					triggerEvent("onDgsSwitchButtonStateChange",element,value,oldState)
 				elseif dgsType == "dgs-dxcombobox" then
 					if key == "scrollBarThick" then
 						assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))

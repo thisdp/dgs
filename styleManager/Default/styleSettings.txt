@@ -183,7 +183,6 @@
 			{"Images/radiobutton/rb_t.png"},		--Normal
 			{"Images/radiobutton/rb_t_s.png"},	--Hover
 			{"Images/radiobutton/rb_t.png"},		--Click
-			
 		},
 	---Values
 		textSize = {1,1},	--Text size
@@ -322,6 +321,48 @@
 	
 	---Values
 		scrollBarThick = 20,
+	},
+	
+-----------------------------------------------------------------------------------DGS Switch Buttoon
+	switchbutton = {
+	---Color
+		textColor_t = tocolor(250,250,250,255),	--Text Color
+		textColor_f = tocolor(250,250,250,255),	--Text Color
+		color_f = {	--Default image color when state is false ( unselected )
+			tocolor(200,40,40,255),	--Normal
+			tocolor(230,50,50,255),	--Hover
+			tocolor(230,50,50,255),	--Click
+		},
+		color_t = {	--Default image color when state is true ( selected )
+			tocolor(120,190,40,255),	--Normal
+			tocolor(130,200,50,255),	--Hover
+			tocolor(130,200,50,255),	--Click
+		},
+		cursorColor = {	--Default image color when state is true ( selected )
+			tocolor(192,192,192,255),	--Normal
+			tocolor(166,166,166,255),	--Hover
+			tocolor(96,96,96,255),		--Click
+		},
+	---Image
+		image_f = {	--Default image when state is false ( unchecked )
+			{},		--Normal
+			{},	--Hover
+			{},		--Click
+		},
+		image_t = {	--Default image when state is true ( checked )
+			{},		--Normal
+			{},	--Hover
+			{},		--Click
+		},
+		cursorImage = {
+			{},
+			{},
+			{},
+		},
+	---Values
+		textSize = {1,1},
+		textOffset = {0.25,true},
+		cursorWidth = {0.5,true},
 	},
 
 -----------------------------------------------------------------------------------DGS Tab Panel

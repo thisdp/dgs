@@ -32,6 +32,7 @@
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
 	<script src="Core/arrowlist.lua" type="client" />
+	<script src="Core/switchbutton.lua" type="client" />
 	
 	<script src="PropertyManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
@@ -317,6 +318,14 @@
 	<export function="dgsCreateScrollBar" type="client" />
 	<export function="dgsScrollBarSetScrollPosition" type="client" />
 	<export function="dgsScrollBarGetScrollPosition" type="client" />
+	<export function="dgsScrollBarSetLocked" type="client" />
+	<export function="dgsScrollBarGetLocked" type="client" />
+	
+	<export function="dgsCreateSwitchButton" type="client" />
+	<export function="dgsSwitchButtonGetState" type="client" />
+	<export function="dgsSwitchButtonSetState" type="client" />
+	<export function="dgsSwitchButtonSetText" type="client" />
+	<export function="dgsSwitchButtonGetText" type="client" />
 
 	<export function="dgsCreateGridList" type="client" />
 	<export function="dgsGridListGetScrollBar" type="client" />
