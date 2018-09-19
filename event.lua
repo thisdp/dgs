@@ -1,4 +1,4 @@
-local cos,sin,rad,atan2 = math.cos,math.sin,math.rad,math.atan2
+local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format = string.gsub,string.sub,string.len,string.find,string.format
 local insert = table.insert
 dgs = exports[getResourceName(getThisResource())]
@@ -173,7 +173,7 @@ end
 
 --------------------------------Math Utility
 function findRotation(x1,y1,x2,y2) 
-	local t = -math.deg(math.atan2(x2-x1,y2-y1))
+	local t = -deg(atan2(x2-x1,y2-y1))
 	return t<0 and t+360 or t
 end
 
@@ -205,7 +205,13 @@ end
 function fromcolor(int,useMath)
 	local a,r,g,b
 	if useMath then
-		b,g,r,a = bitExtract(int,0,8),bitExtract(int,8,8),bitExtract(int,16,8),bitExtract(int,24,8)
+		b = int%256
+		local int = (int-b)/256
+		g = int%256
+		local int = (int-g)/256
+		r = int%256
+		local int = (int-r)/256
+		a = int%256
 	else
 		a,r,g,b = getColorFromString(format("#%.8x",int))
 	end
@@ -213,16 +219,37 @@ function fromcolor(int,useMath)
 end
 
 function getColorAlpha(color)
-	return bitExtract(color,24,8)
+	local b = color%256
+	local color = (color-b)/256
+	local g = color%256
+	local color = (color-g)/256
+	local r = color%256
+	local color = (color-r)/256
+	local a = color%256
+	return a
 end
 
 function setColorAlpha(color,alpha)
-	return bitReplace(color,alpha,24,8)
+	local b = color%256
+	local color = (color-b)/256
+	local g = color%256
+	local color = (color-g)/256
+	local r = color%256
+	return b+g*256+r*65536+alpha*16777216
 end
 
 function applyColorAlpha(color,alpha)
-	return bitReplace(color,bitExtract(color,24,8)*alpha,24,8)
+	local b = color%256
+	local color = (color-b)/256
+	local g = color%256
+	local color = (color-g)/256
+	local r = color%256
+	local color = (color-r)/256
+	local a = color%256
+	return b+g*256+r*65536+a*alpha*16777216
 end
+
+
 --------------------------------Other Utility
 function dgsRunString(func,...)
 	local fnc = loadstring(func)

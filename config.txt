@@ -1,6 +1,6 @@
-dgsConfig.updateCheckNoticeInterval = 120
+dgsConfig.updateCheckNoticeInterval = 5
 dgsConfig.updateCheckAuto = true
 dgsConfig.backup = true
-dgsConfig.updateCheckInterval = 120
+dgsConfig.updateCheckInterval = 60
 dgsConfig.backupMeta = true
 dgsConfig.backupStyleMeta = false

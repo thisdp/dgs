@@ -88,28 +88,55 @@ function dgsGetGuiLocationOnScreen(dgsElement,relative,rndsup)
 	end
 	return false
 end
-
+--[[
 function getParentLocation(dgsElement,rndsup,x,y)
 	local dgsElement = FatherTable[dgsElement]
-	if not isElement(dgsElement) or (rndsup and dgsElementData[dgsElement].renderTarget_parent) then return x,y end
+	local eleData = dgsElementData[dgsElement]
+	if not isElement(dgsElement) or (rndsup and eleData.renderTarget_parent) then return x,y end
 	if dgsElementType[dgsElement] == "dgs-dxtab" then
-		dgsElement = dgsElementData[dgsElement].parent
-		local h = dgsElementData[dgsElement].absSize[2]
-		local tabHeight = dgsElementData[dgsElement].tabHeight[2] and dgsElementData[dgsElement].tabHeight[1]*h or dgsElementData[dgsElement].tabHeight[1]
-		x = x+dgsElementData[dgsElement].absPos[1]
-		y = y+dgsElementData[dgsElement].absPos[2]+tabHeight
+		dgsElement = eleData.parent
+		local h = eleData.absSize[2]
+		local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+		x = x+eleData.absPos[1]
+		y = y+eleData.absPos[2]+tabHeight
 	else
-		local absPos = dgsElementData[dgsElement].absPos or {0,0}
+		local absPos = eleData.absPos or {0,0}
 		x = x+absPos[1]
 		y = y+absPos[2]
 	end
 	return getParentLocation(dgsElement,rndsup,x,y)
+end]]
+
+function getParentLocation(dgsElement,rndsup,x,y)
+	local eleData
+	local x,y = 0,0
+	repeat
+		eleData = dgsElementData[dgsElement]
+		if dgsElementType[dgsElement] == "dgs-dxtab" then
+			dgsElement = eleData.parent
+			local h = eleData.absSize[2]
+			local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+			x = x+eleData.absPos[1]
+			y = y+eleData.absPos[2]+tabHeight
+		else
+			local absPos = eleData.absPos or {0,0}
+			x = x+absPos[1]
+			y = y+absPos[2]
+		end
+		dgsElement = FatherTable[dgsElement]
+	until(not isElement(dgsElement) or (rndsup and eleData.renderTarget_parent))
+	return x,y
 end
 
 function dgsGetPosition(dgsElement,bool,includeParent,rndsupport)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	if includeParent then
-		return dgsGetGuiLocationOnScreen(dgsElement,bool,rndsupport)
+		guielex,guieley = getParentLocation(dgsElement,rndsupport,dgsElementData[dgsElement].absPos[1],dgsElementData[dgsElement].absPos[2])
+		if relative then
+			return guielex/sW,guieley/sH
+		else
+			return guielex,guieley
+		end
 	else
 		local pos = dgsElementData[dgsElement][bool and "rltPos" or "absPos"]
 		return pos[1],pos[2]
@@ -132,14 +159,6 @@ function dgsSetSize(dgsElement,x,y,bool)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	calculateGuiPositionSize(dgsElement,_,_,_,x,y,bool or false)
 	return true
-end
-
-function getType(thing)
-	if isElement(thing) then
-		return dgsGetType(thing)
-	else
-		return type(thing)
-	end
 end
 
 function dgsApplyVisible(parent,visible)
@@ -371,6 +390,36 @@ function dgsGetRootElement()
 	return resourceRoot
 end
 
+------------Move Scale Handler
+function dgsAddMoveHandler(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+	
+end
+
+function dgsRemoveMoveHandler(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+
+end
+
+function dgsIsMoveable(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsMoveable at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+
+end
+
+function dgsAddSizeHandler(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddSizeHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+
+end
+
+function dgsRemoveSizeHandler(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveSizeHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+
+end
+
+function dgsIsSizeable(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsSizeable at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+
+end
 ------------Round Up Functions
 defaultRoundUpPoints = 3
 function dgsRoundUp(num,points)
@@ -405,6 +454,8 @@ function dgsSetRoundUpPoints(points)
 	defaultRoundUpPoints = points
 	return true
 end
+
+-------------------------
 
 addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"lor","left")
