@@ -88,24 +88,6 @@ function dgsGetGuiLocationOnScreen(dgsElement,relative,rndsup)
 	end
 	return false
 end
---[[
-function getParentLocation(dgsElement,rndsup,x,y)
-	local dgsElement = FatherTable[dgsElement]
-	local eleData = dgsElementData[dgsElement]
-	if not isElement(dgsElement) or (rndsup and eleData.renderTarget_parent) then return x,y end
-	if dgsElementType[dgsElement] == "dgs-dxtab" then
-		dgsElement = eleData.parent
-		local h = eleData.absSize[2]
-		local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
-		x = x+eleData.absPos[1]
-		y = y+eleData.absPos[2]+tabHeight
-	else
-		local absPos = eleData.absPos or {0,0}
-		x = x+absPos[1]
-		y = y+absPos[2]
-	end
-	return getParentLocation(dgsElement,rndsup,x,y)
-end]]
 
 function getParentLocation(dgsElement,rndsup,x,y)
 	local eleData
@@ -214,7 +196,7 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 			local tabpanel = parentData.parent
 			local size = dgsElementData[tabpanel].absSize
 			psx,psy = size[1],size[2]
-			local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psx or dgsElementData[tabpanel].tabHeight[1]
+			local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psy or dgsElementData[tabpanel].tabHeight[1]
 			psy = psy-height
 		else
 			local size = parentData.absSize or parentData.resolution
@@ -391,35 +373,58 @@ function dgsGetRootElement()
 end
 
 ------------Move Scale Handler
-function dgsAddMoveHandler(dgsElement)
+function dgsAddMoveHandler(dgsElement,x,y,w,h,xRel,yRel,wRel,hRel,forceReplace)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
-	
+	local x,y,xRel,yRel = x or 0,y or 0,xRel ~= false and true,yRel ~= false and true
+	local w,h,wRel,hRel = w or 0,h or 0,wRel ~= false and true,hRel ~= false and true
+	local moveData = dgsElementData[dgsElement].moveHandlerData
+	if not moveData or forceReplace then
+		dgsSetData(dgsElement,"moveHandlerData",{x,y,w,h,xRel,yRel,wRel,hRel})
+	end
 end
 
 function dgsRemoveMoveHandler(dgsElement)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
-
+	local moveData = dgsElementData[dgsElement].moveHandlerData
+	if moveData then
+		dgsSetData(dgsElement,"moveHandlerData",nil)
+	end
 end
 
-function dgsIsMoveable(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsMoveable at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
-
+function dgsIsMoveHandled(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsMoveHandled at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+	return dgsElementData[dgsElement].moveHandlerData and true or false
 end
 
-function dgsAddSizeHandler(dgsElement)
+function dgsAddSizeHandler(dgsElement,left,right,top,bottom,leftRel,rightRel,topRel,bottomRel,forceReplace)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddSizeHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
-
+	local left = left or 0
+	local right = right or left
+	local top = top or right
+	local bottom = bottom or top
+	local leftRel = leftRel ~= false and true
+	local rightRel = rightRel ~= false and true
+	local topRel = topRel ~= false and true
+	local bottomRel = bottomRel ~= false and true
+	local sizeData = dgsElementData[dgsElement].sizeHandlerData
+	if not sizeData or forceReplace then
+		dgsSetData(dgsElement,"sizeHandlerData",{left,right,top,bottom,leftRel,rightRel,topRel,bottomRel})
+	end
 end
 
 function dgsRemoveSizeHandler(dgsElement)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveSizeHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
-
+	local sizeData = dgsElementData[dgsElement].sizeHandlerData
+	if sizeData then
+		dgsSetData(dgsElement,"sizeHandlerData",nil)
+	end
 end
 
-function dgsIsSizeable(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsSizeable at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
-
+function dgsIsSizeHandled(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsSizeHandled at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+	return dgsElementData[dgsElement].sizeHandlerData and true or false
 end
+
 ------------Round Up Functions
 defaultRoundUpPoints = 3
 function dgsRoundUp(num,points)

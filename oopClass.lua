@@ -265,6 +265,12 @@ function dgsImportOOPClass()
 				stopAlphaing = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsStopAlphaing",self.dgsElement,...)
 				end,
+				getPostGUI = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGetPostGUI",self.dgsElement,...)
+				end,
+				setPostGUI = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGetPostGUI",self.dgsElement,...)
+				end,
 				destroy = function(self,...)
 					return destroyElement(self.dgsElement)
 				end,
@@ -279,6 +285,33 @@ function dgsImportOOPClass()
 				end,
 				getElement = function(self)
 					return self.dgsElement
+				end,
+				addMoveHandler = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsAddMoveHandler",self.dgsElement,...)
+				end,
+				removeMoveHandler = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsRemoveMoveHandler",self.dgsElement,...)
+				end,
+				isMoveHandled = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsIsMoveHandled",self.dgsElement,...)
+				end,
+				addSizeHandler = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsAddSizeHandler",self.dgsElement,...)
+				end,
+				removeSizeHandler = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsRemoveSizeHandler",self.dgsElement,...)
+				end,
+				isSizeHandled = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsIsSizeHandled",self.dgsElement,...)
+				end,
+				attachToTranslation = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsAttachToTranslation",self.dgsElement,...)
+				end,
+				detachFromTranslation = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsDetachFromTranslation",self.dgsElement,...)
+				end,
+				getTranslationName = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGetTranslationName",self.dgsElement,...)
 				end,
 			}
 			for k,v in pairs(dgsOOPHead.HaveParent) do
@@ -816,7 +849,61 @@ function dgsImportOOPClass()
 		DGSClass = {
 			getClass = function(self,dgsElement)
 				return dgsGetClass(dgsElement)
-			end
+			end,
+			isStyleAvailable = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsIsStyleAvailable",...)
+			end,
+			getLoadedStyleList = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsGetLoadedStyleList",...)
+			end,
+			setCurrentStyle = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsSetCurrentStyle",...)
+			end,
+			getCurrentStyle = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsGetCurrentStyle",...)
+			end,
+			getScreenSize = function(self)
+				return guiGetScreenSize()
+			end,
+			setInputEnabled = function(self,...)
+				return guiSetInputEnabled(...)
+			end,
+			getInputEnabled = function(self,...)
+				return guiGetInputEnabled(...)
+			end,
+			setRenderSetting = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsSetRenderSetting",...)
+			end,
+			getRenderSetting = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsGetRenderSetting",...)
+			end,
+			getLayerElements = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsGetLayerElements",...)
+			end,
+			addEasingFunction = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsAddEasingFunction",...)
+			end,
+			easingFunctionExists = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsEasingFunctionExists",...)
+			end,
+			removeEasingFunction = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsRemoveEasingFunction",...)
+			end,
+			getSystemFont = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsGetSystemFont",...)
+			end,
+			setSystemFont = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsSetSystemFont",...)
+			end,
+			translationTableExists = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsTranslationTableExists",...)
+			end,
+			setTranslationTable = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsSetTranslationTable",...)
+			end,
+			setAttachTranslation = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsSetAttachTranslation",...)
+			end,
 		}
 		for k,v in pairs(dgsOOPHead.NoParent) do
 			DGSClass[k] = v

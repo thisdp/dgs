@@ -46,6 +46,13 @@ function testButtonDisable()
 	dgsSetEnabled(button,false)
 end
 
+function testMoveHandler()
+	local window = dgsCreateWindow(100,100,800,800,"test",false)
+	local button = dgsCreateButton(500,500,200,80,"test",false,window)
+	dgsAddSizeHandler(button,5,5,5,5,false,false,false,false)
+	dgsAddMoveHandler(button,0,0,1,1)
+end
+
 function testProgressBar()
 	local pb= dgsCreateProgressBar(500,500,200,30,false)
 	dgsProgressBarSetProgress(pb,50)

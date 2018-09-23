@@ -1,5 +1,8 @@
 focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
+--Speed Up
+abs = math.abs
+--
 sW,sH = guiGetScreenSize()
 white = tocolor(255,255,255,255)
 black = tocolor(0,0,0,255)
@@ -3924,65 +3927,80 @@ function dgsCheckHit(hits,mx,my)
 			triggerEvent("onDgsCursorDrag",MouseData.clickl,mx,my)
 		end
 		if MouseData.Move then
-			if dgsGetType(MouseData.clickl) == "dgs-dxwindow" then
-				local pos = dgsElementData[MouseData.clickl].absPos
-				pos[1] = (mx-MouseData.Move[1])
-				pos[2] = (my-MouseData.Move[2])
-				calculateGuiPositionSize(MouseData.clickl,pos[1],pos[2],false)
+			local pos = {0,0}
+			local parent = FatherTable[MouseData.clickl]
+			if parent then
+				pos = {getParentLocation(parent)}
+				if dgsElementType[parent] == "dgs-dxwindow" then
+					if not dgsElementData[MouseData.clickl].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
+						pos[2] = pos[2] + (dgsElementData[parent].titleHeight or 0)
+					end
+				elseif dgsElementType[parent] == "dgs-dxtab" then
+					local tabpanel = dgsElementData[parent].parent
+					local size = dgsElementData[tabpanel].absSize[2]
+					local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*size or dgsElementData[tabpanel].tabHeight[1]
+					pos[2] = pos[2] + height
+				end
 			end
+			local posX = (mx-MouseData.Move[1]-pos[1])
+			local posY = (my-MouseData.Move[2]-pos[2])
+			calculateGuiPositionSize(MouseData.clickl,posX,posY,false)
 		end
 		if MouseData.Scale then
-			if dgsGetType(MouseData.clickl) == "dgs-dxwindow" then
-				local pos = dgsElementData[MouseData.clickl].absPos
-				local siz = dgsElementData[MouseData.clickl].absSize
-				local relat = {1,1}
-				pos[1] = pos[1]*relat[1]
-				pos[2] = pos[2]*relat[2]
-				siz[1] = siz[1]*relat[1]
-				siz[2] = siz[2]*relat[2]
-				local endr = pos[1] + siz[1]
-				local endd = pos[2] + siz[2]
-				local minSizeX,minSizeY = dgsElementData[MouseData.clickl].minSize[1],dgsElementData[MouseData.clickl].minSize[2]
-				if MouseData.Scale[5] == 1 then
-					local old = pos[1]
-					siz[1] = (siz[1]-(mx-MouseData.Scale[1]-old))
-					if siz[1] < minSizeX then
-						siz[1] = minSizeX
-						pos[1] = endr-siz[1]
-					else
-						pos[1] = (mx-MouseData.Scale[1])
+			local pos = {dgsGetPosition(MouseData.clickl,false,true)}
+			local addPos = {0,0}
+			local parent = FatherTable[MouseData.clickl]
+			if parent then
+				addPos = {getParentLocation(parent)}
+				if dgsElementType[parent] == "dgs-dxwindow" then
+					if not dgsElementData[MouseData.clickl].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
+						addPos[2] = addPos[2] + (dgsElementData[parent].titleHeight or 0)
 					end
-					pos[1] = pos[1]/relat[1]
-					siz[1] = siz[1]/relat[1]
+				elseif dgsElementType[parent] == "dgs-dxtab" then
+					local tabpanel = dgsElementData[parent].parent
+					local size = dgsElementData[tabpanel].absSize[2]
+					local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*size or dgsElementData[tabpanel].tabHeight[1]
+					addPos[2] = addPos[2] + height
 				end
-				if MouseData.Scale[5] == 3 then
-					siz[1] = (mx-pos[1]-MouseData.Scale[3])
-					if siz[1] < minSizeX then
-						siz[1] = minSizeX
-					end
-					siz[1] = siz[1]/relat[2]
-				end
-				if MouseData.Scale[6] == 2 then
-					local old = pos[2]
-					siz[2] = (siz[2]-(my-MouseData.Scale[2]-old))/relat[1]
-					if siz[2] < minSizeY then
-						siz[2] = minSizeY
-						pos[2] = endd-siz[2]
-					else
-						pos[2] = (my-MouseData.Scale[2])
-					end
-					pos[2] = pos[2]/relat[1]
-					siz[2] = siz[2]/relat[1]
-				end
-				if MouseData.Scale[6] == 4 then
-					siz[2] = (my-pos[2]-MouseData.Scale[4])/relat[2]
-					if siz[2] < minSizeY then
-						siz[2] = minSizeY
-					end
-					siz[2] = siz[2]/relat[2]
-				end
-				calculateGuiPositionSize(MouseData.clickl,pos[1],pos[2],false,siz[1],siz[2],false)
 			end
+			local siz = dgsElementData[MouseData.clickl].absSize
+			local endr = pos[1] + siz[1]
+			local endd = pos[2] + siz[2]
+			local minSize = dgsElementData[MouseData.clickl].minSize or {10,10}
+			local minSizeX,minSizeY = minSize[1] or 10,minSize[2] or 10
+			if MouseData.Scale[5] == 1 then
+				local old = pos[1]
+				siz[1] = (siz[1]-(mx-MouseData.Scale[1]-old))
+				if siz[1] < minSizeX then
+					siz[1] = minSizeX
+					pos[1] = endr-siz[1]
+				else
+					pos[1] = (mx-MouseData.Scale[1])
+				end
+			end
+			if MouseData.Scale[5] == 3 then
+				siz[1] = (mx-pos[1]-MouseData.Scale[3])
+				if siz[1] < minSizeX then
+					siz[1] = minSizeX
+				end
+			end
+			if MouseData.Scale[6] == 2 then
+				local old = pos[2]
+				siz[2] = siz[2]-(my-MouseData.Scale[2]-old)
+				if siz[2] < minSizeY then
+					siz[2] = minSizeY
+					pos[2] = endd-siz[2]
+				else
+					pos[2] = (my-MouseData.Scale[2])
+				end
+			end
+			if MouseData.Scale[6] == 4 then
+				siz[2] = (my-pos[2]-MouseData.Scale[4])
+				if siz[2] < minSizeY then
+					siz[2] = minSizeY
+				end
+			end
+			calculateGuiPositionSize(MouseData.clickl,pos[1]-addPos[1],pos[2]-addPos[2],false,siz[1],siz[2],false)
 		else
 			MouseData.lastPos = {-1,-1}
 		end
@@ -4023,10 +4041,8 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 			end
 		end
 		if button == "left" then
-			if guitype == "dgs-dxwindow" then
-				if not checkScale() then
-					checkMove()
-				end
+			if not checkScale() then
+				checkMove()
 			end
 			if guitype == "dgs-dxscrollbar" then
 				local scrollArrow = dgsElementData[source].scrollArrow
@@ -4414,18 +4430,36 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 end)
 
 function checkMove()
-	local mx,my = getCursorPosition()
-	mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
-	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
-	local offsetx,offsety = mx-x,my-y
-	if dgsGetType(source) == "dgs-dxwindow" then
+	local moveData = dgsElementData[source].moveHandlerData
+	if moveData then
+		local mx,my = getCursorPosition()
+		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
+		local x,y = dgsGetPosition(source,false,true)
+		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local offsetx,offsety = mx-x,my-y
+		local xRel,yRel,wRel,hRel = moveData[5],moveData[6],moveData[7],moveData[8]
+		local chx = xRel and moveData[1]*w or moveData[1]
+		local chy = yRel and moveData[2]*h or moveData[2]
+		local chw = wRel and moveData[3]*w or moveData[3]
+		local chh = hRel and moveData[4]*h or moveData[4]
+		if not (offsetx >= chx and offsetx <= chx+chw and offsety >= chy and offsety <= chy+chh) then
+			return
+		end
+		
+		MouseData.Move = {offsetx,offsety}
+	elseif dgsGetType(source) == "dgs-dxwindow" then
+		local mx,my = getCursorPosition()
+		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
+		local x,y = dgsGetPosition(source,false,true)
+		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local offsetx,offsety = mx-x,my-y
+		local moveData = dgsElementData[source].moveHandlerData
 		local movable = dgsElementData[source].movable
 		if not movable then return end
-		local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-		local titsize = dgsElementData[source].movetyp and sy or dgsElementData[source].titleHeight
+		local titsize = dgsElementData[source].movetyp and h or dgsElementData[source].titleHeight
 		if offsety > titsize then return end
+		MouseData.Move = {offsetx,offsety}
 	end
-	MouseData.Move = {offsetx,offsety}
 end
 
 function checkScrollBar(py,sd)
@@ -4437,34 +4471,62 @@ function checkScrollBar(py,sd)
 end
 
 function checkScale()
-	local mx,my = getCursorPosition()
-	mx,my = (mx or -1)*sW,(my or -1)*sH
-	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
-	local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-	local offsets = {mx-x,my-y,mx-x-w,my-y-h}
-	local left
-	local right
-	if dgsGetType(source) == "dgs-dxwindow" then
-		local sizable = dgsElementData[source].sizable
-		if not sizable then return false end
-		local borderSize = dgsElementData[source].borderSize
-		if math.abs(offsets[1]) < borderSize then
+	local sizeData = dgsElementData[source].sizeHandlerData
+	if sizeData then
+		local mx,my = getCursorPosition()
+		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
+		local x,y = dgsGetPosition(source,false,true)
+		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local offsetx,offsety = mx-x,my-y
+		local leftRel,rightRel,topRel,bottomRel = sizeData[5],sizeData[6],sizeData[7],sizeData[8]
+		local left = leftRel and sizeData[1]*w or sizeData[1]
+		local right = rightRel and sizeData[2]*h or sizeData[2]
+		local top = topRel and sizeData[3]*w or sizeData[3]
+		local bottom = bottomRel and sizeData[4]*h or sizeData[4]
+		local offsets = {mx-x,my-y,mx-x-w,my-y-h}
+		if abs(offsets[1]) < left then
 			offsets[5] = 1
-		elseif math.abs(offsets[3]) < borderSize then
+		elseif abs(offsets[3]) < right then
 			offsets[5] = 3
 		end
-		if math.abs(offsets[2]) < borderSize then
+		if abs(offsets[2]) < top then
 			offsets[6] = 2
-		elseif math.abs(offsets[4]) < borderSize then
+		elseif abs(offsets[4]) < bottom then
 			offsets[6] = 4
 		end
 		if not offsets[5] and not offsets[6] then
 			MouseData.Scale = false
 			return false
 		end
+		MouseData.Scale = offsets	
+		return true
+	elseif dgsGetType(source) == "dgs-dxwindow" then
+		local mx,my = getCursorPosition()
+		mx,my = (mx or -1)*sW,(my or -1)*sH
+		local x,y = dgsGetPosition(source,false,true)
+		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local offsets = {mx-x,my-y,mx-x-w,my-y-h}
+		local sizable = dgsElementData[source].sizable
+		if not sizable then return false end
+		local borderSize = dgsElementData[source].borderSize
+		if abs(offsets[1]) < borderSize then
+			offsets[5] = 1
+		elseif abs(offsets[3]) < borderSize then
+			offsets[5] = 3
+		end
+		if abs(offsets[2]) < borderSize then
+			offsets[6] = 2
+		elseif abs(offsets[4]) < borderSize then
+			offsets[6] = 4
+		end
+		if not offsets[5] and not offsets[6] then
+			MouseData.Scale = false
+			return false
+		end
+		MouseData.Scale = offsets
+		return true
 	end
-	MouseData.Scale = offsets
-	return true
+	return false
 end
 DoubleClick = {}
 DoubleClick.down = false

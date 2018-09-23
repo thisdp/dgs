@@ -12,6 +12,8 @@
 	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent too many the same texture element)
 	disabledColor = true,
 	disabledColorPercent = 0.8,
+---------------------------------------------------------------------------------------------------Cursor Image
+
 ---------------------------------------------------------------------------------------------------Unique
 -----------------------------------------------------------------------------------DGS Arrow List
 	arrowlist = {
