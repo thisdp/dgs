@@ -413,6 +413,7 @@
 		},
 	---Image
 		image = {},
+		titleImage = {},
 		textSize = {1,1},
 		titleHeight = 25,
 		borderSize = 5,
