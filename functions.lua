@@ -96,6 +96,7 @@ function getParentLocation(dgsElement,rndsup,x,y)
 		eleData = dgsElementData[dgsElement]
 		if dgsElementType[dgsElement] == "dgs-dxtab" then
 			dgsElement = eleData.parent
+			eleData = dgsElementData[dgsElement]
 			local h = eleData.absSize[2]
 			local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
 			x = x+eleData.absPos[1]
