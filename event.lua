@@ -235,6 +235,7 @@ function setColorAlpha(color,alpha)
 	local g = color%256
 	local color = (color-g)/256
 	local r = color%256
+	alpha = alpha-alpha%1
 	return b+g*256+r*65536+alpha*16777216
 end
 
@@ -245,10 +246,10 @@ function applyColorAlpha(color,alpha)
 	local color = (color-g)/256
 	local r = color%256
 	local color = (color-r)/256
-	local a = color%256
-	return b+g*256+r*65536+a*alpha*16777216
+	local a = color%256*alpha
+	a = a-a%1
+	return b+g*256+r*65536+a*16777216
 end
-
 
 --------------------------------Other Utility
 function dgsRunString(func,...)
