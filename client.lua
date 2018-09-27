@@ -126,6 +126,7 @@ function dgsCoreRender()
 		MouseX,MouseY = mx,my
 	else
 		MouseData.Move = false
+		MouseData.MoveScroll = false
 		MouseData.clickData = false
 		MouseData.clickl = false
 		MouseData.clickr = false
@@ -201,6 +202,7 @@ function dgsCoreRender()
 		if not isCursorShowing() then
 			MouseData.hit = false
 			MouseData.Move = false
+			MouseData.MoveScroll = false
 			MouseData.clickData = false
 			MouseData.clickl = false
 			MouseData.clickr = false
@@ -282,7 +284,7 @@ function dgsCoreRender()
 		end
 		dxDrawText("Resource Elements("..ResCount.."):",301,sH*0.4+16,sW,sH,black)
 		dxDrawText("Resource Elements("..ResCount.."):",300,sH*0.4+15)
-	end	
+	end
 end
 
 function interfaceRender()
@@ -1635,7 +1637,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						colorImageIndex[MouseData.clickData] = 3
 						if MouseData.clickData == 2 then
 							local position = 0
-							local mvx,mvy = MouseData.Move[1],MouseData.Move[2]
+							local mvx,mvy = MouseData.MoveScroll[1],MouseData.MoveScroll[2]
 							if csRange ~= 0 then
 								if voh then
 									local gx = (mx-mvx-ax)/csRange
@@ -4445,7 +4447,6 @@ function checkMove()
 		if not (offsetx >= chx and offsetx <= chx+chw and offsety >= chy and offsety <= chy+chh) then
 			return
 		end
-		
 		MouseData.Move = {offsetx,offsety}
 	elseif dgsGetType(source) == "dgs-dxwindow" then
 		local mx,my = getCursorPosition()
@@ -4467,7 +4468,7 @@ function checkScrollBar(py,sd)
 	mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local offsetx,offsety = mx-x,my-y
-	MouseData.Move = {sd and offsetx-py or offsetx,sd and offsety or offsety-py}
+	MouseData.MoveScroll = {sd and offsetx-py or offsetx,sd and offsety or offsety-py}
 end
 
 function checkScale()
@@ -4660,6 +4661,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			MouseData.clickr = false
 		end
 		MouseData.Move = false
+		MouseData.MoveScroll = false
 		MouseData.Scale = false
 		MouseData.clickData = nil
 		if isTimer(MouseData.Timer[button]) then
