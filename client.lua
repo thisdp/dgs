@@ -1880,6 +1880,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local columnCount = #columnData
 				local rowCount = #rowData
 				local leading = DataTab.leading
+				local rowHeightLeadingTemp = rowHeight+leading
 				dxSetRenderTarget()
 				local rowMoveOffset = DataTab.rowMoveOffset
 				local columnOffset = DataTab.columnOffset
@@ -1896,8 +1897,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local sortIcon = DataTab.sortFunction == sortFunctions_lower and "▼" or (DataTab.sortFunction == sortFunctions_upper and "▲") or nil
 				local sortColumn = DataTab.sortColumn
 				if not mode then
-					local whichRowToStart = -math.floor((DataTab.rowMoveOffset+rowHeight)/(rowHeight+leading))+1
-					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThickH+rowHeight*2)/(rowHeight+leading))-1
+					local temp1 = (DataTab.rowMoveOffset+rowHeight)/rowHeightLeadingTemp
+					local whichRowToStart = -(temp1-temp1%1)+1
+					local temp2 = (h-columnHeight-scbThickH+rowHeight*2)/rowHeightLeadingTemp
+					local whichRowToEnd = whichRowToStart+(temp2-temp2%1)-1
 					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
 					local renderTarget = DataTab.renderTarget
 					local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
@@ -1908,7 +1911,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						local tempColumnOffset = columnMoveOffset+columnOffset
 						local mouseColumnPos = mx-cx
 						local mouseSelectColumn = -1
-						for id,data in ipairs(columnData) do
+						local cPosStart,cPosEnd
+						for id = 1,#columnData do
+							local data = columnData[id]
 							local _columnTextColor = data[5] or columnTextColor
 							local _columnTextColorCoded = data[6] or colorcoded
 							local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
@@ -1919,6 +1924,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							if _tempStartx <= w and _tempEndx >= 0 then
 								cpos[id] = tempCpos
 								cend[id] = _tempEndx
+								if not cPosStart then
+									cPosStart = id
+								end
+								cPosEnd = id
 								if isDraw1 then
 									local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
 									if sortColumn == id and sortIcon then
@@ -1942,8 +1951,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					dxSetRenderTarget(renderTarget[2],true)
 						if MouseData.enter == v then		-------PreSelect
 							if mouseInsideRow then
-								local toffset = (whichRowToStart*(rowHeight+leading))+DataTab.rowMoveOffset
-								sid = math.floor((my-cy-columnHeight-toffset)/(rowHeight+leading))+whichRowToStart+1
+								local toffset = (whichRowToStart*rowHeightLeadingTemp)+DataTab.rowMoveOffset
+								local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp
+								sid = (tempID-tempID%1)+whichRowToStart+1
 								if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
 									DataTab.oPreSelect = sid
 									if rowData[sid][-2] then
@@ -1976,11 +1986,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 									_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 								end
 								local textBuffer = {}
-								for id,v in pairs(cpos) do
-									local text = lc_rowData[id][1]
-									local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
-									local _txtScalex = lc_rowData[id][4] or rowTextSx
-									local _txtScaley = lc_rowData[id][5] or rowTextSy
+								local textBufferCnt = 1
+								--for id,v in pairs(cpos) do
+								if not cPosStart or not cPosEnd then break end
+								for id = cPosStart,cPosEnd do
+									local currentRowData = lc_rowData[id]
+									local text = currentRowData[1]
+									local _txtFont = isSection and sectionFont or (currentRowData[6] or font)
+									local _txtScalex = currentRowData[4] or rowTextSx
+									local _txtScaley = currentRowData[5] or rowTextSy
 									local rowState = 1
 									if selectionMode == 1 then
 										if i == preSelect[1] then
@@ -2022,19 +2036,21 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 										dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,color[rowState])
 									end
 									if text then
-										local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
-										if lc_rowData[id][7] then
-											local imageData = lc_rowData[id][7]
+										local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
+										if currentRowData[7] then
+											local imageData = currentRowData[7]
 											if isElement(imageData[1]) then
 												dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2])
 											else
 												dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 											end
 										end
-										textBuffer[id] = {lc_rowData[id][1],_x-_x%1,_sx-_sx%1,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
+										textBuffer[textBufferCnt] = {currentRowData[1],_x-_x%1,_sx-_sx%1,currentRowData[2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
+										textBufferCnt = textBufferCnt + 1
 									end
 								end
-								for k,v in pairs(textBuffer) do
+								for i=1,#textBuffer do
+									local v = textBuffer[i]
 									local colorcoded = v[9]
 									local text = v[1]
 									if shadow then
@@ -2048,16 +2064,19 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							end
 						end
 					dxSetRenderTarget(rndtgt)
-					if isElement(renderTarget[2]) then
+					if isDraw2 then
 						dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,renderTarget[2],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					end
-					if isElement(renderTarget[1]) then
+					if isDraw1 then
 						dxDrawImage(x,y,w-scbThickV,columnHeight,renderTarget[1],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					end
 				elseif columnCount >= 1 then
-					local _rowMoveOffset = math.floor(rowMoveOffset/(rowHeight+leading))*(rowHeight+leading)
-					local whichRowToStart = -math.floor((_rowMoveOffset+rowHeight)/(rowHeight+leading))+1
-					local whichRowToEnd = whichRowToStart+math.floor((h-columnHeight-scbThickH+rowHeight*2)/(rowHeight+leading))-2
+					local temp1 = rowMoveOffset/rowHeightLeadingTemp
+					local _rowMoveOffset = (temp1-temp1%1)*rowHeightLeadingTemp
+					local temp2 = (_rowMoveOffset+rowHeight)/rowHeightLeadingTemp
+					local whichRowToStart = -(temp2-temp2%1)+1
+					local temp3 = (h-columnHeight-scbThickH+rowHeight*2)/rowHeightLeadingTemp
+					local whichRowToEnd = whichRowToStart+(temp3-temp3%1)-2
 					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
 					local whichColumnToStart,whichColumnToEnd = -1,-1
 					local cpos = {}
@@ -2118,8 +2137,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					end
 					if MouseData.enter == v then		-------PreSelect
 						if mouseInsideRow then
-							local toffset = (whichRowToStart*(rowHeight+leading))+_rowMoveOffset
-							sid = math.floor((my-cy-columnHeight-toffset)/(rowHeight+leading))+whichRowToStart+1
+							local toffset = (whichRowToStart*rowHeightLeadingTemp)+_rowMoveOffset
+							local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp
+							sid = (tempID-tempID%1)+whichRowToStart+1
 							if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+_rowMoveOffset then
 								DataTab.oPreSelect = sid
 								if rowData[sid][-2] then
@@ -2153,11 +2173,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 						end
 						local textBuffer = {}
+						local textBufferCnt = 1
 						for id=whichColumnToStart,whichColumnToEnd do
-							local text = lc_rowData[id][1]
-							local _txtFont = isSection and sectionFont or (lc_rowData[id][6] or font)
-							local _txtScalex = lc_rowData[id][4] or rowTextSx
-							local _txtScaley = lc_rowData[id][5] or rowTextSy
+							local currentRowData = lc_rowData[id]
+							local text = currentRowData[1]
+							local _txtFont = isSection and sectionFont or (currentRowData[6] or font)
+							local _txtScalex = currentRowData[4] or rowTextSx
+							local _txtScaley = currentRowData[5] or rowTextSy
 							local rowState = 1
 							if selectionMode == 1 then
 								if i == preSelect[1] then
@@ -2198,28 +2220,32 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,color[rowState],rendSet)
 							end
 							if text ~= "" then
-								local colorcoded = lc_rowData[id][3] == nil and colorcoded or lc_rowData[id][3]
-								if lc_rowData[id][7] then
-									local imageData = lc_rowData[id][7]
+								local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
+								if currentRowData[7] then
+									local imageData = currentRowData[7]
 									if isElement(imageData[1]) then
 										dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2])
 									else
 										dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 									end
 								end
-								textBuffer[id] = {lc_rowData[id][1],_x,_sx+_x,lc_rowData[id][2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
+								textBuffer[textBufferCnt] = {currentRowData[1],_x,_sx+_x,currentRowData[2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
+								textBufferCnt = textBufferCnt+1
 							end
 						end
-						for k,v in pairs(textBuffer) do
+						--for k,v in pairs(textBuffer) do
+						
+						for i=1,#textBuffer do
+							local v = textBuffer[i]
 							local colorcoded = v[9]
 							local text = v[1]
 							if shadow then
 								if colorcoded then
 									text = text:gsub("#%x%x%x%x%x%x","") or text
 								end
-								dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,true,false,true)
+								dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,rendSet,false,true)
 							end
-							dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],v[10],"center",v[8],false,true,colorcoded,true)
+							dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],v[10],"center",v[8],false,rendSet,colorcoded,true)
 						end
 					end
 				end
@@ -4428,6 +4454,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			end
 		end
 		dgsElementData[source] = nil
+		dgsRenderTempData[source] = nil
 	end
 end)
 

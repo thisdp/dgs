@@ -4,6 +4,7 @@
 	<file src="media.html" />
 	<file src="meta.xml" />
 	<file src="styleManager/styleMapper.lua"/>
+	<file src="shaders/circle.fx" type="client" />
 	<file src="shaders/textureRelight.fx" type="client" />
 	<file src="shaders/mta-helper.fx" type="client" />
 	

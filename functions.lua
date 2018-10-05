@@ -274,18 +274,15 @@ function dgsGetEnabled(dxgui)
 	return dgsGetData(dxgui,"enabled")
 end
 
-function dgsCreateFont(path,...)
-	assert(type(path) == "string","Bad argument @dgsCreateFont at argument 1, expect string got "..type(path))
-	if not fileExists(":"..getResourceName(getThisResource()).."/"..path) and not fileExists(path) then
-		if not fileExists(path) then
-			assert(false,"Bad argument @dgsCreateFont at argument 1,couldn't find such file '"..path.."'")
-		end
-		local filename = split(path,"/")
-		fileCopy(path,":"..getResourceName(getThisResource()).."/"..filename[#filename])
-		path = filename[#filename]
+function dgsCreateFont(path,size,bold,quality)
+	assert(type(path) == "string","Bad argument @dgsCreateFont at argument 1, expect a string got "..dgsGetType(path))
+	sourceResource = sourceResource or getThisResource()
+	if not string.find(path,":") then
+		local resname = getResourceName(sourceResource)
+		path = ":"..resname.."/"..path
 	end
-	local font = dxCreateFont(path,...)
-	return font
+	assert(fileExists(path),"Bad argument @dgsCreateFont at argument 1,couldn't find such file '"..path.."'")
+	return dxCreateFont(path,size,bold,quality)
 end
 
 function dgsSetFont(dxgui,font)

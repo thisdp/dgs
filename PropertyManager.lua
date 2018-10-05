@@ -1,4 +1,5 @@
 dgsElementData = {}		----The Global BuiltIn DGS Element Data Table
+dgsRenderTempData = {}
 
 function dgsGetData(element,key)
 	return dgsElementData[element] and dgsElementData[element][key] or false

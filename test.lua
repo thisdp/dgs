@@ -170,34 +170,36 @@ end
 
 
 function GridListSortingTest()
-	local sortfnc = [[
-		local arg = {...}
-		local column = dgsElementData[self].sortColumn
-		return arg[1][column][1] < arg[2][column][1]
-	]]
+	for x=1,10 do
+		local sortfnc = [[
+			local arg = {...}
+			local column = dgsElementData[self].sortColumn
+			return arg[1][column][1] < arg[2][column][1]
+		]]
 
-	--Be More Clear
-	local sortfnc = [[
-		local arg = {...}
-		local a = arg[1]
-		local b = arg[2]
-		local column = dgsElementData[self].sortColumn
-		local texta,textb = a[column][1],b[column][1]
-		return texta < textb
-	]]
-	
-	gridlist = dgsCreateGridList(300,50,600,600,false)
-	dgsGridListAddColumn(gridlist,"test1",0.2)
-	dgsGridListAddColumn(gridlist,"test2",0.1)
-	dgsSetProperty(gridlist,"mode",true)
-	for i=1,500 do
-		local row = dgsGridListAddRow(gridlist)
-		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
-		dgsGridListSetItemText(gridlist,row,2,tostring(500-i).." Test DGS")
+		--Be More Clear
+		local sortfnc = [[
+			local arg = {...}
+			local a = arg[1]
+			local b = arg[2]
+			local column = dgsElementData[self].sortColumn
+			local texta,textb = a[column][1],b[column][1]
+			return texta < textb
+		]]
+		
+		gridlist = dgsCreateGridList(200,50,600,600,false)
+		dgsGridListAddColumn(gridlist,"test1",0.2)
+		--dgsGridListAddColumn(gridlist,"test2",0.1)
+		dgsSetProperty(gridlist,"mode",true)
+		for i=1,30 do
+			local row = dgsGridListAddRow(gridlist)
+			dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
+			--dgsGridListSetItemText(gridlist,row,2,tostring(500-i).." Test DGS")
+		end
+		--dgsGridListSetSortEnabled(gridlist,false) --disable click sorting
+		--dgsGridListSetSortFunction(gridlist,sortfnc)
+		--dgsGridListSetSortColumn(gridlist,2)
 	end
-	--dgsGridListSetSortEnabled(gridlist,false) --disable click sorting
-	--dgsGridListSetSortFunction(gridlist,sortfnc)
-	--dgsGridListSetSortColumn(gridlist,2)
 end
 
 function Plugin_media()
