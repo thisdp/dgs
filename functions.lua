@@ -475,6 +475,7 @@ addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"disabledColorPercent",styleSettings.disabledColorPercent)
 	dgsSetData(source,"postGUI",dgsRenderSetting.postGUI == nil and true or false)
 	dgsSetData(source,"outline",false) --{side,width,color}
+	dgsSetData(source,"changeOrder",true) --Change the order when "bring to front" or clicked
 end)
 
 function dgsClear(theType,res)

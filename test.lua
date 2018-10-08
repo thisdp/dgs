@@ -309,3 +309,9 @@ end
 function test_switchButton()
 	local button = dgsCreateSwitchButton(200,200,100,25,"on","off",false)
 end
+
+function testShader()
+	--Circle
+	local circle = dxCreateShader("shaders/circle.fx")
+	local image = dgsCreateImage(300,300,400,400,circle,false)
+end

@@ -150,44 +150,46 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 			dgsSetData(oldShow,"selectfrom",dgsElementData[oldShow].cursorpos)
 		end
 	end
-	if not isElement(parent) then
-		local id = table.find(CenterFatherTable,dxgui)
-		if id then
-			table.remove(CenterFatherTable,id)
-			table.insert(CenterFatherTable,dxgui)
-		end
-	else
-		local parents = dxgui
-		while true do
-			local uparents = FatherTable[parents]	--Get Parent
-			if isElement(uparents) then
-				local children = ChildrenTable[uparents]
-				local id = table.find(children,parents)
-				if id then
-					table.remove(children,id)
-					table.insert(children,parents)
-					if dgsElementType[parents] == "dgs-dxscrollpane" then
-						local scrollbar = dgsElementData[parents].scrollbars
-						dgsBringToFront(scrollbar[1],"left",_,true)
-						dgsBringToFront(scrollbar[2],"left",_,true)
-					end
-				end
-				parents = uparents
-			else
-				local id = table.find(CenterFatherTable,parents)
-				if id then
-					table.remove(CenterFatherTable,id)
-					table.insert(CenterFatherTable,parents)
-					if dgsElementType[parents] == "dgs-dxscrollpane" then
-						local scrollbar = dgsElementData[parents].scrollbars
-						dgsBringToFront(scrollbar[1],"left",_,true)
-						dgsBringToFront(scrollbar[2],"left",_,true)
-					end
-				end
-				break
+	if dgsElementData[dxgui].changeOrder then
+		if not isElement(parent) then
+			local id = table.find(CenterFatherTable,dxgui)
+			if id then
+				table.remove(CenterFatherTable,id)
+				table.insert(CenterFatherTable,dxgui)
 			end
-			if dontMoveParent then
-				break
+		else
+			local parents = dxgui
+			while true do
+				local uparents = FatherTable[parents]	--Get Parent
+				if isElement(uparents) then
+					local children = ChildrenTable[uparents]
+					local id = table.find(children,parents)
+					if id then
+						table.remove(children,id)
+						table.insert(children,parents)
+						if dgsElementType[parents] == "dgs-dxscrollpane" then
+							local scrollbar = dgsElementData[parents].scrollbars
+							dgsBringToFront(scrollbar[1],"left",_,true)
+							dgsBringToFront(scrollbar[2],"left",_,true)
+						end
+					end
+					parents = uparents
+				else
+					local id = table.find(CenterFatherTable,parents)
+					if id then
+						table.remove(CenterFatherTable,id)
+						table.insert(CenterFatherTable,parents)
+						if dgsElementType[parents] == "dgs-dxscrollpane" then
+							local scrollbar = dgsElementData[parents].scrollbars
+							dgsBringToFront(scrollbar[1],"left",_,true)
+							dgsBringToFront(scrollbar[2],"left",_,true)
+						end
+					end
+					break
+				end
+				if dontMoveParent then
+					break
+				end
 			end
 		end
 	end
