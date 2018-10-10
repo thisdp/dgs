@@ -11,7 +11,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true) or table.insert(CenterFatherTable,1,cb)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true,true) or table.insert(CenterFatherTable,1,cb)
 	
 	local imageUnchecked = styleSettings.checkbox.image_f
 	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])

@@ -223,6 +223,20 @@ function dgsCoreRender()
 	end
 	if debugMode then
 		local ticks = getTickCount()-tk
+		if isElement(MouseData.hit) and debugMode == 2 then
+			local absX,absY = dgsGetPosition(MouseData.hit,false)
+			local rltX,rltY = dgsGetPosition(MouseData.hit,true)
+			local absW,absH = dgsGetSize(MouseData.hit,false)
+			local rltW,rltH = dgsGetSize(MouseData.hit,true)
+			dxDrawText("ABS X: "..absX , sW/2-100,10)
+			dxDrawText("ABS Y: "..absY , sW/2-100,25)
+			dxDrawText("RLT X: "..rltX , sW/2-100,40)
+			dxDrawText("RLT Y: "..rltY , sW/2-100,55)
+			dxDrawText("ABS W: "..absW , sW/2-100,70)
+			dxDrawText("ABS H: "..absH , sW/2-100,85)
+			dxDrawText("RLT W: "..rltW , sW/2-100,100)
+			dxDrawText("RLT H: "..rltH , sW/2-100,115)
+		end
 		local version = getElementData(resourceRoot,"Version")
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,black)
 		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-115)

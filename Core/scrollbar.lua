@@ -21,7 +21,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	dgsSetData(scrollbar,"multiplier",{1,false})
 	dgsSetData(scrollbar,"scrollArrow",true)
 	dgsSetData(scrollbar,"locked",false)
-	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true) or table.insert(CenterFatherTable,1,scrollbar)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true,true) or table.insert(CenterFatherTable,1,scrollbar)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar)
 	return scrollbar

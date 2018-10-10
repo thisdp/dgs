@@ -72,7 +72,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(gridlist,"configNextFrame",false)
-	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true) or table.insert(CenterFatherTable,1,gridlist)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or table.insert(CenterFatherTable,1,gridlist)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]

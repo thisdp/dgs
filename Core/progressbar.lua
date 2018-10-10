@@ -23,7 +23,7 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 	dgsSetData(progressbar,"indicatorMode",indicatorMode and true or false)
 	dgsSetData(progressbar,"padding",styleSettings.progressbar.padding)
 	dgsSetData(progressbar,"progress",0)
-	local _ = dgsIsDxElement(parent) and dgsSetParent(progressbar,parent,true) or table.insert(CenterFatherTable,1,progressbar)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(progressbar,parent,true,true) or table.insert(CenterFatherTable,1,progressbar)
 	insertResourceDxGUI(sourceResource,progressbar)
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false

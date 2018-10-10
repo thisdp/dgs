@@ -8,7 +8,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	end
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true) or table.insert(CenterFatherTable,1,rb)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true,true) or table.insert(CenterFatherTable,1,rb)
 	
 	local imageUnchecked = styleSettings.radiobutton.image_f
 	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])

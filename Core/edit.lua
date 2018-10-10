@@ -51,7 +51,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"maxLength",guiGetProperty(gedit,"MaxTextLength"))
 	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
 	editsCount = editsCount+1
-	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true) or table.insert(CenterFatherTable,1,edit)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or table.insert(CenterFatherTable,1,edit)
 	insertResourceDxGUI(sourceResource,edit)
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
 	local sx,sy = dgsGetSize(edit,false)

@@ -24,7 +24,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	end
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true) or table.insert(CenterFatherTable,1,combobox)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or table.insert(CenterFatherTable,1,combobox)
 	
 	local defcolor = defcolor or styleSettings.combobox.color[1]
 	local hovcolor = hovcolor or styleSettings.combobox.color[2]

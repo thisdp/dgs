@@ -89,7 +89,7 @@ function dgsGetDxGUINoParent(alwaysBottom)
 	return alwaysBottom and BottomFatherTable or CenterFatherTable
 end
 
-function dgsSetParent(child,parent,nocheckfather)
+function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 	if isElement(child) then
 		local _parent = FatherTable[child]
 		local parentTable = isElement(_parent) and ChildrenTable[_parent] or CenterFatherTable
@@ -111,6 +111,24 @@ function dgsSetParent(child,parent,nocheckfather)
 			end
 			FatherTable[id] = nil
 			table.insert(CenterFatherTable,child) 
+		end
+		---Update Position and Size
+		if not noUpdatePosSize then
+			local rlt = dgsElementData[child].relative
+			if rlt[1] then
+				local pos = dgsElementData[child].rltPos
+				calculateGuiPositionSize(child,pos[1],pos[2],true)
+			else
+				local pos = dgsElementData[child].absPos
+				calculateGuiPositionSize(child,pos[1],pos[2],false)
+			end
+			if rlt[2] then
+				local size = dgsElementData[child].rltSize
+				calculateGuiPositionSize(child,_,_,_,size[1],size[2],true)
+			else
+				local size = dgsElementData[child].absSize
+				calculateGuiPositionSize(child,_,_,_,size[1],size[2],false)
+			end
 		end
 		return true
 	end

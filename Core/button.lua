@@ -8,7 +8,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	end
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true) or table.insert(CenterFatherTable,1,button)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true,true) or table.insert(CenterFatherTable,1,button)
 	local norcolor = norcolor or styleSettings.button.color[1]
 	local hovcolor = hovcolor or styleSettings.button.color[2]
 	local clicolor = clicolor or styleSettings.button.color[3]

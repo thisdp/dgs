@@ -8,7 +8,7 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	end
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(switchbutton,parent,true) or table.insert(CenterFatherTable,1,switchbutton)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(switchbutton,parent,true,true) or table.insert(CenterFatherTable,1,switchbutton)
 
 	dgsSetData(switchbutton,"color_t",styleSettings.switchbutton.color_t)
 	dgsSetData(switchbutton,"color_f",styleSettings.switchbutton.color_f)

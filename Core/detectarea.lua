@@ -10,11 +10,7 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	dgsSetType(detectarea,"dgs-dxdetectarea")
 	dgsSetData(detectarea,"checkFunction",dgsDetectAreaDefaultFunction)
 	dgsSetData(detectarea,"debug",false)
-	if isElement(parent) then
-		dgsSetParent(detectarea,parent)
-	else
-		table.insert(CenterFatherTable,detectarea)
-	end
+	local _x = dgsIsDxElement(parent) and dgsSetParent(detectarea,parent,true,true) or table.insert(CenterFatherTable,1,detectarea)
 	insertResourceDxGUI(sourceResource,detectarea)
 	triggerEvent("onDgsPreCreate",detectarea)
 	calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)

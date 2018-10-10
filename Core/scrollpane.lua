@@ -7,7 +7,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollPane at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local scrollpane = createElement("dgs-dxscrollpane")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true) or table.insert(CenterFatherTable,1,scrollpane)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true,true) or table.insert(CenterFatherTable,1,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	local scbThick = styleSettings.scrollpane.scrollBarThick
 	dgsSetData(scrollpane,"scrollBarThick",scbThick,true)

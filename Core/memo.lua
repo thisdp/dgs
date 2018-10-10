@@ -41,7 +41,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(gmemo,"dxmemo",memo)
 	guiSetAlpha(gmemo,0)
 	dgsSetData(memo,"maxLength",guiGetProperty(gmemo,"MaxTextLength"))
-	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true) or table.insert(CenterFatherTable,1,memo)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or table.insert(CenterFatherTable,1,memo)
 	insertResourceDxGUI(sourceResource,memo)
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]

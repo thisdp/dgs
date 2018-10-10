@@ -48,8 +48,11 @@ addEvent("giveIPBack",true)
 -------DEBUG
 addCommandHandler("debugdgs",function(command,arg)
 	if not arg then
-		debugMode = not getElementData(localPlayer,"DGS-DEBUG")
+		debugMode = (not getElementData(localPlayer,"DGS-DEBUG")) and 1 or false
 		setElementData(localPlayer,"DGS-DEBUG",debugMode,false)
+	elseif arg == "2" then
+		debugMode = 2
+		setElementData(localPlayer,"DGS-DEBUG",2,false)
 	elseif arg == "c" then
 		debugMode_CompatibilityCheck = not getElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck")
 		setElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck",debugMode_CompatibilityCheck,false)

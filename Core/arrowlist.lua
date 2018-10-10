@@ -8,7 +8,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	end
 	local arrowlist = createElement("dgs-dxarrowlist")
 	dgsSetType(arrowlist,"dgs-dxarrowlist")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(arrowlist,parent,true) or table.insert(CenterFatherTable,1,arrowlist)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(arrowlist,parent,true,true) or table.insert(CenterFatherTable,1,arrowlist)
 	dgsSetData(arrowlist,"mode",false)
 	dgsSetData(arrowlist,"font",systemFont)
 	dgsSetData(arrowlist,"bgColor",styleSettings.arrowlist.bgColor)

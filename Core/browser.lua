@@ -9,7 +9,7 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 	local browser = createBrowser(0,0,isLocal and true or false,transparent and true or false)
 	assert(isElement(browser),"Bad argument @dgsCreateBrowser, can't create browser with 'createBrowser' !")
 	dgsSetType(browser,"dgs-dxbrowser")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(browser,parent,true) or table.insert(CenterFatherTable,1,browser)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(browser,parent,true,true) or table.insert(CenterFatherTable,1,browser)
 	dgsSetData(browser,"color",color or tocolor(255,255,255,255))
 	dgsSetData(browser,"transparent",transparent and true or false)
 	dgsSetData(browser,"isLocal",isLocal or false)
