@@ -1,4 +1,4 @@
-addEvent("onClientDgsDxMouseLeave",true)
+--[[addEvent("onClientDgsDxMouseLeave",true)
 addEvent("onClientDgsDxMouseEnter",true)
 addEvent("onClientDgsDxMouseClick",true)
 addEvent("onClientDgsDxMouseDoubleClick",true)
@@ -239,9 +239,7 @@ dgsDxEDAGetDebugModeEnabled	=	dgsEDAGetDebugModeEnabled
 dgsDxGridListGetItemImage	=	dgsGridListGetItemImage
 dgsDxGridListSetItemImage	=	dgsGridListSetItemImage
 dgsDxGridListRemoveItemImage	=	dgsGridListRemoveItemImage
-dgsDxGetMouseEnterGUI	=	dgsGetMouseEnterGUI
-
-
+dgsDxGetMouseEnterGUI	=	dgsGetMouseEnterGUI]]
 
 -----------------------------old Property
 
@@ -287,19 +285,3 @@ oldPropertyNameTable = {
 	selectfrom="selectFrom",
 	ignoreTitleSize="ignoreTitle",
 }
---[[
-function preFunction(res,fnc,aclAllow,filename,line,dxgui,property)
-	if fnc == "dgsGetProperties" or fnc == "dgsSetProperties" then
-		for k,v in pairs(property) do
-			if oldPropertyNameTable[k] then
-				outputDebugString("[DGS]"..resName.."/"..filename..":"..line..": @"..fnc.." Property '"..k.."' will be no longer supported, use '"..oldPropertyNameTable[k].."' instead",2)
-			end
-		end
-	elseif fnc == "dgsGetProperty" or fnc == "dgsSetProperty" then
-		local resName = getResourceName(res)
-		if oldPropertyNameTable[property] then
-			outputDebugString("[DGS]"..resName.."/"..filename..":"..line..": @"..fnc.." Property '"..property.."' will be no longer supported, use '"..oldPropertyNameTable[property].."' instead",2)
-		end
-	end
-end
-addDebugHook( "preFunction", preFunction )]]

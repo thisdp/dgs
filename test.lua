@@ -3,10 +3,11 @@ function createTest()
 		return math.abs(progress^2-0.5)*2
 	]])
 	
-	wind = dgsCreateWindow(math.floor(0.2*sW),math.floor(0.3*sH),math.floor(0.4*sW),math.floor(0.4*sH),"Example Scroll Pane (exclude this window)",false)
-	--pane = dgsCreateScrollPane(0,0,1,1,true,wind)
-	gdlt = dgsCreateImage(0,0,0.7,0.7,_,true,wind,tocolor(255,255,255,255))
-	gdlt2 = dgsCreateImage(0,0,0.7,0.7,_,true,gdlt,tocolor(0,255,255,255))
+	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
+	pane = dgsCreateScrollPane(0,0,1,1,true,wind)
+	gdlt = dgsCreateImage(0.5,0,1.1,1.1,_,true,pane,tocolor(255,255,255,255))
+	dgsSetProperty(pane,"outline",{"out",2,tocolor(255,255,255,255)})
+	gdlt2 = dgsCreateImage(0.1,0,0.7,0.7,_,true,pane,tocolor(0,255,255,255))
 	dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 

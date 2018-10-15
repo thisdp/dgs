@@ -22,8 +22,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	local titleOffset = 0
 	if isElement(parent) then
-		if not dgsElementData[scrollpane].withoutTitle then
-			titleOffset = dgsElementData[parent].titlesize or 0
+		if not dgsElementData[scrollpane].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
+			titleOffset = dgsElementData[parent].titleHeight or 0
 		end
 	end
 	local scrollbar1 = dgsCreateScrollBar(x+sx-scbThick,y-titleOffset,scbThick,sy-scbThick,false,false,parent)
@@ -164,13 +164,11 @@ function configScrollPane(source)
 	local parent = dgsGetParent(source)
 	local titleOffset = 0
 	if isElement(parent) then
-		if not dgsElementData[source].withoutTitle then
-			titleOffset = dgsElementData[parent].titlesize or 0
+		if not dgsElementData[source].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
+			titleOffset = dgsElementData[parent].titleHeight or 0
 		end
 	end
 	local scrollBarOffset = dgsElementData[source].scrollBarOffset
-	--scrollBarOffsetX = scrollBarOffset[1][2] and scrollBarOffset[1][1]*sx or scrollBarOffset[1][1]
-	--scrollBarOffsetY = scrollBarOffset[2][2] and scrollBarOffset[2][1]*sy or scrollBarOffset[2][1]
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	dgsSetPosition(scrollbar[1],x+sx-scbThick,y-titleOffset,false)

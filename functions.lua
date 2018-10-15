@@ -107,7 +107,7 @@ function getParentLocation(dgsElement,rndsup,x,y)
 			y = y+absPos[2]
 		end
 		dgsElement = FatherTable[dgsElement]
-	until(not isElement(dgsElement) or (rndsup and eleData.renderTarget_parent))
+	until(not isElement(dgsElement) or (rndsup and dgsElementData[dgsElement].renderTarget_parent))
 	return x,y
 end
 
