@@ -252,15 +252,17 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 	return true
 end
 
-function dgsSetAlpha(dxgui,alpha)
+function dgsSetAlpha(dxgui,alpha,absolute)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsSetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	assert(type(alpha) == "number","Bad argument @dgsSetAlpha at argument 2, expect a number got "..type(alpha))
+	alpha = absolute and alpha/255 or alpha
 	return dgsSetData(dxgui,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 end
 
-function dgsGetAlpha(dxgui)
+function dgsGetAlpha(dxgui,absolute)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsGetData(dxgui,"alpha")
+	local alp = dgsElementData[dxgui].alpha
+	return absolute and alp*255 or alp
 end
 
 function dgsSetEnabled(dxgui,enabled)
