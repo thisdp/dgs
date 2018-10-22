@@ -103,9 +103,7 @@ function dgsCloseWindow(window)
 	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsCloseWindow at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
 	triggerEvent("onDgsWindowClose",window)
 	local canceled = wasEventCancelled()
-	triggerEvent("onClientDgsDxWindowClose",window)
-	local canceled2 = wasEventCancelled()
-	if not canceled and not canceled2 then
+	if not canceled then
 		return destroyElement(window)
 	end
 	return false
