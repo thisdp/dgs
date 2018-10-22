@@ -2,6 +2,12 @@ focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 --Speed Up
 abs = math.abs
+find = string.find
+rep = string.rep
+gsub = string.gsub
+floor = math.floor
+min = math.min
+max = math.max
 --
 sW,sH = guiGetScreenSize()
 white = tocolor(255,255,255,255)
@@ -35,7 +41,7 @@ function dgsSetSystemFont(font,size,bold,quality)
 	else
 		if sourceResource then
 			local path
-			if not string.find(font,":") then
+			if not find(font,":") then
 				local resname = getResourceName(sourceResource)
 				path = ":"..resname.."/"..font
 			else
@@ -267,13 +273,14 @@ function dgsCoreRender()
 		dxDrawText("  Right: "..rightStr,10,sH*0.4-25)
 		DGSCount = 0
 		for k,v in ipairs(dgsType) do
-			DGSCount = DGSCount+#getElementsByType(v)
+			local elements = #getElementsByType(v)
+			DGSCount = DGSCount+elements
 			local x = 15
 			if v == "dgs-dxtab" or v == "dgs-dxcombobox-Box" then
 				x = 30
 			end
-			dxDrawText(v.." : "..#getElementsByType(v),x+1,sH*0.4+15*k+6,sW,sH,black)
-			dxDrawText(v.." : "..#getElementsByType(v),x,sH*0.4+15*k+5)
+			dxDrawText(v.." : "..elements,x+1,sH*0.4+15*k+6,sW,sH,black)
+			dxDrawText(v.." : "..elements,x,sH*0.4+15*k+5)
 		end
 		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4-9,sW,sH,black)
 		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4-10,sW,sH)
@@ -300,10 +307,11 @@ function dgsCoreRender()
 		ResCount = 0
 		for ka,va in pairs(resourceDxGUI) do
 			if type(ka) == "userdata" and va then
-				Resource = Resource+#va
+				local resDGSCnt = #va
+				Resource = Resource+resDGSCnt
 				ResCount = ResCount +1
-				dxDrawText(getResourceName(ka).." : "..#va,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
-				dxDrawText(getResourceName(ka).." : "..#va,300,sH*0.4+15*(ResCount+1))
+				dxDrawText(getResourceName(ka).." : "..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
+				dxDrawText(getResourceName(ka).." : "..resDGSCnt,300,sH*0.4+15*(ResCount+1))
 			end
 		end
 		dxDrawText("Resource Elements("..ResCount.."):",301,sH*0.4+16,sW,sH,black)
@@ -1148,7 +1156,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				------------------------------------
 				if eleData.masked then
-					text = string.rep(eleData.maskText,utf8.len(text))
+					text = rep(eleData.maskText,utf8.len(text))
 				end
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
@@ -1356,7 +1364,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local textColor = eleData.textColor
 					local showLine = eleData.showLine
 					local caretHeight = eleData.caretHeight-1
-					local canHoldLines = math.floor((h-4)/fontHeight)
+					local canHoldLines = floor((h-4)/fontHeight)
 					canHoldLines = canHoldLines > allLine and allLine or canHoldLines
 					local selPosStart,selPosEnd,selStart,selEnd
 					dxSetRenderTarget(renderTarget,true)
@@ -2011,7 +2019,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								end
 								local textBuffer = {}
 								local textBufferCnt = 1
-								--for id,v in pairs(cpos) do
 								if not cPosStart or not cPosEnd then break end
 								for id = cPosStart,cPosEnd do
 									local currentRowData = lc_rowData[id]
@@ -2257,8 +2264,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								textBufferCnt = textBufferCnt+1
 							end
 						end
-						--for k,v in pairs(textBuffer) do
-						
 						for i=1,#textBuffer do
 							local v = textBuffer[i]
 							local colorcoded = v[9]
@@ -2468,7 +2473,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local listState = eleData.listState
 				if eleData.listStateAnim ~= listState then
 					local stat = eleData.listStateAnim+eleData.listState*0.08
-					eleData.listStateAnim = listState == -1 and math.max(stat,listState) or math.min(stat,listState)
+					eleData.listStateAnim = listState == -1 and max(stat,listState) or min(stat,listState)
 				end
 				if eleData.arrowSettings then
 					dxSetShaderValue(shader,eleData.arrowSettings[1],eleData.arrowSettings[2]*eleData.listStateAnim)
@@ -2548,12 +2553,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				local DataTab = dgsElementData[combo]
 				local itemData = DataTab.itemData
+				local itemDataCount = #itemData
 				local scbThick = dgsElementData[combo].scrollBarThick
 				local itemHeight = DataTab.itemHeight
 				local itemMoveOffset = DataTab.itemMoveOffset
-				local whichRowToStart = -math.floor((itemMoveOffset+itemHeight)/itemHeight)+1
-				local whichRowToEnd = whichRowToStart+math.floor(h/itemHeight)+1
-				DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #itemData and whichRowToEnd or #itemData}
+				local whichRowToStart = -floor((itemMoveOffset+itemHeight)/itemHeight)+1
+				local whichRowToEnd = whichRowToStart+floor(h/itemHeight)+1
+				DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}
 				local renderTarget = dgsElementData[combo].renderTarget
 				------------------------------------
 				if eleData.functionRunBefore then
@@ -2570,8 +2576,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
 					if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
 						local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
-						sid = math.floor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
-						if sid <= #itemData then
+						sid = floor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
+						if sid <= itemDataCount then
 							DataTab.preSelect = sid
 							MouseData.enterData = true
 						else
@@ -2651,7 +2657,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				------------------------------------
 				if enabled[1] and mx then
-					local height = #itemData*itemHeight
+					local height = itemDataCount*itemHeight
 					if height > h then
 						height = h
 					end
@@ -2738,7 +2744,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 									end
 									local textSize = dgsElementData[t].textSize
 									if eleData.PixelInt then
-										_tabsize,_width = tabsize-tabsize%1,math.floor(width+tabsize)
+										_tabsize,_width = tabsize-tabsize%1,floor(width+tabsize)
 									end
 									dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textColor,textSize[1],textSize[2],font,"center","center",false,false,false,colorcoded,true)
 									if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and dgsElementData[t].enabled and enabled[2] then
@@ -2876,7 +2882,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					dxDrawRectangle(x,y,w,h,colors,rendSet)
 				end
 				local hangju,cmdtexts = eleData.hangju,eleData.texts or {}
-				local canshow = math.floor(h/eleData.hangju)-1
+				local canshow = floor(h/eleData.hangju)-1
 				local rowoffset = 0
 				local readyToRenderTable = {}
 				local font = eleData.font
@@ -3006,22 +3012,23 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				local sid
 				local itemData = eleData.itemData
+				local itemDataCount = #itemData
 				if not eleData.mode then
 					dxSetRenderTarget(rendTarget,true)
 					local leading = eleData.leading
 					local itemHeight = eleData.itemHeight
 					local itemMoveOffset = eleData.itemMoveOffset
-					local whichRowToStart = -math.floor((itemMoveOffset+itemHeight+leading)/itemHeight)+1
-					local whichRowToEnd = whichRowToStart+math.floor(h/(itemHeight+leading))+1
-					eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= #itemData and whichRowToEnd or #itemData}
+					local whichRowToStart = -floor((itemMoveOffset+itemHeight+leading)/itemHeight)+1
+					local whichRowToEnd = whichRowToStart+floor(h/(itemHeight+leading))+1
+					eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}
 					local scbThick = eleData.scrollBarThick
 					local scrollbar = eleData.scrollbar
 					local scbcheck = eleData.visible and scbThick or 0
 					if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
 						local toffset = (whichRowToStart*itemHeight+(whichRowToStart-1)*leading)+itemMoveOffset
 						local mouseTemp = (my-cy-toffset)
-						sid = math.floor(mouseTemp/(itemHeight+leading))+whichRowToStart+1
-						if sid <= #itemData and my-cy > (sid-1)*(itemHeight+leading)+itemMoveOffset then
+						sid = floor(mouseTemp/(itemHeight+leading))+whichRowToStart+1
+						if sid <= itemDataCount and my-cy > (sid-1)*(itemHeight+leading)+itemMoveOffset then
 							eleData.select = sid
 							MouseData.enterData = true
 						else
@@ -3337,7 +3344,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local state = eleData.state
 				if eleData.stateAnim ~= state then
 					local stat = eleData.stateAnim+eleData.state*eleData.cursorMoveSpeed
-					eleData.stateAnim = state == -1 and math.max(stat,state) or math.min(stat,state)
+					eleData.stateAnim = state == -1 and max(stat,state) or min(stat,state)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -3404,7 +3411,7 @@ addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.rende
 function removeColorCodeFromString(str)
 	repeat
 		local temp = str
-		str = string.gsub(str,'#%x%x%x%x%x%x','')
+		str = gsub(str,'#%x%x%x%x%x%x','')
 		if str == temp then
 			return temp
 		end
@@ -4211,7 +4218,7 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 								elseif shift then
 									if clicked and #clicked == 2 then
 										dgsGridListSetSelectedItem(source,-1,-1)
-										local startRow,endRow = math.min(clicked[1],preSelect[1]),math.max(clicked[1],preSelect[1])
+										local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
 										for row = startRow,endRow do
 											dgsGridListSelectItem(source,row,1,true)
 										end
@@ -4233,7 +4240,7 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 								elseif shift then
 									if clicked and #clicked == 2 then
 										dgsGridListSetSelectedItem(source,-1,-1)
-										local startColumn,endColumn = math.min(clicked[2],preSelect[2]),math.max(clicked[2],preSelect[2])
+										local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
 										for column = startColumn, endColumn do
 											dgsGridListSelectItem(source,1,column,true)
 										end
@@ -4255,8 +4262,8 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 								elseif shift then
 									if clicked and #clicked == 2 then
 										dgsGridListSetSelectedItem(source,-1,-1)
-										local startRow,endRow = math.min(clicked[1],preSelect[1]),math.max(clicked[1],preSelect[1])
-										local startColumn,endColumn = math.min(clicked[2],preSelect[2]),math.max(clicked[2],preSelect[2])
+										local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+										local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
 										for row = startRow,endRow do
 											for column = startColumn, endColumn do
 												dgsGridListSelectItem(source,row,column,true)
@@ -4397,7 +4404,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 					local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
 					local t_gapSize = dgsElementData[tabpanel].tabGapSize
 					local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
-					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-wid-sidesize*2-gapsize*math.min(#tabs,1))
+					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-wid-sidesize*2-gapsize*min(#tabs,1))
 					local id = dgsElementData[source].id
 					for i=id,#tabs do
 						dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
