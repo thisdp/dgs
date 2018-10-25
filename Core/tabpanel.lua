@@ -35,7 +35,7 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
-	dgsSetParent(tab,tabpanel,true)
+	dgsSetParent(tab,tabpanel,true,true)
 	dgsSetData(tab,"parent",tabpanel)
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
