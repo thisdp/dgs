@@ -9,7 +9,7 @@
 ---------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------------------General
-	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent too many the same texture element)
+	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent creating duplicated texture elements)
 	disabledColor = true,
 	disabledColorPercent = 0.8,
 ---------------------------------------------------------------------------------------------------Cursor Image
@@ -19,8 +19,8 @@
 	arrowlist = {
 	---Color
 		bgColor = tocolor(255,255,255,200),
-		selectorTextColor = tocolor(0,0,0,255), --Selector text color ( < and > )
-		selectorColor = {	--Selector background color ( < and > )
+		selectorTextColor = tocolor(0,0,0,255), --Selector text color ( text between < and > )
+		selectorColor = {	--Selector color ( < and > )
 			tocolor(0,0,0,255),			--Normal
 			tocolor(200,200,200,255),	--Hover
 			tocolor(100,100,100,255),	--Click

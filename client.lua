@@ -654,7 +654,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								if isElement(debugShader) then
 									eleData.debugShader = debugShader
 								else
-									outputChatBox("[DGS]Couldn't create ellipse shader (Maybe video memory isn't enough or your video card isn't support the shader)",255,0,0)
+									outputChatBox("[DGS]Couldn't create ellipse shader (Maybe video memory isn't enough or your video card doesn't support the shader)",255,0,0)
 									eleData.debugShader = "Error"
 								end
 							end

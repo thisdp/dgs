@@ -273,7 +273,7 @@ function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 	return pos
 end
 
-function dgsGridListSetColumnSetFont(gridlist,pos,font)
+function dgsGridListSetColumnFont(gridlist,pos,font)
 	--todo
 end
 
@@ -533,7 +533,7 @@ function dgsGridListAddRow(gridlist,row,...)
 			rowTable[i]._translationText = text
 			text = dgsTranslate(gridlist,text,sourceResource)
 		end
-		rowTable[i][1] = tostring(text)
+		rowTable[i][1] = tostring(text or "")
 		rowTable[i][2] = rowTxtColor
 		rowTable[i][3] = colorcoded
 		rowTable[i][4] = scale[1]
@@ -631,16 +631,6 @@ function dgsGridListRemoveRow(gridlist,row)
 	end
 	table.remove(rowData,row)
 	dgsSetData(gridlist,"configNextFrame",true)
- 	--[[local scrollbars = dgsElementData[gridlist].scrollbars
-	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[source].absSize[2]
-	local scbThick = dgsElementData[gridlist].scrollBarThick
-	if (row-1)*dgsElementData[gridlist].rowHeight > (sy-scbThick-dgsElementData[gridlist].columnHeight) then
-		dgsSetVisible(scrollbars[1],true)
-	else
-		dgsSetVisible(scrollbars[1],false)
-	end
-	dgsSetData(scrollbars[1],"length",{(sy-scbThick-dgsElementData[gridlist].columnHeight)/((row+1)*dgsElementData[gridlist].rowHeight),true})
-	dgsSetData(scrollbars[2],"length",dgsElementData[ scrollbars[2] ].length)]]
 	return true
 end
 
