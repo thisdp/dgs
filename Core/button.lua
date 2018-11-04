@@ -35,8 +35,25 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	dgsSetData(button,"wordbreak",false)
 	dgsSetData(button,"colorcoded",false)
 	dgsSetData(button,"rightbottom",{"center","center"})
+	dgsSetData(button,"buttonImage",false)
 	insertResourceDxGUI(sourceResource,button)
 	calculateGuiPositionSize(button,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",button)
 	return button
+end
+
+function dgsSetButtonImage(gui,image,x,y,sx,sy,u,v,us,vs)
+	assert(dgsGetType(gui) == "dgs-dxbutton","Bad argument @dgsSetButtonImage at argument 1, expect dgs-dxbutton got "..(dgsGetType(gui) or type(gui)))
+	local mus, mvs = image and dxGetMaterialSize( image )	
+	x,y   = tonumber(x) or 0, tonumber(y) or 0
+	sx,sy = tonumber(sx) or 1, tonumber(sy) or 1
+	u,v   = tonumber(u) or 0, tonumber(v) or 0
+	us,vs = tonumber(us) or mus, tonumber(vs) or mvs
+	return dgsSetData(gui,"buttonImage",image and {image,x,y,sx,sy,u,v,us,vs})
+end
+
+function dgsGetButtonImage(gui)
+	assert(dgsGetType(gui) == "dgs-dxbutton","Bad argument @dgsGetButtonImage at argument 1, expect dgs-dxbutton got "..(dgsGetType(gui) or type(gui)))
+	if not dgsElementData[gui].buttonImage then return end
+	return unpack(dgsElementData[gui].buttonImage)
 end

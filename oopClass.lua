@@ -487,6 +487,13 @@ function dgsImportOOPClass()
 				newTable.getMasked = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEditGetMasked",self.dgsElement,...)
 				end
+			elseif dgsType == "dgs-dxbutton" then
+				newTable.setButtonImage = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsSetButtonImage",self.dgsElement,...)
+				end
+				newTable.getButtonImage = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGetButtonImage",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxeda" then
 				newTable.setDebugModeEnabled = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEDASetDebugModeEnabled",self.dgsElement,...)

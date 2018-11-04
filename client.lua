@@ -557,6 +557,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				else
 					dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 				end
+
+				local textColor = applyColorAlpha(eleData.textColor,galpha)				
+
+				if eleData.buttonImage then
+					local tex, rx, ry, rw, rh, u, v, us, vs = unpack(eleData.buttonImage)					
+					dxDrawImageSection(x + rx * w, y + ry * h, rw * w, rh * h,
+						u, v, us, vs, tex, 0,0,0, textColor, rendSet)
+				end
+
 				local text = eleData.text
 				if #text ~= 0 then
 					local font = eleData.font or systemFont
@@ -586,7 +595,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							end
 						end
 					end
-					dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+					dxDrawText(text,textX,textY,textX+w-1,textY+h-1,textColor,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline

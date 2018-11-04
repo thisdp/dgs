@@ -230,6 +230,8 @@
 	<export function="dgsComboBoxGetCaptionText" type="client" />
 	
 	<export function="dgsCreateButton" type="client" />
+	<export function="dgsSetButtonImage" type="client" />
+	<export function="dgsGetButtonImage" type="client" />
 
 	<export function="dgsCreateEdit" type="client" />
 	<export function="dgsEditMoveCaret" type="client" />
