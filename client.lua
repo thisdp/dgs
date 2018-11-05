@@ -561,8 +561,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local textColor = applyColorAlpha(eleData.textColor,galpha)				
 
 				if eleData.buttonImage then
-					local tex, rx, ry, rw, rh, u, v, us, vs = unpack(eleData.buttonImage)					
-					dxDrawImageSection(x + rx * w, y + ry * h, rw * w, rh * h,
+					local tex, ix, iy, iw, ih, u, v, us, vs = unpack(eleData.buttonImage)					
+					dxDrawImageSection(x + ix, y + iy, iw, ih,
 						u, v, us, vs, tex, 0,0,0, textColor, rendSet)
 				end
 
