@@ -7,8 +7,9 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local button = createElement("dgs-dxbutton")
-	dgsSetType(button,"dgs-dxbutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true,true) or table.insert(CenterFatherTable,1,button)
+	dgsSetType(button,"dgs-dxbutton")
+	dgsSetData(button,"renderBuffer",{})
 	local norcolor = norcolor or styleSettings.button.color[1]
 	local hovcolor = hovcolor or styleSettings.button.color[2]
 	local clicolor = clicolor or styleSettings.button.color[3]
@@ -17,6 +18,14 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	local hovimg = selimg or dgsCreateTextureFromStyle(styleSettings.button.image[2])
 	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.button.image[3])
 	dgsSetData(button,"image",{norimg,selimg,cliimg})
+	--[[local UVSize = {}
+	UVSize[1] = isElement(norimg) and 
+	if isElement(texture) and not getElementType(texture) == "shader" then
+		mx,my = dxGetMaterialSize(texture)
+	end
+	dgsSetData(button,"imageUVSize",{mx,my})
+	dgsSetData(button,"imageUVPos",{0,0})
+	]]
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[button]._translationText = text

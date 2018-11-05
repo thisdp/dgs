@@ -142,6 +142,39 @@ function dgsSetData(element,key,value,nocheck)
 						local renderTarget = dxCreateRenderTarget(value[1],value[2],true)
 						dgsSetData(element,"renderTarget",renderTarget)
 					end
+				elseif dgsType == "dgs-dximage" then
+					if key == "UVSize" then
+						local texture = dgsElementData[element].image
+						if isElement(texture) and getElementType(texture) ~= "shader" then
+							local sx,sy,relative = value[1],value[2],value[3]
+							local mx,my = dxGetMaterialSize(texture)
+							local sx,sy = tonumber(sx),tonumber(sy)
+							local sx,sy = relative and (sx or 1)*mx or (sx or mx),relative and (sy or 1)*my or (sy or my)
+							dgsElementData[element].renderBuffer.UVSize = {sx,sy}
+						end
+					elseif key == "UVPos" then
+						local texture = dgsElementData[element].image
+						if isElement(texture) and getElementType(texture) ~= "shader" then
+							local x,y,relative = value[1],value[2],value[3]
+							local mx,my = dxGetMaterialSize(texture)
+							local x,y = tonumber(x),tonumber(y)
+							local x,y = relative and (x or 0)*mx or (x or mx),relative and (y or 0)*my or (y or my)
+							dgsElementData[element].renderBuffer.UVPos = {x,y}
+						end
+					elseif key == "image" then
+						if isElement(value) and getElementType(value) ~= "shader" then
+							local UVPos,UVSize = dgsElementData[element].UVPos or {0,0,true},dgsElementData[element].UVSize or {1,1,true}
+							local x,y,relative = UVPos[1],UVPos[2],UVPos[3]
+							local sx,sy,relative = UVSize[1],UVSize[2],UVSize[3]
+							local mx,my = dxGetMaterialSize(value)
+							local x,y = tonumber(x),tonumber(y)
+							local sx,sy = tonumber(sx),tonumber(sy)
+							local x,y = relative and (x or 0)*mx or (x or mx),relative and (y or 0)*my or (y or my)
+							local sx,sy = relative and (sx or 1)*mx or (sx or mx),relative and (sy or 1)*my or (sy or my)
+							dgsElementData[element].renderBuffer.UVPos = {x,y}
+							dgsElementData[element].renderBuffer.UVSize = {sx,sy}
+						end
+					end
 				end
 				if key == "text" then
 					if type(value) == "table" then

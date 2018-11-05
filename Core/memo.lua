@@ -11,7 +11,9 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateMemo at argument 7, expect dgs-memo got "..dgsGetType(parent))
 	end
 	local memo = createElement("dgs-dxmemo")
+	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or table.insert(CenterFatherTable,1,memo)
 	dgsSetType(memo,"dgs-dxmemo")
+	dgsSetData(memo,"renderBuffer",{})
 	dgsSetData(memo,"bgColor",bgColor or styleSettings.memo.bgColor)
 	dgsSetData(memo,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.memo.bgImage))
 	dgsSetData(memo,"font",systemFont,true)
@@ -41,7 +43,6 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(gmemo,"dxmemo",memo)
 	guiSetAlpha(gmemo,0)
 	dgsSetData(memo,"maxLength",guiGetProperty(gmemo,"MaxTextLength"))
-	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or table.insert(CenterFatherTable,1,memo)
 	insertResourceDxGUI(sourceResource,memo)
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]

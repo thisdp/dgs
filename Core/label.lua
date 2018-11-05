@@ -9,6 +9,7 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	local label = createElement("dgs-dxlabel")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(label,parent,true,true) or table.insert(CenterFatherTable,1,label)
 	dgsSetType(label,"dgs-dxlabel")
+	dgsSetData(label,"renderBuffer",{})
 	dgsSetData(label,"textColor",textColor or styleSettings.label.textColor)
 	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then

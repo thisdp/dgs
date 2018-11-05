@@ -5,6 +5,7 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	local text3d = createElement("dgs-dx3dtext")
 	table.insert(dx3DTextTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
+	dgsSetData(text3d,"renderBuffer",{})
 	dgsSetData(text3d,"position",{x,y,z})
 	dgsSetData(text3d,"textSize",{sizeX or 1,sizeY or 1})
 	dgsSetData(text3d,"font",font or systemFont)

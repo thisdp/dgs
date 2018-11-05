@@ -14,7 +14,9 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		assert(dgsIsDxElement(parent),"@dgsCreateEdit argument 7,expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local edit = createElement("dgs-dxedit")
+	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or table.insert(CenterFatherTable,1,edit)
 	dgsSetType(edit,"dgs-dxedit")
+	dgsSetData(edit,"renderBuffer",{})
 	dgsSetData(edit,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.edit.bgImage))
 	dgsSetData(edit,"bgColor",bgColor or styleSettings.edit.bgColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.edit.textSize[1], tonumber(scaley) or styleSettings.edit.textSize[2]
@@ -51,7 +53,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"maxLength",guiGetProperty(gedit,"MaxTextLength"))
 	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
 	editsCount = editsCount+1
-	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or table.insert(CenterFatherTable,1,edit)
 	insertResourceDxGUI(sourceResource,edit)
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
 	local sx,sy = dgsGetSize(edit,false)

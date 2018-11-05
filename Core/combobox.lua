@@ -23,8 +23,9 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateComboBox at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local combobox = createElement("dgs-dxcombobox")
-	dgsSetType(combobox,"dgs-dxcombobox")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or table.insert(CenterFatherTable,1,combobox)
+	dgsSetType(combobox,"dgs-dxcombobox")
+	dgsSetData(combobox,"renderBuffer",{})
 	
 	local defcolor = defcolor or styleSettings.combobox.color[1]
 	local hovcolor = hovcolor or styleSettings.combobox.color[2]

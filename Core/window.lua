@@ -4,8 +4,9 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	assert(tonumber(sx),"Bad argument @dgsCreateWindow at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateWindow at argument 4, expect number got "..type(sy))
 	local window = createElement("dgs-dxwindow")
-	dgsSetType(window,"dgs-dxwindow")
 	table.insert(CenterFatherTable,window)
+	dgsSetType(window,"dgs-dxwindow")
+	dgsSetData(window,"renderBuffer",{})
 	dgsSetData(window,"titleImage",titleImage or dgsCreateTextureFromStyle(styleSettings.window.titleImage))
 	dgsSetData(window,"textColor",tonumber(textColor) or styleSettings.window.textColor)
 	dgsSetData(window,"titleColor",tonumber(titleColor) or styleSettings.window.titleColor)
@@ -16,7 +17,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 		dgsElementData[window]._translationText = text
 		text = dgsTranslate(window,text,sourceResource)
 	end
-	dgsSetData(window,"text",tostring(text) or "")
+	dgsSetData(window,"text",text or "")
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.window.textSize[1], tonumber(scaley) or styleSettings.window.textSize[2]
 	dgsSetData(window,"textSize",{textSizeX,textSizeY})
 	dgsSetData(window,"titleHeight",tonumber(titleHeight) or styleSettings.window.titleHeight)

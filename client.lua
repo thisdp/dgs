@@ -799,8 +799,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				------------------------------------
 				if colors >= 16777216 or colors < 0 then
 					if imgs then
-						local sx,sy = eleData.imageUVSize[1],eleData.imageUVSize[2]
-						local px,py = eleData.imageUVPos[1],eleData.imageUVPos[2]
+						local uvPos,uvSize = eleData.renderBuffer.UVPos or {},eleData.renderBuffer.UVSize or {}
+						local sx,sy = uvSize[1],uvSize[2]
+						local px,py = uvPos[1],uvPos[2]
 						local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
 						local rot = eleData.rotation or 0
 						if not sx or not sy or not px or not py then

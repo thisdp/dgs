@@ -4,9 +4,9 @@
 	<file src="media.html" />
 	<file src="meta.xml" />
 	<file src="styleManager/styleMapper.lua"/>
-	<file src="shaders/circle.fx" type="client" />
-	<file src="shaders/textureRelight.fx" type="client" />
-	<file src="shaders/mta-helper.fx" type="client" />
+	<file src="shaders/circle.fx"/>
+	<file src="shaders/textureRelight.fx" />
+	<file src="shaders/mta-helper.fx" />
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -56,18 +56,18 @@
 	<!--(Default Style) Don't touch this style with your bear hand-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
 	<file src="styleManager/Default/Images/eda/ellipse.fx" />
-	<file src="styleManager/Default/Images/checkbox/cb_t.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_f.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_i.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" type="client" />
-	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" type="client" />
-	<file src="styleManager/Default/styleSettings.txt" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_t.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_f.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_i.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" />
+	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" />
+	<file src="styleManager/Default/styleSettings.txt" />
 	<!--(Custom Style 1) -->
 	
 	<!--(Custom Style 2) -->

@@ -14,8 +14,10 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateGridList at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local gridlist = createElement("dgs-dxgridlist")
-	insertResourceDxGUI(sourceResource,gridlist)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or table.insert(CenterFatherTable,1,gridlist)
 	dgsSetType(gridlist,"dgs-dxgridlist")
+	dgsSetData(gridlist,"renderBuffer",{})
+	insertResourceDxGUI(sourceResource,gridlist)
 	dgsSetData(gridlist,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.gridlist.bgImage))
 	dgsSetData(gridlist,"bgColor",bgColor or styleSettings.gridlist.bgColor)
 	dgsSetData(gridlist,"columnImage",columnImage or dgsCreateTextureFromStyle(styleSettings.gridlist.columnImage))
@@ -72,7 +74,6 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(gridlist,"configNextFrame",false)
-	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or table.insert(CenterFatherTable,1,gridlist)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]

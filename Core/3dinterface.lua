@@ -11,6 +11,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	local interface = createElement("dgs-dx3dinterface")
 	table.insert(dx3DInterfaceTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
+	dgsSetData(interface,"renderBuffer",{})
 	dgsSetData(interface,"position",{x,y,z})
 	dgsSetData(interface,"faceTo",{faceX,faceY,faceZ})
 	dgsSetData(interface,"size",{w,h})

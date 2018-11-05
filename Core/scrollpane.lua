@@ -9,6 +9,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	local scrollpane = createElement("dgs-dxscrollpane")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true,true) or table.insert(CenterFatherTable,1,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
+	dgsSetData(scrollpane,"renderBuffer",{})
 	local scbThick = styleSettings.scrollpane.scrollBarThick
 	dgsSetData(scrollpane,"scrollBarThick",scbThick,true)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
