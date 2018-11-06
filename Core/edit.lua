@@ -463,6 +463,8 @@ function dgsEditGetPartOfText(edit,fromindex,toindex,delete)
 	return utf8.sub(text,fromindex+1,toindex)
 end
 
+VerticalAlign = {top=true,center=true,bottom=true}
+HorizontalAlign = {left=true,center=true,right=true}
 function dgsEditSetHorizontalAlign(edit,align)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetHorizontalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
 	assert(HorizontalAlign[align],"Bad argument @dgsEditSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
