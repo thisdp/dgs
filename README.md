@@ -36,6 +36,9 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 **Thanks for your support.**
 
 This resource is protected by **DPL v1**(DGS Public Lisence)
+
 *1.Any of the private edition of dgs should be the branch of dgs-master
+
 *2.You are not allowed to republish your edition of dgs.
+
 *3.You are allowed to edit the dgs code
