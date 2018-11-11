@@ -44,3 +44,5 @@ This resource is protected by **DPL v1**(DGS Public Lisence v1)
 *2.You are not allowed to republish your edition of dgs.
 
 *3.You are allowed to edit the dgs code
+
+*4.Items not mentioned are allowed
