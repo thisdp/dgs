@@ -39,10 +39,10 @@ Ignore all the lisences, But you need to obey the following rules.
 
 This resource is protected by **DPL v1**(DGS Public Lisence v1)
 
-*1.Any of the private edition of dgs should be the branch of dgs-master
+* 1.Any of the private edition of dgs should be the branch of dgs-master
 
-*2.You are not allowed to republish your edition of dgs.
+* 2.You are not allowed to republish your edition of dgs.
 
-*3.You are recommended to edit the dgs code.
+* 3.You are recommended to edit the dgs code.
 
-*4.Items not mentioned are allowed!
+* 4.Items not mentioned are allowed!
