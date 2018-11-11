@@ -35,6 +35,8 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 
 **Thanks for your support.**
 
+Ignore all the lisences, But you need to obey the following rules.
+
 This resource is protected by **DPL v1**(DGS Public Lisence v1)
 
 *1.Any of the private edition of dgs should be the branch of dgs-master
