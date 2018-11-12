@@ -35,6 +35,8 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 
 **Thanks for your support.**
 
+#License
+
 Ignore all the lisences, But you need to obey the following rules ( Let's get more freedom!! ).
 
 This resource is protected by **DPL v1**(DGS Public Lisence v1)
