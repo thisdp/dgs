@@ -22,10 +22,10 @@ addEvent("onDgsMediaBrowserReturn",true)
 
 --Media Element won't be rendered by DGS render, so it should be set into other dgs element(Such as dgs-dximage).
 --Media Element is "cef"(browser element), but if you want to manage it well, please use the functions dgs offered.
-function dgsCreateMediaBrowser(w,h)
+function dgsCreateMediaBrowser(w,h,transparent)
 	assert(type(w) == "number","Bad argument @dgsCreateMediaBrowser at argument 1, expect number got "..type(w))
 	assert(type(h) == "number","Bad argument @dgsCreateMediaBrowser at argument 2, expect number got "..type(h))
-	local media = createBrowser(w,h,true,false)
+	local media = createBrowser(w,h,true,transparent and true or false)
 	dgsSetType(media,"dgs-dxmedia")
 	dgsSetData(media,"size",{w,h})
 	dgsSetData(media,"sourcePath",false)
