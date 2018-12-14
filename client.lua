@@ -1,13 +1,15 @@
 focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 --Speed Up
-abs = math.abs
-find = string.find
-rep = string.rep
-gsub = string.gsub
-floor = math.floor
-min = math.min
-max = math.max
+local abs = math.abs
+local find = string.find
+local rep = string.rep
+local gsub = string.gsub
+local floor = math.floor
+local min = math.min
+local max = math.max
+local utf8Sub = utf8.sub
+local utf8Len = utf8.len
 --
 sW,sH = guiGetScreenSize()
 white = tocolor(255,255,255,255)
@@ -1155,12 +1157,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				------------------------------------
 				if eleData.masked then
-					text = rep(eleData.maskText,utf8.len(text))
+					text = rep(eleData.maskText,utf8Len(text))
 				end
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
 						dgsSetData(v,"caretPos",0)
-						dgsSetData(v,"selectFrom",utf8.len(text))
+						dgsSetData(v,"selectFrom",utf8Len(text))
 					end
 				end
 				local caretPos = eleData.caretPos
@@ -1175,9 +1177,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local textColor = eleData.textColor
 					local selx = 0
 					if selectFro-caretPos > 0 then
-						selx = dxGetTextWidth(utf8.sub(text,caretPos+1,selectFro),txtSizX,font)
+						selx = dxGetTextWidth(utf8Sub(text,caretPos+1,selectFro),txtSizX,font)
 					elseif selectFro-caretPos < 0 then
-						selx = -dxGetTextWidth(utf8.sub(text,selectFro+1,caretPos),txtSizX,font)
+						selx = -dxGetTextWidth(utf8Sub(text,selectFro+1,caretPos),txtSizX,font)
 					end
 					local showPos = eleData.showPos
 					dxSetRenderTarget(renderTarget,true)
@@ -1191,7 +1193,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local selectX,selectW
 					local posFix = 0
 					if alignment[1] == "left" then
-						width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
+						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
 						textX_Left,TextX_Right = showPos,w-sidelength
 						selectX,selectW = width+showPos,selx
 						if selx ~= 0 then
@@ -1199,7 +1201,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						end
 					elseif alignment[1] == "center" then
 						local __width = eleData.textFontLen
-						width = dxGetTextWidth(utf8.sub(text,0,caretPos),txtSizX,font)
+						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
 						textX_Left,TextX_Right = showPos,w-sidelength
 						selectX,selectW = width+showPos/2+w/2-__width/2-sidelength+1,selx
 						if selx ~= 0 then
@@ -1207,7 +1209,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						end
 						posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
 					elseif alignment[1] == "right" then
-						width = dxGetTextWidth(utf8.sub(text,caretPos+1),txtSizX,font)
+						width = dxGetTextWidth(utf8Sub(text,caretPos+1),txtSizX,font)
 						textX_Left,TextX_Right = x,w-sidelength*2-showPos
 						selectX,selectW = TextX_Right-width,selx
 						if selx ~= 0 then
@@ -1265,7 +1267,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.caretThick,isRenderTarget)
 								end
 							elseif caretStyle == 1 then
-								local cursorWidth = dxGetTextWidth(utf8.sub(text,caretPos+1,caretPos+1),txtSizX,font)
+								local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
 								if cursorWidth == 0 then
 									cursorWidth = txtSizX*8
 								end
@@ -1341,7 +1343,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if MouseData.nowShow == v then
 					if getKeyState("lctrl") and getKeyState("a") then
 						dgsSetData(v,"caretPos",{0,1})
-						dgsSetData(v,"selectFrom",{utf8.len(text[allLine]),allLine})
+						dgsSetData(v,"selectFrom",{utf8Len(text[allLine]),allLine})
 					end
 				end
 				local caretPos = eleData.caretPos
@@ -1386,8 +1388,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								selStart = selectFro[2]
 								selEnd = caretPos[2]
 							end
-							local startx = dxGetTextWidth(utf8.sub(text[selStart],0,selPosStart),txtSizX,font)
-							local selx = dxGetTextWidth(utf8.sub(text[selStart],selPosStart+1,selPosEnd),txtSizX,font)
+							local startx = dxGetTextWidth(utf8Sub(text[selStart],0,selPosStart),txtSizX,font)
+							local selx = dxGetTextWidth(utf8Sub(text[selStart],selPosStart+1,selPosEnd),txtSizX,font)
 							dxDrawRectangle(offset+startx,2+(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 						else
 							if selectFro[2]>caretPos[2] then
@@ -1401,16 +1403,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								selPosStart = selectFro[1]
 								selPosEnd = caretPos[1]
 							end
-							local startx = dxGetTextWidth(utf8.sub(text[selStart],0,selPosStart),txtSizX,font)
+							local startx = dxGetTextWidth(utf8Sub(text[selStart],0,selPosStart),txtSizX,font)
 							for i=selStart > showLine and selStart or showLine,selEnd < toShowLine and selEnd or toShowLine do
 								if i ~= selStart and i ~= selEnd then
 									local selx = dxGetTextWidth(text[i],txtSizX,font)
 									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 								elseif i == selStart then
-									local selx = dxGetTextWidth(utf8.sub(text[i],selPosStart+1),txtSizX,font)
+									local selx = dxGetTextWidth(utf8Sub(text[i],selPosStart+1),txtSizX,font)
 									dxDrawRectangle(offset+startx,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 								elseif i == selEnd then
-									local selx = dxGetTextWidth(utf8.sub(text[i],0,selPosEnd),txtSizX,font)
+									local selx = dxGetTextWidth(utf8Sub(text[i],0,selPosEnd),txtSizX,font)
 									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
 								end
 							end
@@ -1464,7 +1466,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 									local selEndY = y+lineStart+fontHeight*caretHeight-2
 									dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.caretThick,isRenderTarget)
 								elseif caretStyle == 1 then
-									local cursorWidth = dxGetTextWidth(utf8.sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
+									local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 									if cursorWidth == 0 then
 										cursorWidth = txtSizX*8
 									end
@@ -3813,7 +3815,7 @@ function onClientKeyCheck(button,state)
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					tarline = #text
 				end
-				dgsMemoSetCaretPosition(MouseData.nowShow,utf8.len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
+				dgsMemoSetCaretPosition(MouseData.nowShow,utf8Len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "delete" then
 				if not dgsElementData[MouseData.nowShow].readOnly then
 					local cpos = dgsElementData[MouseData.nowShow].caretPos
