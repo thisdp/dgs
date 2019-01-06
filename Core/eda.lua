@@ -7,7 +7,7 @@ function dgsCreateEDA(x,y,sx,sy,relative,parent)
 		assert(dgsIsDxElement(parent),"@dgsCreateEDA argument 5,expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local eda = createElement("dgs-dxeda")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(eda,parent,true,true) or table.insert(CenterFatherTable,1,eda)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(eda,parent,true,true) or table.insert(CenterFatherTable,eda)
 	dgsSetType(eda,"dgs-dxeda")
 	dgsSetData(eda,"renderBuffer",{})
 	insertResourceDxGUI(sourceResource,eda)

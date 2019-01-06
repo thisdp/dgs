@@ -10,7 +10,7 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgImage,bgC
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateCmd at argument 6, expect dgs-dxgui [ got "..dgsGetType(parent).." ]")
 	end
 	local cmd = createElement("dgs-dxcmd")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(cmd,parent,true,true) or table.insert(CenterFatherTable,1,cmd)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(cmd,parent,true,true) or table.insert(CenterFatherTable,cmd)
 	scalex,scaley = tonumber(scalex) or 1,tonumber(scaley) or 1
 	dgsSetType(cmd,"dgs-dxcmd")
 	dgsSetData(cmd,"textSize",{scalex,scaley})

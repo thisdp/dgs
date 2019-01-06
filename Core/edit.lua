@@ -18,7 +18,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		assert(dgsIsDxElement(parent),"@dgsCreateEdit argument 7,expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local edit = createElement("dgs-dxedit")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or tableInsert(CenterFatherTable,1,edit)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or tableInsert(CenterFatherTable,edit)
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetData(edit,"renderBuffer",{})
 	dgsSetData(edit,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.edit.bgImage))
@@ -102,8 +102,8 @@ function dgsEditMoveCaret(edit,offset,selectText)
 		dgsSetData(edit,"selectFrom",pos)
 	end
 	dgsEditAlignmentShowPosition(edit,text)
-	resetTimer(MouseData.EditTimer)
-	MouseData.editCursor = true
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.editMemoCursor = true
 	return true
 end
 
@@ -124,8 +124,8 @@ function dgsEditSetCaretPosition(edit,pos,selectText)
 		dgsSetData(edit,"selectFrom",mathFloor(pos))
 	end
 	dgsEditAlignmentShowPosition(edit,text)
-	resetTimer(MouseData.EditTimer)
-	MouseData.editCursor = true
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.editMemoCursor = true
 	return true
 end
 

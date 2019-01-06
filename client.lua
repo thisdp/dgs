@@ -1,15 +1,21 @@
 focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 --Speed Up
-local abs = math.abs
-local find = string.find
-local rep = string.rep
-local gsub = string.gsub
-local floor = math.floor
-local min = math.min
-local max = math.max
-local utf8Sub = utf8.sub
-local utf8Len = utf8.len
+abs = math.abs
+find = string.find
+rep = string.rep
+gsub = string.gsub
+floor = math.floor
+min = math.min
+max = math.max
+
+utf8Sub = utf8.sub
+utf8Len = utf8.len
+
+tableInsert = table.insert
+tableRemove = table.remove
+tableCount = table.count
+tableFind = table.find
 --
 sW,sH = guiGetScreenSize()
 white = tocolor(255,255,255,255)
@@ -91,26 +97,17 @@ MouseData.Timer = {}
 MouseData.Timer2 = {}
 MouseData.nowShow = false
 MouseData.arrowListEnter = false
-MouseData.editCursor = false
-MouseData.editCursorMoveOffset = false
+MouseData.editMemoCursor = false
+MouseData.editMemoCursorMoveOffset = false
 MouseData.gridlistMultiSelection = false
 MouseData.lastPos = {-1,-1}
 MouseData.interfaceHit = {}
 MouseData.lock3DInterface = false
 
-MouseData.EditTimer = setTimer(function()
-	if isElement(MouseData.nowShow) then
-		if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-			MouseData.editCursor = not MouseData.editCursor
-		end
-	end
-end,500,0)
-
-MouseData.MemoTimer = setTimer(function()
-	if isElement(MouseData.nowShow) then
-		if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-			MouseData.memoCursor = not MouseData.memoCursor
-		end
+MouseData.EditMemoTimer = setTimer(function()
+	local dgsType = dgsGetType(MouseData.nowShow)
+	if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
+		MouseData.editMemoCursor = not MouseData.editMemoCursor
 	end
 end,500,0)
 
@@ -236,24 +233,24 @@ function dgsCoreRender()
 			local rltX,rltY = dgsGetPosition(MouseData.hit,true)
 			local absW,absH = dgsGetSize(MouseData.hit,false)
 			local rltW,rltH = dgsGetSize(MouseData.hit,true)
-			dxDrawText("ABS X: "..absX , sW/2-99,11,sW,sH,black)
-			dxDrawText("ABS Y: "..absY , sW/2-99,26,sW,sH,black)
-			dxDrawText("RLT X: "..rltX , sW/2-99,41,sW,sH,black)
-			dxDrawText("RLT Y: "..rltY , sW/2-99,56,sW,sH,black)
-			dxDrawText("ABS W: "..absW , sW/2-99,71,sW,sH,black)
-			dxDrawText("ABS H: "..absH , sW/2-99,86,sW,sH,black)
-			dxDrawText("RLT W: "..rltW , sW/2-99,101,sW,sH,black)
-			dxDrawText("RLT H: "..rltH , sW/2-99,116,sW,sH,black)
+			dxDrawText("ABS X: "..absX , sW*0.5-99,11,sW,sH,black)
+			dxDrawText("ABS Y: "..absY , sW*0.5-99,26,sW,sH,black)
+			dxDrawText("RLT X: "..rltX , sW*0.5-99,41,sW,sH,black)
+			dxDrawText("RLT Y: "..rltY , sW*0.5-99,56,sW,sH,black)
+			dxDrawText("ABS W: "..absW , sW*0.5-99,71,sW,sH,black)
+			dxDrawText("ABS H: "..absH , sW*0.5-99,86,sW,sH,black)
+			dxDrawText("RLT W: "..rltW , sW*0.5-99,101,sW,sH,black)
+			dxDrawText("RLT H: "..rltH , sW*0.5-99,116,sW,sH,black)
 			
 			
-			dxDrawText("ABS X: "..absX , sW/2-100,10)
-			dxDrawText("ABS Y: "..absY , sW/2-100,25)
-			dxDrawText("RLT X: "..rltX , sW/2-100,40)
-			dxDrawText("RLT Y: "..rltY , sW/2-100,55)
-			dxDrawText("ABS W: "..absW , sW/2-100,70)
-			dxDrawText("ABS H: "..absH , sW/2-100,85)
-			dxDrawText("RLT W: "..rltW , sW/2-100,100)
-			dxDrawText("RLT H: "..rltH , sW/2-100,115)
+			dxDrawText("ABS X: "..absX , sW*0.5-100,10)
+			dxDrawText("ABS Y: "..absY , sW*0.5-100,25)
+			dxDrawText("RLT X: "..rltX , sW*0.5-100,40)
+			dxDrawText("RLT Y: "..rltY , sW*0.5-100,55)
+			dxDrawText("ABS W: "..absW , sW*0.5-100,70)
+			dxDrawText("ABS H: "..absH , sW*0.5-100,85)
+			dxDrawText("RLT W: "..rltW , sW*0.5-100,100)
+			dxDrawText("RLT H: "..rltH , sW*0.5-100,115)
 		end
 		local version = getElementData(resourceRoot,"Version")
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,black)
@@ -288,10 +285,10 @@ function dgsCoreRender()
 		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4-10,sW,sH)
 		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,black)	
 		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+5,sW,sH)
-		local anim = table.count(animGUIList)
-		local move = table.count(moveGUIList)
-		local size = table.count(sizeGUIList)
-		local alp = table.count(alphaGUIList)
+		local anim = tableCount(animGUIList)
+		local move = tableCount(moveGUIList)
+		local size = tableCount(sizeGUIList)
+		local alp = tableCount(alphaGUIList)
 		local all = anim+move+size+alp
 		dxDrawText("Running Animation("..all.."):",301,sH*0.4-114,sW,sH,black)
 		dxDrawText("Running Animation("..all.."):",300,sH*0.4-115)
@@ -476,20 +473,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -598,20 +595,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -677,20 +674,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -756,20 +753,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -821,20 +818,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -917,9 +914,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				------------------------------------
 				if image[colorimgid] then
-					dxDrawImage(x,y+h/2-buttonSizeY/2,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,rendSet)
+					dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,rendSet)
 				else
-					dxDrawRectangle(x,y+h/2-buttonSizeY/2,buttonSizeX,buttonSizeY,finalcolor,rendSet)
+					dxDrawRectangle(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,finalcolor,rendSet)
 				end
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
@@ -958,20 +955,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -1055,9 +1052,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				------------------------------------
 				if image[colorimgid] then
-					dxDrawImage(x,y+h/2-buttonSizeY/2,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,rendSet)
+					dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,rendSet)
 				else
-					dxDrawRectangle(x,y+h/2-buttonSizeY/2,buttonSizeX,buttonSizeY,finalcolor,rendSet)
+					dxDrawRectangle(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,finalcolor,rendSet)
 				end
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
@@ -1096,20 +1093,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -1203,7 +1200,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						local __width = eleData.textFontLen
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
 						textX_Left,TextX_Right = showPos,w-sidelength
-						selectX,selectW = width+showPos/2+w/2-__width/2-sidelength+1,selx
+						selectX,selectW = width+showPos*0.5+w*0.5-__width*0.5-sidelength+1,selx
 						if selx ~= 0 then
 							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
 						end
@@ -1222,7 +1219,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					dxDrawText(text,textX_Left,0,TextX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 					if eleData.underline then
 						local textHeight = dxGetFontHeight(txtSizY,font)
-						local lineOffset = eleData.underlineOffset+h/2+textHeight/2
+						local lineOffset = eleData.underlineOffset+h*0.5+textHeight*0.5
 						local lineWidth = eleData.underlineWidth
 						local textFontLen = eleData.textFontLen
 						dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
@@ -1250,7 +1247,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					
-					if MouseData.nowShow == v and MouseData.editCursor then
+					if MouseData.nowShow == v and MouseData.editMemoCursor then
 						local CaretShow = true
 						if eleData.readOnly then
 							CaretShow = eleData.readOnlyCaretShow
@@ -1288,20 +1285,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -1446,7 +1443,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local scrollbars = eleData.scrollbars
 					local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 					dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
-					if MouseData.nowShow == v and MouseData.memoCursor then
+					if MouseData.nowShow == v and MouseData.editMemoCursor then
 						local CaretShow = true
 						if eleData.readOnly then
 							CaretShow = eleData.readOnlyCaretShow
@@ -1458,7 +1455,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								local lineStart = fontHeight*(currentLine-showLine)
 								local theText = text[caretPos[2]] or ""
 								local cursorPX = caretPos[1]
-								local width = dxGetTextWidth(utfSub(theText,1,cursorPX),txtSizX,font)
+								local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
 								local showPos = eleData.showPos
 								local caretStyle = eleData.caretStyle
 								if caretStyle == 0 then
@@ -1485,20 +1482,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -1545,8 +1542,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local relSizX,relSizY = w-xthick,h-ythick
 				local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
 				maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-				OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position/100 or 0
-				OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position/100 or 0
+				OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position*0.01 or 0
+				OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position*0.01 or 0
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -1564,20 +1561,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -1731,20 +1728,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -1817,20 +1814,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -1965,7 +1962,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 									local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
 									if sortColumn == id and sortIcon then
 										if DataTab.columnShadow then
-											dxDrawText(sortIcon,_tempStartx+1-10,1,_tempEndx,columnHeight,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
+											dxDrawText(sortIcon,_tempStartx+9,1,_tempEndx,columnHeight,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
 										end
 										dxDrawText(sortIcon,_tempStartx-10,0,_tempEndx,columnHeight,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
 									end
@@ -2105,9 +2102,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				elseif columnCount >= 1 then
 					local temp1 = rowMoveOffset/rowHeightLeadingTemp
 					local _rowMoveOffset = (temp1-temp1%1)*rowHeightLeadingTemp
-					local temp2 = (_rowMoveOffset+rowHeight)/rowHeightLeadingTemp
+					local temp2 = _rowMoveOffset/rowHeightLeadingTemp
 					local whichRowToStart = -(temp2-temp2%1)+1
-					local temp3 = (h-columnHeight-scbThickH+rowHeight*2)/rowHeightLeadingTemp
+					local temp3 = (h-columnHeight-scbThickH+rowHeight)/rowHeightLeadingTemp
 					local whichRowToEnd = whichRowToStart+(temp3-temp3%1)-2
 					DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
 					local whichColumnToStart,whichColumnToEnd = -1,-1
@@ -2118,7 +2115,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local column_x = columnOffset
 					local allColumnWidth = columnData[columnCount][2]+columnData[columnCount][3]
 					local scrollbar = eleData.scrollbars[2]
-					local scrollPos = dgsElementData[scrollbar].position/100
+					local scrollPos = dgsElementData[scrollbar].position*0.01
 					local mouseSelectColumn = -1
 					local does = false
 					for id,data in pairs(columnData) do
@@ -2287,20 +2284,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -2346,7 +2343,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				else
 					dxDrawRectangle(x,y,w,h,bgColor,rendSet)
 				end
-				local percent = eleData.progress/100
+				local percent = eleData.progress*0.01
 				if isElement(indicatorImage) then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 					if indicatorMode then
@@ -2368,20 +2365,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -2511,20 +2508,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -2633,20 +2630,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -2778,20 +2775,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -2829,20 +2826,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -2896,12 +2893,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						local width = dxGetTextWidth(letter,txtSizX,font)
 						movex = movex+width
 						if movex+25 >= w then
-							table.insert(readyToRenderTable,1,rndStr)
+							tableInsert(readyToRenderTable,1,rndStr)
 							rndStr = ""
 							movex = 0
 						end
 					end
-					table.insert(readyToRenderTable,1,rndStr)
+					tableInsert(readyToRenderTable,1,rndStr)
 					if #readyToRenderTable >= canshow then
 						break
 					end
@@ -2918,20 +2915,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -3051,7 +3048,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 							dxDrawRectangle(0,itemY,rndtgtWidth,itemHeight,iConfig[1][colorImgID],false)
 						end
 						if iConfig[8] then
-							dxDrawText(iData[1],iConfig[7],itemY,rndtgtWidth,itemY+itemHeight,tocolor(0,0,0,255),iConfig[4][1],iConfig[4][2],iConfig[11],iConfig[6],"center")
+							dxDrawText(iData[1],iConfig[7],itemY,rndtgtWidth,itemY+itemHeight,black,iConfig[4][1],iConfig[4][2],iConfig[11],iConfig[6],"center")
 						end
 						dxDrawText(iData[1],iConfig[7],itemY,rndtgtWidth,itemY+itemHeight,iConfig[3],iConfig[4][1],iConfig[4][2],iConfig[11],iConfig[6],"center")
 						local operatorLen = dxGetTextWidth("<",iConfig[4][1],"default-bold")
@@ -3107,20 +3104,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -3168,8 +3165,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if x and y then
 					local x,y = x-x%1,y-y%1
 					local antiDistance = 1/distance
-					local sizeX = textSizeX^2/distance*50
-					local sizeY = textSizeY^2/distance*50
+					local sizeX = textSizeX*textSizeX/distance*50
+					local sizeY = textSizeY*textSizeY/distance*50
 					------------------------------------
 					if eleData.functionRunBefore then
 						local fnc = eleData.functions
@@ -3200,26 +3197,26 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					if outlineData then
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
 						local w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
-						local x,y=x-w/2,y-h/2
+						local x,y=x-w*0.5,y-h*0.5
 						local sideColor = outlineData[3]
 						local sideSize = outlineData[2]*antiDistance*25
 						sideColor = applyColorAlpha(sideColor,galpha*fadeMulti)
 						local side = outlineData[1]
 						if side == "in" then
-							dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize)
-							dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize)
-							dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize)
-							dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize)
+							dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize)
+							dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize)
+							dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize)
+							dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize)
 						elseif side == "center" then
-							dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize)
-							dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize)
-							dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize)
-							dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize)
+							dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize)
+							dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize)
+							dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize)
+							dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize)
 						elseif side == "out" then
-							dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize)
-							dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize)
-							dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize)
-							dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize)
+							dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize)
+							dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize)
+							dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize)
+							dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize)
 						end
 					end
 					------------------------------------
@@ -3320,7 +3317,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local wordbreak = eleData.wordbreak
 				local colorcoded = eleData.colorcoded
 				local shadow = eleData.shadow
-				local textX,textY,textWX,textHY = x+w/2+xAdd-cursorWidth,y,x+w/2+xAdd+cursorWidth,y+h
+				local textX,textY,textWX,textHY = x+w*0.5+xAdd-cursorWidth,y,x+w*0.5+xAdd+cursorWidth,y+h
 				if shadow then
 					local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 					if shadowoffx and shadowoffy and shadowc then
@@ -3355,20 +3352,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					sideColor = applyColorAlpha(sideColor,galpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(x,y+sideSize/2,x+w,y+sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+sideSize/2,y,x+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-sideSize/2,y,x+w-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x+w,y+sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+sideSize*0.5,y,x+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-sideSize*0.5,y,x+w-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
 					elseif side == "center" then
-						dxDrawLine(x-sideSize/2,y,x+w+sideSize/2,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+sideSize/2,x,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+sideSize/2,x+w,y+h-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y+h,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x+w+sideSize*0.5,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+sideSize*0.5,x,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+sideSize*0.5,x+w,y+h-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y+h,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
 					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-sideSize/2,x+w+sideSize,y-sideSize/2,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize/2,y,x-sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+sideSize/2,y,x+w+sideSize/2,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+sideSize/2,x+w+sideSize,y+h+sideSize/2,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y-sideSize*0.5,x+w+sideSize,y-sideSize*0.5,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize*0.5,y,x-sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+sideSize*0.5,y,x+w+sideSize*0.5,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+sideSize*0.5,x+w+sideSize,y+h+sideSize*0.5,sideColor,sideSize,rendSet)
 					end
 				end
 				------------------------------------
@@ -3558,7 +3555,7 @@ function onClientKeyCheck(button,state)
 							local shift = getKeyState("lshift") or getKeyState("rshift")
 							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 								dgsEditMoveCaret(MouseData.nowShow,-1,shift)
-								MouseData.editCursorMoveOffset = -1
+								MouseData.editMemoCursorMoveOffset = -1
 							else
 								killTimer(MouseData.Timer["editMove"])
 							end
@@ -3579,7 +3576,7 @@ function onClientKeyCheck(button,state)
 							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
 								dgsEditMoveCaret(MouseData.nowShow,1,shift)
-								MouseData.editCursorMoveOffset = 1
+								MouseData.editMemoCursorMoveOffset = 1
 							else
 								killTimer(MouseData.Timer["editMove"])
 							end
@@ -3715,7 +3712,7 @@ function onClientKeyCheck(button,state)
 				if isTimer(MouseData.Timer["editMoveDelay"]) then
 					killTimer(MouseData.Timer["editMoveDelay"])
 				end
-				MouseData.editCursorMoveOffset = false
+				MouseData.editMemoCursorMoveOffset = false
 			end
 		end
 	elseif dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
@@ -4410,7 +4407,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 					for i=id,#tabs do
 						dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
 					end
-					table.remove(tabs,id)
+					tableRemove(tabs,id)
 				end
 			end
 		elseif dgsType == "dgs-dxcombobox" then
@@ -4436,12 +4433,12 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				end
 			end
 		end
-		table.remove(ChildrenTable[source] or {})
+		tableRemove(ChildrenTable[source] or {})
 		local tresource = getElementData(source,"resource")
 		if tresource then
-			local id = table.find(resourceDxGUI[tresource] or {},source)
+			local id = tableFind(resourceDxGUI[tresource] or {},source)
 			if id then
-				table.remove(resourceDxGUI[tresource],id)
+				tableRemove(resourceDxGUI[tresource],id)
 			end
 		end
 		dgsStopAniming(source)
@@ -4449,40 +4446,40 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		dgsStopSizing(source)
 		dgsStopAlphaing(source)
 		if dgsType == "dgs-dx3dinterface" then
-			local id = table.find(dx3DInterfaceTable,source)
+			local id = tableFind(dx3DInterfaceTable,source)
 			if id then
-				table.remove(dx3DInterfaceTable,id)
+				tableRemove(dx3DInterfaceTable,id)
 			end
 		else
 			local parent = dgsGetParent(source)
 			if not isElement(parent) then
-				local id = table.find(CenterFatherTable,source)
+				local id = tableFind(CenterFatherTable,source)
 				if id then
-					table.remove(CenterFatherTable,id)
+					tableRemove(CenterFatherTable,id)
 					return
 				end
-				local id = table.find(BottomFatherTable,source)
+				local id = tableFind(BottomFatherTable,source)
 				if id then
-					table.remove(BottomFatherTable,id)
+					tableRemove(BottomFatherTable,id)
 					return
 				end
-				local id = table.find(TopFatherTable,source)
+				local id = tableFind(TopFatherTable,source)
 				if id then
-					table.remove(TopFatherTable,id)
+					tableRemove(TopFatherTable,id)
 					return
 				end
 			else
-				local id = table.find(ChildrenTable[parent] or {},source)
+				local id = tableFind(ChildrenTable[parent] or {},source)
 				if id then
-					table.remove(ChildrenTable[parent] or {},id)
+					tableRemove(ChildrenTable[parent] or {},id)
 				end
 			end
 		end
 		local lang = dgsElementData[source]._translationText
 		if lang then
-			local id = table.find(LanguageTranslationAttach,source)
+			local id = tableFind(LanguageTranslationAttach,source)
 			if id then
-				table.remove(LanguageTranslationAttach,id)
+				tableRemove(LanguageTranslationAttach,id)
 			end
 		end
 		dgsElementData[source] = nil

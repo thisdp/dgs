@@ -23,7 +23,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateComboBox at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local combobox = createElement("dgs-dxcombobox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or table.insert(CenterFatherTable,1,combobox)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or table.insert(CenterFatherTable,combobox)
 	dgsSetType(combobox,"dgs-dxcombobox")
 	dgsSetData(combobox,"renderBuffer",{})
 	
@@ -272,7 +272,7 @@ function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
 	assert(tonumber(sy),"Bad argument @dgsComboBoxCreateBox at argument 4, expect number got "..type(sy))
 	assert(dgsGetType(parent) == "dgs-dxcombobox","Bad argument @dgsComboBoxCreateBox at argument 6, expect dgs-dxcombobox got "..dgsGetType(parent))
 	local box = createElement("dgs-dxcombobox-Box")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true,true) or table.insert(CenterFatherTable,1,box)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true,true) or table.insert(CenterFatherTable,box)
 	dgsSetType(box,"dgs-dxcombobox-Box")	
 	insertResourceDxGUI(sourceResource,box)
 	calculateGuiPositionSize(box,x,y,relative or false,sx,sy,relative or false,true)

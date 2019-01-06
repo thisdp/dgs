@@ -7,7 +7,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local button = createElement("dgs-dxbutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true,true) or table.insert(CenterFatherTable,1,button)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true,true) or table.insert(CenterFatherTable,button)
 	dgsSetType(button,"dgs-dxbutton")
 	dgsSetData(button,"renderBuffer",{})
 	local norcolor = norcolor or styleSettings.button.color[1]

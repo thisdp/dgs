@@ -7,7 +7,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateGridList at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local arrowlist = createElement("dgs-dxarrowlist")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(arrowlist,parent,true,true) or table.insert(CenterFatherTable,1,arrowlist)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(arrowlist,parent,true,true) or table.insert(CenterFatherTable,arrowlist)
 	dgsSetType(arrowlist,"dgs-dxarrowlist")
 	dgsSetData(arrowlist,"renderBuffer",{})
 	dgsSetData(arrowlist,"mode",false)

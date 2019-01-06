@@ -150,12 +150,12 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 		MouseData.nowShow = dxgui
 		if dgsGetType(dxgui) == "dgs-dxedit" then
 			MouseData.editCursor = true
-			resetTimer(MouseData.EditTimer)
+			resetTimer(MouseData.EditMemoTimer)
 			local edit = dgsElementData[dxgui].edit
 			guiBringToFront(edit)
 		elseif dgsElementType[dxgui] == "dgs-dxmemo" then
 			MouseData.editCursor = true
-			resetTimer(MouseData.MemoTimer)
+			resetTimer(MouseData.EditMemoTimer)
 			local memo = dgsElementData[dxgui].memo
 			guiBringToFront(memo)
 		elseif dxgui ~= oldShow then

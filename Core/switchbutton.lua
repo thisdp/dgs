@@ -7,7 +7,7 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateSwitchButton at argument 9, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local switchbutton = createElement("dgs-dxswitchbutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(switchbutton,parent,true,true) or table.insert(CenterFatherTable,1,switchbutton)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(switchbutton,parent,true,true) or table.insert(CenterFatherTable,switchbutton)
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
 	dgsSetData(switchbutton,"renderBuffer",{})
 

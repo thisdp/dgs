@@ -7,7 +7,7 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateDetectArea at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local detectarea = createElement("dgs-dxdetectarea")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(detectarea,parent,true,true) or table.insert(CenterFatherTable,1,detectarea)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(detectarea,parent,true,true) or table.insert(CenterFatherTable,detectarea)
 	dgsSetType(detectarea,"dgs-dxdetectarea")
 	dgsSetData(detectarea,"renderBuffer",{})
 	dgsSetData(detectarea,"checkFunction",dgsDetectAreaDefaultFunction)

@@ -7,7 +7,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateRadioButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local rb = createElement("dgs-dxradiobutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true,true) or table.insert(CenterFatherTable,1,rb)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true,true) or table.insert(CenterFatherTable,rb)
 	dgsSetType(rb,"dgs-dxradiobutton")
 	dgsSetData(rb,"renderBuffer",{})
 	

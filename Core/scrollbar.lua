@@ -7,7 +7,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	assert(type(sx) == "number","Bad argument @dgsCreateScrollBar at argument 3, expect number got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy))
 	local scrollbar = createElement("dgs-dxscrollbar")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true,true) or table.insert(CenterFatherTable,1,scrollbar)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true,true) or table.insert(CenterFatherTable,scrollbar)
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
 	dgsSetData(scrollbar,"renderBuffer",{})
 	local arrowImage = arrowImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.image[1])

@@ -15,7 +15,7 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 9, expect texture got "..getElementType(indicatorImage))
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(progressbar,parent,true,true) or table.insert(CenterFatherTable,1,progressbar)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(progressbar,parent,true,true) or table.insert(CenterFatherTable,progressbar)
 	dgsSetType(progressbar,"dgs-dxprogressbar")
 	dgsSetData(progressbar,"renderBuffer",{})
 	dgsSetData(progressbar,"bgColor",bgColor or styleSettings.progressbar.bgColor)

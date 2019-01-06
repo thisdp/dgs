@@ -10,7 +10,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateCheckBox at argument 8,expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local cb = createElement("dgs-dxcheckbox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true,true) or table.insert(CenterFatherTable,1,cb)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true,true) or table.insert(CenterFatherTable,cb)
 	dgsSetType(cb,"dgs-dxcheckbox")
 	dgsSetData(cb,"renderBuffer",{})
 	

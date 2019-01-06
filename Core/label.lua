@@ -7,7 +7,7 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateLabel at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local label = createElement("dgs-dxlabel")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(label,parent,true,true) or table.insert(CenterFatherTable,1,label)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(label,parent,true,true) or table.insert(CenterFatherTable,label)
 	dgsSetType(label,"dgs-dxlabel")
 	dgsSetData(label,"renderBuffer",{})
 	dgsSetData(label,"textColor",textColor or styleSettings.label.textColor)

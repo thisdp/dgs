@@ -11,7 +11,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateMemo at argument 7, expect dgs-memo got "..dgsGetType(parent))
 	end
 	local memo = createElement("dgs-dxmemo")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or table.insert(CenterFatherTable,1,memo)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or table.insert(CenterFatherTable,memo)
 	dgsSetType(memo,"dgs-dxmemo")
 	dgsSetData(memo,"renderBuffer",{})
 	dgsSetData(memo,"bgColor",bgColor or styleSettings.memo.bgColor)
@@ -110,7 +110,7 @@ function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 		dgsSetData(memo,"selectFrom",{pos,line})
 	end
 	resetTimer(MouseData.MemoTimer)
-	MouseData.memoCursor = true
+	MouseData.editMemoCursor = true
 	return true
 end
 
@@ -194,7 +194,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,noselect)
 		dgsSetData(memo,"selectFrom",{pos,line})
 	end
 	resetTimer(MouseData.MemoTimer)
-	MouseData.memoCursor = true
+	MouseData.editMemoCursor = true
 	return true
 end
 

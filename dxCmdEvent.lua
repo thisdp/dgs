@@ -124,7 +124,7 @@ end)
 
 dgsCmdAddCommandHandler("dxstatus",function(cmd)
 	if not isElement(dxStatus["window"]) then
-		dxStatus["window"] = dgsCreateAnimationWindow(sW/2-250,sH/2-150,500,300,"Dx Status",false,tocolor(20,20,200,255),_,_,tocolor(80,140,200,255),_,tocolor(0,0,0,200))
+		dxStatus["window"] = dgsCreateAnimationWindow(sW/2-250,sH/2-150,500,305,"Dx Status",false,tocolor(20,20,200,255),_,_,tocolor(80,140,200,255),_,tocolor(0,0,0,200))
 		dgsWindowSetSizable(dxStatus["window"],false)
 		dgsBringToFront(dxStatus["window"])
 		outputCmdMessage(cmd,"Dx Status Monitor: ON")
@@ -265,6 +265,7 @@ local tick = getTickCount()
 local speedSend = {}
 local speedRecv = {}
 local percentLoss = {}
+local MaxStatisticTimes = 60
 function netUpdate()
 	if isElement(netSystem["Sent"]) then
 		local network = getNetworkStats()
@@ -293,26 +294,26 @@ function netUpdate()
 			table.insert(speedSend,1,_sent)
 			table.insert(speedRecv,1,_received)
 			table.insert(percentLoss,1,network.packetlossLastSecond)
-			if #speedSend > 21 then
-				if speedSend[22] == speedSend[0] then
+			if #speedSend > MaxStatisticTimes+1 then
+				if speedSend[MaxStatisticTimes+2] == speedSend[0] then
 					speedSend[0] = speedSend[1]
-					for i=2,21 do
+					for i=2,MaxStatisticTimes+1 do
 						speedSend[0] = speedSend[0] <= speedSend[i] and speedSend[i] or speedSend[0]
 					end
 				end
-				speedSend[22] = nil
+				speedSend[MaxStatisticTimes+2] = nil
 			end
-			if #speedRecv > 21 then
-				if speedRecv[22] == speedRecv[0] then
+			if #speedRecv > MaxStatisticTimes+1 then
+				if speedRecv[MaxStatisticTimes+2] == speedRecv[0] then
 					speedRecv[0] = speedRecv[1]
-					for i=2,21 do
+					for i=2,MaxStatisticTimes+1 do
 						speedRecv[0] = speedRecv[0] <= speedRecv[i] and speedRecv[i] or speedRecv[0]
 					end
 				end
-				speedRecv[22] = nil
+				speedRecv[MaxStatisticTimes+2] = nil
 			end
-			if #percentLoss > 21 then
-				percentLoss[22] = nil
+			if #percentLoss > MaxStatisticTimes+1 then
+				percentLoss[MaxStatisticTimes+2] = nil
 			end
 			tick = getTickCount()
 		end
@@ -449,9 +450,10 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
 			local maxPos = math.floor((speedSend[0] or 0)*1.2)
+			local LineBlue = tocolor(80,180,255,255)
 			for i=1,#speedSend-1 do
 				local nextone = speedSend[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/maxPos),x+sx-sx*(i-1)/20,y+sy-sy*(speedSend[i]/maxPos),tocolor(80,180,255,255),1,not DEBUG_MODE)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedSend[i]/maxPos)-1,LineBlue,1,not DEBUG_MODE)
 			end
 			dgsSetText(netSystem["picture_sen_max"],maxPos.."Byte/s")
 		end)
@@ -460,9 +462,10 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
 			local maxPos = math.floor((speedRecv[0] or 0)*1.2)
+			local LineBlue = tocolor(80,180,255,255)
 			for i=1,#speedRecv-1 do
 				local nextone = speedRecv[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/maxPos),x+sx-sx*(i-1)/20,y+sy-sy*(speedRecv[i]/maxPos),tocolor(80,180,255,255),1,not DEBUG_MODE)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedRecv[i]/maxPos)-1,LineBlue,1,not DEBUG_MODE)
 			end
 			dgsSetText(netSystem["picture_rec_max"],maxPos.."Byte/s")
 		end)
@@ -470,14 +473,15 @@ addEventHandler("onAnimationWindowCreate",root,function()
 		addEventHandler("onDGSObjectRender",netSystem["picture_pkl"],function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
+			local LineBlue = tocolor(80,180,255,255)
 			for i=1,#percentLoss-1 do
 				local nextone = percentLoss[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/20,y+sy-sy*(nextone/100),x+sx-sx*(i-1)/20,y+sy-sy*(percentLoss[i]/100),tocolor(80,180,255,255),1,not DEBUG_MODE)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/100)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(percentLoss[i]/100)-1,LineBlue,1,not DEBUG_MODE)
 			end
 		end)
 		
 	elseif source == dxStatus["window"] then
-		dxStatus["dxList"] = dgsCreateGridList(10,10,480,255,false,dxStatus["window"],_,tocolor(0,0,0,100),white,tocolor(0,0,0,100),tocolor(0,0,0,0),tocolor(100,100,100,100),tocolor(200,200,200,150))
+		dxStatus["dxList"] = dgsCreateGridList(10,10,480,260,false,dxStatus["window"],_,tocolor(0,0,0,100),white,tocolor(0,0,0,100),tocolor(0,0,0,0),tocolor(100,100,100,100),tocolor(200,200,200,150))
 		dgsGridListAddColumn(dxStatus["dxList"],"Name",0.55)
 		dgsGridListAddColumn(dxStatus["dxList"],"Value",0.35)
 		local scrollBars = dgsGridListGetScrollBar(dxStatus["dxList"])
