@@ -250,6 +250,11 @@
 	<export function="dgsEditSetVerticalAlign" type="client" />
 	<export function="dgsEditGetHorizontalAlign" type="client" />
 	<export function="dgsEditGetVerticalAlign" type="client" />
+	<export function="dgsEditInsertText" type="client" />
+	<export function="dgsEditReplaceText" type="client" />
+	<export function="dgsEditDeleteText" type="client" />
+	<export function="dgsEditGetPartOfText" type="client" />
+	<export function="dgsEditClearText" type="client" />
 	
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />
@@ -293,7 +298,8 @@
 	<export function="dgsImageGetUVSize" type="client" />
 	<export function="dgsImageSetUVPosition" type="client" />
 	<export function="dgsImageGetUVPosition" type="client" />
-
+	<export function="dgsImageGetNativeSize" type="client" />
+	
 	<export function="dgsCreateProgressBar" type="client" />
 	<export function="dgsProgressBarGetProgress" type="client" />
 	<export function="dgsProgressBarSetProgress" type="client" />

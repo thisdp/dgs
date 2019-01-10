@@ -3536,14 +3536,15 @@ function onClientKeyCheck(button,state)
 		end
 	end
 	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-		local edit = dgsElementData[MouseData.nowShow].edit
-		local text = dgsElementData[MouseData.nowShow].text
+		local dgsEdit = MouseData.nowShow
+		local edit = dgsElementData[dgsEdit].edit
+		local text = dgsElementData[dgsEdit].text
 		if state then
-			local cmd = dgsElementData[MouseData.nowShow].mycmd
+			local cmd = dgsElementData[dgsEdit].mycmd
 			local shift = getKeyState("lshift") or getKeyState("rshift")
 			local control = getKeyState("lctrl") or getKeyState("rctrl")
 			if button == "arrow_l" then
-				dgsEditMoveCaret(MouseData.nowShow,-1,shift)
+				dgsEditMoveCaret(dgsEdit,-1,shift)
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -3551,11 +3552,11 @@ function onClientKeyCheck(button,state)
 					killTimer(MouseData.Timer["editMoveDelay"])
 				end
 				MouseData.Timer["editMoveDelay"] = setTimer(function()
-					if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+					if dgsGetType(dgsEdit) == "dgs-dxedit" then
 						MouseData.Timer["editMove"] = setTimer(function()
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-								dgsEditMoveCaret(MouseData.nowShow,-1,shift)
+							if dgsGetType(dgsEdit) == "dgs-dxedit" then
+								dgsEditMoveCaret(dgsEdit,-1,shift)
 								MouseData.editMemoCursorMoveOffset = -1
 							else
 								killTimer(MouseData.Timer["editMove"])
@@ -3564,7 +3565,7 @@ function onClientKeyCheck(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_r" then
-				dgsEditMoveCaret(MouseData.nowShow,1,shift)
+				dgsEditMoveCaret(dgsEdit,1,shift)
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -3572,11 +3573,11 @@ function onClientKeyCheck(button,state)
 					killTimer(MouseData.Timer["editMoveDelay"])
 				end
 				MouseData.Timer["editMoveDelay"] = setTimer(function()
-					if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+					if dgsGetType(dgsEdit) == "dgs-dxedit" then
 						MouseData.Timer["editMove"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+							if dgsGetType(dgsEdit) == "dgs-dxedit" then
 								local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsEditMoveCaret(MouseData.nowShow,1,shift)
+								dgsEditMoveCaret(dgsEdit,1,shift)
 								MouseData.editMemoCursorMoveOffset = 1
 							else
 								killTimer(MouseData.Timer["editMove"])
@@ -3591,8 +3592,8 @@ function onClientKeyCheck(button,state)
 					if history[int+1] then
 						int = int+1
 						dgsSetData(cmd,"cmdCurrentHistory",int)
-						dgsSetText(MouseData.nowShow,history[int])
-						dgsEditSetCaretPosition(MouseData.nowShow,#history[int])
+						dgsSetText(dgsEdit,history[int])
+						dgsEditSetCaretPosition(dgsEdit,#history[int])
 					end
 				end
 			elseif button == "arrow_d" then
@@ -3602,24 +3603,24 @@ function onClientKeyCheck(button,state)
 					if history[int-1] then
 						int = int-1
 						dgsSetData(cmd,"cmdCurrentHistory",int)
-						dgsSetText(MouseData.nowShow,history[int])
-						dgsEditSetCaretPosition(MouseData.nowShow,#history[int])
+						dgsSetText(dgsEdit,history[int])
+						dgsEditSetCaretPosition(dgsEdit,#history[int])
 					end
 				end
 			elseif button == "home" then
-				dgsEditSetCaretPosition(MouseData.nowShow,0,getKeyState("lshift") or getKeyState("rshift"))
+				dgsEditSetCaretPosition(dgsEdit,0,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "end" then
-				dgsEditSetCaretPosition(MouseData.nowShow,#text,getKeyState("lshift") or getKeyState("rshift"))
+				dgsEditSetCaretPosition(dgsEdit,#text,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "delete" then
-				if not dgsElementData[MouseData.nowShow].readOnly then
-					local cpos = dgsElementData[MouseData.nowShow].caretPos
-					local spos = dgsElementData[MouseData.nowShow].selectFrom
+				if not dgsElementData[dgsEdit].readOnly then
+					local cpos = dgsElementData[dgsEdit].caretPos
+					local spos = dgsElementData[dgsEdit].selectFrom
 					if cpos ~= spos then
-						dgsEditDeleteText(MouseData.nowShow,cpos,spos)
-						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
+						dgsEditDeleteText(dgsEdit,cpos,spos)
+						dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
 					else
 						local tarindex = cpos+1
-						dgsEditDeleteText(MouseData.nowShow,cpos,tarindex)
+						dgsEditDeleteText(dgsEdit,cpos,tarindex)
 						if isTimer(MouseData.Timer["editMove"]) then
 							killTimer(MouseData.Timer["editMove"])
 						end
@@ -3627,13 +3628,13 @@ function onClientKeyCheck(button,state)
 							killTimer(MouseData.Timer["editMoveDelay"])
 						end
 						MouseData.Timer["editMoveDelay"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+							if dgsGetType(dgsEdit) == "dgs-dxedit" then
 								MouseData.Timer["editMove"] = setTimer(function()
-									if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-										local cpos = dgsElementData[MouseData.nowShow].caretPos
-										local spos = dgsElementData[MouseData.nowShow].selectFrom
+									if dgsGetType(dgsEdit) == "dgs-dxedit" then
+										local cpos = dgsElementData[dgsEdit].caretPos
+										local spos = dgsElementData[dgsEdit].selectFrom
 										local tarindex = cpos+1
-										dgsEditDeleteText(MouseData.nowShow,cpos,tarindex)
+										dgsEditDeleteText(dgsEdit,cpos,tarindex)
 									else
 										killTimer(MouseData.Timer["editMove"])
 									end
@@ -3643,15 +3644,15 @@ function onClientKeyCheck(button,state)
 					end
 				end
 			elseif button == "backspace" then
-				if not dgsElementData[MouseData.nowShow].readOnly then
-					local cpos = dgsElementData[MouseData.nowShow].caretPos
-					local spos = dgsElementData[MouseData.nowShow].selectFrom
+				if not dgsElementData[dgsEdit].readOnly then
+					local cpos = dgsElementData[dgsEdit].caretPos
+					local spos = dgsElementData[dgsEdit].selectFrom
 					if cpos ~= spos then
-						dgsEditDeleteText(MouseData.nowShow,cpos,spos)
-						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
+						dgsEditDeleteText(dgsEdit,cpos,spos)
+						dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
 					else
 						local tarindex = cpos-1
-						dgsEditDeleteText(MouseData.nowShow,tarindex,cpos)
+						dgsEditDeleteText(dgsEdit,tarindex,cpos)
 						if isTimer(MouseData.Timer["editMove"]) then
 							killTimer(MouseData.Timer["editMove"])
 						end
@@ -3659,13 +3660,13 @@ function onClientKeyCheck(button,state)
 							killTimer(MouseData.Timer["editMoveDelay"])
 						end
 						MouseData.Timer["editMoveDelay"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+							if dgsGetType(dgsEdit) == "dgs-dxedit" then
 								MouseData.Timer["editMove"] = setTimer(function()
-									if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-										local cpos = dgsElementData[MouseData.nowShow].caretPos
-										local spos = dgsElementData[MouseData.nowShow].selectFrom
+									if dgsGetType(dgsEdit) == "dgs-dxedit" then
+										local cpos = dgsElementData[dgsEdit].caretPos
+										local spos = dgsElementData[dgsEdit].selectFrom
 										local tarindex = cpos-1
-										dgsEditDeleteText(MouseData.nowShow,tarindex,cpos)
+										dgsEditDeleteText(dgsEdit,tarindex,cpos)
 									else
 										killTimer(MouseData.Timer["editMove"])
 									end
@@ -3675,18 +3676,26 @@ function onClientKeyCheck(button,state)
 					end
 				end
 			elseif button == "c" or button == "x" then
-				if dgsElementData[MouseData.nowShow].allowCopy then
+				if dgsElementData[dgsEdit].allowCopy then
 					if getKeyState("lctrl") or getKeyState("rctrl") then
-						local deleteText = button == "x" and not dgsElementData[MouseData.nowShow].readOnly
-						local cpos = dgsElementData[MouseData.nowShow].caretPos
-						local spos = dgsElementData[MouseData.nowShow].selectFrom
-						local theText = dgsEditGetPartOfText(MouseData.nowShow,cpos,spos,deleteText)
+						local deleteText = button == "x" and not dgsElementData[dgsEdit].readOnly
+						local cpos = dgsElementData[dgsEdit].caretPos
+						local spos = dgsElementData[dgsEdit].selectFrom
+						local theText = dgsEditGetPartOfText(dgsEdit,cpos,spos,deleteText)
 						setClipboard(theText)
 					end
 				end
+			elseif button == "z" then
+				if getKeyState("lctrl") or getKeyState("rctrl") then
+					dgsEditDoOpposite(dgsEdit,true)
+				end
+			elseif button == "y" then
+				if getKeyState("lctrl") or getKeyState("rctrl") then
+					dgsEditDoOpposite(dgsEdit,false)
+				end
 			elseif button == "tab" then
 				cancelEvent()
-				triggerEvent("onDgsEditPreSwitch",MouseData.nowShow)
+				triggerEvent("onDgsEditPreSwitch",dgsEdit)
 				if isTimer(MouseData.Timer["editMove"]) then
 					killTimer(MouseData.Timer["editMove"])
 				end
@@ -3694,10 +3703,10 @@ function onClientKeyCheck(button,state)
 					killTimer(MouseData.Timer["editMoveDelay"])
 				end
 				MouseData.Timer["editMoveDelay"] = setTimer(function()
-					if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
+					if dgsGetType(dgsEdit) == "dgs-dxedit" then
 						MouseData.Timer["editMove"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-								triggerEvent("onDgsEditPreSwitch",MouseData.nowShow)
+							if dgsGetType(dgsEdit) == "dgs-dxedit" then
+								triggerEvent("onDgsEditPreSwitch",dgsEdit)
 							else
 								killTimer(MouseData.Timer["editMove"])
 							end

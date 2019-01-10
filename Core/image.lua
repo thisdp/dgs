@@ -107,3 +107,11 @@ function dgsImageGetUVPosition(gui,relative)
 	end
 	return false
 end
+
+function dgsImageGetNativeSize(gui)
+	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetNativeSize at argument 1, expect dgs-dximage got "..dgsGetType(gui))
+	if isElement(dgsElementData[gui].image) then
+		return dxGetMaterialSize(gui)
+	end
+	return false
+end
