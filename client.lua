@@ -3541,6 +3541,7 @@ function onClientKeyCheck(button,state)
 		if state then
 			local cmd = dgsElementData[MouseData.nowShow].mycmd
 			local shift = getKeyState("lshift") or getKeyState("rshift")
+			local control = getKeyState("lctrl") or getKeyState("rctrl")
 			if button == "arrow_l" then
 				dgsEditMoveCaret(MouseData.nowShow,-1,shift)
 				if isTimer(MouseData.Timer["editMove"]) then
@@ -3574,7 +3575,7 @@ function onClientKeyCheck(button,state)
 					if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 						MouseData.Timer["editMove"] = setTimer(function()
 							if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-							local shift = getKeyState("lshift") or getKeyState("rshift")
+								local shift = getKeyState("lshift") or getKeyState("rshift")
 								dgsEditMoveCaret(MouseData.nowShow,1,shift)
 								MouseData.editMemoCursorMoveOffset = 1
 							else
@@ -4482,9 +4483,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				tableRemove(LanguageTranslationAttach,id)
 			end
 		end
-		dgsElementData[source] = nil
-		dgsRenderTempData[source] = nil
 	end
+	dgsElementData[source] = nil
+	dgsRenderTempData[source] = nil
 end)
 
 function checkMove()

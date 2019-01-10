@@ -13,7 +13,7 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	dgsSetType(image,"dgs-dximage")
 	local texture = img
 	if type(img) == "string" then
-		texture = dxCreateTexture(img)
+		texture,textureExists = dgsImageCreateTextureExternal(image,sourceResource,texture)
 		if not isElement(texture) then return false end
 	end
 	dgsSetData(image,"image",texture)
@@ -34,7 +34,34 @@ end
 
 function dgsImageSetImage(gui,img)
 	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImage at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	return dgsSetData(gui,"image",img)
+	local texture = dgsElementData[gui].image
+	if isElement(texture) then
+		if dgsElementData[texture].parent == gui then
+			destroyElement(texture)
+		end
+	end
+	texture = img
+	if type(texture) == "string" then
+		texture,textureExists = dgsImageCreateTextureExternal(gui,sourceResource,texture)
+		if not textureExists then return false end
+	end
+	return dgsSetData(gui,"image",texture)
+end
+
+function dgsImageCreateTextureExternal(gui,res,img)
+	if res then
+		img = string.gsub(img,"\\","/")
+		if not string.find(img,":") then
+			img = ":"..getResourceName(res).."/"..img
+			img = string.gsub(img,"//","/") or img
+		end
+	end
+	texture = dxCreateTexture(img)
+	if isElement(texture) then
+		dgsElementData[texture] = {parent=image}
+		return texture,true
+	end
+	return false
 end
 
 function dgsImageSetUVSize(gui,sx,sy,relative)
