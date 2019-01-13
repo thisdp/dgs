@@ -109,7 +109,7 @@ function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 	if not noselect or not isReadOnlyShow then
 		dgsSetData(memo,"selectFrom",{pos,line})
 	end
-	resetTimer(MouseData.MemoTimer)
+	resetTimer(MouseData.EditMemoTimer)
 	MouseData.editMemoCursor = true
 	return true
 end
@@ -193,7 +193,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,noselect)
 	if not noselect then
 		dgsSetData(memo,"selectFrom",{pos,line})
 	end
-	resetTimer(MouseData.MemoTimer)
+	resetTimer(MouseData.EditMemoTimer)
 	MouseData.editMemoCursor = true
 	return true
 end
