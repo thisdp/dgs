@@ -1,3 +1,7 @@
+--Check whether you enable/disable dgs update system..
+--If you don't trust dgs.. Please Disable It In "config.txt"
+if dgsConfig.updateSystemDisabled then return end
+
 local check
 if fileExists("update.cfg") then
 	check = fileOpen("update.cfg")

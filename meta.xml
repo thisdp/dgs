@@ -7,6 +7,7 @@
 	<file src="shaders/circle.fx"/>
 	<file src="shaders/textureRelight.fx" />
 	<file src="shaders/mta-helper.fx" />
+	<file src="shaders/ButtonEffect.fx" />
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />

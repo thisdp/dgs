@@ -2,13 +2,18 @@ animGUIList = {}
 moveGUIList = {}
 sizeGUIList = {}
 alphaGUIList = {}
+--[[
+function dgsAttachAnimationToEvent(gui,animType,animName,...)
+	local args = {...}
+	dgsSetData()
+end]]
 
 function dgsIsAniming(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsIsAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return animGUIList[gui] or false
 end
 
-function dgsAnimTo(gui, property, value, easing, thetime, callback)
+function dgsAnimTo(gui, property, value, easing, thetime, callback,reverseProgress)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsAnimTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	local thetime = tonumber(thetime)
 	assert(type(property) == "string","Bad argument @dgsAnimTo at argument 2, expect string got "..type(property))
@@ -20,7 +25,7 @@ function dgsAnimTo(gui, property, value, easing, thetime, callback)
 		dgsElementData[gui].anim = {}
 	end
 	if not dgsElementData[gui].anim[property] then
-		dgsElementData[gui].anim[property] = {[-1]=index,[0]=getTickCount(),property, value, dgsElementData[gui][property],easing,thetime,callback = callback}
+		dgsElementData[gui].anim[property] = {[-1]=index,[0]=getTickCount(),property, value, dgsElementData[gui][property],easing,thetime,callback = callback,reverseProgress=reverseProgress}
 		if not animGUIList[gui] then
 			animGUIList[gui] = true
 		end
@@ -168,22 +173,24 @@ addEventHandler("onClientRender",root,function()
 		local animList = dgsElementData[v].anim
 		if animGUIList[v] then
 			for _,data in pairs(animList) do
-				local propertyName,targetValue,oldValue,easing,thetime = data[1],data[2],data[3],data[4],data[5]
+				local propertyName,targetValue,oldValue,easing,thetime,isReversed = data[1],data[2],data[3],data[4],data[5],data.reverseProgress
 				local changeTime = tickCount-data[0]
-				if changeTime <= thetime then
-					if builtins[easing] then
-						local percent = oldValue+getEasingValue(changeTime/thetime,easing)*(targetValue-oldValue)
-						dgsSetProperty(v,propertyName,percent)
-					else
-						if SelfEasing[easing] then
-							local value = SelfEasing[easing](changeTime/thetime,{propertyName,targetValue,oldValue},v)
-							dgsSetProperty(v,propertyName,value)
-						else
-							dgsStopAniming(v,propertyName)
-							assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
-						end
-					end
+				local ctPercent = changeTime/thetime
+				linearProgress = ctPercent >= 1 and 1 or ctPercent
+				linearProgress = isReversed and 1-linearProgress or linearProgress
+				if builtins[easing] then
+					local percent = oldValue+getEasingValue(linearProgress,easing)*(targetValue-oldValue)
+					dgsSetProperty(v,propertyName,percent)
 				else
+					if SelfEasing[easing] then
+						local value = SelfEasing[easing](linearProgress,{propertyName,targetValue,oldValue},v)
+						dgsSetProperty(v,propertyName,value)
+					else
+						dgsStopAniming(v,propertyName)
+						assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
+					end
+				end
+				if ctPercent >= 1 then
 					dgsStopAniming(v,propertyName)
 				end
 			end

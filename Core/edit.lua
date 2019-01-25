@@ -202,9 +202,9 @@ function dgsEditInsertText(edit,index,text)
 	return handleDxEditText(edit,tostring(text),true,index)
 end
 
-function dgsEditReplaceText(edit,fromIndex,toIndex,text,historyRecState)
-	local deletedText = dgsEditDeleteText(edit,fromIndex,toIndex,_,0)
-	handleDxEditText(edit,text,true,_,_,0)
+function dgsEditReplaceText(edit,fromIndex,toIndex,text,noAffectCaret,historyRecState)
+	local deletedText = dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,0)
+	handleDxEditText(edit,text,true,noAffectCaret,_,0)
 	if dgsElementData[edit].enableRedoUndoRecord then
 		historyRecState = historyRecState or 1
 		if historyRecState ~= 0 then

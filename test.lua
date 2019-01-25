@@ -316,3 +316,40 @@ function testShader()
 	local circle = dxCreateShader("shaders/circle.fx")
 	local image = dgsCreateImage(300,300,400,400,circle,false)
 end
+
+
+-----------------------------DGS Animation With Shader Example
+--Example 1, Simple Button Effect
+function testButtonEffect()
+	local bEffect = dxCreateShader("shaders/ButtonEffect.fx")				--Create our shader
+	local button = dgsCreateButton(300,300,200,100,"Button",false)			--Create our dgs button
+	dgsSetProperty(button,"image",{bEffect,bEffect,bEffect})				--Set all image of dgs button as shader
+	dgsAddEasingFunction("ButtonEffect_1",[[								--Define our custom easing function that can be only used in dgs
+		local shader = propertyTable.image[1]								--Get the shader
+		local circleRadius = dgsGetProperty(self,"circleRadius") or 0		--Get the property value
+		circleRadius = circleRadius+(setting[2]-circleRadius)*progress		--Calculate the changing
+		if isElement(shader) and dgsGetType(shader) == "shader" then		--Is the shader existing?
+			dxSetShaderValue(shader,"radius",circleRadius*8)				--If so, then set shader value
+		end
+		return circleRadius													--Return the property value
+	]])
+	
+	function dgsButtonEffectHandler(mx,my)
+		if dgsIsAniming(source) then dgsStopAniming(source) end				--If it is animating, then suspend it
+		local wid,hei = dgsGetSize(source,false)							--Get the size of the dgs button to calculate the ratio and the mouse relative position
+		local x,y = dgsGetPosition(source,false)							--Get the position of the dgs button to calculate the mouse relative position
+		local ratio = wid/hei												--Calculate the ratio
+		local shader = dgsGetProperty(source,"image")[1]					--Get the shader
+		if not isElement(shader) then return false end						--If there is no shader, then jump out
+		dxSetShaderValue(shader,"ratio",ratio)								--Set ratio
+		local mouseRltX,mouseRltY = (mx-x)/wid,(my-y)/hei					--Get mouse relative position
+		dxSetShaderValue(shader,"circlePos",{mouseRltX,mouseRltY})			--Push in to shader
+		if eventName == "onDgsMouseEnter" then								--Animation in onDgsMouseEnter
+			dgsAnimTo(source,"circleRadius",1,"ButtonEffect_1",800)				--Let's Do It!
+		else																--Animation in onDgsMouseLeave
+			dgsAnimTo(source,"circleRadius",0,"ButtonEffect_1",600)				--Let's Do It Reverse!
+		end
+	end
+	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
+	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
+end
