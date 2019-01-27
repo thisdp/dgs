@@ -247,7 +247,7 @@ function test3DInterface()
 	--dgs3DInterfaceAttachToElement(material,localPlayer,0,0,0,0,1,0)
 
 end
-test3DInterface()
+
 function exampleDetectArea()
 	local image = dgsCreateImage(200,200,100,100,_,false)
 	local da = dgsCreateDetectArea(0,0,100,100,false,image)
