@@ -1,6 +1,6 @@
 local cos,sin,rad,atan2 = math.cos,math.sin,math.rad,math.atan2
 
-function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance)
+function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot)
 	assert(tonumber(x),"Bad argument @dgsCreate3DInterface at argument 1, expect a number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreate3DInterface at argument 2, expect a number got "..type(y))
 	assert(tonumber(y),"Bad argument @dgsCreate3DInterface at argument 3, expect a number got "..type(z))
@@ -23,6 +23,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"attachTo",false)
 	dgsSetData(interface,"dimension",-1)
 	dgsSetData(interface,"interior",-1)
+	dgsSetData(interface,"rotation",rot or 0)
 	local rndTgt = dxCreateRenderTarget(resolX,resolY,true)
 	dgsSetData(interface,"renderTarget_parent",rndTgt)
 	insertResourceDxGUI(sourceResource,interface)
@@ -34,12 +35,13 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	return interface
 end
 
-function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt)
+function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt,rot)
 	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
 	local offFaceZ = atan2(vx,vy)
 	local _h=h
-	h=h/2
-	local x1,y1,z1 = sin(offFaceX)*sin(offFaceZ)*h,sin(offFaceX)*cos(offFaceZ)*h,-cos(offFaceX)*h
+	h=h*0.5
+	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
+	local x1,y1,z1 = _x*h,_y*h,_z*h
 	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,tocolor(255,255,255,255),x+vx,y+vy,z+vz)
 	if lnVec and lnPnt then
 		local px,py,pz = dgsGetIntersection(lnVec,lnPnt,{vx,vy,vz},{x,y,z}) --Intersection Point
@@ -72,6 +74,17 @@ local blendMode = {
 	modulate_add = true,
 	overwrite = true,
 }
+
+function dgs3DInterfaceSetRotation(interface,rotation)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetRotation at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	assert(type(rotation) == "number","Bad argument @dgs3DInterfaceSetRotation at argument 2, expect a number got "..dgsGetType(rotation))
+	return dgsSetData(interface,"rotation",rotation)
+end
+
+function dgs3DInterfaceGetRotation(interface)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetRotation at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	return dgsElementData[interface].rotation
+end
 
 function dgs3DInterfaceSetBlendMode(interface,blend)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetBlendMode at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))

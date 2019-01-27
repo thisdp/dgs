@@ -674,19 +674,15 @@ function dgsGridListClearColumn(gridlist,notResetSelected,notResetScrollBar)
 	return true
 end
 
-function dgsGridListClear(gridlist)
+function dgsGridListClear(gridlist,clearRow,clearColumn)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListClear at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
- 	local scrollbars = dgsElementData[gridlist].scrollbars
-	dgsSetData(scrollbars[1],"length",{0,true})
-	dgsSetData(scrollbars[2],"length",{0,true})
-	dgsSetData(scrollbars[1],"position",0)
-	dgsSetData(scrollbars[2],"position",0)
-	dgsSetVisible(scrollbars[1],false)
-	dgsSetVisible(scrollbars[2],false)
-	dgsGridListSetSelectedItem(gridlist,-1)
-	dgsSetData(gridlist,"rowData",{})
-	dgsSetData(gridlist,"columnData",{})
-	configGridList(gridlist)
+	clearRow = clearRow ~= false
+	clearColumn = clearColumn and true or false
+ 	if clearRow then
+		dgsGridListClearRow(gridlist)
+	elseif clearColumn then
+		dgsGridListClearColumn(gridlist)
+	end
 	return true
 end
 

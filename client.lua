@@ -339,7 +339,7 @@ function interfaceRender()
 			local pos = eleData.position
 			local size = eleData.size
 			local faceTo = eleData.faceTo
-			local x,y,z,w,h,fx,fy,fz = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3]
+			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 			eleData.hit = false
 			if x and y and z and w and h then
 				local colors = eleData.color
@@ -371,7 +371,7 @@ function interfaceRender()
 						dxSetShaderValue(filter,"gTexture",renderThing)
 						renderThing = filter
 					end
-					eleData.hit = {dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,lnVec,lnPnt)}
+					eleData.hit = {dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,lnVec,lnPnt,rot)}
 				end
 				------------------------------------
 				if not eleData.functionRunBefore then
@@ -1156,12 +1156,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if eleData.masked then
 					text = rep(eleData.maskText,utf8Len(text))
 				end
-				if MouseData.nowShow == v then
-					if getKeyState("lctrl") and getKeyState("a") then
-						dgsSetData(v,"caretPos",0)
-						dgsSetData(v,"selectFrom",utf8Len(text))
-					end
-				end
 				local caretPos = eleData.caretPos
 				local selectFro = eleData.selectFrom
 				local selectColor = eleData.selectColor
@@ -1186,8 +1180,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local textX_Left,TextX_Right
 					local selStartY = (h-sideheight)*(1-caretHeight)
 					local selEndY = (h-sideheight)*caretHeight-sideheight
-					local width
-					local selectX,selectW
+					local width,selectX,selectW
 					local posFix = 0
 					if alignment[1] == "left" then
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
@@ -1246,14 +1239,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					end
 					local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
-					
 					if MouseData.nowShow == v and MouseData.editMemoCursor then
 						local CaretShow = true
 						if eleData.readOnly then
 							CaretShow = eleData.readOnlyCaretShow
 						end
 						if CaretShow then
-							local caretHeight = eleData.caretHeight
 							local caretStyle = eleData.caretStyle
 							local selStartX = selectX+x+sidelength
 							selStartX = selStartX-selStartX%1-1
@@ -1325,7 +1316,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				local bgImage = eleData.bgImage
 				local bgColor = eleData.bgColor
-				bgColor = setColorAlpha(bgColor,getColorAlpha(bgColor)*galpha)
+				bgColor = applyColorAlpha(bgColor,galpha)
 				local memo = eleData.memo
 				if not isElement(memo) then
 					destroyElement(v)
@@ -1337,12 +1328,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 				local text = eleData.text
 				local allLine = #text
-				if MouseData.nowShow == v then
-					if getKeyState("lctrl") and getKeyState("a") then
-						dgsSetData(v,"caretPos",{0,1})
-						dgsSetData(v,"selectFrom",{utf8Len(text[allLine]),allLine})
-					end
-				end
 				local caretPos = eleData.caretPos
 				local selectFro = eleData.selectFrom
 				local selectColor = eleData.selectColor
@@ -1603,21 +1588,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local ax,ay = dgsGetPosition(v,false)
 				local voh = eleData.voh
 				local image = eleData.image
 				local pos = eleData.position
 				local length,lrlt = eleData.length[1],eleData.length[2]
-				local colors = {eleData.colorn,eleData.colore,eleData.colorc}
 				local cursorColor,arrowColor,troughColor = eleData.cursorColor,eleData.arrowColor,eleData.troughColor
-				local tempCursorColor = {}
-				local tempArrowColor = {}
-				for key,color in pairs(cursorColor) do
-					tempCursorColor[key] = applyColorAlpha(color,galpha)
-				end
-				for key,color in pairs(arrowColor) do
-					tempArrowColor[key] = applyColorAlpha(color,galpha)
-				end
+				local tempCursorColor = {applyColorAlpha(cursorColor[1],galpha),applyColorAlpha(cursorColor[2],galpha),applyColorAlpha(cursorColor[3],galpha)}
+				local tempArrowColor = {applyColorAlpha(arrowColor[1],galpha),applyColorAlpha(arrowColor[2],galpha),applyColorAlpha(arrowColor[3],galpha)}
 				local tempTroughColor = applyColorAlpha(troughColor,galpha)
 				local colorImageIndex = {1,1,1,1}
 				local slotRange
@@ -1638,6 +1615,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local csRange = slotRange-cursorRange
 				if MouseData.enter == v then
 					if not MouseData.clickData then
+						local ax,ay = dgsGetPosition(v,false)
 						MouseData.enterData = false
 						if voh then
 							if my >= cy-2 and my <= cy+h-1 then
@@ -2962,22 +2940,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				dxSetRenderTarget(rndtgt,true)
 				dxSetRenderTarget()
 				if enabled[1] and mx then
-					if hit then
-						local oldPos = MouseData.interfaceHit
-						local distance = eleData.cameraDistance
-						if isElement(MouseData.lock3DInterface) then
-							if MouseData.lock3DInterface == v then
-								MouseData.hit = v
-								mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
-								MouseX,MouseY = mx,my
-								MouseData.interfaceHit = {x,y,z,distance,v}
-							end
-						elseif not oldPos[4] or distance <= oldPos[4] then
+					local oldPos = MouseData.interfaceHit
+					local distance = eleData.cameraDistance
+					if isElement(MouseData.lock3DInterface) then
+						if MouseData.lock3DInterface == v then
 							MouseData.hit = v
 							mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
 							MouseX,MouseY = mx,my
 							MouseData.interfaceHit = {x,y,z,distance,v}
 						end
+					elseif (not oldPos[4] or distance <= oldPos[4]) and hit then
+						MouseData.hit = v
+						mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
+						MouseX,MouseY = mx,my
+						MouseData.interfaceHit = {x,y,z,distance,v}
 					end
 				end
 			else
@@ -3417,7 +3393,7 @@ function removeColorCodeFromString(str)
 end
 
 ccax = 0
-function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)
+function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)		--To be optimized (can be done in the loop)
 	local ax,ay = getParentLocation(gui,true,dgsElementData[gui].absPos[1],dgsElementData[gui].absPos[2])
 	local cx,cy = getParentLocation(gui,false,dgsElementData[gui].absPos[1],dgsElementData[gui].absPos[2])
 	x,y = rndtgt and ax or x,rndtgt and ay or y
@@ -3713,6 +3689,12 @@ function onClientKeyCheck(button,state)
 						end,50,0)
 					end
 				end,500,1)
+			elseif button == "a" then
+				if getKeyState("lctrl") or getKeyState("rctrl")  then
+					dgsSetData(dgsEdit,"caretPos",0)
+					local text = dgsElementData[dgsEdit].text
+					dgsSetData(dgsEdit,"selectFrom",utf8Len(text))
+				end
 			end
 		else
 			if button == "arrow_l" or button == "arrow_r" or button == "tab" or button == "backspace" or button == "delete" then
@@ -3726,11 +3708,12 @@ function onClientKeyCheck(button,state)
 			end
 		end
 	elseif dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+		local memo = MouseData.nowShow
 		if state then
-			local cmd = dgsElementData[MouseData.nowShow].mycmd
+			local cmd = dgsElementData[memo].mycmd
 			local shift = getKeyState("lshift") or getKeyState("rshift")
 			if button == "arrow_l" then
-				dgsMemoMoveCaret(MouseData.nowShow,-1,0,shift)
+				dgsMemoMoveCaret(memo,-1,0,shift)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -3738,11 +3721,11 @@ function onClientKeyCheck(button,state)
 					killTimer(MouseData.Timer["memoMoveDelay"])
 				end
 				MouseData.Timer["memoMoveDelay"] = setTimer(function()
-					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+					if dgsGetType(memo) == "dgs-dxmemo" then
 						MouseData.Timer["memoMove"] = setTimer(function()
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-								dgsMemoMoveCaret(MouseData.nowShow,-1,0,shift)
+							if dgsGetType(memo) == "dgs-dxmemo" then
+								dgsMemoMoveCaret(memo,-1,0,shift)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -3750,7 +3733,7 @@ function onClientKeyCheck(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_r" then
-				dgsMemoMoveCaret(MouseData.nowShow,1,0,shift)
+				dgsMemoMoveCaret(memo,1,0,shift)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -3758,11 +3741,11 @@ function onClientKeyCheck(button,state)
 					killTimer(MouseData.Timer["memoMoveDelay"])
 				end
 				MouseData.Timer["memoMoveDelay"] = setTimer(function()
-					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+					if dgsGetType(memo) == "dgs-dxmemo" then
 						MouseData.Timer["memoMove"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							if dgsGetType(memo) == "dgs-dxmemo" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsMemoMoveCaret(MouseData.nowShow,1,0,shift)
+								dgsMemoMoveCaret(memo,1,0,shift)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -3770,7 +3753,7 @@ function onClientKeyCheck(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_u" then
-				dgsMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
+				dgsMemoMoveCaret(memo,0,-1,shift,true)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -3778,11 +3761,11 @@ function onClientKeyCheck(button,state)
 					killTimer(MouseData.Timer["memoMoveDelay"])
 				end
 				MouseData.Timer["memoMoveDelay"] = setTimer(function()
-					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+					if dgsGetType(memo) == "dgs-dxmemo" then
 						MouseData.Timer["memoMove"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							if dgsGetType(memo) == "dgs-dxmemo" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsMemoMoveCaret(MouseData.nowShow,0,-1,shift,true)
+								dgsMemoMoveCaret(memo,0,-1,shift,true)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -3790,7 +3773,7 @@ function onClientKeyCheck(button,state)
 					end
 				end,500,1)
 			elseif button == "arrow_d" then
-				dgsMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
+				dgsMemoMoveCaret(memo,0,1,shift,true)
 				if isTimer(MouseData.Timer["memoMove"]) then
 					killTimer(MouseData.Timer["memoMove"])
 				end
@@ -3798,11 +3781,11 @@ function onClientKeyCheck(button,state)
 					killTimer(MouseData.Timer["memoMoveDelay"])
 				end
 				MouseData.Timer["memoMoveDelay"] = setTimer(function()
-					if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+					if dgsGetType(memo) == "dgs-dxmemo" then
 						MouseData.Timer["memoMove"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							if dgsGetType(memo) == "dgs-dxmemo" then
 							local shift = getKeyState("lshift") or getKeyState("rshift")
-								dgsMemoMoveCaret(MouseData.nowShow,0,1,shift,true)
+								dgsMemoMoveCaret(memo,0,1,shift,true)
 							else
 								killTimer(MouseData.Timer["memoMove"])
 							end
@@ -3814,25 +3797,25 @@ function onClientKeyCheck(button,state)
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					tarline = 1
 				end
-				dgsMemoSetCaretPosition(MouseData.nowShow,0,tarline,getKeyState("lshift") or getKeyState("rshift"))
+				dgsMemoSetCaretPosition(memo,0,tarline,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "end" then
-				local text = dgsElementData[MouseData.nowShow].text
-				local line = dgsElementData[MouseData.nowShow].caretPos[2]
+				local text = dgsElementData[memo].text
+				local line = dgsElementData[memo].caretPos[2]
 				local tarline
 				if getKeyState("lctrl") or getKeyState("rctrl") then
 					tarline = #text
 				end
-				dgsMemoSetCaretPosition(MouseData.nowShow,utf8Len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
+				dgsMemoSetCaretPosition(memo,utf8Len(text[line] or ""),tarline,getKeyState("lshift") or getKeyState("rshift"))
 			elseif button == "delete" then
-				if not dgsElementData[MouseData.nowShow].readOnly then
-					local cpos = dgsElementData[MouseData.nowShow].caretPos
-					local spos = dgsElementData[MouseData.nowShow].selectFrom
+				if not dgsElementData[memo].readOnly then
+					local cpos = dgsElementData[memo].caretPos
+					local spos = dgsElementData[memo].selectFrom
 					if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
-						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
-						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
+						dgsMemoDeleteText(memo,cpos[1],cpos[2],spos[1],spos[2])
+						dgsElementData[memo].selectFrom = dgsElementData[memo].caretPos
 					else
-						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
-						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[memo].text,cpos[1]+1,cpos[2])
+						dgsMemoDeleteText(memo,cpos[1],cpos[2],tarindex,tarline)
 						if isTimer(MouseData.Timer["memoMove"]) then
 							killTimer(MouseData.Timer["memoMove"])
 						end
@@ -3840,13 +3823,13 @@ function onClientKeyCheck(button,state)
 							killTimer(MouseData.Timer["memoMoveDelay"])
 						end
 						MouseData.Timer["memoMoveDelay"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							if dgsGetType(memo) == "dgs-dxmemo" then
 								MouseData.Timer["memoMove"] = setTimer(function()
-									if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-										local cpos = dgsElementData[MouseData.nowShow].caretPos
-										local spos = dgsElementData[MouseData.nowShow].selectFrom
-										local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]+1,cpos[2])
-										dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],tarindex,tarline)
+									if dgsGetType(memo) == "dgs-dxmemo" then
+										local cpos = dgsElementData[memo].caretPos
+										local spos = dgsElementData[memo].selectFrom
+										local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[memo].text,cpos[1]+1,cpos[2])
+										dgsMemoDeleteText(memo,cpos[1],cpos[2],tarindex,tarline)
 									else
 										killTimer(MouseData.Timer["memoMove"])
 									end
@@ -3856,15 +3839,15 @@ function onClientKeyCheck(button,state)
 					end
 				end
 			elseif button == "backspace" then
-				if not dgsElementData[MouseData.nowShow].readOnly then
-					local cpos = dgsElementData[MouseData.nowShow].caretPos
-					local spos = dgsElementData[MouseData.nowShow].selectFrom
+				if not dgsElementData[memo].readOnly then
+					local cpos = dgsElementData[memo].caretPos
+					local spos = dgsElementData[memo].selectFrom
 					if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
-						dgsMemoDeleteText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2])
-						dgsElementData[MouseData.nowShow].selectFrom = dgsElementData[MouseData.nowShow].caretPos
+						dgsMemoDeleteText(memo,cpos[1],cpos[2],spos[1],spos[2])
+						dgsElementData[memo].selectFrom = dgsElementData[memo].caretPos
 					else
-						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
-						dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+						local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[memo].text,cpos[1]-1,cpos[2])
+						dgsMemoDeleteText(memo,tarindex,tarline,cpos[1],cpos[2])
 						if isTimer(MouseData.Timer["memoMove"]) then
 							killTimer(MouseData.Timer["memoMove"])
 						end
@@ -3872,13 +3855,13 @@ function onClientKeyCheck(button,state)
 							killTimer(MouseData.Timer["memoMoveDelay"])
 						end
 						MouseData.Timer["memoMoveDelay"] = setTimer(function()
-							if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
+							if dgsGetType(memo) == "dgs-dxmemo" then
 								MouseData.Timer["memoMove"] = setTimer(function()
-									if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-										local cpos = dgsElementData[MouseData.nowShow].caretPos
-										local spos = dgsElementData[MouseData.nowShow].selectFrom
-										local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[MouseData.nowShow].text,cpos[1]-1,cpos[2])
-										dgsMemoDeleteText(MouseData.nowShow,tarindex,tarline,cpos[1],cpos[2])
+									if dgsGetType(memo) == "dgs-dxmemo" then
+										local cpos = dgsElementData[memo].caretPos
+										local spos = dgsElementData[memo].selectFrom
+										local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[memo].text,cpos[1]-1,cpos[2])
+										dgsMemoDeleteText(memo,tarindex,tarline,cpos[1],cpos[2])
 									else
 										killTimer(MouseData.Timer["memoMove"])
 									end
@@ -3888,14 +3871,21 @@ function onClientKeyCheck(button,state)
 					end
 				end
 			elseif button == "c" or button == "x" then
-				if dgsElementData[MouseData.nowShow].allowCopy then
+				if dgsElementData[memo].allowCopy then
 					if getKeyState("lctrl") or getKeyState("rctrl") then
-						local deleteText = button == "x" and not dgsElementData[MouseData.nowShow].readOnly
-						local cpos = dgsElementData[MouseData.nowShow].caretPos
-						local spos = dgsElementData[MouseData.nowShow].selectFrom
-						local theText = dgsMemoGetPartOfText(MouseData.nowShow,cpos[1],cpos[2],spos[1],spos[2],deleteText)
+						local deleteText = button == "x" and not dgsElementData[memo].readOnly
+						local cpos = dgsElementData[memo].caretPos
+						local spos = dgsElementData[memo].selectFrom
+						local theText = dgsMemoGetPartOfText(memo,cpos[1],cpos[2],spos[1],spos[2],deleteText)
 						setClipboard(theText)
 					end
+				end
+			elseif button == "a" then
+				if getKeyState("lctrl") or getKeyState("rctrl")  then
+					dgsSetData(memo,"caretPos",{0,1})
+					local text = dgsElementData[memo].text
+					local allLine = #text
+					dgsSetData(memo,"selectFrom",{utf8Len(text[allLine]),allLine})
 				end
 			end
 		else

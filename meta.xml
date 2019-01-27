@@ -183,6 +183,8 @@
 	<export function="dgs3DInterfaceGetAttachedOffsets" type="client" />
 	<export function="dgs3DInterfaceSetDimension" type="client" />
 	<export function="dgs3DInterfaceGetDimension" type="client" />
+	<export function="dgs3DInterfaceSetRotation" type="client" />
+	<export function="dgs3DInterfaceGetRotation" type="client" />
 	
 	<export function="dgsCreate3DText" type="client" />
 	<export function="dgs3DTextGetPosition" type="client" />

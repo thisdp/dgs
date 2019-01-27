@@ -1,3 +1,21 @@
+------------Stress Test
+function scrollBarTest()
+	for i=1,1000 do
+		dgsCreateScrollBar(50+1*i,200,20,500,false)
+	end
+end
+function memoTest()
+	for i=1,1000 do
+		dgsCreateMemo(50+1*i,200,500,500,"",false)
+	end
+end
+function editTest()
+	for i=1,1000 do
+		dgsCreateEdit(50,100+10*i,500,40,"",false)
+	end
+end
+------------
+
 function createTest()
 	dgsAddEasingFunction("test_line",[[
 		return math.abs(progress^2-0.5)*2
@@ -221,15 +239,15 @@ function testBrowser()
 end
 
 function test3DInterface()
-	material1 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),0,1,0)
-	material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
-	edit1 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material1)
-	edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
+	material1 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0,_,56)
+	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
+	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material1)
+	--edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
 	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
 	--dgs3DInterfaceAttachToElement(material,localPlayer,0,0,0,0,1,0)
 
 end
-
+test3DInterface()
 function exampleDetectArea()
 	local image = dgsCreateImage(200,200,100,100,_,false)
 	local da = dgsCreateDetectArea(0,0,100,100,false,image)
