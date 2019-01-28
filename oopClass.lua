@@ -313,6 +313,16 @@ function dgsImportOOPClass()
 				getTranslationName = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGetTranslationName",self.dgsElement,...)
 				end,
+				on = function(self,eventName,theFnc)
+					removeEventHandler(eventName,self.dgsElement,theFnc)
+					local newfenv = {self=self}
+					setmetatable(newfenv,{__index = _G})
+					setfenv(theFnc,newfenv)
+					addEventHandler(eventName,self.dgsElement,theFnc)
+				end,
+				removeOn = function(self,eventName,theFnc)
+					removeEventHandler(eventName,self.dgsElement,theFnc)
+				end,
 			}
 			for k,v in pairs(dgsOOPHead.HaveParent) do
 				newTable[k]=v

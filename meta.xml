@@ -131,9 +131,6 @@
 	<export function="dgsGetDxGUIFromResource" type="client" />
 	<export function="dgsGetDxGUINoParent" type="client" />
 	<export function="dgsGetFocusedGUI" type="client" />
-	<export function="dgsRoundUp" type="client" />
-	<export function="dgsSetRoundUpPoints" type="client" />
-	<export function="dgsGetRoundUpPoints" type="client" />
 	<export function="dgsClear" type="client" />
 	<export function="dgsSetRenderSetting" type="client" />
 	<export function="dgsGetRenderSetting" type="client" />
