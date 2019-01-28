@@ -4450,6 +4450,12 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if id then
 				tableRemove(dx3DInterfaceTable,id)
 			end
+		elseif dgsType == "dgs-dx3dtext" then
+			local id = tableFind(dx3DTextTable,source)
+			if id then
+				tableRemove(dx3DTextTable,id)
+				return
+			end
 		else
 			local parent = dgsGetParent(source)
 			if not isElement(parent) then
