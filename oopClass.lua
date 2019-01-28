@@ -274,12 +274,6 @@ function dgsImportOOPClass()
 				destroy = function(self,...)
 					return destroyElement(self.dgsElement)
 				end,
-				addEventHandler = function(self,eventName,fnc,...)
-					return addEventHandler(eventName,self.dgsElement,fnc,...)
-				end,
-				removeEventHandler = function(self,eventName,fnc,...)
-					return removeEventHandler(eventName,self.dgsElement,fnc,...)
-				end,
 				isElement = function(self)
 					return isElement(self.dgsElement)
 				end,
@@ -347,6 +341,52 @@ function dgsImportOOPClass()
 				end
 				newTable.getCloseButton = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsWindowGetCloseButton",self.dgsElement,...)
+				end
+			elseif dgsType == "dgs-dx3dinterface" then
+				newTable.getBlendMode = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetBlendMode",self.dgsElement,...)
+				end
+				newTable.setBlendMode = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetBlendMode",self.dgsElement,...)
+				end
+				newTable.getPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetPosition",self.dgsElement,...)
+				end
+				newTable.setPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetPosition",self.dgsElement,...)
+				end
+				newTable.getSize = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetSize",self.dgsElement,...)
+				end
+				newTable.setSize = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetSize",self.dgsElement,...)
+				end
+				newTable.getResolution = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetResolution",self.dgsElement,...)
+				end
+				newTable.setResolution = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetResolution",self.dgsElement,...)
+				end
+				newTable.attachToElement = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceAttachToElement",self.dgsElement,...)
+				end
+				newTable.isAttached = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceIsAttached",self.dgsElement,...)
+				end
+				newTable.detachFromElement = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceDetachFromElement",self.dgsElement,...)
+				end
+				newTable.setAttachedOffsets = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetAttachedOffsets",self.dgsElement,...)
+				end
+				newTable.getAttachedOffsets = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetAttachedOffsets",self.dgsElement,...)
+				end
+				newTable.setRotation = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetRotation",self.dgsElement,...)
+				end
+				newTable.getRotation = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetRotation",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxarrowlist" then
 				newTable.addItem = function(self,...)
@@ -496,6 +536,39 @@ function dgsImportOOPClass()
 				end
 				newTable.getMasked = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEditGetMasked",self.dgsElement,...)
+				end
+				newTable.setUnderlined = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetUnderlined",self.dgsElement,...)
+				end
+				newTable.getUnderlined = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetUnderlined",self.dgsElement,...)
+				end
+				newTable.setHorizontalAlign = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetHorizontalAlign",self.dgsElement,...)
+				end
+				newTable.getHorizontalAlign = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetHorizontalAlign",self.dgsElement,...)
+				end
+				newTable.setVerticalAlign = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetVerticalAlign",self.dgsElement,...)
+				end
+				newTable.getVerticalAlign = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetVerticalAlign",self.dgsElement,...)
+				end
+				newTable.insertText = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditInsertText",self.dgsElement,...)
+				end
+				newTable.deleteText = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditDeleteText",self.dgsElement,...)
+				end
+				newTable.getPartOfText = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetPartOfText",self.dgsElement,...)
+				end
+				newTable.clearText = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditClearText",self.dgsElement,...)
+				end
+				newTable.replaceText = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditReplaceText ",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxeda" then
 				newTable.setDebugModeEnabled = function(self,...)
@@ -675,17 +748,17 @@ function dgsImportOOPClass()
 				newTable.getImage = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsImageGetImage",self.dgsElement,...)
 				end
-				newTable.setImageSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageSetImageSize",self.dgsElement,...)
+				newTable.setUVSize = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsImageSetUVSize",self.dgsElement,...)
 				end
-				newTable.getImageSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageGetImageSize",self.dgsElement,...)
+				newTable.getUVSize = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsImageGetUVSize",self.dgsElement,...)
 				end
-				newTable.setImagePosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageSetImagePosition",self.dgsElement,...)
+				newTable.setUVPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsImageSetUVPosition",self.dgsElement,...)
 				end
-				newTable.getImagePosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageGetImagePosition",self.dgsElement,...)
+				newTable.getUVPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsImageGetUVPosition",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxmemo" then
 				newTable.moveCaret = function(self,...)
