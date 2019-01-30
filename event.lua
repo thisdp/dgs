@@ -44,7 +44,40 @@ addEvent("onDgsCursorDrag",true)
 -------
 addEvent("giveIPBack",true)
 
+-------
+fontDxHave = {
+	["default"]=true,
+	["default-bold"]=true,
+	["clear"]=true,
+	["arial"]=true,
+	["sans"]=true,
+	["pricedown"]=true,
+	["bankgothic"]=true,
+	["diploma"]=true,
+	["beckett"]=true,
+}
 
+builtins = {
+	Linear = true,
+	InQuad = true,
+	OutQuad = true,
+	InOutQuad = true,
+	OutInQuad = true,
+	InElastic = true,
+	OutElastic = true,
+	InOutElastic = true,
+	OutInElastic = true,
+	InBack = true,
+	OutBack = true,
+	InOutBack = true,
+	OutInBack = true,
+	InBounce = true,
+	OutBounce = true,
+	InOutBounce = true,
+	OutInBounce = true,
+	SineCurve = true,
+	CosineCurve = true,
+}
 -------DEBUG
 addCommandHandler("debugdgs",function(command,arg)
 	if not arg then

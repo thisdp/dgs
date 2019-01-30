@@ -479,6 +479,9 @@ function dgsImportOOPClass()
 				newTable.setState = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetState",self.dgsElement,...)
 				end
+				newTable.getItemCount = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetItemCount",self.dgsElement,...)
+				end
 				newTable.getBoxHeight = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetBoxHeight",self.dgsElement,...)
 				end
@@ -624,6 +627,12 @@ function dgsImportOOPClass()
 				newTable.setColumnTitle = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnTitle",self.dgsElement,...)
 				end
+				newTable.getColumnFont = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnFont,self.dgsElement,...)
+				end
+				newTable.setColumnFont = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnFont",self.dgsElement,...)
+				end
 				newTable.addRow = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListAddRow",self.dgsElement,...)
 				end
@@ -740,6 +749,12 @@ function dgsImportOOPClass()
 				end
 				newTable.sort = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListSort",self.dgsElement,...)
+				end
+				newTable.setNavigationEnabled = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListSetNavigationEnabled",self.dgsElement,...)
+				end
+				newTable.getNavigationEnabled = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListGetNavigationEnabled",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dximage" then
 				newTable.setImage = function(self,...)

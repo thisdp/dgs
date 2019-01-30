@@ -32,10 +32,13 @@ function dgsSetData(element,key,value,nocheck)
 				elseif dgsType == "dgs-dxgridlist" then
 					if key == "columnHeight" or key == "mode" or key== "scrollBarThick" or key== "leading" then
 						configGridList(element)
+						dgsGridListUpdateRowMoveOffset(element)
 					elseif key == "rowData" then
 						if dgsElementData[element].autoSort then
 							dgsElementData[element].nextRenderSort = true
 						end
+					elseif key == "rowMoveOffset" then
+						dgsGridListUpdateRowMoveOffset(element)
 					end
 				elseif dgsType == "dgs-dxscrollpane" then
 					if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" then
@@ -75,30 +78,24 @@ function dgsSetData(element,key,value,nocheck)
 					end
 				elseif dgsType == "dgs-dxtab" then
 					if key == "text" then
-						--local absrltWidth = dgsElementData[element].absrltWidth
-						--if absrltWidth[1] < 0 then
-							local tabpanel = dgsElementData[element].parent
-							local w = dgsElementData[tabpanel].absSize[1]
-							local t_minWid = dgsElementData[tabpanel].tabMinWidth
-							local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-							local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-							local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-							if type(value) == "table" then
-								dgsElementData[element]._translationText = value
-								value = dgsTranslate(element,value,sourceResource)
-							else
-								dgsElementData[element]._translationText = nil
-							end
-							dgsElementData[element].text = tostring(value)
-							dgsSetData(element,"width",math.restrict(minwidth,maxwidth,dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[tabpanel].font)))
-							return triggerEvent("onDgsTextChange",element)
-						--end
+						local tabpanel = dgsElementData[element].parent
+						local w = dgsElementData[tabpanel].absSize[1]
+						local t_minWid = dgsElementData[tabpanel].tabMinWidth
+						local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
+						local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
+						local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
+						if type(value) == "table" then
+							dgsElementData[element]._translationText = value
+							value = dgsTranslate(element,value,sourceResource)
+						else
+							dgsElementData[element]._translationText = nil
+						end
+						dgsElementData[element].text = tostring(value)
+						dgsSetData(element,"width",math.restrict(minwidth,maxwidth,dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[tabpanel].font)))
+						return triggerEvent("onDgsTextChange",element)
 					elseif key == "width" then
-						--local absrltWidth = dgsElementData[element].absrltWidth
-						--if absrltWidth[1] < 0 then
-							local tabpanel = dgsElementData[element].parent
-							dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng+(value-oldValue))
-						--end
+						local tabpanel = dgsElementData[element].parent
+						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng+(value-oldValue))
 					end
 				elseif dgsType == "dgs-dxedit" then
 					local gedit = dgsElementData[element].edit

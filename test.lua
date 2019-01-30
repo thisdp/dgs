@@ -149,7 +149,8 @@ end
 function gridlistTest()
 	gridlist = dgsCreateGridList(300,50,600,600,false)
 	dgsSetProperty(gridlist,"clip",false)
-	dgsSetProperty(gridlist,"mode",true)
+	--dgsSetProperty(gridlist,"leading",10)
+	--dgsSetProperty(gridlist,"mode",true)
 	dgsGridListAddColumn(gridlist,"test1",0.2)
 	dgsGridListAddColumn(gridlist,"test2",0.1)
 	for i=1,500 do
@@ -159,7 +160,10 @@ function gridlistTest()
 	end
 	dgsGridListSetMultiSelectionEnabled(gridlist,true)
 	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
+	configGridList(gridlist)
+	dgsGridListSetColumnFont(gridlist,1,"default-bold")
 end
+
 function centerEdit()
 	edit = dgsCreateEdit(100,300,300,100,"TestTestTest",false)
 	dgsSetProperty(edit,"alignment","center")
@@ -231,9 +235,7 @@ end
 
 function testBrowser()
 	local browser = dgsCreateBrowser(200,200,400,400,false,_,false,true)
-	
 	addEventHandler("onClientBrowserCreated",browser,function()
-		
 		loadBrowserURL(browser,"http://www.youtube.com")
 	end)
 end

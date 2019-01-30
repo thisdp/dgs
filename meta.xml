@@ -228,6 +228,7 @@
 	<export function="dgsComboBoxGetScrollPosition" type="client" />
 	<export function="dgsComboBoxSetCaptionText" type="client" />
 	<export function="dgsComboBoxGetCaptionText" type="client" />
+	<export function="dgsComboBoxGetItemCount" type="client" />
 	
 	<export function="dgsCreateButton" type="client" />
 
@@ -353,6 +354,8 @@
 	<export function="dgsGridListSetColumnWidth" type="client" />
 	<export function="dgsGridListGetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnTitle" type="client" />
+	<export function="dgsGridListSetColumnFont" type="client" />
+	<export function="dgsGridListGetColumnFont" type="client" />
 	<export function="dgsGridListAddRow" type="client" />
 	<export function="dgsGridListRemoveRow" type="client" />
 	<export function="dgsGridListClearRow" type="client" />
@@ -394,6 +397,8 @@
 	<export function="dgsGridListGetEnterColumn" type="client" />
 	<export function="dgsGridListSetScrollPosition" type="client" />
 	<export function="dgsGridListGetScrollPosition" type="client" />
+	<export function="dgsGridListSetNavigationEnabled" type="client" />
+	<export function="dgsGridListGetNavigationEnabled" type="client" />
 	
 	<export function="dgsCreateBrowser" type="client" />
 	

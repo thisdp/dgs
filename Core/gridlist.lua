@@ -32,7 +32,6 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	local columnHeight = tonumber(columnHeight) or styleSettings.gridlist.columnHeight
 	dgsSetData(gridlist,"columnHeight",columnHeight,true)
 	dgsSetData(gridlist,"selectedColumn",-1)
-	
 	local rownorc = rownorc or styleSettings.gridlist.rowColor[1]
 	local rowhovc = rowhovc or styleSettings.gridlist.rowColor[2]
 	local rowselc = rowselc or styleSettings.gridlist.rowColor[3]
@@ -41,12 +40,11 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	local rowhovi = rowhovi or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[2])
 	local rowseli = rowseli or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[3])
 	dgsSetData(gridlist,"rowImage",{rownori,rowhovi,rowseli})	--Normal/Hover/Selected
-	
 	dgsSetData(gridlist,"rowData",{})
 	dgsSetData(gridlist,"rowTextSize",styleSettings.gridlist.rowTextSize)
 	dgsSetData(gridlist,"rowTextColor",styleSettings.gridlist.rowTextColor)
 	dgsSetData(gridlist,"rowShadow",false)
-	dgsSetData(gridlist,"rowMoveOffset",0)
+	dgsSetData(gridlist,"rowMoveOffset",0,true)
 	dgsSetData(gridlist,"rowHeight",styleSettings.gridlist.rowHeight)
 	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
 	dgsElementData[gridlist].nextRenderSort = false
@@ -69,6 +67,8 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"preSelect",{})
 	dgsSetData(gridlist,"rowSelect",{})
 	dgsSetData(gridlist,"itemClick",{})
+	dgsSetData(gridlist,"enableNavigation",true)
+	dgsSetData(gridlist,"lastSelectedItem",{1,1})
 	dgsSetData(gridlist,"scrollBarState",{nil,nil})
 	dgsSetData(gridlist,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
@@ -118,6 +118,15 @@ function dgsGridListGetMultiSelectionEnabled(gridlist)
 	return dgsElementData[gridlist].multiSelection
 end
 
+function dgsGridListGetNavigationEnabled(gridlist,state)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetNavigationEnabled at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	return dgsElementData[gridlist].enableNavigation
+end
+
+function dgsGridListSetNavigationEnabled(gridlist)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetNavigationEnabled at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	return dgsSetData(grid,"enableNavigation",state)
+end
 -----------------------------Sort
 function sortFunctions_upper(...)
 	local arg = {...}
@@ -274,7 +283,51 @@ function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 	return pos
 end
 
-function dgsGridListSetColumnFont(gridlist,pos,font)
+function dgsGridListSetColumnFont(gridlist,pos,font,affectRow)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetColumnFont at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsGridListSetColumnFont at argument 2, expect number got "..dgsGetType(pos))
+	assert(fontDxHave[font] or dgsGetType(font) == "dx-font","Bad argument @dgsGridListSetColumnFont at argument 3, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
+	local eleData = dgsElementData[gridlist]
+	local columnData = eleData.columnData
+	if #columnData == 0 then return end
+	assert(pos >= 1 and pos <= #columnData, "Bad argument @dgsGridListSetColumnFont at argument 2, Out Of Range [1,"..#columnData.."]")
+	columnData[pos][9] = font
+	if affectRow then
+		local rowData = eleData.rowData
+		for i=1,#rowData do
+			rowData[i][pos][6] = font
+		end
+	end
+	return true
+end
+
+function dgsGridListGetColumnFont(gridlist,pos)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetColumnFont at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsGridListGetColumnFont at argument 2, expect number got "..dgsGetType(pos))
+	local eleData = dgsElementData[gridlist]
+	local columnData = eleData.columnData
+	if #columnData == 0 then return end
+	assert(pos >= 1 and pos <= #columnData, "Bad argument @dgsGridListSetColumnFont at argument 2, Out Of Range [1,"..#columnData.."]")
+	return columnData[pos][9]
+end
+
+function dgsGridListGetColumnTextSize()
+	--todo
+end
+
+function dgsGridListSetColumnTextSize()
+	--todo
+end
+
+function dgsGridListSetItemFont()
+
+end
+
+function dgsGridListSetItemTextSize()
+	--todo
+end
+
+function dgsGridListGetItemTextSize()
 	--todo
 end
 
@@ -808,12 +861,69 @@ function dgsGridListGetSelectedItem(gridlist)
 	return row or -1,column or -1
 end
 
+function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
+	local DataTab = dgsElementData[gridlist]
+	local rowMoveOffset = rowMoveOffset or DataTab.rowMoveOffset
+	local rowHeight = DataTab.rowHeight
+	local leading = DataTab.leading
+	local rowHeightLeadingTemp = rowHeight + leading
+	local scbThick = DataTab.scrollBarThick
+	local scrollbars = DataTab.scrollbars
+	local scbThickH = dgsElementData[ scrollbars[2] ].visible and scbThick or 0
+	local w,h = DataTab.absSize[1],DataTab.absSize[2]
+	local columnHeight = DataTab.columnHeight
+	local rowData = DataTab.rowData
+	local rowCount = #rowData
+	if DataTab.mode then
+		local temp1 = rowMoveOffset/rowHeightLeadingTemp
+		local whichRowToStart = -(temp1-temp1%1)+1
+		local temp2 = (h-columnHeight-scbThickH+rowHeight)/rowHeightLeadingTemp
+		local whichRowToEnd = whichRowToStart+(temp2-temp2%1)-2
+		DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
+	else
+		local temp1 = (rowMoveOffset+rowHeight)/rowHeightLeadingTemp
+		local whichRowToStart = -(temp1-temp1%1)+1
+		local temp2 = (h-columnHeight-scbThickH+rowHeight*2)/rowHeightLeadingTemp
+		local whichRowToEnd = whichRowToStart+(temp2-temp2%1)-1
+		DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
+	end
+end
+
+function dgsGridListScrollTo(gridlist,row,column)
+	if row then
+		local rowData = dgsElementData[gridlist].rowData
+		local rowCounts = #rowData
+		if row >=1 and row <= #rowData then
+			local rowHeight = dgsElementData[gridlist].rowHeight
+			local leading = dgsElementData[gridlist].leading
+			local rowHeightLeadingTemp = rowHeight+leading
+			local fromTo = dgsElementData[gridlist].FromTo
+			local scrollBars = dgsElementData[gridlist].scrollbars
+			local sy = dgsElementData[gridlist].absSize[2]
+			local scbThick = dgsElementData[gridlist].scrollBarThick
+			local columnHeight = dgsElementData[gridlist].columnHeight
+			local scbThickH = dgsElementData[scrollBars[2]].visible and scbThick or 0
+			local gridListRange = sy-scbThickH-columnHeight
+			if row <= fromTo[1] then
+				local scrollPos = ((row-2)*rowHeightLeadingTemp+rowHeight+leading)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
+				dgsGridListSetScrollPosition(gridlist,scrollPos)
+			elseif row > fromTo[2] then
+				local scrollPos = ((row-1)*rowHeightLeadingTemp+rowHeight-gridListRange)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
+				dgsGridListSetScrollPosition(gridlist,scrollPos)
+			end
+		end
+	end
+	if column then
+	
+	end
+end
+
 function dgsGridListGetSelectedItems(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetSelectedItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return dgsElementData[gridlist].rowSelect
 end
 
-function dgsGridListSetSelectedItem(gridlist,row,column,notClear)
+function dgsGridListSetSelectedItem(gridlist,row,column,scrollTo)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetSelectedItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	if row == -1 or row > 0 then
 		local rowData = dgsElementData[gridlist].rowData
@@ -859,6 +969,9 @@ function dgsGridListSetSelectedItem(gridlist,row,column,notClear)
 			triggerEvent("onDgsGridListSelect",gridlist,row or -1,column or -1,old1 or -1,old2 or -1)
 		end
 		dgsElementData[gridlist].itemClick = {row,column}
+		if scrollTo then
+			dgsGridListScrollTo(gridlist,row,column)
+		end
 		return true
 	end
 	return false
@@ -868,9 +981,22 @@ function dgsGridListSetSelectedItems(gridlist,tab)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetSelectedItems at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(tab) == "table","Bad argument @dgsGridListSetSelectedItems at argument 2, expect table got "..type(tab))
 	dgsSetData(gridlist,"rowSelect",tab)
-	triggerEvent("onDgsGridListSelect",gridlist,_,_,tab)
+	triggerEvent("onDgsGridListSelect",gridlist,tab,_)
 	return true
 end
+
+addEventHandler("onDgsGridListSelect",resourceRoot,function(rowOrTable,column,oldRowOrTable,oldColumn)
+	local lastSelected = dgsElementData[source].lastSelectedItem
+	if type(rowOrTable) == "table" then
+		local row,columns = next(rowOrTable)
+		if row then
+			local column = next(columns)
+			dgsSetData(source,"lastSelectedItem",{row,column})
+		end
+	else
+		dgsSetData(source,"lastSelectedItem",{rowOrTable == -1 and lastSelected[1] or rowOrTable,column == -1 and lastSelected[2] or column})
+	end
+end)
 
 function dgsGridListSelectItem(gridlist,row,column,state)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSelectItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
@@ -878,6 +1004,9 @@ function dgsGridListSelectItem(gridlist,row,column,state)
 	local rowData = dgsElementData[gridlist].rowData
 	local columnData = dgsElementData[gridlist].rowData
 	if rowData[row] and rowData[row][column] then
+		if not dgsElementData[gridlist].multiSelection then
+			selectedItem = {}
+		end
 		local selectionMode = dgsElementData[gridlist].selectionMode
 		if selectionMode == 1 then
 			selectedItem[row] = selectedItem[row] or {}
@@ -898,6 +1027,8 @@ function dgsGridListSelectItem(gridlist,row,column,state)
 				selectedItem[row] = nil
 			end
 		end
+		triggerEvent("onDgsGridListSelect",gridlist,row,column)
+		dgsElementData[gridlist].rowSelect = selectedItem
 		return true
 	end
 	return false
@@ -997,7 +1128,7 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 		if source == scrollBars[1] then
 			local scbThickH = dgsElementData[scrollBars[2]].visible and scbThick or 0
 			local rowLength = #dgsElementData[parent].rowData*(dgsElementData[parent].rowHeight+dgsElementData[parent].leading)
-			local temp = -new*(rowLength-(sy-scbThickH-dgsElementData[parent].columnHeight))/100
+			local temp = -new*(rowLength-sy+scbThickH+dgsElementData[parent].columnHeight)/100
 			local temp = dgsElementData[parent].scrollFloor[1] and math.floor(temp) or temp 
 			dgsSetData(parent,"rowMoveOffset",temp)
 		elseif source == scrollBars[2] then
@@ -1083,6 +1214,8 @@ function configGridList(source)
 			dgsSetData(source,"renderTarget",{columnRender,rowRender})
 		end
 	end
+	dgsGridListUpdateRowMoveOffset(gridlist)
+	dgsSetData(source,"configNextFrame",false)
 end
 
 function dgsGridListResetScrollBarPosition(gridlist,vertical,horizontal)

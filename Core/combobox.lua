@@ -201,6 +201,11 @@ function dgsComboBoxGetItemText(combobox,item)
 	return false
 end
 
+function dgsComboBoxGetItemCount(combobox)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemCount at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	return #dgsElementData[combobox].itemData
+end
+
 function dgsComboBoxSetItemColor(combobox,item,color)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemColor at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemColor at argument 2, expect number got "..type(item))
