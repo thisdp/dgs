@@ -1214,7 +1214,7 @@ function configGridList(source)
 			dgsSetData(source,"renderTarget",{columnRender,rowRender})
 		end
 	end
-	dgsGridListUpdateRowMoveOffset(gridlist)
+	dgsGridListUpdateRowMoveOffset(source)
 	dgsSetData(source,"configNextFrame",false)
 end
 
