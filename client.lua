@@ -441,7 +441,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				else
 					dxDrawRectangle(x,y,w,titsize,titleColor,rendSet)
 				end
-				local rightbottom = eleData.rightbottom
+				local alignment = eleData.alignment
 				local font = eleData.font or systemFont
 				local textColor = applyColorAlpha(eleData.textColor,galpha)
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
@@ -454,15 +454,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					if shadowoffx and shadowoffy and shadowc then
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
 						local shadowc = applyColorAlpha(shadowc,galpha)
-						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
-				dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,eleData.colorcoded)
+				dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet,eleData.colorcoded)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -561,7 +561,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local clip = eleData.clip
 					local wordbreak = eleData.wordbreak
 					local colorcoded = eleData.colorcoded
-					local rightbottom = eleData.rightbottom
+					local alignment = eleData.alignment
 					local textOffset = eleData.textOffset
 					local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 					local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
@@ -575,15 +575,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						if shadowoffx and shadowoffy and shadowc then
 							local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
 							local shadowc = applyColorAlpha(shadowc,galpha)
-							dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 							if shadowIsOutline then
-								dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-								dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-								dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+								dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+								dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+								dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 							end
 						end
 					end
-					dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+					dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet,colorcoded)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -924,7 +924,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local text = eleData.text
 				local textImageSpace = _textImageSpace[2] and _textImageSpace[1]*w or _textImageSpace[1]
 				local colorcoded = eleData.colorcoded
-				local rightbottom = eleData.rightbottom
+				local alignment = eleData.alignment
 				local px = x+buttonSizeX+textImageSpace
 				if eleData.PixelInt then
 					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
@@ -936,15 +936,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					if shadowoffx and shadowoffy and shadowc then
 						shadowc = applyColorAlpha(shadowc,galpha)
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
-				dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+				dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet,colorcoded)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -1062,7 +1062,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local textImageSpace = _textImageSpace[2] and _textImageSpace[1]*w or _textImageSpace[1]
 				local text = eleData.text
 				local colorcoded = eleData.colorcoded
-				local rightbottom = eleData.rightbottom
+				local alignment = eleData.alignment
 				local px = x+buttonSizeX+textImageSpace
 				if eleData.PixelInt then
 					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
@@ -1074,15 +1074,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					if shadowoffx and shadowoffy and shadowc then
 						local shadowc = applyColorAlpha(shadowc,galpha)
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
-				dxDrawText(text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded)
+				dxDrawText(text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,galpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet,colorcoded)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -1161,7 +1161,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local renderTarget = eleData.renderTarget
-				local alignment = eleData.rightbottom
+				local alignment = eleData.alignment
 				if isElement(renderTarget) then
 					local textColor = eleData.textColor
 					local selx = 0
@@ -1741,7 +1741,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local rightbottom = eleData.rightbottom
+				local alignment = eleData.alignment
 				local colors,imgs = eleData.textColor,eleData.image
 				colors = applyColorAlpha(colors,galpha)
 				local colorimgid = 1
@@ -1772,15 +1772,15 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					if shadowoffx and shadowoffy and shadowc then
 						local shadowc = applyColorAlpha(shadowc,galpha)
 						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+						dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						if shadowIsOutline then
-							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
-							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
+							dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet)
 						end
 					end
 				end
-				dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,rightbottom[1],rightbottom[2],clip,wordbreak,rendSet,colorcoded,true)
+				dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,rendSet,colorcoded,true)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -1825,7 +1825,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configGridList(v)
-				dgsSetData(v,"configNextFrame",false)
 			end
 			if x and y then
 				local nx,ny,nw,nh = x,y,w,h
@@ -2448,7 +2447,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 					local textSide = eleData.comboTextSide
 					local font = eleData.font or systemFont
 					local textColor = eleData.textColor
-					local rb = eleData.rightbottom
+					local rb = eleData.alignment
 					local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 					local colorcoded = eleData.colorcoded
 					local shadow = eleData.shadow
@@ -2532,7 +2531,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				------------------------------------
 				if isElement(renderTarget) then
 					dxSetRenderTarget(renderTarget,true)
-					local rb_l = dgsElementData[combo].rightbottomList
+					local rb_l = dgsElementData[combo].alignmentList
 					local scrollbar = dgsElementData[combo].scrollbar
 					local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
 					if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
@@ -4262,17 +4261,16 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				local id = tableFind(CenterFatherTable,source)
 				if id then
 					tableRemove(CenterFatherTable,id)
-					return
-				end
-				local id = tableFind(BottomFatherTable,source)
-				if id then
-					tableRemove(BottomFatherTable,id)
-					return
-				end
-				local id = tableFind(TopFatherTable,source)
-				if id then
-					tableRemove(TopFatherTable,id)
-					return
+				else
+					local id = tableFind(BottomFatherTable,source)
+					if id then
+						tableRemove(BottomFatherTable,id)
+					else
+						local id = tableFind(TopFatherTable,source)
+						if id then
+							tableRemove(TopFatherTable,id)
+						end
+					end
 				end
 			else
 				local id = tableFind(ChildrenTable[parent] or {},source)
@@ -4290,7 +4288,6 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 	end
 	dgsElementData[source] = nil
-	dgsRenderTempData[source] = nil
 end)
 
 function checkMove()
@@ -4611,5 +4608,3 @@ addEventHandler("onDgsSizeChange",root,function()
 		end
 	end
 end)
-
-dgsElementData[resourceRoot] = {}

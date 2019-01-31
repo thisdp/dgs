@@ -40,7 +40,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"maskText",styleSettings.edit.maskText)
 	dgsSetData(edit,"showPos",0)
 	dgsSetData(edit,"padding",styleSettings.edit.padding)
-	dgsSetData(edit,"rightbottom",{"left","center"})
+	dgsSetData(edit,"alignment",{"left","center"})
 	dgsSetData(edit,"caretStyle",styleSettings.edit.caretStyle)
 	dgsSetData(edit,"caretThick",styleSettings.edit.caretThick)
 	dgsSetData(edit,"caretOffset",styleSettings.edit.caretOffset)
@@ -291,27 +291,27 @@ end
 function dgsEditSetHorizontalAlign(edit,align)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetHorizontalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
 	assert(HorizontalAlign[align],"Bad argument @dgsEditSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
-	local rightbottom = dgsElementData[edit].rightbottom
-	return dgsSetData(edit,"rightbottom",{align,rightbottom[2]})
+	local alignment = dgsElementData[edit].alignment
+	return dgsSetData(edit,"alignment",{align,alignment[2]})
 end
 
 function dgsEditSetVerticalAlign(edit,align)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetVerticalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
 	assert(VerticalAlign[align],"Bad argument @dgsEditSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
-	local rightbottom = dgsElementData[edit].rightbottom
-	return dgsSetData(edit,"rightbottom",{rightbottom[1],align})
+	local alignment = dgsElementData[edit].alignment
+	return dgsSetData(edit,"alignment",{alignment[1],align})
 end
 
 function dgsEditGetHorizontalAlign(edit)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetHorizontalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
-	local rightbottom = dgsElementData[edit].rightbottom
-	return rightbottom[1]
+	local alignment = dgsElementData[edit].alignment
+	return alignment[1]
 end
 
 function dgsEditGetVerticalAlign(edit)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetVerticalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
-	local rightbottom = dgsElementData[edit].rightbottom
-	return rightbottom[2]
+	local alignment = dgsElementData[edit].alignment
+	return alignment[2]
 end
 
 function dgsEditSetUnderlined(edit,state)
@@ -360,7 +360,7 @@ function searchEditMousePosition(dxedit,posx,posy)
 	local size = dgsElementData[dxedit].absSize
 	local offset = dgsElementData[dxedit].showPos
 	local x = dgsGetPosition(dxedit,false,true)
-	local alignment = dgsElementData[dxedit].rightbottom 
+	local alignment = dgsElementData[dxedit].alignment 
 	local padding = dgsElementData[dxedit].padding
 	local pos
 	local alllen = dgsElementData[dxedit].textFontLen
@@ -477,7 +477,7 @@ addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
 end)
 
 function dgsEditAlignmentShowPosition(edit,text)
-	local alignment = dgsElementData[edit].rightbottom
+	local alignment = dgsElementData[edit].alignment
 	local font = dgsElementData[edit].font
 	local sx = dgsElementData[edit].absSize[1]
 	local showPos = dgsElementData[edit].showPos

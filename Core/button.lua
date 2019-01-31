@@ -18,14 +18,6 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	local hovimg = selimg or dgsCreateTextureFromStyle(styleSettings.button.image[2])
 	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.button.image[3])
 	dgsSetData(button,"image",{norimg,selimg,cliimg})
-	--[[local UVSize = {}
-	UVSize[1] = isElement(norimg) and 
-	if isElement(texture) and not getElementType(texture) == "shader" then
-		mx,my = dxGetMaterialSize(texture)
-	end
-	dgsSetData(button,"imageUVSize",{mx,my})
-	dgsSetData(button,"imageUVPos",{0,0})
-	]]
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[button]._translationText = text
@@ -43,7 +35,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	dgsSetData(button,"clickType",1)	--1:LMB;2:Wheel;3:RMB
 	dgsSetData(button,"wordbreak",false)
 	dgsSetData(button,"colorcoded",false)
-	dgsSetData(button,"rightbottom",{"center","center"})
+	dgsSetData(button,"alignment",{"center","center"})
 	insertResourceDxGUI(sourceResource,button)
 	calculateGuiPositionSize(button,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",button)

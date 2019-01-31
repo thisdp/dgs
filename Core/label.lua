@@ -23,7 +23,7 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	dgsSetData(label,"wordbreak",false)
 	dgsSetData(label,"colorcoded",false)
 	dgsSetData(label,"shadow",{shadowoffsetx,shadowoffsety,shadowcolor})
-	dgsSetData(label,"rightbottom",{right or "left",bottom or "top"})
+	dgsSetData(label,"alignment",{right or "left",bottom or "top"})
 	dgsSetData(label,"font",systemFont)
 	insertResourceDxGUI(sourceResource,label)
 	calculateGuiPositionSize(label,x,y,relative or false,sx,sy,relative or false,true)
@@ -61,27 +61,27 @@ local VerticalAlign = {
 function dgsLabelSetHorizontalAlign(label,align)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetHorizontalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	assert(HorizontalAlign[align],"Bad argument @dgsLabelSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
-	local rightbottom = dgsElementData[label].rightbottom
-	return dgsSetData(label,"rightbottom",{align,rightbottom[2]})
+	local alignment = dgsElementData[label].alignment
+	return dgsSetData(label,"alignment",{align,alignment[2]})
 end
 
 function dgsLabelSetVerticalAlign(label,align)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetVerticalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	assert(VerticalAlign[align],"Bad argument @dgsLabelSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
-	local rightbottom = dgsElementData[label].rightbottom
-	return dgsSetData(label,"rightbottom",{rightbottom[1],align})
+	local alignment = dgsElementData[label].alignment
+	return dgsSetData(label,"alignment",{alignment[1],align})
 end
 
 function dgsLabelGetHorizontalAlign(label)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetHorizontalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
-	local rightbottom = dgsElementData[label].rightbottom
-	return rightbottom[1]
+	local alignment = dgsElementData[label].alignment
+	return alignment[1]
 end
 
 function dgsLabelGetVerticalAlign(label)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetVerticalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
-	local rightbottom = dgsElementData[label].rightbottom
-	return rightbottom[2]
+	local alignment = dgsElementData[label].alignment
+	return alignment[2]
 end
 
 function dgsLabelGetTextExtent ( label )

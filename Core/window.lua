@@ -28,7 +28,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"sizable",true)
 	dgsSetData(window,"clip",true)
 	dgsSetData(window,"wordbreak",false)
-	dgsSetData(window,"rightbottom",{"center","center"})
+	dgsSetData(window,"alignment",{"center","center"})
 	dgsSetData(window,"movetyp",false) --false only title;true are all
 	dgsSetData(window,"font",systemFont)
 	dgsSetData(window,"minSize",{60,60})
@@ -42,7 +42,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 		dgsSetSide(buttonOff,"right",false)
 		dgsSetData(buttonOff,"ignoreParentTitle",true)
 		dgsSetData(buttonOff,"font","default-bold")
-		dgsSetData(buttonOff,"rightbottom",{"center","center"})
+		dgsSetData(buttonOff,"alignment",{"center","center"})
 		dgsSetPosition(buttonOff,40,0,false)
 	end
 	return window

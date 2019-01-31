@@ -50,7 +50,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	dgsSetData(rb,"clip",false)
 	dgsSetData(rb,"wordbreak",false)
 	dgsSetData(rb,"colorcoded",false)
-	dgsSetData(rb,"rightbottom",{"left","center"})
+	dgsSetData(rb,"alignment",{"left","center"})
 	insertResourceDxGUI(sourceResource,rb)
 	calculateGuiPositionSize(rb,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",rb)

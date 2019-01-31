@@ -1,5 +1,4 @@
-dgsElementData = {}		----The Global BuiltIn DGS Element Data Table
-dgsRenderTempData = {}
+dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
 
 function dgsGetData(element,key)
 	return dgsElementData[element] and dgsElementData[element][key] or false

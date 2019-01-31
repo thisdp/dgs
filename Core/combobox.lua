@@ -73,8 +73,8 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	local scbThick = styleSettings.combobox.scrollBarThick
 	dgsSetData(combobox,"scrollBarThick",scbThick,true)
 	dgsSetData(combobox,"itemData",{})
-	dgsSetData(combobox,"rightbottom",{"left","center"})
-	dgsSetData(combobox,"rightbottomList",{"left","center"})
+	dgsSetData(combobox,"alignment",{"left","center"})
+	dgsSetData(combobox,"alignmentList",{"left","center"})
 	dgsSetData(combobox,"FromTo",{0,0})
 	dgsSetData(combobox,"itemMoveOffset",0)
 	dgsSetData(combobox,"scrollFloor",true)

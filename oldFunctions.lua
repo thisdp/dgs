@@ -41,4 +41,5 @@ oldPropertyNameTable = {
 	barsize="padding",
 	selectfrom="selectFrom",
 	ignoreTitleSize="ignoreTitle",
+	rightbottom="alignment",
 }
