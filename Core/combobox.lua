@@ -77,11 +77,12 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"alignmentList",{"left","center"})
 	dgsSetData(combobox,"FromTo",{0,0})
 	dgsSetData(combobox,"itemMoveOffset",0)
+	dgsSetData(combobox,"scrollSize",20)	--60px pixels
 	dgsSetData(combobox,"scrollFloor",true)
+	dgsSetData(combobox,"configNextFrame",false)
 	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or getThisResource()])
 	if type(caption) == "table" then
 		dgsElementData[combobox]._translationText = caption
-		print(dgsElementData[combobox]._translationText)
 		caption = dgsTranslate(combobox,caption,sourceResource)
 	end
 	dgsSetData(combobox,"caption",tostring(caption),true)
@@ -168,6 +169,7 @@ function dgsComboBoxAddItem(combobox,text)
 		local scrollBar = dgsElementData[combobox].scrollbar
 		dgsSetVisible(scrollBar,true)
 	end
+	dgsSetData(combobox,"configNextFrame",true)
 	return id
 end
 
@@ -313,8 +315,8 @@ function dgsComboBoxGetSelectedItem(combobox)
 	end
 end
 
-function configComboBox_Box(box)
-	local combobox = dgsElementData[box].myCombo
+function configComboBox(combobox)
+	local box = dgsElementData[combobox].myBox
 	local boxsiz = dgsElementData[box].absSize
 	local rendertarget = dgsElementData[combobox].renderTarget
 	if isElement(rendertarget) then
@@ -323,12 +325,18 @@ function configComboBox_Box(box)
 	local sbt = dgsElementData[combobox].scrollBarThick
 	local rendertarget = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true)
 	dgsSetData(combobox,"renderTarget",rendertarget)
-	local sb = dgsElementData[combobox].scrollbar
-	dgsSetPosition(sb,boxsiz[1]-sbt,0,false)
-	dgsSetSize(sb,sbt,boxsiz[2],false)
+	local scrollbar = dgsElementData[combobox].scrollbar
+	dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
+	dgsSetSize(scrollbar,sbt,boxsiz[2],false)
 	local itemData = dgsElementData[combobox].itemData
 	local itemHeight = dgsElementData[combobox].itemHeight
-	dgsSetData(sb,"length",{boxsiz[2]/(itemHeight*#itemData),true})
+	local itemLength = itemHeight*#itemData
+	local higLen = 1-(itemLength-boxsiz[2])/itemLength
+	higLen = higLen >= 0.95 and 0.95 or higLen
+	dgsSetData(scrollbar,"length",{higLen,true})
+	local verticalScrollSize = dgsElementData[combobox].scrollSize/(itemLength-boxsiz[2])
+	dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
+	dgsSetData(combobox,"configNextFrame",false)
 end
 
 addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)

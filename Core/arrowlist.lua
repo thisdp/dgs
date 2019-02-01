@@ -287,18 +287,26 @@ end)
 function configArrowList(arrowlist)
 	local size = dgsElementData[arrowlist].absSize
 	local itemHeight = dgsElementData[arrowlist].itemHeight
-	local leading = dgsElementData[arrowlist].leading
-	local scrollBar = dgsElementData[arrowlist].scrollbar
 	local itemCount = #dgsElementData[arrowlist].itemData
-	local scrollBarVisible = itemCount*itemHeight+(itemCount-1)*leading > size[2]
-	dgsSetVisible(scrollBar,scrollBarVisible)
-	local sbt = scrollBarVisible and dgsElementData[arrowlist].scrollBarThick or 0
+	local leading = dgsElementData[arrowlist].leading
+	local itemLength = (itemHeight+leading)*itemCount
+	local scrollbar = dgsElementData[arrowlist].scrollbar
+	local scrollBarVisible = itemLength-leading > size[2]
+	dgsSetVisible(scrollbar,scrollBarVisible)
+	local scbThick = scrollBarVisible and dgsElementData[arrowlist].scrollBarThick or 0
 	local rendertarget = dgsElementData[arrowlist].renderTarget
 	if isElement(rendertarget) then
 		destroyElement(rendertarget)
 	end
-	local rendertarget = dxCreateRenderTarget(size[1]-sbt,size[2],true)
+	local rendertarget = dxCreateRenderTarget(size[1]-scbThick,size[2],true)
 	dgsSetData(arrowlist,"renderTarget",rendertarget)
-	dgsSetPosition(scrollBar,size[1]-dgsElementData[arrowlist].scrollBarThick,0,false)
-	dgsSetSize(scrollBar,sbt,size[2],false)
+	dgsSetPosition(scrollbar,size[1]-dgsElementData[arrowlist].scrollBarThick,0,false)
+	dgsSetSize(scrollbar,scbThick,size[2],false)
+		
+	local higLen = 1-(itemLength-size[2])/itemLength
+	higLen = higLen >= 0.95 and 0.95 or higLen
+	dgsSetData(scrollbar,"length",{higLen,true})
+	local verticalScrollSize = dgsElementData[arrowlist].scrollSize/(itemLength-size[2])
+	dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
+	
 end

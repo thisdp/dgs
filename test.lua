@@ -84,6 +84,7 @@ function testButtonPerformance()
 end
 
 function createTestMemo()
+	local sW,sH = dgsGetScreenSize()
 	local memo = dgsCreateMemo(500,200,200,300,[[This is a dgs-dxmemo
 	
 	Thisdp's

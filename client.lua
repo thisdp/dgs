@@ -82,8 +82,6 @@ MouseData.lastEnter = false
 MouseData.enterData = false
 MouseData.scrollPane = false
 MouseData.hit = false
-MouseData.Timer = {}
-MouseData.Timer2 = {}
 MouseData.nowShow = false
 MouseData.arrowListEnter = false
 MouseData.editMemoCursor = false
@@ -220,6 +218,17 @@ function dgsCoreRender()
 					onClientKeyTriggered(KeyHolder.lastKey)
 				else
 					KeyHolder = {}
+				end
+			end
+		end
+		if MouseHolder.repeatKey then
+			local tick = getTickCount()
+			if tick-MouseHolder.repeatStartTick >= MouseHolder.repeatDuration then
+				MouseHolder.repeatStartTick = tick
+				if getKeyState(MouseHolder.lastKey) and isElement(MouseHolder.element) then
+					onClientMouseTriggered(MouseHolder.lastKey)
+				else
+					MouseHolder = {}
 				end
 			end
 		end
@@ -1399,7 +1408,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 						end
 						for i=showLine,toShowLine do
 							local ypos = (i-showLine)*fontHeight
-							dxDrawText(text[i],offset,ypos,dxGetTextWidth(text[i],txtSizX,font),fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",true,false,false,false)
+							--dxDrawText(text[i],offset,ypos,dxGetTextWidth(text[i],txtSizX,font),fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",true,false,false,false)
+							dxDrawText(text[i],offset,ypos,offset,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
 						end
 					end
 					dxSetRenderTarget(rndtgt)
@@ -2362,6 +2372,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 		elseif dxType =="dgs-dxcombobox" then
 			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.configNextFrame then
+					configComboBox(v)
+				end
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
@@ -2841,8 +2854,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				else
 					dxDrawRectangle(x,y,w,h,colors,rendSet)
 				end
-				local hangju,cmdtexts = eleData.hangju,eleData.texts or {}
-				local canshow = floor(h/eleData.hangju)-1
+				local leading,cmdtexts = eleData.leading,eleData.texts or {}
+				local canshow = floor(h/eleData.leading)-1
 				local rowoffset = 0
 				local readyToRenderTable = {}
 				local font = eleData.font
@@ -2850,24 +2863,27 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				for i=1,#cmdtexts do
 					local movex = 0
 					local rndStr = ""
-					for key,letter in ipairs(cmdtexts[i]) do
+					for cnt=1,#cmdtexts[i] do
+						local letter = cmdtexts[i][cnt]
 						rndStr = rndStr..letter
 						local width = dxGetTextWidth(letter,txtSizX,font)
 						movex = movex+width
 						if movex+25 >= w then
-							tableInsert(readyToRenderTable,1,rndStr)
+							tableInsert(readyToRenderTable,{rndStr,movex})
 							rndStr = ""
 							movex = 0
 						end
 					end
-					tableInsert(readyToRenderTable,1,rndStr)
+					if rndStre ~= "" then
+						tableInsert(readyToRenderTable,{rndStr,movex})
+					end
 					if #readyToRenderTable >= canshow then
 						break
 					end
 				end
 				for i=#readyToRenderTable,1,-1 do
-					local width = dxGetTextWidth(readyToRenderTable[i],txtSizX,font)
-					dxDrawText(readyToRenderTable[i],x+5,y+(i-1)*hangju,x+width+5,y+i*hangju,white,txtSizX,txtSizY,font,"left","bottom",false,true,rendSet)
+					local width = readyToRenderTable[i][2]
+					dxDrawText(readyToRenderTable[i][1],x+5,y+(i-1)*leading,x+width+5,y+i*leading,white,txtSizX,txtSizY,font,"left","bottom",false,true,rendSet)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -3684,19 +3700,22 @@ end
 
 KeyHolder = {}
 function onClientKeyCheck(button,state)
-	if string.sub(button,1,5) == "mouse" then return end
 	if state then
-		if isTimer(KeyHolder.Timer) then killTimer(KeyHolder.Timer) end
-		KeyHolder = {}
-		KeyHolder.lastKey = button
-		KeyHolder.Timer = setTimer(function()
-			local kState = getKeyState(KeyHolder.lastKey)
-			if not kState then return end
-			KeyHolder.repeatKey = true
-			KeyHolder.repeatStartTick = getTickCount()
-			KeyHolder.repeatDuration = 25
-		end,500,1)
-		onClientKeyTriggered(button)
+		if string.sub(button,1,5) ~= "mouse" then
+			if isTimer(KeyHolder.Timer) then killTimer(KeyHolder.Timer) end
+			KeyHolder = {}
+			KeyHolder.lastKey = button
+			KeyHolder.Timer = setTimer(function()
+				if not getKeyState(KeyHolder.lastKey) then
+					KeyHolder = {}
+					return
+				end
+				KeyHolder.repeatKey = true
+				KeyHolder.repeatStartTick = getTickCount()
+				KeyHolder.repeatDuration = 25
+			end,400,1)
+			onClientKeyTriggered(button)
+		end
 	end
 end
 addEventHandler("onClientKey",root,onClientKeyCheck)
@@ -3750,14 +3769,6 @@ function dgsCheckHit(hits,mx,my)
 		if MouseData.enter ~= hits then
 			if isElement(MouseData.enter) then
 				triggerEvent("onDgsMouseLeave",MouseData.enter,mx,my,hits)
-				if dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" then
-					if isTimer(MouseData.Timer[MouseData.clickl]) then
-						killTimer(MouseData.Timer[MouseData.clickl])
-					end
-					if isTimer(MouseData.Timer2[MouseData.clickl]) then
-						killTimer(MouseData.Timer2[MouseData.clickl])
-					end
-				end
 				if dgsGetType(MouseData.enter) == "dgs-dxgridlist" then
 					dgsSetData(MouseData.enter,"preSelect",{-1,-1})
 				end
@@ -3876,6 +3887,51 @@ function dgsCheckHit(hits,mx,my)
 	MouseData.lastPos = {mx,my}
 end
 
+function onClientMouseTriggered()
+	if MouseHolder.element == MouseData.enter and dgsGetType(MouseHolder.element) == "dgs-dxscrollbar" then
+		if MouseData.enterData then
+			MouseData.clickData = MouseData.enterData
+		end
+		local scrollbar = MouseHolder.element
+		if MouseData.enterData == 1 or MouseData.enterData == 4 then
+			if dgsElementData[scrollbar].scrollArrow then
+				scrollScrollBar(scrollbar,MouseData.clickData == 4)
+			end
+		end
+	end
+end
+
+MouseHolder = {}
+MouseKeyConverter = {left="mouse1",right="mouse2",middle="mouse3"}
+MouseKeySupports = {["dgs-dxscrollbar"] = true}
+function onDGSMouseCheck(button,state)
+	local button = MouseKeyConverter[button]
+	if state == "down" then
+		if MouseKeySupports[dgsGetType(source)] then
+			if not MouseHolder.lastKey then
+				if isTimer(MouseHolder.Timer) then killTimer(MouseHolder.Timer) end
+				MouseHolder = {}
+				MouseHolder.element = source
+				MouseHolder.lastKey = button
+				MouseHolder.Timer = setTimer(function()
+					if not getKeyState(MouseHolder.lastKey) or not isElement(MouseHolder.element) then
+						MouseHolder = {}
+						return
+					end
+					MouseHolder.repeatKey = true
+					MouseHolder.repeatStartTick = getTickCount()
+					MouseHolder.repeatDuration = 25
+				end,500,1)
+				onClientMouseTriggered(button)
+			end
+		end
+	elseif MouseHolder.lastKey == button then
+		if isTimer(MouseHolder.Timer) then killTimer(MouseHolder.Timer) end
+		MouseHolder = {}
+	end
+end
+addEventHandler("onDgsMouseClick",root,onDGSMouseCheck)
+
 addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 	if not isElement(source) then return end
 	local parent = dgsGetParent(source)
@@ -3921,59 +3977,6 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 					slotRange = h-arrowPos*2
 				end
 				local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
-				if MouseData.enterData then
-					MouseData.clickData = MouseData.enterData
-				end
-				if scrollArrow then
-					if MouseData.clickData == 1 then
-						local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
-						local movePos = dgsElementData[source].position
-						local gpos = movePos-(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
-						dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
-						if not isTimer(MouseData.Timer[source]) then
-							MouseData.Timer2[source] = setTimer(function(source)
-								if MouseData.clickl == source then
-									if not isTimer(MouseData.Timer[source]) then
-										MouseData.Timer[source] = setTimer(function(source)
-											if MouseData.clickData == 1 then
-												local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
-												local movePos = dgsElementData[source].position
-												local gpos = movePos-(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
-												dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
-											else
-												killTimer(MouseData.Timer[source])
-											end
-										end,50,0,source)
-									end
-								end
-							end,400,1,source)
-						end
-					end
-					if MouseData.clickData == 4 then
-						local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
-						local movePos = dgsElementData[source].position
-						local gpos = movePos+(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
-						dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
-						if not isTimer(MouseData.Timer[source]) then
-							MouseData.Timer2[source] = setTimer(function(source)
-								if MouseData.clickl == source then
-									if not isTimer(MouseData.Timer[source]) then
-										MouseData.Timer[source] = setTimer(function(source)
-											if MouseData.clickData == 4 then
-												local moveMultiplier,rltPos = dgsElementData[source].multiplier[1],dgsElementData[source].multiplier[2]
-												local movePos = dgsElementData[source].position
-												local gpos = movePos+(rltPos and moveMultiplier*cursorRange*0.01 or moveMultiplier)
-												dgsSetData(source,"position",(gpos < 0 and 0) or (gpos >100 and 100) or gpos)
-											else
-												killTimer(MouseData.Timer[source])
-											end
-										end,50,0,source)
-									end
-								end
-							end,400,1,source)
-						end
-					end
-				end
 				local py =  pos*0.01*(slotRange-cursorRange)
 				checkScrollBar(py,voh)
 				local parent = dgsElementData[source].attachedToParent
@@ -4408,21 +4411,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					dgsCheckBoxSetSelected(guiele,not state)
 				end
 			end
-			if isElement(lastFront) then
-				if guiele ~= lastFront then
-					local theType = dgsGetType(lastFront)
-					if theType == "dgs-dxcombobox" then
-						if dgsElementData[guiele].myCombo ~= lastFront then
-							dgsComboBoxSetState(lastFront,false)
-						end
-					else
-						local combobox = dgsElementData[lastFront].myCombo
-						if isElement(combobox) and dgsElementData[guiele].myCombo ~= combobox then
-							dgsComboBoxSetState(combobox,false)
-						end
-					end
-				end
-			end
 		end
 		if gtype == "dgs-dxbrowser" then
 			focusBrowser(guiele)
@@ -4523,12 +4511,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		MouseData.MoveScroll = false
 		MouseData.Scale = false
 		MouseData.clickData = nil
-		if isTimer(MouseData.Timer[button]) then
-			killTimer(MouseData.Timer[button])
-		end
-		if isTimer(MouseData.Timer2[button]) then
-			killTimer(MouseData.Timer2[button])
-		end
 	end
 end)
 
@@ -4539,23 +4521,26 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 			local abspos = dgsElementData[source].absPos
 			local abssize = dgsElementData[source].absSize
 			if abspos and abssize then
-				local x,y = abspos[1],abspos[2]
-				local sx,sy = abssize[1],abssize[2]
+				local x,y,sx,sy = abspos[1],abspos[2],abssize[1],abssize[2]
 				local maxSize = dgsElementData[parent].maxChildSize
 				local ntempx,ntempy
+				local children = ChildrenTable[parent] or {}
+				local childrenCnt = #children
 				if maxSize[1] <= sx then
 					ntempx = 0
-					for k,v in ipairs(ChildrenTable[parent] or {}) do
-						local pos = dgsElementData[source].absPos
-						local size = dgsElementData[source].absSize
+					for k=1,#children do
+						local child = children[k]
+						local pos = dgsElementData[child].absPos
+						local size = dgsElementData[child].absSize
 						ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
 					end
 				end
 				if maxSize[2] <= sy then
 					ntempy = 0
-					for k,v in ipairs(ChildrenTable[parent] or {}) do
-						local pos = dgsElementData[source].absPos
-						local size = dgsElementData[source].absSize
+					for k=1,#children do
+						local child = children[k]
+						local pos = dgsElementData[child].absPos
+						local size = dgsElementData[child].absSize
 						ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]	
 					end
 				end
@@ -4563,29 +4548,35 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 			end
 		end
 	end
-	for k,v in ipairs(ChildrenTable[source] or {}) do
-		local relt = dgsElementData[v].relative
+	local children = ChildrenTable[source] or {}
+	local childrenCnt = #children
+	for k=1,childrenCnt do
+		local child = children[k]
+		local relt = dgsElementData[child].relative
 		local relativePos,relativeSize = relt[1],relt[2]
 		local x,y
 		if relativePos then
-			x,y = dgsElementData[v].rltPos[1],dgsElementData[v].rltPos[2]
+			x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
 		end
-		calculateGuiPositionSize(v,x,y,relativePos)
+		calculateGuiPositionSize(child,x,y,relativePos)
 	end
 end)
 
 addEventHandler("onDgsSizeChange",root,function()
-	for k,v in ipairs(ChildrenTable[source] or {}) do
-		local relt = dgsElementData[v].relative
+	local children = ChildrenTable[source] or {}
+	local childrenCnt = #children
+	for k=1,childrenCnt do
+		local child = children[k]
+		local relt = dgsElementData[child].relative
 		local relativePos,relativeSize = relt[1],relt[2]
 		local x,y,sx,sy
 		if relativePos then
-			x,y = dgsElementData[v].rltPos[1],dgsElementData[v].rltPos[2]
+			x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
 		end
 		if relativeSize then
-			sx,sy = dgsElementData[v].rltSize[1],dgsElementData[v].rltSize[2]
+			sx,sy = dgsElementData[child].rltSize[1],dgsElementData[child].rltSize[2]
 		end
-		calculateGuiPositionSize(v,x,y,relativePos,sx,sy,relativeSize)
+		calculateGuiPositionSize(child,x,y,relativePos,sx,sy,relativeSize)
 	end
 	local typ = dgsGetType(source)
 	if typ == "dgs-dxgridlist" then
@@ -4599,7 +4590,7 @@ addEventHandler("onDgsSizeChange",root,function()
 	elseif typ == "dgs-dxtabpanel" then
 		configTabPanel(source)
 	elseif typ == "dgs-dxcombobox-Box" then
-		configComboBox_Box(source)
+		configComboBox(dgsElementData[source].myCombo)
 	end
 	local parent = dgsGetParent(source)
 	if isElement(parent) then

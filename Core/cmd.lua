@@ -1,7 +1,7 @@
 ﻿cmdBaseWhiteList = {}
 eventHandlers = {}
 
-function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgImage,bgColor)
+function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,leading,bgImage,bgColor)
 	assert(tonumber(x),"Bad argument @dgsCreateCmd at argument 1, expect number [ got "..type(x).." ]")
 	assert(tonumber(y),"Bad argument @dgsCreateCmd at argument 2, expect number [ got "..type(y).." ]")
 	assert(tonumber(sx),"Bad argument @dgsCreateCmd at argument 3, expect number [ got "..type(sx).." ]")
@@ -15,7 +15,7 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,hangju,bgImage,bgC
 	dgsSetType(cmd,"dgs-dxcmd")
 	dgsSetData(cmd,"textSize",{scalex,scaley})
 	dgsSetData(cmd,"bgImage",bgImage)
-	dgsSetData(cmd,"hangju",tonumber(hangju) or 20)
+	dgsSetData(cmd,"leading",tonumber(leading) or 20)
 	dgsSetData(cmd,"bgColor",tocolor(0,0,0,180))
 	dgsSetData(cmd,"texts",{})
 	dgsSetData(cmd,"preName","")
@@ -137,7 +137,7 @@ end
 function outputCmdMessage(cmd,str)
 	assert(dgsGetType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect dgs-dxcmd [ got "..dgsGetType(cmd).." ]")
 	local texts = dgsGetData(cmd,"texts")
-	table.insert(texts,1,dgsGetChars(str))
+	table.insert(texts,dgsGetChars(str))
 end
 
 function receiveCmdEditInput(cmd,str)

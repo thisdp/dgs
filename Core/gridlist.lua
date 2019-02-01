@@ -72,6 +72,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"scrollBarState",{nil,nil})
 	dgsSetData(gridlist,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
+	dgsSetData(gridlist,"scrollSize",60)	--60 pixels
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(gridlist,"configNextFrame",false)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
@@ -1180,6 +1181,7 @@ function configGridList(source)
 	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
 	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
 	local rowShowRange = relSizY-columnHeight
+	local columnShowRange = relSizX
 	if scbStateH then
 		dgsSetData(scrollbar[2],"position",0)
 	end
@@ -1194,11 +1196,19 @@ function configGridList(source)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].position
 	local scroll2 = dgsElementData[scrollbar[2]].position
-	dgsSetData(source,"rowMoveOffset",-scroll1*(rowLength-relSizY+columnHeight)/100)
-	local length1 = rowShowRange/rowLength
-	local length2 = relSizX/(columnWidth+scbThick)
-	dgsSetData(scrollbar[1],"length",{length1 > 1 and 1 or length1,true})
-	dgsSetData(scrollbar[2],"length",{length2 > 1 and 1 or length2,true})
+	dgsSetData(source,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
+	
+	local higLen = 1-(rowLength-rowShowRange)/rowLength
+	higLen = higLen >= 0.95 and 0.95 or higLen
+	dgsSetData(scrollbar[1],"length",{higLen,true})
+	local verticalScrollSize = dgsElementData[source].scrollSize/(rowLength-rowShowRange)
+	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
+	
+	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
+	widLen = widLen >= 0.95 and 0.95 or widLen
+	dgsSetData(scrollbar[2],"length",{widLen,true})
+	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(columnWidth-columnShowRange)
+	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 
 	local rentarg = dgsElementData[source].renderTarget
 	if rentarg then

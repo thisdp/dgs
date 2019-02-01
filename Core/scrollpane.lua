@@ -32,8 +32,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
-	dgsSetData(scrollbar1,"length",{0,true})
-	dgsSetData(scrollbar2,"length",{0,true})
+	dgsSetData(scrollpane,"scrollSize",60)	--60 pixels
 	dgsSetData(scrollpane,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(scrollbar1,"attachedToParent",scrollpane)
 	dgsSetData(scrollbar2,"attachedToParent",scrollpane)
@@ -41,6 +40,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollbar2,"hitoutofparent",true)
 	dgsSetData(scrollbar1,"scrollType","Vertical")
 	dgsSetData(scrollbar2,"scrollType","Horizontal")
+	dgsSetData(scrollbar1,"length",{0,true})
+	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	triggerEvent("onDgsCreate",scrollpane)
@@ -184,14 +185,26 @@ function configScrollPane(source)
 	lengthHorizontal = lengthHorizontal < 1 and lengthHorizontal or 1
 	dgsSetEnabled(scrollbar[1],lengthVertical ~= 1 and true or false)
 	dgsSetEnabled(scrollbar[2],lengthHorizontal  ~= 1 and true or false)
-	dgsSetData(scrollbar[1],"length",{lengthVertical,true})
-	dgsSetData(scrollbar[2],"length",{lengthHorizontal,true})
+		
+	local higLen = 1-(childBounding[2]-relSizY)/childBounding[2]
+	higLen = higLen >= 0.95 and 0.95 or higLen
+	dgsSetData(scrollbar[1],"length",{higLen,true})
+	local verticalScrollSize = dgsElementData[source].scrollSize/(childBounding[2]-relSizY)
+	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
+	
+	local widLen = 1-(childBounding[1]-relSizX)/childBounding[1]
+	widLen = widLen >= 0.95 and 0.95 or widLen
+	dgsSetData(scrollbar[2],"length",{widLen,true})
+	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(childBounding[1]-relSizX)
+	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
+	
 	local renderTarget = dgsElementData[source].renderTarget_parent
 	if isElement(renderTarget) then
 		destroyElement(renderTarget)
 	end
 	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true)
 	dgsSetData(source,"renderTarget_parent",renderTarget)
+	dgsSetData(source,"configNextFrame",false)
 end
 
 function sortScrollPane(source,parent)
@@ -204,9 +217,12 @@ function sortScrollPane(source,parent)
 		ntempx = tempx
 	else
 		ntempx = 0
-		for k,v in ipairs(dgsGetChildren(parent)) do
-			local pos = dgsElementData[v].absPos
-			local size = dgsElementData[v].absSize
+		local children = ChildrenTable[parent]
+		local childrenCnt = #children
+		for i=1,childrenCnt do
+			local child = children[i]
+			local pos = dgsElementData[child].absPos
+			local size = dgsElementData[child].absSize
 			ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
 		end
 	end
@@ -214,9 +230,12 @@ function sortScrollPane(source,parent)
 		ntempy = tempy
 	else
 		ntempy = 0
-		for k,v in ipairs(dgsGetChildren(parent)) do
-			local pos = dgsElementData[v].absPos
-			local size = dgsElementData[v].absSize
+		local children = ChildrenTable[parent]
+		local childrenCnt = #children
+		for i=1,childrenCnt do
+			local child = children[i]
+			local pos = dgsElementData[child].absPos
+			local size = dgsElementData[child].absSize
 			ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]
 		end
 	end

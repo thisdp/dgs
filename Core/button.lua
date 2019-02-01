@@ -17,7 +17,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	local norimg = norimg or dgsCreateTextureFromStyle(styleSettings.button.image[1])
 	local hovimg = selimg or dgsCreateTextureFromStyle(styleSettings.button.image[2])
 	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.button.image[3])
-	dgsSetData(button,"image",{norimg,selimg,cliimg})
+	dgsSetData(button,"image",{norimg,hovimg,cliimg})
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[button]._translationText = text

@@ -25,6 +25,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"caretPos",{0,1})
 	dgsSetData(memo,"selectFrom",{0,1})
 	dgsSetData(memo,"rightLength",{0,1})
+	dgsSetData(memo,"scrollSize",3)	-- Lines
 	dgsSetData(memo,"showPos",0)
 	dgsSetData(memo,"showLine",1)
 	dgsSetData(memo,"caretStyle",styleSettings.memo.caretStyle)
@@ -594,19 +595,24 @@ function configMemo(source)
 	local scbTakes1 = dgsElementData[scrollbar[1]].visible and scbThick or 0
 	dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
 	local scbTakes2 = dgsElementData[scrollbar[2]].visible and scbThick or 0
-	
 	dgsSetPosition(scrollbar[1],size[1]-scbThick,0,false)
 	dgsSetPosition(scrollbar[2],0,size[2]-scbThick,false)
 	dgsSetSize(scrollbar[1],scbThick,size[2]-scbTakes2,false)
 	dgsSetSize(scrollbar[2],size[1]-scbTakes1,scbThick,false)
-	
-	local higLen = #text/(#text-canHold)/4
+
+	local higLen = 1-(#text-canHold)/#text
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	dgsSetData(scrollbar[1],"length",{higLen,true})
-	local widLen = dgsElementData[source].rightLength[1]/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/4
+	local verticalScrollSize = dgsElementData[source].scrollSize/(#text-canHold)
+	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
+	
+	local widLen = 1-(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/dgsElementData[source].rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	dgsSetData(scrollbar[2],"length",{widLen,true})
-	local px,py = mathFloor(size[1]), mathFloor(size[2])
+	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
+	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
+	
+	local px,py = size[1]-size[1]%1, size[2]-size[2]%1
 	local rnd = dgsElementData[source].renderTarget
 	if isElement(rnd) then
 		destroyElement(rnd)
