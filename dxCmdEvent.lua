@@ -26,7 +26,7 @@ addCommandHandler("cmd",function()
 				dgsSetFont(dgsElementData[cmdSystem.cmd].cmdEdit,dsm)
 				dgsCmdAddEventToWhiteList(cmdSystem["cmd"],{"changeMode"})
 				local version = getElementData(resourceRoot,"Version") or "N/A"
-				outputCmdMessage(cmdSystem["cmd"],"( Thisdp's Dx Graphical User Interface System ) Version: "..version)
+				outputCmdMessage(cmdSystem["cmd"],"(Thisdp's Dx Graphical User Interface System) Version: "..version)
 			end,310,1)
 			dgsShowCursor(true,"cmd")
 		end,310,1)
