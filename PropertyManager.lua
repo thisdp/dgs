@@ -49,7 +49,7 @@ function dgsSetData(element,key,value,nocheck)
 					if key == "scrollBarThick" then
 						assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
 						local scrollbar = dgsElementData[element].scrollbar
-						configComboBox_Box(dgsElementData[element].myBox)
+						configComboBox(dgsElementData[element].myBox)
 					elseif key == "listState" then
 						triggerEvent("onDgsComboBoxStateChange",element,value == 1 and true or false)
 					end
