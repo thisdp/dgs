@@ -35,20 +35,18 @@ function dgsSetSystemFont(font,size,bold,quality)
 	if fontDxHave[font] then
 		systemFont = font
 		return true
-	else
-		if sourceResource then
-			local path
-			if not find(font,":") then
-				local resname = getResourceName(sourceResource)
-				path = ":"..resname.."/"..font
-			else
-				path = font
-			end
-			assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
-			local font = dxCreateFont(path,size,bold,quality)
-			if isElement(font) then
-				systemFont = font
-			end
+	elseif sourceResource then
+		local path
+		if not find(font,":") then
+			local resname = getResourceName(sourceResource)
+			path = ":"..resname.."/"..font
+		else
+			path = font
+		end
+		assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
+		local font = dxCreateFont(path,size,bold,quality)
+		if isElement(font) then
+			systemFont = font
 		end
 	end
 	return false
@@ -248,8 +246,6 @@ function dgsCoreRender()
 			dxDrawText("ABS H: "..absH , sW*0.5-99,86,sW,sH,black)
 			dxDrawText("RLT W: "..rltW , sW*0.5-99,101,sW,sH,black)
 			dxDrawText("RLT H: "..rltH , sW*0.5-99,116,sW,sH,black)
-			
-			
 			dxDrawText("ABS X: "..absX , sW*0.5-100,10)
 			dxDrawText("ABS Y: "..absY , sW*0.5-100,25)
 			dxDrawText("RLT X: "..rltX , sW*0.5-100,40)

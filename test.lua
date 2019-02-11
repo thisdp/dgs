@@ -267,7 +267,7 @@ function test3DText()
 	dgsSetProperty(text,"fadeDistance",20)
 	dgsSetProperty(text,"shadow",{1,1,tocolor(0,0,0,255),true})
 	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
-	dgs3DTextAttachToElement(text,localPlayer,0,10)
+	dgs3DTextAttachToElement(text,localPlayer,0,5)
 end
 
 function languageTest_ComboBox()
@@ -279,6 +279,7 @@ function languageTest_ComboBox()
 	for i=1,20 do
 		dgsComboBoxAddItem(combobox,{"wtf",i})
 	end
+	dgsSetProperty(combobox,"scrollBarThick",15)
 	setTimer(function()
 		dgsSetTranslationTable("test",languageTab2)
 	end,1000,1)
@@ -337,8 +338,14 @@ function testShader()
 	local circle = dxCreateShader("shaders/circle.fx")
 	local image = dgsCreateImage(300,300,400,400,circle,false)
 end
-
-
+-----------------------------OOP Test
+function oopTest()
+	loadstring(dgsImportOOPClass())()-- load OOP class
+	window1 = DGSClass:createWindow(0,0,0.5,0.1,"test",true) --create a window with oop
+	window2 = DGSClass:createWindow(0.2,0,0.5,0.1,"test",true) --create a window with oop
+	label = window1:createLabel(0,0,1,1,"label",true) --create a label inside the window
+	label.parent = window2
+end
 -----------------------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect
 function testButtonEffect()

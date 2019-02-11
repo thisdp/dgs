@@ -222,12 +222,6 @@ function dgsGridListGetEnterColumn(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetEnterColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	return dgsElementData[gridlist].selectedColumn
 end
-
---[[
-local arg = {...}
-arg[1]
-]]
-
 -----------------------------Column
 --[[
 	columnData Struct:

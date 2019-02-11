@@ -1,5 +1,9 @@
 ----Speed UP
 local mathFloor = math.floor
+local tableInsert = table.insert
+local tableRemove = table.remove
+local utf8Sub = utf8.sub
+local utf8Len = utf8.len
 ----
 function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor)
 	assert(type(x) == "number","Bad argument @dgsCreateMemo at argument 1, expect number got "..type(x))
@@ -11,7 +15,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateMemo at argument 7, expect dgs-memo got "..dgsGetType(parent))
 	end
 	local memo = createElement("dgs-dxmemo")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or table.insert(CenterFatherTable,memo)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or tableInsert(CenterFatherTable,memo)
 	dgsSetType(memo,"dgs-dxmemo")
 	dgsSetData(memo,"renderBuffer",{})
 	dgsSetData(memo,"bgColor",bgColor or styleSettings.memo.bgColor)
@@ -38,6 +42,10 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"readOnly",false)
 	dgsSetData(memo,"readOnlyCaretShow",false)
 	dgsSetData(memo,"scrollBarState",{nil,nil})
+	dgsSetData(memo,"historyMaxRecords",100)
+	dgsSetData(memo,"enableRedoUndoRecord",true)
+	dgsSetData(memo,"undoHistory",{})
+	dgsSetData(memo,"redoHistory",{})
 	dgsSetData(memo,"selectColor",styleSettings.memo.selectColor)
 	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
 	dgsSetData(memo,"memo",gmemo)
@@ -58,7 +66,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
-	dgsMemoSetCaretPosition(memo,utf8.len(tostring(text)))
+	dgsMemoSetCaretPosition(memo,utf8Len(tostring(text)))
 	triggerEvent("onDgsCreate",memo)
 	return memo
 end
@@ -79,7 +87,7 @@ function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
 	local pos,line = dgsMemoSeekPosition(textTable,xpos+mathFloor(offset),line+mathFloor(lineoffset),noMoveLine)
 	local showPos,showLine = dgsElementData[memo].showPos,dgsElementData[memo].showLine
 	local font = dgsElementData[memo].font
-	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[memo].textSize[1],font)
+	local nowLen = dxGetTextWidth(utf8Sub(text,0,pos),dgsElementData[memo].textSize[1],font)
 	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 	local size = dgsElementData[memo].absSize
 	local targetLen = nowLen+showPos
@@ -118,14 +126,14 @@ end
 function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
 	local line = (line < 1 and 1) or (line > #textTable and #textTable) or line
 	local text = textTable[line] or ""
-	local strCount = utf8.len(text)
+	local strCount = utf8Len(text)
 	if not noMoveLine then
 		while true do
 			if pos < 0 then
 				if line-1 >= 1 then
 					line = line-1
 					text = textTable[line] or ""
-					strCount = utf8.len(text)
+					strCount = utf8Len(text)
 					pos = strCount+pos+1
 					if pos >= 0 then
 						break
@@ -139,7 +147,7 @@ function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
 					pos = pos-strCount-1
 					line = line+1
 					text = textTable[line] or ""
-					strCount = utf8.len(text)
+					strCount = utf8Len(text)
 					if pos <= strCount then
 						break
 					end
@@ -167,7 +175,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,noselect)
 	local pos,line = dgsMemoSeekPosition(textTable,tpos,tline)
 	local showPos,showLine = dgsElementData[memo].showPos,dgsElementData[memo].showLine
 	local font = dgsElementData[memo].font
-	local nowLen = dxGetTextWidth(utf8.sub(text,0,pos),dgsElementData[memo].textSize[1],font)
+	local nowLen = dxGetTextWidth(utf8Sub(text,0,pos),dgsElementData[memo].textSize[1],font)
 	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 	local size = dgsElementData[memo].absSize
 	local targetLen = nowLen+showPos
@@ -250,31 +258,32 @@ function searchMemoMousePosition(dxmemo,posx,posy)
 		selLine = selLine > #allText and #allText or selLine 
 		local text = dgsElementData[dxmemo].text[selLine] or ""
 		local pos = posx-x-offset
-		local sfrom,sto,templen = 0,utf8.len(text),0
+		local sfrom,sto,templen = 0,utf8Len(text),0
 		for i=1,sto do
-			local strlen = dxGetTextWidth(utf8.sub(text,sfrom+1,sto/2+sfrom/2),txtSizX,font)
+			halfStoSfrom = (sto+sfrom)*0.5
+			local strlen = dxGetTextWidth(utf8Sub(text,sfrom+1,halfStoSfrom),txtSizX,font)
 			local len1 = strlen+templen
 			if pos < len1 then
-				sto = mathFloor((sto+sfrom)/2)
+				sto = halfStoSfrom-halfStoSfrom%1
 			elseif pos > len1 then
-				sfrom = mathFloor((sto+sfrom)/2)
-				templen = dxGetTextWidth(utf8.sub(text,0,sfrom),txtSizX,font)
+				sfrom = halfStoSfrom-halfStoSfrom%1
+				templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 				start = len1
 			elseif pos == len1 then
 				start = len1
 				sto = sfrom
-				templen = dxGetTextWidth(utf8.sub(text,0,sfrom),txtSizX,font)
+				templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 			end
 			if sto-sfrom <= 10 then
 				break
 			end
 		end
-		local start = dxGetTextWidth(utf8.sub(text,0,sfrom),txtSizX,font)
+		local start = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 		for i=sfrom,sto do
-			local poslen1 = dxGetTextWidth(utf8.sub(text,sfrom+1,i),txtSizX,font)+start
-			local theNext = dxGetTextWidth(utf8.sub(text,i+1,i+1),txtSizX,font)/2
+			local poslen1 = dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
+			local theNext = dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
 			local offsetR = theNext+poslen1
-			local theLast = dxGetTextWidth(utf8.sub(text,i,i),txtSizX,font)/2
+			local theLast = dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
 			local offsetL = poslen1-theLast
 			if i <= sfrom and pos <= offsetL then
 				return sfrom,selLine
@@ -313,13 +322,13 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	local fixed = utf8.gsub(fixed,"	"," ")
 	fixed = " "..fixed.." "
 	local tab = string.split(fixed,splitChar2)
-	tab[1] = utf8.sub(tab[1],2)
-	tab[#tab] = utf8.sub(tab[#tab],1,utf8.len(tab[#tab])-1)
+	tab[1] = utf8Sub(tab[1],2)
+	tab[#tab] = utf8Sub(tab[#tab],1,utf8Len(tab[#tab])-1)
 	local offset = 0
 	if tab ~= 0 then
 		if #tab == 1 then
 			tab[1] = tab[1] or ""
-			offset = utf8.len(tab[1])+1
+			offset = utf8Len(tab[1])+1
 			textTable[line] = utf8.insert(textTable[line] or "",index+1,tab[1])
 			textLen[line] = dxGetTextWidth(textTable[line],textSize[1],font)
 			if dgsElementData[memo].rightLength[1] < textLen[line] then
@@ -327,18 +336,18 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 			end
 		else
 			tab[1] = tab[1] or ""
-			offset = offset+utf8.len(tab[1])+1
+			offset = offset+utf8Len(tab[1])+1
 			textTable[line] = textTable[line] or ""
-			local txt1 = utf8.sub(textTable[line],0,index) or ""
-			local txt2 = utf8.sub(textTable[line],index+1) or ""
+			local txt1 = utf8Sub(textTable[line],0,index) or ""
+			local txt2 = utf8Sub(textTable[line],index+1) or ""
 			textTable[line] = (txt1)..(tab[1])
 			textLen[line] = dxGetTextWidth(textTable[line],textSize[1],font)
 			for i=2,#tab do
 				tab[i] = tab[i] or ""
-				offset = offset+utf8.len(tab[i])+1
+				offset = offset+utf8Len(tab[i])+1
 				local theline = line+i-1
-				table.insert(textTable,theline,tab[i])
-				table.insert(textLen,theline,dxGetTextWidth(tab[i],textSize[1],font))
+				tableInsert(textTable,theline,tab[i])
+				tableInsert(textLen,theline,dxGetTextWidth(tab[i],textSize[1],font))
 				if dgsElementData[memo].rightLength[1] < textLen[theline] then
 					dgsElementData[memo].rightLength = {textLen[theline],theline}
 				elseif dgsElementData[memo].rightLength[2] > line+#tab-1 then
@@ -373,10 +382,8 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 		end
 		if #textTable > canHold then
 			configMemo(memo)
-		else
-			if dgsElementData[scrollbars[2]].visible then
-				configMemo(memo)
-			end
+		elseif dgsElementData[scrollbars[2]].visible then
+			configMemo(memo)
 		end
 		if not noAffectCaret then
 			if line < _line or (line == _line and index <= _index) then
@@ -418,8 +425,8 @@ function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
 	end
 	local lineTextFrom = textTable[fromline]
 	local lineTextTo = textTable[toline]
-	local lineTextFromCnt = utf8.len(lineTextFrom)
-	local lineTextToCnt = utf8.len(lineTextTo)
+	local lineTextFromCnt = utf8Len(lineTextFrom)
+	local lineTextToCnt = utf8Len(lineTextTo)
 	if fromindex < 0 then
 		fromindex = 0
 	elseif fromindex > lineTextFromCnt then
@@ -441,14 +448,14 @@ function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
 	if fromline == toline then
 		local _to = toindex < fromindex  and fromindex or toindex
 		local _from = fromindex > toindex and toindex or fromindex
-		textTable[toline] = utf8.sub(textTable[toline],0,_from)..utf8.sub(textTable[toline],_to+1)
+		textTable[toline] = utf8Sub(textTable[toline],0,_from)..utf8Sub(textTable[toline],_to+1)
 		textLen[toline] = dxGetTextWidth(textTable[toline],textSize[1],font)
 	else
-		textTable[fromline] = utf8.sub(textTable[fromline],0,fromindex)..utf8.sub(textTable[toline],toindex+1)
+		textTable[fromline] = utf8Sub(textTable[fromline],0,fromindex)..utf8Sub(textTable[toline],toindex+1)
 		textLen[fromline] = dxGetTextWidth(textTable[fromline],textSize[1],font)
 		for i=fromline+1,toline do
-			table.remove(textTable,fromline+1)
-			table.remove(textLen,fromline+1)
+			tableRemove(textTable,fromline+1)
+			tableRemove(textLen,fromline+1)
 		end
 	end
 	dgsElementData[memo].text = textTable
@@ -514,7 +521,7 @@ function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
 	local outStr = ""
 	local textTable = dgsElementData[memo].text
 	local textLines = #textTable
-	cindex,cline,tindex,tline = cindex or 0,cline or 1,tindex or utf8.len(textTable[textLines]),tline or textLines
+	cindex,cline,tindex,tline = cindex or 0,cline or 1,tindex or utf8Len(textTable[textLines]),tline or textLines
 	if cline < 1 then
 		cline = 1
 	elseif cline > textLines then
@@ -527,8 +534,8 @@ function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
 	end
 	local lineTextFrom = textTable[cline]
 	local lineTextTo = textTable[tline]
-	local lineTextFromCnt = utf8.len(lineTextFrom)
-	local lineTextToCnt = utf8.len(lineTextTo)
+	local lineTextFromCnt = utf8Len(lineTextFrom)
+	local lineTextToCnt = utf8Len(lineTextTo)
 	if cindex < 0 then
 		cindex = 0
 	elseif cindex > lineTextFromCnt then
@@ -550,10 +557,10 @@ function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
 	if cline == tline then
 		local _to = tindex < cindex  and cindex or tindex
 		local _from = cindex > tindex and tindex or cindex
-		outStr = utf8.sub(textTable[tline],_from,_to)
+		outStr = utf8Sub(textTable[tline],_from,_to)
 	else
-		local txt1 = utf8.sub(textTable[cline],cindex+1) or ""
-		local txt2 = utf8.sub(textTable[tline],0,tindex) or ""
+		local txt1 = utf8Sub(textTable[cline],cindex+1) or ""
+		local txt2 = utf8Sub(textTable[tline],0,tindex) or ""
 		for i=cline+1,tline-1 do
 			outStr = outStr..textTable[i]..splitChar2
 		end
@@ -700,7 +707,7 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 					local caretPos = dgsElementData[mymemo].caretPos
 					local selectFrom = dgsElementData[mymemo].selectFrom
 					dgsMemoDeleteText(mymemo,caretPos[1],caretPos[2],selectFrom[1],selectFrom[2])
-					handleDxMemoText(mymemo,utf8.sub(text,1,utf8.len(text)-1),true)
+					handleDxMemoText(mymemo,utf8Sub(text,1,utf8Len(text)-1),true)
 					dgsElementData[mymemo].CoolTime = true
 					guiSetText(source,"")
 					dgsElementData[mymemo].CoolTime = false

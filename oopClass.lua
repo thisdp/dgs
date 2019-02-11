@@ -12,12 +12,34 @@ function dgsImportOOPClass()
 		dgsRoot = getResourceRootElement(dgsOOPHead.dgsRes)
 		dgsOOPHead.dgsRoot = dgsRoot
 		dgsOOPHead.dgsClass = {}
+		dgsOOPHead.transfromEventName = function(eventName,isReverse)
+			if isReverse then
+				local head = eventName:sub(3,3):lower()
+				return head..eventName:sub(4)
+			else
+				local head = eventName:sub(1,1):upper()
+				return "on"..head..eventName:sub(2)
+			end
+		end
 		
 		dgsOOPHead.AccessTable = {
 			__index=function(self,key)
+				if key == "parent" then
+					local parent = call(dgsOOPHead.dgsRes,"dgsGetParent",self.dgsElement,key)
+					return parent and dgsGetClass(parent) or false
+				elseif key == "children" then
+					return self:getChildren()
+				end
 				return call(dgsOOPHead.dgsRes,"dgsGetProperty",self.dgsElement,key)
 			end,
 			__newindex=function(self,key,value)
+				if key == "parent" then
+					local targetEle
+					if type(value) == "table" then
+						targetEle = value.dgsElement
+					end
+					return call(dgsOOPHead.dgsRes,"dgsSetParent",self.dgsElement,targetEle)
+				end
 				return call(dgsOOPHead.dgsRes,"dgsSetProperty",self.dgsElement,key,value)
 			end,
 			__metatable=true
@@ -140,7 +162,7 @@ function dgsImportOOPClass()
 					return call(dgsOOPHead.dgsRes,"dgsSetPosition",self.dgsElement,...)
 				end,
 				getParent = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetParent",self.dgsElement,...)
+					return dgsGetClass(call(dgsOOPHead.dgsRes,"dgsGetParent",self.dgsElement,...))
 				end,
 				setParent = function(self,parent,nocheck)
 					if type(parent) == "table" and isElement(parent.dgsElement) then
@@ -149,10 +171,15 @@ function dgsImportOOPClass()
 					return call(dgsOOPHead.dgsRes,"dgsSetParent",self.dgsElement,parent,nocheck)
 				end,
 				getChild = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetChild",self.dgsElement,...)
+					return dgsGetClass(call(dgsOOPHead.dgsRes,"dgsGetChild",self.dgsElement,...))
 				end,
 				getChildren = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetChildren",self.dgsElement,...)
+					local children = call(dgsOOPHead.dgsRes,"dgsGetChildren",self.dgsElement,...)
+					local newChildren = {}
+					for i=1,#children do
+						newChildren[i] = dgsGetClass(children[i])
+					end
+					return newChildren
 				end,
 				getSize = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGetSize",self.dgsElement,...)
@@ -308,6 +335,7 @@ function dgsImportOOPClass()
 					return call(dgsOOPHead.dgsRes,"dgsGetTranslationName",self.dgsElement,...)
 				end,
 				on = function(self,eventName,theFnc)
+					local eventName = dgsOOPHead.transfromEventName(eventName)
 					removeEventHandler(eventName,self.dgsElement,theFnc)
 					local newfenv = {self=self}
 					setmetatable(newfenv,{__index = _G})
@@ -315,6 +343,7 @@ function dgsImportOOPClass()
 					addEventHandler(eventName,self.dgsElement,theFnc)
 				end,
 				removeOn = function(self,eventName,theFnc)
+					local eventName = dgsOOPHead.transfromEventName(eventName)
 					removeEventHandler(eventName,self.dgsElement,theFnc)
 				end,
 			}
@@ -628,7 +657,7 @@ function dgsImportOOPClass()
 					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnTitle",self.dgsElement,...)
 				end
 				newTable.getColumnFont = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnFont,self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnFont",self.dgsElement,...)
 				end
 				newTable.setColumnFont = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnFont",self.dgsElement,...)
@@ -976,7 +1005,12 @@ function dgsImportOOPClass()
 				return call(dgsOOPHead.dgsRes,"dgsGetRenderSetting",...)
 			end,
 			getLayerElements = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsGetLayerElements",...)
+				local elements = call(dgsOOPHead.dgsRes,"dgsGetLayerElements",...)
+				local newElements = {}
+				for i=1,#elements do
+					newElements[i] = dgsGetClass(elements[i])
+				end
+				return newElements
 			end,
 			addEasingFunction = function(self,...)
 				return call(dgsOOPHead.dgsRes,"dgsAddEasingFunction",...)
