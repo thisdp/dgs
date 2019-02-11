@@ -40,7 +40,7 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 
 Ignore all the lisences, But you need to obey the following rules ( Let's get more freedom!! ).
 
-This resource is protected by **DPL v1**(DGS Public Lisence v1)
+This resource is protected by **DPL v1**(DGS Public License v1)
 
 * 1.Any of the private edition of dgs should be the branch of dgs-master
 
