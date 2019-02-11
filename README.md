@@ -38,7 +38,7 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 
 # License
 
-Ignore all the lisences, But you need to obey the following rules ( Let's get more freedom!! ).
+Ignore all the licenses, But you need to obey the following rules ( Let's get more freedom!! ).
 
 This resource is protected by **DPL v1**(DGS Public License v1)
 
