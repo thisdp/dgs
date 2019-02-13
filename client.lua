@@ -4549,12 +4549,14 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	for k=1,childrenCnt do
 		local child = children[k]
 		local relt = dgsElementData[child].relative
-		local relativePos,relativeSize = relt[1],relt[2]
-		local x,y
-		if relativePos then
-			x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
+		if relt then
+			local relativePos,relativeSize = relt[1],relt[2]
+			local x,y
+			if relativePos then
+				x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
+			end
+			calculateGuiPositionSize(child,x,y,relativePos)
 		end
-		calculateGuiPositionSize(child,x,y,relativePos)
 	end
 end)
 
