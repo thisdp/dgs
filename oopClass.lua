@@ -602,6 +602,12 @@ function dgsImportOOPClass()
 				newTable.replaceText = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEditReplaceText ",self.dgsElement,...)
 				end
+				newTable.getTypingSound = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetTypingSound ",self.dgsElement,...)
+				end
+				newTable.setTypingSound = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetTypingSound ",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxeda" then
 				newTable.setDebugModeEnabled = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEDASetDebugModeEnabled",self.dgsElement,...)
@@ -849,6 +855,12 @@ function dgsImportOOPClass()
 				end
 				newTable.clearText = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsMemoClearText",self.dgsElement,...)
+				end
+				newTable.getTypingSound = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoGetTypingSound ",self.dgsElement,...)
+				end
+				newTable.setTypingSound = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoSetTypingSound ",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxlabel" then
 				newTable.setColor = function(self,...)
