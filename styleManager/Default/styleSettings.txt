@@ -215,6 +215,7 @@
 		caretThick = 1.2,
 		caretOffset = 3,
 		caretHeight = 1,
+		typingSound = nil,
 	},
 
 -----------------------------------------------------------------------------------DGS Grid List
@@ -263,7 +264,7 @@
 -----------------------------------------------------------------------------------DGS Memo
 	memo = {
 	---Color
-		bgColor = tocolor(200,200,200,255),	--Background color of edit
+		bgColor = tocolor(200,200,200,255),	--Background color of memo
 		textColor = tocolor(0,0,0,255),		--Text color
 		caretColor = tocolor(0,0,0,255),	--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
@@ -277,6 +278,7 @@
 		caretOffset = 3,
 		caretHeight = 1,
 		scrollBarThick = 20,
+		typingSound = nil,
 	},
 
 -----------------------------------------------------------------------------------DGS Progress Bar

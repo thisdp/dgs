@@ -46,6 +46,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"enableRedoUndoRecord",true)
 	dgsSetData(memo,"undoHistory",{})
 	dgsSetData(memo,"redoHistory",{})
+	dgsSetData(memo,"typingSound",styleSettings.memo.typingSound)
 	dgsSetData(memo,"selectColor",styleSettings.memo.selectColor)
 	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
 	dgsSetData(memo,"memo",gmemo)
@@ -570,6 +571,24 @@ function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
 		dgsMemoDeleteText(memo,cindex,cline,tindex,tline)
 	end
 	return outStr
+end
+
+function dgsMemoSetTypingSound(memo,sound)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetTypingSound at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+	assert(type(sound) == "string" or not sound,"Bad argument @dgsMemoSetTypingSound at argument 2, expect a string or nil got "..dgsGetType(sound))
+	local path = sound
+	if sourceResource then
+		if not find(sound,":") then
+			path = ":"..getResourceName(sourceResource).."/"..sound
+		end
+	end
+	assert(fileExists(path),"Bad argument @dgsMemoSetTypingSound at argument 1,couldn't find such file '"..path.."'")
+	dgsElementData[memo].typingSound = path
+end
+
+function dgsMemoGetTypingSound(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetTypingSound at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+	return dgsElementData[memo].typingSound
 end
 
 function seekMaxLengthLine(memo)

@@ -256,6 +256,8 @@
 	<export function="dgsEditDeleteText" type="client" />
 	<export function="dgsEditGetPartOfText" type="client" />
 	<export function="dgsEditClearText" type="client" />
+	<export function="dgsEditSetTypingSound" type="client" />
+	<export function="dgsEditGetTypingSound" type="client" />
 	
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />
@@ -273,6 +275,8 @@
 	<export function="dgsMemoGetScrollBar" type="client" />
 	<export function="dgsMemoSetScrollPosition" type="client" />
 	<export function="dgsMemoGetScrollPosition" type="client" />
+	<export function="dgsMemoSetTypingSound" type="client" />
+	<export function="dgsMemoGetTypingSound" type="client" />
 
 	<export function="dgsCreateMediaBrowser" type="client" />
 	<export function="dgsMediaLoadMedia" type="client" />

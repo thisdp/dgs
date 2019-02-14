@@ -59,6 +59,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"enableRedoUndoRecord",true)
 	dgsSetData(edit,"undoHistory",{})
 	dgsSetData(edit,"redoHistory",{})
+	dgsSetData(edit,"typingSound",styleSettings.edit.typingSound)
 	local gedit = guiCreateEdit(0,0,0,0,"" or "",true,GlobalEditParent)
 	guiSetProperty(gedit,"ClippedByParent","False")
 	dgsSetData(edit,"edit",gedit)
@@ -541,6 +542,24 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 		end
 	end
 	triggerEvent("onDgsTextChange",edit)
+end
+
+function dgsEditSetTypingSound(edit,sound)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetTypingSound at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	assert(type(sound) == "string" or not sound,"Bad argument @dgsEditSetTypingSound at argument 2, expect a string or nil got "..dgsGetType(sound))
+	local path = sound
+	if sourceResource then
+		if not find(sound,":") then
+			path = ":"..getResourceName(sourceResource).."/"..sound
+		end
+	end
+	assert(fileExists(path),"Bad argument @dgsEditSetTypingSound at argument 1,couldn't find such file '"..path.."'")
+	dgsElementData[edit].typingSound = path
+end
+
+function dgsEditGetTypingSound(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetTypingSound at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	return dgsElementData[edit].typingSound
 end
 
 --[[

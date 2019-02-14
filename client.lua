@@ -3430,7 +3430,6 @@ function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)		--To 
 	return x+offsetx,y+offsety,(rndtgt and cx or x)+offsetx,(rndtgt and cy or y)+offsety
 end
 
-
 addEventHandler("onClientKey",root,function(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
 		local dgsType = dgsGetType(MouseData.enter)
@@ -3505,6 +3504,16 @@ addEventHandler("onClientKey",root,function(button,state)
 			local scrollbar = dgsElementData[MouseData.enter].scrollbar
 			if dgsGetVisible(scrollbar) then
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+			end
+		end
+	elseif state then
+		local dgsType = dgsGetType(MouseData.nowShow)
+		if dgsType == "dgs-dxmemo" or dgsType == "dgs-dxedit" then
+			if not button:find("mouse") then
+				local typingSound = dgsElementData[MouseData.nowShow].typingSound
+				if typingSound then
+					playSound(typingSound)
+				end
 			end
 		end
 	end
