@@ -390,7 +390,7 @@ function interfaceRender()
 end
 addEventHandler("onClientPreRender",root,interfaceRender)
 
-function renderGUI(v,mx,my,enabled,rndtgtm,position,size,OffsetX,OffsetY,galpha,visible,checkElement)
+function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,visible,checkElement)
 	local isElementInside = false
 	if debugMode then
 		DGSShow = DGSShow+1
