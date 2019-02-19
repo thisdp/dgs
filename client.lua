@@ -143,7 +143,7 @@ function dgsCoreRender()
 			local eleData = dgsData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
-				if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible,MouseData.clickl) then
+				if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible,MouseData.clickl) then
 					intfaceClickElementl = true
 				end
 			end
@@ -157,7 +157,7 @@ function dgsCoreRender()
 			local v = dx3DTextTable[i]
 			local eleData = dgsData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
-				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
 			end
 		end
 		for i=1,bottomTableSize do
@@ -2752,7 +2752,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 							dxDrawRectangle(x,y+height,w,h-height,colors,rendSet)
 						end
 						for cid,child in ipairs(dgsGetChildren(tabs[selected])) do
-							renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible)
+							renderGUI(child,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
