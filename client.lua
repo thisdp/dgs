@@ -1562,7 +1562,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 					end
 				end
 				------------------------------------
-				dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
+				if rndtgt then
+					dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
+				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -3853,7 +3855,10 @@ function dgsCheckHit(hits,mx,my)
 			end
 			local posX = (mx-MouseData.Move[1]-pos[1])
 			local posY = (my-MouseData.Move[2]-pos[2])
-			calculateGuiPositionSize(MouseData.clickl,posX,posY,false)
+			local absPos = dgsElementData[MouseData.clickl].absPos
+			if absPos[1] ~= posX or absPos[2] ~= posY then
+				calculateGuiPositionSize(MouseData.clickl,posX,posY,false)
+			end
 		end
 		if MouseData.Scale then
 			local pos = {dgsGetPosition(MouseData.clickl,false,true)}
@@ -3872,7 +3877,9 @@ function dgsCheckHit(hits,mx,my)
 					addPos[2] = addPos[2] + height
 				end
 			end
-			local siz = dgsElementData[MouseData.clickl].absSize
+			local absPos = dgsElementData[MouseData.clickl].absPos
+			local _size = dgsElementData[MouseData.clickl].absSize
+			local siz = {_size[1],_size[2]}
 			local endr = pos[1] + siz[1]
 			local endd = pos[2] + siz[2]
 			local minSize = dgsElementData[MouseData.clickl].minSize or {10,10}
@@ -3909,7 +3916,12 @@ function dgsCheckHit(hits,mx,my)
 					siz[2] = minSizeY
 				end
 			end
-			calculateGuiPositionSize(MouseData.clickl,pos[1]-addPos[1],pos[2]-addPos[2],false,siz[1],siz[2],false)
+			local posX,posY = pos[1]-addPos[1],pos[2]-addPos[2]
+			local sizeX,sizeY = siz[1],siz[2]
+			local absSize = dgsElementData[MouseData.clickl].absSize
+			if posX+posY-absPos[1]-absPos[2] ~= 0 or sizeX+sizeY-absSize[1]-absSize[2] ~= 0 then
+				calculateGuiPositionSize(MouseData.clickl,posX,posY,false,sizeX,sizeY,false)
+			end
 		else
 			MouseData.lastPos = {-1,-1}
 		end
@@ -4618,7 +4630,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	end
 end)
 
-addEventHandler("onDgsSizeChange",root,function()
+addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 	local children = ChildrenTable[source] or {}
 	local childrenCnt = #children
 	for k=1,childrenCnt do
@@ -4635,23 +4647,26 @@ addEventHandler("onDgsSizeChange",root,function()
 		calculateGuiPositionSize(child,x,y,relativePos,sx,sy,relativeSize)
 	end
 	local typ = dgsGetType(source)
-	if typ == "dgs-dxgridlist" then
-		configGridList(source)
-	elseif typ == "dgs-dxcmd" then
-		configCMD(source)
-	elseif typ == "dgs-dxedit" then
-		configEdit(source)
-	elseif typ == "dgs-dxscrollpane" then
-		configScrollPane(source)
-	elseif typ == "dgs-dxtabpanel" then
-		configTabPanel(source)
-	elseif typ == "dgs-dxcombobox-Box" then
-		configComboBox(dgsElementData[source].myCombo)
-	end
-	local parent = dgsGetParent(source)
-	if isElement(parent) then
-		if dgsGetType(parent) == "dgs-dxscrollpane" then
-			sortScrollPane(source,parent)
+	local absSize = dgsElementData[source].absSize
+	if absSize[1] ~= oldSizeAbsx or absSize[2] ~= oldSizeAbsy then
+		if typ == "dgs-dxgridlist" then
+			configGridList(source)
+		elseif typ == "dgs-dxcmd" then
+			configCMD(source)
+		elseif typ == "dgs-dxedit" then
+			configEdit(source)
+		elseif typ == "dgs-dxscrollpane" then
+			configScrollPane(source)
+		elseif typ == "dgs-dxtabpanel" then
+			configTabPanel(source)
+		elseif typ == "dgs-dxcombobox-Box" then
+			configComboBox(dgsElementData[source].myCombo)
+		end
+		local parent = dgsGetParent(source)
+		if isElement(parent) then
+			if dgsGetType(parent) == "dgs-dxscrollpane" then
+				sortScrollPane(source,parent)
+			end
 		end
 	end
 	local attachedBy = dgsElementData[source].attachedBy or {}
