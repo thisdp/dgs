@@ -213,11 +213,17 @@ function dgsSetData(element,key,value,nocheck)
 					end
 				elseif key == "ignoreParentTitle" then
 					configPosSize(element,false,true)
+					if dgsType == "dgs-dxscrollpane" then
+						configScrollPane(element)
+					end
 				elseif key == "ignoreTitle" then
 					local children = dgsGetChildren(element)
 					for i=1,#children do
 						if not dgsElementData[children[i]].ignoreParentTitle then
 							configPosSize(children[i],false,true)
+							if dgsElementType[children[i]] == "dgs-dxscrollpane" then
+								configScrollPane(children[i])
+							end
 						end
 					end
 				end

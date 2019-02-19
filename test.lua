@@ -22,16 +22,16 @@ function createTest()
 	]])
 	
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
-	pane = dgsCreateScrollPane(0,0,0.4*sW,0.4*sH,false,wind)
+	pane = dgsCreateScrollPane(0,0,0.8,0.8,true,wind)
 	dgsScrollPaneSetScrollBarState(pane,f1alse)
-	local scrollbar = dgsCreateScrollBar(0,0,15,50,false,false)
-	--dgsAttachElements(scrollbar,pane,0,0,false,0,0,false)
-	
+	local scrollbar = dgsCreateScrollBar(10,0,15,60,false,false)
+	dgsAttachElements(scrollbar,pane,-0.5,0,true,0.02,0.5,true)
 	gdlt = dgsCreateImage(0.5,0,1.1,1.1,_,true,pane,tocolor(255,255,255,255))
 	dgsSetProperty(pane,"outline",{"out",2,tocolor(255,255,255,255)})
 	gdlt2 = dgsCreateImage(0.1,0,0.7,0.7,_,true,pane,tocolor(0,255,255,255))
 	dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
+createTest()
 
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)

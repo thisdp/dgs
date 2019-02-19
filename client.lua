@@ -3409,6 +3409,7 @@ function removeColorCodeFromString(str)
 end
 
 function positionOffsetProcessing(gui,parent)
+	local parent = parent or dgsGetParent(gui)
 	if dgsElementType[gui] == "dgs-dxtab" then
 		local eleData = dgsElementData[parent]
 		local h = eleData.absSize[2]
@@ -4603,14 +4604,15 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	end
 	local attachedBy = dgsElementData[source].attachedBy or {}
 	local absx,absy = dgsGetPosition(source,false,true)
-	local absw,absh = dgsElementData[source].absSize
+	local absw,absh = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	for i=1,#attachedBy do
 		local attachSource = attachedBy[i]
 		local attachedTable = dgsElementData[attachSource].attachedTo
-		local posRlt = attachedTable[4]
+		local relativePos = attachedTable[4]
 		local offsetX,offsetY = attachedTable[2],attachedTable[3]
-		offsetX,offsetY = posRlt and absw*offsetX or offsetX, posRlt and absh*offsetY or offsetY
-		calculateGuiPositionSize(attachSource,absx+offsetX,absy+offsetY,false)
+		offsetX,offsetY = relativePos and absw*offsetX or offsetX, relativePos and absh*offsetY or offsetY
+		local resX,resY = (absx+offsetX)/sW,(absy+offsetY)/sH
+		calculateGuiPositionSize(attachSource,resX,resY,relativePos)
 	end
 end)
 
@@ -4651,13 +4653,14 @@ addEventHandler("onDgsSizeChange",root,function()
 		end
 	end
 	local attachedBy = dgsElementData[source].attachedBy or {}
-	local absw,absh = dgsElementData[source].absSize
+	local absw,absh = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	for i=1,#attachedBy do
 		local attachSource = attachedBy[i]
 		local attachedTable = dgsElementData[attachSource].attachedTo
-		local posRlt = attachedTable[7]
+		local sizeRlt = attachedTable[7]
 		local offsetW,offsetH = attachedTable[5],attachedTable[6]
-		offsetW,offsetH = posRlt and absw*offsetW or offsetW, posRlt and absh*offsetH or offsetH
-		calculateGuiPositionSize(attachSource,_,_,_,offsetW,offsetH,false)
+		offsetW,offsetH = sizeRlt and absw*offsetW or offsetW, sizeRlt and absh*offsetH or offsetH
+		offsetW,offsetH = sizeRlt and offsetW/sW or offsetW,sizeRlt and offsetH/sH or offsetH
+		calculateGuiPositionSize(attachSource,_,_,_,offsetW,offsetH,sizeRlt)
 	end
 end)

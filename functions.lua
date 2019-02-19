@@ -81,6 +81,13 @@ function getParentLocation(dgsElement,rndsup,x,y)
 			local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
 			x = x+eleData.absPos[1]
 			y = y+eleData.absPos[2]+tabHeight
+		elseif dgsElementType[FatherTable[dgsElement]] == "dgs-dxwindow" then
+			local titleHeight = 0
+			if not eleData.ignoreParentTitle and not dgsElementData[FatherTable[dgsElement]].ignoreTitle then
+				titleHeight = dgsElementData[FatherTable[dgsElement]].titleHeight or 0
+			end
+			x = x+eleData.absPos[1]
+			y = y+eleData.absPos[2]+titleHeight
 		else
 			local absPos = eleData.absPos or {0,0}
 			x = x+absPos[1]
@@ -124,21 +131,29 @@ function dgsSetSize(dgsElement,x,y,bool)
 	return true
 end
 
-function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize,alwaysOn)
+function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize,alwaysOnTOP)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dxgui got "..dgsGetType(attachTo))
 	assert(not dgsGetParent(dgsElement),"Bad argument @dgsAttachElements at argument 1, source dgs element shouldn't have a parent")
 	dgsDetachElements(dgsElement)
-	if not width or height then
+	if not width or not height then
 		local size = dgsElementData[dgsElement].absSize
 		width,height = size[1],size[2]
 		relativeSize = false
 	end
-	local attachedTable = {attachTo,offsetX or 0,offsetY or 0,relativePos,width,height,relativeSize,alwaysOn}
+	offsetX,offsetY = offsetX or 0,offsetY or 0
+	local attachedTable = {attachTo,offsetX,offsetY,relativePos,width,height,relativeSize,alwaysOnTOP}
 	local attachedBy = dgsElementData[attachTo].attachedBy
 	table.insert(attachedBy,dgsElement)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
-	return dgsSetData(dgsElement,"attachedTo",attachedTable)
+	dgsSetData(dgsElement,"attachedTo",attachedTable)
+	local attachedTable = dgsElementData[dgsElement].attachedTo
+	local absx,absy = dgsGetPosition(attachTo,false,true)
+	local absw,absh = dgsElementData[attachTo].absSize[1],dgsElementData[attachTo].absSize[2]
+	offsetX,offsetY = relativePos and absw*offsetX or offsetX, relativePos and absh*offsetY or offsetY
+	local resX,resY = (absx+offsetX)/sW,(absy+offsetY)/sH
+	calculateGuiPositionSize(dgsElement,resX,resY,relativePos,width,height,relativeSize)
+	return true
 end
 
 function dgsElementIsAttached(dgsElement)

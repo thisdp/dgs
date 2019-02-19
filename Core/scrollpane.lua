@@ -16,6 +16,10 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local renderTarget = dxCreateRenderTarget(sx,sy,true)
+	if not isElement(renderTarget) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for dgs-dxscrollpane [Expected:"..(0.0000076*sx*sy).."MB/Free:"..videoMemory.."MB]",2)
+	end
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
@@ -29,7 +33,6 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	end
 	local scrollbar1 = dgsCreateScrollBar(x+sx-scbThick,y-titleOffset,scbThick,sy-scbThick,false,false,parent)
 	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scbThick-titleOffset,sx-scbThick,scbThick,true,false,parent)
-	
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollpane,"scrollSize",60)	--60 pixels
@@ -45,10 +48,6 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	triggerEvent("onDgsCreate",scrollpane)
-	if not isElement(renderTarget) then
-		destroyElement(scrollpane)
-		return false
-	end
 	return scrollpane
 end
 
@@ -163,18 +162,13 @@ function configScrollPane(source)
 	if scbStateV then
 		dgsSetData(scrollbar[1],"position",0)
 	end
-	local parent = dgsGetParent(source)
-	local titleOffset = 0
-	if isElement(parent) then
-		if not dgsElementData[source].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
-			titleOffset = dgsElementData[parent].titleHeight or 0
-		end
-	end
 	local scrollBarOffset = dgsElementData[source].scrollBarOffset
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
-	dgsSetPosition(scrollbar[1],x+sx-scbThick,y-titleOffset,false)
-	dgsSetPosition(scrollbar[2],x,y+sy-scbThick-titleOffset,false)
+	dgsElementData[scrollbar[1]].ignoreParentTitle = dgsElementData[source].ignoreParentTitle
+	dgsElementData[scrollbar[2]].ignoreParentTitle = dgsElementData[source].ignoreParentTitle
+	dgsSetPosition(scrollbar[1],x+sx-scbThick,y,false)
+	dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
 	dgsSetSize(scrollbar[1],scbThick,relSizY,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].position
@@ -203,6 +197,10 @@ function configScrollPane(source)
 		destroyElement(renderTarget)
 	end
 	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true)
+	if not isElement(renderTarget) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for dgs-dxscrollpane [Expected:"..(0.0000076*relSizX*relSizY).."MB/Free:"..videoMemory.."MB]",2)
+	end
 	dgsSetData(source,"renderTarget_parent",renderTarget)
 	dgsSetData(source,"configNextFrame",false)
 end

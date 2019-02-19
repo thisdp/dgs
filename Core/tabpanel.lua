@@ -27,6 +27,10 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx = dgsElementData[tabpanel].absSize[1]
 	local rendertarget = dxCreateRenderTarget(abx,tabHeight or 20,true)
+	if not isElement(renderTarget) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for tab list of dgs-dxtabpanel [Expected:"..(0.0000076*abx*(tabHeight or 20)).."MB/Free:"..videoMemory.."MB]",2)
+	end
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
 	triggerEvent("onDgsCreate",tabpanel)
 	return tabpanel
@@ -175,6 +179,10 @@ function configTabPanel(source)
 		destroyElement(rentarg)
 	end
 	local tabRender = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true)
+	if not isElement(tabRender) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for tab list of dgs-dxtabpanel [Expected:"..(0.0000076*sx*(tabHeight[2] and tabHeight[1]*sy or tabHeight[1])).."MB/Free:"..videoMemory.."MB]",2)
+	end
 	dgsSetData(source,"renderTarget",tabRender)
 end
 

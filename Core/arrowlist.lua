@@ -44,6 +44,10 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	local aSize = dgsElementData[arrowlist].absSize
 	local abx,aby = aSize[1],aSize[2]
 	local rndtgt = dxCreateRenderTarget(abx,aby,true)
+	if not isElement(rndtgt) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for dgs-dxarrowlist [Expected:"..(0.0000076*abx*aby).."MB/Free:"..videoMemory.."MB]",2)
+	end
 	local scrollbar = dgsCreateScrollBar(abx-scbThick,0,scbThick,aby,false,false,arrowlist)
 	dgsSetData(arrowlist,"renderTarget",rndtgt)
 	dgsSetData(scrollbar,"length",{0,true})
@@ -299,6 +303,11 @@ function configArrowList(arrowlist)
 		destroyElement(rendertarget)
 	end
 	local rendertarget = dxCreateRenderTarget(size[1]-scbThick,size[2],true)
+	if not isElement(rendertarget) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for dgs-dxarrowlist [Expected:"..(0.0000076*(size[1]-scbThick)*size[2]).."MB/Free:"..videoMemory.."MB]",2)
+	end
+
 	dgsSetData(arrowlist,"renderTarget",rendertarget)
 	dgsSetPosition(scrollbar,size[1]-dgsElementData[arrowlist].scrollBarThick,0,false)
 	dgsSetSize(scrollbar,scbThick,size[2],false)

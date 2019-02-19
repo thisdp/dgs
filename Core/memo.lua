@@ -64,6 +64,10 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	local renderTarget = dxCreateRenderTarget(abx-4,aby,true)
+	if not isElement(renderTarget) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*(abx-4)*aby).."MB/Free:"..videoMemory.."MB]",2)
+	end
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
@@ -644,6 +648,11 @@ function configMemo(source)
 		destroyElement(rnd)
 	end
 	local renderTarget = dxCreateRenderTarget(px-scbTakes1,py-scbTakes2,true)
+	if not isElement(renderTarget) then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*(px-scbTakes1)*(py-scbTakes2)).."MB/Free:"..videoMemory.."MB]",2)
+	end
+
 	dgsSetData(source,"renderTarget",renderTarget)
 end
 

@@ -131,6 +131,14 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 				calculateGuiPositionSize(child,_,_,_,size[1],size[2],false)
 			end
 		end
+		if dgsElementType[child] == "dgs-dxscrollpane" then
+			local scrollbars = (dgsElementData[child] or {}).scrollbars
+			if scrollbars then
+				dgsSetParent(scrollbars[1],parent)
+				dgsSetParent(scrollbars[2],parent)
+				configScrollPane(child)
+			end
+		end
 		return true
 	end
 	return false
