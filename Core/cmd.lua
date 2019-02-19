@@ -171,13 +171,13 @@ end
 
 function dgsCmdGetEdit(cmd)
 	if dgsGetType(cmd) == "dgs-dxcmd" then
-		return dgsGetData(cmd,"cmdEdit")
+		return dgsElementData[cmd].cmdEdit
 	end
 	return false
 end
 
 function configCMD(source)
-	local dxedit = dgsGetData(source,"cmdEdit")
+	local dxedit = dgsElementData[source].cmdEdit
 	local scalex,scaley = unpack(dgsGetData(source,"textSize"))
 	local sx,sy = dgsGetSize(source,false)
 	dgsSetPosition(dxedit,0,sy-scaley*20,false)

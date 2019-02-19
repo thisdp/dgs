@@ -346,6 +346,15 @@ function dgsImportOOPClass()
 					local eventName = dgsOOPHead.transfromEventName(eventName)
 					removeEventHandler(eventName,self.dgsElement,theFnc)
 				end,
+				attach = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsAttachElements",self.dgsElement,...)
+				end,
+				detach = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsDetachElements",self.dgsElement,...)
+				end,
+				isAttached = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsElementIsAttached",self.dgsElement,...)
+				end,
 			}
 			for k,v in pairs(dgsOOPHead.HaveParent) do
 				newTable[k]=v

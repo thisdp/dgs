@@ -211,6 +211,15 @@ function dgsSetData(element,key,value,nocheck)
 							end
 						end
 					end
+				elseif key == "ignoreParentTitle" then
+					configPosSize(element,false,true)
+				elseif key == "ignoreTitle" then
+					local children = dgsGetChildren(element)
+					for i=1,#children do
+						if not dgsElementData[children[i]].ignoreParentTitle then
+							configPosSize(children[i],false,true)
+						end
+					end
 				end
 			end
 		end

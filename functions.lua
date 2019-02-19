@@ -124,6 +124,41 @@ function dgsSetSize(dgsElement,x,y,bool)
 	return true
 end
 
+function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize,alwaysOn)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dxgui got "..dgsGetType(attachTo))
+	assert(not dgsGetParent(dgsElement),"Bad argument @dgsAttachElements at argument 1, source dgs element shouldn't have a parent")
+	dgsDetachElements(dgsElement)
+	if not width or height then
+		local size = dgsElementData[dgsElement].absSize
+		width,height = size[1],size[2]
+		relativeSize = false
+	end
+	local attachedTable = {attachTo,offsetX or 0,offsetY or 0,relativePos,width,height,relativeSize,alwaysOn}
+	local attachedBy = dgsElementData[attachTo].attachedBy
+	table.insert(attachedBy,dgsElement)
+	dgsSetData(attachTo,"attachedBy",attachedBy)
+	return dgsSetData(dgsElement,"attachedTo",attachedTable)
+end
+
+function dgsElementIsAttached(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsElementIsAttached at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	return dgsElementData[dgsElement].attachedTo and true or false
+end
+
+function dgsDetachElements(dgsElement)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsDetachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	local attachedTable = dgsElementData[dgsElement].attachedTo or {}
+	if isElement(attachedTable[1]) then
+		local attachedBy = dgsElementData[attachedTable[1]].attachedBy
+		local id = table.find(attachedBy,dgsElement)
+		if id then
+			table.remove(attachedBy,dgsElement)
+		end
+	end
+	return dgsSetData(dgsElement,"attachedTo",false)
+end
+
 function dgsApplyVisible(parent,visible)
 	for k,v in pairs(ChildrenTable[parent] or {}) do
 		if dgsElementType[v] == "dgs-dxedit" then
@@ -162,16 +197,67 @@ function dgsGetSide(dxgui,topleft)
 	return dgsElementData[dxgui][topleft and "tob" or "lor"]
 end
 
-function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
-	local eleData = dgsElementData[gui]
+function configPosSize(dgsElement,pos,size)
+	local eleData = dgsElementData[dgsElement]
+	local relt = eleData.relative
+	local x,y,rltPos,w,h,rltSize
+	if pos then
+		if relt[1] then
+			x,y = eleData.rltPos[1],eleData.rltPos[2]
+			rltPos = relt[1]
+		else
+			x,y = eleData.absPos[1],eleData.absPos[2]
+			rltPos = relt[1]
+		end
+	end
+	if size then
+		if relt[2] then
+			w,h = eleData.rltSize[1],eleData.rltSize[2]
+			rltSize = relt[1]
+		else
+			w,h = eleData.absSize[1],eleData.absSize[2]
+			rltSize = relt[2]
+		end
+	end
+	calculateGuiPositionSize(dgsElement,x,y,rltPos,w,h,rltSize)
+end
+
+function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notrigger)
+	local eleData = dgsElementData[dgsElement]
 	eleData = eleData or {}
-	local parent = dgsGetParent(gui)
+	local parent = dgsGetParent(dgsElement)
 	local px,py = 0,0
 	local psx,psy = sW,sH
 	local relt = eleData.relative or {relativep,relatives}
 	local oldRelativePos,oldRelativeSize = relt[1],relt[2]
+	local haveParent = isElement(parent)
+	if haveParent then
+		local parentData = dgsElementData[parent]
+		local size = parentData.absSize or parentData.resolution
+		psx,psy = size[1],size[2]
+	end
+	if x and y then
+		local absPos = eleData.absPos or {}
+		local oldPosAbsx,oldPosAbsy = absPos[1],absPos[2]
+		local rltPos = eleData.rltPos or {}
+		local oldPosRltx,oldPosRlty = rltPos[1],rltPos[2]
+		x,y = relativep and x*psx or x,relativep and y*psy or y
+		local abx,aby,relatx,relaty = x,y,x/psx,y/psy
+		if psx == 0 then
+			relatx = 0
+		end
+		if psy == 0 then
+			relaty = 0
+		end
+		dgsSetData(dgsElement,"absPos",{abx,aby})
+		dgsSetData(dgsElement,"rltPos",{relatx,relaty})
+		dgsSetData(dgsElement,"relative",{relativep,oldRelativeSize})
+		if not notrigger then
+			triggerEvent("onDgsPositionChange",dgsElement,oldPosAbsx,oldPosAbsy,oldPosRltx,oldPosRlty)
+		end
+	end
 	local titleOffset = 0
-	if isElement(parent) then
+	if haveParent then
 		local parentData = dgsElementData[parent]
 		if dgsGetType(parent) == "dgs-dxtab" then
 			local tabpanel = parentData.parent
@@ -189,26 +275,6 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 			titleOffset = parentData.titleHeight or 0
 		end
 	end
-	if x and y then
-		local absPos = eleData.absPos or {}
-		local oldPosAbsx,oldPosAbsy = absPos[1],absPos[2]
-		local rltPos = eleData.rltPos or {}
-		local oldPosRltx,oldPosRlty = rltPos[1],rltPos[2]
-		x,y = relativep and x*psx or x,relativep and y*(psy-titleOffset) or y
-		local abx,aby,relatx,relaty = x,y+titleOffset,x/psx,y/(psy-titleOffset)
-		if psx == 0 then
-			relatx = 0
-		end
-		if psy-titleOffset == 0 then
-			relaty = 0
-		end
-		dgsSetData(gui,"absPos",{abx,aby})
-		dgsSetData(gui,"rltPos",{relatx,relaty})
-		dgsSetData(gui,"relative",{relativep,oldRelativeSize})
-		if not notrigger then
-			triggerEvent("onDgsPositionChange",gui,oldPosAbsx,oldPosAbsy,oldPosRltx,oldPosRlty)
-		end
-	end
 	if sx and sy then
 		local absSize = eleData.absSize or {}
 		local oldSizeAbsx,oldSizeAbsy = absSize[1],absSize[2]
@@ -222,11 +288,11 @@ function calculateGuiPositionSize(gui,x,y,relativep,sx,sy,relatives,notrigger)
 		if psy-titleOffset == 0 then
 			relatsy = 0
 		end
-		dgsSetData(gui,"absSize",{absx,absy})
-		dgsSetData(gui,"rltSize",{relatsx,relatsy})
-		dgsSetData(gui,"relative",{oldRelativePos,relatives})
+		dgsSetData(dgsElement,"absSize",{absx,absy})
+		dgsSetData(dgsElement,"rltSize",{relatsx,relatsy})
+		dgsSetData(dgsElement,"relative",{oldRelativePos,relatives})
 		if not notrigger then
-			triggerEvent("onDgsSizeChange",gui,oldSizeAbsx,oldSizeAbsy,oldSizeRltx,oldSizeRlty)
+			triggerEvent("onDgsSizeChange",dgsElement,oldSizeAbsx,oldSizeAbsy,oldSizeRltx,oldSizeRlty)
 		end
 	end
 	return true
@@ -253,7 +319,7 @@ end
 
 function dgsGetEnabled(dxgui)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	return dgsGetData(dxgui,"enabled")
+	return dgsElementData[dxgui].enabled
 end
 
 function dgsCreateFont(path,size,bold,quality)
@@ -276,9 +342,7 @@ end
 
 function dgsGetFont(dxgui)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	if dgsIsDxElement(dxgui) then
-		return dgsGetData(dxgui,"font")	
-	end
+	return dgsElementData[dxgui].font
 end
 
 function dgsSetText(dxgui,text)
@@ -447,7 +511,7 @@ addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"tob","top")
 	dgsSetData(source,"visible",true)
 	dgsSetData(source,"enabled",true)
-	dgsSetData(source,"ignoreParentTitle",false)
+	dgsSetData(source,"ignoreParentTitle",false,true)
 	dgsSetData(source,"textRelative",false)
 	dgsSetData(source,"alpha",1)
 	dgsSetData(source,"hitoutofparent",false)
@@ -458,6 +522,8 @@ addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"postGUI",dgsRenderSetting.postGUI == nil and true or false)
 	dgsSetData(source,"outline",false) --{side,width,color}
 	dgsSetData(source,"changeOrder",true) --Change the order when "bring to front" or clicked
+	dgsSetData(source,"attachedTo",false) --Attached To
+	dgsSetData(source,"attachedBy",{}) --Attached By
 end)
 
 function dgsClear(theType,res)

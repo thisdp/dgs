@@ -163,17 +163,17 @@ function dgsCoreRender()
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
 		end
 		for i=1,centerTableSize do
 			local v = CenterFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
 		end
 		for i=1,topTableSize do
 			local v = TopFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
 		end
 		if intfaceClickElementl then
 			MouseX,MouseY = intfaceMx,intfaceMy
@@ -390,7 +390,7 @@ function interfaceRender()
 end
 addEventHandler("onClientPreRender",root,interfaceRender)
 
-function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkElement)
+function renderGUI(v,mx,my,enabled,rndtgtm,position,size,OffsetX,OffsetY,galpha,visible,checkElement)
 	local isElementInside = false
 	if debugMode then
 		DGSShow = DGSShow+1
@@ -406,18 +406,36 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				return
 			end
 		end
-		local parent,children,galpha = FatherTable[v] or false,ChildrenTable[v] or {},eleData.alpha*galpha
+		local parent,children,galpha = FatherTable[v] or false,ChildrenTable[v] or {},(eleData.alpha or 1)*galpha
 		dxSetRenderTarget(rndtgt)
-		local x,y
-		if eleData.absPos then
-			x,y = dgsGetPosition(v,false,true)
+		local p_offsetX,p_offsetY = positionOffsetProcessing(v,parent)
+		local absPos = eleData.absPos
+		
+		--Side Processing
+		local PosX,PosY = absPos[1],absPos[2]
+		if dgsElementData[v].lor == "right" then
+			local parentData = dgsElementData[parent]
+			local pSize = parentData.absSize
+			PosX = pSize[1]-PosX
 		end
-		local siz = eleData.absSize or {}
-		local w,h = siz[1],siz[2]
-		local isRenderTarget = (not rndtgt) and true or false
+		if dgsElementData[v].tob == "bottom" then
+			local parentData = dgsElementData[parent]
+			local pSize = parentData.absSize
+			PosY = pSize[2]-PosY
+		end
+		
+		position = {position[1]+PosX+p_offsetX,position[2]+PosY+p_offsetY}
+		local x,y = position[1]+OffsetX,position[2]+OffsetY
+		local cx,cy = x,y
+		local noRenderTarget = (not rndtgt) and true or false
+		if not noRenderTarget then
+			cx,cy = absPos[1]+OffsetX,absPos[2]+OffsetY
+		end
+		local w,h = eleData.absSize[1],eleData.absSize[2]
+		
 		self = v
 		local interrupted = false
-		local rendSet = not debugMode and isRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
+		local rendSet = not debugMode and noRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
 		if dxType == "dgs-dxwindow" then
 			if x and y then
 				if eleData.PixelInt then
@@ -509,7 +527,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxbutton" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -631,7 +649,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxeda" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -705,7 +723,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxdetectarea" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -784,7 +802,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dximage" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -854,7 +872,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxradiobutton" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -991,7 +1009,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxcheckbox" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1129,7 +1147,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxedit" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1255,7 +1273,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
 									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
 									local selEndY = (h-sideheight*2)*caretHeight
-									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.caretThick,isRenderTarget)
+									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.caretThick,noRenderTarget)
 								end
 							elseif caretStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
@@ -1265,7 +1283,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 									local offset = eleData.caretOffset
 									local selStartY = y+h-sideheight*2
-									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,eleData.caretColor,eleData.caretThick,isRenderTarget)
+									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,eleData.caretColor,eleData.caretThick,noRenderTarget)
 								end
 							end
 						end
@@ -1312,7 +1330,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxmemo" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1450,14 +1468,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 								if caretStyle == 0 then
 									local selStartY = y+lineStart+1+fontHeight*(1-caretHeight)
 									local selEndY = y+lineStart+fontHeight*caretHeight-2
-									dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.caretThick,isRenderTarget)
+									dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.caretThick,noRenderTarget)
 								elseif caretStyle == 1 then
 									local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 									if cursorWidth == 0 then
 										cursorWidth = txtSizX*8
 									end
 									local offset = eleData.caretOffset
-									dxDrawLine(x+width+showPos+1,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.caretThick,isRenderTarget)
+									dxDrawLine(x+width+showPos+1,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.caretThick,noRenderTarget)
 								end
 							end
 						end
@@ -1504,7 +1522,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxscrollpane" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configScrollPane(v)
 			end
@@ -1512,7 +1530,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local postgui = isRenderTarget
+				local postgui = noRenderTarget
 				if rndtgt then
 					if rndtgt == eleData.renderTarget_parent then
 						postgui = true
@@ -1586,7 +1604,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 			end
 		elseif dxType == "dgs-dxscrollbar" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1742,7 +1760,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxlabel" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1828,7 +1846,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxgridlist" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configGridList(v)
 			end
@@ -2285,7 +2303,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxprogressbar" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2366,7 +2384,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType =="dgs-dxcombobox" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.configNextFrame then
 					configComboBox(v)
@@ -2515,7 +2533,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 			local combo = eleData.myCombo
 			local x,y = dgsGetPosition(v,false,true)
 			local w,h = eleData.absSize[1],eleData.absSize[2]
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,v,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,v,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2638,7 +2656,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxtabpanel" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2774,7 +2792,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxbrowser" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2830,7 +2848,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxcmd" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2956,7 +2974,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				visible = false
 			end
 		elseif dxType == "dgs-dxarrowlist" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configArrowList(v)
 				dgsSetData(v,"configNextFrame",false)
@@ -3202,7 +3220,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 				end
 			end
 		elseif dxType == "dgs-dxswitchbutton" then
-			local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
+			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -3370,7 +3388,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkEl
 		if not interrupted then
 			for i=1,#children do
 				local child = children[i]
-				isElementInside = isElementInside or renderGUI(child,mx,my,enabled,rndtgt,OffsetX,OffsetY,galpha,visible,checkElement)
+				isElementInside = isElementInside or renderGUI(child,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,visible,checkElement)
 			end
 		end
 	end
@@ -3388,7 +3406,21 @@ function removeColorCodeFromString(str)
 	until(false)
 end
 
-ccax = 0
+function positionOffsetProcessing(gui,parent)
+	if dgsElementType[gui] == "dgs-dxtab" then
+		local eleData = dgsElementData[parent]
+		local h = eleData.absSize[2]
+		local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+		return 0,tabHeight
+	elseif dgsElementType[parent] == "dgs-dxwindow" then
+		if not dgsElementData[gui].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
+			return 0,dgsElementData[parent].titleHeight or 0
+		end
+	end
+	return 0,0
+end
+
+--[[
 function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)		--To be optimized (can be done in the loop)
 	local ax,ay = getParentLocation(gui,true,dgsElementData[gui].absPos[1],dgsElementData[gui].absPos[2])
 	local cx,cy = getParentLocation(gui,false,dgsElementData[gui].absPos[1],dgsElementData[gui].absPos[2])
@@ -3399,7 +3431,6 @@ function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)		--To 
 		local siz = dgsElementData[gui].absSize
 		local psx,psy,sx,sy = psiz[1],psiz[2],siz[1],siz[2]
 		if x > psx-offsetx or y > psy-offsety or x+sx < -offsetx or y+sy < -offsety then
-			ccax = ccax+1
 			return false,false
 		end
 	end
@@ -3429,6 +3460,7 @@ function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)		--To 
 	end
 	return x+offsetx,y+offsety,(rndtgt and cx or x)+offsetx,(rndtgt and cy or y)+offsety
 end
+]]
 
 addEventHandler("onClientKey",root,function(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
@@ -4559,13 +4591,24 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 		local child = children[k]
 		local relt = dgsElementData[child].relative
 		if relt then
-			local relativePos,relativeSize = relt[1],relt[2]
-			local x,y
+			local relativePos = relt[1]
+			local x,y = dgsElementData[child].absPos[1],dgsElementData[child].absPos[2]
 			if relativePos then
 				x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
 			end
 			calculateGuiPositionSize(child,x,y,relativePos)
 		end
+	end
+	local attachedBy = dgsElementData[source].attachedBy or {}
+	local absx,absy = dgsGetPosition(source,false,true)
+	local absw,absh = dgsElementData[source].absSize
+	for i=1,#attachedBy do
+		local attachSource = attachedBy[i]
+		local attachedTable = dgsElementData[attachSource].attachedTo
+		local posRlt = attachedTable[4]
+		local offsetX,offsetY = attachedTable[2],attachedTable[3]
+		offsetX,offsetY = posRlt and absw*offsetX or offsetX, posRlt and absh*offsetY or offsetY
+		calculateGuiPositionSize(attachSource,absx+offsetX,absy+offsetY,false)
 	end
 end)
 
@@ -4604,5 +4647,15 @@ addEventHandler("onDgsSizeChange",root,function()
 		if dgsGetType(parent) == "dgs-dxscrollpane" then
 			sortScrollPane(source,parent)
 		end
+	end
+	local attachedBy = dgsElementData[source].attachedBy or {}
+	local absw,absh = dgsElementData[source].absSize
+	for i=1,#attachedBy do
+		local attachSource = attachedBy[i]
+		local attachedTable = dgsElementData[attachSource].attachedTo
+		local posRlt = attachedTable[7]
+		local offsetW,offsetH = attachedTable[5],attachedTable[6]
+		offsetW,offsetH = posRlt and absw*offsetW or offsetW, posRlt and absh*offsetH or offsetH
+		calculateGuiPositionSize(attachSource,_,_,_,offsetW,offsetH,false)
 	end
 end)

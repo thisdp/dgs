@@ -90,6 +90,7 @@ function dgsGetDxGUINoParent(alwaysBottom)
 end
 
 function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
+	assert(not dgsElementData[child] or not dgsElementData[child].attachTo, "Bad argument @dgsSetParent at argument 1, attached dgs element shouldn't have a parent")
 	if isElement(child) then
 		local _parent = FatherTable[child]
 		local parentTable = isElement(_parent) and ChildrenTable[_parent] or CenterFatherTable
