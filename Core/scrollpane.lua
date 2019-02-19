@@ -254,10 +254,10 @@ function dgsScrollPaneSetScrollPosition(scrollpane,vertical,horizontal)
 	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsScrollPaneSetScrollPosition at at argument 3,  expect nil, none or number∈[0,100] got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
 	local scb = dgsElementData[scrollpane].scrollbars
 	local state1,state2 = true,true
-	if dgsElementData[scb[1]].visible then
+	if dgsElementData[scb[1]].visible and vertical then
 		state1 = dgsScrollBarSetScrollPosition(scb[1],vertical)
 	end
-	if dgsElementData[scb[2]].visible then
+	if dgsElementData[scb[2]].visible and horizontal then
 		state2 = dgsScrollBarSetScrollPosition(scb[2],horizontal)
 	end
 	return state1 and state2

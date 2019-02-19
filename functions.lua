@@ -131,7 +131,7 @@ function dgsSetSize(dgsElement,x,y,bool)
 	return true
 end
 
-function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize,alwaysOnTOP)
+function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dxgui got "..dgsGetType(attachTo))
 	assert(not dgsGetParent(dgsElement),"Bad argument @dgsAttachElements at argument 1, source dgs element shouldn't have a parent")
@@ -142,7 +142,7 @@ function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width
 		relativeSize = false
 	end
 	offsetX,offsetY = offsetX or 0,offsetY or 0
-	local attachedTable = {attachTo,offsetX,offsetY,relativePos,width,height,relativeSize,alwaysOnTOP}
+	local attachedTable = {attachTo,offsetX,offsetY,relativePos,width,height,relativeSize}
 	local attachedBy = dgsElementData[attachTo].attachedBy
 	table.insert(attachedBy,dgsElement)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
@@ -175,7 +175,7 @@ function dgsDetachElements(dgsElement)
 end
 
 function dgsApplyVisible(parent,visible)
-	for k,v in pairs(ChildrenTable[parent] or {}) do
+	for k,v in ipairs(ChildrenTable[parent] or {}) do
 		if dgsElementType[v] == "dgs-dxedit" then
 			local edit = dgsElementData[v].edit
 			guiSetVisible(edit,visible)
@@ -241,7 +241,6 @@ function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notri
 	local eleData = dgsElementData[dgsElement]
 	eleData = eleData or {}
 	local parent = dgsGetParent(dgsElement)
-	local px,py = 0,0
 	local psx,psy = sW,sH
 	local relt = eleData.relative or {relativep,relatives}
 	local oldRelativePos,oldRelativeSize = relt[1],relt[2]

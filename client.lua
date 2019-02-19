@@ -1550,8 +1550,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 				local relSizX,relSizY = w-xthick,h-ythick
 				local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
 				maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-				OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position*0.01 or 0
-				OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position*0.01 or 0
+				--OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position*0.01 or 0
+				--OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position*0.01 or 0
+				OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
+				OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
