@@ -428,7 +428,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 		local x,y = position[1]+OffsetX,position[2]+OffsetY
 		local cx,cy = x,y
 		local noRenderTarget = (not rndtgt) and true or false
-		if dgsElementData[parent].renderTarget_parent == rndtgt then
+		if (dgsElementData[parent] or {}).renderTarget_parent == rndtgt and not noRenderTarget then
 			position = {PosX,PosY}
 			x,y = OffsetX+PosX,OffsetY+PosY
 			cx,cy = x,y
