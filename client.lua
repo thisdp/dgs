@@ -431,7 +431,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 		if (dgsElementData[parent] or {}).renderTarget_parent == rndtgt and not noRenderTarget then
 			position = {PosX,PosY}
 			x,y = OffsetX+PosX,OffsetY+PosY
-			cx,cy = x,y
+			cx,cy = cx+x,cy+y
 		end
 		local w,h = eleData.absSize[1],eleData.absSize[2]
 		
