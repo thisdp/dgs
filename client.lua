@@ -143,7 +143,7 @@ function dgsCoreRender()
 			local eleData = dgsData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
-				if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible,MouseData.clickl) then
+				if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible,MouseData.clickl) then
 					intfaceClickElementl = true
 				end
 			end
@@ -157,23 +157,23 @@ function dgsCoreRender()
 			local v = dx3DTextTable[i]
 			local eleData = dgsData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
-				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
+				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
 			end
 		end
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		for i=1,centerTableSize do
 			local v = CenterFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		for i=1,topTableSize do
 			local v = TopFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0},{0,0},0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		if intfaceClickElementl then
 			MouseX,MouseY = intfaceMx,intfaceMy
@@ -390,7 +390,7 @@ function interfaceRender()
 end
 addEventHandler("onClientPreRender",root,interfaceRender)
 
-function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,visible,checkElement)
+function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
 	local isElementInside = false
 	if debugMode then
 		DGSShow = DGSShow+1
@@ -424,14 +424,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 			PosY = pSize[2]-PosY
 		end
 		
-		position = {position[1]+PosX+p_offsetX,position[2]+PosY+p_offsetY}
-		local x,y = position[1]+OffsetX,position[2]+OffsetY
-		local cx,cy = x,y
+		local x,y = PosX+p_offsetX+OffsetX,PosY+p_offsetY+OffsetY
+		position = {position[1]+x,position[2]+y,position[3]+x,position[4]+y}
 		local noRenderTarget = (not rndtgt) and true or false
 		if (dgsElementData[parent] or {}).renderTarget_parent == rndtgt and not noRenderTarget then
-			position = {PosX,PosY}
-			x,y = OffsetX+PosX,OffsetY+PosY
+			position[1],position[2] = OffsetX+PosX,OffsetY+PosY
 		end
+		local x,y,cx,cy = position[1],position[2],position[3],position[4]
 		local w,h = eleData.absSize[1],eleData.absSize[2]
 		
 		self = v
@@ -2757,7 +2756,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 							dxDrawRectangle(x,y+height,w,h-height,colors,rendSet)
 						end
 						for cid,child in ipairs(dgsGetChildren(tabs[selected])) do
-							renderGUI(child,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,visible)
+							renderGUI(child,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
@@ -3393,7 +3392,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,v
 		if not interrupted then
 			for i=1,#children do
 				local child = children[i]
-				isElementInside = isElementInside or renderGUI(child,mx,my,enabled,rndtgt,position,size,OffsetX,OffsetY,galpha,visible,checkElement)
+				isElementInside = isElementInside or renderGUI(child,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
 			end
 		end
 	end
