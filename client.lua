@@ -426,14 +426,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			PosY = tabHeight
 			w,h = pSize[1],pSize[2]-tabHeight
 		end
+		if dxType ~= "dgs-dxtab" then
+			PosX,PosY = PosX+absPos[1],PosY+absPos[2]
+			w,h = absSize[1],absSize[2]
+		end
 		if dgsElementData[v].lor == "right" then
 			local parentData = dgsElementData[parent]
 			local pSize = parentData.absSize
 			PosX = pSize[1]-PosX
-		end
-		if dxType ~= "dgs-dxtab" then
-			PosX,PosY = PosX+absPos[1],PosY+absPos[2]
-			w,h = absSize[1],absSize[2]
 		end
 		if dgsElementData[v].tob == "bottom" then
 			local parentData = dgsElementData[parent]
@@ -445,7 +445,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 		position = {position[1]+x,position[2]+y,position[3]+x,position[4]+y}
 		local noRenderTarget = (not rndtgt) and true or false
 		if (dgsElementData[parent] or {}).renderTarget_parent == rndtgt and not noRenderTarget then
-			position[1],position[2] = OffsetX+PosX,OffsetY+PosY
+			position[1],position[2] = x,y
 		end
 		local x,y,cx,cy = position[1],position[2],position[3],position[4]
 		
