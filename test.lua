@@ -52,7 +52,7 @@ function createTest2()
 	for i=1,10 do
 		dgsCreateTab(i.."Panel",tabp)
 	end
-	gdlt2 = dgsCreateButton(10,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
+	gdlt2 = dgsCreateButton(0,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
 	dgsSetProperty(gdlt2,"shadow",{1,1,tocolor(0,0,0,255),true})
 end
 

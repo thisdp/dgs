@@ -407,16 +407,33 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			end
 		end
 		local parent,children,galpha = FatherTable[v] or false,ChildrenTable[v] or {},(eleData.alpha or 1)*galpha
+		local dxType_p = dgsGetType(parent)
 		dxSetRenderTarget(rndtgt)
-		local p_offsetX,p_offsetY = positionOffsetProcessing(v,parent)
 		local absPos = eleData.absPos
+		local absSize = eleData.absSize
 		
 		--Side Processing
-		local PosX,PosY = absPos[1],absPos[2]
+		local PosX,PosY,w,h = 0,0,0,0
+		if dxType_p == "dgs-dxwindow" then
+			local pEleData = dgsElementData[parent]
+			if not pEleData.ignoreTitle and not eleData.ignoreParentTitle then
+				PosY = PosY+(eleData.titleHeight or 0)
+			end
+		elseif dxType_p == "dgs-dxtab" then
+			local pEleData = dgsElementData[FatherTable[parent]]
+			local pSize = pEleData.absSize
+			local tabHeight = pEleData.tabHeight[2] and pEleData.tabHeight[1]*pSize[2] or pEleData.tabHeight[1]
+			PosY = tabHeight
+			w,h = pSize[1],pSize[2]-tabHeight
+		end
 		if dgsElementData[v].lor == "right" then
 			local parentData = dgsElementData[parent]
 			local pSize = parentData.absSize
 			PosX = pSize[1]-PosX
+		end
+		if dxType ~= "dgs-dxtab" then
+			PosX,PosY = PosX+absPos[1],PosY+absPos[2]
+			w,h = absSize[1],absSize[2]
 		end
 		if dgsElementData[v].tob == "bottom" then
 			local parentData = dgsElementData[parent]
@@ -424,14 +441,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			PosY = pSize[2]-PosY
 		end
 		
-		local x,y = PosX+p_offsetX+OffsetX,PosY+p_offsetY+OffsetY
+		local x,y = PosX+OffsetX,PosY+OffsetY
 		position = {position[1]+x,position[2]+y,position[3]+x,position[4]+y}
 		local noRenderTarget = (not rndtgt) and true or false
 		if (dgsElementData[parent] or {}).renderTarget_parent == rndtgt and not noRenderTarget then
 			position[1],position[2] = OffsetX+PosX,OffsetY+PosY
 		end
 		local x,y,cx,cy = position[1],position[2],position[3],position[4]
-		local w,h = eleData.absSize[1],eleData.absSize[2]
 		
 		self = v
 		local interrupted = false
@@ -2698,7 +2714,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						if eleData.PixelInt then
 							x,y,w,height = x-x%1,y-y%1,w-w%1,height-height%1
 						end
-						for d,t in ipairs(tabs) do
+						for d=1,#tabs do
+							local t = tabs[d]
 							if dgsElementData[t].visible then
 								local width = dgsElementData[t].width+tabSideSize*2
 								local _width = 0
@@ -3408,21 +3425,6 @@ function removeColorCodeFromString(str)
 			return temp
 		end
 	until(false)
-end
-
-function positionOffsetProcessing(gui,parent)
-	local parent = parent or dgsGetParent(gui)
-	if dgsElementType[gui] == "dgs-dxtab" then
-		local eleData = dgsElementData[parent]
-		local h = eleData.absSize[2]
-		local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
-		return 0,tabHeight
-	elseif dgsElementType[parent] == "dgs-dxwindow" then
-		if not dgsElementData[gui].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
-			return 0,dgsElementData[parent].titleHeight or 0
-		end
-	end
-	return 0,0
 end
 
 --[[

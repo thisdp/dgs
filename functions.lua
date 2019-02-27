@@ -245,10 +245,24 @@ function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notri
 	local relt = eleData.relative or {relativep,relatives}
 	local oldRelativePos,oldRelativeSize = relt[1],relt[2]
 	local haveParent = isElement(parent)
+	local titleOffset = 0
 	if haveParent then
 		local parentData = dgsElementData[parent]
-		local size = parentData.absSize or parentData.resolution
-		psx,psy = size[1],size[2]
+		if dgsGetType(parent) == "dgs-dxtab" then
+			local tabpanel = parentData.parent
+			local size = dgsElementData[tabpanel].absSize
+			psx,psy = size[1],size[2]
+			local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psy or dgsElementData[tabpanel].tabHeight[1]
+			psy = psy-height
+		else
+			local size = parentData.absSize or parentData.resolution
+			psx,psy = size[1],size[2]
+		end
+		if eleData.ignoreParentTitle or parentData.ignoreTitle then
+			titleOffset = 0
+		else
+			titleOffset = parentData.titleHeight or 0
+		end
 	end
 	if x and y then
 		local absPos = eleData.absPos or {}
@@ -268,25 +282,6 @@ function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notri
 		dgsSetData(dgsElement,"relative",{relativep,oldRelativeSize})
 		if not notrigger then
 			triggerEvent("onDgsPositionChange",dgsElement,oldPosAbsx,oldPosAbsy,oldPosRltx,oldPosRlty)
-		end
-	end
-	local titleOffset = 0
-	if haveParent then
-		local parentData = dgsElementData[parent]
-		if dgsGetType(parent) == "dgs-dxtab" then
-			local tabpanel = parentData.parent
-			local size = dgsElementData[tabpanel].absSize
-			psx,psy = size[1],size[2]
-			local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psy or dgsElementData[tabpanel].tabHeight[1]
-			psy = psy-height
-		else
-			local size = parentData.absSize or parentData.resolution
-			psx,psy = size[1],size[2]
-		end
-		if eleData.ignoreParentTitle or parentData.ignoreTitle then
-			titleOffset = 0
-		else
-			titleOffset = parentData.titleHeight or 0
 		end
 	end
 	if sx and sy then
