@@ -57,7 +57,6 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 			dgsSetData(window,"closeButton",buttonOff)
 			dgsSetSide(buttonOff,"right",false)
 			dgsSetData(buttonOff,"ignoreParentTitle",true)
-			dgsSetPosition(buttonOff,30,0,false)
 			return true
 		end
 	else

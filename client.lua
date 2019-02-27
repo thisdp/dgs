@@ -417,13 +417,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 		if dxType_p == "dgs-dxwindow" then
 			local pEleData = dgsElementData[parent]
 			if not pEleData.ignoreTitle and not eleData.ignoreParentTitle then
-				PosY = PosY+(eleData.titleHeight or 0)
+				PosY = PosY+(pEleData.titleHeight or 0)
 			end
 		elseif dxType_p == "dgs-dxtab" then
 			local pEleData = dgsElementData[FatherTable[parent]]
 			local pSize = pEleData.absSize
 			local tabHeight = pEleData.tabHeight[2] and pEleData.tabHeight[1]*pSize[2] or pEleData.tabHeight[1]
-			PosY = tabHeight
+			PosY = PosY+tabHeight
 			w,h = pSize[1],pSize[2]-tabHeight
 		end
 		if dxType ~= "dgs-dxtab" then
