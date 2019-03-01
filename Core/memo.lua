@@ -646,7 +646,7 @@ function configMemo(source)
 	if isElement(rnd) then
 		destroyElement(rnd)
 	end
-	local renderTarget = dxCreateRenderTarget(px-scbTakes1,py-scbTakes2,true)
+	local renderTarget = dxCreateRenderTarget(px,py,true)
 	if not isElement(renderTarget) and px*py ~= 0 then
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
 		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
