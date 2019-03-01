@@ -76,6 +76,11 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	return memo
 end
 
+function dgsMemoGetLineCount(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetLineCount at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	return #dgsElementData[memo].textLength
+end
+
 function dgsMemoGetScrollBar(memo)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetScrollBar at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsElementData[memo].scrollbars
