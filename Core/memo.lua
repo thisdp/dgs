@@ -48,6 +48,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"redoHistory",{})
 	dgsSetData(memo,"typingSound",styleSettings.memo.typingSound)
 	dgsSetData(memo,"selectColor",styleSettings.memo.selectColor)
+	dgsSetData(memo,"configNextFrame",false)
 	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
 	dgsSetData(memo,"memo",gmemo)
 	dgsSetData(gmemo,"dxmemo",memo)
@@ -64,14 +65,13 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	local renderTarget = dxCreateRenderTarget(abx-4,aby,true)
-	if not isElement(renderTarget) then
+	if not isElement(renderTarget) and (abx-4)*aby ~= 0 then
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
 		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*(abx-4)*aby).."MB/Free:"..videoMemory.."MB]",2)
 	end
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
-	dgsMemoSetCaretPosition(memo,utf8Len(tostring(text)))
 	triggerEvent("onDgsCreate",memo)
 	return memo
 end
@@ -380,10 +380,8 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 		local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
 		if dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] then
 			configMemo(memo)
-		else
-			if dgsElementData[scrollbars[1]].visible then
-				configMemo(memo)
-			end
+		elseif dgsElementData[scrollbars[1]].visible then
+			configMemo(memo)
 		end
 		if #textTable > canHold then
 			configMemo(memo)
@@ -476,17 +474,13 @@ function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
 	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
 	if dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] then
 		configMemo(memo)
-	else
-		if dgsElementData[scrollbars[1]].visible then
-			configMemo(memo)
-		end
+	elseif dgsElementData[scrollbars[1]].visible then
+		configMemo(memo)
 	end
 	if #textTable > canHold then
 		configMemo(memo)
-	else
-		if dgsElementData[scrollbars[2]].visible then
-			configMemo(memo)
-		end
+	elseif dgsElementData[scrollbars[2]].visible then
+		configMemo(memo)
 	end
 	if not noAffectCaret then
 		local cpos = dgsElementData[memo].caretPos
@@ -495,6 +489,9 @@ function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
 		elseif cpos[2] == fromline and cpos[1] >= fromindex then
 			dgsMemoSetCaretPosition(memo,fromindex,fromline)
 		end
+	end
+	if #dgsElementData[memo].text > canHold and dgsElementData[memo].showLine-1+canHold > #dgsElementData[memo].text then
+		dgsElementData[memo].showLine = 1-canHold+#dgsElementData[memo].text
 	end
 	triggerEvent("onDgsTextChange",memo)
 end
@@ -597,7 +594,9 @@ end
 
 function seekMaxLengthLine(memo)
 	local line,lineLen = -1,-1
-	for k,v in ipairs(dgsElementData[memo].textLength) do
+	local textLength = dgsElementData[memo].textLength
+	for i=1,#textLength do
+		local v = textLength[i]
 		if v > lineLen then
 			lineLen = v
 			line = k
@@ -642,18 +641,18 @@ function configMemo(source)
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	
-	local px,py = size[1]-size[1]%1, size[2]-size[2]%1
+	local px,py = size[1]-size[1]%1-scbTakes1, size[2]-size[2]%1-scbTakes2
 	local rnd = dgsElementData[source].renderTarget
 	if isElement(rnd) then
 		destroyElement(rnd)
 	end
 	local renderTarget = dxCreateRenderTarget(px-scbTakes1,py-scbTakes2,true)
-	if not isElement(renderTarget) then
+	if not isElement(renderTarget) and px*py ~= 0 then
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*(px-scbTakes1)*(py-scbTakes2)).."MB/Free:"..videoMemory.."MB]",2)
+		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
 	end
-
 	dgsSetData(source,"renderTarget",renderTarget)
+	dgsSetData(source,"configNextFrame",false)
 end
 
 addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
@@ -669,11 +668,11 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 		if source == scrollbars[1] then
 			local fontHeight = dxGetFontHeight(dgsElementData[parent].textSize[2],font)
 			local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
-			local temp = mathFloor((#text-canHold)*new/100)+1
+			local temp = mathFloor((#text-canHold)*new*0.01)+1
 			dgsSetData(parent,"showLine",temp)
 		elseif source == scrollbars[2] then
 			local len = dgsElementData[parent].rightLength[1]
-			local canHold = mathFloor(len-size[1]+scbTakes1+2)/100
+			local canHold = mathFloor(len-size[1]+scbTakes1+2)*0.01
 			local temp = -new*canHold
 			dgsSetData(parent,"showPos",temp)
 		end
@@ -687,16 +686,17 @@ function syncScrollBars(memo,which)
 	local font = dgsElementData[memo].font
 	local textSize = dgsElementData[memo].textSize
 	local text = dgsElementData[memo].text
+	local line = #text
 	local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 	if which == 1 or not which then
 		local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 		local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
-		local new = (#text-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(#text-canHold)
+		local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(line-canHold)
 		dgsScrollBarSetScrollPosition(scrollbars[1],new)
 	end
 	if which == 2 or not which then
 		local len = dgsElementData[memo].rightLength[1]
-		local canHold = mathFloor(len-size[1]+scbTakes1+2)/100
+		local canHold = mathFloor(len-size[1]+scbTakes1+2)*0.01
 		local new = -dgsElementData[memo].showPos/canHold
 		dgsScrollBarSetScrollPosition(scrollbars[2],new)
 	end

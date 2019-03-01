@@ -83,7 +83,7 @@ end
 
 function testMoveHandler()
 	local window = dgsCreateWindow(100,100,800,800,"test",false)
-	local button = dgsCreateButton(500,500,200,80,"test",false,window)
+	local button = dgsCreateButton(500,0,200,80,"test",false,window)
 
 end
 

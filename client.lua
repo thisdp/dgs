@@ -18,8 +18,12 @@ tableCount = table.count
 tableFind = table.find
 --
 sW,sH = guiGetScreenSize()
-white = tocolor(255,255,255,255)
-black = tocolor(0,0,0,255)
+white = 0xFFFFFFFF
+black = 0xFF000000
+green = 0xFF00FF00
+red = 0xFFFF0000
+blue = 0xFF0000FF
+yellow = 0xFFFFFF00
 fontSize = {}
 systemFont = "default"
 dgsRenderSetting = {
@@ -261,7 +265,15 @@ function dgsCoreRender()
 		dxDrawText("Version: "..version,6,sH*0.4-99,sW,sH,black)
 		dxDrawText("Version: "..version,5,sH*0.4-100)
 		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-84,sW,sH,black)
-		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-85)
+		local tickColor
+		if ticks <= 8 then
+			tickColor = green
+		elseif ticks <= 20 then
+			tickColor = yellow
+		else
+			tickColor = red
+		end
+		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-85,_,_,tickColor)
 		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).."("..tostring(MouseData.hit)..")" or "None"
 		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
 		dxDrawText("Enter: "..enterStr,10,sH*0.4-70)
@@ -284,10 +296,10 @@ function dgsCoreRender()
 			dxDrawText(v.." : "..elements,x+1,sH*0.4+15*k+6,sW,sH,black)
 			dxDrawText(v.." : "..elements,x,sH*0.4+15*k+5)
 		end
-		dxDrawText("Elements Shows: "..DGSShow,11,sH*0.4-9,sW,sH,black)
-		dxDrawText("Elements Shows: "..DGSShow,10,sH*0.4-10,sW,sH)
-		dxDrawText("Elements Counts: "..DGSCount,11,sH*0.4+6,sW,sH,black)	
-		dxDrawText("Elements Counts: "..DGSCount,10,sH*0.4+5,sW,sH)
+		dxDrawText("Rendering: "..DGSShow,11,sH*0.4-9,sW,sH,black)
+		dxDrawText("Rendering: "..DGSShow,10,sH*0.4-10,sW,sH,green)
+		dxDrawText("Created: "..DGSCount,11,sH*0.4+6,sW,sH,black)	
+		dxDrawText("Created: "..DGSCount,10,sH*0.4+5,sW,sH,yellow)
 		local anim = tableCount(animGUIList)
 		local move = tableCount(moveGUIList)
 		local size = tableCount(sizeGUIList)
@@ -392,12 +404,12 @@ addEventHandler("onClientPreRender",root,interfaceRender)
 
 function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
 	local isElementInside = false
-	if debugMode then
-		DGSShow = DGSShow+1
-	end
 	local eleData = dgsElementData[v]
 	local enabled = {enabled[1] and eleData.enabled,eleData.enabled}
 	if eleData.visible and visible and isElement(v) then
+		if debugMode then
+			DGSShow = DGSShow+1
+		end
 		visible = eleData.visible
 		local dxType = dgsGetType(v)
 		if dxType == "dgs-dxscrollbar" then
@@ -543,7 +555,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxbutton" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -665,7 +676,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxeda" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -739,7 +749,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxdetectarea" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -818,7 +827,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dximage" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -888,7 +896,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxradiobutton" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1025,7 +1032,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxcheckbox" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1163,7 +1169,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxedit" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1346,8 +1351,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxmemo" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
+				if eleData.configNextFrame then
+					configMemo(v)
+				end
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
@@ -1394,22 +1401,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local offset = eleData.showPos
 						if caretPos[2] == selectFro[2] then
 							if selectFro[1]>caretPos[1] then
-								selPosStart = caretPos[1]
-								selPosEnd = selectFro[1]
+								selPosStart,selPosEnd = caretPos[1],selectFro[1]
 							else
-								selPosStart = selectFro[1]
-								selPosEnd = caretPos[1]
+								selPosStart,selPosEnd = selectFro[1],caretPos[1]
 							end
 							if selectFro[2]>caretPos[2] then
-								selStart = caretPos[2]
-								selEnd = selectFro[2]
+								selStart,selEnd = caretPos[2],selectFro[2]
 							else
-								selStart = selectFro[2]
-								selEnd = caretPos[2]
+								selStart,selEnd = selectFro[2],caretPos[2]
 							end
 							local startx = dxGetTextWidth(utf8Sub(text[selStart],0,selPosStart),txtSizX,font)
 							local selx = dxGetTextWidth(utf8Sub(text[selStart],selPosStart+1,selPosEnd),txtSizX,font)
-							dxDrawRectangle(offset+startx,2+(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
+							dxDrawRectangle(offset+startx,(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
 						else
 							if selectFro[2]>caretPos[2] then
 								selStart = caretPos[2]
@@ -1426,19 +1429,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							for i=selStart > showLine and selStart or showLine,selEnd < toShowLine and selEnd or toShowLine do
 								if i ~= selStart and i ~= selEnd then
 									local selx = dxGetTextWidth(text[i],txtSizX,font)
-									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
+									dxDrawRectangle(offset,(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
 								elseif i == selStart then
 									local selx = dxGetTextWidth(utf8Sub(text[i],selPosStart+1),txtSizX,font)
-									dxDrawRectangle(offset+startx,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
+									dxDrawRectangle(offset+startx,(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
 								elseif i == selEnd then
 									local selx = dxGetTextWidth(utf8Sub(text[i],0,selPosEnd),txtSizX,font)
-									dxDrawRectangle(offset,2+(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1)-4,selectColor)
+									dxDrawRectangle(offset,(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
 								end
 							end
 						end
 						for i=showLine,toShowLine do
 							local ypos = (i-showLine)*fontHeight
-							--dxDrawText(text[i],offset,ypos,dxGetTextWidth(text[i],txtSizX,font),fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",true,false,false,false)
 							dxDrawText(text[i],offset,ypos,offset,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
 						end
 					end
@@ -1482,8 +1484,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								local showPos = eleData.showPos
 								local caretStyle = eleData.caretStyle
 								if caretStyle == 0 then
-									local selStartY = y+lineStart+1+fontHeight*(1-caretHeight)
-									local selEndY = y+lineStart+fontHeight*caretHeight-2
+									local selStartY = y+lineStart+fontHeight*(1-caretHeight)
+									local selEndY = y+lineStart+fontHeight*caretHeight
 									dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.caretThick,noRenderTarget)
 								elseif caretStyle == 1 then
 									local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
@@ -1538,7 +1540,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxscrollpane" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configScrollPane(v)
 			end
@@ -1564,8 +1565,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local relSizX,relSizY = w-xthick,h-ythick
 				local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
 				maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-				--OffsetX = scbstate[2] and -maxX*dgsElementData[scrollbar[2]].position*0.01 or 0
-				--OffsetY = scbstate[1] and -maxY*dgsElementData[scrollbar[1]].position*0.01 or 0
 				OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
 				OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
 				------------------------------------
@@ -1624,7 +1623,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 			end
 		elseif dxType == "dgs-dxscrollbar" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1658,18 +1656,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					if not MouseData.clickData then
 						MouseData.enterData = false
 						if voh then
-							if my >= cy-2 and my <= cy+h-1 then
-								if mx >= cx-2 and mx <= cx+arrowPos-1 then			------left
+							if my >= cy and my <= cy+h then
+								if mx >= cx and mx <= cx+arrowPos then			------left
 									MouseData.enterData = 1
-								elseif mx >= cx+w-arrowPos-2 and mx <= cx+w-1 then		------right
+								elseif mx >= cx+w-arrowPos and mx <= cx+w then		------right
 									MouseData.enterData = 4
 								elseif mx >= cx+arrowPos+pos*0.01*csRange and mx <= cx+arrowPos+pos*0.01*csRange+cursorRange then
 									MouseData.enterData = 2
 								end
 							end
 						else
-							if mx >= cx-2 and mx <= cx+w-1 then
-								if my >= cy-1 and my <= cy+arrowPos then			------up
+							if mx >= cx and mx <= cx+w then
+								if my >= cy and my <= cy+arrowPos then			------up
 									MouseData.enterData = 1
 								elseif my >= cy+h-arrowPos and my <= cy+h then			------down
 									MouseData.enterData = 4
@@ -1780,7 +1778,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxlabel" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -1866,7 +1863,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxgridlist" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configGridList(v)
 			end
@@ -1876,11 +1872,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
 				local DataTab = eleData
-				local bgColor,bgImage = DataTab.bgColor,DataTab.bgImage
-				local columncolor,columnimg = DataTab.columnColor,DataTab.columnImage
+				local bgColor,bgImage = applyColorAlpha(DataTab.bgColor,galpha),DataTab.bgImage
+				local columnColor,columnImage = applyColorAlpha(DataTab.columnColor,galpha),DataTab.columnImage
 				local font = DataTab.font or systemFont
-				columncolor = applyColorAlpha(columncolor,galpha)
-				bgColor = applyColorAlpha(bgColor,galpha)
 				local columnHeight = DataTab.columnHeight
 				if MouseData.enter == v then
 					colorimgid = 2
@@ -1902,10 +1896,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				else
 					dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,rendSet)
 				end
-				if columnimg then
-					dxDrawImage(x,y,w,columnHeight,columnimg,0,0,0,columncolor,rendSet)
+				if columnImage then
+					dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,rendSet)
 				else
-					dxDrawRectangle(x,y,w,columnHeight,columncolor,rendSet)
+					dxDrawRectangle(x,y,w,columnHeight,columnColor,rendSet)
 				end
 				local columnData = DataTab.columnData
 				local sortColumn = DataTab.sortColumn
@@ -2323,15 +2317,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxprogressbar" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local bgColor = eleData.bgColor
-				local indicatorColor = eleData.indicatorColor
-				bgColor = applyColorAlpha(bgColor,galpha)
-				indicatorColor = applyColorAlpha(indicatorColor,galpha)
+				local bgColor = applyColorAlpha(eleData.bgColor,galpha)
+				local indicatorColor = applyColorAlpha(eleData.indicatorColor,galpha)
 				local bgImage = eleData.bgImage
 				local indicatorImage = eleData.indicatorImage
 				local indicatorMode = eleData.indicatorMode
@@ -2404,7 +2395,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType =="dgs-dxcombobox" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.configNextFrame then
 					configComboBox(v)
@@ -2553,7 +2543,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			local combo = eleData.myCombo
 			local x,y = dgsGetPosition(v,false,true)
 			local w,h = eleData.absSize[1],eleData.absSize[2]
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,v,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2676,7 +2665,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxtabpanel" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2772,8 +2760,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						else
 							dxDrawRectangle(x,y+height,w,h-height,colors,rendSet)
 						end
-						for cid,child in ipairs(dgsGetChildren(tabs[selected])) do
-							renderGUI(child,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible)
+						local children = ChildrenTable[tabs[selected]]
+						for i=1,#children do
+							renderGUI(children[i],mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible)
 						end
 					end
 				end
@@ -2813,7 +2802,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxbrowser" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2869,7 +2857,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxcmd" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -2995,7 +2982,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				visible = false
 			end
 		elseif dxType == "dgs-dxarrowlist" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if eleData.configNextFrame then
 				configArrowList(v)
 				dgsSetData(v,"configNextFrame",false)
@@ -3241,7 +3227,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 			end
 		elseif dxType == "dgs-dxswitchbutton" then
-			--local x,y,cx,cy = processPositionOffset(v,x,y,w,h,parent,rndtgt,OffsetX,OffsetY)
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
@@ -3416,58 +3401,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 	return isElementInside or v == checkElement
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
-
-function removeColorCodeFromString(str)
-	repeat
-		local temp = str
-		str = gsub(str,'#%x%x%x%x%x%x','')
-		if str == temp then
-			return temp
-		end
-	until(false)
-end
-
---[[
-function processPositionOffset(gui,x,y,w,h,parent,rndtgt,offsetx,offsety)		--To be optimized (can be done in the loop)
-	local ax,ay = getParentLocation(gui,true,dgsElementData[gui].absPos[1],dgsElementData[gui].absPos[2])
-	local cx,cy = getParentLocation(gui,false,dgsElementData[gui].absPos[1],dgsElementData[gui].absPos[2])
-	x,y = rndtgt and ax or x,rndtgt and ay or y
-	local P_dgsType = dgsElementType[parent]
-	if P_dgsType == "dgs-dxscrollpane" then
-		local psiz = dgsElementData[parent].absSize
-		local siz = dgsElementData[gui].absSize
-		local psx,psy,sx,sy = psiz[1],psiz[2],siz[1],siz[2]
-		if x > psx-offsetx or y > psy-offsety or x+sx < -offsetx or y+sy < -offsety then
-			return false,false
-		end
-	end
-	local hasParent = isElement(parent)
-	if dgsElementData[gui].lor == "right" then
-		local px,psx = 0,sW
-		if hasParent then
-			px = dgsElementData[parent].absPos[1]
-			psx = dgsElementData[parent].absSize[1]
-		end
-		x = px*2+psx-x
-	end
-	if dgsElementData[gui].tob == "bottom" then
-		local py,psy = 0,sH
-		if hasParent then
-			if P_dgsType == "dgs-dxtab" then
-				local tabpanel = dgsElementData[parent].parent
-				local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*psx or dgsElementData[tabpanel].tabHeight[1]
-				psy = dgsElementData[tabpanel].absSize[2]-height
-				py = dgsElementData[parent].absPos[2]+height
-			else
-				py = dgsElementData[parent].absPos[2]
-				psy = dgsElementData[parent].absSize[2]
-			end
-		end
-		y = py*2+psy-y
-	end
-	return x+offsetx,y+offsety,(rndtgt and cx or x)+offsetx,(rndtgt and cy or y)+offsety
-end
-]]
 
 addEventHandler("onClientKey",root,function(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
@@ -3745,7 +3678,7 @@ end
 KeyHolder = {}
 function onClientKeyCheck(button,state)
 	if state then
-		if string.sub(button,1,5) ~= "mouse" then
+		if button:sub(1,5) ~= "mouse" then
 			if isTimer(KeyHolder.Timer) then killTimer(KeyHolder.Timer) end
 			KeyHolder = {}
 			KeyHolder.lastKey = button
@@ -4661,6 +4594,8 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 			configTabPanel(source)
 		elseif typ == "dgs-dxcombobox-Box" then
 			configComboBox(dgsElementData[source].myCombo)
+		elseif typ == "dgs-dxmemo" then
+			dgsSetData(source,"configNextFrame",true)
 		end
 		local parent = dgsGetParent(source)
 		if isElement(parent) then
