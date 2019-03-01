@@ -599,7 +599,7 @@ function seekMaxLengthLine(memo)
 		local v = textLength[i]
 		if v > lineLen then
 			lineLen = v
-			line = k
+			line = i
 		end
 	end
 	return line,lineLen
