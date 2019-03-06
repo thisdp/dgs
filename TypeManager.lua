@@ -30,7 +30,13 @@ function dgsGetType(dgsGUI)
 	if isElement(dgsGUI) then
 		return tostring(dgsElementType[dgsGUI] or getElementType(dgsGUI))
 	else
-		return type(dgsGUI)
+		local theType = type(dgsGUI)
+		if theType == "userdata" then
+			if dgsElementType[dgsGUI] then
+				return "garbage (destroyed)"
+			end
+		end
+		return theType
 	end
 end
 
@@ -43,5 +49,5 @@ function dgsSetType(dgsGUI,myType)
 end
 
 function dgsIsDxElement(element)
-	return (dgsElementType[element] or ""):sub(1,6) == "dgs-dx"
+	return isElement(element) and ((dgsElementType[element] or ""):sub(1,6) == "dgs-dx")
 end

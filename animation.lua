@@ -208,7 +208,7 @@ addEventHandler("onClientRender",root,function()
 			if mtype then
 				local disx,disy = x-ox,y-oy
 				local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
-				local speedX,speedY = torvx*diff/1000*symbolX,vy*diff/1000*symbolY
+				local speedX,speedY = torvx*diff*symbolX*0.001,vy*diff*symbolY*0.001
 				local finishX,finishY = false,false
 				if disx ~= 0 then
 					local progress = (nx-ox)/disx
@@ -278,7 +278,7 @@ addEventHandler("onClientRender",root,function()
 			if mtype then
 				local disx,disy = x-ox,y-oy
 				local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
-				local speedX,speedY = torvx*diff/1000*symbolX,vy*diff/1000*symbolY
+				local speedX,speedY = torvx*diff*symbolX*0.001,vy*diff*symbolY*0.001
 				local finishX,finishY = false,false
 				if disx ~= 0 then
 					local progress = (nx-ox)/disx
@@ -349,7 +349,7 @@ addEventHandler("onClientRender",root,function()
 			if mtype then
 				local disAlpha = endalpha-oldAlpha
 				local symbolAlpha = disAlpha < 0 and -1 or 1
-				local speed = torv*diff/1000*symbolAlpha
+				local speed = torv*diff*symbolAlpha*0.001
 				if disAlpha ~= 0 then
 					local progress = (alp-oldAlpha)/disAlpha
 					if builtins[easing] then
