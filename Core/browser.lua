@@ -6,7 +6,7 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateBrowser at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
-	local browser = createBrowser(0,0,isLocal and true or false,transparent and true or false)
+	local browser = createBrowser(1,1,isLocal and true or false,transparent and true or false)
 	assert(isElement(browser),"Bad argument @dgsCreateBrowser, can't create browser with 'createBrowser' !")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(browser,parent,true,true) or table.insert(CenterFatherTable,browser)
 	dgsSetType(browser,"dgs-dxbrowser")
