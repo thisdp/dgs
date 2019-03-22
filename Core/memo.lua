@@ -22,6 +22,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.memo.bgImage))
 	dgsSetData(memo,"font",systemFont,true)
 	dgsElementData[memo].text = {}
+	dgsSetData(memo,"clip",false)
 	dgsSetData(memo,"textLength",{""})
 	dgsSetData(memo,"textColor",textColor or styleSettings.memo.textColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.memo.textSize[1], tonumber(scaley) or styleSettings.memo.textSize[2]

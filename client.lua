@@ -439,6 +439,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			w,h = pSize[1],pSize[2]-tabHeight
 		end
 		if dxType ~= "dgs-dxtab" then
+			absPos = absPos or {0,0}
+			absSize = absSize or {0,0}
 			PosX,PosY = PosX+absPos[1],PosY+absPos[2]
 			w,h = absSize[1],absSize[2]
 		end
@@ -4270,7 +4272,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				end
 			end
 		end
-		local lang = dgsElementData[source]._translationText
+		local lang = (dgsElementData[source] or {})._translationText
 		if lang then
 			local id = tableFind(LanguageTranslationAttach,source)
 			if id then

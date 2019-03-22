@@ -113,6 +113,7 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 			FatherTable[id] = nil
 			table.insert(CenterFatherTable,child) 
 		end
+		setElementParent(child,parent)
 		---Update Position and Size
 		if not noUpdatePosSize then
 			local rlt = dgsElementData[child].relative

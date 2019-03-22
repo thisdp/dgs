@@ -238,7 +238,7 @@ function getPositionFromElementOffset(element,offX,offY,offZ)
     return x, y, z
 end
 --------------------------------Color Utility
-function fromcolor(int,useMath)
+function fromcolor(int,useMath,relative)
 	local a,r,g,b
 	if useMath then
 		b = int%256
@@ -250,6 +250,9 @@ function fromcolor(int,useMath)
 		a = int%256
 	else
 		a,r,g,b = getColorFromString(format("#%.8x",int))
+	end
+	if relative then
+		a,r,g,b = a/255,r/255,g/255,b/255
 	end
 	return r,g,b,a
 end

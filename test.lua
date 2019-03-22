@@ -344,6 +344,13 @@ function languageTest_TabPanel()
 	end,1000,1)
 end
 
+function dgsRoundRectTest()
+	local rndRect1 = dgsCreateRoundRect(1,tocolor(0,0,0,150))
+	local image1 = dgsCreateImage(200,200,400,100,rndRect1,false)
+	local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
+	local image2 = dgsCreateImage(200,400,400,100,rndRect2,false)
+end
+
 function test_switchButton()
 	local button = dgsCreateSwitchButton(200,200,100,25,"on","off",false)
 end

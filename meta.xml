@@ -8,6 +8,7 @@
 	<file src="shaders/textureRelight.fx" />
 	<file src="shaders/mta-helper.fx" />
 	<file src="shaders/ButtonEffect.fx" />
+	<file src="shaders/roundRect.fx" />
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -43,6 +44,7 @@
 	<script src="functions.lua" type="client" />
 	<script src="client.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
+	<script src="plugin/roundRect.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
@@ -432,6 +434,14 @@
 	<export function="dgsArrowListSetItemStep" type="client" />
 	<export function="dgsArrowListGetItemStep" type="client" />
 	<export function="dgsArrowListGetItemTranslatedValue" type="client" />
+	
+	<export function="dgsCreateRoundRect" type="client" />
+	<export function="dgsRoundRectSetTexture" type="client" />
+	<export function="dgsRoundRectSetRadius" type="client" />
+	<export function="dgsRoundRectGetRadius" type="client" />
+	<export function="dgsRoundRectSetColor" type="client" />
+	<export function="dgsRoundRectGetColor" type="client" />
+	
 	
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
