@@ -10,7 +10,8 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 	local _ = dgsIsDxElement(parent) and dgsSetParent(tabpanel,parent,true,true) or table.insert(CenterFatherTable,tabpanel)
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
 	dgsSetData(tabpanel,"renderBuffer",{})
-	dgsSetData(tabpanel,"tabHeight",{tabHeight or styleSettings.tabpanel.tabHeight,false})
+	local tabHeight = tabHeight or styleSettings.tabpanel.tabHeight
+	dgsSetData(tabpanel,"tabHeight",{tabHeight,false})
 	dgsSetData(tabpanel,"tabMaxWidth",{10000,false})
 	dgsSetData(tabpanel,"tabMinWidth",{10,false})
 	dgsSetData(tabpanel,"font",systemFont)
@@ -26,8 +27,8 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 	insertResourceDxGUI(sourceResource,tabpanel)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx = dgsElementData[tabpanel].absSize[1]
-	local rendertarget = dxCreateRenderTarget(abx,tabHeight or 20,true)
-	if not isElement(renderTarget) then
+	local rendertarget = dxCreateRenderTarget(abx,tabHeight,true)
+	if not isElement(rendertarget) then
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
 		outputDebugString("Failed to create render target for tab list of dgs-dxtabpanel [Expected:"..(0.0000076*abx*(tabHeight or 20)).."MB/Free:"..videoMemory.."MB]",2)
 	end

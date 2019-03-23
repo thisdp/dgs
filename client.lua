@@ -2544,8 +2544,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			end
 		elseif dxType == "dgs-dxcombobox-Box" then
 			local combo = eleData.myCombo
-			local x,y = dgsGetPosition(v,false,true)
-			local w,h = eleData.absSize[1],eleData.absSize[2]
 			if x and y then
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1

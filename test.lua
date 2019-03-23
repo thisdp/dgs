@@ -63,7 +63,10 @@ function createTest3()
 end
 
 function createTest4()
-	rb1 = dgsCreateComboBox(500,400,200,30,"test",false)
+	local window = dgsCreateWindow(100,100,400,400,"test",false)
+	tabp = dgsCreateTabPanel(0,0,400,400,false,window)
+	tab1 = dgsCreateTab("DGS",tabp)
+	rb1 = dgsCreateComboBox(0,0,200,30,"test",false,tab1)
 	for i=1,20 do
 		dgsComboBoxAddItem(rb1,i)
 	end
@@ -185,12 +188,6 @@ function centerEdit()
 	dgsSetProperty(edit,"alignment","center")
 end
 
-function mediaTest()
-	local media = dgsCreateMedia(600,600)
-	--local image = dgsCreateImage(200,100,400,400,media,false)
-	dgsMediaLoadMedia(media,"liquicity.mp4","VIDEO")
-end
-
 function dgsAnimTest()
 	if not dgsEasingFunctionExists("shadowOffset") then
 		dgsAddEasingFunction("shadowOffset",[[
@@ -243,7 +240,9 @@ end
 
 function Plugin_media()
 	bro = dgsCreateMediaBrowser(600,600)
-	img = dgsCreateImage(400,200,600,600,bro,false)
+	rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
+	material1 = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
+	img = dgsCreateImage(0,0,800,500,rndRect1,false,material1)
 	dgsMediaLoadMedia(bro,"test.webm","VIDEO") -- Give a video file PLZ! (Only .webm file)
 	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
 	dgsMediaPlay(bro)
