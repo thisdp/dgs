@@ -35,7 +35,7 @@ end
 function dgsImageSetImage(gui,img)
 	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImage at argument 1, expect dgs-dximage got "..dgsGetType(gui))
 	local texture = dgsElementData[gui].image
-	if isElement(texture) then
+	if isElement(texture) and dgsElementData[texture] then
 		if dgsElementData[texture].parent == gui then
 			destroyElement(texture)
 		end

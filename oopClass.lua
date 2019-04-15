@@ -866,10 +866,19 @@ function dgsImportOOPClass()
 					return call(dgsOOPHead.dgsRes,"dgsMemoClearText",self.dgsElement,...)
 				end
 				newTable.getTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetTypingSound ",self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoGetTypingSound",self.dgsElement,...)
 				end
 				newTable.setTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetTypingSound ",self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoSetTypingSound",self.dgsElement,...)
+				end
+				newTable.getLineCount = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoGetLineCount",self.dgsElement,...)
+				end
+				newTable.setWordWarp = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsSetWordWarpState",self.dgsElement,...)
+				end
+				newTable.getWordWarp = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGetWordWarpState",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxlabel" then
 				newTable.setColor = function(self,...)

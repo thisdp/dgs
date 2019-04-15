@@ -72,7 +72,7 @@ function scrollScrollBar(scrollbar,button)
 	local pos = dgsElementData[scrollbar].position
 	local offsetPos = (rltPos and multiplier*slotRange or multiplier)/(slotRange)*100
 	local gpos = button and pos+offsetPos or pos-offsetPos
-	dgsSetData(scrollbar,"position",math.restrict(0,100,gpos))
+	dgsSetData(scrollbar,"position",math.restrict(gpos,0,100))
 end
 
 function dgsScrollBarSetScrollSize(scrollbar,size,relative)

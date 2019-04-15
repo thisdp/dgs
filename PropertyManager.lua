@@ -89,7 +89,7 @@ function dgsSetData(element,key,value,nocheck)
 							dgsElementData[element]._translationText = nil
 						end
 						dgsElementData[element].text = tostring(value)
-						dgsSetData(element,"width",math.restrict(minwidth,maxwidth,dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[tabpanel].font)))
+						dgsSetData(element,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[tabpanel].font),minwidth,maxwidth))
 						return triggerEvent("onDgsTextChange",element)
 					elseif key == "width" then
 						local tabpanel = dgsElementData[element].parent
@@ -121,8 +121,14 @@ function dgsSetData(element,key,value,nocheck)
 						return guiMemoSetReadOnly(gmemo,value and true or false)
 					elseif key == "text" then
 						return handleDxMemoText(element,value)
-					elseif key== "scrollBarThick" then
+					elseif key == "scrollBarThick" then
 						configMemo(element)
+					elseif key == "textSize" then
+						--todo
+					elseif key == "font" then
+						--todo
+					elseif key == "wordWarp" then
+						--todo
 					end
 				elseif dgsType == "dgs-dxprogressbar" then
 					if key == "progress" then
@@ -337,7 +343,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 					if dgsType == "dgs-dxtab" then
 						local tabpanel = dgsElementData[v].parent
 						local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
-						local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[v].textSize[1],dgsElementData[tabpanel].font))
+						local wid = math.restrict(dxGetTextWidth(value,dgsElementData[v].textSize[1],dgsElementData[tabpanel].font),minW,maxW)
 						local owid = dgsElementData[tab].width
 						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
 						dgsSetData(v,"width",wid)
@@ -385,7 +391,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 				if dgsType == "dgs-dxtab" then
 					local tabpanel = dgsElementData[dxgui].parent
 					local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
-					local wid = math.restrict(minW,maxW,dxGetTextWidth(value,dgsElementData[dxgui].textSize[1],dgsElementData[tabpanel].font))
+					local wid = math.restrict(dxGetTextWidth(value,dgsElementData[dxgui].textSize[1],dgsElementData[tabpanel].font),minW,maxW)
 					local owid = dgsElementData[tab].width
 					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
 					dgsSetData(dxgui,"width",wid)

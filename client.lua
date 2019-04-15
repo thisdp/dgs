@@ -1374,7 +1374,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				local text = eleData.text
-				local allLine = #text
 				local caretPos = eleData.caretPos
 				local selectFro = eleData.selectFrom
 				local selectColor = eleData.selectColor
@@ -1382,6 +1381,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 				local renderTarget = eleData.renderTarget
 				local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
+				local wordwarp = eleData.wordWarp
+				local scbThick = eleData.scrollBarThick
+				local scrollbars = eleData.scrollbars
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -1391,116 +1393,247 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				------------------------------------
 				if isElement(renderTarget) then
-					local textColor = eleData.textColor
-					local showLine = eleData.showLine
-					local caretHeight = eleData.caretHeight-1
-					local canHoldLines = floor((h-4)/fontHeight)
-					canHoldLines = canHoldLines > allLine and allLine or canHoldLines
-					local selPosStart,selPosEnd,selStart,selEnd
-					dxSetRenderTarget(renderTarget,true)
-					if allLine > 0 then
-						local toShowLine = showLine+canHoldLines
-						toShowLine = toShowLine > #text and #text or toShowLine
-						local offset = eleData.showPos
-						if caretPos[2] == selectFro[2] then
-							if selectFro[1]>caretPos[1] then
-								selPosStart,selPosEnd = caretPos[1],selectFro[1]
-							else
-								selPosStart,selPosEnd = selectFro[1],caretPos[1]
-							end
-							if selectFro[2]>caretPos[2] then
+					if wordwarp then
+						if eleData.rebuildMapTableNextFrame then
+							dgsMemoRebuildWordWarpMapTable(v)
+						end
+						local allLines = #eleData.wordWarpMapText
+						local textColor = eleData.textColor
+						local showLine = eleData.showLine
+						local wordWarpShowLine = eleData.wordWarpShowLine
+						local caretHeight = eleData.caretHeight-1
+						local canHoldLines = floor((h-4)/fontHeight)
+						canHoldLines = canHoldLines > allLines and allLines or canHoldLines
+						local selPosStart,selPosEnd,selStart,selEnd
+						dxSetRenderTarget(renderTarget,true)
+						local showPos = eleData.showPos
+						local caretRltHeight = fontHeight*caretHeight
+						local caretDrawPos
+						local tk = getTickCount()
+						if allLines > 0 then
+							if selectFro[2] > caretPos[2] then
 								selStart,selEnd = caretPos[2],selectFro[2]
-							else
+								selPosStart,selPosEnd = caretPos[1],selectFro[1]
+							elseif selectFro[2] < caretPos[2] then
 								selStart,selEnd = selectFro[2],caretPos[2]
-							end
-							local startx = dxGetTextWidth(utf8Sub(text[selStart],0,selPosStart),txtSizX,font)
-							local selx = dxGetTextWidth(utf8Sub(text[selStart],selPosStart+1,selPosEnd),txtSizX,font)
-							dxDrawRectangle(offset+startx,(selStart-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
-						else
-							if selectFro[2]>caretPos[2] then
-								selStart = caretPos[2]
-								selEnd = selectFro[2]
-								selPosStart = caretPos[1]
-								selPosEnd = selectFro[1]
+								selPosStart,selPosEnd = selectFro[1],caretPos[1]
 							else
-								selStart = selectFro[2]
-								selEnd = caretPos[2]
-								selPosStart = selectFro[1]
-								selPosEnd = caretPos[1]
+								selStart,selEnd = caretPos[2],selectFro[2]
+								if selectFro[1] > caretPos[1] then
+									selPosStart,selPosEnd = caretPos[1],selectFro[1]
+								else
+									selPosStart,selPosEnd = selectFro[1],caretPos[1]
+								end
 							end
-							local startx = dxGetTextWidth(utf8Sub(text[selStart],0,selPosStart),txtSizX,font)
-							for i=selStart > showLine and selStart or showLine,selEnd < toShowLine and selEnd or toShowLine do
-								if i ~= selStart and i ~= selEnd then
-									local selx = dxGetTextWidth(text[i],txtSizX,font)
-									dxDrawRectangle(offset,(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
-								elseif i == selStart then
-									local selx = dxGetTextWidth(utf8Sub(text[i],selPosStart+1),txtSizX,font)
-									dxDrawRectangle(offset+startx,(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
-								elseif i == selEnd then
-									local selx = dxGetTextWidth(utf8Sub(text[i],0,selPosEnd),txtSizX,font)
-									dxDrawRectangle(offset,(i-showLine)*fontHeight-fontHeight*caretHeight,selx,fontHeight*(caretHeight+1),selectColor)
+							local isInWeakLine = false
+							local lineCnt = 0
+							local rndLine,rndPos,totalLine = eleData.wordWarpShowLine[1],eleData.wordWarpShowLine[2],eleData.wordWarpShowLine[3]
+							if rndLine <= 1 then
+								rndLine = 1
+							end
+							local caretPos = eleData.caretPos
+							for a=rndLine,#text do
+								local weakLinePos = 0
+								local nextWeakLineLen = 0
+								for b=1,#text[a][1] do
+									weakLineLen = text[a][1][b][3]
+									if b >= rndPos then
+										local ypos = lineCnt*fontHeight
+										local renderingText = text[a][1][b][0]
+										if a == selStart or a == selEnd then
+											if a == selStart and a == selEnd then
+												if selPosStart >= weakLinePos then
+													local startPosX = dxGetTextWidth(utf8Sub(renderingText,0,selPosStart-weakLinePos),txtSizX,font)
+													local selectLen = dxGetTextWidth(utf8Sub(renderingText,selPosStart-weakLinePos+1,selPosEnd-weakLinePos),txtSizX,font)
+													dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+												elseif selPosStart < weakLinePos and selPosEnd > weakLinePos+weakLineLen then
+													local startPosX = dxGetTextWidth(renderingText,txtSizX,font)
+													dxDrawRectangle(-showPos,ypos-caretRltHeight,startPosX,caretRltHeight+fontHeight,selectColor)
+												elseif selPosEnd >= weakLinePos and selPosEnd <= weakLinePos+weakLineLen then
+													local selectLen = dxGetTextWidth(utf8Sub(renderingText,0,selPosEnd-weakLinePos),txtSizX,font)
+													dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+												end
+											elseif a == selStart then
+												if selPosStart >= weakLinePos and selPosStart <= weakLinePos+weakLineLen then
+													local startPosX = dxGetTextWidth(utf8Sub(renderingText,0,selPosStart-weakLinePos),txtSizX,font)
+													local selectLen = dxGetTextWidth(utf8Sub(renderingText,selPosStart-weakLinePos+1),txtSizX,font)
+													dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+												elseif selPosStart <= weakLinePos then
+													dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
+												end
+											elseif a == selEnd then
+												if selPosEnd >= weakLinePos and selPosEnd <= weakLinePos+weakLineLen then
+													local selectLen = dxGetTextWidth(utf8Sub(renderingText,0,selPosEnd-weakLinePos),txtSizX,font)
+													dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+												elseif selPosEnd >= weakLinePos then
+													dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
+												end
+											end
+										elseif a > selStart and a < selEnd then
+											dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
+										end
+										if caretPos[2] == a then
+											if caretPos[1] >= weakLinePos and caretPos[1] <= weakLinePos+weakLineLen then
+												local indexInWeakLine = caretPos[1]-weakLinePos
+												caretDrawPos = {x-showPos,y+ypos,utf8Sub(renderingText,1,indexInWeakLine),utf8Sub(renderingText,indexInWeakLine+1,indexInWeakLine+1)}
+											end
+										end
+										dxDrawText(renderingText,-showPos,ypos,-showPos,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
+										rndPos = 1
+										lineCnt = lineCnt + 1
+									end
+									weakLinePos = weakLinePos+weakLineLen
+									if lineCnt > canHoldLines then
+										break
+									end
+								end
+								if lineCnt > canHoldLines then
+									break
 								end
 							end
 						end
-						for i=showLine,toShowLine do
-							local ypos = (i-showLine)*fontHeight
-							dxDrawText(text[i],offset,ypos,offset,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
-						end
-					end
-					dxSetRenderTarget(rndtgt)
-					local finalcolor
-					if not enabled[1] and not enabled[2] then
-						if type(eleData.disabledColor) == "number" then
-							finalcolor = eleData.disabledColor
-						elseif eleData.disabledColor == true then
-							local r,g,b,a = fromcolor(bgColor,true)
-							local average = (r+g+b)/3*eleData.disabledColorPercent
-							finalcolor = tocolor(average,average,average,a)
+						dxSetRenderTarget(rndtgt)
+						local finalcolor
+						if not enabled[1] and not enabled[2] then
+							if type(eleData.disabledColor) == "number" then
+								finalcolor = eleData.disabledColor
+							elseif eleData.disabledColor == true then
+								local r,g,b,a = fromcolor(bgColor,true)
+								local average = (r+g+b)/3*eleData.disabledColorPercent
+								finalcolor = tocolor(average,average,average,a)
+							else
+								finalcolor = bgColor
+							end
 						else
 							finalcolor = bgColor
 						end
-					else
-						finalcolor = bgColor
-					end
-					if bgImage then
-						dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
-					else
-						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
-					end
-					local scbThick = eleData.scrollBarThick
-					local scrollbars = eleData.scrollbars
-					local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
-					dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
-					if MouseData.nowShow == v and MouseData.editMemoCursor then
-						local CaretShow = true
-						if eleData.readOnly then
-							CaretShow = eleData.readOnlyCaretShow
+						if bgImage then
+							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
+						else
+							dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 						end
-						if CaretShow then
-							local showLine = eleData.showLine
-							local currentLine = eleData.caretPos[2]
-							if currentLine >= showLine and currentLine <= showLine+canHoldLines then
-								local lineStart = fontHeight*(currentLine-showLine)
-								local theText = text[caretPos[2]] or ""
-								local cursorPX = caretPos[1]
-								local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
-								local showPos = eleData.showPos
+						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+						if MouseData.nowShow == v and MouseData.editMemoCursor then
+							local CaretShow = true
+							if eleData.readOnly then
+								CaretShow = eleData.readOnlyCaretShow
+							end
+							if CaretShow and caretDrawPos then
 								local caretStyle = eleData.caretStyle
+								local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
 								if caretStyle == 0 then
-									local selStartY = y+lineStart+fontHeight*(1-caretHeight)
-									local selEndY = y+lineStart+fontHeight*caretHeight
-									dxDrawLine(x+width+showPos+1,selStartY,x+width+showPos+1,selEndY,eleData.caretColor,eleData.caretThick,noRenderTarget)
+									dxDrawLine(caretRenderX,caretDrawPos[2],caretRenderX,caretDrawPos[2]+fontHeight*(1-caretHeight),eleData.caretColor,eleData.caretThick,noRenderTarget)
 								elseif caretStyle == 1 then
-									local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
+									local cursorWidth = dxGetTextWidth(caretDrawPos[4],txtSizX,font)
 									if cursorWidth == 0 then
 										cursorWidth = txtSizX*8
 									end
 									local offset = eleData.caretOffset
-									dxDrawLine(x+width+showPos+1,y+h-4+offset,x+width+showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.caretThick,noRenderTarget)
+									local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
+									local caretRenderY = caretDrawPos[2]+fontHeight*(1-caretHeight)*0.85+offset-2
+									dxDrawLine(caretRenderX,caretRenderY,caretRenderX+cursorWidth,caretRenderY,eleData.caretColor,eleData.caretThick,noRenderTarget)
 								end
 							end
 						end
-					end	
+					else------------!
+						local allLine = #text
+						local textColor = eleData.textColor
+						local showLine = eleData.showLine
+						local caretHeight = eleData.caretHeight-1
+						local canHoldLines = floor((h-4)/fontHeight)
+						canHoldLines = canHoldLines > allLine and allLine or canHoldLines
+						local selPosStart,selPosEnd,selStart,selEnd
+						dxSetRenderTarget(renderTarget,true)
+						local showPos = eleData.showPos
+						if allLine > 0 then
+							local toShowLine = showLine+canHoldLines
+							toShowLine = toShowLine > allLine and allLine or toShowLine
+							if selectFro[2] > caretPos[2] then
+								selStart,selEnd = caretPos[2],selectFro[2]
+								selPosStart,selPosEnd = caretPos[1],selectFro[1]
+							elseif selectFro[2] < caretPos[2] then
+								selStart,selEnd = selectFro[2],caretPos[2]
+								selPosStart,selPosEnd = selectFro[1],caretPos[1]
+							else
+								selStart,selEnd = caretPos[2],selectFro[2]
+								if selectFro[1] > caretPos[1] then
+									selPosStart,selPosEnd = caretPos[1],selectFro[1]
+								else
+									selPosStart,selPosEnd = selectFro[1],caretPos[1]
+								end
+							end
+							local caretRltHeight = fontHeight*caretHeight
+							for i=showLine,toShowLine do
+								local ypos = (i-showLine)*fontHeight
+								if i == selStart or i == selEnd then
+									if i == selStart and i == selEnd then
+										local startPosX = dxGetTextWidth(utf8Sub(text[i][0],0,selPosStart),txtSizX,font)
+										local selectLen = dxGetTextWidth(utf8Sub(text[i][0],selPosStart+1,selPosEnd),txtSizX,font)
+										dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+									elseif i == selStart then
+										local startPosX = dxGetTextWidth(utf8Sub(text[i][0],0,selPosStart),txtSizX,font)
+										local selectLen = dxGetTextWidth(utf8Sub(text[i][0],selPosStart+1),txtSizX,font)
+										dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+									elseif i == selEnd then
+										local selectLen = dxGetTextWidth(utf8Sub(text[i][0],0,selPosEnd),txtSizX,font)
+										dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+									end
+								elseif i > selStart and i < selEnd then
+									dxDrawRectangle(-showPos,ypos-caretRltHeight,text[i][-1],caretRltHeight+fontHeight,selectColor)
+								end
+								dxDrawText(text[i][0],-showPos,ypos,-showPos,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
+							end
+						end
+						dxSetRenderTarget(rndtgt)
+						local finalcolor
+						if not enabled[1] and not enabled[2] then
+							if type(eleData.disabledColor) == "number" then
+								finalcolor = eleData.disabledColor
+							elseif eleData.disabledColor == true then
+								local r,g,b,a = fromcolor(bgColor,true)
+								local average = (r+g+b)/3*eleData.disabledColorPercent
+								finalcolor = tocolor(average,average,average,a)
+							else
+								finalcolor = bgColor
+							end
+						else
+							finalcolor = bgColor
+						end
+						if bgImage then
+							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
+						else
+							dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
+						end
+						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+						if MouseData.nowShow == v and MouseData.editMemoCursor then
+							local CaretShow = true
+							if eleData.readOnly then
+								CaretShow = eleData.readOnlyCaretShow
+							end
+							if CaretShow then
+								local showLine = eleData.showLine
+								local currentLine = eleData.caretPos[2]
+								if currentLine >= showLine and currentLine <= showLine+canHoldLines then
+									local lineStart = fontHeight*(currentLine-showLine)
+									local theText = (text[caretPos[2]] or {[0]=""})[0]
+									local cursorPX = caretPos[1]
+									local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
+									if eleData.caretStyle == 0 then
+										local selStartY = y+lineStart+fontHeight*(1-caretHeight)
+										local selEndY = y+lineStart+fontHeight*caretHeight
+										dxDrawLine(x+width-showPos+1,selStartY,x+width-showPos+1,selEndY,eleData.caretColor,eleData.caretThick,noRenderTarget)
+									elseif eleData.caretStyle == 1 then
+										local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
+										cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
+										local offset = eleData.caretOffset
+										dxDrawLine(x+width-showPos+1,y+h-4+offset,x+width-showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.caretThick,noRenderTarget)
+									end
+								end
+							end
+						end
+					end
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -1917,6 +2050,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local columnRelt = DataTab.columnRelative
 				local rowData = DataTab.rowData
 				local rowHeight = DataTab.rowHeight
+				local rowTextPosOffset = DataTab.rowTextPosOffset
+				local columnTextPosOffset = DataTab.columnTextPosOffset
 				local leading = DataTab.leading
 				local scbThick = DataTab.scrollBarThick
 				local scrollbars = DataTab.scrollbars
@@ -1972,14 +2107,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 									local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
 									if sortColumn == id and sortIcon then
 										if DataTab.columnShadow then
-											dxDrawText(sortIcon,_tempStartx+9,1,_tempEndx,columnHeight,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
+											dxDrawText(sortIcon,_tempStartx+9+columnTextPosOffset[1],1+columnTextPosOffset[2],_tempEndx+columnTextPosOffset[1],columnHeight+columnTextPosOffset[2],black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
 										end
-										dxDrawText(sortIcon,_tempStartx-10,0,_tempEndx,columnHeight,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
+										dxDrawText(sortIcon,_tempStartx-10+columnTextPosOffset[1],0+columnTextPosOffset[2],_tempEndx+columnTextPosOffset[1],columnHeight+columnTextPosOffset[2],_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
 									end
 									if DataTab.columnShadow then
-										dxDrawText(data[1],_tempStartx+1,1,_tempEndx,columnHeight,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,false,true)
+										dxDrawText(data[1],_tempStartx+1+columnTextPosOffset[1],1+columnTextPosOffset[2],_tempEndx+columnTextPosOffset[1],columnHeight+columnTextPosOffset[2],black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,false,true)
 									end
-									dxDrawText(data[1],_tempStartx,0,_tempEndx,columnHeight,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,_columnTextColorCoded,true)
+									dxDrawText(data[1],_tempStartx+columnTextPosOffset[1],0+columnTextPosOffset[2],_tempEndx+columnTextPosOffset[1],columnHeight+columnTextPosOffset[2],_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,_columnTextColorCoded,true)
 								end
 								if mouseInsideGridList and mouseSelectColumn == -1 then
 									if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
@@ -2096,9 +2231,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 										if colorcoded then
 											text = text:gsub("#%x%x%x%x%x%x","") or text
 										end
-										dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,false,false,true)
+										dxDrawText(text,v[2]+shadow[1]+rowTextPosOffset[1],_y+shadow[2]+rowTextPosOffset[2],v[3]+shadow[1]+rowTextPosOffset[1],_sy+shadow[2]+rowTextPosOffset[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,false,false,true)
 									end
-									dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],v[10],"center",v[8],false,false,colorcoded,true)
+									dxDrawText(v[1],v[2]+rowTextPosOffset[1],_y+rowTextPosOffset[2],v[3]+rowTextPosOffset[1],_sy+rowTextPosOffset[2],v[4],v[5],v[6],v[7],v[10],"center",v[8],false,false,colorcoded,true)
 								end
 							end
 						end
@@ -2148,14 +2283,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local tPosX = posx-posx%1
 						if sortColumn == i and sortIcon then
 							if DataTab.columnShadow then
-								dxDrawText(sortIcon,tPosX+1-10,1+cy,column_sx,ypcolumn,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
+								dxDrawText(sortIcon,tPosX-9+columnTextPosOffset[1],1+cy+columnTextPosOffset[2],column_sx+columnTextPosOffset[1],ypcolumn+columnTextPosOffset[2],black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
 							end
-							dxDrawText(sortIcon,tPosX-10,cy,column_sx,ypcolumn,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
+							dxDrawText(sortIcon,tPosX-10+columnTextPosOffset[1],cy+columnTextPosOffset[2],column_sx+columnTextPosOffset[1],ypcolumn+columnTextPosOffset[2],_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
 						end
 						if DataTab.columnShadow then
-							dxDrawText(data[1],1+tPosX,1+cy,column_sx,ypcolumn,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,rendSet,false,true)
+							dxDrawText(data[1],1+tPosX+columnTextPosOffset[1],1+cy+columnTextPosOffset[2],column_sx+columnTextPosOffset[1],ypcolumn+columnTextPosOffset[2],black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,rendSet,false,true)
 						end
-						dxDrawText(data[1],tPosX,cy,column_sx,ypcolumn,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,rendSet,false,true)
+						dxDrawText(data[1],tPosX+columnTextPosOffset[1],cy+columnTextPosOffset[2],column_sx+columnTextPosOffset[1],ypcolumn+columnTextPosOffset[2],_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,rendSet,false,true)
 						if mouseInsideGridList and mouseSelectColumn == -1 then
 							backgroundWidth = data[2]*multiplier
 							if backgroundWidth+posx-x >= w or whichColumnToEnd == i then
@@ -2273,9 +2408,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								if colorcoded then
 									text = text:gsub("#%x%x%x%x%x%x","") or text
 								end
-								dxDrawText(text,v[2]+shadow[1],_y+shadow[2],v[3]+shadow[1],_sy+shadow[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,rendSet,false,true)
+								dxDrawText(text,v[2]+shadow[1]+rowTextPosOffset[1],_y+shadow[2]+rowTextPosOffset[2],v[3]+shadow[1]+rowTextPosOffset[1],_sy+shadow[2]+rowTextPosOffset[2],shadow[3],v[5],v[6],v[7],v[10],"center",v[8],false,rendSet,false,true)
 							end
-							dxDrawText(v[1],v[2],_y,v[3],_sy,v[4],v[5],v[6],v[7],v[10],"center",v[8],false,rendSet,colorcoded,true)
+							dxDrawText(v[1],v[2]+rowTextPosOffset[1],_y+rowTextPosOffset[2],v[3]+rowTextPosOffset[1],_sy+rowTextPosOffset[2],v[4],v[5],v[6],v[7],v[10],"center",v[8],false,rendSet,colorcoded,true)
 						end
 					end
 				end
@@ -3463,7 +3598,7 @@ addEventHandler("onClientKey",root,function(button,state)
 				if my < y+height then
 					local speed = dgsElementData[tabpanel].scrollSpeed[2] and dgsElementData[tabpanel].scrollSpeed[1] or dgsElementData[tabpanel].scrollSpeed[1]/width
 					local orgoff = dgsElementData[tabpanel].taboffperc
-					orgoff = math.restrict(0,1,orgoff+scroll*speed)
+					orgoff = math.restrict(orgoff+scroll*speed,0,1)
 					dgsSetData(tabpanel,"taboffperc",orgoff)
 				end
 			end
@@ -3584,6 +3719,7 @@ function onClientKeyTriggered(button)
 		local memo = MouseData.nowShow
 		local shift = getKeyState("lshift") or getKeyState("rshift")
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
+		local isWordWarp = dgsElementData[memo].wordWarp
 		if button == "arrow_l" then
 			dgsMemoMoveCaret(memo,-1,0,shift)
 		elseif button == "arrow_r" then
@@ -3593,11 +3729,25 @@ function onClientKeyTriggered(button)
 		elseif button == "arrow_d" then
 			dgsMemoMoveCaret(memo,0,1,shift,true)
 		elseif button == "home" then
-			dgsMemoSetCaretPosition(memo,0,ctrl and 1,getKeyState("lshift") or getKeyState("rshift"))
+			if isWordWarp then
+				local text = dgsElementData[memo].text
+				local index,line = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
+				local weakLineIndex,weakLine = dgsMemoFindWeakLineInStrongLine(text[line],index)
+				local currentPos = utf8Len(text[line][0],1,index)-utf8Len(text[line][1][weakLine][0],1,weakLineIndex)
+				dgsMemoSetCaretPosition(memo,currentPos,ctrl and 1,shift)
+			else
+				dgsMemoSetCaretPosition(memo,0,ctrl and 1,shift)
+			end
 		elseif button == "end" then
 			local text = dgsElementData[memo].text
-			local line = dgsElementData[memo].caretPos[2]
-			dgsMemoSetCaretPosition(memo,utf8Len(text[line] or ""),ctrl and #text,getKeyState("lshift") or getKeyState("rshift"))
+			local index,line = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
+			if isWordWarp then
+				local weakLineIndex,weakLine = dgsMemoFindWeakLineInStrongLine(dgsElementData[memo].text[line],index,true)
+				local currentPos = utf8Len(dgsElementData[memo].text[line][0],1,index)-utf8Len(text[line][1][weakLine][0],1,weakLineIndex)+dgsElementData[memo].text[line][1][weakLine][3]
+				dgsMemoSetCaretPosition(memo,currentPos,ctrl and #text,shift,not ctrl and true)
+			else
+				dgsMemoSetCaretPosition(memo,utf8Len(text[line][0] or ""),ctrl and #text,shift)
+			end
 		elseif button == "delete" then
 			if not dgsElementData[memo].readOnly then
 				local cpos = dgsElementData[memo].caretPos
@@ -3636,10 +3786,7 @@ function onClientKeyTriggered(button)
 			end
 		elseif button == "a" then
 			if ctrl then
-				dgsSetData(memo,"caretPos",{0,1})
-				local text = dgsElementData[memo].text
-				local allLine = #text
-				dgsSetData(memo,"selectFrom",{utf8Len(text[allLine]),allLine})
+				dgsMemoSetSelectedArea(memo,0,1,"all")
 			end
 		end
 	elseif dgsGetType(MouseData.nowShow) == "dgs-dxgridlist" then
@@ -3648,28 +3795,28 @@ function onClientKeyTriggered(button)
 			if button == "arrow_u" then
 				if dgsElementData[gridlist].selectionMode ~= 2 then
 					local lastSelected = dgsElementData[gridlist].lastSelectedItem
-					local theNext = lastSelected[1]-1
-					dgsGridListSetSelectedItem(gridlist,theNext <= 1 and 1 or theNext,lastSelected[2],true)
+					local nextSelected = lastSelected[1]-1
+					dgsGridListSetSelectedItem(gridlist,nextSelected <= 1 and 1 or nextSelected,lastSelected[2],true)
 				end
 			elseif button == "arrow_d" then
 				if dgsElementData[gridlist].selectionMode ~= 2 then
 					local lastSelected = dgsElementData[gridlist].lastSelectedItem
-					local theNext = lastSelected[1]+1
+					local nextSelected = lastSelected[1]+1
 					local rowCount = #dgsElementData[gridlist].rowData
-					dgsGridListSetSelectedItem(gridlist,theNext >= rowCount and rowCount or theNext,lastSelected[2],true)
+					dgsGridListSetSelectedItem(gridlist,nextSelected >= rowCount and rowCount or nextSelected,lastSelected[2],true)
 				end
 			elseif button == "arrow_l" then
 				if dgsElementData[gridlist].selectionMode ~= 1 then
 					local lastSelected = dgsElementData[gridlist].lastSelectedItem
-					local theNext = lastSelected[2]-1
-					dgsGridListSetSelectedItem(gridlist,lastSelected[1],theNext <= 1 and 1 or theNext,true)
+					local nextSelected = lastSelected[2]-1
+					dgsGridListSetSelectedItem(gridlist,lastSelected[1],nextSelected <= 1 and 1 or nextSelected,true)
 				end
 			elseif button == "arrow_r" then
 				if dgsElementData[gridlist].selectionMode ~= 1 then
 					local lastSelected = dgsElementData[gridlist].lastSelectedItem
-					local theNext = lastSelected[2]+1
+					local nextSelected = lastSelected[2]+1
 					local columCount = #dgsElementData[gridlist].columnData
-					dgsGridListSetSelectedItem(gridlist,lastSelected[1],theNext >= columCount and columCount or theNext,true)
+					dgsGridListSetSelectedItem(gridlist,lastSelected[1],nextSelected >= columCount and columCount or nextSelected,true)
 				end
 			end
 		end
@@ -4089,7 +4236,7 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 					if alEnter[3] then
 						local mathSymbol = alEnter[3] == "left" and -1 or 1
 						local old = sItemData[6]
-						sItemData[6] = math.restrict(sItemData[2],sItemData[3],sItemData[6]+sItemData[4]*mathSymbol)
+						sItemData[6] = math.restrict(sItemData[6]+sItemData[4]*mathSymbol,sItemData[2],sItemData[3])
 						triggerEvent("onDgsArrowListValueChange",source,id,sItemData[6],old)
 					end
 				end

@@ -3,8 +3,39 @@ local mathFloor = math.floor
 local tableInsert = table.insert
 local tableRemove = table.remove
 local utf8Sub = utf8.sub
+local utf8Gsub = utf8.gsub
 local utf8Len = utf8.len
-----
+local utf8Insert = utf8.insert
+local _dxGetTextWidth = dxGetTextWidth
+--[[
+---------------In Normal Mode------------------
+	Text Table Structure:
+			Original Text(String)
+		{
+			{[0] = text},
+			{[0] = text},
+			{[0] = text},
+			...
+		}
+--------------In Word Warp Mode----------------
+	Text Table Structure:
+			Text(String),	Map Tables For Weak Line(Table),	
+		{
+			{[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 1
+			{[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 2
+			{[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 3
+			...
+		}
+		
+	Map Table Structure:
+			Text Of Weak Line(String),	Row In Text Table(Table),	Weak Line Index In Text Table(Integer),		Length Of Text(Integer),
+		{		
+			{[0] = SplitedText,			[1] = LineInTextTable,		[2] = WeakIndex,							[3] = utf8Len(SplitedText)},			
+			{[0] = SplitedText,			[1] = LineInTextTable,		[2] = WeakIndex,							[3] = utf8Len(SplitedText)},		
+			{[0] = SplitedText,			[1] = LineInTextTable,		[2] = WeakIndex,							[3] = utf8Len(SplitedText)},
+			...
+		}
+]]
 function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor)
 	assert(type(x) == "number","Bad argument @dgsCreateMemo at argument 1, expect number got "..type(x))
 	assert(type(y) == "number","Bad argument @dgsCreateMemo at argument 2, expect number got "..type(y))
@@ -22,13 +53,15 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.memo.bgImage))
 	dgsSetData(memo,"font",systemFont,true)
 	dgsElementData[memo].text = {}
-	dgsSetData(memo,"clip",false)
-	dgsSetData(memo,"textLength",{""})
+	dgsSetData(memo,"wordWarp",false)	--false:Normal Mode; 0:Word warp by character; 1:Word warp by word;
+	dgsSetData(memo,"wordWarpShowLine",{1,1,1})
+	dgsSetData(memo,"wordWarpMapText",{})
 	dgsSetData(memo,"textColor",textColor or styleSettings.memo.textColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.memo.textSize[1], tonumber(scaley) or styleSettings.memo.textSize[2]
 	dgsSetData(memo,"textSize",{textSizeX,textSizeY},true)
 	dgsSetData(memo,"caretPos",{0,1})
 	dgsSetData(memo,"selectFrom",{0,1})
+	--dgsSetData(memo,"insertMode",false)
 	dgsSetData(memo,"rightLength",{0,1})
 	dgsSetData(memo,"scrollSize",3)	-- Lines
 	dgsSetData(memo,"showPos",0)
@@ -50,6 +83,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"typingSound",styleSettings.memo.typingSound)
 	dgsSetData(memo,"selectColor",styleSettings.memo.selectColor)
 	dgsSetData(memo,"configNextFrame",false)
+	dgsSetData(memo,"rebuildMapTableNextFrame",false)
 	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
 	dgsSetData(memo,"memo",gmemo)
 	dgsSetData(gmemo,"dxmemo",memo)
@@ -79,7 +113,7 @@ end
 
 function dgsMemoGetLineCount(memo)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetLineCount at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	return #dgsElementData[memo].textLength
+	return #dgsElementData[memo].text
 end
 
 function dgsMemoGetScrollBar(memo)
@@ -87,47 +121,74 @@ function dgsMemoGetScrollBar(memo)
 	return dgsElementData[memo].scrollbars
 end
 
-function dgsMemoMoveCaret(memo,offset,lineoffset,noselect,noMoveLine)
+function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoMoveCaret at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(offset) == "number","Bad argument @dgsMemoMoveCaret at argument 2, expect number got "..type(offset))
-	lineoffset = lineoffset or 0
-	local xpos = dgsElementData[memo].caretPos[1]
+	assert(type(indexOffset) == "number","Bad argument @dgsMemoMoveCaret at argument 2, expect number got "..type(indexOffset))
+	lineOffset = lineOffset or 0
+	local index = dgsElementData[memo].caretPos[1]
 	local line = dgsElementData[memo].caretPos[2]
-	local textTable = dgsElementData[memo].text
-	local text = textTable[line] or ""
-	local pos,line = dgsMemoSeekPosition(textTable,xpos+mathFloor(offset),line+mathFloor(lineoffset),noMoveLine)
-	local showPos,showLine = dgsElementData[memo].showPos,dgsElementData[memo].showLine
 	local font = dgsElementData[memo].font
-	local nowLen = dxGetTextWidth(utf8Sub(text,0,pos),dgsElementData[memo].textSize[1],font)
-	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 	local size = dgsElementData[memo].absSize
-	local targetLen = nowLen+showPos
-	local targetLine = line-showLine
+	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 	local scbThick = dgsElementData[memo].scrollBarThick
 	local scrollbars = dgsElementData[memo].scrollbars
 	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
 	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
-	if targetLen > size[1]-scbTakes[1]-4 then
-		dgsSetData(memo,"showPos",size[1]-scbTakes[1]-4-nowLen)
-		syncScrollBars(memo,2)
-	elseif targetLen < 0 then
-		dgsSetData(memo,"showPos",-nowLen)
-		syncScrollBars(memo,2)
-	end
-	if targetLine >= canHold then
-		dgsSetData(memo,"showLine",line-canHold+1)
-		syncScrollBars(memo,1)
-	elseif targetLine < 1 then
-		dgsSetData(memo,"showLine",line)
-		syncScrollBars(memo,1)
-	end
-	dgsSetData(memo,"caretPos",{pos,line})	
-	local isReadOnlyShow = true
-	if dgsElementData[memo].readOnly then
-		isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
-	end
-	if not noselect or not isReadOnlyShow then
-		dgsSetData(memo,"selectFrom",{pos,line})
+	local textTable = dgsElementData[memo].text
+	local isWordWarp = dgsElementData[memo].wordWarp
+	if isWordWarp then
+		local wordWarpShowLine = dgsElementData[memo].wordWarpShowLine
+		local mapTable = dgsElementData[memo].wordWarpMapText
+		local weakIndex,weakLine = dgsMemoTransformStrongLineToWeakLine(textTable,mapTable,index,line,indexOffset > 0)
+		local newWeakIndex,newWeakLine = dgsMemoSeekPosition(mapTable,weakIndex+indexOffset,weakLine+lineOffset,noMoveLine)
+		local newIndex,newLine = dgsMemoTransfromWeakLineToStrongLine(textTable,mapTable,newWeakIndex,newWeakLine)
+		local targetLine = newWeakLine-wordWarpShowLine[3]
+		if targetLine >= canHold then
+			local theWeakLineIndex = newWeakLine-canHold+1
+			dgsSetData(memo,"wordWarpShowLine",{newLine,mapTable[theWeakLineIndex][2],theWeakLineIndex})
+			syncScrollBars(memo,1)
+		elseif targetLine < 1 then
+			dgsSetData(memo,"wordWarpShowLine",{newLine,mapTable[newWeakLine][2],newWeakLine})
+			syncScrollBars(memo,1)
+		end
+		dgsSetData(memo,"caretPos",{newIndex,newLine})	
+		local isReadOnlyShow = true
+		if dgsElementData[memo].readOnly then
+			isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
+		end
+		if not noselect or not isReadOnlyShow then
+			dgsSetData(memo,"selectFrom",{newIndex,newLine})
+		end
+	else
+		local text = (textTable[line] or {[0]=""})[0]
+		local pos,line = dgsMemoSeekPosition(textTable,index+mathFloor(indexOffset),line+mathFloor(lineOffset),noMoveLine)
+		local showLine = dgsElementData[memo].showLine
+		local targetLine = line-showLine
+		local showPos = dgsElementData[memo].showPos
+		local nowLen = _dxGetTextWidth(utf8Sub(text,0,pos),dgsElementData[memo].textSize[1],font)
+		local targetLen = nowLen-showPos
+		if targetLen > size[1]-scbTakes[1]-4 then
+			dgsSetData(memo,"showPos",-(size[1]-scbTakes[1]-4-nowLen))
+			syncScrollBars(memo,2)
+		elseif targetLen < 0 then
+			dgsSetData(memo,"showPos",nowLen)
+			syncScrollBars(memo,2)
+		end
+		if targetLine >= canHold then
+			dgsSetData(memo,"showLine",line-canHold+1)
+			syncScrollBars(memo,1)
+		elseif targetLine < 1 then
+			dgsSetData(memo,"showLine",line)
+			syncScrollBars(memo,1)
+		end
+		dgsSetData(memo,"caretPos",{pos,line})	
+		local isReadOnlyShow = true
+		if dgsElementData[memo].readOnly then
+			isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
+		end
+		if not noselect or not isReadOnlyShow then
+			dgsSetData(memo,"selectFrom",{pos,line})
+		end
 	end
 	resetTimer(MouseData.EditMemoTimer)
 	MouseData.editMemoCursor = true
@@ -136,19 +197,17 @@ end
 
 function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
 	local line = (line < 1 and 1) or (line > #textTable and #textTable) or line
-	local text = textTable[line] or ""
+	local text = (textTable[line] or {[0]=""})[0]
 	local strCount = utf8Len(text)
 	if not noMoveLine then
 		while true do
 			if pos < 0 then
 				if line-1 >= 1 then
 					line = line-1
-					text = textTable[line] or ""
+					text = (textTable[line] or {[0]=""})[0]
 					strCount = utf8Len(text)
 					pos = strCount+pos+1
-					if pos >= 0 then
-						break
-					end
+					if pos >= 0 then break end
 				else
 					pos = 0
 					break
@@ -157,11 +216,9 @@ function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
 				if line+1 <= #textTable then
 					pos = pos-strCount-1
 					line = line+1
-					text = textTable[line] or ""
+					text = (textTable[line] or {[0]=""})[0]
 					strCount = utf8Len(text)
-					if pos <= strCount then
-						break
-					end
+					if pos <= strCount then break end
 				else
 					pos = strCount
 					break
@@ -176,42 +233,83 @@ function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
 	end
 end
 
-function dgsMemoSetCaretPosition(memo,tpos,tline,noselect)
+function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	assert(type(tpos) == "number","Bad argument @dgsMemoSetCaretPosition at argument 2, expect number got "..type(tpos))
 	local textTable = dgsElementData[memo].text
 	local curpos = dgsElementData[memo].caretPos
 	tline = tline or curpos[2]
-	local text = textTable[tline] or ""
-	local pos,line = dgsMemoSeekPosition(textTable,tpos,tline)
-	local showPos,showLine = dgsElementData[memo].showPos,dgsElementData[memo].showLine
+	local text = (textTable[tline] or {[-1]=0,[0]=""})[0]
+	local index,line
+	local isWordWarp = dgsElementData[memo].wordWarp
+	local showLine = dgsElementData[memo].showLine
 	local font = dgsElementData[memo].font
-	local nowLen = dxGetTextWidth(utf8Sub(text,0,pos),dgsElementData[memo].textSize[1],font)
 	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 	local size = dgsElementData[memo].absSize
-	local targetLen = nowLen+showPos
-	local targetLine = tline-showLine+1
 	local scbThick = dgsElementData[memo].scrollBarThick
 	local scrollbars = dgsElementData[memo].scrollbars
 	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
 	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
-	if targetLen > size[1]-scbTakes[1]-4 then
-		dgsSetData(memo,"showPos",size[1]-scbTakes[1]-4-nowLen)
-		syncScrollBars(memo,2)
-	elseif targetLen < 0 then
-		dgsSetData(memo,"showPos",-nowLen)
-		syncScrollBars(memo,2)
-	end
-	if targetLine >= canHold then
-		dgsSetData(memo,"showLine",line-canHold+1)
-		syncScrollBars(memo,1)
-	elseif targetLine < 1 then
-		dgsSetData(memo,"showLine",line)
-		syncScrollBars(memo,1)
-	end
-	dgsSetData(memo,"caretPos",{pos,line})
-	if not noselect then
-		dgsSetData(memo,"selectFrom",{pos,line})
+	if isWordWarp then
+		if noSeekPosition then
+			index = math.restrict(tpos,0,utf8Len(text))
+			line = tline
+		else
+			index,line = dgsMemoSeekPosition(textTable,tpos,tline)
+		end
+		local wordWarpShowLine = dgsElementData[memo].wordWarpShowLine
+		local mapTable = dgsElementData[memo].wordWarpMapText
+		local weakIndex,weakLine = dgsMemoTransformStrongLineToWeakLine(textTable,mapTable,index,line)
+		local targetLine = weakLine-wordWarpShowLine[3]+1
+		if targetLine >= canHold then
+			local theWeakLineIndex = weakLine-canHold+1
+			local theWeakLine = mapTable[theWeakLineIndex]
+			local newLine
+			for i=1,#textTable do
+				if textTable[i] == theWeakLine[1] then
+					newLine = i
+					break
+				end
+			end
+			dgsSetData(memo,"wordWarpShowLine",{newLine,mapTable[theWeakLineIndex][2],theWeakLineIndex})
+			syncScrollBars(memo,1)
+		elseif targetLine < 1 then
+			dgsSetData(memo,"wordWarpShowLine",{line,mapTable[weakLine][2],weakLine})
+			syncScrollBars(memo,1)
+		end
+		dgsSetData(memo,"caretPos",{index,line})
+		if not doSelect then
+			dgsSetData(memo,"selectFrom",{index,line})
+		end
+	else
+		if noSeekPosition then
+			index = math.restrict(tpos,0,utf8Len(text))
+			line = tline
+		else
+			index,line = dgsMemoSeekPosition(textTable,tpos,tline)
+		end
+		local showPos = dgsElementData[memo].showPos
+		local nowLen = _dxGetTextWidth(utf8Sub(text,0,index),dgsElementData[memo].textSize[1],font)
+		local targetLen = nowLen-showPos
+		if targetLen > size[1]-scbTakes[1]-4 then
+			dgsSetData(memo,"showPos",-(size[1]-scbTakes[1]-4-nowLen))
+			syncScrollBars(memo,2)
+		elseif targetLen < 0 then
+			dgsSetData(memo,"showPos",nowLen)
+			syncScrollBars(memo,2)
+		end
+		local targetLine = tline-showLine+1
+		if targetLine >= canHold then
+			dgsSetData(memo,"showLine",line-canHold+1)
+			syncScrollBars(memo,1)
+		elseif targetLine < 1 then
+			dgsSetData(memo,"showLine",line)
+			syncScrollBars(memo,1)
+		end
+		dgsSetData(memo,"caretPos",{index,line})
+		if not doSelect then
+			dgsSetData(memo,"selectFrom",{index,line})
+		end
 	end
 	resetTimer(MouseData.EditMemoTimer)
 	MouseData.editMemoCursor = true
@@ -261,65 +359,230 @@ function searchMemoMousePosition(dxmemo,posx,posy)
 		local font = dgsElementData[dxmemo].font or systemFont
 		local txtSizX = dgsElementData[dxmemo].textSize[1]
 		local fontHeight = dxGetFontHeight(dgsElementData[dxmemo].textSize[2],font)
-		local offset = dgsElementData[dxmemo].showPos
-		local showLine = dgsElementData[dxmemo].showLine
+		local showPos = dgsElementData[dxmemo].showPos
+		local isWordWarp = dgsElementData[dxmemo].wordWarp
+		local showLine = isWordWarp and dgsElementData[dxmemo].wordWarpShowLine[3] or dgsElementData[dxmemo].showLine
 		local x,y = dgsGetPosition(dxmemo,false,true)
-		local allText = dgsElementData[dxmemo].text
+		local originalText = dgsElementData[dxmemo].text
+		local allText = isWordWarp and dgsElementData[dxmemo].wordWarpMapText or originalText
 		local selLine = mathFloor((posy-y)/fontHeight)+showLine
 		selLine = selLine > #allText and #allText or selLine 
-		local text = dgsElementData[dxmemo].text[selLine] or ""
-		local pos = posx-x-offset
+		local text = (allText[selLine] or {[0]=""})[0]
+		local pos = posx-x+showPos
 		local sfrom,sto,templen = 0,utf8Len(text),0
 		for i=1,sto do
-			halfStoSfrom = (sto+sfrom)*0.5
-			local strlen = dxGetTextWidth(utf8Sub(text,sfrom+1,halfStoSfrom),txtSizX,font)
+			stoSfrom_Half = (sto+sfrom)*0.5
+			local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
+			local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
 			local len1 = strlen+templen
 			if pos < len1 then
-				sto = halfStoSfrom-halfStoSfrom%1
+				sto = stoSfrom_Half
 			elseif pos > len1 then
-				sfrom = halfStoSfrom-halfStoSfrom%1
-				templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+				sfrom = stoSfrom_Half
+				templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 				start = len1
 			elseif pos == len1 then
 				start = len1
+				sfrom = stoSfrom_Half
 				sto = sfrom
-				templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+				templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 			end
-			if sto-sfrom <= 10 then
+			if sto-sfrom <= 10 then break end
+		end
+		local start = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+		local resultIndex,resultLine = 0,1
+		for i=sfrom,sto do
+			local poslen1 = _dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
+			local theNext = _dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
+			local offsetR = theNext+poslen1
+			local theLast = _dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
+			local offsetL = poslen1-theLast
+			if i <= sfrom and pos <= offsetL then
+				resultIndex,resultLine = sfrom,selLine
+				break
+			elseif i >= sto and pos >= offsetR then
+				resultIndex,resultLine = sto,selLine
+				break
+			elseif pos >= offsetL and pos <= offsetR then
+				resultIndex,resultLine = i,selLine
 				break
 			end
 		end
-		local start = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
-		for i=sfrom,sto do
-			local poslen1 = dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
-			local theNext = dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
-			local offsetR = theNext+poslen1
-			local theLast = dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
-			local offsetL = poslen1-theLast
-			if i <= sfrom and pos <= offsetL then
-				return sfrom,selLine
-			elseif i >= sto and pos >= offsetR then
-				return sto,selLine
-			elseif pos >= offsetL and pos <= offsetR then
-				return i,selLine
+		if isWordWarp then
+			local warpTotalLine = 0
+			for line=1,#originalText do
+				for weakLine=1,#originalText[line][1] do
+					warpTotalLine = warpTotalLine + 1
+					if warpTotalLine == resultLine then
+						resultLine = line
+						local before = 0
+						for i=1,weakLine-1 do
+							before = before + originalText[line][1][i][3]
+						end
+						resultIndex = resultIndex + before
+					end
+				end
 			end
 		end
-		return 0,1
+		return resultIndex,resultLine
 	end
 	return false
+end
+
+function searchTextFromPosition(text,font,textSizeX,pos)
+	local sfrom,sto = 0,utf8Len(text)
+	local templen = 0
+	for i=1,sto do
+		local stoSfrom_Half = (sto+sfrom)*0.5
+		local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
+		local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),textSizeX,font)
+		local len1 = strlen+templen
+		if pos < len1 then
+			sto = stoSfrom_Half
+		elseif pos > len1 then
+			sfrom = stoSfrom_Half
+			templen = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
+			start = len1
+		elseif pos == len1 then
+			start = len1
+			sfrom = stoSfrom_Half-1
+			sto = sfrom
+			templen = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)	
+		end
+		if sto-sfrom <= 10 then
+			break
+		end
+	end
+	local start = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
+	for i=sfrom,sto do
+		local Current = _dxGetTextWidth(utf8Sub(text,i+1,i+1),textSizeX,font)
+		if start+Current >= pos then
+			return i
+		end
+		start = start+Current
+	end
+	return sto
+end
+
+--Optimize Mark: textLength/textCount
+function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
+	local splitTable = {}
+	local font = font or systemFont
+	local textSizeX = textSizeX or 1
+	local textWidth = textWidth or _dxGetTextWidth(text,textSizeX,font)
+	if maxWidth > textWidth then
+		return {text},1
+	end
+	local cnt = 1
+	if isSplitByWord then
+		
+	else
+		while(text ~= "") do
+			local tick = getTickCount()
+			local index = searchTextFromPosition(text,font,textSizeX,maxWidth)
+			local tempText = utf8Sub(text,1,index)
+			text = utf8Sub(text,index+1)
+			splitTable[cnt] = tempText
+			cnt = cnt+1
+		end
+		return splitTable,cnt-1
+	end
+	return false,false
+end
+
+function dgsMemoGetInsertLine(textTable,mapTable,theLine)
+	for i=1,#mapTable do
+		if mapTable[i][1] == textTable[theLine] then
+			return i,#textTable[theLine][1]
+		end
+	end
+	return 1,1
+end
+
+function dgsMemoRemoveMapTable(mapTable,from,count)
+	for i=from,from+count-1 do
+		tableRemove(mapTable,from)
+	end
+end
+
+function dgsMemoInsertMapTable(mapTable,from,insertTable,strongLine)
+	local resultTable = {}
+	for i=1,#insertTable do
+		local readyTable = {[0]=insertTable[i],strongLine,i,utf8Len(insertTable[i])}
+		tableInsert(mapTable,from+i-1,readyTable)
+		resultTable[i] = readyTable
+	end
+	return resultTable
+end
+
+function dgsMemoFindWeakLineInStrongLine(strongLine,index,isCeil)
+	if #strongLine[1] == 1 then
+		return index,1
+	end
+	for i=1,#strongLine[1] do
+		local textLen = strongLine[1][i][3]
+		if (isCeil and index >= textLen) or (not isCeil and index > textLen) then
+			index = index-textLen
+		else
+			return index,i
+		end
+	end
+	return index,#strongLine[1]
+end
+
+function dgsMemoTransfromWeakLineToStrongLine(textTable,mapTable,index,weakLine)
+	local weakLineText = mapTable[weakLine]
+	local allPos = 0
+	for i=1,#textTable do
+		if weakLineText[1] == textTable[i] then
+			local textLen = index
+			for a=1,weakLine-allPos-1 do
+				textLen = textTable[i][1][a][3]+textLen
+			end
+			return textLen,i
+		end
+		allPos = allPos+#textTable[i][1]
+	end
+	return utf8Len(textTable[#textTable][0]),#textTable
+end
+
+function dgsMemoTransformStrongLineToWeakLine(textTable,mapTable,index,line,isCeil)
+	local strongLine = textTable[line]
+	for i=1,#strongLine[1] do
+		local textLen = strongLine[1][i][3]
+		if index-textLen < 0 then
+			local weakLineBefore = 0
+			for weakLine=1,#mapTable do
+				if mapTable[weakLine][1] == strongLine then
+					weakLineBefore = weakLine-1
+					break
+				end
+			end
+			return index,i+weakLineBefore
+		elseif index-textLen == 0 then
+			if not isCeil or i == #strongLine[1] then
+				local weakLineBefore = 0
+				for weakLine=1,#mapTable do
+					if mapTable[weakLine][1] == strongLine then
+						weakLineBefore = weakLine-1
+						break
+					end
+				end
+				return index,i+weakLineBefore
+			end
+		end
+		index = index-textLen
+	end
+	return utf8Len(mapTable[#mapTable][0]),#mapTable
 end
 
 local splitChar = "\r\n"
 local splitChar2 = "\n"
 function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
-	local textTable = dgsElementData[memo].text
-	local textLen = dgsElementData[memo].textLength
-	local str = textTable
+	local textTable = dgsElementData[memo].text or {}
 	if not noclear then
-		dgsElementData[memo].text = {""}
-		dgsElementData[memo].textLength = {}
+		dgsElementData[memo].text = {{[-1]=0,[0]="",[1]={}}}
 		textTable = dgsElementData[memo].text
-		textLen = dgsElementData[memo].textLength
 		dgsSetData(memo,"caretPos",{0,1})
 		dgsSetData(memo,"selectFrom",{0,1})
 		dgsSetData(memo,"rightLength",{0,1})
@@ -329,69 +592,70 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	local textSize = dgsElementData[memo].textSize
 	local _index,_line = dgsMemoGetCaretPosition(memo,true)
 	local index,line = index or _index,line or _line
-	local fixed = utf8.gsub(text,splitChar,splitChar2)
-	local fixed = utf8.gsub(fixed,"	"," ")
-	fixed = " "..fixed.." "
+	local fixed = utf8Gsub(text,splitChar,splitChar2)
+	local fixed = " "..utf8Gsub(fixed,"	"," ").." "
 	local tab = string.split(fixed,splitChar2)
 	tab[1] = utf8Sub(tab[1],2)
 	tab[#tab] = utf8Sub(tab[#tab],1,utf8Len(tab[#tab])-1)
+	local isWordWarp = dgsElementData[memo].wordWarp
+
+	local mapTable = dgsElementData[memo].wordWarpMapText or {}
+	local size = dgsElementData[memo].absSize
+	local scbThick = dgsElementData[memo].scrollBarThick
+	local scrollbars = dgsElementData[memo].scrollbars
+	local scbTakes1 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4
+	local canHold = mathFloor(size[1]-scbTakes1)
+	
 	local offset = 0
 	if tab ~= 0 then
-		if #tab == 1 then
-			tab[1] = tab[1] or ""
-			offset = utf8Len(tab[1])+1
-			textTable[line] = utf8.insert(textTable[line] or "",index+1,tab[1])
-			textLen[line] = dxGetTextWidth(textTable[line],textSize[1],font)
-			if dgsElementData[memo].rightLength[1] < textLen[line] then
-				dgsElementData[memo].rightLength = {textLen[line],line}
+		local insertLine,lineCnt
+		if isWordWarp then
+			insertLine,lineCnt = dgsMemoGetInsertLine(textTable,mapTable,line)
+			dgsMemoRemoveMapTable(mapTable,insertLine,lineCnt)
+		end
+		local textFront,textRear
+		local newTextLines = #tab
+		for i=1,newTextLines do
+			tab[i] = tab[i] or ""
+			offset = offset+utf8Len(tab[i])+1
+			theline = line+i-1
+			if i ~= 1 and i ~= newTextLines then
+				local textLen = _dxGetTextWidth(tab[i],textSize[1],font)
+				local text = tab[i]
+				tableInsert(textTable,theline,{[-1]=textLen,[0]=text})
+			else
+				if i == 1 then
+					textTable[theline] = textTable[theline] or {[0]=""}
+					textFront = utf8Sub(textTable[theline][0],0,index) or ""
+					textRear = utf8Sub(textTable[theline][0],index+1) or ""
+					local isAppendRear = newTextLines == 1 and textRear or ""
+					textTable[theline][0] = textFront..tab[1]..isAppendRear
+					textTable[theline][-1] = _dxGetTextWidth(textTable[theline][0],textSize[1],font)
+				end
+				if i == newTextLines and i ~= 1 then
+					local text = {}
+					text[0] = (tab[i] or "")..textRear
+					text[-1] = _dxGetTextWidth(text[0],textSize[1],font)
+					tableInsert(textTable,theline,text)
+				end
 			end
-		else
-			tab[1] = tab[1] or ""
-			offset = offset+utf8Len(tab[1])+1
-			textTable[line] = textTable[line] or ""
-			local txt1 = utf8Sub(textTable[line],0,index) or ""
-			local txt2 = utf8Sub(textTable[line],index+1) or ""
-			textTable[line] = (txt1)..(tab[1])
-			textLen[line] = dxGetTextWidth(textTable[line],textSize[1],font)
-			for i=2,#tab do
-				tab[i] = tab[i] or ""
-				offset = offset+utf8Len(tab[i])+1
-				local theline = line+i-1
-				tableInsert(textTable,theline,tab[i])
-				tableInsert(textLen,theline,dxGetTextWidth(tab[i],textSize[1],font))
-				if dgsElementData[memo].rightLength[1] < textLen[theline] then
-					dgsElementData[memo].rightLength = {textLen[theline],theline}
-				elseif dgsElementData[memo].rightLength[2] > line+#tab-1 then
-					dgsElementData[memo].rightLength[2] = dgsElementData[memo].rightLength[2]+1
-				end
-				if i == #tab then
-					textTable[theline] = (tab[i] or "")..txt2
-					textLen[theline] = dxGetTextWidth(textTable[theline],textSize[1],font)
-					if dgsElementData[memo].rightLength[1] < textLen[theline] then
-						dgsElementData[memo].rightLength = {textLen[theline],theline}
-					elseif dgsElementData[memo].rightLength[2] > line+#tab-1 then
-						dgsElementData[memo].rightLength[2] = dgsElementData[memo].rightLength[2]+1
-					end
-				end
+			if isWordWarp then
+				local splitedText,splitedTextLine = dgsMemoWordSplit(textTable[theline][0],canHold,textTable[theline][-1],font,textSize[1],false)
+				textTable[theline][1] = dgsMemoInsertMapTable(mapTable,insertLine,splitedText,textTable[theline])
+				insertLine = insertLine + splitedTextLine
+			end
+
+			if dgsElementData[memo].rightLength[1] < textTable[theline][-1] then
+				dgsElementData[memo].rightLength = {textTable[theline][-1],theline}
+			elseif dgsElementData[memo].rightLength[2] > line+#tab-1 then
+				dgsElementData[memo].rightLength[2] = dgsElementData[memo].rightLength[2]+1
 			end
 		end
 		dgsElementData[memo].text = textTable
-		dgsElementData[memo].textLength = textLen
-		local font = dgsElementData[memo].font
 		local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
-		local size = dgsElementData[memo].absSize
-		local scbThick = dgsElementData[memo].scrollBarThick
-		local scrollbars = dgsElementData[memo].scrollbars
 		local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
 		local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
-		if dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] then
-			configMemo(memo)
-		elseif dgsElementData[scrollbars[1]].visible then
-			configMemo(memo)
-		end
-		if #textTable > canHold then
-			configMemo(memo)
-		elseif dgsElementData[scrollbars[2]].visible then
+		if dgsElementData[scrollbars[1]].visible or dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] or dgsElementData[scrollbars[2]].visible or #textTable > canHold then
 			configMemo(memo)
 		end
 		if not noAffectCaret then
@@ -411,102 +675,112 @@ function dgsMemoInsertText(memo,index,line,text,noAffectCaret)
 	return handleDxMemoText(memo,tostring(text),true,noAffectCaret,index,line)
 end
 
-function dgsMemoDeleteText(memo,fromindex,fromline,toindex,toline,noAffectCaret)
+function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoDeleteText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(dgsGetType(fromindex) == "number","Bad argument @dgsMemoDeleteText at argument 2, expect number got "..dgsGetType(fromindex))
-	assert(dgsGetType(fromline) == "number","Bad argument @dgsMemoDeleteText at argument 3, expect number got "..dgsGetType(fromline))
-	assert(dgsGetType(toindex) == "number","Bad argument @dgsMemoDeleteText at argument 4, expect number got "..dgsGetType(toindex))
-	assert(dgsGetType(toline) == "number","Bad argument @dgsMemoDeleteText at argument 5, expect number got "..dgsGetType(toline))
+	assert(dgsGetType(fromIndex) == "number","Bad argument @dgsMemoDeleteText at argument 2, expect number got "..dgsGetType(fromIndex))
+	assert(dgsGetType(fromLine) == "number","Bad argument @dgsMemoDeleteText at argument 3, expect number got "..dgsGetType(fromLine))
+	assert(dgsGetType(toIndex) == "number","Bad argument @dgsMemoDeleteText at argument 4, expect number got "..dgsGetType(toIndex))
+	assert(dgsGetType(toLine) == "number","Bad argument @dgsMemoDeleteText at argument 5, expect number got "..dgsGetType(toLine))
+	if fromIndex == toIndex and fromLine == toLine then return end
 	local textTable = dgsElementData[memo].text
-	local textLen = dgsElementData[memo].textLength
+	local mapTable = dgsElementData[memo].wordWarpMapText
 	local font = dgsElementData[memo].font
 	local textSize = dgsElementData[memo].textSize
-	local textLines = #textTable
-	if fromline < 1 then
-		fromline = 1
-	elseif fromline > textLines then
-		fromline = textLines
-	end
-	if toline < 1 then
-		toline = 1
-	elseif toline > textLines then
-		toline = textLines
-	end
-	local lineTextFrom = textTable[fromline]
-	local lineTextTo = textTable[toline]
-	local lineTextFromCnt = utf8Len(lineTextFrom)
-	local lineTextToCnt = utf8Len(lineTextTo)
-	if fromindex < 0 then
-		fromindex = 0
-	elseif fromindex > lineTextFromCnt then
-		toline = lineTextFromCnt
-	end
-	if toindex < 0 then
-		toindex = 0
-	elseif toindex > lineTextToCnt then
-		toline = lineTextToCnt
-	end
-	if fromline > toline then
-		local temp = toline
-		toline = fromline
-		fromline = temp
-		local temp = toindex
-		toindex = fromindex
-		fromindex = temp
-	end
-	if fromline == toline then
-		local _to = toindex < fromindex  and fromindex or toindex
-		local _from = fromindex > toindex and toindex or fromindex
-		textTable[toline] = utf8Sub(textTable[toline],0,_from)..utf8Sub(textTable[toline],_to+1)
-		textLen[toline] = dxGetTextWidth(textTable[toline],textSize[1],font)
-	else
-		textTable[fromline] = utf8Sub(textTable[fromline],0,fromindex)..utf8Sub(textTable[toline],toindex+1)
-		textLen[fromline] = dxGetTextWidth(textTable[fromline],textSize[1],font)
-		for i=fromline+1,toline do
-			tableRemove(textTable,fromline+1)
-			tableRemove(textLen,fromline+1)
-		end
-	end
-	dgsElementData[memo].text = textTable
-	dgsElementData[memo].textLength = textLen
-	local line,len = seekMaxLengthLine(memo)
-	dgsElementData[memo].rightLength = {len,line}
-	local font = dgsElementData[memo].font
 	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 	local size = dgsElementData[memo].absSize
 	local scbThick = dgsElementData[memo].scrollBarThick
 	local scrollbars = dgsElementData[memo].scrollbars
-	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
-	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
-	if dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] then
-		configMemo(memo)
-	elseif dgsElementData[scrollbars[1]].visible then
-		configMemo(memo)
+	local textLines = #textTable
+	local isWordWarp = dgsElementData[memo].wordWarp
+	local lineTextFrom = textTable[fromLine][0]
+	local lineTextTo = textTable[toLine][0]
+	local lineTextFromCnt = utf8Len(lineTextFrom)
+	local lineTextToCnt = utf8Len(lineTextTo)
+	local insertLine,lineCnt
+	fromIndex,toIndex = math.restrict(fromIndex,0,lineTextFromCnt),math.restrict(toIndex,0,lineTextToCnt)
+	fromLine,toLine = math.restrict(fromLine,1,textLines),math.restrict(toLine,1,textLines)
+	if fromLine > toLine then
+		fromLine,toLine,fromIndex,toIndex = toLine,fromLine,toIndex,fromIndex
 	end
-	if #textTable > canHold then
-		configMemo(memo)
-	elseif dgsElementData[scrollbars[2]].visible then
+	if fromLine == toLine then
+		local _to = toIndex < fromIndex and fromIndex or toIndex
+		local _from = fromIndex > toIndex and toIndex or fromIndex
+		textTable[toLine][0] = utf8Sub(textTable[toLine][0],0,_from)..utf8Sub(textTable[toLine][0],_to+1)
+		textTable[toLine][-1] = _dxGetTextWidth(textTable[toLine][0],textSize[1],font)
+		if isWordWarp then
+			insertLine,lineCnt = dgsMemoGetInsertLine(textTable,mapTable,fromLine)
+			dgsMemoRemoveMapTable(mapTable,insertLine,lineCnt)
+		end
+	else
+		textTable[fromLine][0] = utf8Sub(textTable[fromLine][0],0,fromIndex)..utf8Sub(textTable[toLine][0],toIndex+1)
+		textTable[fromLine][-1] = _dxGetTextWidth(textTable[fromLine][0],textSize[1],font)
+		insertLine,lineCnt = dgsMemoGetInsertLine(textTable,mapTable,fromLine)
+		dgsMemoRemoveMapTable(mapTable,insertLine,lineCnt)
+		for i=fromLine+1,toLine do
+			if isWordWarp then
+				insertLine,lineCnt = dgsMemoGetInsertLine(textTable,mapTable,fromLine+1)
+				dgsMemoRemoveMapTable(mapTable,insertLine,lineCnt)
+			end
+			tableRemove(textTable,fromLine+1)
+		end
+	end
+	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick+2 or 4}
+	local canHold = mathFloor((size[2]-scbTakes[2])/fontHeight)
+	if isWordWarp then
+		local splitedText,splitedTextLine = dgsMemoWordSplit(textTable[fromLine][0],size[1]-scbTakes[1],textTable[fromLine][-1],font,textSize[1],false)
+		textTable[fromLine][1] = dgsMemoInsertMapTable(mapTable,insertLine,splitedText,textTable[fromLine])
+		insertLine = insertLine + splitedTextLine
+	end
+	dgsElementData[memo].text = textTable
+	local line,len = seekMaxLengthLine(memo)
+	dgsElementData[memo].rightLength = {len,line}
+	if dgsElementData[scrollbars[1]].visible or dgsElementData[memo].rightLength[1] > size[1]-scbTakes[1] or dgsElementData[scrollbars[2]].visible or #textTable > canHold then
 		configMemo(memo)
 	end
 	if not noAffectCaret then
 		local cpos = dgsElementData[memo].caretPos
-		if cpos[2] > fromline then
-			dgsMemoSetCaretPosition(memo,cpos[1]-(toindex-fromindex),cpos[2]-(toline-fromline))
-		elseif cpos[2] == fromline and cpos[1] >= fromindex then
-			dgsMemoSetCaretPosition(memo,fromindex,fromline)
+		if cpos[2] > fromLine then
+			dgsMemoSetCaretPosition(memo,cpos[1]-(toIndex-fromIndex),cpos[2]-(toLine-fromLine))
+		elseif cpos[2] == fromLine and cpos[1] >= fromIndex then
+			dgsMemoSetCaretPosition(memo,fromIndex,fromLine)
 		end
 	end
-	if #dgsElementData[memo].text > canHold and dgsElementData[memo].showLine-1+canHold > #dgsElementData[memo].text then
-		dgsElementData[memo].showLine = 1-canHold+#dgsElementData[memo].text
+	local textTable = dgsElementData[memo].text
+	if isWordWarp then
+		local mapTable = dgsElementData[memo].wordWarpMapText
+		local mapTableCnt = #mapTable
+		local wordWarpShowLine = dgsElementData[memo].wordWarpShowLine
+		if mapTableCnt> canHold and wordWarpShowLine[3]-1+canHold > mapTableCnt then
+			wordWarpShowLine[3] = 1-canHold+mapTableCnt
+			local startStrongLine
+			for i = 1,#textTable do
+				if textTable[i] == mapTable[wordWarpShowLine[3]][1] then
+					startStrongLine = i
+				end
+			end
+			local startWeakLine
+			for i=1,mapTableCnt do
+				if mapTable[i][1] == textTable[startStrongLine] then
+					startWeakLine = wordWarpShowLine[3]-i+1
+				end
+			end
+			wordWarpShowLine[1] = startStrongLine
+			wordWarpShowLine[2] = startWeakLine
+		end
+	else
+		if #textTable > canHold and dgsElementData[memo].showLine-1+canHold > #textTable then
+			dgsElementData[memo].showLine = 1-canHold+#textTable
+		end
 	end
 	triggerEvent("onDgsTextChange",memo)
 end
 
 function dgsMemoClearText(memo)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoClearText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	dgsElementData[memo].text = {""}
-	dgsElementData[memo].textLength = {}
+	dgsElementData[memo].text = {{[-1]=0,[0]=""}}
 	dgsSetData(memo,"caretPos",{0,1})
+	dgsSetData(memo,"wordWarpMapText",{})
+	dgsSetData(memo,"wordWarpShowLine",{1,1,1})
 	dgsSetData(memo,"selectFrom",{0,1})
 	dgsSetData(memo,"rightLength",{0,1})
 	configMemo(memo)
@@ -518,66 +792,85 @@ function checkMemoMousePosition(button,state,x,y)
 	if dgsGetType(source) == "dgs-dxmemo" then
 		if state == "down" and button ~= "middle" then
 			local pos,line = searchMemoMousePosition(source,x,y)
-			dgsMemoSetCaretPosition(source,pos,line)
+			local shift = getKeyState("lshift") or getKeyState("rshift")
+			dgsMemoSetCaretPosition(source,pos,line,shift)
 		end
 	end
 end
 addEventHandler("onDgsMouseClick",root,checkMemoMousePosition)
 
-function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,delete)
+function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,isDelete)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetPartOfText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	local outStr = ""
 	local textTable = dgsElementData[memo].text
 	local textLines = #textTable
-	cindex,cline,tindex,tline = cindex or 0,cline or 1,tindex or utf8Len(textTable[textLines]),tline or textLines
-	if cline < 1 then
-		cline = 1
-	elseif cline > textLines then
-		cline = textLines
-	end
-	if tline < 1 then
-		tline = 1
-	elseif tline > textLines then
-		tline = textLines
-	end
-	local lineTextFrom = textTable[cline]
-	local lineTextTo = textTable[tline]
+	cindex,cline,tindex,tline = cindex or 0,cline or 1,tindex or utf8Len(textTable[textLines][0]),tline or textLines
+	cline = math.restrict(cline,1,textLines)
+	tline = math.restrict(tline,1,textLines)
+	local lineTextFrom = textTable[cline][0]
+	local lineTextTo = textTable[tline][0]
 	local lineTextFromCnt = utf8Len(lineTextFrom)
 	local lineTextToCnt = utf8Len(lineTextTo)
-	if cindex < 0 then
-		cindex = 0
-	elseif cindex > lineTextFromCnt then
-		tline = lineTextFromCnt
-	end
-	if tindex < 0 then
-		tindex = 0
-	elseif tindex > lineTextToCnt then
-		tline = lineTextToCnt
-	end
+	cindex = math.restrict(cindex,0,lineTextFromCnt)
+	tindex = math.restrict(tindex,0,lineTextToCnt)
 	if cline > tline then
-		local temp = tline
-		tline = cline
-		cline = temp
-		local temp = tindex
-		tindex = cindex
-		cindex = temp
+		tline,cline = cline,tline
 	end
 	if cline == tline then
 		local _to = tindex < cindex  and cindex or tindex
 		local _from = cindex > tindex and tindex or cindex
-		outStr = utf8Sub(textTable[tline],_from,_to)
+		outStr = utf8Sub(textTable[tline][0],_from,_to)
 	else
-		local txt1 = utf8Sub(textTable[cline],cindex+1) or ""
-		local txt2 = utf8Sub(textTable[tline],0,tindex) or ""
+		local txt1 = utf8Sub(textTable[cline][0],cindex+1) or ""
+		local txt2 = utf8Sub(textTable[tline][0],0,tindex) or ""
 		for i=cline+1,tline-1 do
-			outStr = outStr..textTable[i]..splitChar2
+			outStr = outStr..textTable[i][0]..splitChar2
 		end
 		outStr = txt1 ..splitChar2 ..outStr.. txt2
 	end
-	if delete then
+	if isDelete then
 		dgsMemoDeleteText(memo,cindex,cline,tindex,tline)
 	end
 	return outStr
+end
+
+function dgsMemoSetSelectedArea(memo,fromIndex,fromLine,...)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetSelectedArea at argument 1, except a dgs-memo got "..dgsGetType(memo))
+	assert(type(fromIndex) == "number","Bad argument @dgsMemoSetSelectedArea at argument 2, except a number got "..type(fromIndex))
+	assert(type(fromLine) == "number","Bad argument @dgsMemoSetSelectedArea at argument 3, except a number got "..type(fromLine))
+	local args = {...}
+	local textTable = dgsElementData[memo].text
+	local toIndex,toLine
+	if #args == 1 then
+		if args[1] == "all" then
+			toLine = #textTable
+			toIndex = utf8Len(textTable[toLine][0])
+		else
+			assert(type(args[1]) == "number","Bad argument @dgsMemoSetSelectedArea at argument 4, except a number got "..type(args[1]))
+			toIndex,toLine = dgsMemoSeekPosition(textTable,fromIndex+args[1],fromLine)
+		end
+	elseif #args == 2 then
+		toIndex,toLine = args[1],args[2]
+		assert(type(toIndex) == "number","Bad argument @dgsMemoSetSelectedArea at argument 4, except a number got "..type(toIndex))
+		assert(type(toLine) == "number","Bad argument @dgsMemoSetSelectedArea at argument 5, except a number got "..type(toLine))
+		if #textTable <= toLine then
+			toLine = #textTable
+		end
+		local textCnt = utf8Len(textTable[toLine][0])
+		if textCnt <= toIndex then
+			toIndex = textCnt
+		end
+	end
+	dgsSetData(memo,"caretPos",{fromIndex,fromLine})
+	dgsSetData(memo,"selectFrom",{toIndex,toLine})
+	return true
+end
+
+function dgsMemoGetSelectedArea(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetSelectedArea at argument 1, except a dgs-memo got "..dgsGetType(memo))
+	local fromIndex,fromLine = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
+	local toIndex,toLine = dgsElementData[memo].selectFrom[1],dgsElementData[memo].selectFrom[2]
+	return fromIndex,fromLine,toIndex,toLine
 end
 
 function dgsMemoSetTypingSound(memo,sound)
@@ -598,11 +891,26 @@ function dgsMemoGetTypingSound(memo)
 	return dgsElementData[memo].typingSound
 end
 
+function dgsSetWordWarpState(memo,state)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsSetWordWarpState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+	if state == true then
+		state = 0
+	elseif state ~= false and state ~= 1 and state ~= 0 then
+		state = false
+	end
+	return dgsSetData(memo,"wordWarp",state)
+end
+
+function dgsGetWordWarpState(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsGetWordWarpState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+	return dgsElementData[memo].wordWarp
+end
+
 function seekMaxLengthLine(memo)
 	local line,lineLen = -1,-1
-	local textLength = dgsElementData[memo].textLength
-	for i=1,#textLength do
-		local v = textLength[i]
+	local textTable = dgsElementData[memo].text
+	for i=1,#textTable do
+		local v = textTable[i][-1]
 		if v > lineLen then
 			lineLen = v
 			line = i
@@ -614,31 +922,41 @@ end
 function configMemo(source)
 	local mymemo = dgsElementData[source].memo
 	local size = dgsElementData[source].absSize
-	local text = dgsElementData[source].text
+	local scrollbar = dgsElementData[source].scrollbars
+	local scrollBarBefore = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
+	local textCnt
+	if dgsElementData[source].wordWarp then
+		textCnt = #dgsElementData[source].wordWarpMapText	--Weak Line for word warp
+	else
+		textCnt = #dgsElementData[source].text			--Strong Line for no word warp
+	end
 	local font = dgsElementData[source].font
 	local textSize = dgsElementData[source].textSize
 	local fontHeight = dxGetFontHeight(dgsElementData[source].textSize[2],font)
 	local scbThick = dgsElementData[source].scrollBarThick
-	local scrollbar = dgsElementData[source].scrollbars
 	local visible1,visible2 = dgsElementData[scrollbar[1]].visible, dgsElementData[scrollbar[2]].visible
 	dgsSetVisible(scrollbar[1],false)
 	dgsSetVisible(scrollbar[2],false)
-	dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1])
+	if not dgsElementData[source].wordWarp then
+		dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1])
+	end
 	local scbTakes2 = dgsElementData[scrollbar[2]].visible and scbThick or 0
 	local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
-	dgsSetVisible(scrollbar[1], #text > canHold )
+	dgsSetVisible(scrollbar[1],textCnt > canHold )
 	local scbTakes1 = dgsElementData[scrollbar[1]].visible and scbThick or 0
-	dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
+	if not dgsElementData[source].wordWarp then
+		dgsSetVisible(scrollbar[2],dgsElementData[source].rightLength[1] > size[1]-scbTakes1)
+	end
 	local scbTakes2 = dgsElementData[scrollbar[2]].visible and scbThick or 0
 	dgsSetPosition(scrollbar[1],size[1]-scbThick,0,false)
 	dgsSetPosition(scrollbar[2],0,size[2]-scbThick,false)
 	dgsSetSize(scrollbar[1],scbThick,size[2]-scbTakes2,false)
 	dgsSetSize(scrollbar[2],size[1]-scbTakes1,scbThick,false)
 
-	local higLen = 1-(#text-canHold)/#text
+	local higLen = 1-(textCnt-canHold)/textCnt
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	dgsSetData(scrollbar[1],"length",{higLen,true})
-	local verticalScrollSize = dgsElementData[source].scrollSize/(#text-canHold)
+	local verticalScrollSize = dgsElementData[source].scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
 	local widLen = 1-(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/dgsElementData[source].rightLength[1]
@@ -647,40 +965,67 @@ function configMemo(source)
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	
-	local px,py = size[1]-size[1]%1-scbTakes1, size[2]-size[2]%1-scbTakes2
-	local rnd = dgsElementData[source].renderTarget
-	if isElement(rnd) then
-		destroyElement(rnd)
+	local scrollBarAfter = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
+	if scrollBarAfter[1] ~= scrollBarBefore[1] or scrollBarAfter[2] ~= scrollBarBefore[2] then
+		dgsSetData(source,"rebuildMapTableNextFrame",true)
+		local px,py = size[1]-size[1]%1-scbTakes1, size[2]-size[2]%1-scbTakes2
+		local rnd = dgsElementData[source].renderTarget
+		if isElement(rnd) then
+			destroyElement(rnd)
+		end
+		local renderTarget = dxCreateRenderTarget(px,py,true)
+		if not isElement(renderTarget) and px*py ~= 0 then
+			local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+			outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
+		end
+		dgsSetData(source,"renderTarget",renderTarget)
 	end
-	local renderTarget = dxCreateRenderTarget(px,py,true)
-	if not isElement(renderTarget) and px*py ~= 0 then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
-	end
-	dgsSetData(source,"renderTarget",renderTarget)
 	dgsSetData(source,"configNextFrame",false)
 end
 
 addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
-	local parent = dgsGetParent(source)
-	if dgsGetType(parent) == "dgs-dxmemo" then
-		local scrollbars = dgsElementData[parent].scrollbars
-		local size = dgsElementData[parent].absSize
-		local scbThick = dgsElementData[parent].scrollBarThick
-		local font = dgsElementData[parent].font
-		local textSize = dgsElementData[parent].textSize
-		local text = dgsElementData[parent].text
+	local memo = dgsGetParent(source)
+	if dgsGetType(memo) == "dgs-dxmemo" then
+		local scrollbars = dgsElementData[memo].scrollbars
+		local size = dgsElementData[memo].absSize
+		local scbThick = dgsElementData[memo].scrollBarThick
+		local font = dgsElementData[memo].font
+		local textSize = dgsElementData[memo].textSize
+		local isWordWarp = dgsElementData[memo].wordWarp
+		local textTable = dgsElementData[memo].text
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if source == scrollbars[1] then
-			local fontHeight = dxGetFontHeight(dgsElementData[parent].textSize[2],font)
+			local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 			local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
-			local temp = mathFloor((#text-canHold)*new*0.01)+1
-			dgsSetData(parent,"showLine",temp)
+			if isWordWarp then
+				local mapTable = dgsElementData[memo].wordWarpMapText
+				local temp = mathFloor((#mapTable-canHold)*new*0.01)+1
+				local wordWarpShowLine = dgsElementData[memo].wordWarpShowLine
+				wordWarpShowLine[3] = temp
+				local startStrongLine
+				for i=1,#textTable do
+					if textTable[i] == mapTable[wordWarpShowLine[3]][1] then
+						startStrongLine = i
+					end
+				end
+				local startWeakLine
+				for i=1,#mapTable do
+					if mapTable[i][1] == textTable[startStrongLine] then
+						startWeakLine = wordWarpShowLine[3]-i+1
+						break
+					end
+				end
+				wordWarpShowLine[1] = startStrongLine
+				wordWarpShowLine[2] = startWeakLine
+			else
+				local temp = mathFloor((#textTable-canHold)*new*0.01)+1
+				dgsSetData(memo,"showLine",temp)
+			end
 		elseif source == scrollbars[2] then
-			local len = dgsElementData[parent].rightLength[1]
+			local len = dgsElementData[memo].rightLength[1]
 			local canHold = mathFloor(len-size[1]+scbTakes1+2)*0.01
-			local temp = -new*canHold
-			dgsSetData(parent,"showPos",temp)
+			local temp = new*canHold
+			dgsSetData(memo,"showPos",temp)
 		end
 	end
 end)
@@ -691,19 +1036,25 @@ function syncScrollBars(memo,which)
 	local scbThick = dgsElementData[memo].scrollBarThick
 	local font = dgsElementData[memo].font
 	local textSize = dgsElementData[memo].textSize
-	local text = dgsElementData[memo].text
-	local line = #text
+	local isWordWarp = dgsElementData[memo].wordWarp
 	local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 	if which == 1 or not which then
 		local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
 		local canHold = mathFloor((size[2]-scbTakes2)/fontHeight)
-		local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(line-canHold)
-		dgsScrollBarSetScrollPosition(scrollbars[1],new)
+		if isWordWarp then
+			local line = #dgsElementData[memo].wordWarpMapText
+			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].wordWarpShowLine[3]-1)*100/(line-canHold)
+			dgsScrollBarSetScrollPosition(scrollbars[1],new)
+		else
+			local line = #dgsElementData[memo].text
+			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(line-canHold)
+			dgsScrollBarSetScrollPosition(scrollbars[1],new)
+		end
 	end
 	if which == 2 or not which then
 		local len = dgsElementData[memo].rightLength[1]
 		local canHold = mathFloor(len-size[1]+scbTakes1+2)*0.01
-		local new = -dgsElementData[memo].showPos/canHold
+		local new = dgsElementData[memo].showPos/canHold
 		dgsScrollBarSetScrollPosition(scrollbars[2],new)
 	end
 end
@@ -750,3 +1101,25 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 		end
 	end
 end)
+
+function dgsMemoRebuildWordWarpMapTable(memo)
+	dgsSetData(memo,"rebuildMapTableNextFrame",false)
+	local textTable = dgsElementData[memo].text
+	local size = dgsElementData[memo].absSize
+	local font = dgsElementData[memo].font
+	local textSizeX = dgsElementData[memo].textSize[1]
+	local scbThick = dgsElementData[memo].scrollBarThick
+	local scrollbars = dgsElementData[memo].scrollbars
+	local scbTakes1 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4
+	local canHold = mathFloor(size[1]-scbTakes1)
+	local insertLine = 1
+	local mapTable = {}
+	for i=1,#textTable do
+		local strongLine = textTable[i]
+		local splitedText,splitedTextLine = dgsMemoWordSplit(strongLine[0],canHold,_,font,textSizeX)
+		strongLine[1] = dgsMemoInsertMapTable(mapTable,insertLine,splitedText,strongLine)
+		insertLine = insertLine+splitedTextLine
+	end
+	dgsSetData(memo,"wordWarpMapText",mapTable)
+	return true
+end

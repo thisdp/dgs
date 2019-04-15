@@ -43,6 +43,8 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"rowData",{})
 	dgsSetData(gridlist,"rowTextSize",styleSettings.gridlist.rowTextSize)
 	dgsSetData(gridlist,"rowTextColor",styleSettings.gridlist.rowTextColor)
+	dgsSetData(gridlist,"rowTextPosOffset",{0,0})
+	dgsSetData(gridlist,"columnTextPosOffset",{0,0})
 	dgsSetData(gridlist,"rowShadow",false)
 	dgsSetData(gridlist,"rowMoveOffset",0,true)
 	dgsSetData(gridlist,"rowHeight",styleSettings.gridlist.rowHeight)
@@ -100,6 +102,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(scrollbar1,"multiplier",{1,false})
 	dgsSetData(scrollbar2,"multiplier",{1,false})
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
+	dgsSetData(gridlist,"FromTo",{1,0})
 	triggerEvent("onDgsCreate",gridlist)
 	return gridlist
 end

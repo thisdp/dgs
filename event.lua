@@ -97,15 +97,34 @@ debugMode = getElementData(localPlayer,"DGS-DEBUG")
 debugMode_CompatibilityCheck = getElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck")
 --------------------------------Table Utility
 function table.find(tab,ke,num)
-	for k,v in pairs(tab) do
-		if num then
+	if num then
+		for k,v in pairs(tab) do
 			if v[num] == ke then
 				return k
 			end
-		else
+		end
+	else
+		for k,v in pairs(tab) do
 			if v == ke then
 				return k
 			end	
+		end
+	end
+	return false
+end
+
+function table.arrayFind(tab,ke,num)
+	if num then
+		for i=1,#tab do
+			if tab[i][num] == ke then
+				return i
+			end
+		end
+	else
+		for i=1,#tab do
+			if tab[i] == ke then
+				return i
+			end
 		end
 	end
 	return false
@@ -172,39 +191,19 @@ function string.count(str)
 	return count
 end
 
-function string.split(s, delim, mode)
-    if type(delim) ~= "string" or len(delim) <= 0 then
-        return
-    end
-	if mode then
-		local start = 1
-		local t = {}
-		local index = 1
-		while true do
-			local pos = find (s, delim, start, true)
-			if not pos then
-			  break
-			end
-			t[index] = sub(s,start,pos-1)
-			start = pos + len(delim)
-			index = index+1
-		end
-		t[index] = sub(s,start)
-		return t
-	else
-		local start = 1
-		local t = {}
-		while true do
-			local pos = find (s, delim, start, true)
-			if not pos then
-			  break
-			end
-			insert (t, sub (s, start, pos - 1))
-			start = pos + len (delim)
-		end
-		insert (t, sub (s, start))
-		return t
+function string.split(s, delim)
+	local delimLen = len(delim)
+    if type(delim) ~= "string" or delimLen <= 0 then return false end
+	local start,index,t = 1,1,{}
+	while true do
+		local pos = find(s,delim,start,true)
+		if not pos then break end
+		t[index] = sub(s,start,pos-1)
+		start = pos+delimLen
+		index = index+1
 	end
+	t[index] = sub(s,start)
+	return t
 end
 
 --------------------------------Math Utility
@@ -213,7 +212,7 @@ function findRotation(x1,y1,x2,y2)
 	return t<0 and t+360 or t
 end
 
-function math.restrict(n_min,n_max,value)
+function math.restrict(value,n_min,n_max)
 	if value <= n_min then
 		return n_min
 	elseif value >= n_max then
