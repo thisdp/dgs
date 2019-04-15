@@ -283,8 +283,8 @@
 	<export function="dgsMemoSetTypingSound" type="client" />
 	<export function="dgsMemoGetTypingSound" type="client" />
 	<export function="dgsMemoGetLineCount" type="client" />
-	<export function="dgsSetWordWarpState" type="client" />
-	<export function="dgsGetWordWarpState" type="client" />
+	<export function="dgsMemoSetWordWarpState" type="client" />
+	<export function="dgsMemoGetWordWarpState" type="client" />
 
 	<export function="dgsCreateMediaBrowser" type="client" />
 	<export function="dgsMediaLoadMedia" type="client" />

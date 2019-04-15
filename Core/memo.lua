@@ -891,8 +891,8 @@ function dgsMemoGetTypingSound(memo)
 	return dgsElementData[memo].typingSound
 end
 
-function dgsSetWordWarpState(memo,state)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsSetWordWarpState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+function dgsMemoSetWordWarpState(memo,state)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetWordWarpState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
 	if state == true then
 		state = 0
 	elseif state ~= false and state ~= 1 and state ~= 0 then
@@ -901,8 +901,8 @@ function dgsSetWordWarpState(memo,state)
 	return dgsSetData(memo,"wordWarp",state)
 end
 
-function dgsGetWordWarpState(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsGetWordWarpState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+function dgsMemoGetWordWarpState(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetWordWarpState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
 	return dgsElementData[memo].wordWarp
 end
 

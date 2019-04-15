@@ -874,11 +874,11 @@ function dgsImportOOPClass()
 				newTable.getLineCount = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsMemoGetLineCount",self.dgsElement,...)
 				end
-				newTable.setWordWarp = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetWordWarpState",self.dgsElement,...)
+				newTable.setWordWarpState = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoSetWordWarpState",self.dgsElement,...)
 				end
-				newTable.getWordWarp = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetWordWarpState",self.dgsElement,...)
+				newTable.getWordWarpState = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoGetWordWarpState",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxlabel" then
 				newTable.setColor = function(self,...)
