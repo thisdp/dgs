@@ -124,11 +124,13 @@ function dgsSetData(element,key,value,nocheck)
 					elseif key == "scrollBarThick" then
 						configMemo(element)
 					elseif key == "textSize" then
-						--todo
+						dgsMemoRebuildTextTable(element)
 					elseif key == "font" then
-						--todo
+						dgsMemoRebuildTextTable(element)
 					elseif key == "wordWarp" then
-						--todo
+						if value then
+							dgsMemoRebuildWordWarpMapTable(element)
+						end
 					end
 				elseif dgsType == "dgs-dxprogressbar" then
 					if key == "progress" then

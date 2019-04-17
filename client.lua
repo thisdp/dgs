@@ -4288,15 +4288,13 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 		local dgsType = dgsGetType(source)
 		if dgsType == "dgs-dxedit" then
-			local edit = dgsElementData[source].edit
-			destroyElement(edit)
+			destroyElement(dgsElementData[source].edit)
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
 		elseif dgsType == "dgs-dxmemo" then
-			local memo = dgsElementData[source].memo
-			destroyElement(memo)
+			destroyElement(dgsElementData[source].memo)
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)

@@ -136,37 +136,12 @@ end
 
 function createTestMemo()
 	local sW,sH = dgsGetScreenSize()
-	local memo = dgsCreateMemo(500,200,200,300,[[	1
-	2
-	3
-	4
-	5
-	6
-	7
-	8
-	9
-	10
-	11
-	12
-	13
-	14
-	15
-	16
-	17
-	18
-	19
-	20
-	21
-	22
-	23
-	24
-	25
-	26
-	27]],false)
-	dgsSetWordWarpState(memo,1)
+	local memo = dgsCreateMemo(500,200,200,300,[[DGS DirectX Memo Line Changing Test]],false)
+	dgsMemoSetScrollBarState(memo,false,false)
+	dgsMemoSetWordWarpState(memo,2)
 	--dgsMemoSetReadOnly(memo,true)
 end
---createTestMemo()
+
 function editTest() --Test Tab Switch for edit.
 	edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	setTimer(function()

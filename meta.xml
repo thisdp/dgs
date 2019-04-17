@@ -285,6 +285,8 @@
 	<export function="dgsMemoGetLineCount" type="client" />
 	<export function="dgsMemoSetWordWarpState" type="client" />
 	<export function="dgsMemoGetWordWarpState" type="client" />
+	<export function="dgsMemoSetScrollBarState" type="client" />
+	<export function="dgsMemoGetScrollBarState" type="client" />
 
 	<export function="dgsCreateMediaBrowser" type="client" />
 	<export function="dgsMediaLoadMedia" type="client" />

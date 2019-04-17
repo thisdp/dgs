@@ -880,6 +880,12 @@ function dgsImportOOPClass()
 				newTable.getWordWarpState = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsMemoGetWordWarpState",self.dgsElement,...)
 				end
+				newTable.setScrollBarState = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoSetScrollBarState",self.dgsElement,...)
+				end
+				newTable.getScrollBarState = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoGetScrollBarState",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxlabel" then
 				newTable.setColor = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsLabelSetColor",self.dgsElement,...)
