@@ -81,12 +81,12 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]
 	local columnRender = dxCreateRenderTarget(abx,columnHeight,true)
-	if not isElement(columnRender) then
+	if not isElement(columnRender) and abx*columnHeight ~= 0 then
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
 		outputDebugString("Failed to create render target for column of dgs-dxgridlist [Expected:"..(0.0000076*abx*columnHeight).."MB/Free:"..videoMemory.."MB]",2)
 	end
 	local rowRender = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true)
-	if not isElement(rowRender) then
+	if not isElement(rowRender) and abx*(aby-columnHeight-scbThick) ~= 0 then
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
 		outputDebugString("Failed to create render target for row of dgs-dxgridlist [Expected:"..(0.0000076*abx*(aby-columnHeight-scbThick)).."MB/Free:"..videoMemory.."MB]",2)
 	end
