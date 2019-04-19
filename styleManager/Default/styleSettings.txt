@@ -12,6 +12,7 @@
 	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent creating duplicated texture elements)
 	disabledColor = true,
 	disabledColorPercent = 0.8,
+	systemFont="default",
 ---------------------------------------------------------------------------------------------------Cursor Image
 
 ---------------------------------------------------------------------------------------------------Unique
