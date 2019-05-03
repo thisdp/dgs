@@ -136,9 +136,9 @@ end
 
 function createTestMemo()
 	local sW,sH = dgsGetScreenSize()
-	local memo = dgsCreateMemo(500,200,200,300,[[DGS DirectX Memo Line Changing Test]],false)
-	dgsMemoSetScrollBarState(memo,false,false)
-	dgsMemoSetWordWarpState(memo,2)
+	local memo = dgsCreateMemo(500,200,150,100,[[DGS Dx Memo Line Changing Test]],false)
+	--dgsMemoSetScrollBarState(memo,false,false)
+	dgsMemoSetWordWarpState(memo,false)
 	--dgsMemoSetReadOnly(memo,true)
 end
 
@@ -153,7 +153,8 @@ function editTest() --Test Tab Switch for edit.
 	dgsEditSetReadOnly(edit4,true)
 	dgsBringToFront(edit,"left")
 	dgsEditSetCaretPosition (edit, 1)
-
+	dgsSetProperty(edit2,"placeHolder","Type something if you want to tell me")
+	dgsSetProperty(edit2,"placeHolderIgnoreRenderTarget",true)
 	dgsSetProperty(edit,"bgcolor",tocolor(255,255,255,0))
 end
 

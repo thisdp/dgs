@@ -217,6 +217,9 @@
 		caretOffset = 3,
 		caretHeight = 1,
 		typingSound = nil,
+		placeHolder = "",
+		placeHolderOffset = {0,0},
+		placeHolderIgnoreRenderTarget = false,
 	},
 
 -----------------------------------------------------------------------------------DGS Grid List

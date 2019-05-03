@@ -39,14 +39,23 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	return interface
 end
 
-function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,lnVec,lnPnt,rot)
+function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
 	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
 	local offFaceZ = atan2(vx,vy)
 	local _h=h
 	h=h*0.5
 	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
 	local x1,y1,z1 = _x*h,_y*h,_z*h
-	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,tocolor(255,255,255,255),x+vx,y+vy,z+vz)
+	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,color,x+vx,y+vy,z+vz)
+end
+
+function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVec,lnPnt,rot)
+	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
+	local offFaceZ = atan2(vx,vy)
+	local _h=h
+	h=h*0.5
+	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
+	local x1,y1,z1 = _x*h,_y*h,_z*h
 	if lnVec and lnPnt then
 		local px,py,pz = dgsGetIntersection(lnVec,lnPnt,{vx,vy,vz},{x,y,z}) --Intersection Point
 		if not px then return end

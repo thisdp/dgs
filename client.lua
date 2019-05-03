@@ -367,16 +367,10 @@ function interfaceRender()
 					end
 				end
 				------------------------------------
-				local lnVec,lnPnt
 				local camX,camY,camZ = getCameraMatrix()
 				if not fx or not fy or not fz then
 					fx,fy,fz = camX-x,camY-y,camZ-z
 				end
-				if wX and wY and wZ then
-					lnVec = {wX-camX,wY-camY,wZ-camZ}
-					lnPnt = {camX,camY,camZ}
-				end
-				local hit,hitX,hitY
 				local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
 				eleData.cameraDistance = cameraDistance
 				if cameraDistance <= eleData.maxDistance then
@@ -386,7 +380,7 @@ function interfaceRender()
 						dxSetShaderValue(filter,"gTexture",renderThing)
 						renderThing = filter
 					end
-					eleData.hit = {dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,lnVec,lnPnt,rot)}
+					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
 				end
 				------------------------------------
 				if not eleData.functionRunBefore then
@@ -1218,18 +1212,21 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						selx = -dxGetTextWidth(utf8Sub(text,selectFro+1,caretPos),txtSizX,font)
 					end
 					local showPos = eleData.showPos
-					dxSetRenderTarget(renderTarget,true)
 					local padding = eleData.padding
 					local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
 					local caretHeight = eleData.caretHeight
-					local textX_Left,TextX_Right
+					local textX_Left,textX_Right
 					local selStartY = (h-sideheight)*(1-caretHeight)
 					local selEndY = (h-sideheight)*caretHeight-sideheight
 					local width,selectX,selectW
 					local posFix = 0
+					local placeHolder = eleData.placeHolder
+					local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
+					local placeHolderOffset = eleData.placeHolderOffset
+					dxSetRenderTarget(renderTarget,true)
 					if alignment[1] == "left" then
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
-						textX_Left,TextX_Right = showPos,w-sidelength
+						textX_Left,textX_Right = showPos,w-sidelength
 						selectX,selectW = width+showPos,selx
 						if selx ~= 0 then
 							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
@@ -1237,7 +1234,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					elseif alignment[1] == "center" then
 						local __width = eleData.textFontLen
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
-						textX_Left,TextX_Right = showPos,w-sidelength
+						textX_Left,textX_Right = showPos,w-sidelength
 						selectX,selectW = width+showPos*0.5+w*0.5-__width*0.5-sidelength+1,selx
 						if selx ~= 0 then
 							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
@@ -1245,16 +1242,21 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
 					elseif alignment[1] == "right" then
 						width = dxGetTextWidth(utf8Sub(text,caretPos+1),txtSizX,font)
-						textX_Left,TextX_Right = x,w-sidelength*2-showPos
-						selectX,selectW = TextX_Right-width,selx
+						textX_Left,textX_Right = x,w-sidelength*2-showPos
+						selectX,selectW = textX_Right-width,selx
 						if selx ~= 0 then
 							dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
 						end
 						posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
 					end
 					textX_Left = textX_Left-textX_Left%1
-					TextX_Right = TextX_Right-TextX_Right%1
-					dxDrawText(text,textX_Left,0,TextX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+					textX_Right = textX_Right-textX_Right%1
+					if not placeHolderIgnoreRndTgt then
+						if text == "" and MouseData.nowShow ~= v then
+							dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+						end
+					end
+					dxDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 					if eleData.underline then
 						local textHeight = dxGetFontHeight(txtSizY,font)
 						local lineOffset = eleData.underlineOffset+h*0.5+textHeight*0.5
@@ -1284,6 +1286,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 					local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					if placeHolderIgnoreRndTgt then
+						if text == "" and MouseData.nowShow ~= v then
+							dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,rendSet,false)
+						end
+					end
 					if MouseData.nowShow == v and MouseData.editMemoCursor then
 						local CaretShow = true
 						if eleData.readOnly then
@@ -3087,10 +3094,26 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			local pos = eleData.position
 			local size = eleData.size
 			local faceTo = eleData.faceTo
-			local x,y,z,w,h,fx,fy,fz = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3]
+			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 			rndtgt = eleData.renderTarget_parent
 			if x and y and z and w and h then
 				local intfaceHit = eleData.hit
+				local lnVec,lnPnt
+				local camX,camY,camZ = getCameraMatrix()
+				if not fx or not fy or not fz then
+					fx,fy,fz = camX-x,camY-y,camZ-z
+				end
+				if wX and wY and wZ then
+					lnVec = {wX-camX,wY-camY,wZ-camZ}
+					lnPnt = {camX,camY,camZ}
+				end
+				local intfaceHit
+				if eleData.cameraDistance <= eleData.maxDistance then
+					eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVec,lnPnt,rot)}
+					intfaceHit = eleData.hit
+				else
+					eleData.hit = {}
+				end
 				local hit,hitX,hitY
 				if intfaceHit then
 					hit,hitX,hitY,x,y,z = intfaceHit[1],intfaceHit[2],intfaceHit[3],intfaceHit[4],intfaceHit[5]
