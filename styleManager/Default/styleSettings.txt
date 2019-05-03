@@ -206,6 +206,7 @@
 		textColor = tocolor(0,0,0,255),			--Text color
 		caretColor = tocolor(0,0,0,255),		--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
+		placeHolder = tocolor(0,0,0,255)		--Place holder text color
 	---Image
 		bgImage = {},
 	---Values
@@ -218,6 +219,7 @@
 		caretHeight = 1,
 		typingSound = nil,
 		placeHolder = "",
+		placeHolderColorcoded = false,
 		placeHolderOffset = {0,0},
 		placeHolderIgnoreRenderTarget = false,
 	},

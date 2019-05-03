@@ -263,6 +263,10 @@
 	<export function="dgsEditClearText" type="client" />
 	<export function="dgsEditSetTypingSound" type="client" />
 	<export function="dgsEditGetTypingSound" type="client" />
+	<export function="dgsEditSetAlignment" type="client" />
+	<export function="dgsEditGetAlignment" type="client" />
+	<export function="dgsEditSetPlaceHolder" type="client" />
+	<export function="dgsEditGetPlaceHolder" type="client" />
 	
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />

@@ -1253,7 +1253,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					textX_Right = textX_Right-textX_Right%1
 					if not placeHolderIgnoreRndTgt then
 						if text == "" and MouseData.nowShow ~= v then
-							dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+							local pColor = eleData.placeHolderColor
+							local pFont = eleData.placeHolderFont
+							local pColorcoded = eleData.placeHolderColorcoded
+							dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,false,pColorcoded)
 						end
 					end
 					dxDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
@@ -1288,7 +1291,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					if placeHolderIgnoreRndTgt then
 						if text == "" and MouseData.nowShow ~= v then
-							dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,rendSet,false)
+							local pColor = applyColorAlpha(eleData.placeHolderColor,galpha)
+							local pFont = eleData.placeHolderFont
+							local pColorcoded = eleData.placeHolderColorcoded
+							dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,rendSet,pColorcoded)
 						end
 					end
 					if MouseData.nowShow == v and MouseData.editMemoCursor then

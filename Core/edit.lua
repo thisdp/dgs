@@ -7,6 +7,13 @@ local strRep = string.rep
 local tableInsert = table.insert
 local tableRemove = table.remove
 local _dxGetTextWidth = dxGetTextWidth
+local acceptedAlignment = {
+	top=2,
+	bottom=2,
+	center=0,
+	right=1,
+	left=1,
+}
 ----Initialize
 VerticalAlign = {top=true,center=true,bottom=true}
 HorizontalAlign = {left=true,center=true,right=true}
@@ -41,6 +48,9 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"maskText",styleSettings.edit.maskText)
 	dgsSetData(edit,"showPos",0)
 	dgsSetData(edit,"placeHolder",styleSettings.edit.placeHolder)
+	dgsSetData(edit,"placeHolderFont",systemFont)
+	dgsSetData(edit,"placeHolderColor",styleSettings.edit.placeHolderColor)
+	dgsSetData(edit,"placeHolderColorcoded",styleSettings.edit.placeHolderColorcoded)
 	dgsSetData(edit,"placeHolderOffset",styleSettings.edit.placeHolderOffset)
 	dgsSetData(edit,"placeHolderIgnoreRenderTarget",styleSettings.edit.placeHolderIgnoreRenderTarget)
 	dgsSetData(edit,"padding",styleSettings.edit.padding)
@@ -578,6 +588,32 @@ function dgsEditGetTypingSound(edit)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetTypingSound at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
 	return dgsElementData[edit].typingSound
 end
+
+function dgsEditSetAlignment(edit,horizontal,vertical)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetAlignment at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	local alignment = dgsElementData[edit].alignment
+	horizontal = horizontal or alignment[1] or "left"
+	vertical = vertical or alignment[2] or "top"
+	assert(acceptedAlignment[horizontal] and acceptedAlignment[horizontal] ~= 2,"Bad argument @dgsEditSetAlignment at argument 2, expect left/center/right, got "..horizontal)
+	assert(acceptedAlignment[vertical] and acceptedAlignment[vertical] ~= 1,"Bad argument @dgsEditSetAlignment at argument 3, expect left/center/right, got "..vertical)
+	return dgsSetData(edit,"alignment",{horizontal,vertical})
+end
+function dgsEditGetAlignment(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetAlignment at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	local alignment = dgsElementData[edit].alignment
+	return alignment[1],alignment[2]
+end
+
+function dgsEditSetPlaceHolder(edit,placeHolder)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetPlaceHolder at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	return dgsSetData(edit,"placeHolder",placeHolder)
+end
+
+function dgsEditGetPlaceHolder(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetPlaceHolder at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	return dgsElementData[edit].placeHolder
+end
+
 
 --[[
 	historyRecState:
