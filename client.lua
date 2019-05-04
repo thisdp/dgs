@@ -1716,6 +1716,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 				OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
 				OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
+				if OffsetX > 0 then
+					OffsetX = 0
+				end
+				if OffsetY > 0 then
+					OffsetY = 0
+				end
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions

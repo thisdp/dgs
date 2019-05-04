@@ -1135,16 +1135,20 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 			local scbThickH = dgsElementData[scrollBars[2]].visible and scbThick or 0
 			local rowLength = #dgsElementData[parent].rowData*(dgsElementData[parent].rowHeight+dgsElementData[parent].leading)
 			local temp = -new*(rowLength-sy+scbThickH+dgsElementData[parent].columnHeight)/100
-			local temp = dgsElementData[parent].scrollFloor[1] and math.floor(temp) or temp 
-			dgsSetData(parent,"rowMoveOffset",temp)
+			if temp <= 0 then
+				local temp = dgsElementData[parent].scrollFloor[1] and math.floor(temp) or temp 
+				dgsSetData(parent,"rowMoveOffset",temp)
+			end
 		elseif source == scrollBars[2] then
 			local scbThickV = dgsElementData[scrollBars[1]].visible and scbThick or 0
 			local columnCount =  dgsGridListGetColumnCount(parent)
 			local columnWidth = dgsGridListGetColumnAllWidth(parent,columnCount)
 			local columnOffset = dgsElementData[parent].columnOffset
 			local temp = -new*(columnWidth-sx+scbThickV+columnOffset)/100
-			local temp = dgsElementData[parent].scrollFloor[2] and math.floor(temp) or temp
-			dgsSetData(parent,"columnMoveOffset",temp)
+			if temp <= 0 then
+				local temp = dgsElementData[parent].scrollFloor[2] and math.floor(temp) or temp
+				dgsSetData(parent,"columnMoveOffset",temp)
+			end
 		end
 	end
 end)
@@ -1265,10 +1269,10 @@ function dgsGridListSetScrollPosition(gridlist,vertical,horizontal)
 	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsGridListSetScrollPosition at at argument 3,  expect nil, none or number∈[0,100] got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
 	local scb = dgsElementData[gridlist].scrollbars
 	local state1,state2 = true,true
-	if dgsElementData[scb[1]].visible and vertical then
+	if vertical then
 		state1 = dgsScrollBarSetScrollPosition(scb[1],vertical)
 	end
-	if dgsElementData[scb[2]].visible and horizontal then
+	if horizontal then
 		state2 = dgsScrollBarSetScrollPosition(scb[2],horizontal)
 	end
 	return state1 and state2

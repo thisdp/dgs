@@ -181,7 +181,7 @@ function gridlistTest()
 	--dgsSetProperty(gridlist,"mode",true)
 	dgsGridListAddColumn(gridlist,"test1",0.2)
 	dgsGridListAddColumn(gridlist,"test2",0.1)
-	for i=1,500 do
+	for i=1,200 do
 		local row = dgsGridListAddRow(gridlist)
 		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
@@ -190,6 +190,8 @@ function gridlistTest()
 	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
 	configGridList(gridlist)
 	dgsGridListSetColumnFont(gridlist,1,"default-bold")
+	dgsGridListSetScrollPosition(gridlist,100)
+
 end
 
 function centerEdit()
