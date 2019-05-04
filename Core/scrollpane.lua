@@ -130,6 +130,7 @@ function configScrollPane(source)
 	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local scbThick = dgsElementData[source].scrollBarThick
 	local childBounding = dgsElementData[source].maxChildSize
+	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
 	if childBounding[1] > sx then
 		scbStateH = true
@@ -156,10 +157,10 @@ function configScrollPane(source)
 	end
 	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
 	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
-	if scbStateH then
+	if scbStateH and scbStateH ~= oriScbStateH then
 		dgsSetData(scrollbar[2],"position",0)
 	end
-	if scbStateV then
+	if scbStateV and scbStateV ~= oriScbStateV then
 		dgsSetData(scrollbar[1],"position",0)
 	end
 	local scrollBarOffset = dgsElementData[source].scrollBarOffset

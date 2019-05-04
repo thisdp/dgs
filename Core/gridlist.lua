@@ -1159,6 +1159,7 @@ function configGridList(source)
 	local columnWidth = dgsGridListGetColumnAllWidth(source,columnCount,false,true)
 	local rowLength = #dgsElementData[source].rowData*(rowHeight+dgsElementData[source].leading)
 	local scbX,scbY = sx-scbThick,sy-scbThick
+	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
 	if columnWidth > sx then
 		scbStateH = true
@@ -1187,10 +1188,10 @@ function configGridList(source)
 	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
 	local rowShowRange = relSizY-columnHeight
 	local columnShowRange = relSizX
-	if scbStateH then
+	if scbStateH and scbStateH ~= oriScbStateH then
 		dgsSetData(scrollbar[2],"position",0)
 	end
-	if scbStateV then
+	if scbStateV and scbStateV ~= oriScbStateV  then
 		dgsSetData(scrollbar[1],"position",0)
 	end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
