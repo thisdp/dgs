@@ -533,6 +533,7 @@ addEventHandler("onDgsCreate",root,function()
 	dgsSetData(source,"changeOrder",true) --Change the order when "bring to front" or clicked
 	dgsSetData(source,"attachedTo",false) --Attached To
 	dgsSetData(source,"attachedBy",{}) --Attached By
+	ChildrenTable[source] = ChildrenTable[source] or {}
 end)
 
 function dgsClear(theType,res)

@@ -237,7 +237,7 @@ function GridListSortingTest()
 		gridlist = dgsCreateGridList(200,50,600,600,false)
 		dgsGridListAddColumn(gridlist,"test1",0.2)
 		--dgsGridListAddColumn(gridlist,"test2",0.1)
-		dgsSetProperty(gridlist,"mode",true)
+		dgsSetProperty(gridlist,"mode",false)
 		for i=1,30 do
 			local row = dgsGridListAddRow(gridlist)
 			dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
