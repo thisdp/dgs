@@ -40,12 +40,12 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	local idefcolor = styleSettings.combobox.itemColor[1]
 	local ihovcolor = styleSettings.combobox.itemColor[2]
 	local iclicolor = styleSettings.combobox.itemColor[3]
-	dgsSetData(combobox,"itemColor",{idefcolor,ihovcolor,iselcolor})
+	dgsSetData(combobox,"itemColor",{idefcolor,ihovcolor,iclicolor})
 	
 	local idefimg = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[1])
 	local ihovimg = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[2])
-	local iselimg = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[3])
-	dgsSetData(combobox,"itemImage",{idefimg,ihovimg,iselimg})
+	local icliimage = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[3])
+	dgsSetData(combobox,"itemImage",{idefimg,ihovimg,icliimage})
 	
 	dgsSetData(combobox,"textColor",textColor or styleSettings.combobox.textColor)
 	dgsSetData(combobox,"itemTextColor",textColor or styleSettings.combobox.itemTextColor)
