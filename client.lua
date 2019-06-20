@@ -311,8 +311,8 @@ function dgsCoreRender()
 			if value == "dgs-dxtab" or value == "dgs-dxcombobox-Box" then
 				x = 30
 			end
-			dxDrawText(value.." : "..elements,x+1,sH*0.4+15*k+6,sW,sH,black)
-			dxDrawText(value.." : "..elements,x,sH*0.4+15*k+5)
+			dxDrawText(value.." : "..elements,x+1,sH*0.4+15*i+6,sW,sH,black)
+			dxDrawText(value.." : "..elements,x,sH*0.4+15*i+5)
 		end
 		dxDrawText("Rendering: "..DGSShow,11,sH*0.4-9,sW,sH,black)
 		dxDrawText("Rendering: "..DGSShow,10,sH*0.4-10,sW,sH,green)
