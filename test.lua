@@ -199,7 +199,6 @@ function centerEdit()
 	dgsSetProperty(edit,"alignment",{"left","center"})
 	dgsEditSetWhiteList(edit,"%l")
 end
-centerEdit()
 
 function dgsAnimTest()
 	if not dgsEasingFunctionExists("shadowOffset") then
