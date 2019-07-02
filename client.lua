@@ -337,7 +337,7 @@ function dgsCoreRender()
 		
 		Resource = 0
 		ResCount = 0
-		for ka,va in pairs(resourceDxGUI) do
+		for ka,va in pairs(boundResource) do
 			if type(ka) == "userdata" and va then
 				local resDGSCnt = #va
 				Resource = Resource+resDGSCnt
@@ -4476,9 +4476,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		tableRemove(ChildrenTable[source] or {})
 		local tresource = getElementData(source,"resource")
 		if tresource then
-			local id = tableFind(resourceDxGUI[tresource] or {},source)
+			local id = tableFind(boundResource[tresource] or {},source)
 			if id then
-				tableRemove(resourceDxGUI[tresource],id)
+				tableRemove(boundResource[tresource],id)
 			end
 		end
 		dgsStopAniming(source)

@@ -24,7 +24,6 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 	dgsSetData(tabpanel,"scrollSpeed",styleSettings.tabpanel.scrollSpeed)
 	dgsSetData(tabpanel,"taboffperc",0)
 	dgsSetData(tabpanel,"allleng",0)
-	insertResourceDxGUI(sourceResource,tabpanel)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx = dgsElementData[tabpanel].absSize[1]
 	local rendertarget = dxCreateRenderTarget(abx,tabHeight,true)
@@ -33,7 +32,7 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 		outputDebugString("Failed to create render target for tab list of dgs-dxtabpanel [Expected:"..(0.0000076*abx*(tabHeight or 20)).."MB/Free:"..videoMemory.."MB]",2)
 	end
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
-	triggerEvent("onDgsCreate",tabpanel)
+	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
 end
 
@@ -79,8 +78,6 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	local tabhovcolor = tabhovcolor or styleSettings.tab.tabColor[2]
 	local tabclicolor = tabclicolor or styleSettings.tab.tabColor[3]
 	dgsSetData(tab,"tabColor",{tabnorcolor,tabhovcolor,tabclicolor})
-	insertResourceDxGUI(sourceResource,tabpanel)
-	triggerEvent("onDgsPreCreate",tab)
 	if dgsElementData[tabpanel].selected == -1 then
 		dgsSetData(tabpanel,"selected",id)
 	end

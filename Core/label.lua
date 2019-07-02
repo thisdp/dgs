@@ -25,9 +25,8 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	dgsSetData(label,"shadow",{shadowoffsetx,shadowoffsety,shadowcolor})
 	dgsSetData(label,"alignment",{right or "left",bottom or "top"})
 	dgsSetData(label,"font",systemFont)
-	insertResourceDxGUI(sourceResource,label)
 	calculateGuiPositionSize(label,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",label)
+	triggerEvent("onDgsCreate",label,sourceResource)
 	return label
 end
 

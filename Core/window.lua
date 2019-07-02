@@ -33,9 +33,8 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"font",systemFont)
 	dgsSetData(window,"minSize",{60,60})
 	dgsSetData(window,"maxSize",{20000,20000})
-	insertResourceDxGUI(sourceResource,window)
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
-	triggerEvent("onDgsCreate",window)
+	triggerEvent("onDgsCreate",window,sourceResource)
 	if not noCloseButton then
 		local buttonOff = dgsCreateButton(40,0,40,24,styleSettings.window.closeButtonText,false,window,_,_,_,_,_,_,styleSettings.window.closeButtonColor[1],styleSettings.window.closeButtonColor[2],styleSettings.window.closeButtonColor[3],true)
 		dgsSetData(window,"closeButton",buttonOff)

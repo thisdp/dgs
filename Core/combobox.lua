@@ -88,7 +88,6 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"caption",tostring(caption),true)
 	dgsSetData(combobox,"autoHideWhenSelecting",true)
 	dgsSetData(combobox,"arrow",dgsCreateTextureFromStyle(styleSettings.combobox.arrow))
-	insertResourceDxGUI(sourceResource,combobox)
 	calculateGuiPositionSize(combobox,x,y,relative or false,sx,sy,relative or false,true)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
 	dgsSetData(combobox,"myBox",box)
@@ -103,7 +102,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetVisible(scrollbar,false)
 	dgsSetVisible(box,false)
 	dgsSetData(combobox,"scrollbar",scrollbar)
-	triggerEvent("onDgsCreate",combobox)
+	triggerEvent("onDgsCreate",combobox,sourceResource)
 	dgsSetData(combobox,"hitoutofparent",true)
 	return combobox
 end
@@ -281,7 +280,7 @@ function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
 	local box = createElement("dgs-dxcombobox-Box")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true,true) or table.insert(CenterFatherTable,box)
 	dgsSetType(box,"dgs-dxcombobox-Box")	
-	insertResourceDxGUI(sourceResource,box)
+	insertResource(sourceResource,box)
 	calculateGuiPositionSize(box,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",box)
 	return box

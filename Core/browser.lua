@@ -15,12 +15,11 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 	dgsSetData(browser,"transparent",transparent and true or false)
 	dgsSetData(browser,"isLocal",isLocal or false)
 	dgsSetData(browser,"requestCommand",{})
-	insertResourceDxGUI(sourceResource,browser)
 	calculateGuiPositionSize(browser,x,y,relative,sx,sy,relative,true)
 	local size = dgsElementData[browser].absSize
 	resizeBrowser(browser,browserw or size[1],browserh or size[2])
 	dgsSetData(browser,"browserSize",{browserw or size[1],browserh or size[2]})
-	triggerEvent("onDgsCreate",browser)
+	triggerEvent("onDgsCreate",browser,sourceResource)
 	return browser
 end
 

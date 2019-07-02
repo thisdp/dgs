@@ -226,6 +226,12 @@ function dgsImportOOPClass()
 				setEnabled = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsSetEnabled",self.dgsElement,...)
 				end,
+				blur = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsBlur",self.dgsElement,...)
+				end,
+				focus = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsFocus",self.dgsElement,...)
+				end,
 				getSide = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGetSide",self.dgsElement,...)
 				end,
@@ -252,6 +258,9 @@ function dgsImportOOPClass()
 				end,
 				bringToFront = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsBringToFront",self.dgsElement,...)
+				end,
+				moveToBack = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMoveToBack",self.dgsElement,...)
 				end,
 				simulateClick = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsSimulateClick",self.dgsElement,...)
@@ -596,6 +605,12 @@ function dgsImportOOPClass()
 				newTable.getVerticalAlign = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEditGetVerticalAlign",self.dgsElement,...)
 				end
+				newTable.setAlignment = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetAlignment ",self.dgsElement,...)
+				end
+				newTable.getAlignment = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetAlignment ",self.dgsElement,...)
+				end
 				newTable.insertText = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEditInsertText",self.dgsElement,...)
 				end
@@ -616,6 +631,12 @@ function dgsImportOOPClass()
 				end
 				newTable.setTypingSound = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEditSetTypingSound ",self.dgsElement,...)
+				end
+				newTable.getPlaceHolder = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetPlaceHolder ",self.dgsElement,...)
+				end
+				newTable.setPlaceHolder = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetPlaceHolder ",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxeda" then
 				newTable.setDebugModeEnabled = function(self,...)
@@ -1029,10 +1050,16 @@ function dgsImportOOPClass()
 				return guiGetScreenSize()
 			end,
 			setInputEnabled = function(self,...)
-				return guiSetInputEnabled(...)
+				return dgsSetInputEnabled(...)
 			end,
 			getInputEnabled = function(self,...)
-				return guiGetInputEnabled(...)
+				return dgsGetInputEnabled(...)
+			end,
+			setInputMode = function(self,...)
+				return dgsSetInputMode(...)
+			end,
+			getInputMode = function(self,...)
+				return dgsGetInputMode(...)
 			end,
 			setRenderSetting = function(self,...)
 				return call(dgsOOPHead.dgsRes,"dgsSetRenderSetting",...)

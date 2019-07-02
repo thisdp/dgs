@@ -21,8 +21,7 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	end
 	dgsSetData(text3d,"text",tostring(text))
 	dgsSetData(text3d,"colorcode",colorcode or false)
-	insertResourceDxGUI(sourceResource,text3d)
-	triggerEvent("onDgsCreate",text3d)
+	triggerEvent("onDgsCreate",text3d,sourceResource)
 	return text3d
 end
 

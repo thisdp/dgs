@@ -60,9 +60,8 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	dgsSetData(switchbutton,"clip",false)
 	dgsSetData(switchbutton,"wordbreak",false)
 	dgsSetData(switchbutton,"colorcoded",false)
-	insertResourceDxGUI(sourceResource,switchbutton)
 	calculateGuiPositionSize(switchbutton,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",switchbutton)
+	triggerEvent("onDgsCreate",switchbutton,sourceResource)
 	return switchbutton
 end
 

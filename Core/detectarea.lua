@@ -13,10 +13,8 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	dgsSetData(detectarea,"checkFunction",dgsDetectAreaDefaultFunction)
 	dgsSetData(detectarea,"debug",false)
 	--dgsSetData(detectarea,"rot",0)
-	insertResourceDxGUI(sourceResource,detectarea)
-	triggerEvent("onDgsPreCreate",detectarea)
 	calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",detectarea)
+	triggerEvent("onDgsCreate",detectarea,sourceResource)
 	return detectarea
 end
 

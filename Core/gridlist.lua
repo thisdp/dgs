@@ -17,7 +17,6 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or table.insert(CenterFatherTable,gridlist)
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsSetData(gridlist,"renderBuffer",{})
-	insertResourceDxGUI(sourceResource,gridlist)
 	dgsSetData(gridlist,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.gridlist.bgImage))
 	dgsSetData(gridlist,"bgColor",bgColor or styleSettings.gridlist.bgColor)
 	dgsSetData(gridlist,"columnImage",columnImage or dgsCreateTextureFromStyle(styleSettings.gridlist.columnImage))
@@ -103,7 +102,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(scrollbar2,"multiplier",{1,false})
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(gridlist,"FromTo",{1,0})
-	triggerEvent("onDgsCreate",gridlist)
+	triggerEvent("onDgsCreate",gridlist,sourceResource)
 	return gridlist
 end
 

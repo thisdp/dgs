@@ -90,7 +90,6 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(gmemo,"dxmemo",memo)
 	guiSetAlpha(gmemo,0)
 	dgsSetData(memo,"maxLength",guiGetProperty(gmemo,"MaxTextLength"))
-	insertResourceDxGUI(sourceResource,memo)
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
@@ -108,7 +107,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
-	triggerEvent("onDgsCreate",memo)
+	triggerEvent("onDgsCreate",memo,sourceResource)
 	return memo
 end
 

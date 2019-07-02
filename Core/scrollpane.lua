@@ -47,7 +47,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
-	triggerEvent("onDgsCreate",scrollpane)
+	triggerEvent("onDgsCreate",scrollpane,sourceResource)
 	return scrollpane
 end
 

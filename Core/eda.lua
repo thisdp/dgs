@@ -10,9 +10,8 @@ function dgsCreateEDA(x,y,sx,sy,relative,parent)
 	local _x = dgsIsDxElement(parent) and dgsSetParent(eda,parent,true,true) or table.insert(CenterFatherTable,eda)
 	dgsSetType(eda,"dgs-dxeda")
 	dgsSetData(eda,"renderBuffer",{})
-	insertResourceDxGUI(sourceResource,eda)
 	calculateGuiPositionSize(eda,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",eda)
+	triggerEvent("onDgsCreate",eda,sourceResource)
 	return eda
 end
 

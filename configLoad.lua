@@ -4,6 +4,7 @@ dgsConfig.updateCheckInterval		= 120										-- Minutes
 dgsConfig.updateCheckNoticeInterval	= 120										-- Minutes
 dgsConfig.backupMeta				= true										-- Backup meta.xml
 dgsConfig.backupStyleMeta			= false										-- Backup style files meta index from meta.xml
+dgsConfig.g2d						= false										-- GUI To DGS command line
 
 function loadConfig()
 	if fileExists("config.txt") then
@@ -32,6 +33,9 @@ function loadConfig()
 		fileWrite(file,str:sub(3))
 		fileClose(file)
 		outputDebugString("[DGS]Config File Created!")
+	end
+	if dgsConfig.g2d then
+		outputDebugString("[DGS]G2D is enabled! If your server isn't under development, Please disable it in config as soon as possible!",2)
 	end
 end
 loadConfig()

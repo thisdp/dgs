@@ -25,14 +25,13 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 	dgsSetData(progressbar,"indicatorMode",indicatorMode and true or false)
 	dgsSetData(progressbar,"padding",styleSettings.progressbar.padding)
 	dgsSetData(progressbar,"progress",0)
-	insertResourceDxGUI(sourceResource,progressbar)
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(indicatorImage) then
 		mx,my = dxGetMaterialSize(indicatorImage)
 	end
 	dgsSetData(progressbar,"indicatorUVSize",{mx,my})
-	triggerEvent("onDgsCreate",progressbar)
+	triggerEvent("onDgsCreate",progressbar,sourceResource)
 	return progressbar
 end
 

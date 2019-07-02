@@ -52,6 +52,7 @@
 	<script src="test.lua" type="client" />
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
+	<script src="G2DManager_s.lua" type="server" />
 	
 	<!--$Add Your Styles Here-->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
@@ -117,6 +118,8 @@
 	<export function="dgsSetAlpha" type="client" />
 	<export function="dgsSetLayer" type="client" />
 	<export function="dgsGetLayer" type="client" />
+	<export function="dgsBlur" type="client" />
+	<export function="dgsFocus" type="client" />
 	<export function="dgsSetCurrentLayerIndex" type="client" />
 	<export function="dgsGetCurrentLayerIndex" type="client" />
 	<export function="dgsGetLayerElements" type="client" />
@@ -128,6 +131,7 @@
 	<export function="dgsSetPostGUI" type="client" />
 	<export function="dgsCreateFont" type="client" />
 	<export function="dgsBringToFront" type="client" />
+	<export function="dgsMoveToBack" type="client" />
 	<export function="dgsGetMouseEnterGUI" type="client" />
 	<export function="dgsGetMouseLeaveGUI" type="client" />
 	<export function="dgsGetDxGUIFromResource" type="client" />
@@ -138,6 +142,8 @@
 	<export function="dgsGetRenderSetting" type="client" />
 	<export function="dgsSimulateClick" type="client" />
 	<export function="dgsGetScreenSize" type="client" />
+	<export function="dgsSetInputMode" type="client" />
+	<export function="dgsGetInputMode" type="client" />
 	<export function="dgsGetRootElement" type="client" />
 	<export function="dgsSetInputEnabled" type="client" />
 	<export function="dgsGetCurrentStyle" type="client" />

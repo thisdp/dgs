@@ -27,9 +27,8 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent,scalex,scaley,leading,bgImage,bg
 	tabl[0] = ""
 	dgsSetData(cmd,"cmdHistory",tabl)
 	dgsSetData(cmd,"cmdCurrentHistory",0)
-	insertResourceDxGUI(sourceResource,cmd)
 	calculateGuiPositionSize(cmd,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",cmd)
+	triggerEvent("onDgsCreate",cmd,sourceResource)
 	local sx,sy = dgsGetSize(cmd,false)
 	local edit = dgsCreateEdit(0,sy-scaley*20,sx,scaley*20,"",false,cmd,tocolor(0,0,0,255),scalex,scaley)
 	dgsSetData(cmd,"cmdEdit",edit)

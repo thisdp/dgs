@@ -36,8 +36,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	dgsSetData(button,"wordbreak",false)
 	dgsSetData(button,"colorcoded",false)
 	dgsSetData(button,"alignment",{"center","center"})
-	insertResourceDxGUI(sourceResource,button)
 	calculateGuiPositionSize(button,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",button)
+	triggerEvent("onDgsCreate",button,sourceResource)
 	return button
 end

@@ -39,7 +39,6 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsAttachToTranslation(arrowlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsAttachToTranslation(arrowlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(arrowlist,"configNextFrame",false)
-	insertResourceDxGUI(sourceResource,arrowlist)
 	calculateGuiPositionSize(arrowlist,x,y,relative,sx,sy,relative,true)
 	local aSize = dgsElementData[arrowlist].absSize
 	local abx,aby = aSize[1],aSize[2]
@@ -53,7 +52,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsSetData(scrollbar,"length",{0,true})
 	dgsSetData(arrowlist,"scrollbar",scrollbar)
 	dgsSetVisible(scrollbar,false)
-	triggerEvent("onDgsCreate",arrowlist)
+	triggerEvent("onDgsCreate",arrowlist,sourceResource)
 	return arrowlist
 end
 

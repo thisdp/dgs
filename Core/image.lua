@@ -21,9 +21,8 @@ function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	dgsSetData(image,"rotationCenter",{0,0}) --0~1
 	dgsSetData(image,"rotation",0) --0~360
 	local _x = dgsIsDxElement(parent) and dgsSetParent(image,parent,true,true) or table.insert(CenterFatherTable,image)
-	insertResourceDxGUI(sourceResource,image)
 	calculateGuiPositionSize(image,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",image)
+	triggerEvent("onDgsCreate",image,sourceResource)
 	return image
 end
 

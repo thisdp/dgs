@@ -1,3 +1,35 @@
+--Speed Up
+local abs = math.abs
+local find = string.find
+local rep = string.rep
+local gsub = string.gsub
+local floor = math.floor
+local min = math.min
+local max = math.max
+local tocolor = tocolor
+local dxDrawLine = dxDrawLine
+local dxDrawImage = dxDrawImage
+local dxDrawImageSection = dxDrawImageSection
+local dxDrawText = dxDrawText
+local dxGetFontHeight = dxGetFontHeight
+local dxDrawRectangle = dxDrawRectangle
+local dxSetShaderValue = dxSetShaderValue
+local dxGetPixelsSize = dxGetPixelsSize
+local dxGetPixelColor = dxGetPixelColor
+local dxSetRenderTarget = dxSetRenderTarget
+local dxGetTextWidth = dxGetTextWidth
+local dgsDrawMaterialLine3D = dgsDrawMaterialLine3D
+local utf8Sub = utf8.sub
+local utf8Len = utf8.len
+local tableInsert = table.insert
+local tableRemove = table.remove
+local tableCount = table.count
+local tableFind = table.find
+local triggerEvent = triggerEvent
+local unpack = unpack
+local isElement = isElement
+local assert = assert
+
 BottomFatherTable = {}		--Store Bottom Father Element
 CenterFatherTable = {}		--Store Center Father Element (Default)
 TopFatherTable = {}			--Store Top Father Element
@@ -9,56 +41,56 @@ ChildrenTable = {}			--Store Children Element
 
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
 
-function dgsSetLayer(dgsGUI,layer,forceDetatch)
-	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsSetLayer at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
-	if dgsElementType[dgsGUI] == "dgs-dxtab" then return false end
+function dgsSetLayer(dgsEle,layer,forceDetatch)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetLayer at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	if dgsElementType[dgsEle] == "dgs-dxtab" then return false end
 	assert(layer == "center" or layer == "top" or layer == "bottom","Bad argument @dgsSetLayer at argument 2, expect a string(top/center/bottom) got "..dgsGetType(layer))
-	local hasParent = isElement(FatherTable[dgsGUI])
+	local hasParent = isElement(FatherTable[dgsEle])
 	if hasParent and not forceDetatch then return false end
 	if hasParent then
-		local id = table.find(ChildrenTable[FatherTable[dgsGUI]],dgsGUI)
+		local id = tableFind(ChildrenTable[FatherTable[dgsEle]],dgsEle)
 		if id then
-			table.remove(ChildrenTable[FatherTable[dgsGUI]],id)
+			tableRemove(ChildrenTable[FatherTable[dgsEle]],id)
 		end
-		FatherTable[dgsGUI] = nil
+		FatherTable[dgsEle] = nil
 	end
-	local oldLayer = dgsElementData[dgsGUI].alwaysOn or "center"
+	local oldLayer = dgsElementData[dgsEle].alwaysOn or "center"
 	if oldLayer == layer then return false end
-	local id = table.find(LayerCastTable[oldLayer],dgsGUI)
+	local id = tableFind(LayerCastTable[oldLayer],dgsEle)
 	if id then
-		table.remove(LayerCastTable[oldLayer],id)
+		tableRemove(LayerCastTable[oldLayer],id)
 	end
-	dgsSetData(dgsGUI,"alwaysOn",layer == "center" and false or layer)
-	table.insert(LayerCastTable[layer],dgsGUI)
+	dgsSetData(dgsEle,"alwaysOn",layer == "center" and false or layer)
+	tableInsert(LayerCastTable[layer],dgsEle)
 	return true
 end
 
-function dgsGetLayer(dgsGUI)
-	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsGetLayer at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
-	return dgsElementData[dgsGUI].alwaysOn or "center"
+function dgsGetLayer(dgsEle)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetLayer at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	return dgsElementData[dgsEle].alwaysOn or "center"
 end
 
-function dgsSetCurrentLayerIndex(dgsGUI,index)
-	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsSetCurrentLayerIndex at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
+function dgsSetCurrentLayerIndex(dgsEle,index)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetCurrentLayerIndex at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
 	assert(type(index) == "number" ,"Bad argument @dgsSetCurrentLayerIndex at argument 2, expect a number got "..dgsGetType(index))
-	local layer = dgsElementData[dgsGUI].alwaysOn or "center"
-	local hasParent = isElement(FatherTable[dgsGUI])
-	local theTable = hasParent and ChildrenTable[FatherTable[dgsGUI]] or LayerCastTable[layer]
+	local layer = dgsElementData[dgsEle].alwaysOn or "center"
+	local hasParent = isElement(FatherTable[dgsEle])
+	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
 	local index = math.restrict(1,#theTable+1,index)
-	local id = table.find(theTable,dgsGUI)
+	local id = tableFind(theTable,dgsEle)
 	if id then
-		table.remove(theTable,id)
+		tableRemove(theTable,id)
 	end
-	table.insert(theTable,index,dgsGUI)
+	tableInsert(theTable,index,dgsEle)
 	return true
 end
 
-function dgsGetCurrentLayerIndex(dgsGUI)
-	assert(dgsIsDxElement(dgsGUI),"Bad argument @dgsGetCurrentLayerIndex at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsGUI))
-	local layer = dgsElementData[dgsGUI].alwaysOn or "center"
-	local hasParent = isElement(FatherTable[dgsGUI])
-	local theTable = hasParent and ChildrenTable[FatherTable[dgsGUI]] or LayerCastTable[layer]
-	return table.find(theTable,dgsGUI) or false
+function dgsGetCurrentLayerIndex(dgsEle)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetCurrentLayerIndex at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	local layer = dgsElementData[dgsEle].alwaysOn or "center"
+	local hasParent = isElement(FatherTable[dgsEle])
+	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
+	return tableFind(theTable,dgsEle) or false
 end
 
 function dgsGetLayerElements(layer)
@@ -81,7 +113,7 @@ end
 function dgsGetDxGUIFromResource(res)
 	local res = res or sourceResource
 	if res then
-		return resourceDxGUI[res] or {}
+		return boundResource[res] or {}
 	end
 end
 
@@ -97,21 +129,21 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 		if isElement(parent) then
 			if not dgsIsDxElement(parent) then return end
 			if not nocheckfather then
-				local id = table.find(parentTable,child)
+				local id = tableFind(parentTable,child)
 				if id then
-					table.remove(parentTable,id)
+					tableRemove(parentTable,id)
 				end
 			end
 			FatherTable[child] = parent
 			ChildrenTable[parent] = ChildrenTable[parent] or {}
-			table.insert(ChildrenTable[parent],child)
+			tableInsert(ChildrenTable[parent],child)
 		else
-			local id = table.find(parentTable,child)
+			local id = tableFind(parentTable,child)
 			if id then
-				table.remove(parentTable,id)
+				tableRemove(parentTable,id)
 			end
 			FatherTable[id] = nil
-			table.insert(CenterFatherTable,child) 
+			tableInsert(CenterFatherTable,child) 
 		end
 		setElementParent(child,parent)
 		---Update Position and Size
@@ -152,23 +184,23 @@ function blurEditMemo()
 end
 
 lastFront = false
-function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	local parent = FatherTable[dxgui]	--Get Parent
+function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	local parent = FatherTable[dgsEle]	--Get Parent
 	if not dontChangeData then
 		local oldShow = MouseData.nowShow
-		MouseData.nowShow = dxgui
-		if dgsGetType(dxgui) == "dgs-dxedit" then
+		MouseData.nowShow = dgsEle
+		if dgsGetType(dgsEle) == "dgs-dxedit" then
 			MouseData.editCursor = true
 			resetTimer(MouseData.EditMemoTimer)
-			local edit = dgsElementData[dxgui].edit
+			local edit = dgsElementData[dgsEle].edit
 			guiBringToFront(edit)
-		elseif dgsElementType[dxgui] == "dgs-dxmemo" then
+		elseif dgsElementType[dgsEle] == "dgs-dxmemo" then
 			MouseData.editCursor = true
 			resetTimer(MouseData.EditMemoTimer)
-			local memo = dgsElementData[dxgui].memo
+			local memo = dgsElementData[dgsEle].memo
 			guiBringToFront(memo)
-		elseif dxgui ~= oldShow then
+		elseif dgsEle ~= oldShow then
 			local dgsType = dgsGetType(oldShow)
 			if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
 				blurEditMemo()
@@ -178,23 +210,23 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 			dgsSetData(oldShow,"selectfrom",dgsElementData[oldShow].cursorpos)
 		end
 	end
-	if dgsElementData[dxgui].changeOrder then
+	if dgsElementData[dgsEle].changeOrder then
 		if not isElement(parent) then
-			local id = table.find(CenterFatherTable,dxgui)
+			local id = tableFind(CenterFatherTable,dgsEle)
 			if id then
-				table.remove(CenterFatherTable,id)
-				table.insert(CenterFatherTable,dxgui)
+				tableRemove(CenterFatherTable,id)
+				tableInsert(CenterFatherTable,dgsEle)
 			end
 		else
-			local parents = dxgui
+			local parents = dgsEle
 			while true do
 				local uparents = FatherTable[parents]	--Get Parent
 				if isElement(uparents) then
 					local children = ChildrenTable[uparents]
-					local id = table.find(children,parents)
+					local id = tableFind(children,parents)
 					if id then
-						table.remove(children,id)
-						table.insert(children,parents)
+						tableRemove(children,id)
+						tableInsert(children,parents)
 						if dgsElementType[parents] == "dgs-dxscrollpane" then
 							local scrollbar = dgsElementData[parents].scrollbars
 							dgsBringToFront(scrollbar[1],"left",_,true)
@@ -203,10 +235,10 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 					end
 					parents = uparents
 				else
-					local id = table.find(CenterFatherTable,parents)
+					local id = tableFind(CenterFatherTable,parents)
 					if id then
-						table.remove(CenterFatherTable,id)
-						table.insert(CenterFatherTable,parents)
+						tableRemove(CenterFatherTable,id)
+						tableInsert(CenterFatherTable,parents)
 						if dgsElementType[parents] == "dgs-dxscrollpane" then
 							local scrollbar = dgsElementData[parents].scrollbars
 							dgsBringToFront(scrollbar[1],"left",_,true)
@@ -221,19 +253,44 @@ function dgsBringToFront(dxgui,mouse,dontMoveParent,dontChangeData)
 			end
 		end
 	end
-	if isElement(lastFront) and lastFront ~= dxgui then
-		triggerEvent("onDgsBlur",lastFront,dxgui)
+	if isElement(lastFront) and lastFront ~= dgsEle then
+		triggerEvent("onDgsBlur",lastFront,dgsEle)
 	end
-	triggerEvent("onDgsFocus",dxgui,lastFront)
-	lastFront = dxgui
+	triggerEvent("onDgsFocus",dgsEle,lastFront)
+	lastFront = dgsEle
 	if mouse == "left" then
-		MouseData.clickl = dxgui
+		MouseData.clickl = dgsEle
 		if MouseData.interfaceHit and MouseData.interfaceHit[5] then
 			MouseData.lock3DInterface = MouseData.interfaceHit[5]
 		end
 		MouseData.clickData = nil
 	elseif mouse == "right" then
-		MouseData.clickr = dxgui
+		MouseData.clickr = dgsEle
 	end
 	return true
+end
+
+function dgsMoveToBack(dgsEle)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsMoveToBack at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	local parent = FatherTable[dgsEle]	--Get Parent
+	if isElement(parent) then
+		local children = ChildrenTable[parent]
+		local id = tableFind(children,dgsEle)
+		if id then
+			tableRemove(children,id)
+			tableInsert(children,1,dgsEle)
+			return true
+		end
+		return false
+	else
+		local layer = dgsElementData[dgsEle].alwaysOn
+		local layerTable = LayerCastTable[layer]
+		local id = tableFind(layerTable,dgsEle)
+		if id then
+			tableRemove(layerTable,id)
+			tableInsert(layerTable,1,dgsEle)
+			return true
+		end
+		return false
+	end
 end

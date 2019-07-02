@@ -30,8 +30,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 		outputDebugString("Failed to create render target for dgs-dx3dinterface [Expected:"..(0.0000076*resolX*resolY).."MB/Free:"..videoMemory.."MB]",2)
 	end
 	dgsSetData(interface,"renderTarget_parent",renderTarget)
-	insertResourceDxGUI(sourceResource,interface)
-	triggerEvent("onDgsCreate",interface)
+	triggerEvent("onDgsCreate",interface,sourceResource)
 	if not isElement(renderTarget) then
 		destroyElement(interface)
 		return false

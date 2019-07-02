@@ -24,7 +24,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	dgsSetData(scrollbar,"scrollArrow",true)
 	dgsSetData(scrollbar,"locked",false)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",scrollbar)
+	triggerEvent("onDgsCreate",scrollbar,sourceResource)
 	return scrollbar
 end
 
