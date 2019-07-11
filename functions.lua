@@ -398,6 +398,14 @@ function dgsSimulateClick(dgsGUI,button)
 	triggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
+addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y)
+	if state == "down" then
+		triggerEvent("onDgsMouseClickDown",source,button,"down",x,y)
+	else
+		triggerEvent("onDgsMouseClickUp",source,button,"down",x,y)
+	end
+end)
+
 function dgsGetMouseEnterGUI()
 	return MouseData.enter
 end

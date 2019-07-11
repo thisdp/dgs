@@ -460,6 +460,19 @@ function dgsGridListSetColumnWidth(gridlist,pos,width,relative)
 	return true
 end
 
+function dgsGridListAutoSizeColumn(gridlist,pos)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetColumnWidth at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(pos) == "number","Bad argument @dgsGridListSetColumnWidth at argument 2, expect number got "..dgsGetType(pos))
+	local columnData = dgsElementData[gridlist].columnData
+	assert(columnData[pos],"Bad argument @dgsGridListSetColumnWidth at argument 2, column index is out of range [min 1, max "..#columnData..", got "..pos.."]")
+	local text = dgsGridListGetColumnTitle(gridlist,pos)
+	local textSizeX = columnData[pos][7]
+	local font = columnData[pos][9]
+	local wid = dxGetTextWidth(text,textSizeX,font)
+	dgsGridListSetColumnWidth(gridlist,pos,wid,false)
+	return true
+end
+
 --[[
 mode Fast(true)/Slow(false)
 --]]
@@ -919,16 +932,115 @@ function dgsGridListScrollTo(gridlist,row,column)
 		end
 	end
 	if column then
-	
+	--todo
 	end
 end
 
-function dgsGridListGetSelectedItems(gridlist)
+function dgsGridListGetSelectedItems(gridlist,isOrigin)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetSelectedItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	return dgsElementData[gridlist].rowSelect
+	local items = dgsElementData[gridlist].rowSelect
+	if isOrigin then return items end
+	local selectionMode = dgsElementData[gridlist].selectionMode
+	local columndata = dgsElementData[gridlist].columnData
+	local rowData = dgsElementData[gridlist].rowData
+	local newSelectTable = {}
+	local cnt = 0
+	if not next(items) then return {} end
+	if selectionMode == 1 then
+		for row,val in pairs(items) do
+			for col=1,#columndata do
+				cnt = cnt+1
+				newSelectTable[cnt] = {row=row,column=col}
+			end
+		end
+		return newSelectTable
+	elseif selectionMode == 2 then
+		for row=1,#rowData do
+			for col,val in pairs(items[1]) do
+				cnt = cnt+1
+				newSelectTable[cnt] = {row=row,column=col}
+			end
+		end
+		return newSelectTable
+	elseif selectionMode == 3 then
+		for row,val in pairs(items) do
+			for col,_ in pairs(val) do
+				cnt = cnt+1
+				newSelectTable[cnt] = {row=row,column=col}
+			end
+		end
+		return newSelectTable
+	end
+	return {}
 end
 
-function dgsGridListSetSelectedItem(gridlist,row,column,scrollTo)
+function dgsGridListSetSelectedItems(gridlist,tab,isOrigin)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetSelectedItems at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(tab) == "table","Bad argument @dgsGridListSetSelectedItems at argument 2, expect table got "..type(tab))
+	local originSel
+	if not isOrigin then
+		originSel = {}
+		local selectionMode = dgsElementData[gridlist].selectionMode
+		if selectionMode == 1 then
+			for k,v in ipairs(tab) do
+				originSel[v.row] = {true}
+			end
+		elseif selectionMode == 2 then
+			originSel[1] = {}
+			for k,v in ipairs(tab) do
+				originSel[1][v.column] = true
+			end
+		elseif selectionMode == 3 then
+			for k,v in ipairs(tab) do
+				originSel[v.row] = originSel[v.row] or {}
+				originSel[v.row][v.column] = true
+			end
+		end
+	end
+	dgsSetData(gridlist,"rowSelect",originSel or tab)
+	triggerEvent("onDgsGridListSelect",gridlist,tab,_)
+	return true
+end
+
+function dgsGridListGetSelectedCount(gridlist,inRow,inColumn)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetSelectedCount at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	local inRow,inColumn = inRow or -1,inColumn or -1
+	assert(type(inRow) == "number" and inRow == -1 or inRow >= 1,"Bad argument @dgsGridListGetSelectedCount at argument 2, expect a number -1 or 1 ~ RowCount, got "..tostring(inRow).." ("..type(inRow)..")")
+	assert(type(inColumn) == "number" and inColumn == -1 or inColumn >= 1,"Bad argument @dgsGridListGetSelectedCount at argument 3, expect a number -1 or 1 ~ ColumnCount, got "..tostring(inColumn).." ("..type(inColumn)..")")
+	local selectedItems = dgsGridListGetSelectedItems(gridlist)
+	if inRow == -1 then
+		if inColumn == -1 then
+			return #selectedItems
+		else
+			local cnt = 0
+			for i=1,#selectedItems do
+				if selectedItems[i].column == inColumn then
+					cnt = cnt + 1
+				end
+			end
+			return cnt
+		end
+	else
+		if inColumn == -1 then
+			local cnt = 0
+			for i=1,#selectedItems do
+				if selectedItems[i].row == inRow then
+					cnt = cnt + 1
+				end
+			end
+			return cnt
+		else
+			for i=1,#selectedItems do
+				if selectedItems[i].row == inRow and selectedItems[i].column == inColumn then
+					return 1
+				end
+			end
+			return 0
+		end
+	end
+end
+
+function dgsGridListSetSelectedItem(gridlist,row,column,scrollTo,isOrigin)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetSelectedItem at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	if row == -1 or row > 0 then
 		local rowData = dgsElementData[gridlist].rowData
@@ -938,9 +1050,9 @@ function dgsGridListSetSelectedItem(gridlist,row,column,scrollTo)
 		local column = column <= #columndata and column or #columndata
 		local old1,old2
 		if dgsElementData[gridlist].multiSelection then
-			old1 = dgsGridListGetSelectedItems(gridlist)
+			old1 = dgsElementData[gridlist].rowSelect
 		else
-			data = dgsGridListGetSelectedItems(gridlist)
+			data = dgsElementData[gridlist].rowSelect
 			if not next(data) then
 				old1 = -1
 				old2 = -1
@@ -980,14 +1092,6 @@ function dgsGridListSetSelectedItem(gridlist,row,column,scrollTo)
 		return true
 	end
 	return false
-end
-
-function dgsGridListSetSelectedItems(gridlist,tab)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetSelectedItems at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(tab) == "table","Bad argument @dgsGridListSetSelectedItems at argument 2, expect table got "..type(tab))
-	dgsSetData(gridlist,"rowSelect",tab)
-	triggerEvent("onDgsGridListSelect",gridlist,tab,_)
-	return true
 end
 
 addEventHandler("onDgsGridListSelect",resourceRoot,function(rowOrTable,column,oldRowOrTable,oldColumn)

@@ -377,6 +377,12 @@ function dgsImportOOPClass()
 				newTable.setMovable = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsWindowSetMovable",self.dgsElement,...)
 				end
+				newTable.getSizable = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsWindowGetSizable",self.dgsElement,...)
+				end
+				newTable.getMovable = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsWindowGetMovable",self.dgsElement,...)
+				end
 				newTable.close = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsCloseWindow",self.dgsElement,...)
 				end
@@ -385,6 +391,12 @@ function dgsImportOOPClass()
 				end
 				newTable.getCloseButtonEnabled = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsWindowGetCloseButtonEnabled",self.dgsElement,...)
+				end
+				newTable.setCloseButtonSize = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsWindowSetCloseButtonSize",self.dgsElement,...)
+				end
+				newTable.getCloseButtonSize = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsWindowGetCloseButtonSize",self.dgsElement,...)
 				end
 				newTable.getCloseButton = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsWindowGetCloseButton",self.dgsElement,...)
@@ -686,6 +698,9 @@ function dgsImportOOPClass()
 				newTable.setColumnWidth = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnWidth",self.dgsElement,...)
 				end
+				newTable.autoSizeColumn = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListAutoSizeColumn",self.dgsElement,...)
+				end
 				newTable.getColumnTitle = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnTitle",self.dgsElement,...)
 				end
@@ -787,6 +802,9 @@ function dgsImportOOPClass()
 				end
 				newTable.setSelectedItems = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListSetSelectedItems",self.dgsElement,...)
+				end
+				newTable.getSelectedCount = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListGetSelectedCount",self.dgsElement,...)
 				end
 				newTable.setSortFunction = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListSetSortFunction",self.dgsElement,...)
@@ -925,6 +943,12 @@ function dgsImportOOPClass()
 				end
 				newTable.getVerticalAlign = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsLabelGetVerticalAlign",self.dgsElement,...)
+				end
+				newTable.getTextExtent = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsLabelGetTextExtent",self.dgsElement,...)
+				end
+				newTable.getFontHeight = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsLabelGetFontHeight",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxprogressbar" then
 				newTable.getProgress = function(self,...)

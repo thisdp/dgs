@@ -31,6 +31,9 @@ local applyColorAlpha = applyColorAlpha
 local getCursorPosition = getCursorPosition
 local triggerEvent = triggerEvent
 local unpack = unpack
+local tostring = tostring
+local tonumber = tonumber
+local type = type
 local isElement = isElement
 
 ----

@@ -37,6 +37,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	triggerEvent("onDgsCreate",window,sourceResource)
 	if not noCloseButton then
 		local buttonOff = dgsCreateButton(40,0,40,24,styleSettings.window.closeButtonText,false,window,_,_,_,_,_,_,styleSettings.window.closeButtonColor[1],styleSettings.window.closeButtonColor[2],styleSettings.window.closeButtonColor[3],true)
+		dgsSetData(window,"closeButtonSize",{40,24,false})
 		dgsSetData(window,"closeButton",buttonOff)
 		dgsSetSide(buttonOff,"right",false)
 		dgsSetData(buttonOff,"ignoreParentTitle",true,true)
@@ -52,7 +53,8 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 	local closeButton = dgsElementData[window].closeButton
 	if bool then
 		if not isElement(closeButton) then
-			local buttonOff = dgsCreateButton(30,0,25,20,"×",false,window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
+			local cbSize = dgsElementData[window].closeButtonSize
+			local buttonOff = dgsCreateButton(40,0,cbSize[1],cbSize[2],"×",cbSize[3],window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
 			dgsSetData(window,"closeButton",buttonOff)
 			dgsSetSide(buttonOff,"right",false)
 			dgsSetData(buttonOff,"ignoreParentTitle",true)
@@ -75,11 +77,13 @@ end
 
 function dgsWindowSetSizable(window,bool)
 	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetSizable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
-	if dgsGetType(window) == "dgs-dxwindow" then
-		dgsSetData(window,"sizable",(bool and true) or false)
-		return true
-	end
+	dgsSetData(window,"sizable",bool and true or false)
 	return false
+end
+
+function dgsWindowGetSizable(window)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowGetSizable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+	return dgsElementData[window].sizable
 end
 
 function dgsWindowGetCloseButton(window)
@@ -91,9 +95,31 @@ end
 
 function dgsWindowSetMovable(window,bool)
 	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetMovable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
-    if dgsGetType(window) == "dgs-dxwindow" then
-		dgsSetData(window,"movable",(bool and true) or false)
-		return true
+	dgsSetData(window,"movable",bool and true or false)
+end
+
+function dgsWindowGetMovable(window)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowGetMovable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+	return dgsElementData[window].movable
+end
+
+function dgsWindowSetCloseButtonSize(window,w,h,relative)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetCloseButtonSize at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+	assert(tonumber(w),"Bad argument @dgsWindowSetCloseButtonSize at argument 2, expect number got "..type(w))
+	assert(tonumber(h),"Bad argument @dgsWindowSetCloseButtonSize at argument 3, expect number got "..type(h))
+	local closeButton = dgsElementData[window].closeButton
+	if isElement(closeButton) then
+		dgsSetData(window,"closeButtonSize",{w,h,relative and true or false})
+		dgsSetSize(closeButton,w,h,relative and true or false)
+	end
+	return false
+end
+
+function dgsWindowGetCloseButtonSize(window,relative)
+	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowGetCloseButtonSize at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
+	local closeButton = dgsElementData[window].closeButton
+	if isElement(closeButton) then
+		return dgsGetSize(closeButton,relative and true or false)
 	end
 	return false
 end

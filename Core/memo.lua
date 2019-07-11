@@ -1189,13 +1189,15 @@ function dgsMemoRebuildWordWarpMapTable(memo)
 end
 
 function dgsMemoRebuildTextTable(memo)
-	local textTable = dgsElementData[memo].textTable
+	local textTable = dgsElementData[memo].text
 	local textSize = dgsElementData[memo].textSize
 	local font = dgsElementData[memo].font
 	for i=1,#textTable do
-		local text = textTable[0]
-		textTable[-1] = _dxGetTextWidth(text,textSize[1],font)
+		local text = textTable[i][0]
+		textTable[i][-1] = _dxGetTextWidth(text,textSize[1],font)
+		if dgsElementData[memo].rightLength[1] < textTable[i][-1] then
+			dgsElementData[memo].rightLength = {textTable[i][-1],i}
+		end
 	end
 	configMemo(memo)
-	--dgsMemoRebuildWordWarpMapTable(memo)
 end

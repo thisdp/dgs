@@ -1,3 +1,5 @@
+local tostring = tostring
+local tonumber = tonumber
 dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
 
 function dgsGetData(element,key)
@@ -246,7 +248,7 @@ function dgsSetProperty(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
 	if oldPropertyNameTable[key] then
-		outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+		outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
 		if debugMode_CompatibilityCheck then
 			assert(false,"[DGS]Assert! Look the warning debug message above")
 		end
@@ -308,7 +310,7 @@ function dgsGetProperty(dxgui,key)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if not dgsElementData[dxgui] then return false end
 	if oldPropertyNameTable[key] then
-		outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)	
+		outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
 		if debugMode_CompatibilityCheck then
 			assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
 		end
@@ -328,7 +330,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 			local dgsType = dgsElementType[v]
 			for key,value in pairs(theTable) do
 				if oldPropertyNameTable[key] then
-					outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+					outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
 					if debugMode_CompatibilityCheck then
 						assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
 					end
@@ -377,7 +379,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 		for key,value in pairs(theTable) do
 			local skip = false
 			if oldPropertyNameTable[key] then
-				outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+				outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
 				if debugMode_CompatibilityCheck then
 					assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
 				end
@@ -431,7 +433,7 @@ function dgsGetProperties(dxgui,properties)
 		local data = {}
 		for k,key in ipairs(properties) do
 			if oldPropertyNameTable[key] then
-				outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+				outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
 				if debugMode_CompatibilityCheck then
 					assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
 				end
@@ -447,7 +449,7 @@ function dgsSetPropertyInherit(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetPropertyInherit at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
 	if oldPropertyNameTable[key] then
-		outputDebugString("[DGS]Property '"..key.."' will be no longer supported, use '"..oldPropertyNameTable[key].."' instead",2)
+		outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
 		if debugMode_CompatibilityCheck then
 			assert(false,"[DGS]Assert! Look the warning debug message above")
 		end

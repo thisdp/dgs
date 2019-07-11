@@ -132,6 +132,7 @@ function createTestMemo()
 	9
 	10]],false)
 	--dgsMemoSetReadOnly(memo,true)
+	dgsSetFont(memo,"default-bold")
 end
 
 function createTestMemo()
@@ -191,7 +192,6 @@ function gridlistTest()
 	configGridList(gridlist)
 	dgsGridListSetColumnFont(gridlist,1,"default-bold")
 	dgsGridListSetScrollPosition(gridlist,100)
-
 end
 
 function centerEdit()

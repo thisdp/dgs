@@ -96,4 +96,14 @@ addCommandHandler("g2d",function(player,command,...)
 	end
 end)
 
---Under development
+G2D.ConvertTable = {
+
+
+
+
+
+
+
+
+
+}

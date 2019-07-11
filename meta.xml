@@ -170,10 +170,15 @@
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
 	<export function="dgsWindowSetMovable" type="client" />
+	<export function="dgsWindowGetSizable" type="client" />
+	<export function="dgsWindowGetMovable" type="client" />
 	<export function="dgsCloseWindow" type="client" />
 	<export function="dgsWindowSetCloseButtonEnabled" type="client" />
 	<export function="dgsWindowGetCloseButtonEnabled" type="client" />
+	<export function="dgsWindowSetCloseButtonSize" type="client" />
+	<export function="dgsWindowGetCloseButtonSize" type="client" />
 	<export function="dgsWindowGetCloseButton" type="client" />
+	
 
 	<export function="dgsCreate3DInterface" type="client" />
 	<export function="dgs3DInterfaceGetBlendMode" type="client" />
@@ -343,6 +348,7 @@
 	<export function="dgsLabelGetHorizontalAlign" type="client" />
 	<export function="dgsLabelGetVerticalAlign" type="client" />
 	<export function="dgsLabelGetTextExtent" type="client" />
+	<export function="dgsLabelGetFontHeight" type="client" />
 
 	<export function="dgsCreateTabPanel" type="client" />
 	<export function="dgsCreateTab" type="client" />
@@ -376,6 +382,7 @@
 	<export function="dgsGridListGetColumnAllWidth" type="client" />
 	<export function="dgsGridListGetColumnWidth" type="client" />
 	<export function="dgsGridListSetColumnWidth" type="client" />
+	<export function="dgsGridListAutoSizeColumn" type="client" />
 	<export function="dgsGridListGetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnFont" type="client" />
@@ -392,6 +399,7 @@
 	<export function="dgsGridListSetSelectedItem" type="client" />
 	<export function="dgsGridListGetSelectedItems" type="client" />
 	<export function="dgsGridListSetSelectedItems" type="client" />
+	<export function="dgsGridListGetSelectedCount" type="client" />
 	<export function="dgsGridListSetItemColor" type="client" />
 	<export function="dgsGridListGetItemColor" type="client" />
 	<export function="dgsGridListGetRowBackGroundImage" type="client" />

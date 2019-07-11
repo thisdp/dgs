@@ -83,11 +83,18 @@ function dgsLabelGetVerticalAlign(label)
 	return alignment[2]
 end
 
-function dgsLabelGetTextExtent ( label )
+function dgsLabelGetTextExtent(label)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetTextExtent at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	local font = dgsElementData[label].font or systemFont
 	local textSizeX = dgsElementData[label].textSize[1]
 	local text = dgsElementData[label].text
 	local colorcoded = dgsElementData[label].colorcoded
-	return dxGetTextWidth(text,textSizeX,font.colorcoded)
+	return dxGetTextWidth(text,textSizeX,font,colorcoded)
+end
+
+function dgsLabelGetFontHeight(label)
+	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelGetFontHeight at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
+	local font = dgsElementData[label].font or systemFont
+	local textSizeY = dgsElementData[label].textSize[2]
+	return dxGetFontHeight(textSizeY,font)
 end
