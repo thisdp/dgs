@@ -106,7 +106,7 @@ function getParentLocation(dgsElement,rndsup,x,y)
 end
 
 function dgsGetPosition(dgsElement,bool,includeParent,rndsupport)
-	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetPosition at argument 1, expect dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	if includeParent then
 		guielex,guieley = getParentLocation(dgsElement,rndsupport,dgsElementData[dgsElement].absPos[1],dgsElementData[dgsElement].absPos[2])
 		if relative then
@@ -121,26 +121,26 @@ function dgsGetPosition(dgsElement,bool,includeParent,rndsupport)
 end
 
 function dgsSetPosition(dgsElement,x,y,bool)
-	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetPosition at argument 1, expect dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	calculateGuiPositionSize(dgsElement,x,y,bool or false)
 	return true
 end
 
 function dgsGetSize(dgsElement,bool)
-	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetSize at argument 1, expect dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	local size = dgsElementData[dgsElement][bool and "rltSize" or "absSize"]
 	return size[1],size[2]
 end
 
 function dgsSetSize(dgsElement,x,y,bool)
-	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetSize at argument 1, expect dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	calculateGuiPositionSize(dgsElement,_,_,_,x,y,bool or false)
 	return true
 end
 
 function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize)
-	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dgsEle got "..dgsGetType(dgsElement))
-	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dgsEle got "..dgsGetType(attachTo))
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dxgui got "..dgsGetType(attachTo))
 	assert(not dgsGetParent(dgsElement),"Bad argument @dgsAttachElements at argument 1, source dgs element shouldn't have a parent")
 	dgsDetachElements(dgsElement)
 	if not width or not height then
@@ -164,12 +164,12 @@ function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width
 end
 
 function dgsElementIsAttached(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsElementIsAttached at argument 1, expect dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsElementIsAttached at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	return dgsElementData[dgsElement].attachedTo and true or false
 end
 
 function dgsDetachElements(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsDetachElements at argument 1, expect dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsDetachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	local attachedTable = dgsElementData[dgsElement].attachedTo or {}
 	if isElement(attachedTable[1]) then
 		local attachedBy = dgsElementData[attachedTable[1]].attachedBy
@@ -183,39 +183,33 @@ end
 
 function dgsApplyVisible(parent,visible)
 	for k,v in ipairs(ChildrenTable[parent] or {}) do
-		if dgsElementType[v] == "dgs-dxedit" then
-			local edit = dgsElementData[v].edit
-			guiSetVisible(edit,visible)
-		else
-			dgsApplyVisible(v,visible)
-		end
+		dgsApplyVisible(v,visible)
 	end
 end
 
 function dgsSetVisible(dgsEle,visible)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
+	local originalVisible = dgsElementData[dgsEle].visible
 	local visible = visible and true or false
-	if dgsGetType(dgsEle) == "dgs-dxedit" then
-		local edit = dgsElementData[dgsEle].edit
-		guiSetVisible(edit,visible)
-	else
-		dgsApplyVisible(dgsEle,visible)
+	if visible == originalVisible then
+		return true
 	end
+	dgsApplyVisible(dgsEle,visible)
 	return dgsSetData(dgsEle,"visible",visible)
 end
 
 function dgsGetVisible(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetVisible at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle].visible
 end
 
 function dgsSetSide(dgsEle,side,topleft)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetSide at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsSetData(dgsEle,topleft and "tob" or "lor",side)
 end
 
 function dgsGetSide(dgsEle,topleft)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetSide at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetSide at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle][topleft and "tob" or "lor"]
 end
 
@@ -315,26 +309,26 @@ function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notri
 end
 
 function dgsSetAlpha(dgsEle,alpha,absolute)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetAlpha at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	assert(type(alpha) == "number","Bad argument @dgsSetAlpha at argument 2, expect a number got "..type(alpha))
 	alpha = absolute and alpha/255 or alpha
 	return dgsSetData(dgsEle,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 end
 
 function dgsGetAlpha(dgsEle,absolute)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetAlpha at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local alp = dgsElementData[dgsEle].alpha
 	return absolute and alp*255 or alp
 end
 
 function dgsSetEnabled(dgsEle,enabled)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetEnabled at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))	
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))	
 	assert(type(enabled) == "boolean","Bad argument @dgsSetEnabled at argument 2, expect a boolean element got "..type(enabled))	
 	return dgsSetData(dgsEle,"enabled",enabled)
 end
 
 function dgsGetEnabled(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetEnabled at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle].enabled
 end
 
@@ -350,24 +344,24 @@ function dgsCreateFont(path,size,bold,quality)
 end
 
 function dgsSetFont(dgsEle,font)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetFont at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	if font then
 		dgsSetData(dgsEle,"font",font)	
 	end
 end
 
 function dgsGetFont(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetFont at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle].font
 end
 
 function dgsSetText(dgsEle,text)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetText at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsSetData(dgsEle,"text",text)
 end
 
 function dgsGetText(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetText at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetText at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local dxtype = dgsGetType(dgsEle)
 	if dxtype == "dgs-dxmemo" then
 		return dgsMemoGetPartOfText(dgsEle)
@@ -377,12 +371,12 @@ function dgsGetText(dgsEle)
 end
 
 function dgsSetPostGUI(dgsEle,state)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetPostGUI at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetPostGUI at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsSetProperty(dgsEle,"postGUI",state)
 end
 
 function dgsGetPostGUI(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetPostGUI at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetPostGUI at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle].postGUI
 end
 
@@ -449,28 +443,42 @@ function dgsGetInputMode(...)
 end
 
 function dgsFocus(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsFocus at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsFocus at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
+	local lastFront = MouseData.nowShow
 	MouseData.nowShow = dgsEle
-	if dgsElementType[dgsEle] == "dgs-dxbrowser" then
+	local eleType = dgsElementType[dgsEle]
+	if eleType == "dgs-dxbrowser" then
 		focusBrowser(dgsEle)
+	elseif eleType == "dgs-dxedit" then
+		MouseData.editCursor = true
+		resetTimer(MouseData.EditMemoTimer)
+		dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
+		guiFocus(GlobalEdit)
+	elseif eleType == "dgs-dxmemo" then
+		MouseData.editCursor = true
+		resetTimer(MouseData.EditMemoTimer)
+		dgsElementData[GlobalEdit].linkedDxMemo = dgsEle
+		guiFocus(GlobalMemo)
 	end
+	triggerEvent("onDgsFocus",dgsEle,lastFront)
 	return true
 end
 
 function dgsBlur(dgsEle)
-	if isElement(dgsEle) then
-		if dgsEle == MouseData.nowShow then
-			MouseData.nowShow = nil
-			if dgsElementType[dgsEle] == "dgs-dxbrowser" then
-				focusBrowser()
-			end
-			return true
-		end
-	end
+	if isElement(dgsEle) and dgsEle ~= MouseData.nowShow then return false end
+	local lastFront = MouseData.nowShow
 	MouseData.nowShow = nil
-	if dgsElementType[dgsEle] == "dgs-dxbrowser" then
+	local eleType = dgsElementType[dgsEle]
+	if eleType == "dgs-dxbrowser" then
 		focusBrowser()
+	elseif eleType == "dgs-dxedit" then
+		dgsElementData[GlobalEdit].linkedDxEdit = nil
+		guiBlur(GlobalEdit)
+	elseif eleType == "dgs-dxmemo" then
+		dgsElementData[GlobalEdit].linkedDxMemo = nil
+		guiBlur(GlobalMemo)
 	end
+	triggerEvent("onDgsBlur",lastFront)
 	return true
 end
 
@@ -478,9 +486,32 @@ function dgsGetRootElement()
 	return resourceRoot
 end
 
+function dgsGetCursorPosition(relativeElement,relative)
+	if isCursorShowing() then
+		local rltX,rltY = getCursorPosition()
+		if dgsIsDxElement(relativeElement) then
+			local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
+			local absX,absY = rltX*sW,rltY*sH
+			local curX,curY = absX-xPos,absY-yPos
+			local eleSize = dgsElementData[relativeElement].absSize
+			if relative then
+				return curX/eleSize[1],curY/eleSize[2]
+			else
+				return curX,curY
+			end
+		else
+			if relative then
+				return rltX,rltY
+			else
+				return rltX*sW,rltY*sH
+			end
+		end
+	end
+end
+
 ------------Move Scale Handler
 function dgsAddMoveHandler(dgsElement,x,y,w,h,xRel,yRel,wRel,hRel,forceReplace)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddMoveHandler at argument 1, expect a dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
 	local x,y,xRel,yRel = x or 0,y or 0,xRel ~= false and true,yRel ~= false and true
 	local w,h,wRel,hRel = w or 0,h or 0,wRel ~= false and true,hRel ~= false and true
 	local moveData = dgsElementData[dgsElement].moveHandlerData
@@ -490,7 +521,7 @@ function dgsAddMoveHandler(dgsElement,x,y,w,h,xRel,yRel,wRel,hRel,forceReplace)
 end
 
 function dgsRemoveMoveHandler(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveMoveHandler at argument 1, expect a dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
 	local moveData = dgsElementData[dgsElement].moveHandlerData
 	if moveData then
 		dgsSetData(dgsElement,"moveHandlerData",nil)
@@ -498,12 +529,12 @@ function dgsRemoveMoveHandler(dgsElement)
 end
 
 function dgsIsMoveHandled(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsMoveHandled at argument 1, expect a dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsMoveHandled at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
 	return dgsElementData[dgsElement].moveHandlerData and true or false
 end
 
 function dgsAddSizeHandler(dgsElement,left,right,top,bottom,leftRel,rightRel,topRel,bottomRel,forceReplace)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddSizeHandler at argument 1, expect a dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddSizeHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
 	local left = left or 0
 	local right = right or left
 	local top = top or right
@@ -519,7 +550,7 @@ function dgsAddSizeHandler(dgsElement,left,right,top,bottom,leftRel,rightRel,top
 end
 
 function dgsRemoveSizeHandler(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveSizeHandler at argument 1, expect a dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveSizeHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
 	local sizeData = dgsElementData[dgsElement].sizeHandlerData
 	if sizeData then
 		dgsSetData(dgsElement,"sizeHandlerData",nil)
@@ -527,9 +558,10 @@ function dgsRemoveSizeHandler(dgsElement)
 end
 
 function dgsIsSizeHandled(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsSizeHandled at argument 1, expect a dgs-dgsEle got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsSizeHandled at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
 	return dgsElementData[dgsElement].sizeHandlerData and true or false
 end
+
 
 ------------Round Up Functions
 defaultRoundUpPoints = 3
@@ -586,6 +618,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"changeOrder",true) --Change the order when "bring to front" or clicked
 	dgsSetData(source,"attachedTo",false) --Attached To
 	dgsSetData(source,"attachedBy",{}) --Attached By
+	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 end)
@@ -684,7 +717,7 @@ function dgsSetTranslationTable(name,tab)
 end
 
 function dgsAttachToTranslation(dgsEle,name)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsAttachToTranslation at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsAttachToTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastTrans = dgsElementData[dgsEle]._translang
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
 		local id = table.find(LanguageTranslationAttach[name])
@@ -700,7 +733,7 @@ function dgsAttachToTranslation(dgsEle,name)
 end
 
 function dgsDetachFromTranslation(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsDetachFromTranslation at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsDetachFromTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastTrans = dgsElementData[dgsEle]._translang
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
 		local id = table.find(LanguageTranslationAttach[name])
@@ -717,7 +750,7 @@ function dgsSetAttachTranslation(name)
 end
 
 function dgsGetTranslationName(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetTranslationName at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetTranslationName at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle]._translang
 end
 

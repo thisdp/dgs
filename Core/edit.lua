@@ -21,6 +21,8 @@ local acceptedAlignment = {
 VerticalAlign = {top=true,center=true,bottom=true}
 HorizontalAlign = {left=true,center=true,right=true}
 GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
+GlobalEdit = guiCreateEdit(-1,0,0,0,"",true)
+dgsSetData(GlobalEdit,"linkedDxEdit",nil)
 local splitChar = "\r\n"
 local splitChar2 = "\n"
 local editsCount = 1
@@ -67,22 +69,19 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"readOnlyCaretShow",false)
 	dgsSetData(edit,"clearSelection",true)
 	dgsSetData(edit,"enableTabSwitch",true)
-	dgsSetData(edit,"savePositionSwitch",false)
+	dgsSetData(edit,"clearSwitchPos",false)
 	dgsSetData(edit,"lastSwitchPosition",-1)
 	dgsSetData(edit,"lockView",false)
 	dgsSetData(edit,"allowCopy",true)
 	dgsSetData(edit,"selectColor",styleSettings.edit.selectColor)
+	dgsSetData(edit,"selectColorBlur",styleSettings.edit.selectColorBlur)
+	print(styleSettings.edit.selectColorBlur)
 	dgsSetData(edit,"historyMaxRecords",100)
 	dgsSetData(edit,"enableRedoUndoRecord",true)
 	dgsSetData(edit,"undoHistory",{})
 	dgsSetData(edit,"redoHistory",{})
 	dgsSetData(edit,"typingSound",styleSettings.edit.typingSound)
-	local gedit = guiCreateEdit(0,0,0,0,"" or "",true,GlobalEditParent)
-	guiSetProperty(gedit,"ClippedByParent","False")
-	dgsSetData(edit,"edit",gedit)
-	dgsSetData(gedit,"dxedit",edit)
-	guiSetAlpha(gedit,0)
-	dgsSetData(edit,"maxLength",guiGetProperty(gedit,"MaxTextLength"))
+	dgsSetData(edit,"maxLength",0x3FFFFFFF)
 	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
 	editsCount = editsCount+1
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
@@ -180,7 +179,6 @@ end
 function dgsEditSetMaxLength(edit,maxLength,nonTextCut)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetMaxLength at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
 	assert(type(maxLength) == "number","Bad argument @dgsEditSetMaxLength at argument 2, expect number got "..type(maxLength))
-	local guiedit = dgsElementData[edit].edit
 	if not nonTextCut then
 		local text = dgsElementData[edit].text
 		dgsEditDeleteText(edit,maxLength,utf8Len(text),true)
@@ -188,19 +186,13 @@ function dgsEditSetMaxLength(edit,maxLength,nonTextCut)
 	return dgsSetData(edit,"maxLength",maxLength)
 end
 
-function dgsEditGetMaxLength(edit,fromgui)
+function dgsEditGetMaxLength(edit)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetMaxLength at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	local guiedit = dgsElementData[edit].edit
-	if fromgui then
-		return guiGetProperty(guiedit,"MaxTextLength")
-	else
-		return dgsElementData[edit].maxLength
-	end
+	return dgsElementData[edit].maxLength
 end
 
 function dgsEditSetReadOnly(edit,state)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetReadOnly at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	local guiedit = dgsElementData[edit].edit
 	return dgsSetData(edit,"readOnly",state and true or false)
 end
 
@@ -364,7 +356,6 @@ end
 
 -----------------Internal Functions
 function configEdit(source)
-	local myedit = dgsElementData[source].edit
 	local x,y = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	local padding = dgsElementData[source].padding
 	local px,py = x-padding[1],y-padding[2]
@@ -383,7 +374,6 @@ end
 function resetEdit(x,y)
 	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 		if MouseData.nowShow == MouseData.clickl then
-			local edit = dgsElementData[MouseData.nowShow].edit
 			local pos = searchEditMousePosition(MouseData.nowShow,MouseX or x*sW, MouseY or y*sH)
 			dgsEditSetCaretPosition(MouseData.nowShow,pos,true)
 		end
@@ -469,16 +459,16 @@ end
 addEventHandler("onDgsMouseClick",root,checkEditMousePosition)
 
 addEventHandler("onClientGUIAccepted",resourceRoot,function()
-	local mydxedit = dgsElementData[source].dxedit
-	if dgsGetType(mydxedit) == "dgs-dxedit" then
-		triggerEvent("onDgsEditAccepted",mydxedit)
-		local cmd = dgsElementData[mydxedit].mycmd
+	local dxEdit = dgsElementData[source].linkedDxEdit
+	if dgsGetType(dxEdit) == "dgs-dxedit" then
+		triggerEvent("onDgsEditAccepted",dxEdit)
+		local cmd = dgsElementData[dxEdit].mycmd
 		if dgsGetType(cmd) == "dgs-dxcmd" then
-			local text = dgsElementData[mydxedit].text
+			local text = dgsElementData[dxEdit].text
 			if text ~= "" then
 				receiveCmdEditInput(cmd,text)
 			end
-			dgsEditClearText(mydxedit)
+			dgsEditClearText(dxEdit)
 		end
 	end
 end)
@@ -505,15 +495,8 @@ addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
 			end
 			local theResult = Next or theFirst
 			if theResult then
-				if dgsElementData[source].savePositionSwitch then
-					dgsSetData(source,"lastSwitchPosition",dgsEditGetCaretPosition(source))
-				else
-					dgsSetData(source,"lastSwitchPosition",-1)
-				end
 				dgsBringToFront(theResult)
-				if dgsElementData[theResult].savePositionSwitch and dgsElementData[theResult].lastSwitchPosition >= 0 then
-					dgsEditSetCaretPosition(theResult,dgsElementData[theResult].lastSwitchPosition)
-				else
+				if dgsElementData[theResult].clearSwitchPos then
 					dgsEditSetCaretPosition(theResult,utf8Len(dgsElementData[theResult].text or ""))
 				end
 				triggerEvent("onDgsEditSwitched",theResult,source)
@@ -752,24 +735,23 @@ function dgsEditDoOpposite(edit,isUndo)
 end
 
 addEventHandler("onClientGUIChanged",resourceRoot,function()
-	if not dgsElementData[source] then return end
 	if getElementType(source) == "gui-edit" then
-		local myedit = dgsElementData[source].dxedit
-		if isElement(myedit) then
-			if source == dgsElementData[myedit].edit then
-				local text = guiGetText(source)
-				local cool = dgsElementData[myedit].CoolTime
-				if #text ~= 0 and not cool then
-					local caretPos = dgsElementData[myedit].caretPos
-					local selectFrom = dgsElementData[myedit].selectFrom
+		local dxEdit = dgsElementData[source].linkedDxEdit
+		if isElement(dxEdit) then
+			local text = guiGetText(source)
+			local cool = dgsElementData[dxEdit].CoolTime
+			if #text ~= 0 then
+				if not cool and not dgsElementData[dxEdit].readOnly then
+					local caretPos = dgsElementData[dxEdit].caretPos
+					local selectFrom = dgsElementData[dxEdit].selectFrom
 					if selectFrom-caretPos ~= 0 then
-						dgsEditReplaceText(myedit,caretPos,selectFrom,text)
+						dgsEditReplaceText(dxEdit,caretPos,selectFrom,text)
 					else
-						handleDxEditText(myedit,text,true)
+						handleDxEditText(dxEdit,text,true)
 					end
-					dgsElementData[myedit].CoolTime = true
+					dgsElementData[dxEdit].CoolTime = true
 					guiSetText(source,"")
-					dgsElementData[myedit].CoolTime = false
+					dgsElementData[dxEdit].CoolTime = false
 				end
 			end
 		end

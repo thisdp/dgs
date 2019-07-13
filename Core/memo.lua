@@ -8,6 +8,8 @@ local utf8Len = utf8.len
 local utf8Insert = utf8.insert
 local utf8Byte = utf8.byte
 local _dxGetTextWidth = dxGetTextWidth
+GlobalMemo = guiCreateMemo(-1,0,0,0,"",true)
+dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 --[[
 ---------------In Normal Mode------------------
 	Text Table Structure:
@@ -83,13 +85,10 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"redoHistory",{})
 	dgsSetData(memo,"typingSound",styleSettings.memo.typingSound)
 	dgsSetData(memo,"selectColor",styleSettings.memo.selectColor)
+	dgsSetData(memo,"selectColorBlur",styleSettings.memo.selectColorBlur)
 	dgsSetData(memo,"configNextFrame",false)
 	dgsSetData(memo,"rebuildMapTableNextFrame",false)
-	local gmemo = guiCreateMemo(0,0,0,0,"",true,GlobalEditParent)
-	dgsSetData(memo,"memo",gmemo)
-	dgsSetData(gmemo,"dxmemo",memo)
-	guiSetAlpha(gmemo,0)
-	dgsSetData(memo,"maxLength",guiGetProperty(gmemo,"MaxTextLength"))
+	dgsSetData(memo,"maxLength",0x3FFFFFFF)
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
@@ -356,80 +355,76 @@ end
 addEventHandler("onClientCursorMove",root,resetMemo)
 
 function searchMemoMousePosition(dxmemo,posx,posy)
-	local memo = dgsElementData[dxmemo].memo
-	if isElement(memo) then
-		local size = dgsElementData[dxmemo].absSize
-		local font = dgsElementData[dxmemo].font or systemFont
-		local txtSizX = dgsElementData[dxmemo].textSize[1]
-		local fontHeight = dxGetFontHeight(dgsElementData[dxmemo].textSize[2],font)
-		local showPos = dgsElementData[dxmemo].showPos
-		local isWordWarp = dgsElementData[dxmemo].wordWarp
-		local showLine = isWordWarp and dgsElementData[dxmemo].wordWarpShowLine[3] or dgsElementData[dxmemo].showLine
-		local x,y = dgsGetPosition(dxmemo,false,true)
-		local originalText = dgsElementData[dxmemo].text
-		local allText = isWordWarp and dgsElementData[dxmemo].wordWarpMapText or originalText
-		local selLine = mathFloor((posy-y)/fontHeight)+showLine
-		selLine = selLine > #allText and #allText or selLine 
-		local text = (allText[selLine] or {[0]=""})[0]
-		local pos = posx-x+showPos
-		local sfrom,sto,templen = 0,utf8Len(text),0
-		for i=1,sto do
-			stoSfrom_Half = (sto+sfrom)*0.5
-			local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
-			local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
-			local len1 = strlen+templen
-			if pos < len1 then
-				sto = stoSfrom_Half
-			elseif pos > len1 then
-				sfrom = stoSfrom_Half
-				templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
-				start = len1
-			elseif pos == len1 then
-				start = len1
-				sfrom = stoSfrom_Half
-				sto = sfrom
-				templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
-			end
-			if sto-sfrom <= 10 then break end
+	local size = dgsElementData[dxmemo].absSize
+	local font = dgsElementData[dxmemo].font or systemFont
+	local txtSizX = dgsElementData[dxmemo].textSize[1]
+	local fontHeight = dxGetFontHeight(dgsElementData[dxmemo].textSize[2],font)
+	local showPos = dgsElementData[dxmemo].showPos
+	local isWordWarp = dgsElementData[dxmemo].wordWarp
+	local showLine = isWordWarp and dgsElementData[dxmemo].wordWarpShowLine[3] or dgsElementData[dxmemo].showLine
+	local x,y = dgsGetPosition(dxmemo,false,true)
+	local originalText = dgsElementData[dxmemo].text
+	local allText = isWordWarp and dgsElementData[dxmemo].wordWarpMapText or originalText
+	local selLine = mathFloor((posy-y)/fontHeight)+showLine
+	selLine = selLine > #allText and #allText or selLine 
+	local text = (allText[selLine] or {[0]=""})[0]
+	local pos = posx-x+showPos
+	local sfrom,sto,templen = 0,utf8Len(text),0
+	for i=1,sto do
+		stoSfrom_Half = (sto+sfrom)*0.5
+		local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
+		local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
+		local len1 = strlen+templen
+		if pos < len1 then
+			sto = stoSfrom_Half
+		elseif pos > len1 then
+			sfrom = stoSfrom_Half
+			templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+			start = len1
+		elseif pos == len1 then
+			start = len1
+			sfrom = stoSfrom_Half
+			sto = sfrom
+			templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 		end
-		local start = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
-		local resultIndex,resultLine = 0,1
-		for i=sfrom,sto do
-			local poslen1 = _dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
-			local theNext = _dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
-			local offsetR = theNext+poslen1
-			local theLast = _dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
-			local offsetL = poslen1-theLast
-			if i <= sfrom and pos <= offsetL then
-				resultIndex,resultLine = sfrom,selLine
-				break
-			elseif i >= sto and pos >= offsetR then
-				resultIndex,resultLine = sto,selLine
-				break
-			elseif pos >= offsetL and pos <= offsetR then
-				resultIndex,resultLine = i,selLine
-				break
-			end
+		if sto-sfrom <= 10 then break end
+	end
+	local start = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+	local resultIndex,resultLine = 0,1
+	for i=sfrom,sto do
+		local poslen1 = _dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
+		local theNext = _dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
+		local offsetR = theNext+poslen1
+		local theLast = _dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
+		local offsetL = poslen1-theLast
+		if i <= sfrom and pos <= offsetL then
+			resultIndex,resultLine = sfrom,selLine
+			break
+		elseif i >= sto and pos >= offsetR then
+			resultIndex,resultLine = sto,selLine
+			break
+		elseif pos >= offsetL and pos <= offsetR then
+			resultIndex,resultLine = i,selLine
+			break
 		end
-		if isWordWarp then
-			local warpTotalLine = 0
-			for line=1,#originalText do
-				for weakLine=1,#originalText[line][1] do
-					warpTotalLine = warpTotalLine + 1
-					if warpTotalLine == resultLine then
-						resultLine = line
-						local before = 0
-						for i=1,weakLine-1 do
-							before = before + originalText[line][1][i][3]
-						end
-						resultIndex = resultIndex + before
+	end
+	if isWordWarp then
+		local warpTotalLine = 0
+		for line=1,#originalText do
+			for weakLine=1,#originalText[line][1] do
+				warpTotalLine = warpTotalLine + 1
+				if warpTotalLine == resultLine then
+					resultLine = line
+					local before = 0
+					for i=1,weakLine-1 do
+						before = before + originalText[line][1][i][3]
 					end
+					resultIndex = resultIndex + before
 				end
 			end
 		end
-		return resultIndex,resultLine
 	end
-	return false
+	return resultIndex,resultLine
 end
 
 function searchTextFromPosition(text,font,textSizeX,pos)
@@ -962,7 +957,6 @@ function seekMaxLengthLine(memo)
 end
 	
 function configMemo(source)
-	local mymemo = dgsElementData[source].memo
 	local size = dgsElementData[source].absSize
 	local scrollbar = dgsElementData[source].scrollbars
 	local scrollBarBefore = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
@@ -1144,20 +1138,20 @@ end
 addEventHandler("onClientGUIChanged",resourceRoot,function()
 	if not dgsElementData[source] then return end
 	if getElementType(source) == "gui-memo" then
-		local mymemo = dgsElementData[source].dxmemo
-		if isElement(mymemo) then
-			if source == dgsElementData[mymemo].memo then
-				local text = guiGetText(source)
-				local cool = dgsElementData[mymemo].CoolTime
-				if #text ~= 0 and not cool then
-					local caretPos = dgsElementData[mymemo].caretPos
-					local selectFrom = dgsElementData[mymemo].selectFrom
-					dgsMemoDeleteText(mymemo,caretPos[1],caretPos[2],selectFrom[1],selectFrom[2])
-					handleDxMemoText(mymemo,utf8Sub(text,1,utf8Len(text)-1),true)
-					dgsElementData[mymemo].CoolTime = true
-					guiSetText(source,"")
-					dgsElementData[mymemo].CoolTime = false
+		local dxMemo = dgsElementData[source].linkedDxMemo
+		if isElement(dxMemo) then
+			local text = guiGetText(source)
+			local cool = dgsElementData[dxMemo].CoolTime
+			if text ~= "\n" then
+				if not cool and not dgsElementData[dxMemo].readOnly then
+					local caretPos = dgsElementData[dxMemo].caretPos
+					local selectFrom = dgsElementData[dxMemo].selectFrom
+					dgsMemoDeleteText(dxMemo,caretPos[1],caretPos[2],selectFrom[1],selectFrom[2])
+					handleDxMemoText(dxMemo,utf8Sub(text,1,utf8Len(text)-1),true)
 				end
+				dgsElementData[dxMemo].CoolTime = true
+				guiSetText(source,"")
+				dgsElementData[dxMemo].CoolTime = false
 			end
 		end
 	end

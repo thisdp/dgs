@@ -156,7 +156,7 @@ function editTest() --Test Tab Switch for edit.
 	dgsEditSetCaretPosition (edit, 1)
 	dgsSetProperty(edit2,"placeHolder","Type something if you want to tell me")
 	dgsSetProperty(edit2,"placeHolderIgnoreRenderTarget",true)
-	dgsSetProperty(edit,"bgcolor",tocolor(255,255,255,0))
+	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
 end
 
 function editTest4()

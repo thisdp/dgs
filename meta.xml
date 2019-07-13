@@ -14,6 +14,8 @@
 	<script src="event.lua" type="client" />
 	<script src="styleManager/styleManager.lua" type="client" />
 	
+	<script src="PropertyManager.lua" type="client" />
+	<script src="TypeManager.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
 	<script src="Core/eda.lua" type="client" />
@@ -37,9 +39,7 @@
 	<script src="Core/arrowlist.lua" type="client" />
 	<script src="Core/switchbutton.lua" type="client" />
 	
-	<script src="PropertyManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
-	<script src="TypeManager.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
 	<script src="client.lua" type="client" />
@@ -159,6 +159,7 @@
 	<export function="dgsAttachElements" type="client" />
 	<export function="dgsDetachElements" type="client" />
 	<export function="dgsElementIsAttached" type="client" />
+	<export function="dgsGetCursorPosition" type="client" />
 
 	<export function="dgsTranslationTableExists" type="client" />
 	<export function="dgsSetTranslationTable" type="client" />

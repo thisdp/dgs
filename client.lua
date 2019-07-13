@@ -478,7 +478,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			position[1],position[2] = x,y
 		end
 		local x,y,cx,cy = position[1],position[2],position[3],position[4]
-		
+		dgsElementData[v].rndTmpData.coordinate = {x,y,cx,cy}
 		self = v
 		local interrupted = false
 		local rendSet = not debugMode and noRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
@@ -1222,12 +1222,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				local bgImage = eleData.bgImage
 				local bgColor = eleData.bgColor
+				
 				bgColor = applyColorAlpha(bgColor,galpha)
-				local edit = eleData.edit
-				if not isElement(edit) then
-					destroyElement(v)
-					return
-				end
 				if MouseData.nowShow == v then
 					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 						MouseData.nowShow = false
@@ -1247,8 +1243,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				local caretPos = eleData.caretPos
 				local selectFro = eleData.selectFrom
-				local selectColor = eleData.selectColor
-				guiSetVisible(edit,visible)
+				local selectColor = MouseData.nowShow == v and eleData.selectColor or eleData.selectColorBlur
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local renderTarget = eleData.renderTarget
@@ -1428,10 +1423,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local bgImage = eleData.bgImage
 				local bgColor = eleData.bgColor
 				bgColor = applyColorAlpha(bgColor,galpha)
-				local memo = eleData.memo
-				if not isElement(memo) then
-					destroyElement(v)
-				end
 				if MouseData.nowShow == v then
 					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 						MouseData.nowShow = false
@@ -1440,7 +1431,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local text = eleData.text
 				local caretPos = eleData.caretPos
 				local selectFro = eleData.selectFrom
-				local selectColor = eleData.selectColor
+				local selectColor = MouseData.nowShow == v and eleData.selectColor or eleData.selectColorBlur
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 				local renderTarget = eleData.renderTarget
@@ -3956,41 +3947,28 @@ addEventHandler("onClientGUIBlur",resourceRoot,function()
 	local guitype = getElementType(source)
 	if dgsElementData[source] then
 		if guitype == "gui-edit" then
-			local edit = dgsElementData[source].dxedit
-			if isElement(edit) then
-				if MouseData.nowShow == edit then
-					if dgsElementData[edit].clearSelection then
-						dgsSetData(edit,"selectFrom",dgsElementData[edit].caretPos)
-					end
-					MouseData.nowShow = false
-				end
+			local edit = dgsElementData[source].linkedDxEdit
+			if isElement(edit) and MouseData.nowShow == edit then
+				MouseData.nowShow = false
 			end
 		elseif guitype == "gui-memo" then
-			local memo = dgsElementData[source].dxmemo
-			if isElement(memo) then
-				if MouseData.nowShow == memo then
-					if dgsElementData[memo].clearSelection then
-						dgsSetData(memo,"selectFrom",dgsElementData[memo].caretPos)
-					end
-					MouseData.nowShow = false
-				end
+			local memo = dgsElementData[source].linkedDxMemo
+			if isElement(memo) and MouseData.nowShow == memo then
+				MouseData.nowShow = false
 			end
 		end
 	end
 end)
 
 addEventHandler("onDgsTextChange",root,function()
-	local gui = dgsElementData[source].edit
 	local text = dgsElementData[source].text
-	if isElement(gui) then
-		local parent = dgsElementData[source].mycmd
-		if isElement(parent) then
-			if dgsGetType(parent) == "dgs-dxcmd" then
-				local hisid = dgsElementData[parent].cmdCurrentHistory
-				local history = dgsElementData[parent].cmdHistory
-				if history[hisid] ~= text then
-					dgsSetData(parent,"cmdCurrentHistory",0)
-				end
+	local parent = dgsElementData[source].mycmd
+	if isElement(parent) then
+		if dgsGetType(parent) == "dgs-dxcmd" then
+			local hisid = dgsElementData[parent].cmdCurrentHistory
+			local history = dgsElementData[parent].cmdHistory
+			if history[hisid] ~= text then
+				dgsSetData(parent,"cmdCurrentHistory",0)
 			end
 		end
 	end
@@ -4395,13 +4373,11 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 		local dgsType = dgsGetType(source)
 		if dgsType == "dgs-dxedit" then
-			destroyElement(dgsElementData[source].edit)
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
 		elseif dgsType == "dgs-dxmemo" then
-			destroyElement(dgsElementData[source].memo)
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)
@@ -4722,7 +4698,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			end
 		end
 	elseif state == "down" then
-		local dgsType = dgsGetType(MouseData.nowShow)
 		if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
 			blurEditMemo()
 		end

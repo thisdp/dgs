@@ -206,7 +206,8 @@
 		textColor = tocolor(0,0,0,255),			--Text color
 		caretColor = tocolor(0,0,0,255),		--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
-		placeHolder = tocolor(0,0,0,255),		--Place holder text color
+		selectColorBlur = tocolor(140,140,140,200),	--Selected background color when blurred
+		placeHolderColor = tocolor(0,0,0,255),		--Place holder text color
 	---Image
 		bgImage = {},
 	---Values
@@ -274,6 +275,7 @@
 		textColor = tocolor(0,0,0,255),		--Text color
 		caretColor = tocolor(0,0,0,255),	--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
+		selectColorBlur = tocolor(140,140,140,200),	--Selected background color when blurred
 	---Image
 		bgImage = {},
 	---Values

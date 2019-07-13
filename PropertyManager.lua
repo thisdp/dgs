@@ -98,15 +98,7 @@ function dgsSetData(element,key,value,nocheck)
 						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng+(value-oldValue))
 					end
 				elseif dgsType == "dgs-dxedit" then
-					local gedit = dgsElementData[element].edit
-					if key == "maxLength" then
-						local value = tonumber(value)
-						if not value or not isElement(gedit) then return false end
-						return guiEditSetMaxLength(gedit,value)
-					elseif key == "readOnly" then
-						if not isElement(gedit) then return false end
-						return guiEditSetReadOnly(gedit,value and true or false)
-					elseif key == "text" then
+					if key == "text" then
 						local txtSize = dgsElementData[element].textSize
 						local success = handleDxEditText(element,value)
 						return success
@@ -117,11 +109,7 @@ function dgsSetData(element,key,value,nocheck)
 						dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,txtSize[1],dgsElementData[element].font)
 					end
 				elseif dgsType == "dgs-dxmemo" then
-					if key == "readOnly" then
-						local gmemo = dgsElementData[element].memo
-						if not isElement(gmemo) then return false end
-						return guiMemoSetReadOnly(gmemo,value and true or false)
-					elseif key == "text" then
+					if key == "text" then
 						return handleDxMemoText(element,value)
 					elseif key == "scrollBarThick" then
 						configMemo(element)
@@ -198,29 +186,6 @@ function dgsSetData(element,key,value,nocheck)
 						dgsElementData[element]._translationText = nil
 					end
 					dgsElementData[element].caption = tostring(value)
-				elseif key == "visible" and not value then
-					for k,v in ipairs(getElementsByType("dgs-dxedit")) do
-						local parent = v
-						for i=1,500 do
-							parent = dgsElementType[parent] == "dgs-dxtab" and dgsElementData[parent].parent or FatherTable[parent]
-							if not parent then break end
-							if parent == element then
-								guiSetVisible(dgsElementData[v].edit,false)
-								break
-							end
-						end
-					end
-					for k,v in ipairs(getElementsByType("dgs-dxmemo")) do
-						local parent = v
-						for i=1,500 do
-							parent = dgsElementType[parent] == "dgs-dxtab" and dgsElementData[parent].parent or FatherTable[parent]
-							if not parent then break end
-							if parent == element then
-								guiSetVisible(dgsElementData[v].memo,false)
-								break
-							end
-						end
-					end
 				elseif key == "ignoreParentTitle" then
 					configPosSize(element,false,true)
 					if dgsType == "dgs-dxscrollpane" then

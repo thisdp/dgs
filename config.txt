@@ -5,3 +5,4 @@ dgsConfig.backup = true
 dgsConfig.updateCheckInterval = 120
 dgsConfig.backupMeta = true
 dgsConfig.backupStyleMeta = false
+dgsConfig.g2d = false

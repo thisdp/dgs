@@ -178,9 +178,12 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 end
 
 function blurEditMemo()
-	local gui = guiCreateLabel(0,0,0,0,"",false)
-	guiBringToFront(gui)
-	destroyElement(gui)
+	local dgsType = dgsGetType(MouseData.nowShow)
+	if dgsType == "dgs-dxedit" then
+		guiBlur(GlobalEdit)
+	elseif dgsType == "dgs-dxmemo" then
+		guiBlur(GlobalMemo)
+	end
 end
 
 lastFront = false
@@ -193,17 +196,19 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 		if dgsGetType(dgsEle) == "dgs-dxedit" then
 			MouseData.editCursor = true
 			resetTimer(MouseData.EditMemoTimer)
-			local edit = dgsElementData[dgsEle].edit
-			guiBringToFront(edit)
+			dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
+			guiFocus(GlobalEdit)
 		elseif dgsElementType[dgsEle] == "dgs-dxmemo" then
 			MouseData.editCursor = true
 			resetTimer(MouseData.EditMemoTimer)
-			local memo = dgsElementData[dgsEle].memo
-			guiBringToFront(memo)
+			dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
+			guiFocus(GlobalMemo)
 		elseif dgsEle ~= oldShow then
 			local dgsType = dgsGetType(oldShow)
-			if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
-				blurEditMemo()
+			if dgsType == "dgs-dxedit" then
+				guiBlur(GlobalEdit)
+			elseif dgsType == "dgs-dxmemo" then
+				guiBlur(GlobalMemo)
 			end
 		end
 		if isElement(oldShow) and dgsElementData[oldShow].clearSelection then
