@@ -22,7 +22,7 @@ float4 HSV2RGB(float4 HSVA)
 
 float4 HSVComponent(float2 tex : TEXCOORD0) : COLOR0
 {
-	float kValue = tex[vertical];
+	float kValue = tex[!vertical];
 	float3 nHSV = HSV*StaticMode+defHSV*(1-StaticMode);
 	float3 hsv = HSV_Chg*kValue+nHSV*(1-HSV_Chg);
 	float4 color = HSV2RGB(float4(hsv.x,hsv.y,hsv.z,1));
