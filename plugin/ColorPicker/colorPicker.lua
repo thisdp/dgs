@@ -198,6 +198,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			RGBCHG[colorID] = 1
 			dgsImageSetImage(show,RGBComponent)
 			dxSetShaderValue(RGBComponent,"RGB_Chg",RGBCHG)
+			dxSetShaderValue(RGBComponent,"vertical",dgsElementData[show].voh)
 			if staticMode then
 				dxSetShaderValue(RGBComponent,"StaticMode",{0,0,0})
 			else
@@ -211,6 +212,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			local HSLCHG = {0,0,0}
 			HSLCHG[colorID] = 1
 			dxSetShaderValue(HSLComponent,"HSL_Chg",HSLCHG)
+			dxSetShaderValue(HSLComponent,"vertical",dgsElementData[show].voh)
 			if staticMode then
 				dxSetShaderValue(HSLComponent,"StaticMode",{1,0,0})
 			else
@@ -224,6 +226,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			local HSVCHG = {0,0,0}
 			HSVCHG[colorID] = 1
 			dxSetShaderValue(HSVComponent,"HSV_Chg",HSVCHG)
+			dxSetShaderValue(HSVComponent,"vertical",dgsElementData[show].voh)
 			if staticMode then
 				dxSetShaderValue(HSVComponent,"StaticMode",{1,0,0})
 			else
