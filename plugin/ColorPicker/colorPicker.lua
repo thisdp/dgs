@@ -190,6 +190,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			local ALPComponent = dxCreateShader("plugin/ColorPicker/ALPComponent.fx")
 			dgsSetData(show,"shader",ALPComponent)
 			dgsImageSetImage(show,ALPComponent)
+			dxSetShaderValue(ALPComponent,"vertical",dgsElementData[show].voh)
 		elseif colorType == "RGB" then
 			local RGBComponent = dxCreateShader("plugin/ColorPicker/RGBComponent.fx")
 			dgsSetData(show,"shader",RGBComponent)
@@ -255,7 +256,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 				setCool = false
 			end
 			local shader = dgsElementData[show].shader
-			local X,Y,Z = dgsColorPickerGetColor(cp,colorType)
+			local X,Y,Z = dgsColorPickerGetColor(colorPicker,colorType)
 			local ScaleX = AvailableColorType[colorType][ColorAttributeOrder[colorType][1]][2]
 			local ScaleY = AvailableColorType[colorType][ColorAttributeOrder[colorType][2]][2]
 			local ScaleZ = AvailableColorType[colorType][ColorAttributeOrder[colorType][3]][2]
