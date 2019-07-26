@@ -471,6 +471,8 @@
 	<export function="dgsArrowListGetItemStep" type="client" />
 	<export function="dgsArrowListGetItemTranslatedValue" type="client" />
 	<!-- Plugins -->
+	<export function="dgsGetPluginType" type="client" />
+	
 	<export function="dgsCreateRoundRect" type="client" />
 	<export function="dgsRoundRectSetTexture" type="client" />
 	<export function="dgsRoundRectSetRadius" type="client" />
@@ -487,6 +489,12 @@
 	<export function="dgsColorPickerGetColor" type="client" />
 	<export function="dgsColorPickerSetColor" type="client" />
 	
+	<export function="dgsRGBToHSV" type="client" />
+	<export function="dgsRGBToHSL" type="client" />
+	<export function="dgsHSLToRGB" type="client" />
+	<export function="dgsHSVToRGB" type="client" />
+	<export function="dgsHSLToHSV" type="client" />
+	<export function="dgsHSVToHSL" type="client" />
 	
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
