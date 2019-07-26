@@ -374,7 +374,6 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			local show = _DGSShowElement
 			local colorType = _colorType
 			local colorAttribute = _colorAttribute
-			print(colorAttribute)
 			if colorAttribute == "A" then
 				setCool = true
 				dgsSetText(show,tostring(math.floor(dgsElementData[cp].A)))
@@ -383,7 +382,6 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			end
 			local attrID = AvailableColorType[colorType][colorAttribute][1]
 			setCool = true
-			print(dgsGetType(cp))
 			dgsSetText(show,tostring(math.floor(dgsElementData[cp][colorType][attrID])))
 			setCool = false
 		end
