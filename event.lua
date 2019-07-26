@@ -1,6 +1,9 @@
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format = string.gsub,string.sub,string.len,string.find,string.format
 local insert = table.insert
+ClientInfo = {
+	SupportedPixelShader={}
+}
 dgs = exports[getResourceName(getThisResource())]
 addEvent("onDgsMouseLeave",true)
 addEvent("onDgsMouseEnter",true)
@@ -209,8 +212,8 @@ function string.split(s, delim)
 end
 
 --------------------------------Math Utility
-function findRotation(x1,y1,x2,y2) 
-	local t = -deg(atan2(x2-x1,y2-y1))
+function findRotation(x1,y1,x2,y2,offsetFix) 
+	local t = -deg(atan2(x2-x1,y2-y1))+offsetFix
 	return t<0 and t+360 or t
 end
 
@@ -237,6 +240,14 @@ function getPositionFromElementOffset(element,offX,offY,offZ)
     local y = offX * m[1][2] + offY * m[2][2] + offZ * m[3][2] + m[4][2]
     local z = offX * m[1][3] + offY * m[2][3] + offZ * m[3][3] + m[4][3]
     return x, y, z
+end
+
+function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
+	local posX,posY = dgsGetGuiLocationOnScreen(dgsEle,false)
+	local absSize = dgsElementData[dgsEle].absSize
+	local posX,posY = posX+absSize[1]/2,posY+absSize[2]/2
+	local rot = findRotation(posX,posY,x,y,offsetFix)
+	return rot,(x-posX)/absSize[1],(y-posY)/absSize[2]
 end
 --------------------------------Color Utility
 function fromcolor(int,useMath,relative)
@@ -291,6 +302,144 @@ function applyColorAlpha(color,alpha)
 	return b+g*256+r*65536+a*16777216
 end
 
+--If you are trying to edit following code...
+--You should know that
+--HSL and HSV are not the same thing, while HSB is the same as HSV...
+
+function HSL2RGB(H,S,L)
+	local H,S,L = H/360,S/100,L/100
+	local R,G,B
+	if S == 0 then
+		R,G,B = L,L,L
+	else
+		local var_1,var_2
+		if L < 0.5 then
+			var_2 = L*(1+S)
+		else
+			var_2 = L+S-S*L
+		end
+		var_1 = 2*L-var_2
+		R = HUE2RGB(var_1,var_2,H+(1/3)) 
+		G = HUE2RGB(var_1,var_2,H)
+		B = HUE2RGB(var_1,var_2,H-(1/3))
+	end
+	return R*255,G*255,B*255
+end
+
+function HUE2RGB(v1,v2,vH)
+	if vH < 0 then
+		vH = vH+1
+	elseif vH > 1 then
+		vH = vH-1
+	end
+	if 6*vH < 1 then
+		return v1+(v2-v1)*6*vH
+	elseif 2*vH < 1 then
+		return v2
+	elseif 3*vH < 2 then
+		return v1+(v2-v1)*((2/3)-vH)*6
+	end
+	return v1
+end
+
+function RGB2HSL(R,G,B)
+	local R,G,B = R/255,G/255,B/255
+	local min,max = math.min(R,G,B),math.max(R,G,B)
+	local delta = max-min
+	local L,H,S = (max+min)/2,0,0
+	if delta ~= 0 then
+		if L < 0.5 then
+			S = delta/(max+min)
+		else
+			S = delta/(2-max-min)
+		end	
+		local dR = ((max-R)/6+delta/2)/delta
+		local dG = ((max-G)/6+delta/2)/delta
+		local dB = ((max-B)/6+delta/2)/delta
+		if R == max then
+			H = dB-dG
+		elseif G == max then
+			H = (1/3)+dR-dB
+		else
+			H = (2/3)+dG-dR
+		end
+		if H < 0 then
+			H = H+1
+		elseif H > 1 then
+			H = H-1
+		end
+	end
+	return H*360,S*100,L*100	--{0~360,0~100,0~100} H,S,L
+end
+
+function RGB2HSV(R,G,B)
+	local R,G,B = R/255,G/255,B/255
+	local min = math.min(R,G,B)
+	local max = math.max(R,G,B)
+	local V,H,S = max,0,0
+	local delta = max - min
+	if max ~= 0 then
+		S = delta / max
+	else
+		S = 0
+	end
+	local dR = R/6
+	local dG = G/6
+	local dB = B/6
+	if R == max then
+		H = dB-dG
+	elseif G == max then
+		H = (1/3)+dR-dB
+	else
+		H = (2/3)+dG-dR
+	end
+	if H < 0 then
+		H = H+1
+	elseif H > 1 then
+		H = H-1
+	end
+	return H*360,S*100,V*100
+end
+
+function HSV2RGB(H,S,V)
+	H,S,V = H/360,S/100,V/100
+	H = H*6;
+	local chroma = S*V;
+	local interm = chroma*(1-math.abs(H%2-1));
+	local shift = V - chroma;
+	local RGB
+	if H < 1 then
+		RGB = {shift+chroma,shift+interm,shift}
+	elseif H < 2 then
+		RGB = {shift+interm,shift+chroma,shift}
+	elseif H < 3 then
+		RGB = {shift,shift+chroma,shift+interm}
+	elseif H < 4 then
+		RGB = {shift,shift+interm,shift+chroma}
+	elseif H < 5 then
+		RGB = {shift+interm,shift,shift+chroma}
+	else
+		RGB = {shift+chroma,shift,shift+interm}
+	end
+	return RGB[1]*255,RGB[2]*255,RGB[3]*255
+end
+
+function HSV2HSL(H,S,V)
+	H,S,V = H/360,S/100,V/100
+	local HSL_L = (2 - S) * V / 2
+	local HSL_S
+	HSL_S = HSL_L == 0 and 0 or (HSL_L < 1 and S*V/(HSL_L < 0.5 and HSL_L*2 or 2-HSL_L*2) or S)
+	return H*360,HSL_S*100,HSL_L*100
+end
+
+function HSL2HSV(H,S,L)
+	H,S,L = H/360,S/100,L/100
+	local tmp = S*(L<0.5 and L or 1-L)
+	local HSV_V = L+tmp
+	local HSV_S = L>0 and 2*tmp/HSV_V or S
+	return H*360,HSV_S*100,HSV_V*100
+end
+
 --------------------------------Other Utility
 function dgsRunString(func,...)
 	local fnc = loadstring(func)
@@ -299,3 +448,33 @@ function dgsRunString(func,...)
 end
 
 --------------------------------OOP Utility
+
+--------------------------------Dx Utility
+PixelShaderCode = [[
+	float4 main(float2 Tex : TEXCOORD0):COLOR0
+	{
+		return 0;
+	}
+	
+	technique RepTexture
+	{
+		pass P0
+		{
+			PixelShader = compile ps_&rep main();
+		}
+	}
+]]
+PixShaderVersion = {"2_0","2_a","2_b","3_0"}
+function checkPixelShaderVersion()
+	for i,ver in ipairs(PixShaderVersion) do
+		local shaderCode = string.gsub(PixelShaderCode,"&rep",ver)
+		local shader = dxCreateShader(shaderCode)
+		if shader then
+			ClientInfo.SupportedPixelShader[ver] = true
+			destroyElement(shader)
+		else
+			ClientInfo.SupportedPixelShader[ver] = false
+		end
+	end
+end
+checkPixelShaderVersion()

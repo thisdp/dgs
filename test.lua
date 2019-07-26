@@ -268,13 +268,11 @@ function testBrowser()
 end
 
 function test3DInterface()
-	material1 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0,_,56)
+	material = dgsCreate3DInterface(0,0,10,10,10,500,500,tocolor(255,255,255,255),1,0,0,_,0)
 	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
-	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material1)
+	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)
 	--edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
 	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
-	--dgs3DInterfaceAttachToElement(material,localPlayer,0,0,0,0,1,0)
-
 end
 
 function exampleDetectArea()
@@ -379,6 +377,34 @@ function oopTest()
 	label = window1:createLabel(0,0,1,1,"label",true) --create a label inside the window
 	label.parent = window2
 end
+
+function testColorPicker()
+	cp = dgsCreateColorPicker("HSVRing",50,50,300,300,false)
+	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false)
+	dgsBindToColorPicker(r,cp,"RGB","R",true)
+	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false)
+	dgsBindToColorPicker(g,cp,"RGB","G",true)
+	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false)
+	dgsBindToColorPicker(b,cp,"RGB","B",true)
+	
+	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false)
+	dgsBindToColorPicker(H,cp,"HSL","H",true)
+	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false)
+	dgsBindToColorPicker(S,cp,"HSL","S",true)
+	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false)
+	dgsBindToColorPicker(L,cp,"HSL","L",true)
+	
+	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false)
+	dgsBindToColorPicker(H,cp,"HSV","H",true)
+	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false)
+	dgsBindToColorPicker(S,cp,"HSV","S",true)
+	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false)
+	dgsBindToColorPicker(V,cp,"HSV","V",true)
+	
+	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false)
+	dgsBindToColorPicker(A,cp,"RGB","A")
+end
+
 -----------------------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect
 function testButtonEffect()

@@ -40,6 +40,10 @@ function dgsGetType(dgsGUI)
 	end
 end
 
+function dgsGetPluginType(dgsGUI)
+	return dgsGUI and dgsElementData[dgsGUI].asPlugin or false
+end
+
 function dgsSetType(dgsGUI,myType)
 	if isElement(dgsGUI) and type(myType) == "string" then
 		dgsElementType[dgsGUI] = myType

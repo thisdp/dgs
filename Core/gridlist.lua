@@ -810,7 +810,7 @@ function dgsGridListGetItemImage(gridlist,row,column)
 	return false
 end
 
-function dgsGridListSetItemText(gridlist,row,column,text,image)
+function dgsGridListSetItemText(gridlist,row,column,text,isSection)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemText at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetItemText at argument 2, expect number got "..type(row))
 	assert(type(column) == "number","Bad argument @dgsGridListSetItemText at argument 3, expect number got "..type(column))
@@ -830,6 +830,9 @@ function dgsGridListSetItemText(gridlist,row,column,text,image)
 			rowData[row][column]._translationText = nil
 		end
 		rowData[row][column][1] = tostring(text)
+		if isSection then
+			dgsGridListSetRowAsSection(gridlist,row,true)
+		end
 		return true
 	end
 	return false

@@ -75,7 +75,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"allowCopy",true)
 	dgsSetData(edit,"selectColor",styleSettings.edit.selectColor)
 	dgsSetData(edit,"selectColorBlur",styleSettings.edit.selectColorBlur)
-	print(styleSettings.edit.selectColorBlur)
 	dgsSetData(edit,"historyMaxRecords",100)
 	dgsSetData(edit,"enableRedoUndoRecord",true)
 	dgsSetData(edit,"undoHistory",{})

@@ -16,6 +16,7 @@
 	
 	<script src="PropertyManager.lua" type="client" />
 	<script src="TypeManager.lua" type="client" />
+	<script src="client.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
 	<script src="Core/eda.lua" type="client" />
@@ -42,13 +43,25 @@
 	<script src="ParentManager.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
-	<script src="client.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="plugin/roundRect.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
 	<script src="oldFunctions.lua" type="client" />
+	
+	
+	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
+	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
+	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
+	
+	<file src="plugin/ColorPicker/HSLSquare.fx" type="client" />
+	<file src="plugin/ColorPicker/PickCircle.fx" type="client" />
+	<file src="plugin/ColorPicker/HSLComponent.fx" type="client" />
+	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
+	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
+	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
+	
 	<script src="test.lua" type="client" />
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
@@ -457,13 +470,22 @@
 	<export function="dgsArrowListSetItemStep" type="client" />
 	<export function="dgsArrowListGetItemStep" type="client" />
 	<export function="dgsArrowListGetItemTranslatedValue" type="client" />
-	
+	<!-- Plugins -->
 	<export function="dgsCreateRoundRect" type="client" />
 	<export function="dgsRoundRectSetTexture" type="client" />
 	<export function="dgsRoundRectSetRadius" type="client" />
 	<export function="dgsRoundRectGetRadius" type="client" />
 	<export function="dgsRoundRectSetColor" type="client" />
 	<export function="dgsRoundRectGetColor" type="client" />
+	
+	<export function="dgsCreateColorPicker" type="client" />
+	<export function="dgsColorPickerCreateComponentSelector" type="client" />
+	<export function="dgsColorPickerGetComponentSelectorValue" type="client" />
+	<export function="dgsColorPickerSetComponentSelectorValue" type="client" />
+	<export function="dgsBindToColorPicker" type="client" />
+	<export function="dgsUnbindFromColorPicker" type="client" />
+	<export function="dgsColorPickerGetColor" type="client" />
+	<export function="dgsColorPickerSetColor" type="client" />
 	
 	
 	<export function="dgsGetExportedFunctionName" type="client" />

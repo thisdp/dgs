@@ -20,7 +20,6 @@ local dxGetPixelsSize = dxGetPixelsSize
 local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
-local dgsDrawMaterialLine3D = dgsDrawMaterialLine3D
 local utf8Sub = utf8.sub
 local utf8Len = utf8.len
 local tableInsert = table.insert
@@ -110,7 +109,9 @@ MouseData.editMemoCursor = false
 MouseData.gridlistMultiSelection = false
 MouseData.lastPos = {-1,-1}
 MouseData.interfaceHit = {}
+MouseData.intfaceHitElement = false
 MouseData.lock3DInterface = false
+MouseData.dgsCursorPos = {}
 MouseData.EditMemoTimer = setTimer(function()
 	local dgsType = dgsGetType(MouseData.nowShow)
 	if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
@@ -131,6 +132,7 @@ function dgsCoreRender()
 	DGSShow = 0
 	wX,wY,wZ = nil,nil,nil
 	local mx,my = -1000,-1000
+	MouseData.intfaceHitElement = false
 	if isCursorShowing() then
 		mx,my = getCursorPosition()
 		mx,my = mx*sW,my*sH
@@ -146,6 +148,7 @@ function dgsCoreRender()
 		MouseData.lock3DInterface = false
 		MouseData.Scale = false
 		MouseData.scrollPane = false
+		MouseData.dgsCursorPos = {false,false}
 		if MouseData.arrowListEnter then
 			if isElement(MouseData.arrowListEnter[1]) then
 				dgsSetData(MouseData.arrowListEnter[1],"arrowListClick",false)
@@ -174,7 +177,7 @@ function dgsCoreRender()
 		end
 		dxSetBlendMode("blend")
 		local intfaceMx,intfaceMy = MouseX,MouseY
-		local intfaceHitElement = MouseData.hit
+		MouseData.intfaceHitElement = MouseData.hit
 		dxSetRenderTarget()
 		local mx,my = normalMx,normalMy
 		for i=1,dx3DTextTableSize do
@@ -204,12 +207,13 @@ function dgsCoreRender()
 		else
 			if MouseData.clickl then
 				MouseX,MouseY = normalMx,normalMy
-			elseif MouseData.hit == intfaceHitElement then
+			elseif MouseData.hit == MouseData.intfaceHitElement then
 				MouseX,MouseY = intfaceMx,intfaceMy
 			else
 				MouseX,MouseY = normalMx,normalMy
 			end
 		end
+		MouseData.dgsCursorPos = {MouseX,MouseY}
 		dxSetRenderTarget()
 		if not isCursorShowing() then
 			MouseData.hit = false
@@ -338,15 +342,15 @@ function dgsCoreRender()
 		dxDrawText("Alpha:"..alp,301,sH*0.4-54,sW,sH,black)
 		dxDrawText("Alpha:"..alp,300,sH*0.4-55)
 		
-		Resource = 0
 		ResCount = 0
 		for ka,va in pairs(boundResource) do
 			if type(ka) == "userdata" and va then
 				local resDGSCnt = #va
-				Resource = Resource+resDGSCnt
-				ResCount = ResCount +1
-				dxDrawText(getResourceName(ka).." : "..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
-				dxDrawText(getResourceName(ka).." : "..resDGSCnt,300,sH*0.4+15*(ResCount+1))
+				if resDGSCnt ~= 0 then
+					ResCount = ResCount +1
+					dxDrawText(getResourceName(ka).." : "..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
+					dxDrawText(getResourceName(ka).." : "..resDGSCnt,300,sH*0.4+15*(ResCount+1))
+				end
 			end
 		end
 		dxDrawText("Resource Elements("..ResCount.."):",301,sH*0.4+16,sW,sH,black)
@@ -378,8 +382,6 @@ function interfaceRender()
 			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 			eleData.hit = false
 			if x and y and z and w and h then
-				local colors = eleData.color
-				colors = applyColorAlpha(colors,eleData.alpha)
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -389,9 +391,6 @@ function interfaceRender()
 				end
 				------------------------------------
 				local camX,camY,camZ = getCameraMatrix()
-				if not fx or not fy or not fz then
-					fx,fy,fz = camX-x,camY-y,camZ-z
-				end
 				local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
 				eleData.cameraDistance = cameraDistance
 				if cameraDistance <= eleData.maxDistance then
@@ -400,6 +399,14 @@ function interfaceRender()
 					if isElement(filter) then
 						dxSetShaderValue(filter,"gTexture",renderThing)
 						renderThing = filter
+					end
+					local addalp = 1
+					if cameraDistance >= eleData.fadeDistance then
+						addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)
+					end
+					local colors = applyColorAlpha(eleData.color,eleData.alpha*addalp)
+					if not fx or not fy or not fz then
+						fx,fy,fz = camX-x,camY-y,camZ-z
 					end
 					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
 				end
@@ -3180,7 +3187,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					lnPnt = {camX,camY,camZ}
 				end
 				local intfaceHit
-				if eleData.cameraDistance <= eleData.maxDistance then
+				if eleData.cameraDistance or 0 <= eleData.maxDistance then
 					eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVec,lnPnt,rot)}
 					intfaceHit = eleData.hit
 				else
@@ -4377,11 +4384,13 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
+			blurEditMemo()
 		elseif dgsType == "dgs-dxmemo" then
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end
+			blurEditMemo()
 		elseif dgsType == "dgs-dxgridlist" then
 			local rentarg = dgsElementData[source].renderTarget
 			if isElement(rentarg[1]) then
@@ -4523,6 +4532,7 @@ function checkMove()
 		local chy = yRel and moveData[2]*h or moveData[2]
 		local chw = wRel and moveData[3]*w or moveData[3]
 		local chh = hRel and moveData[4]*h or moveData[4]
+		print(offsetx,chx,chw)
 		if not (offsetx >= chx and offsetx <= chx+chw and offsety >= chy and offsety <= chy+chh) then
 			return
 		end

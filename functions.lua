@@ -396,7 +396,7 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y)
 	if state == "down" then
 		triggerEvent("onDgsMouseClickDown",source,button,"down",x,y)
 	else
-		triggerEvent("onDgsMouseClickUp",source,button,"down",x,y)
+		triggerEvent("onDgsMouseClickUp",source,button,"up",x,y)
 	end
 end)
 
@@ -486,24 +486,45 @@ function dgsGetRootElement()
 	return resourceRoot
 end
 
-function dgsGetCursorPosition(relativeElement,relative)
+function dgsGetCursorPosition(relativeElement,relative,forceOnScreen)
 	if isCursorShowing() then
-		local rltX,rltY = getCursorPosition()
-		if dgsIsDxElement(relativeElement) then
-			local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
-			local absX,absY = rltX*sW,rltY*sH
-			local curX,curY = absX-xPos,absY-yPos
-			local eleSize = dgsElementData[relativeElement].absSize
-			if relative then
-				return curX/eleSize[1],curY/eleSize[2]
+		if MouseData.intfaceHitElement and not forceOnScreen then
+			local absX,absY = MouseData.dgsCursorPos[1],MouseData.dgsCursorPos[2]
+			local resolution = dgsElementData[MouseData.intfaceHitElement].resolution
+			if not relativeElement and not dgsIsDxElement(relativeElement) then
+				if relative then
+					return absX/resolution[1],absY/resolution[2]
+				else
+					return absX,absY
+				end
 			else
-				return curX,curY
+				local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
+				local curX,curY = absX-xPos,absY-yPos
+				local eleSize = dgsElementData[relativeElement].absSize
+				if relative then
+					return curX/eleSize[1],curY/eleSize[2]
+				else
+					return curX,curY
+				end
 			end
 		else
-			if relative then
-				return rltX,rltY
+			local rltX,rltY = getCursorPosition()
+			if dgsIsDxElement(relativeElement) then
+				local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
+				local absX,absY = rltX*sW,rltY*sH
+				local curX,curY = absX-xPos,absY-yPos
+				local eleSize = dgsElementData[relativeElement].absSize
+				if relative then
+					return curX/eleSize[1],curY/eleSize[2]
+				else
+					return curX,curY
+				end
 			else
-				return rltX*sW,rltY*sH
+				if relative then
+					return rltX,rltY
+				else
+					return rltX*sW,rltY*sH
+				end
 			end
 		end
 	end
@@ -513,7 +534,7 @@ end
 function dgsAddMoveHandler(dgsElement,x,y,w,h,xRel,yRel,wRel,hRel,forceReplace)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
 	local x,y,xRel,yRel = x or 0,y or 0,xRel ~= false and true,yRel ~= false and true
-	local w,h,wRel,hRel = w or 0,h or 0,wRel ~= false and true,hRel ~= false and true
+	local w,h,wRel,hRel = w or 1,h or 1,wRel ~= false and true,hRel ~= false and true
 	local moveData = dgsElementData[dgsElement].moveHandlerData
 	if not moveData or forceReplace then
 		dgsSetData(dgsElement,"moveHandlerData",{x,y,w,h,xRel,yRel,wRel,hRel})
