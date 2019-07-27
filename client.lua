@@ -4165,7 +4165,6 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 	local guitype = dgsGetType(source)
 	if state == "down" then
 		dgsBringToFront(source,button)
-		print("Bring To Front")
 		if guitype == "dgs-dxscrollpane" then
 			local scrollbar = dgsElementData[source].scrollbars
 			dgsBringToFront(scrollbar[1],"left",_,true)
@@ -4533,7 +4532,6 @@ function checkMove(source)
 		local chy = yRel and moveData[2]*h or moveData[2]
 		local chw = wRel and moveData[3]*w or moveData[3]
 		local chh = hRel and moveData[4]*h or moveData[4]
-		print(offsetx,chx,chw)
 		if not (offsetx >= chx and offsetx <= chx+chw and offsety >= chy and offsety <= chy+chh) then
 			return
 		end
@@ -4650,7 +4648,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		local guitype = dgsGetType(guiele)
 		if state == "down" then
 			dgsBringToFront(guiele,button)
-			print("Bring To Front")
 			if guitype == "dgs-dxscrollpane" then
 				local scrollbar = dgsElementData[guiele].scrollbars
 				dgsBringToFront(scrollbar[1],"left",_,true)

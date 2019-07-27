@@ -279,7 +279,6 @@ end
 
 function dgsMoveToBack(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsMoveToBack at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
-	print("Move To Back")
 	if dgsElementData[dgsEle].changeOrder then
 		local parent = FatherTable[dgsEle]	--Get Parent
 		if isElement(parent) then
