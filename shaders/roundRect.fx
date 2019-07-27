@@ -31,7 +31,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0
 	if(fixedPos.x-corner.x >= 0 && fixedPos.y-corner.y >= 0)
 		if(distance(fixedPos,corner)-nRadius > 0)
 			result.a *= 1-(distance(fixedPos,corner)-nRadius)/borderSoft;
-	result.a = clamp(result.a,0,1)*_color.a
+	result.a = clamp(result.a,0,1)*_color.a;
 	return result;
 	
 }
