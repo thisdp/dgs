@@ -4158,13 +4158,14 @@ function onDGSMouseCheck(button,state)
 	end
 end
 addEventHandler("onDgsMouseClick",root,onDGSMouseCheck)
-
+--[[
 addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 	if not isElement(source) then return end
 	local parent = dgsGetParent(source)
 	local guitype = dgsGetType(source)
 	if state == "down" then
 		dgsBringToFront(source,button)
+		print("Bring To Front")
 		if guitype == "dgs-dxscrollpane" then
 			local scrollbar = dgsElementData[source].scrollbars
 			dgsBringToFront(scrollbar[1],"left",_,true)
@@ -4366,7 +4367,7 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,mx,my)
 			end
 		end
 	end
-end)
+end)]]
 
 addEventHandler("onClientElementDestroy",resourceRoot,function()
 	local parent = dgsGetParent(source) or root
@@ -4519,7 +4520,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 	dgsElementData[source] = nil
 end)
 
-function checkMove()
+function checkMove(source)
 	local moveData = dgsElementData[source].moveHandlerData
 	if moveData then
 		local mx,my = getCursorPosition()
@@ -4560,7 +4561,7 @@ function checkScrollBar(py,sd)
 	MouseData.MoveScroll = {sd and offsetx-py or offsetx,sd and offsety or offsety-py}
 end
 
-function checkScale()
+function checkScale(source)
 	local sizeData = dgsElementData[source].sizeHandlerData
 	if sizeData then
 		local mx,my = getCursorPosition()
@@ -4643,6 +4644,210 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			focusBrowser(guiele)
 		else
 			focusBrowser()
+		end
+		
+		local parent = dgsGetParent(guiele)
+		local guitype = dgsGetType(guiele)
+		if state == "down" then
+			dgsBringToFront(guiele,button)
+			print("Bring To Front")
+			if guitype == "dgs-dxscrollpane" then
+				local scrollbar = dgsElementData[guiele].scrollbars
+				dgsBringToFront(scrollbar[1],"left",_,true)
+				dgsBringToFront(scrollbar[2],"left",_,true)
+			elseif guitype == "dgs-dxswitchbutton" then
+				local clickType = dgsElementData[guiele].clickType
+				if clickType == 1 and button == "left" then
+					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
+				elseif clickType == 2 and button == "middle" then
+					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
+				elseif clickType == 3 and buutton == "right" then
+					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
+				end
+			end
+			if button == "left" then
+				if not checkScale(guiele) then
+					checkMove(guiele)
+				end
+				if guitype == "dgs-dxscrollbar" then
+					local scrollArrow = dgsElementData[guiele].scrollArrow
+					local x,y = dgsGetPosition(guiele,false,true)
+					local w,h = dgsGetSize(guiele,false)
+					local voh = dgsElementData[guiele].voh
+					local pos = dgsElementData[guiele].position
+					local length,lrlt = dgsElementData[guiele].length[1],dgsElementData[guiele].length[2]
+					local slotRange
+					local arrowPos = 0
+					if voh then
+						if scrollArrow then
+							arrowPos = h
+						end
+						slotRange = w-arrowPos*2
+					else
+						if scrollArrow then
+							arrowPos = w
+						end
+						slotRange = h-arrowPos*2
+					end
+					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
+					local py =  pos*0.01*(slotRange-cursorRange)
+					checkScrollBar(py,voh)
+					local parent = dgsElementData[guiele].attachedToParent
+					if isElement(parent) then
+						if guiele == dgsElementData[parent].scrollbars[1] then
+							dgsSetData(parent,"mouseWheelScrollBar",false)
+						elseif guiele == dgsElementData[parent].scrollbars[2] then
+							dgsSetData(parent,"mouseWheelScrollBar",true)
+						end
+					end
+				elseif guitype == "dgs-dxgridlist" then
+					local oPreSelect = dgsElementData[guiele].oPreSelect
+					local rowData = dgsElementData[guiele].rowData
+					----Sort
+					if dgsElementData[guiele].sortEnabled then
+						local column = dgsElementData[guiele].selectedColumn
+						if column and column >= 1 then
+							local sortFunction = dgsElementData[guiele].sortFunction
+							local targetfunction = sortFunction == sortFunctions_upper and sortFunctions_lower or sortFunctions_upper
+							dgsGridListSetSortFunction(guiele,targetfunction)
+							dgsGridListSetSortColumn(guiele,column)
+						end
+					end
+					--------
+					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
+						local old1,old2
+						local selectionMode = dgsElementData[guiele].selectionMode
+						local multiSelection = dgsElementData[guiele].multiSelection
+						local preSelect = dgsElementData[guiele].preSelect
+						local clicked = dgsElementData[guiele].itemClick
+						local pass = true
+						local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
+						if #preSelect == 2 then
+							if selectionMode == 1 then
+								if multiSelection then
+									if ctrl then
+										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],1)
+										dgsGridListSelectItem(guiele,preSelect[1],1,not selected)
+									elseif shift then
+										if clicked and #clicked == 2 then
+											dgsGridListSetSelectedItem(guiele,-1,-1)
+											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+											for row = startRow,endRow do
+												dgsGridListSelectItem(guiele,row,1,true)
+											end
+											dgsElementData[guiele].itemClick = clicked
+										end
+									else
+										dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+										dgsElementData[guiele].itemClick = preSelect
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							elseif selectionMode == 2 then
+								if multiSelection then
+									if ctrl then
+										local selected = dgsGridListItemIsSelected(guiele,1,preSelect[2])
+										dgsGridListSelectItem(guiele,1,preSelect[2],not selected)
+									elseif shift then
+										if clicked and #clicked == 2 then
+											dgsGridListSetSelectedItem(guiele,-1,-1)
+											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+											for column = startColumn, endColumn do
+												dgsGridListSelectItem(guiele,1,column,true)
+											end
+											dgsElementData[guiele].itemClick = clicked
+										end
+									else
+										dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+										dgsElementData[guiele].itemClick = preSelect
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							elseif selectionMode == 3 then
+								if multiSelection then
+									if ctrl then
+										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],preSelect[2])
+										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
+									elseif shift then
+										if clicked and #clicked == 2 then
+											dgsGridListSetSelectedItem(guiele,-1,-1)
+											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+											for row = startRow,endRow do
+												for column = startColumn, endColumn do
+													dgsGridListSelectItem(guiele,row,column,true)
+												end
+											end
+											dgsElementData[guiele].itemClick = clicked
+										end
+									else
+										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
+										dgsElementData[guiele].itemClick = preSelect
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							end
+						end
+					end
+				elseif guitype == "dgs-dxcombobox-Box" then
+					local combobox = dgsElementData[guiele].myCombo
+					local preSelect = dgsElementData[combobox].preSelect
+					local oldSelect = dgsElementData[combobox].select
+					dgsElementData[combobox].select = preSelect
+					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
+					if dgsElementData[combobox].autoHideWhenSelecting then
+						dgsSetData(combobox,"listState",-1)
+					end
+				elseif guitype == "dgs-dxarrowlist" then
+					local alEnter = MouseData.arrowListEnter
+					if alEnter and alEnter[1] == guiele then
+						dgsSetData(guiele,"arrowListClick",{alEnter[2],alEnter[3]})
+						local id = alEnter[2]
+						local itemData = dgsElementData[guiele].itemData
+						local sItemData = itemData[id]
+						if alEnter[3] then
+							local mathSymbol = alEnter[3] == "left" and -1 or 1
+							local old = sItemData[6]
+							sItemData[6] = math.restrict(sItemData[6]+sItemData[4]*mathSymbol,sItemData[2],sItemData[3])
+							triggerEvent("onDgsArrowListValueChange",guiele,id,sItemData[6],old)
+						end
+					end
+				elseif guitype == "dgs-dxtab" then
+					local tabpanel = dgsElementData[guiele].parent
+					dgsBringToFront(tabpanel)
+					if dgsElementData[tabpanel]["preSelect"] ~= -1 then
+						dgsSetData(tabpanel,"selected",dgsElementData[tabpanel]["preSelect"])
+					end
+				elseif guitype == "dgs-dxcombobox" then
+					dgsSetData(guiele,"listState",dgsElementData[guiele].listState == 1 and -1 or 1)
+				end
+			end
+		else
+			if button == "left" then
+				if MouseData.arrowListEnter then
+					if isElement(MouseData.arrowListEnter[1]) then
+						dgsSetData(MouseData.arrowListEnter[1],"arrowListClick",false)
+					end
+				end
+				MouseData.arrowListEnter = false
+				if MouseData.clickl == guiele then
+					if isElement(parent) then
+						local closebutton = dgsElementData[parent].closeButton
+						if closebutton == guiele then
+							triggerEvent("onDgsWindowClose",parent,closebutton)
+							if not wasEventCancelled() then
+								destroyElement(parent)
+							end
+						end
+					end	
+				end
+			end
 		end
 		triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
 		if not isElement(guiele) then return end

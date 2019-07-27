@@ -268,7 +268,9 @@ function testBrowser()
 end
 
 function test3DInterface()
+	local shader = dxCreateShader("shaders/textureRelight.fx")
 	material = dgsCreate3DInterface(0,0,10,10,10,500,500,tocolor(255,255,255,255),1,0,0,_,0)
+	dgsSetData(material,"filterShader",shader)
 	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
 	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)
 	--edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)

@@ -34,13 +34,18 @@ PSInput myVertexShader (VSInput VS)
 float4 myPixelShader (PSInput input) : COLOR0
 {
 	float4 color = tex2D(mySampler,input.TexCoord);
-	return color*input.Diffuse;
+	if (input.TexCoord.x < 0.5)
+		color = (1.0-gMaterialAmbient)/2
+	else
+		color /= 2;
+	color.a = 1;
 };
 
 technique TexReplace
 {
-	pass P0
+	pass P1
 	{
+		FogEnable = false;
 		VertexShader = compile vs_2_0 myVertexShader();
 		PixelShader = compile ps_2_0 myPixelShader();
 	}

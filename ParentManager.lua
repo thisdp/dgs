@@ -217,10 +217,12 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 	end
 	if dgsElementData[dgsEle].changeOrder then
 		if not isElement(parent) then
-			local id = tableFind(CenterFatherTable,dgsEle)
+			local layer = dgsElementData[dgsEle].alwaysOn or "center"
+			local layerTable = LayerCastTable[layer]
+			local id = tableFind(layerTable,dgsEle)
 			if id then
-				tableRemove(CenterFatherTable,id)
-				tableInsert(CenterFatherTable,dgsEle)
+				tableRemove(layerTable,id)
+				tableInsert(layerTable,dgsEle)
 			end
 		else
 			local parents = dgsEle
@@ -277,25 +279,28 @@ end
 
 function dgsMoveToBack(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsMoveToBack at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
-	local parent = FatherTable[dgsEle]	--Get Parent
-	if isElement(parent) then
-		local children = ChildrenTable[parent]
-		local id = tableFind(children,dgsEle)
-		if id then
-			tableRemove(children,id)
-			tableInsert(children,1,dgsEle)
-			return true
+	print("Move To Back")
+	if dgsElementData[dgsEle].changeOrder then
+		local parent = FatherTable[dgsEle]	--Get Parent
+		if isElement(parent) then
+			local children = ChildrenTable[parent]
+			local id = tableFind(children,dgsEle)
+			if id then
+				tableRemove(children,id)
+				tableInsert(children,1,dgsEle)
+				return true
+			end
+			return false
+		else
+			local layer = dgsElementData[dgsEle].alwaysOn or "center"
+			local layerTable = LayerCastTable[layer]
+			local id = tableFind(layerTable,dgsEle)
+			if id then
+				tableRemove(layerTable,id)
+				tableInsert(layerTable,1,dgsEle)
+				return true
+			end
+			return false
 		end
-		return false
-	else
-		local layer = dgsElementData[dgsEle].alwaysOn
-		local layerTable = LayerCastTable[layer]
-		local id = tableFind(layerTable,dgsEle)
-		if id then
-			tableRemove(layerTable,id)
-			tableInsert(layerTable,1,dgsEle)
-			return true
-		end
-		return false
 	end
 end
