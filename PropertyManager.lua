@@ -107,6 +107,8 @@ function dgsSetData(element,key,value,nocheck)
 					elseif key == "font" then
 						local txtSize = dgsElementData[element].textSize
 						dgsElementData[element].textFontLen = dxGetTextWidth(dgsElementData[element].text,txtSize[1],dgsElementData[element].font)
+					elseif key == "padding" then
+						configEdit(element)
 					end
 				elseif dgsType == "dgs-dxmemo" then
 					if key == "text" then

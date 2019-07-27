@@ -58,7 +58,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"placeHolderColorcoded",styleSettings.edit.placeHolderColorcoded)
 	dgsSetData(edit,"placeHolderOffset",styleSettings.edit.placeHolderOffset)
 	dgsSetData(edit,"placeHolderIgnoreRenderTarget",styleSettings.edit.placeHolderIgnoreRenderTarget)
-	dgsSetData(edit,"padding",styleSettings.edit.padding)
+	dgsSetData(edit,"padding",styleSettings.edit.padding,true)
 	dgsSetData(edit,"alignment",{"left","center"})
 	dgsSetData(edit,"caretStyle",styleSettings.edit.caretStyle)
 	dgsSetData(edit,"caretThick",styleSettings.edit.caretThick)
@@ -357,7 +357,7 @@ end
 function configEdit(source)
 	local x,y = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	local padding = dgsElementData[source].padding
-	local px,py = x-padding[1],y-padding[2]
+	local px,py = x-padding[1]*2,y-padding[2]*2
 	px,py = px-px%1,py-py%1
 	local renderTarget = dxCreateRenderTarget(px,py,true)
 	if not isElement(renderTarget) then
