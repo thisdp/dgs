@@ -4551,7 +4551,7 @@ function checkMove(source)
 	end
 end
 
-function checkScrollBar(py,sd)
+function checkScrollBar(source,py,sd)
 	local mx,my = getCursorPosition()
 	mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
@@ -4688,7 +4688,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
 					local py =  pos*0.01*(slotRange-cursorRange)
-					checkScrollBar(py,voh)
+					checkScrollBar(guiele,py,voh)
 					local parent = dgsElementData[guiele].attachedToParent
 					if isElement(parent) then
 						if guiele == dgsElementData[parent].scrollbars[1] then
