@@ -4639,6 +4639,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		if not isElement(guiele) then return end
 		triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
+		if not isElement(guiele) then return end
 		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
 			triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)
 			killTimer(DoubleClick[state].timer)
