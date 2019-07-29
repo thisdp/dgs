@@ -376,6 +376,8 @@
 	<export function="dgsCreateScrollBar" type="client" />
 	<export function="dgsScrollBarSetScrollPosition" type="client" />
 	<export function="dgsScrollBarGetScrollPosition" type="client" />
+	<export function="dgsScrollBarSetCursorLength" type="client" />
+	<export function="dgsScrollBarGetCursorLength" type="client" />
 	<export function="dgsScrollBarSetLocked" type="client" />
 	<export function="dgsScrollBarGetLocked" type="client" />
 	

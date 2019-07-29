@@ -75,13 +75,13 @@ function scrollScrollBar(scrollbar,button)
 	dgsSetData(scrollbar,"position",math.restrict(gpos,0,100))
 end
 
-function dgsScrollBarSetScrollSize(scrollbar,size,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetScrollSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+function dgsScrollBarSetCursorLength(scrollbar,size,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorLength at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	return dgsSetData(scrollbar,"length",{size,relative or false})
 end
 
-function dgsScrollBarGetScrollSize(scrollbar,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetScrollSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+function dgsScrollBarGetCursorLength(scrollbar,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetCursorLength at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	local relative = relative or false
 	local eleData = dgsElementData[scrollbar]
 	local slotRange

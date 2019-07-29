@@ -982,11 +982,11 @@ function dgsImportOOPClass()
 				newTable.getScrollPosition = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetScrollPosition",self.dgsElement,...)
 				end
-				newTable.setScrollSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetScrollSize",self.dgsElement,...)
+				newTable.setCursorLength = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetCursorLength",self.dgsElement,...)
 				end
-				newTable.getScrollSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetScrollSize",self.dgsElement,...)
+				newTable.getCursorLength = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetCursorLength",self.dgsElement,...)
 				end
 				newTable.setLocked = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetLocked",self.dgsElement,...)
