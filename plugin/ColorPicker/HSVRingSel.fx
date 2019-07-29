@@ -38,7 +38,7 @@ float4 PS(float2 tex : TEXCOORD0, float4 _color : COLOR0) : COLOR0
 		theVector = float2(-0.21650635,-0.125);
 	float theVectorLen = length(theVector);
 	float res = abs(dot(newTex,theVector))/theVectorLen-theVectorLen-0.25050927;
-	color = HSV2RGB(float4(Hue,(1-2*newTex.y)/(sqrt3*newTex.x-newTex.y+2),(sqrt3*newTex.x-newTex.y+2)/3,1-(res+borderSoft*0.5)/borderSoft));
+	color = HSV2RGB(float4(Hue,(1-2*newTex.y)/(sqrt3*(-newTex.x)-newTex.y+2),(sqrt3*(-newTex.x)-newTex.y+2)/3,1-(res+borderSoft*0.5)/borderSoft));
 	color.a = clamp(color.a,0,1)*_color.a;
     return color;
 }
