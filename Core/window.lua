@@ -77,8 +77,7 @@ end
 
 function dgsWindowSetSizable(window,bool)
 	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetSizable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
-	dgsSetData(window,"sizable",bool and true or false)
-	return false
+	return dgsSetData(window,"sizable",bool and true or false)
 end
 
 function dgsWindowGetSizable(window)
@@ -95,7 +94,7 @@ end
 
 function dgsWindowSetMovable(window,bool)
 	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetMovable at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
-	dgsSetData(window,"movable",bool and true or false)
+	return dgsSetData(window,"movable",bool and true or false)
 end
 
 function dgsWindowGetMovable(window)
@@ -110,7 +109,7 @@ function dgsWindowSetCloseButtonSize(window,w,h,relative)
 	local closeButton = dgsElementData[window].closeButton
 	if isElement(closeButton) then
 		dgsSetData(window,"closeButtonSize",{w,h,relative and true or false})
-		dgsSetSize(closeButton,w,h,relative and true or false)
+		return dgsSetSize(closeButton,w,h,relative and true or false)
 	end
 	return false
 end
