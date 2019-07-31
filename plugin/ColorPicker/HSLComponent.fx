@@ -39,7 +39,7 @@ float4 HSL2RGB(float4 hsl)
 
 float4 HSLComponent(float2 tex : TEXCOORD0) : COLOR0
 {
-	float kValue = tex[vertical];
+	float kValue = tex[!vertical];
 	float3 nHSL = HSL*StaticMode+defHSL*(1-StaticMode);
 	float3 hsl = HSL_Chg*kValue+nHSL*(1-HSL_Chg);
 	float4 color = HSL2RGB(float4(hsl.x,hsl.y,hsl.z,1));
