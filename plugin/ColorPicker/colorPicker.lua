@@ -161,7 +161,6 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	triggerEvent("onDgsColorPickerComponentSelectorChange",cs,value,oldV)
 end
 
---dgsBindToColorPicker(edit,colorPicker,"HSL","H")
 AvailableColorType = {
 	RGB={R={1,255},G={2,255},B={3,255}},
 	HSL={H={1,360},S={2,100},L={3,100}},
@@ -272,7 +271,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			if value then
 				if colorAttribute == "A" then
 					setCool = true
-					dgsColorPickerSetColor(cp,_,_,_,value,colorType)
+					dgsColorPickerSetColor(cp,_,_,_,value*255,colorType)
 					setCool = false
 					return
 				end
