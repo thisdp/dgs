@@ -301,8 +301,8 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 		setmetatable(newEnv,{__index=_G})
 		setfenv(tempColorChange,newEnv)
 		setfenv(tempScPosChange,newEnv)
-		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange)
-		addEventHandler("onDgsColorPickerComponentSelectorChange",show,tempScPosChange)
+		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange,false)
+		addEventHandler("onDgsColorPickerComponentSelectorChange",show,tempScPosChange,false)
 		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
 		dgsElementData[show].bindColorPicker_Fnc2 = tempScPosChange
 		tempColorChange()
@@ -365,8 +365,8 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 		setmetatable(newEnv,{__index=_G})
 		setfenv(tempColorChange,newEnv)
 		setfenv(tempScPosChange,newEnv)
-		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange)
-		addEventHandler("onDgsScrollBarScrollPositionChange",show,tempScPosChange)
+		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange,false)
+		addEventHandler("onDgsScrollBarScrollPositionChange",show,tempScPosChange,false)
 		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
 		dgsElementData[show].bindColorPicker_Fnc2 = tempScPosChange
 		tempColorChange()
@@ -427,8 +427,8 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 		setmetatable(newEnv,{__index=_G})
 		setfenv(tempColorChange,newEnv)
 		setfenv(tempTextChange,newEnv)
-		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange)
-		addEventHandler("onDgsTextChange",show,tempTextChange)
+		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange,false)
+		addEventHandler("onDgsTextChange",show,tempTextChange,false)
 		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
 		dgsElementData[show].bindColorPicker_Fnc2 = tempTextChange
 		tempColorChange()
