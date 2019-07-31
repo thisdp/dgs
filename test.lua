@@ -311,6 +311,13 @@ function languageTest_ComboBox()
 	end,1000,1)
 end
 
+function testScrollBar()
+	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
+	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
+	dgsSetProperty(scrollbar,"scrollArrow",false)
+	scrollbar = dgsCreateScrollBar(400,530,180,20,true,false)
+end
+
 function languageTest_GridList()
 	languageTab = {wtf="DGS %rep%",test="Test Lang1"}
 	languageTab2 = {wtf="Test %rep% %rep%",test="Test Lang2"}
@@ -442,3 +449,4 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
+

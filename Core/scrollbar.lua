@@ -23,6 +23,9 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	dgsSetData(scrollbar,"multiplier",{1,false})
 	dgsSetData(scrollbar,"scrollArrow",true)
 	dgsSetData(scrollbar,"locked",false)
+	dgsSetData(scrollbar,"cursorWidth",styleSettings.scrollbar.cursorWidth or {1,true})
+	dgsSetData(scrollbar,"troughWidth",styleSettings.scrollbar.troughWidth or styleSettings.scrollbar.cursorWidth or {1,true})
+	dgsSetData(scrollbar,"arrowWidth",styleSettings.scrollbar.arrowWidth or styleSettings.scrollbar.cursorWidth or {1,true})
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar,sourceResource)
 	return scrollbar

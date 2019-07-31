@@ -1844,17 +1844,36 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local colorImageIndex = {1,1,1,1}
 				local slotRange
 				local scrollArrow =  eleData.scrollArrow
-				local arrowPos = 0
+				local cursorWidth = eleData.cursorWidth
+				local troughWidth = eleData.troughWidth
+				local arrowWidth = eleData.arrowWidth
+				local troughPadding,cursorPadding,arrowPadding
 				if voh then
-					if scrollArrow then
-						arrowPos = h
+					troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
+					cursorWidth = cursorWidth[2] and cursorWidth[1]*h or cursorWidth[1]
+					troughPadding = (h-troughWidth)/2
+					cursorPadding = (h-cursorWidth)/2
+					if not scrollArrow then
+						arrowWidth = 0
+						arrowPadding = 0
+					else
+						arrowWidth = arrowWidth[2] and arrowWidth[1]*h or arrowWidth[1]
+						arrowPadding = (h-arrowWidth)/2
 					end
-					slotRange = w-arrowPos*2
+					slotRange = w-arrowWidth*2
 				else
-					if scrollArrow then
-						arrowPos = w
+					troughWidth = troughWidth[2] and troughWidth[1]*w or troughWidth[1]
+					cursorWidth = cursorWidth[2] and cursorWidth[1]*w or cursorWidth[1]
+					troughPadding = (w-troughWidth)/2
+					cursorPadding = (w-cursorWidth)/2
+					if not scrollArrow then
+						arrowWidth = 0
+						arrowPadding = 0
+					else
+						arrowWidth = arrowWidth[2] and arrowWidth[1]*w or arrowWidth[1]
+						arrowPadding = (w-arrowWidth)/2
 					end
-					slotRange = h-arrowPos*2
+					slotRange = h-arrowWidth*2
 				end
 				local cursorRange = lrlt and length*slotRange or (length <= slotRange and length or 0)
 				local csRange = slotRange-cursorRange
@@ -1863,22 +1882,34 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						MouseData.enterData = false
 						if voh then
 							if my >= cy and my <= cy+h then
-								if mx >= cx and mx <= cx+arrowPos then			------left
-									MouseData.enterData = 1
-								elseif mx >= cx+w-arrowPos and mx <= cx+w then		------right
-									MouseData.enterData = 4
-								elseif mx >= cx+arrowPos+pos*0.01*csRange and mx <= cx+arrowPos+pos*0.01*csRange+cursorRange then
-									MouseData.enterData = 2
+								if mx >= cx and mx <= cx+arrowWidth then			------left
+									if abs(cy+h/2-my) <= arrowWidth then
+										MouseData.enterData = 1
+									end
+								elseif mx >= cx+w-arrowWidth and mx <= cx+w then		------right
+									if abs(cy+h/2-my) <= arrowWidth then
+										MouseData.enterData = 4
+									end
+								elseif mx >= cx+arrowWidth+pos*0.01*csRange and mx <= cx+arrowWidth+pos*0.01*csRange+cursorRange then
+									if abs(cy+h/2-my) <= cursorWidth then
+										MouseData.enterData = 2
+									end
 								end
 							end
 						else
 							if mx >= cx and mx <= cx+w then
-								if my >= cy and my <= cy+arrowPos then			------up
-									MouseData.enterData = 1
-								elseif my >= cy+h-arrowPos and my <= cy+h then			------down
-									MouseData.enterData = 4
-								elseif my >= cy+arrowPos+pos*0.01*csRange and my <= cy+arrowPos+pos*0.01*csRange+cursorRange then
-									MouseData.enterData = 2
+								if my >= cy and my <= cy+arrowWidth then			------up
+									if abs(cx+w/2-mx) <= arrowWidth then
+										MouseData.enterData = 1
+									end
+								elseif my >= cy+h-arrowWidth and my <= cy+h then			------down
+									if abs(cx+w/2-mx) <= arrowWidth then
+										MouseData.enterData = 4
+									end
+								elseif my >= cy+arrowWidth+pos*0.01*csRange and my <= cy+arrowWidth+pos*0.01*csRange+cursorRange then
+									if abs(cx+w/2-mx) <= cursorWidth then
+										MouseData.enterData = 2
+									end
 								end
 							end
 						end
@@ -1914,33 +1945,33 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				------------------------------------
 				if voh then
 					if image[3] then
-						dxDrawImage(x+arrowPos,y,w-2*arrowPos,h,image[3],0,0,0,tempTroughColor,rendSet)
+						dxDrawImage(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,image[3],0,0,0,tempTroughColor,rendSet)
 					else
-						dxDrawRectangle(x+arrowPos,y,w-2*arrowPos,h,tempTroughColor,rendSet)
+						dxDrawRectangle(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
-						dxDrawImage(x,y,h,h,image[1],270,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x+w-h,y,h,h,image[1],90,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],270,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],90,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
 					if image[2] then
-						dxDrawImage(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
-						dxDrawRectangle(x+arrowPos+pos*0.01*csRange,y,cursorRange,h,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawRectangle(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
 				else
 					if image[3] then
-						dxDrawImage(x,y+arrowPos,w,h-2*arrowPos,image[3],0,0,0,tempTroughColor,rendSet)
+						dxDrawImage(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,image[3],0,0,0,tempTroughColor,rendSet)
 					else
-						dxDrawRectangle(x,y+arrowPos,w,h-2*arrowPos,tempTroughColor,rendSet)
+						dxDrawRectangle(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
-						dxDrawImage(x,y,w,w,image[1],0,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x,y+h-w,w,w,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],0,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
 					if image[2] then
-						dxDrawImage(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
-						dxDrawRectangle(x,y+arrowPos+pos*0.01*csRange,w,cursorRange,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
 				end
 				------------------------------------OutLine
@@ -4488,101 +4519,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 							dgsSetData(parent,"mouseWheelScrollBar",true)
 						end
 					end
-				elseif guitype == "dgs-dxgridlist" then
-					local oPreSelect = dgsElementData[guiele].oPreSelect
-					local rowData = dgsElementData[guiele].rowData
-					----Sort
-					if dgsElementData[guiele].sortEnabled then
-						local column = dgsElementData[guiele].selectedColumn
-						if column and column >= 1 then
-							local sortFunction = dgsElementData[guiele].sortFunction
-							local targetfunction = sortFunction == sortFunctions_upper and sortFunctions_lower or sortFunctions_upper
-							dgsGridListSetSortFunction(guiele,targetfunction)
-							dgsGridListSetSortColumn(guiele,column)
-						end
-					end
-					--------
-					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
-						local old1,old2
-						local selectionMode = dgsElementData[guiele].selectionMode
-						local multiSelection = dgsElementData[guiele].multiSelection
-						local preSelect = dgsElementData[guiele].preSelect
-						local clicked = dgsElementData[guiele].itemClick
-						local pass = true
-						local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
-						if #preSelect == 2 then
-							if selectionMode == 1 then
-								if multiSelection then
-									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],1)
-										dgsGridListSelectItem(guiele,preSelect[1],1,not selected)
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
-											for row = startRow,endRow do
-												dgsGridListSelectItem(guiele,row,1,true)
-											end
-											dgsElementData[guiele].itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(guiele,preSelect[1],1)
-										dgsElementData[guiele].itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(guiele,preSelect[1],1)
-									dgsElementData[guiele].itemClick = preSelect
-								end
-							elseif selectionMode == 2 then
-								if multiSelection then
-									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,1,preSelect[2])
-										dgsGridListSelectItem(guiele,1,preSelect[2],not selected)
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
-											for column = startColumn, endColumn do
-												dgsGridListSelectItem(guiele,1,column,true)
-											end
-											dgsElementData[guiele].itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(guiele,1,preSelect[2])
-										dgsElementData[guiele].itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(guiele,1,preSelect[2])
-									dgsElementData[guiele].itemClick = preSelect
-								end
-							elseif selectionMode == 3 then
-								if multiSelection then
-									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],preSelect[2])
-										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
-											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
-											for row = startRow,endRow do
-												for column = startColumn, endColumn do
-													dgsGridListSelectItem(guiele,row,column,true)
-												end
-											end
-											dgsElementData[guiele].itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-										dgsElementData[guiele].itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-									dgsElementData[guiele].itemClick = preSelect
-								end
-							end
-						end
-					end
 				elseif guitype == "dgs-dxcombobox-Box" then
 					local combobox = dgsElementData[guiele].myCombo
 					local preSelect = dgsElementData[combobox].preSelect
@@ -4634,6 +4570,105 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 							end
 						end
 					end	
+				end
+			end
+		end
+		if guitype == "dgs-dxgridlist" then
+			local clickButton = dgsElementData[guiele].mouseSelectButton
+			local isSelectButtonEnabled = clickButton[mouseButtonOrder[button]]
+			if isSelectButtonEnabled then
+				local oPreSelect = dgsElementData[guiele].oPreSelect
+				local rowData = dgsElementData[guiele].rowData
+				----Sort
+				if dgsElementData[guiele].sortEnabled then
+					local column = dgsElementData[guiele].selectedColumn
+					if column and column >= 1 then
+						local sortFunction = dgsElementData[guiele].sortFunction
+						local targetfunction = sortFunction == sortFunctions_upper and sortFunctions_lower or sortFunctions_upper
+						dgsGridListSetSortFunction(guiele,targetfunction)
+						dgsGridListSetSortColumn(guiele,column)
+					end
+				end
+				--------
+				if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
+					local old1,old2
+					local selectionMode = dgsElementData[guiele].selectionMode
+					local multiSelection = dgsElementData[guiele].multiSelection
+					local preSelect = dgsElementData[guiele].preSelect
+					local clicked = dgsElementData[guiele].itemClick
+					local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
+					if #preSelect == 2 then
+						if selectionMode == 1 then
+							if multiSelection then
+								if ctrl then
+									local selected = dgsGridListItemIsSelected(guiele,preSelect[1],1)
+									dgsGridListSelectItem(guiele,preSelect[1],1,not selected)
+								elseif shift then
+									if clicked and #clicked == 2 then
+										dgsGridListSetSelectedItem(guiele,-1,-1)
+										local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+										for row = startRow,endRow do
+											dgsGridListSelectItem(guiele,row,1,true)
+										end
+										dgsElementData[guiele].itemClick = clicked
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							else
+								dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+								dgsElementData[guiele].itemClick = preSelect
+							end
+						elseif selectionMode == 2 then
+							if multiSelection then
+								if ctrl then
+									local selected = dgsGridListItemIsSelected(guiele,1,preSelect[2])
+									dgsGridListSelectItem(guiele,1,preSelect[2],not selected)
+								elseif shift then
+									if clicked and #clicked == 2 then
+										dgsGridListSetSelectedItem(guiele,-1,-1)
+										local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+										for column = startColumn, endColumn do
+											dgsGridListSelectItem(guiele,1,column,true)
+										end
+										dgsElementData[guiele].itemClick = clicked
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							else
+								dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+								dgsElementData[guiele].itemClick = preSelect
+							end
+						elseif selectionMode == 3 then
+							if multiSelection then
+								if ctrl then
+									local selected = dgsGridListItemIsSelected(guiele,preSelect[1],preSelect[2])
+									dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
+								elseif shift then
+									if clicked and #clicked == 2 then
+										dgsGridListSetSelectedItem(guiele,-1,-1)
+										local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+										local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+										for row = startRow,endRow do
+											for column = startColumn, endColumn do
+												dgsGridListSelectItem(guiele,row,column,true)
+											end
+										end
+										dgsElementData[guiele].itemClick = clicked
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							else
+								dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
+								dgsElementData[guiele].itemClick = preSelect
+							end
+						end
+					end
 				end
 			end
 		end

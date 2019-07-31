@@ -1,4 +1,9 @@
 self = false
+mouseButtonOrder = {
+	left=1,
+	middle=2,
+	right=3,
+}
 --[[
 Selection Mode
 1-> Row Selection
@@ -68,6 +73,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"preSelect",{})
 	dgsSetData(gridlist,"rowSelect",{})
 	dgsSetData(gridlist,"itemClick",{})
+	dgsSetData(gridlist,"mouseSelectButton",{true,false,false})
 	dgsSetData(gridlist,"enableNavigation",true)
 	dgsSetData(gridlist,"lastSelectedItem",{1,1})
 	dgsSetData(gridlist,"scrollBarState",{nil,nil})

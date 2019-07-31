@@ -323,6 +323,9 @@
 		},
 	---Values
 		scrollArrow = true,
+		cursorWidth={1,true},
+		troughWidth=false,	--False for using cursorWidth
+		arrowWidth=false,	--False for using cursorWidth
 	},
 
 -----------------------------------------------------------------------------------DGS Scroll Pane
