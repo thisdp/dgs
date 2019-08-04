@@ -13,7 +13,7 @@
 
 This is a dxGUI library for [Multi Theft Auto: San Andreas](https://mtasa.com/) and is designed for the usage of dx functions.
 
-Since DGS has style system, here provides free style packs: **[DGS Style Packs](https://github.com/thisdp/DGS-Styles)**
+# Since DGS has style system, here provides free style packs: **[DGS Style Packs](https://github.com/thisdp/DGS-Styles)**
 
 **MTA:SA Forum Topic:** https://forum.mtasa.com/topic/95964-releasethisdps-dx-gui-system/
 
