@@ -4440,6 +4440,7 @@ function checkScale(source)
 	return false
 end
 DoubleClick = {}
+DoubleClick.Interval = 500
 DoubleClick.down = false
 DoubleClick.up = false
 GirdListDoubleClick = {}
@@ -4552,105 +4553,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					dgsSetData(guiele,"listState",dgsElementData[guiele].listState == 1 and -1 or 1)
 				end
 			end
-			if guitype == "dgs-dxgridlist" then
-				local clickButton = dgsElementData[guiele].mouseSelectButton
-				local isSelectButtonEnabled = clickButton[mouseButtonOrder[button]]
-				if isSelectButtonEnabled then
-					local oPreSelect = dgsElementData[guiele].oPreSelect
-					local rowData = dgsElementData[guiele].rowData
-					----Sort
-					if dgsElementData[guiele].sortEnabled then
-						local column = dgsElementData[guiele].selectedColumn
-						if column and column >= 1 then
-							local sortFunction = dgsElementData[guiele].sortFunction
-							local targetfunction = sortFunction == sortFunctions_upper and sortFunctions_lower or sortFunctions_upper
-							dgsGridListSetSortFunction(guiele,targetfunction)
-							dgsGridListSetSortColumn(guiele,column)
-						end
-					end
-					--------
-					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
-						local old1,old2
-						local selectionMode = dgsElementData[guiele].selectionMode
-						local multiSelection = dgsElementData[guiele].multiSelection
-						local preSelect = dgsElementData[guiele].preSelect
-						local clicked = dgsElementData[guiele].itemClick
-						local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
-						if #preSelect == 2 then
-							if selectionMode == 1 then
-								if multiSelection then
-									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],1)
-										dgsGridListSelectItem(guiele,preSelect[1],1,not selected)
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
-											for row = startRow,endRow do
-												dgsGridListSelectItem(guiele,row,1,true)
-											end
-											dgsElementData[guiele].itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(guiele,preSelect[1],1)
-										dgsElementData[guiele].itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(guiele,preSelect[1],1)
-									dgsElementData[guiele].itemClick = preSelect
-								end
-							elseif selectionMode == 2 then
-								if multiSelection then
-									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,1,preSelect[2])
-										dgsGridListSelectItem(guiele,1,preSelect[2],not selected)
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
-											for column = startColumn, endColumn do
-												dgsGridListSelectItem(guiele,1,column,true)
-											end
-											dgsElementData[guiele].itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(guiele,1,preSelect[2])
-										dgsElementData[guiele].itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(guiele,1,preSelect[2])
-									dgsElementData[guiele].itemClick = preSelect
-								end
-							elseif selectionMode == 3 then
-								if multiSelection then
-									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],preSelect[2])
-										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
-											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
-											for row = startRow,endRow do
-												for column = startColumn, endColumn do
-													dgsGridListSelectItem(guiele,row,column,true)
-												end
-											end
-											dgsElementData[guiele].itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-										dgsElementData[guiele].itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-									dgsElementData[guiele].itemClick = preSelect
-								end
-							end
-						end
-					end
-				end
-			end
 		else
 			if button == "left" then
 				if MouseData.arrowListEnter then
@@ -4672,6 +4574,105 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				end
 			end
 		end
+		if guitype == "dgs-dxgridlist" then
+			local clickButton = dgsElementData[guiele].mouseSelectButton
+			local isSelectButtonEnabled = clickButton[mouseButtonOrder[button]]
+			if isSelectButtonEnabled then
+				local oPreSelect = dgsElementData[guiele].oPreSelect
+				local rowData = dgsElementData[guiele].rowData
+				----Sort
+				if dgsElementData[guiele].sortEnabled then
+					local column = dgsElementData[guiele].selectedColumn
+					if column and column >= 1 then
+						local sortFunction = dgsElementData[guiele].sortFunction
+						local targetfunction = sortFunction == sortFunctions_upper and sortFunctions_lower or sortFunctions_upper
+						dgsGridListSetSortFunction(guiele,targetfunction)
+						dgsGridListSetSortColumn(guiele,column)
+					end
+				end
+				--------
+				if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
+					local old1,old2
+					local selectionMode = dgsElementData[guiele].selectionMode
+					local multiSelection = dgsElementData[guiele].multiSelection
+					local preSelect = dgsElementData[guiele].preSelect
+					local clicked = dgsElementData[guiele].itemClick
+					local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
+					if #preSelect == 2 then
+						if selectionMode == 1 then
+							if multiSelection then
+								if ctrl then
+									local selected = dgsGridListItemIsSelected(guiele,preSelect[1],1)
+									dgsGridListSelectItem(guiele,preSelect[1],1,not selected)
+								elseif shift then
+									if clicked and #clicked == 2 then
+										dgsGridListSetSelectedItem(guiele,-1,-1)
+										local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+										for row = startRow,endRow do
+											dgsGridListSelectItem(guiele,row,1,true)
+										end
+										dgsElementData[guiele].itemClick = clicked
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							else
+								dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+								dgsElementData[guiele].itemClick = preSelect
+							end
+						elseif selectionMode == 2 then
+							if multiSelection then
+								if ctrl then
+									local selected = dgsGridListItemIsSelected(guiele,1,preSelect[2])
+									dgsGridListSelectItem(guiele,1,preSelect[2],not selected)
+								elseif shift then
+									if clicked and #clicked == 2 then
+										dgsGridListSetSelectedItem(guiele,-1,-1)
+										local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+										for column = startColumn, endColumn do
+											dgsGridListSelectItem(guiele,1,column,true)
+										end
+										dgsElementData[guiele].itemClick = clicked
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							else
+								dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+								dgsElementData[guiele].itemClick = preSelect
+							end
+						elseif selectionMode == 3 then
+							if multiSelection then
+								if ctrl then
+									local selected = dgsGridListItemIsSelected(guiele,preSelect[1],preSelect[2])
+									dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
+								elseif shift then
+									if clicked and #clicked == 2 then
+										dgsGridListSetSelectedItem(guiele,-1,-1)
+										local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+										local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+										for row = startRow,endRow do
+											for column = startColumn, endColumn do
+												dgsGridListSelectItem(guiele,row,column,true)
+											end
+										end
+										dgsElementData[guiele].itemClick = clicked
+									end
+								else
+									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
+									dgsElementData[guiele].itemClick = preSelect
+								end
+							else
+								dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
+								dgsElementData[guiele].itemClick = preSelect
+							end
+						end
+					end
+				end
+			end
+		end
 		if not isElement(guiele) then return end
 		triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
 		if not isElement(guiele) then return end
@@ -4690,7 +4691,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			DoubleClick[state].but = button
 			DoubleClick[state].timer = setTimer(function()
 				DoubleClick[state] = false
-			end,500,1)
+			end,DoubleClick.Interval,1)
 		end
 		if not isElement(guiele) then return end
 		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
@@ -4732,7 +4733,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					GirdListDoubleClick[state].but = button
 					GirdListDoubleClick[state].timer = setTimer(function()
 						GirdListDoubleClick[state].gridlist = false
-					end,500,1)
+					end,DoubleClick.Interval,1)
 				end
 			end
 		end
