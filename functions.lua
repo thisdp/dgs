@@ -451,6 +451,7 @@ end
 function dgsFocus(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsFocus at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastFront = MouseData.nowShow
+	dgsBlur()
 	MouseData.nowShow = dgsEle
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
@@ -466,13 +467,16 @@ function dgsFocus(dgsEle)
 		dgsElementData[GlobalEdit].linkedDxMemo = dgsEle
 		guiFocus(GlobalMemo)
 	end
+	MouseData.nowShow = dgsEle
 	triggerEvent("onDgsFocus",dgsEle,lastFront)
 	return true
 end
 
 function dgsBlur(dgsEle)
-	if isElement(dgsEle) and dgsEle ~= MouseData.nowShow then return false end
-	local lastFront = MouseData.nowShow
+	if not isElement(MouseData.nowShow) or dgsEle ~= MouseData.nowShow then return end
+	if not dgsEle then
+		dgsEle = MouseData.nowShow
+	end
 	MouseData.nowShow = nil
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
@@ -484,7 +488,7 @@ function dgsBlur(dgsEle)
 		dgsElementData[GlobalEdit].linkedDxMemo = nil
 		guiBlur(GlobalMemo)
 	end
-	triggerEvent("onDgsBlur",lastFront)
+	triggerEvent("onDgsBlur",dgsEle)
 	return true
 end
 

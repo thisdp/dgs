@@ -160,6 +160,7 @@
 		itemTextSide = {5,5},
 		comboTextSide = {5,5},
 		scrollBarThick = 20,
+		autoHideAfterSelected=true,
 	},
 	
 -----------------------------------------------------------------------------------DGS Radio Button

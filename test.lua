@@ -14,6 +14,26 @@ function editTest()
 		dgsCreateEdit(50,100+10*i,500,40,"",false)
 	end
 end
+
+------------Full demo
+function createFullDemo()
+	dgsSetCurrentStyle("Discord")
+	loadstring(dgsImportOOPClass())()
+	local window = DGSClass:createWindow(400,200,600,500,"test",false)
+	local gridlist = window:createGridList(0,0,300,300,false)
+	gridlist:addColumn("Column 1",0.5,true)
+	gridlist:addColumn("Column 2",0.5,true)
+	for i=1,100 do
+		gridlist:addRow(i,i,math.random(1,500))
+	end
+	local combobox = window:createComboBox(320,0,150,30,"test",false)
+	for i=1,100 do
+		combobox:addItem(i)
+	end
+	
+	window:createButton(10,350,80,40,"Test Button",false)
+end
+createFullDemo()
 ------------
 
 function createTest()
@@ -71,7 +91,6 @@ function createTest4()
 		dgsComboBoxAddItem(rb1,i)
 	end
 end
-
 function createTest5()
 	local cb1 = dgsCreateCheckBox(500,500,200,30,"test_indeterminate",false)
 	local cb2 = dgsCreateCheckBox(500,520,200,30,"test_checked",false)
@@ -86,8 +105,7 @@ end
 
 function testMoveHandler()
 	local window = dgsCreateWindow(100,100,800,800,"test",false)
-	local button = dgsCreateButton(500,0,200,80,"test",false,window)
-
+	local button = dgsCreateButton(50+i,0,200,80,"test",false,window)
 end
 
 function testProgressBar()
@@ -366,7 +384,7 @@ function dgsRoundRectTest()
 	local rndRect1 = dgsCreateRoundRect(1,tocolor(0,0,0,150))
 	local image1 = dgsCreateImage(200,200,400,100,rndRect1,false)
 	local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
-	local image2 = dgsCreateImage(200,400,400,100,rndRect2,false)
+	local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
 end
 
 function test_switchButton()
@@ -413,7 +431,6 @@ function testColorPicker()
 	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false)
 	dgsBindToColorPicker(A,cp,"RGB","A")
 end
-
 -----------------------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect
 function testButtonEffect()
@@ -449,4 +466,3 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
-

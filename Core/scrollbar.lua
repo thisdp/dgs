@@ -21,7 +21,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	dgsSetData(scrollbar,"position",0)
 	dgsSetData(scrollbar,"length",{30,false},true)
 	dgsSetData(scrollbar,"multiplier",{1,false})
-	dgsSetData(scrollbar,"scrollArrow",true)
+	dgsSetData(scrollbar,"scrollArrow",styleSettings.scrollbar.scrollArrow)
 	dgsSetData(scrollbar,"locked",false)
 	dgsSetData(scrollbar,"cursorWidth",styleSettings.scrollbar.cursorWidth or {1,true})
 	dgsSetData(scrollbar,"troughWidth",styleSettings.scrollbar.troughWidth or styleSettings.scrollbar.cursorWidth or {1,true})

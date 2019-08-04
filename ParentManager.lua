@@ -186,12 +186,11 @@ function blurEditMemo()
 	end
 end
 
-lastFront = false
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
-	local parent = FatherTable[dgsEle]	--Get Parent
+	local parent = FatherTable[dgsEle]	--Get Parent\
+	local lastFront = MouseData.nowShow
 	if not dontChangeData then
-		local oldShow = MouseData.nowShow
 		MouseData.nowShow = dgsEle
 		if dgsGetType(dgsEle) == "dgs-dxedit" then
 			MouseData.editCursor = true
@@ -203,16 +202,16 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 			resetTimer(MouseData.EditMemoTimer)
 			dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 			guiFocus(GlobalMemo)
-		elseif dgsEle ~= oldShow then
-			local dgsType = dgsGetType(oldShow)
+		elseif dgsEle ~= lastFront then
+			local dgsType = dgsGetType(lastFront)
 			if dgsType == "dgs-dxedit" then
 				guiBlur(GlobalEdit)
 			elseif dgsType == "dgs-dxmemo" then
 				guiBlur(GlobalMemo)
 			end
 		end
-		if isElement(oldShow) and dgsElementData[oldShow].clearSelection then
-			dgsSetData(oldShow,"selectfrom",dgsElementData[oldShow].cursorpos)
+		if isElement(lastFront) and dgsElementData[lastFront].clearSelection then
+			dgsSetData(lastFront,"selectfrom",dgsElementData[lastFront].cursorpos)
 		end
 	end
 	if dgsElementData[dgsEle].changeOrder then

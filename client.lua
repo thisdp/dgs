@@ -284,11 +284,11 @@ function dgsCoreRender()
 			dxDrawText("RLT H: "..rltH , sW*0.5-100,115)
 		end
 		local version = getElementData(resourceRoot,"Version")
-		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-114,sW,sH,black)
-		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-115)
-		dxDrawText("Version: "..version,6,sH*0.4-99,sW,sH,black)
-		dxDrawText("Version: "..version,5,sH*0.4-100)
-		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-84,sW,sH,black)
+		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-129,sW,sH,black)
+		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-130)
+		dxDrawText("Version: "..version,6,sH*0.4-114,sW,sH,black)
+		dxDrawText("Version: "..version,5,sH*0.4-115)
+		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-99,sW,sH,black)
 		local tickColor
 		if ticks <= 8 then
 			tickColor = green
@@ -297,7 +297,13 @@ function dgsCoreRender()
 		else
 			tickColor = red
 		end
-		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-85,_,_,tickColor)
+		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-100,_,_,tickColor)
+		local Focused = "None"
+		if isElement(MouseData.nowShow) then
+			Focused = dgsGetType(MouseData.nowShow).."("..tostring(MouseData.nowShow)..")"
+		end
+		dxDrawText("Focused: "..Focused,6,sH*0.4-84,sW,sH,black)
+		dxDrawText("Focused: "..Focused,5,sH*0.4-85)
 		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).."("..tostring(MouseData.hit)..")" or "None"
 		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
 		dxDrawText("Enter: "..enterStr,10,sH*0.4-70)
@@ -2658,8 +2664,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local textBox = eleData.textBox
 				local buttonLen_t = eleData.buttonLen
 				local buttonLen
-				local bgColor = eleData.bgColor
-				local bgImage = eleData.bgImage
 				if textBox then
 					buttonLen = buttonLen_t[2] and buttonLen_t[1]*h or buttonLen_t[1]
 				else
@@ -2695,6 +2699,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				else
 					finalcolor = applyColorAlpha(colors[colorimgid],galpha)
 				end
+				local bgColor = eleData.bgColor or finalcolor
+				local bgImage = eleData.bgImage
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -2819,7 +2825,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local rb_l = dgsElementData[combo].alignmentList
 					local scrollbar = dgsElementData[combo].scrollbar
 					local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
-					if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
+					if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h and MouseData.enter == v then
 						local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
 						sid = floor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
 						if sid <= itemDataCount then
@@ -4451,22 +4457,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
 		local gtype = dgsGetType(guiele)
-		if state == "down" then
-			if button == "left" then
-				if gtype == "dgs-dxradiobutton" then
-					dgsRadioButtonSetSelected(guiele,true)
-				elseif gtype == "dgs-dxcheckbox" then
-					local state = dgsElementData[guiele].CheckBoxState
-					dgsCheckBoxSetSelected(guiele,not state)
-				end
-			end
-		end
 		if gtype == "dgs-dxbrowser" then
 			focusBrowser(guiele)
 		else
 			focusBrowser()
 		end
-		
 		local parent = dgsGetParent(guiele)
 		local guitype = dgsGetType(guiele)
 		if state == "down" then
@@ -4481,7 +4476,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
 				elseif clickType == 2 and button == "middle" then
 					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
-				elseif clickType == 3 and buutton == "right" then
+				elseif clickType == 3 and button == "right" then
 					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
 				end
 			end
@@ -4520,13 +4515,18 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 							dgsSetData(parent,"mouseWheelScrollBar",true)
 						end
 					end
+				elseif gtype == "dgs-dxradiobutton" then
+					dgsRadioButtonSetSelected(guiele,true)
+				elseif gtype == "dgs-dxcheckbox" then
+					local state = dgsElementData[guiele].CheckBoxState
+					dgsCheckBoxSetSelected(guiele,not state)
 				elseif guitype == "dgs-dxcombobox-Box" then
 					local combobox = dgsElementData[guiele].myCombo
 					local preSelect = dgsElementData[combobox].preSelect
 					local oldSelect = dgsElementData[combobox].select
 					dgsElementData[combobox].select = preSelect
 					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
-					if dgsElementData[combobox].autoHideWhenSelecting then
+					if dgsElementData[combobox].autoHideAfterSelected then
 						dgsSetData(combobox,"listState",-1)
 					end
 				elseif guitype == "dgs-dxarrowlist" then
@@ -4741,19 +4741,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
 			blurEditMemo()
 		end
-		MouseData.nowShow = false
-		if isElement(lastFront) then
-			local theType = dgsGetType(lastFront)
-			if theType == "dgs-dxcombobox" then
-				dgsComboBoxSetState(lastFront,false)
-			else
-				local combobox = dgsElementData[lastFront].myCombo
-				if isElement(combobox) then
-					dgsComboBoxSetState(combobox,false)
-				end
-			end
-			triggerEvent("onDgsBlur",lastFront,false)
-			lastFront = false
+		if isElement(MouseData.nowShow) then
+			triggerEvent("onDgsBlur",MouseData.nowShow,false)
 		end
 	end
 	if state == "up" then

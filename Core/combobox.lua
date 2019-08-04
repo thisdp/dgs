@@ -56,7 +56,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"font",systemFont)
 	dgsSetData(combobox,"bgColor",styleSettings.combobox.bgColor)
 	dgsSetData(combobox,"bgImage",dgsCreateTextureFromStyle(styleSettings.combobox.bgImage))
-	dgsSetData(combobox,"buttonLen",{1,true}) --height
+	dgsSetData(combobox,"buttonLen",{1,true}) --1,isRelative
 	dgsSetData(combobox,"textBox",true) --enable textbox
 	dgsSetData(combobox,"select",-1)
 	dgsSetData(combobox,"clip",false)
@@ -65,6 +65,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"colorcoded",false)
 	dgsSetData(combobox,"listState",-1,true)
 	dgsSetData(combobox,"listStateAnim",-1)
+	dgsSetData(combobox,"autoHideAfterSelected",styleSettings.combobox.autoHideAfterSelected)
 	dgsSetData(combobox,"itemTextSide",styleSettings.combobox.itemTextSide)
 	dgsSetData(combobox,"comboTextSide",styleSettings.combobox.comboTextSide)
 	dgsSetData(combobox,"arrowColor",styleSettings.combobox.arrowColor)
@@ -86,7 +87,6 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 		caption = dgsTranslate(combobox,caption,sourceResource)
 	end
 	dgsSetData(combobox,"caption",tostring(caption),true)
-	dgsSetData(combobox,"autoHideWhenSelecting",true)
 	dgsSetData(combobox,"arrow",dgsCreateTextureFromStyle(styleSettings.combobox.arrow))
 	calculateGuiPositionSize(combobox,x,y,relative or false,sx,sy,relative or false,true)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
@@ -102,6 +102,20 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetVisible(scrollbar,false)
 	dgsSetVisible(box,false)
 	dgsSetData(combobox,"scrollbar",scrollbar)
+	addEventHandler("onDgsBlur",box,function(nextFocused)
+		local combobox = dgsElementData[source].myCombo
+		local scb = dgsElementData[combobox].scrollbar
+		if nextFocused ~= combobox and nextFocused ~= scb then
+			dgsComboBoxSetState(combobox,false)
+		end
+	end,false)
+	addEventHandler("onDgsBlur",scrollbar,function(nextFocused)
+		local combobox = dgsElementData[source].myCombo
+		local box = dgsElementData[combobox].myBox
+		if nextFocused ~= combobox and nextFocused ~= box then
+			dgsComboBoxSetState(combobox,false)
+		end
+	end,false)
 	triggerEvent("onDgsCreate",combobox,sourceResource)
 	dgsSetData(combobox,"hitoutofparent",true)
 	return combobox
@@ -266,8 +280,8 @@ function dgsComboBoxClear(combobox)
 	local data = dgsElementData[combobox].itemData
 	table.remove(data)
 	dgsElementData[combobox].itemData = {}
-	local scrollBar = dgsElementData[combobox].scrollbar
-	dgsSetVisible(scrollBar,false)
+	local scb = dgsElementData[combobox].scrollbar
+	dgsSetVisible(scb,false)
 	return true
 end
 
@@ -338,7 +352,7 @@ function configComboBox(combobox)
 	dgsSetData(combobox,"configNextFrame",false)
 end
 
-addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
+addEventHandler("onDgsScrollBarScrollPositionChange",resourceRoot,function(new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxcombobox-Box" then
 		local combobox = dgsElementData[parent].myCombo
@@ -353,11 +367,12 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 	end
 end)
 
-addEventHandler("onDgsComboBoxStateChange",root,function(state)
+addEventHandler("onDgsComboBoxStateChange",resourceRoot,function(state)
 	if not wasEventCancelled() then
 		local box = dgsElementData[source].myBox
 		if state then
 			dgsSetVisible(box,true)
+			dgsFocus(box)
 		else
 			dgsSetVisible(box,false)
 		end
