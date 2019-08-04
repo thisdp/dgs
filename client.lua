@@ -4440,6 +4440,7 @@ function checkScale(source)
 	return false
 end
 DoubleClick = {}
+DoubleClick.Interval = 500
 DoubleClick.down = false
 DoubleClick.up = false
 GirdListDoubleClick = {}
@@ -4690,7 +4691,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			DoubleClick[state].but = button
 			DoubleClick[state].timer = setTimer(function()
 				DoubleClick[state] = false
-			end,500,1)
+			end,DoubleClick.Interval,1)
 		end
 		if not isElement(guiele) then return end
 		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
@@ -4732,7 +4733,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					GirdListDoubleClick[state].but = button
 					GirdListDoubleClick[state].timer = setTimer(function()
 						GirdListDoubleClick[state].gridlist = false
-					end,500,1)
+					end,DoubleClick.Interval,1)
 				end
 			end
 		end

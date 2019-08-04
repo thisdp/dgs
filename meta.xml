@@ -173,6 +173,8 @@
 	<export function="dgsDetachElements" type="client" />
 	<export function="dgsElementIsAttached" type="client" />
 	<export function="dgsGetCursorPosition" type="client" />
+	<export function="dgsSetDoubleClickInterval" type="client" />
+	<export function="dgsGetDoubleClickInterval" type="client" />
 
 	<export function="dgsTranslationTableExists" type="client" />
 	<export function="dgsSetTranslationTable" type="client" />

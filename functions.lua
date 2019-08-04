@@ -536,7 +536,16 @@ function dgsGetCursorPosition(relativeElement,relative,forceOnScreen)
 	end
 end
 
+function dgsSetDoubleClickInterval(interval)
+	assert(type(interval) == "number","Bad argument @dgsSetDoubleClickInterval at argument 1, expect a number got "..type(interval))
+	assert(interval >= 50,"Bad argument @dgsSetDoubleClickInterval at argument 1, interval is too short, minimum is 50")
+	DoubleClick.Interval = interval
+	return true
+end
 
+function dgsGetDoubleClickInterval()
+	return DoubleClick.Interval
+end
 ------------Move Scale Handler
 function dgsAddMoveHandler(dgsElement,x,y,w,h,xRel,yRel,wRel,hRel,forceReplace)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
