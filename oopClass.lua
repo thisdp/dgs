@@ -74,8 +74,8 @@ function dgsImportOOPClass()
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
-			createRadioButton = function(self,x,y,w,h,text,state,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateRadioButton",x,y,w,h,text,state,relative,self.dgsElement,...)
+			createRadioButton = function(self,x,y,w,h,text,relative,...)
+				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateRadioButton",x,y,w,h,text,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
@@ -139,8 +139,8 @@ function dgsImportOOPClass()
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
-			createSwitchButton = function(self,x,y,w,h,textOn,textOff,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateSwitchButton",x,y,w,h,textOn,textOff,relative,self.dgsElement,...)
+			createSwitchButton = function(self,x,y,w,h,textOn,textOff,state,relative,...)
+				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateSwitchButton",x,y,w,h,textOn,textOff,state,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
@@ -636,19 +636,19 @@ function dgsImportOOPClass()
 					return call(dgsOOPHead.dgsRes,"dgsEditClearText",self.dgsElement,...)
 				end
 				newTable.replaceText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditReplaceText ",self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditReplaceText",self.dgsElement,...)
 				end
 				newTable.getTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetTypingSound ",self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetTypingSound",self.dgsElement,...)
 				end
 				newTable.setTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetTypingSound ",self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetTypingSound",self.dgsElement,...)
 				end
 				newTable.getPlaceHolder = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetPlaceHolder ",self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetPlaceHolder",self.dgsElement,...)
 				end
 				newTable.setPlaceHolder = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetPlaceHolder ",self.dgsElement,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetPlaceHolder",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxeda" then
 				newTable.setDebugModeEnabled = function(self,...)

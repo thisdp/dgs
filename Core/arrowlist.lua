@@ -19,7 +19,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsSetData(arrowlist,"itemData",{})
 	dgsSetData(arrowlist,"leading",styleSettings.arrowlist.leading)
 	dgsSetData(arrowlist,"itemHeight",itemHeight or styleSettings.arrowlist.itemHeight)
-	dgsSetData(arrowlist,"itemColor",{idefcolor or schemeColor.arrowlist.itemColor[1],ihovcolor or schemeColor.arrowlist.itemColor[2]})
+	dgsSetData(arrowlist,"itemColor",{idefcolor or styleSettings.arrowlist.itemColor[1],ihovcolor or styleSettings.arrowlist.itemColor[2]})
 	dgsSetData(arrowlist,"itemImage",{idefimage,ihovimage})
 	dgsSetData(arrowlist,"itemMoveOffset",0)
 	dgsSetData(arrowlist,"itemTextShadow",nil)
@@ -36,6 +36,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsSetData(arrowlist,"selectorSize",styleSettings.arrowlist.selectorSize)
 	dgsSetData(arrowlist,"selectorTextColor",styleSettings.arrowlist.selectorTextColor)
 	dgsSetData(arrowlist,"selectorColor",styleSettings.arrowlist.selectorColor)
+	dgsSetData(arrowlist,"scrollSize",60)	--60 pixels
 	dgsAttachToTranslation(arrowlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsAttachToTranslation(arrowlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(arrowlist,"configNextFrame",false)
@@ -78,7 +79,6 @@ translateTable = {
 ]]
 function dgsArrowListAddItem(arrowlist,text,rangeStart,rangeEnd,step,translationTable,pos)
 	assert(dgsGetType(arrowlist) == "dgs-dxarrowlist","Bad argument @dgsArrowListAddItem at argument 1, expect dgs-dxarrowlist got "..dgsGetType(arrowlist))
-	assert(type(text) == "string","Bad argument @dgsArrowListAddItem at argument 2, expect string got "..dgsGetType(text))
 	assert(tonumber(rangeStart),"Bad argument @dgsArrowListAddItem at argument 3, expect number got "..type(rangeStart))
 	assert(tonumber(rangeEnd),"Bad argument @dgsArrowListAddItem at argument 4, expect number got "..type(rangeEnd))
 	step = tonumber(step) or 1
@@ -114,7 +114,7 @@ function dgsArrowListAddItem(arrowlist,text,rangeStart,rangeEnd,step,translation
 		tab._translationText = text
 		text = dgsTranslate(arrowlist,text,sourceResource)
 	end
-	tab[1] = text
+	tab[1] = tostring(text)
 	tab[2] = rangeStart
 	tab[3] = rangeEnd
 	tab[4] = step

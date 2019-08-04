@@ -17,23 +17,46 @@ end
 
 ------------Full demo
 function createFullDemo()
-	dgsSetCurrentStyle("Discord")
 	loadstring(dgsImportOOPClass())()
-	local window = DGSClass:createWindow(400,200,600,500,"test",false)
-	local gridlist = window:createGridList(0,0,300,300,false)
+	local window = DGSClass:createWindow(400,200,600,500,"DGS Full Demo",false)
+	local button = window:createButton(10,210,80,50,"Test Button",false)
+	local switchButton1 = window:createSwitchButton(100,210,60,20,"","",false)
+	local switchButton2 = window:createSwitchButton(100,240,60,20,"","",true)
+	local gridlist = window:createGridList(0,0,290,200,false)
 	gridlist:addColumn("Column 1",0.5,true)
 	gridlist:addColumn("Column 2",0.5,true)
 	for i=1,100 do
 		gridlist:addRow(i,i,math.random(1,500))
 	end
-	local combobox = window:createComboBox(320,0,150,30,"test",false)
+	local arrowlist = window:createArrowList(300,0,290,200,false)
+	for i=1,100 do
+		arrowlist:addItem(i,1,10)
+	end
+	local combobox = window:createComboBox(10,270,150,30,"test",false)
 	for i=1,100 do
 		combobox:addItem(i)
 	end
 	
-	window:createButton(10,350,80,40,"Test Button",false)
+	local tabPanel = window:createTabPanel(290,210,280,220,false)
+	local tab1 = tabPanel:createTab("Tab1")
+	local memo = tab1:createMemo(10,10,260,100,"This is a memo for demo",false)
+	local tab2 = tabPanel:createTab("Tab2")
+	local edit1 = tab1:createEdit(10,120,260,30,"",false)
+	edit1:setPlaceHolder("I am the place holder, and this edit is for demo")
+	local edit2 = tab1:createEdit(10,160,260,30,"This is a edit for demo",false)
+	local progressBar = window:createProgressBar(10,440,580,25,false)
+	progressBar:setProperty("functions",[[
+		local progress = dgsGetProperty(self,"progress")
+		dgsSetProperty(self,"progress",(progress+0.5)%100)
+		return true
+	]])
+	local RadioButton1 = window:createRadioButton(10,380,180,30,"This is a radio button for demo",false)
+	local RadioButton2 = window:createRadioButton(10,410,180,30,"This is a radio button for demo",false)
+	RadioButton1:setSelected(true)
+	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
+	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
-createFullDemo()
+
 ------------
 
 function createTest()

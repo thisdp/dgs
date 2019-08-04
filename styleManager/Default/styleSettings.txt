@@ -30,9 +30,7 @@
 			tocolor(200,200,200,255),	--Normal
 			tocolor(160,160,160,255),	--Hover
 		},
-		itemTextColor = {	--Item text color
-			tocolor(0,0,0,255),
-		},
+		itemTextColor = tocolor(0,0,0,255),	--Item text color
 	---Image
 		bgImage = {},
 		itemImage = {
