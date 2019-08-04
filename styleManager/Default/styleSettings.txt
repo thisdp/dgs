@@ -416,8 +416,9 @@
 -----------------------------------------------------------------------------------DGS Window
 	window = {
 	---Color
-		textColor = tocolor(255,255,255,255),	--Window title text color
+		textColor = tocolor(255,255,255,255),		--Window title text color
 		titleColor = tocolor(20,20,20,200),			--Window title background color
+		titleColorBlur = tocolor(0,0,0,200),		--Window title background color when blurred
 		color = tocolor(20,20,20,150),				--Window background color
 		closeButtonColor = {	--Window close button color
 			tocolor(200,50,50,255),	--Normal

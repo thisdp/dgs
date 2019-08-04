@@ -120,9 +120,15 @@ function dgsGetPosition(dgsElement,bool,includeParent,rndsupport)
 	end
 end
 
-function dgsSetPosition(dgsElement,x,y,bool)
+function dgsSetPosition(dgsElement,x,y,bool,isCenterPosition)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
-	calculateGuiPositionSize(dgsElement,x,y,bool or false)
+	local bool = bool and true or false
+	if isCenterPosition then
+		local size = dgsElementData[dgsElement][bool and "rltSize" or "absSize"]
+		calculateGuiPositionSize(dgsElement,x-size[1]/2,y-size[2],bool)
+	else
+		calculateGuiPositionSize(dgsElement,x,y,bool)
+	end
 	return true
 end
 
@@ -530,6 +536,7 @@ function dgsGetCursorPosition(relativeElement,relative,forceOnScreen)
 	end
 end
 
+
 ------------Move Scale Handler
 function dgsAddMoveHandler(dgsElement,x,y,w,h,xRel,yRel,wRel,hRel,forceReplace)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAddMoveHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
@@ -642,6 +649,14 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
+	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
+	addEventHandler("onDgsBlur",source,function()
+		dgsElementData[this].isFocused = false
+	end,getPropagated)
+
+	addEventHandler("onDgsFocus",source,function()
+		dgsElementData[this].isFocused = true
+	end,getPropagated)
 end)
 
 function dgsClear(theType,res)

@@ -2,7 +2,8 @@ texture background;
 float4 color = float4(1,1,1,1);
 bool textureLoad;
 float radius = 0.5;
-float borderSoft = 0.005;
+float borderSoft = 0.008;
+bool colorOverwritten = true;
 
 SamplerState tSampler
 {
@@ -31,7 +32,9 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0
 	if(fixedPos.x-corner.x >= 0 && fixedPos.y-corner.y >= 0)
 		if(distance(fixedPos,corner)-nRadius > 0)
 			result.a *= 1-(distance(fixedPos,corner)-nRadius)/borderSoft;
-	result.a = clamp(result.a,0,1)*_color.a;
+	result = clamp(result,0,1);
+	result.rgb *= colorOverwritten ? 1 : _color.rgb;
+	result.a *= _color.a;
 	return result;
 	
 }

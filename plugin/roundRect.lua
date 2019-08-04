@@ -7,6 +7,7 @@ function dgsCreateRoundRect(radius,color,texture)
 	dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
 	dgsSetData(shader,"radius",radius)
 	dgsSetData(shader,"color",color)
+	dgsSetData(shader,"colorOverwritten",true)
 	dgsRoundRectSetRadius(shader,radius)
 	dgsRoundRectSetTexture(shader,texture)
 	dgsRoundRectSetColor(shader,color)
@@ -49,4 +50,15 @@ end
 function dgsRoundRectGetColor(rectShader)
 	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetColor at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
 	return dgsElementData[rectShader].color
+end
+
+function dgsRoundRectGetColorOverwritten(rectShader)
+	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetColorOverwritten at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	return dgsElementData[rectShader].colorOverwritten
+end
+
+function dgsRoundRectSetColorOverwritten(rectShader,colorOverwritten)
+	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetColorOverwritten at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	dgsSetData(rectShader,"colorOverwritten",colorOverwritten)
+	dxSetShaderValue(rectShader,"colorOverwritten",colorOverwritten)
 end

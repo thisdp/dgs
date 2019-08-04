@@ -1175,11 +1175,17 @@ end
 function dgsGridListSetItemColor(gridlist,row,column,r,g,b,a)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemColor at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetItemColor at argument 2, expect number got "..type(row))
+	assert(type(row) == "number","Bad argument @dgsGridListSetItemColor at argument 2, expect number got "..type(row))
+	assert(type(row) == "number","Bad argument @dgsGridListSetItemColor at argument 2, expect number got "..type(row))
+	assert(type(row) == "number","Bad argument @dgsGridListSetItemColor at argument 2, expect number got "..type(row))
 	local rowData = dgsElementData[gridlist]["rowData"]
-	local color
 	if r and g and b then
+		assert(type(r) == "number","Bad argument @dgsGridListSetItemColor at argument 3, expect number got "..type(r))
+		assert(type(g) == "number","Bad argument @dgsGridListSetItemColor at argument 4, expect number got "..type(g))
+		assert(type(b) == "number","Bad argument @dgsGridListSetItemColor at argument 5, expect number got "..type(b))
 		color = tocolor(r,g,b,a or 255)
-	elseif r and (not g or not b) then
+	elseif r and (not g and not b and not a) then
+		assert(type(r) == "number","Bad argument @dgsGridListSetItemColor at argument 3, expect number got "..type(r))
 		color = r
 	end
 	if rowData then

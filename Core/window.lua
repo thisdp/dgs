@@ -9,6 +9,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"renderBuffer",{})
 	dgsSetData(window,"titleImage",titleImage or dgsCreateTextureFromStyle(styleSettings.window.titleImage))
 	dgsSetData(window,"textColor",tonumber(textColor) or styleSettings.window.textColor)
+	dgsSetData(window,"titleColorBlur",tonumber(titleColor) or styleSettings.window.titleColorBlur)
 	dgsSetData(window,"titleColor",tonumber(titleColor) or styleSettings.window.titleColor)
 	dgsSetData(window,"image",image or dgsCreateTextureFromStyle(styleSettings.window.image))
 	dgsSetData(window,"color",tonumber(color) or styleSettings.window.color)

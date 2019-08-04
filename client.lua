@@ -485,7 +485,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			position[1],position[2] = x,y
 		end
 		local x,y,cx,cy = position[1],position[2],position[3],position[4]
-		dgsElementData[v].rndTmpData.coordinate = {x,y,cx,cy}
+		eleData.rndTmpData.coordinate = {x,y,cx,cy}
 		self = v
 		local interrupted = false
 		local rendSet = not debugMode and noRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
@@ -497,7 +497,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local img = eleData.image
 				local color = eleData.color
 				color = applyColorAlpha(color,galpha)
-				local titimg,titleColor,titsize = eleData.titleImage,eleData.titleColor,eleData.titleHeight
+				local titimg,titleColor,titsize = eleData.titleImage,eleData.isFocused and eleData.titleColor or eleData.titleColorBlur,eleData.titleHeight
 				titleColor = applyColorAlpha(titleColor,galpha)
 				------------------------------------
 				if eleData.functionRunBefore then

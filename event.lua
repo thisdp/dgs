@@ -270,36 +270,22 @@ function fromcolor(int,useMath,relative)
 end
 
 function getColorAlpha(color)
-	local b = color%256
-	local color = (color-b)/256
-	local g = color%256
-	local color = (color-g)/256
-	local r = color%256
-	local color = (color-r)/256
-	local a = color%256
+	local rgb = color%16777216
+	local a = (color-rgb)/16777216*alpha
+	a = a-a%1
 	return a
 end
 
 function setColorAlpha(color,alpha)
-	local b = color%256
-	local color = (color-b)/256
-	local g = color%256
-	local color = (color-g)/256
-	local r = color%256
 	alpha = alpha-alpha%1
-	return b+g*256+r*65536+alpha*16777216
+	return color%16777216+alpha*16777216
 end
 
 function applyColorAlpha(color,alpha)
-	local b = color%256
-	local color = (color-b)/256
-	local g = color%256
-	local color = (color-g)/256
-	local r = color%256
-	local color = (color-r)/256
-	local a = color%256*alpha
+	local rgb = color%16777216
+	local a = (color-rgb)/16777216*alpha
 	a = a-a%1
-	return b+g*256+r*65536+a*16777216
+	return rgb+a*16777216
 end
 
 --If you are trying to edit following code...
