@@ -123,7 +123,22 @@ function dgsSetCurrentStyle(styleName)
 						end
 					end
 				else
-					if customStyleSettings[dgsType] ~= nil then
+					if dgsType == "systemFont" then
+						local newFont = customStyleSettings[dgsType]
+						local fontSize = 12
+						local fontBold = false
+						local fontQuality = "proof"
+						if type(newFont) == "table" then
+							fontSize = newFont[2] or fontSize
+							fontBold = newFont[3] or fontBold
+							fontQuality = newFont[4] or fontQuality
+							newFont = newFont[1]
+						end
+						if not fontDxHave[newFont] then
+							newFont = path..newFont
+						end
+						dgsSetSystemFont(newFont,fontSize,fontBold,fontQuality)
+					elseif customStyleSettings[dgsType] ~= nil then
 						styleSettings[dgsType] = customStyleSettings[dgsType]
 					end
 				end

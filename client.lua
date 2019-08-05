@@ -55,6 +55,7 @@ function dgsSetSystemFont(font,size,bold,quality)
 	if isElement(systemFont) then
 		destroyElement(systemFont)
 	end
+	sourceResource = sourceResource or getThisResource()
 	if fontDxHave[font] then
 		systemFont = font
 		return true
