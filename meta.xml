@@ -504,6 +504,6 @@
 	<export function="dgsImportFunction" type="client" />
 	<export function="dgsImportOOPClass" type="client" />
 
-	<min_mta_version server="1.5.4-9.11342" />
+	<min_mta_version server="1.5.4-9.16361" />
 	<download_priority_group>999</download_priority_group>
 </meta>
