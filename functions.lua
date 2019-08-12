@@ -399,6 +399,7 @@ function dgsSimulateClick(dgsGUI,button)
 end
 
 addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y)
+	if not isElement(source) then return end
 	if state == "down" then
 		triggerEvent("onDgsMouseClickDown",source,button,"down",x,y)
 	else
@@ -670,6 +671,11 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	addEventHandler("onDgsFocus",source,function()
 		dgsElementData[this].isFocused = true
 	end,getPropagated)
+end)
+
+addEventHandler("onDgsPluginCreate",root,function(theResource)
+	ChildrenTable[source] = ChildrenTable[source] or {}
+	insertResource(theResource,source)
 end)
 
 function dgsClear(theType,res)
