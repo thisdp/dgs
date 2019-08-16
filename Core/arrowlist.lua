@@ -272,7 +272,7 @@ function dgsArrowListClear(arrowlist)
 	dgsSetData(arrowlist,"configNextFrame",true)
 end
 
-addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
+addEventHandler("onDgsScrollBarScroll",root,function(new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxarrowlist" then
 		local scrollBar = dgsElementData[parent].scrollbar

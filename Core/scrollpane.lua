@@ -264,6 +264,33 @@ function dgsScrollPaneSetScrollPosition(scrollpane,vertical,horizontal)
 	return state1 and state2
 end
 
+--Make compatibility for GUI
+function dgsScrollPaneGetHorizontalScrollPosition(scrollpane)
+	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetHorizontalScrollPosition at at argument 1, expect dgs-dxscrollpane got "..dgsGetType(scrollpane))
+	local scb = dgsElementData[scrollpane].scrollbars
+	return dgsScrollBarGetScrollPosition(scb[2])
+end
+
+function dgsScrollPaneSetHorizontalScrollPosition(scrollpane,horizontal)
+	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetHorizontalScrollPosition at at argument 1, expect dgs-dxscrollpane got "..dgsGetType(scrollpane))
+	assert(type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100,"Bad argument @dgsScrollPaneSetHorizontalScrollPosition at at argument 3, expect number ranges from 0 to 100 got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	local scb = dgsElementData[scrollpane].scrollbars
+	return dgsScrollBarSetScrollPosition(scb[2],horizontal)
+end
+
+function dgsScrollPaneGetVerticalScrollPosition(scrollpane)
+	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetVerticalScrollPosition at at argument 1, expect dgs-dxscrollpane got "..dgsGetType(scrollpane))
+	local scb = dgsElementData[scrollpane].scrollbars
+	return dgsScrollBarGetScrollPosition(scb[1])
+end
+
+function dgsScrollPaneSetVerticalScrollPosition(scrollpane,vertical)
+	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetVerticalScrollPosition at at argument 1, expect dgs-dxscrollpane got "..dgsGetType(scrollpane))
+	assert(type(vertical) == "number" and vertical>= 0 and vertical <= 100,"Bad argument @dgsScrollPaneSetVerticalScrollPosition at at argument 2, expect number ranges from 0 to 100 got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	local scb = dgsElementData[scrollpane].scrollbars
+	return dgsScrollBarSetScrollPosition(scb[1],vertical)
+end
+
 function dgsScrollPaneGetScrollPosition(scrollpane)
 	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetScrollPosition at at argument 1, expect dgs-dxscrollpane got "..dgsGetType(scrollpane))
 	local scb = dgsElementData[scrollpane].scrollbars
@@ -282,11 +309,13 @@ function dgsScrollPaneGetScrollBarState(scrollpane)
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
 end
 
-addEventHandler("onDgsScrollBarScrollPositionChange",resourceRoot,function(new,old)
+addEventHandler("onDgsScrollBarScroll",resourceRoot,function(new,old)
 	local parent = dgsElementData[source].attachedToParent
-	if parent and dgsGetType(parent) == "dgs-dxscrollpane" then
+	if dgsGetType(parent) == "dgs-dxscrollpane" then
 		local scrollbars = dgsElementData[parent].scrollbars
-		local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
-		triggerEvent("onDgsScrollPaneScroll",parent,pos1,pos2)
+		if source == scrollbars[1] or source == scrollbars[2] then
+			local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
+			triggerEvent("onDgsScrollPaneScroll",parent,source,pos1,pos2)
+		end
 	end
 end)

@@ -401,10 +401,20 @@ end
 addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y)
 	if not isElement(source) then return end
 	if state == "down" then
-		triggerEvent("onDgsMouseClickDown",source,button,"down",x,y)
-	else
-		triggerEvent("onDgsMouseClickUp",source,button,"up",x,y)
+		triggerEvent("onDgsMouseClickDown",source,button,x,y)
+	elseif state == "up" then
+		triggerEvent("onDgsMouseClickUp",source,button,x,y)
 	end
+end)
+
+addEvent("onDgsScrollBarScrollPositionChange",true)
+addEventHandler("onDgsScrollBarScroll",resourceRoot,function(...)
+	triggerEvent("onDgsScrollBarScrollPositionChange",source,...)
+end)
+
+addEvent("onDgsCursorMove",true)
+addEventHandler("onDgsMouseMove",resourceRoot,function(...)
+	triggerEvent("onDgsCursorMove",source,...)
 end)
 
 function dgsGetMouseEnterGUI()

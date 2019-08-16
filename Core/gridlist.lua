@@ -628,6 +628,14 @@ function dgsGridListAddRow(gridlist,row,...)
 	return row
 end
 
+function dgsGridListInsertRowAfter(gridlist,row,...)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListInsertRowAfter at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	local eleData = dgsElementData[gridlist]
+	local columnData = eleData.columnData
+	assert(#columnData > 0 ,"Bad argument @dgsGridListInsertRowAfter, no columns in the grid list")
+	return dgsGridListAddRow(gridlist,row+1,...)
+end
+
 function dgsGridListSetItemClickable(gridlist,row,column,state)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetItemClickable at argument 2, expect number got "..dgsGetType(row))
@@ -1243,22 +1251,24 @@ function dgsGridListSetRowBackGroundImage(gridlist,row,norimage,selimage,cliimag
 	return dgsSetData(gridlist,"rowData",rowData)
 end
 
-addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
+addEventHandler("onDgsScrollBarScroll",root,function(new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxgridlist" then
-		local scrollBars = dgsElementData[parent].scrollbars
+		local scrollbars = dgsElementData[parent].scrollbars
 		local sx,sy = dgsElementData[parent].absSize[1],dgsElementData[parent].absSize[2]
 		local scbThick = dgsElementData[parent].scrollBarThick
-		if source == scrollBars[1] then
-			local scbThickH = dgsElementData[scrollBars[2]].visible and scbThick or 0
+		if source == scrollbars[1] then
+			local scbThickH = dgsElementData[scrollbars[2]].visible and scbThick or 0
 			local rowLength = #dgsElementData[parent].rowData*(dgsElementData[parent].rowHeight+dgsElementData[parent].leading)
 			local temp = -new*(rowLength-sy+scbThickH+dgsElementData[parent].columnHeight)/100
 			if temp <= 0 then
 				local temp = dgsElementData[parent].scrollFloor[1] and math.floor(temp) or temp 
 				dgsSetData(parent,"rowMoveOffset",temp)
 			end
-		elseif source == scrollBars[2] then
-			local scbThickV = dgsElementData[scrollBars[1]].visible and scbThick or 0
+			local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
+			triggerEvent("onDgsGridListScroll",parent,source,pos1,pos2)
+		elseif source == scrollbars[2] then
+			local scbThickV = dgsElementData[scrollbars[1]].visible and scbThick or 0
 			local columnCount =  dgsGridListGetColumnCount(parent)
 			local columnWidth = dgsGridListGetColumnAllWidth(parent,columnCount)
 			local columnOffset = dgsElementData[parent].columnOffset
@@ -1267,6 +1277,8 @@ addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
 				local temp = dgsElementData[parent].scrollFloor[2] and math.floor(temp) or temp
 				dgsSetData(parent,"columnMoveOffset",temp)
 			end
+			local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
+			triggerEvent("onDgsGridListScroll",parent,source,pos1,pos2)
 		end
 	end
 end)
@@ -1383,8 +1395,8 @@ end
 
 function dgsGridListSetScrollPosition(gridlist,vertical,horizontal)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsGridListSetScrollPosition at at argument 2, expect nil, none or number∈[0,100] got "..dgsGetType(vertical).."("..tostring(vertical)..")")
-	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsGridListSetScrollPosition at at argument 3,  expect nil, none or number∈[0,100] got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsGridListSetScrollPosition at at argument 2, expect nil/none/number ranges from 0 to 100 got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsGridListSetScrollPosition at at argument 3,  expect nil/none/number ranges from 0 to 100 got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
 	local scb = dgsElementData[gridlist].scrollbars
 	local state1,state2 = true,true
 	if vertical then
@@ -1400,4 +1412,31 @@ function dgsGridListGetScrollPosition(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	local scb = dgsElementData[gridlist].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
+end
+
+--Make compatibility for GUI
+function dgsGridListGetHorizontalScrollPosition(gridlist)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetHorizontalScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	local scb = dgsElementData[gridlist].scrollbars
+	return dgsScrollBarGetScrollPosition(scb[2])
+end
+
+function dgsGridListSetHorizontalScrollPosition(gridlist,horizontal)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetHorizontalScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100,"Bad argument @dgsGridListSetHorizontalScrollPosition at at argument 3, expect number ranges from 0 to 100 got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	local scb = dgsElementData[gridlist].scrollbars
+	return dgsScrollBarSetScrollPosition(scb[2],horizontal)
+end
+
+function dgsGridListGetVerticalScrollPosition(gridlist)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetVerticalScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	local scb = dgsElementData[gridlist].scrollbars
+	return dgsScrollBarGetScrollPosition(scb[1])
+end
+
+function dgsGridListSetVerticalScrollPosition(gridlist,vertical)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetVerticalScrollPosition at at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(vertical) == "number" and vertical>= 0 and vertical <= 100,"Bad argument @dgsGridListSetVerticalScrollPosition at at argument 2, expect number ranges from 0 to 100 got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	local scb = dgsElementData[gridlist].scrollbars
+	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end

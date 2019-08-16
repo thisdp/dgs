@@ -11,6 +11,7 @@ function dgsCreateRoundRect(radius,color,texture)
 	dgsRoundRectSetRadius(shader,radius)
 	dgsRoundRectSetTexture(shader,texture)
 	dgsRoundRectSetColor(shader,color)
+	triggerEvent("onDgsPluginCreate",shader,sourceResource)
 	return shader
 end
 

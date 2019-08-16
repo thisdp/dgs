@@ -224,6 +224,20 @@ setmetatable(LexState,{
 					end
 					return false
 				end,
+				checksamenext=function(self,target,...)
+					local nextStr = self.readText:sub(self.checkindex,self.checkindex)
+					local targetType = type(target)
+					if targetType == "string" then
+						for i=1,#target do
+							if target:sub(i,i) == nextStr then
+								return true
+							end
+						end
+					elseif targetType == "function" then
+						return target(nextStr,...)
+					end
+					return false
+				end,
 				checkcurrent=function(self,target)
 					for i=1,#target do
 						if target:sub(i,i) == self.current then
@@ -245,7 +259,7 @@ setmetatable(LexState,{
 				finish=function(self,token)
 					self.prevIndex = self.index
 					self.prevLine = self.line
-					self.result[#self.result+1] = {self.buffer,token or singleCharType[self.buffer] or "undefined"}
+					self.result[#self.result+1] = {self.buffer,token or singleCharType[self.buffer] or "undefined",self.line}
 					self.buffer = ""
 				end
 			}
@@ -360,8 +374,15 @@ end
 local function DGSLLex(ls)
 	ls:next()
 	while(ls.index <= ls.textLength) do
-		if ls.current == "\r" or ls.current == "\n" then
-			--do nothing..
+		if ls.current == "\r" then
+			ls:save()
+			ls:finish("space")
+		elseif ls.current == "\n" then
+			ls:save()
+			ls:finish("space")
+		elseif ls.current == "\t" then
+			ls:save()
+			ls:finish("space")
 		elseif ls.current == "-" then 	--check operator or comment
 			if ls:checknext("-") then	--comment
 				ls:next()				--skip two -
@@ -370,11 +391,15 @@ local function DGSLLex(ls)
 					ls:next()	--skip 1 [ , anther one gives the reader as start
 					readlongstring(ls,"long comment")
 				else												--short comment
-					repeat
-						if ls:checkcurrent("\r\n") then break end
-						ls:save()
-					until(not ls:next())
-					ls:finish("short comment")
+					if ls:checkcurrent("\r\n") then
+						ls:finish("short comment")
+					else
+						repeat
+							if ls:checknext("\r\n") then ls:save() break end
+							ls:save()
+						until(not ls:next())
+						ls:finish("short comment")
+					end
 				end
 			else						--operator
 				ls:save()
@@ -454,7 +479,7 @@ local function DGSLLex(ls)
 			elseif isLetter(ls.current,true) then
 				repeat
 					ls:save()
-					if not ls:checknext(isLetter,true) and not ls:checknext(isDigital) then break end
+					if (not ls:checknext(isLetter,true)) and (not ls:checksamenext(isDigital)) then break end
 				until(not ls:next())
 				if keyword[ls.buffer] then
 					ls:finish("keyword")
@@ -469,15 +494,328 @@ local function DGSLLex(ls)
 		ls:next()
 	end
 end
---[[
-local file = fileOpen("client.lua")
-local str = fileRead(file,fileGetSize(file))
-fileClose(file)
-local ls = LexState(str)
-DGSLLex(ls)
-local oFile = fileCreate("result.txt")
-for k,v in ipairs(ls.result) do
-	fileWrite(oFile,tostring(k),"	",v[1],"	",v[2],"\n")
+
+OPRS = {"ADD","SUB","MUL","DIV","MOD","POW","CONCAT","LT","GT","NE","EQ","LE","GE","AND","OR","NOBINOPR","NOT","MINUS","LEN","NOUNOPR"}
+OPR = {}
+for i=1,#OPRS do
+	OPR[OPRS[i]] = i
 end
-fileClose(oFile)
-]]
+
+TKOPRTransf = {
+["~"]=OPR.NOT,
+["-"]=OPR.MINUS,
+["#"]=OPR.LEN,
+["+"]=OPR.ADD,
+["-"]=OPR.SUB,
+["*"]=OPR.MUL,
+["/"]=OPR.DIV,
+["%"]=OPR.MOD,
+["^"]=OPR.POW,
+[".."]=OPR.CONCAT,
+["<"]=OPR.LT,
+[">"]=OPR.GT,
+["~="]=OPR.NE,
+["=="]=OPR.EQ,
+["<="]=OPR.LE,
+[">="]=OPR.GE,
+["and"]=OPR.AND,
+["or"]=OPR.OR,
+}
+
+function getUNOPR(op)
+	return TKOPRTransf[op] or OPR.NOUNOPR
+end
+
+function getBINOPR(op)
+	return TKOPRTransf[op] or OPR.NOBINOPR
+end
+
+AnalyzerState = {}
+
+setmetatable(AnalyzerState,{
+	__call = function(self,lexResult)
+			return {
+				tokenIndex=0,
+				separatorDepth = 0,
+				lexResult=lexResult,
+				replacedFunction = {},
+				executeProcess = function(self)
+					local GUIFnc = self.replacedFunction[1]
+					local DGSFnc = self.replacedFunction[2]
+					local resLen = #self.lexResult
+					while(true) do
+						local arguments = {}
+						local argument = {}
+						local item = self:getNext()
+						if not item then break end
+						if item[2] == "identifier" then
+							if item[1] == GUIFnc[1] then	-- matched, get into the process
+								self.lexResult[self.tokenIndex][1] = DGSFnc[1]
+								--print("Found "..GUIFnc[1].." in line "..self.lexResult[self.tokenIndex][3])
+								local enterArgs = false
+								while(true) do
+									local continue = false
+									item = self:getNext()
+									if not item then break end
+									if item[2] ~= "space" then
+										if item[2] == "separator" then
+											if item[1] == "(" then
+												enterArgs = true
+												self.separatorDepth = self.separatorDepth + 1
+												if self.separatorDepth == 1 then
+													continue = true
+												end
+											elseif item[1] == ")" then
+												self.separatorDepth = self.separatorDepth - 1
+												if self.separatorDepth == 0 then
+													table.insert(arguments,argument)
+													argument = {}
+													continue = true
+												end
+											elseif self.separatorDepth == 1 and item[1] == "," then
+												table.insert(arguments,argument)
+												argument = {}
+												continue = true
+											end
+										end
+										if self.separatorDepth == 0 and enterArgs then
+											break
+										end
+									end
+									if self.separatorDepth >= 1 and not continue and enterArgs then
+										table.insert(argument,self.tokenIndex)
+									end
+								end
+							end
+						end
+					end
+				end,
+				getNext = function(self)
+					self.tokenIndex = self.tokenIndex+1
+					return self.lexResult[self.tokenIndex]
+				end,
+				set = function(self,repFnc)
+					self.replacedFunction = repFnc
+					self.tokenIndex=0
+					self.separatorDepth = 0
+				end,
+				generateFile = function(self)
+					local file = fileCreate("tmp.txt")
+					local newtab = {}
+					for i=1,#self.lexResult do
+						if self.lexResult[i][2] == "short comment" then
+							newtab[i] = "--"..self.lexResult[i][1]
+						elseif self.lexResult[i][2] == "long comment" then
+							newtab[i] = "--[["..self.lexResult[i][1].."]]"
+						elseif self.lexResult[i][2] == "short string" then 
+							newtab[i] = "\""..self.lexResult[i][1].."\""
+						elseif self.lexResult[i][2] == "long string" then
+							newtab[i] = "[["..self.lexResult[i][1].."]]"
+						else
+							newtab[i] = self.lexResult[i][1]
+						end
+					end
+					fileWrite(file,table.concat(newtab))
+					fileClose(file)
+				end,
+			}
+	end
+})
+
+convertFunctionTable = {
+	{{"guiBringToFront"},{"dgsBringToFront"}},
+	{{"guiCreateFont"},{"dgsCreateFont"}},
+	{{"guiBlur"},{"dgsBlur"}},
+	{{"guiFocus"},{"dgsFocus"}},
+	{{"guiGetAlpha"},{"dgsGetAlpha"}},
+	{{"guiGetEnabled"},{"dgsGetEnabled"}},
+	{{"guiGetFont"},{"dgsGetFont"}},
+	{{"guiGetInputEnabled"},{"dgsGetInputEnabled"}},
+	{{"guiGetInputMode"},{"dgsGetInputMode"}},
+	{{"guiGetPosition"},{"dgsGetPosition"}},
+	{{"guiGetProperties"},{"dgsGetProperties"}},
+	{{"guiGetProperty"},{"dgsGetProperty"}},
+	{{"guiGetScreenSize"},{"dgsGetScreenSize"}},
+	{{"guiGetSize"},{"dgsGetSize"}},
+	{{"guiGetText"},{"dgsGetText"}},
+	{{"guiGetVisible"},{"dgsGetVisible"}},
+	{{"guiMoveToBack"},{"dgsMoveToBack"}},
+	{{"guiSetAlpha"},{"dgsSetAlpha"}},
+	{{"guiSetEnabled"},{"dgsSetEnabled"}},
+	{{"guiSetFont"},{"dgsSetFont"}},
+	{{"guiSetInputEnabled"},{"dgsSetInputEnabled"}},
+	{{"guiSetInputMode"},{"dgsSetInputMode"}},
+	{{"guiSetPosition"},{"dgsSetPosition"}},
+	{{"guiSetProperty"},{"dgsSetProperty"}},
+	{{"guiSetSize"},{"dgsSetSize"}},
+	{{"guiSetText"},{"dgsSetText"}},
+	{{"guiSetVisible"},{"dgsSetVisible"}},
+	{{"guiCreateBrowser"},{"dgsCreateBrowser"}},
+	{{"guiCreateButton"},{"dgsCreateButton"}},
+	{{"guiCheckBoxGetSelected"},{"dgsCheckBoxGetSelected"}},
+	{{"guiCheckBoxSetSelected"},{"dgsCheckBoxSetSelected"}},
+	{{"guiCreateCheckBox"},{"dgsCreateCheckBox"}},
+	{{"guiCreateComboBox"},{"dgsCreateComboBox"}},
+	{{"guiComboBoxAddItem"},{"dgsComboBoxAddItem"}},
+	{{"guiComboBoxClear"},{"dgsComboBoxClear"}},
+	{{"guiComboBoxGetItemCount"},{"dgsComboBoxGetItemCount"}},
+	{{"guiComboBoxGetItemText"},{"dgsComboBoxGetItemText"}},
+	{{"guiComboBoxGetSelected"},{"dgsComboBoxGetSelected"}},
+	{{"guiComboBoxIsOpen"},{"dgsComboBoxGetState"}},
+	{{"guiComboBoxRemoveItem"},{"dgsComboBoxRemoveItem"}},
+	{{"guiComboBoxSetItemText"},{"dgsComboBoxSetItemText"}},
+	{{"guiComboBoxSetOpen"},{"dgsComboBoxSetState"}},
+	{{"guiComboBoxSetSelected"},{"dgsComboBoxSetSelected"}},
+	{{"guiCreateEdit"},{"dgsCreateEdit"}},
+	{{"guiEditGetCaretIndex"},{"dgsEditGetCaretPosition"}},
+	{{"guiEditGetMaxLength"},{"dgsEditGetMaxLength"}},
+	{{"guiEditIsMasked"},{"dgsEditGetMasked"}},
+	{{"guiEditIsReadOnly"},{"dgsEditGetReadOnly"}},
+	{{"guiEditSetCaretIndex"},{"dgsEditSetCaretPosition"}},
+	{{"guiEditSetMasked"},{"dgsEditSetMasked"}},
+	{{"guiEditSetMaxLength"},{"dgsEditSetMaxLength"}},
+	{{"guiEditSetReadOnly"},{"dgsEditSetReadOnly"}},
+	{{"guiCreateGridList"},{"dgsCreateGridList"}},
+	{{"guiGridListAddColumn"},{"dgsGridListAddColumn"}},
+	{{"guiGridListAddRow"},{"dgsGridListAddRow"}},
+	{{"guiGridListAutoSizeColumn"},{"dgsGridListAutoSizeColumn"}},
+	{{"guiGridListClear"},{"dgsGridListClear"}},
+	{{"guiGridListGetColumnCount"},{"dgsGridListGetColumnCount"}},
+	{{"guiGridListGetColumnTitle"},{"dgsGridListGetColumnTitle"}},
+	{{"guiGridListGetColumnWidth"},{"dgsGridListGetColumnWidth"}},
+	{{"guiGridListGetItemColor"},{"dgsGridListGetItemColor"}},
+	{{"guiGridListGetItemData"},{"dgsGridListGetItemData"}},
+	{{"guiGridListGetItemText"},{"dgsGridListGetItemText"}},
+	{{"guiGridListGetRowCount"},{"dgsGridListGetRowCount"}},
+	{{"guiGridListGetSelectedCount"},{"dgsGridListGetSelectedCount"}},
+	{{"guiGridListGetSelectedItem"},{"dgsGridListGetSelectedItem"}},
+	{{"guiGridListGetSelectedItems"},{"dgsGridListGetSelectedItems"}},
+	{{"guiGridListGetSelectionMode"},{"dgsGridListGetSelectionMode"}},
+	{{"guiGridListIsSortingEnabled"},{"dgsGridListGetSortEnabled"}},
+	{{"guiGridListRemoveColumn"},{"dgsGridListRemoveColumn"}},
+	{{"guiGridListRemoveRow"},{"dgsGridListRemoveRow"}},
+	{{"guiGridListSetColumnTitle"},{"dgsGridListSetColumnTitle"}},
+	{{"guiGridListSetColumnWidth"},{"dgsGridListSetColumnWidth"}},
+	{{"guiGridListSetItemColor"},{"dgsGridListSetItemColor"}},
+	{{"guiGridListSetItemData"},{"dgsGridListSetItemData"}},
+	{{"guiGridListSetItemText"},{"dgsGridListSetItemText"}},
+	{{"guiGridListSetScrollBars"},{"dgsGridListSetScrollBarState"}},
+	{{"guiGridListSetSelectedItem"},{"dgsGridListSetSelectedItem"}},
+	{{"guiGridListSetSelectionMode"},{"dgsGridListSetSelectionMode"}},
+	{{"guiGridListSetSortingEnabled"},{"dgsGridListSetSortEnabled"}},
+	{{"guiCreateMemo"},{"dgsCreateMemo"}},
+	{{"guiMemoGetCaretIndex"},{"dgsMemoGetCaretIndex"}},
+	{{"guiMemoIsReadOnly"},{"dgsMemoIsReadOnly"}},
+	{{"guiMemoSetCaretIndex"},{"dgsMemoSetCaretIndex"}},
+	{{"guiMemoSetReadOnly"},{"dgsMemoSetReadOnly"}},
+	{{"guiCreateProgressBar"},{"dgsCreateProgressBar"}},
+	{{"guiProgressBarGetProgress"},{"dgsProgressBarGetProgress"}},
+	{{"guiProgressBarSetProgress"},{"dgsProgressBarSetProgress"}},
+	{{"guiCreateRadioButton"},{"dgsCreateRadioButton"}},
+	{{"guiRadioButtonGetSelected"},{"dgsRadioButtonGetSelected"}},
+	{{"guiRadioButtonSetSelected"},{"dgsRadioButtonSetSelected"}},
+	{{"guiCreateScrollBar"},{"dgsCreateScrollBar"}},
+	{{"guiScrollBarGetScrollPosition"},{"dgsScrollBarGetScrollPosition"}},
+	{{"guiScrollBarSetScrollPosition"},{"dgsScrollBarSetScrollPosition"}},
+	{{"guiCreateScrollPane"},{"dgsCreateScrollPane"}},
+	{{"guiScrollPaneSetScrollBars"},{"dgsScrollPaneSetScrollBarState"}},
+	{{"guiCreateStaticImage"},{"dgsCreateImage"}},
+	{{"guiStaticImageGetNativeSize"},{"dgsImageGetNativeSize"}},
+	{{"guiStaticImageLoadImage"},{"dgsImageSetImage"}},
+	{{"guiCreateTabPanel"},{"dgsCreateTabPanel"}},
+	{{"guiGetSelectedTab"},{"dgsGetSelectedTab"}},
+	{{"guiSetSelectedTab"},{"dgsSetSelectedTab"}},
+	{{"guiCreateTab"},{"dgsCreateTab"}},
+	{{"guiDeleteTab"},{"dgsDeleteTab"}},
+	{{"guiCreateLabel"},{"dgsCreateLabel"}},
+	{{"guiLabelGetColor"},{"dgsLabelGetColor"}},
+	{{"guiLabelGetFontHeight"},{"dgsLabelGetFontHeight"}},
+	{{"guiLabelGetTextExtent"},{"dgsLabelGetTextExtent"}},
+	{{"guiLabelSetColor"},{"dgsLabelSetColor"}},
+	{{"guiLabelSetHorizontalAlign"},{"dgsLabelSetHorizontalAlign"}},
+	{{"guiLabelSetVerticalAlign"},{"dgsLabelSetVerticalAlign"}},
+	{{"guiCreateWindow"},{"dgsCreateWindow"}},
+	{{"guiWindowIsMovable"},{"dgsWindowGetMovable"}},
+	{{"guiWindowIsSizable"},{"dgsWindowGetSizable"}},
+	{{"guiWindowSetMovable"},{"dgsWindowSetMovable"}},
+	{{"guiWindowSetSizable"},{"dgsWindowSetSizable"}},
+	{{"guiGridListGetHorizontalScrollPosition"},{"dgsGridListGetHorizontalScrollPosition"}},
+	{{"guiGridListSetHorizontalScrollPosition"},{"dgsGridListSetHorizontalScrollPosition"}},
+	{{"guiGridListGetVerticalScrollPosition"},{"dgsGridListGetVerticalScrollPosition"}},
+	{{"guiGridListSetVerticalScrollPosition"},{"dgsGridListSetVerticalScrollPosition"}},
+	{{"guiMemoGetVerticalScrollPosition"},{"dgsMemoGetVerticalScrollPosition"}},
+	{{"guiMemoSetVerticalScrollPosition"},{"dgsMemoSetVerticalScrollPosition"}},
+	{{"guiScrollPaneGetHorizontalScrollPosition"},{"dgsScrollPaneGetHorizontalScrollPosition"}},
+	{{"guiScrollPaneGetVerticalScrollPosition"},{"dgsScrollPaneGetVerticalScrollPosition"}},
+	{{"guiScrollPaneSetHorizontalScrollPosition"},{"dgsScrollPaneSetHorizontalScrollPosition"}},
+	{{"guiScrollPaneSetVerticalScrollPosition"},{"dgsScrollPaneSetVerticalScrollPosition"}},
+	{{"guiGridListInsertRowAfter"},{"dgsGridListInsertRowAfter"}},
+	{{"guiGetBrowser"},{""}},
+}
+
+converEventTable = {
+	{{"onClientGUIAccepted"},{"onDgsEditAccepted"}},
+	{{"onClientGUIBlur"},{"onDgsBlur"}},
+	{{"onClientGUIChanged"},{"onDgsTextChange"}},
+	{{"onClientGUIClick"},{"onDgsMouseClickUp"}},
+	{{"onClientGUIComboBoxAccepted"},{"onDgsComboBoxSelect"}},
+	{{"onClientGUIDoubleClick"},{"onDgsMouseDoubleClick"}},
+	{{"onClientGUIFocus"},{"onDgsFocus"}},
+	{{"onClientGUIMouseDown"},{"onDgsMouseDown"}},
+	{{"onClientGUIMouseUp"},{"onDgsMouseUp"}},
+	{{"onClientGUIMove"},{"onDgsElementMove"}},
+	{{"onClientGUIScroll"},{"onDgsScrollBarScroll"}},
+	{{"onClientGUISize"},{"onDgsElementSize"}},
+	{{"onClientGUITabSwitched"},{"onDgsTabSelect"}},
+	{{"onClientMouseEnter"},{"onDgsMouseEnter"}},
+	{{"onClientMouseLeave"},{"onDgsMouseLeave"}},
+	{{"onClientMouseMove"},{"onDgsMouseMove"}},
+	{{"onClientMouseWheel"},{"onDgsMouseWheel"}},
+}
+
+
+function showProgress(progress)
+	print("[G2D]Progress "..string.format("%.2f",progress).."%")
+end
+
+G2DRunningData = {
+	File=false,
+	Timer= false
+}
+
+function G2DStart()
+	local file = fileOpen("client.lua")
+	local str = fileRead(file,fileGetSize(file))
+	fileClose(file)
+	local ls = LexState(str)
+	DGSLLex(ls)
+	local az = AnalyzerState(ls.result)
+	local runningProcess = 1
+	local getTickCount = getTickCount
+	local convTabCnt = #convertFunctionTable
+	setTimer(function()
+		local tick = getTickCount()
+		for i=runningProcess,convTabCnt do
+			if not convertFunctionTable[i] then break end
+			az:set(convertFunctionTable[i])
+			az:executeProcess()
+			runningProcess = i
+			if getTickCount()-tick >= 95 then
+				runningProcess = i+1
+				tick = getTickCount()
+				break
+			end
+		end
+		if runningProcess >= convTabCnt then
+			showProgress(100)
+			killTimer(sourceTimer)
+			
+			print("[G2D]Generating file...")
+			az:generateFile()
+			print("[G2D]Saved to file")
+			
+		else
+			showProgress((runningProcess-1)/convTabCnt*100)
+		end
+	end,100,0)
+end

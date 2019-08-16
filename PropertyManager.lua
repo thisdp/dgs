@@ -24,7 +24,7 @@ function dgsSetData(element,key,value,nocheck)
 					elseif key == "position" then
 						if not dgsElementData[element].locked then
 							if oldValue and oldValue ~= value then
-								triggerEvent("onDgsScrollBarScrollPositionChange",element,value,oldValue)
+								triggerEvent("onDgsScrollBarScroll",element,value,oldValue)
 							end
 						else
 							dgsElementData[element][key] = oldValue
@@ -214,13 +214,6 @@ end
 function dgsSetProperty(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
-	if oldPropertyNameTable[key] then
-		outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
-		if debugMode_CompatibilityCheck then
-			assert(false,"[DGS]Assert! Look the warning debug message above")
-		end
-		key = oldPropertyNameTable[key]
-	end
 	if isTable then
 		for k,v in ipairs(dxgui) do
 			if key == "functions" then
@@ -276,13 +269,6 @@ end
 function dgsGetProperty(dxgui,key)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	if not dgsElementData[dxgui] then return false end
-	if oldPropertyNameTable[key] then
-		outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
-		if debugMode_CompatibilityCheck then
-			assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
-		end
-		key = oldPropertyNameTable[key]
-	end
 	return dgsElementData[dxgui][key]
 end
 
@@ -296,13 +282,6 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 		for k,v in ipairs(dxgui) do
 			local dgsType = dgsElementType[v]
 			for key,value in pairs(theTable) do
-				if oldPropertyNameTable[key] then
-					outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
-					if debugMode_CompatibilityCheck then
-						assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
-					end
-					key = oldPropertyNameTable[key]
-				end
 				local skip = false
 				if key == "functions" then
 					value = {loadstring(value),additionArg.functions or {}}
@@ -345,13 +324,6 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 		local dgsType = dgsElementType[dxgui]
 		for key,value in pairs(theTable) do
 			local skip = false
-			if oldPropertyNameTable[key] then
-				outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
-				if debugMode_CompatibilityCheck then
-					assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
-				end
-				key = oldPropertyNameTable[key]
-			end
 			if key == "functions" then
 				value = {loadstring(value),additionArg.functions or {}}
 			elseif key == "textColor" then
@@ -399,13 +371,6 @@ function dgsGetProperties(dxgui,properties)
 	else
 		local data = {}
 		for k,key in ipairs(properties) do
-			if oldPropertyNameTable[key] then
-				outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
-				if debugMode_CompatibilityCheck then
-					assert(false,"[DGS]Compatibility Check Assert! Look the warning debug message above")
-				end
-				key = oldPropertyNameTable[key]
-			end
 			data[key] = dgsElementData[dxgui][key]
 		end
 		return data
@@ -415,13 +380,6 @@ end
 function dgsSetPropertyInherit(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetPropertyInherit at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
-	if oldPropertyNameTable[key] then
-		outputDebugString("[DGS]Property '"..key.."' will be no longer supported ( removed in 3.46 ), use '"..oldPropertyNameTable[key].."' instead. To check this warning use /debugdgs c",2)
-		if debugMode_CompatibilityCheck then
-			assert(false,"[DGS]Assert! Look the warning debug message above")
-		end
-		key = oldPropertyNameTable[key]
-	end
 	if isTable then
 		for k,v in ipairs(dxgui) do
 			if key == "functions" then

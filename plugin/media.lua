@@ -35,16 +35,13 @@ function dgsCreateMediaBrowser(w,h,transparent)
 	dgsSetData(media,"functionBuffer",{})
 	dgsElementData[media].duration = false
 	dgsElementData[media].current = false
-	insertResourceDxGUI(sourceResource,media)
-	triggerEvent("onDgsPreCreate",media)
-	triggerEvent("onDgsCreate",media)
+	triggerEvent("onDgsPluginCreate",media,sourceResource)
 	return media
 end
 
 addEventHandler("onClientBrowserCreated",resourceRoot,function()
 	if dgsGetType(source) == "dgs-dxmedia" then
 		loadBrowserURL(source,"http://mta/"..getResourceName(getThisResource()).."/media.html")
-		--toggleBrowserDevTools(source,true)
 	end
 end)
 

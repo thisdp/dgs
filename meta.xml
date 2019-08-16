@@ -48,7 +48,6 @@
 	<script src="animation.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
-	<script src="oldFunctions.lua" type="client" />
 	
 	
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
@@ -73,20 +72,20 @@
 	<!--(Default Style) Don't touch this style with your bear hand-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
 	<file src="styleManager/Default/Images/eda/ellipse.fx" />
-	<file src="styleManager/Default/Images/checkbox/cb_t.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_f.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_i.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" />
-	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" />
-	<file src="styleManager/Default/styleSettings.txt" />
+	<file src="styleManager/Default/Images/checkbox/cb_t.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_f.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_i.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" type="client" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" type="client" />
+	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" type="client" />
+	<file src="styleManager/Default/styleSettings.txt" type="client" />
 	<!--(Custom Style 1) -->
-
+	
 	<!--(Custom Style 2) -->
 	
 	<!--&Add Your Styles Here-->
@@ -232,6 +231,10 @@
 	<export function="dgsScrollPaneGetScrollBarState" type="client" />
 	<export function="dgsScrollPaneSetScrollPosition" type="client" />
 	<export function="dgsScrollPaneGetScrollPosition" type="client" />
+	<export function="dgsScrollPaneSetHorizontalScrollPosition" type="client" />
+	<export function="dgsScrollPaneGetHorizontalScrollPosition" type="client" />
+	<export function="dgsScrollPaneSetVerticalScrollPosition" type="client" />
+	<export function="dgsScrollPaneGetVerticalScrollPosition" type="client" />
 	
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
@@ -311,6 +314,10 @@
 	<export function="dgsMemoGetScrollBar" type="client" />
 	<export function="dgsMemoSetScrollPosition" type="client" />
 	<export function="dgsMemoGetScrollPosition" type="client" />
+	<export function="dgsMemoSetHorizontalScrollPosition" type="client" />
+	<export function="dgsMemoGetHorizontalScrollPosition" type="client" />
+	<export function="dgsMemoSetVerticalScrollPosition" type="client" />
+	<export function="dgsMemoGetVerticalScrollPosition" type="client" />
 	<export function="dgsMemoSetTypingSound" type="client" />
 	<export function="dgsMemoGetTypingSound" type="client" />
 	<export function="dgsMemoGetLineCount" type="client" />
@@ -405,6 +412,7 @@
 	<export function="dgsGridListSetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnFont" type="client" />
 	<export function="dgsGridListGetColumnFont" type="client" />
+	<export function="dgsGridListInsertRowAfter" type="client" />
 	<export function="dgsGridListAddRow" type="client" />
 	<export function="dgsGridListRemoveRow" type="client" />
 	<export function="dgsGridListClearRow" type="client" />
@@ -447,6 +455,10 @@
 	<export function="dgsGridListGetEnterColumn" type="client" />
 	<export function="dgsGridListSetScrollPosition" type="client" />
 	<export function="dgsGridListGetScrollPosition" type="client" />
+	<export function="dgsGridListSetHorizontalScrollPosition" type="client" />
+	<export function="dgsGridListGetHorizontalScrollPosition" type="client" />
+	<export function="dgsGridListSetVerticalScrollPosition" type="client" />
+	<export function="dgsGridListGetVerticalScrollPosition" type="client" />
 	<export function="dgsGridListSetNavigationEnabled" type="client" />
 	<export function="dgsGridListGetNavigationEnabled" type="client" />
 	
@@ -504,6 +516,6 @@
 	<export function="dgsImportFunction" type="client" />
 	<export function="dgsImportOOPClass" type="client" />
 
-	<min_mta_version client="1.5.6-9.16361" />
+	<min_mta_version server="1.5.4-9.16361" client="1.5.4-9.16361" />
 	<download_priority_group>999</download_priority_group>
 </meta>

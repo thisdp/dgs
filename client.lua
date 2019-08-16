@@ -4041,12 +4041,12 @@ function dgsCheckHit(hits,mx,my)
 	end
 	if isElement(hits) then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
-			triggerEvent("onDgsCursorMove",hits,mx,my)
+			triggerEvent("onDgsMouseMove",hits,mx,my)
 		end
 	end
 	if isElement(MouseData.clickl) then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
-			triggerEvent("onDgsCursorDrag",MouseData.clickl,mx,my)
+			triggerEvent("onDgsMouseDrag",MouseData.clickl,mx,my)
 		end
 		if MouseData.Move then
 			local pos = {0,0}
@@ -4365,6 +4365,7 @@ function checkMove(source)
 			return
 		end
 		MouseData.Move = {offsetx,offsety}
+		triggerEvent("onDgsElementMove",source,offsetx,offsety)
 	elseif dgsGetType(source) == "dgs-dxwindow" then
 		local mx,my = getCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
@@ -4377,6 +4378,7 @@ function checkMove(source)
 		local titsize = dgsElementData[source].movetyp and h or dgsElementData[source].titleHeight
 		if offsety > titsize then return end
 		MouseData.Move = {offsetx,offsety}
+		triggerEvent("onDgsElementMove",source,offsetx,offsety)
 	end
 end
 
@@ -4417,6 +4419,7 @@ function checkScale(source)
 			return false
 		end
 		MouseData.Scale = offsets	
+		triggerEvent("onDgsElementSize",source,offsets[1],offsets[2])
 		return true
 	elseif dgsGetType(source) == "dgs-dxwindow" then
 		local mx,my = getCursorPosition()
@@ -4442,6 +4445,7 @@ function checkScale(source)
 			return false
 		end
 		MouseData.Scale = offsets
+		triggerEvent("onDgsElementSize",source,offsets[1],offsets[2])
 		return true
 	end
 	return false
@@ -4457,6 +4461,11 @@ GirdListDoubleClick.up = false
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
+		if state == "down" then
+			triggerEvent("onDgsMouseDown",guiele,button,state,MouseX or x,MouseY or y)
+		elseif state == "up" then
+			triggerEvent("onDgsMouseUp",guiele,button,state,MouseX or x,MouseY or y)
+		end
 		local gtype = dgsGetType(guiele)
 		if gtype == "dgs-dxbrowser" then
 			focusBrowser(guiele)
@@ -4661,21 +4670,12 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 				end
 				MouseData.arrowListEnter = false
-				if MouseData.clickl == guiele then
-					if isElement(parent) then
-						local closebutton = dgsElementData[parent].closeButton
-						if closebutton == guiele then
-							triggerEvent("onDgsWindowClose",parent,closebutton)
-							if not wasEventCancelled() then
-								destroyElement(parent)
-							end
-						end
-					end	
-				end
 			end
 		end
 		if not isElement(guiele) then return end
-		triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
+		if MouseData.clickl == guiele then
+			triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
+		end
 		if not isElement(guiele) then return end
 		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
 			triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)

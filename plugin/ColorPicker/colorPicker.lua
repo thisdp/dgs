@@ -4,6 +4,7 @@ addEvent("onDgsColorPickerComponentSelectorChange",true)
 function dgsCreateColorPicker(style,...)
 	assert(type(style) == "string","Bad argument @dgsCreateColorPicker at argument 1, expect a string got "..type(style))
 	local args = {...}
+	local mainElement
 	if style == "HSVRing" then
 		local x,y,w,h,relative,parent = args[1],args[2],args[3],args[4],args[5],args[6]
 		local HSVRing = dxCreateShader("plugin/ColorPicker/HSVRing.fx")
@@ -18,7 +19,7 @@ function dgsCreateColorPicker(style,...)
 		dgsAddMoveHandler(PickCircleImg)
 		dgsSetData(HSVRingImg,"cp_shaders",{HSVRing,HSVRingSel,PickCircle})
 		dgsSetData(HSVRingImg,"cp_images",{HSVRingImg,HSVRingSelImg,PickCircleImg})
-		addEventHandler("onDgsCursorDrag",HSVRingImg,HSVRingChange,false)
+		addEventHandler("onDgsMouseDrag",HSVRingImg,HSVRingChange,false)
 		addEventHandler("onDgsMouseClickDown",HSVRingImg,HSVRingChange,false)
 		dgsSetData(HSVRingImg,"style",style)
 		dgsColorPickerSetColor(HSVRingImg,0,0,255,255)
@@ -29,7 +30,7 @@ function dgsCreateColorPicker(style,...)
 				end
 			end
 		end,false)
-		return HSVRingImg
+		mainElement = HSVRingImg
 	elseif style == "HSLSquare" then
 		local x,y,w,h,relative,parent = args[1],args[2],args[3],args[4],args[5],args[6]
 		local HSLSquare = dxCreateShader("plugin/ColorPicker/HSLSquare.fx")
@@ -41,7 +42,7 @@ function dgsCreateColorPicker(style,...)
 		dgsAddMoveHandler(PickCircleImg)
 		dgsSetData(HSLSquareImg,"cp_shaders",{HSLSquare,PickCircle})
 		dgsSetData(HSLSquareImg,"cp_images",{HSLSquareImg,PickCircleImg})
-		addEventHandler("onDgsCursorDrag",HSLSquareImg,HSLSquareChange,false)
+		addEventHandler("onDgsMouseDrag",HSLSquareImg,HSLSquareChange,false)
 		addEventHandler("onDgsMouseClickDown",HSLSquareImg,HSLSquareChange,false)
 		dgsSetData(HSLSquareImg,"style",style)
 		dgsColorPickerSetColor(HSLSquareImg,0,0,255,255)
@@ -52,9 +53,13 @@ function dgsCreateColorPicker(style,...)
 				end
 			end
 		end,false)
-		return HSLSquareImg
+		mainElement = HSLSquareImg
 	else
 		assert(false,"Bad argument @dgsCreateColorPicker at argument 1, unsupported type "..style)
+	end
+	if mainElement then
+		triggerEvent("onDgsPluginCreate",mainElement,sourceResource)
+		return mainElement
 	end
 	return false
 end
@@ -77,7 +82,7 @@ function dgsColorPickerCreateComponentSelector(x,y,w,h,voh,relative,parent,thick
 	dgsSetData(cs,"voh",voh)
 	dgsSetData(cs,"cp_images",{cs,selector})
 	dgsSetData(cs,"value",0)	--0~100
-	addEventHandler("onDgsCursorDrag",cs,ComponentChange,false)
+	addEventHandler("onDgsMouseDrag",cs,ComponentChange,false)
 	addEventHandler("onDgsMouseClickDown",cs,ComponentChange,false)
 	addEventHandler("onDgsSizeChange",cs,ComponentResize,false)
 	addEventHandler("onDgsDestroy",cs,function()

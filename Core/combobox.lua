@@ -352,7 +352,7 @@ function configComboBox(combobox)
 	dgsSetData(combobox,"configNextFrame",false)
 end
 
-addEventHandler("onDgsScrollBarScrollPositionChange",resourceRoot,function(new,old)
+addEventHandler("onDgsScrollBarScroll",resourceRoot,function(new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxcombobox-Box" then
 		local combobox = dgsElementData[parent].myCombo
@@ -363,6 +363,7 @@ addEventHandler("onDgsScrollBarScrollPositionChange",resourceRoot,function(new,o
 			local temp = -new*(itemLength-sy)/100
 			local temp = dgsElementData[combobox].scrollFloor and math.floor(temp) or temp 
 			dgsSetData(combobox,"itemMoveOffset",temp)
+			triggerEvent("onDgsComboBoxScroll",combobox,source,new)
 		end
 	end
 end)

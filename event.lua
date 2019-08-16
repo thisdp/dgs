@@ -16,8 +16,9 @@ addEvent("onDgsWindowClose",true)
 addEvent("onDgsPositionChange",true)
 addEvent("onDgsSizeChange",true)
 addEvent("onDgsTextChange",true)
-addEvent("onDgsScrollBarScrollPositionChange",true)
+addEvent("onDgsScrollBarScroll",true)
 addEvent("onDgsScrollPaneScroll",true)
+addEvent("onDgsGridListScroll",true)
 addEvent("onDgsDestroy",true)
 addEvent("onDgsSwitchButtonStateChange",true)
 addEvent("onDgsGridListSelect",true)
@@ -28,25 +29,27 @@ addEvent("onDgsPluginCreate",true)
 addEvent("onDgsPreRender",true)
 addEvent("onDgsRender",true)
 addEvent("onDgsElementRender",true)
+addEvent("onDgsElementMove",true)
+addEvent("onDgsElementSize",true)
 addEvent("onDgsFocus",true)
 addEvent("onDgsBlur",true)
-addEvent("onDgsCursorMove",true)
+addEvent("onDgsMouseMove",true)
 addEvent("onDgsTabSelect",true)
 addEvent("onDgsTabPanelTabSelect",true)
 addEvent("onDgsRadioButtonChange",true)
 addEvent("onDgsCheckBoxChange",true)
+addEvent("onDgsComboBoxScroll",true)
 addEvent("onDgsComboBoxSelect",true)
 addEvent("onDgsComboBoxStateChange",true)
 addEvent("onDgsEditPreSwitch",true)
 addEvent("onDgsEditSwitched",true)
 addEvent("onDgsEditAccepted",true)
-addEvent("onDgsComboBoxAccepted",true)
 addEvent("onDgsStopMoving",true)
 addEvent("onDgsStopSizing",true)
 addEvent("onDgsStopAlphaing",true)
 addEvent("onDgsStopAniming",true)
 addEvent("onDgsArrowListValueChange",true)
-addEvent("onDgsCursorDrag",true)
+addEvent("onDgsMouseDrag",true)
 -------
 addEvent("giveIPBack",true)
 
@@ -92,15 +95,10 @@ addCommandHandler("debugdgs",function(command,arg)
 	elseif arg == "2" then
 		debugMode = 2
 		setElementData(localPlayer,"DGS-DEBUG",2,false)
-	elseif arg == "c" then
-		debugMode_CompatibilityCheck = not getElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck")
-		setElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck",debugMode_CompatibilityCheck,false)
-		outputChatBox("[DGS]Compatibility Check is "..(debugMode_CompatibilityCheck and "enabled" or "disabled"),0,255,0)
 	end
 end)
 
 debugMode = getElementData(localPlayer,"DGS-DEBUG")
-debugMode_CompatibilityCheck = getElementData(localPlayer,"DGS-DEBUG-CompatibilityCheck")
 --------------------------------Table Utility
 function table.find(tab,ke,num)
 	if num then
@@ -150,7 +148,7 @@ function table.merger(...)
 		local result = {}
 		for k,v in ipairs(tab) do
 			if type(v) ~= "table" then
-				assert(false,"@table.merger argument "..k..",expect table got "..type(v))
+				assert(false,"Bad argument @table.merger at argument "..k..",expect table got "..type(v))
 				return false
 			end
 			for _k,_v in pairs(v) do
@@ -164,7 +162,7 @@ function table.merger(...)
 end
 
 function table.complement(theall,...)
-	assert(type(theall) == "table","@table.complement argument 1,expect table got "..type(theall))
+	assert(type(theall) == "table","Bad argument @table.complement at argument 1,expect table got "..type(theall))
 	local remove = table.merger(...)
 	local newtable = {}
 	for k,v in pairs(theall) do

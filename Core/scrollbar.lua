@@ -116,8 +116,8 @@ function dgsScrollBarSyncWith(scrollbar1,scrollbar2)
 	end
 	dgsElementData[scrollbar1].he = scrollbar2
 	dgsElementData[scrollbar2].he = scrollbar1
-	addEventHandler("onDgsScrollBarScrollPositionChange",scrollbar1,sync,false)
-	addEventHandler("onDgsScrollBarScrollPositionChange",scrollbar2,sync,false)
+	addEventHandler("onDgsScrollBarScroll",scrollbar1,sync,false)
+	addEventHandler("onDgsScrollBarScroll",scrollbar2,sync,false)
 end
 
 function dgsScrollBarDesyncFrom(scrollbar1,scrollbar2)

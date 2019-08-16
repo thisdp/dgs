@@ -1027,7 +1027,7 @@ function configMemo(source)
 	dgsSetData(source,"configNextFrame",false)
 end
 
-addEventHandler("onDgsScrollBarScrollPositionChange",root,function(new,old)
+addEventHandler("onDgsScrollBarScroll",root,function(new,old)
 	local memo = dgsGetParent(source)
 	if dgsGetType(memo) == "dgs-dxmemo" then
 		local scrollbars = dgsElementData[memo].scrollbars
@@ -1133,6 +1133,33 @@ function dgsMemoGetScrollPosition(memo)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
+end
+
+--Make compatibility for GUI
+function dgsMemoGetHorizontalScrollPosition(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetHorizontalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	local scb = dgsElementData[memo].scrollbars
+	return dgsScrollBarGetScrollPosition(scb[2])
+end
+
+function dgsMemoSetHorizontalScrollPosition(memo,horizontal)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetHorizontalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100,"Bad argument @dgsMemoSetHorizontalScrollPosition at at argument 3, expect number ranges from 0 to 100 got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	local scb = dgsElementData[memo].scrollbars
+	return dgsScrollBarSetScrollPosition(scb[2],horizontal)
+end
+
+function dgsMemoGetVerticalScrollPosition(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetVerticalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	local scb = dgsElementData[memo].scrollbars
+	return dgsScrollBarGetScrollPosition(scb[1])
+end
+
+function dgsMemoSetVerticalScrollPosition(memo,vertical)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetVerticalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(type(vertical) == "number" and vertical>= 0 and vertical <= 100,"Bad argument @dgsMemoSetVerticalScrollPosition at at argument 2, expect number ranges from 0 to 100 got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	local scb = dgsElementData[memo].scrollbars
+	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end
 
 addEventHandler("onClientGUIChanged",resourceRoot,function()
