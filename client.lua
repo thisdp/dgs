@@ -1770,6 +1770,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				rndtgt = eleData.renderTarget_parent
 				dxSetRenderTarget(rndtgt,true)
+				if eleData.color then
+					local width, height = dxGetMaterialSize(rndtgt)
+					dxDrawRectangle(0,0,width,height,eleData.color)
+				end
 				dxSetRenderTarget()
 				dxSetBlendMode("add")
 				local scrollbar = eleData.scrollbars
