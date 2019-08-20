@@ -41,7 +41,7 @@ function dgsSetData(element,key,value,nocheck)
 						dgsGridListUpdateRowMoveOffset(element)
 					end
 				elseif dgsType == "dgs-dxscrollpane" then
-					if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" then
+					if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" or key == "scrollBarLength" then
 						configScrollPane(element)
 					end
 				elseif dgsType == "dgs-dxswitchbutton" then

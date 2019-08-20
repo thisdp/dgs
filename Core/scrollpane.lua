@@ -25,6 +25,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
 	dgsSetData(scrollpane,"configNextFrame",false)
 	dgsSetData(scrollpane,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
+	dgsSetData(scrollpane,"scrollBarLength",{},true)
 	local titleOffset = 0
 	if isElement(parent) then
 		if not dgsElementData[scrollpane].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
@@ -180,16 +181,20 @@ function configScrollPane(source)
 	lengthHorizontal = lengthHorizontal < 1 and lengthHorizontal or 1
 	dgsSetEnabled(scrollbar[1],lengthVertical ~= 1 and true or false)
 	dgsSetEnabled(scrollbar[2],lengthHorizontal  ~= 1 and true or false)
-		
+
+	local scbLengthHoz = dgsElementData[source].scrollBarLength[1]
 	local higLen = 1-(childBounding[2]-relSizY)/childBounding[2]
 	higLen = higLen >= 0.95 and 0.95 or higLen
-	dgsSetData(scrollbar[1],"length",{higLen,true})
+	length = scbLengthHoz or {higLen,true}
+	dgsSetData(scrollbar[1],"length",length)
 	local verticalScrollSize = dgsElementData[source].scrollSize/(childBounding[2]-relSizY)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
+	local scbLengthVec = dgsElementData[source].scrollBarLength[2]
 	local widLen = 1-(childBounding[1]-relSizX)/childBounding[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	dgsSetData(scrollbar[2],"length",{widLen,true})
+	local length = scbLengthVec or {widLen,true}
+	dgsSetData(scrollbar[2],"length",length)
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(childBounding[1]-relSizX)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	

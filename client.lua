@@ -263,6 +263,7 @@ function dgsCoreRender()
 	local ticks = getTickCount()-tk
 	if debugMode then
 		if isElement(MouseData.hit) and debugMode == 2 then
+			local scAbsX,scAbsY = dgsGetPosition(MouseData.hit,false,true,false,true)
 			local absX,absY = dgsGetPosition(MouseData.hit,false)
 			local rltX,rltY = dgsGetPosition(MouseData.hit,true)
 			local absW,absH = dgsGetSize(MouseData.hit,false)
@@ -283,6 +284,15 @@ function dgsCoreRender()
 			dxDrawText("ABS H: "..absH , sW*0.5-100,85)
 			dxDrawText("RLT W: "..rltW , sW*0.5-100,100)
 			dxDrawText("RLT H: "..rltH , sW*0.5-100,115)
+			
+			local sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/10,100,50))
+			local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
+			local hSideSize = sideSize*0.5
+			local x,y,w,h = scAbsX,scAbsY,absW,absH
+			dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,rendSet)
+			dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,rendSet)
+			dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
+			dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
 		end
 		local version = getElementData(resourceRoot,"Version")
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-129,sW,sH,black)
@@ -432,6 +442,7 @@ end
 addEventHandler("onClientPreRender",root,interfaceRender)
 
 function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
+	local currentBlendMode = dxGetBlendMode()
 	local isElementInside = false
 	local eleData = dgsElementData[v]
 	local enabled = {enabled[1] and eleData.enabled,eleData.enabled}
@@ -474,16 +485,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			w,h = absSize[1],absSize[2]
 		end
 		if dgsElementData[v].lor == "right" then
-			local parentData = dgsElementData[parent]
-			local pSize = parentData.absSize
+			local pSize = parent and dgsElementData[parent].absSize or {sW,sH}
 			PosX = pSize[1]-PosX
 		end
 		if dgsElementData[v].tob == "bottom" then
-			local parentData = dgsElementData[parent]
-			local pSize = parentData.absSize
+			local pSize = parent and dgsElementData[parent].absSize or {sW,sH}
 			PosY = pSize[2]-PosY
 		end
-		
 		local x,y = PosX+OffsetX,PosY+OffsetY
 		OffsetX,OffsetY = 0,0
 		position = {position[1]+x,position[2]+y,position[3]+x,position[4]+y}
@@ -1753,6 +1761,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
+				local oldRndTgt = rndtgt
 				local postgui = noRenderTarget
 				if rndtgt then
 					if rndtgt == eleData.renderTarget_parent then
@@ -1762,6 +1771,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				rndtgt = eleData.renderTarget_parent
 				dxSetRenderTarget(rndtgt,true)
 				dxSetRenderTarget()
+				dxSetBlendMode("add")
 				local scrollbar = eleData.scrollbars
 				local scbThick = eleData.scrollBarThick
 				local scbstate = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
@@ -3676,6 +3686,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				isElementInside = isElementInside or renderGUI(child,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
 			end
 		end
+		dxSetBlendMode(currentBlendMode)
 	end
 	return isElementInside or v == checkElement
 end

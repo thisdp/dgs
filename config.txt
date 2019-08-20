@@ -1,3 +1,4 @@
+dgsConfig.updateSystemDisabled = false
 dgsConfig.updateCheckNoticeInterval = 120
 dgsConfig.updateCheckAuto = true
 dgsConfig.backup = true

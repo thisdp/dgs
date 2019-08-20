@@ -88,6 +88,13 @@ function createTest()
 	dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 
+function createScrollPane()
+	pane = dgsCreateScrollPane(200,200,200,200,false)
+	gdlt = dgsCreateImage(0,0,1.5,1.5,_,true,pane,tocolor(0,0,0,10))
+	text = dgsCreateLabel(0,0,1,1,_,true,pane,tocolor(255,255,255,255))
+	dgsSetProperty(pane,"scrollBarLength",{{10,false}})
+end
+
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
 	tab1 = dgsCreateTab("DGS",tabp)
@@ -309,8 +316,10 @@ function testBrowser()
 end
 
 function test3DInterface()
-	local shader = dxCreateShader("shaders/textureRelight.fx")
-	material = dgsCreate3DInterface(0,0,10,10,10,500,500,tocolor(255,255,255,255),1,0,0,_,0)
+	material = dgsCreate3DInterface(-2060,-1790,290,100,100,500,500,tocolor(255,255,255,255),-1,0,1,_,0)
+	dgsSetProperty(material,"maxDistance",1000)
+	dgsSetProperty(material,"fadeDistance",1000)
+	local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
 	dgsSetData(material,"filterShader",shader)
 	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
 	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)

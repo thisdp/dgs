@@ -9,6 +9,7 @@
 	<file src="shaders/mta-helper.fx" />
 	<file src="shaders/ButtonEffect.fx" />
 	<file src="shaders/roundRect.fx" />
+	<file src="shaders/pixelWithoutBlur.fx" />
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -68,24 +69,23 @@
 	
 	<!--$Add Your Styles Here-->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
-	
 	<!--(Default Style) Don't touch this style with your bear hand-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
 	<file src="styleManager/Default/Images/eda/ellipse.fx" />
-	<file src="styleManager/Default/Images/checkbox/cb_t.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_f.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_i.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" type="client" />
-	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" type="client" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" type="client" />
-	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" type="client" />
-	<file src="styleManager/Default/styleSettings.txt" type="client" />
+	<file src="styleManager/Default/Images/checkbox/cb_t.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_f.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_i.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" />
+	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" />
+	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" />
+	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" />
+	<file src="styleManager/Default/styleSettings.txt" />
 	<!--(Custom Style 1) -->
-	
+
 	<!--(Custom Style 2) -->
 	
 	<!--&Add Your Styles Here-->
