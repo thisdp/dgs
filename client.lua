@@ -263,7 +263,7 @@ function dgsCoreRender()
 	local ticks = getTickCount()-tk
 	if debugMode then
 		if isElement(MouseData.hit) and debugMode == 2 then
-			local scAbsX,scAbsY = dgsGetPosition(MouseData.hit,false,true,false,true)
+			local scAbsX,scAbsY = dgsGetPosition2(MouseData.hit,false,true,false,true)
 			local absX,absY = dgsGetPosition(MouseData.hit,false)
 			local rltX,rltY = dgsGetPosition(MouseData.hit,true)
 			local absW,absH = dgsGetSize(MouseData.hit,false)
@@ -442,7 +442,8 @@ end
 addEventHandler("onClientPreRender",root,interfaceRender)
 
 function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
-	local currentBlendMode = dxGetBlendMode()
+	local globalBlendMode = rndtgt and "modulate_add" or "blend"
+	dxSetBlendMode(globalBlendMode)
 	local isElementInside = false
 	local eleData = dgsElementData[v]
 	local enabled = {enabled[1] and eleData.enabled,eleData.enabled}
@@ -1291,6 +1292,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
 					local placeHolderOffset = eleData.placeHolderOffset
 					dxSetRenderTarget(renderTarget,true)
+					dxSetBlendMode("modulate_add")
 					if alignment[1] == "left" then
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
 						textX_Left,textX_Right = showPos,w-sidelength
@@ -1335,6 +1337,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
 					end
 					dxSetRenderTarget(rndtgt)
+					dxSetBlendMode(rndtgt and "modulate_add" or "add")
 					local finalcolor
 					if not enabled[1] and not enabled[2] then
 						if type(eleData.disabledColor) == "number" then
@@ -1483,6 +1486,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						canHoldLines = canHoldLines > allLines and allLines or canHoldLines
 						local selPosStart,selPosEnd,selStart,selEnd
 						dxSetRenderTarget(renderTarget,true)
+						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						local caretRltHeight = fontHeight*caretHeight
 						local caretDrawPos
@@ -1570,6 +1574,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
+						dxSetBlendMode(rndtgt and "modulate_add" or "add")
 						local finalcolor
 						if not enabled[1] and not enabled[2] then
 							if type(eleData.disabledColor) == "number" then
@@ -1622,6 +1627,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						canHoldLines = canHoldLines > allLine and allLine or canHoldLines
 						local selPosStart,selPosEnd,selStart,selEnd
 						dxSetRenderTarget(renderTarget,true)
+						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						if allLine > 0 then
 							local toShowLine = showLine+canHoldLines
@@ -1663,6 +1669,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
+						dxSetBlendMode(rndtgt and "modulate_add" or "add")
 						local finalcolor
 						if not enabled[1] and not enabled[2] then
 							if type(eleData.disabledColor) == "number" then
@@ -1806,9 +1813,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						bgColor = applyColorAlpha(bgColor,galpha)
 						dxDrawRectangle(x,y,relSizX,relSizY,bgColor)
 					end
+					dxSetBlendMode("add")
 					dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
 				end
-				dxSetBlendMode("add")
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -2189,7 +2196,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local columnCount = #columnData
 				local rowCount = #rowData
 				local rowHeightLeadingTemp = rowHeight+leading
-				dxSetRenderTarget()
 				local rowMoveOffset = DataTab.rowMoveOffset
 				local columnOffset = DataTab.columnOffset
 				local columnMoveOffset = eleData.PixelInt and DataTab.columnMoveOffset-DataTab.columnMoveOffset%1
@@ -2209,6 +2215,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local renderTarget = DataTab.renderTarget
 					local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
 					dxSetRenderTarget(renderTarget[1],true)
+					dxSetBlendMode("modulate_add")
 						local cpos = {}
 						local cend = {}
 						local multiplier = columnRelt and (w-scbThickV) or 1
@@ -2369,6 +2376,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 					dxSetRenderTarget(rndtgt)
+					dxSetBlendMode(rndtgt and "modulate_add" or "add")
 					if isDraw2 then
 						dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,renderTarget[2],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					end
@@ -2842,6 +2850,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				------------------------------------
 				if isElement(renderTarget) then
 					dxSetRenderTarget(renderTarget,true)
+					dxSetBlendMode("modulate_add")
 					local rb_l = dgsElementData[combo].alignmentList
 					local scrollbar = dgsElementData[combo].scrollbar
 					local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
@@ -2893,6 +2902,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawText(text,textSide[1],_y,_sx,_sy,textColor,textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
 					end
 					dxSetRenderTarget(rndtgt)
+					dxSetBlendMode(rndtgt and "modulate_add" or "add")
 					dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				------------------------------------OutLine
@@ -2972,7 +2982,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local rendt = eleData.renderTarget
 					if isElement(rendt) then
 						dxSetRenderTarget(rendt,true)
-						dxSetBlendMode("add")
+						dxSetBlendMode("modulate_add")
 						local tabSideSize = eleData.tabSideSize[2] and eleData.tabSideSize[1]*w or eleData.tabSideSize[1]
 						local tabsize = -eleData.taboffperc*(dgsTabPanelGetWidth(v)-w)
 						local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
@@ -3029,8 +3039,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						eleData.preSelect = -1
-						dxSetBlendMode("blend")
-						dxSetRenderTarget()
+						dxSetRenderTarget(rndtgt)
+						dxSetBlendMode(rndtgt and "modulate_add" or "add")
 						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),rendSet)
 						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,galpha)
 						if dgsElementData[tabs[selected]].bgImage then
@@ -3307,6 +3317,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local itemDataCount = #itemData
 				if not eleData.mode then
 					dxSetRenderTarget(rendTarget,true)
+					dxSetBlendMode("modulate_add")
 					local leading = eleData.leading
 					local itemHeight = eleData.itemHeight
 					local itemMoveOffset = eleData.itemMoveOffset
@@ -3385,7 +3396,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							
 						end
 					end
-					dxSetRenderTarget()
+					dxSetRenderTarget(rndtgt)
+					dxSetBlendMode(rndtgt and "modulate_add" or "add")
 					dxDrawImage(x,y,rndtgtWidth,h,rendTarget,0,0,0,tocolor(255,255,255,galpha*255),rendSet)
 				else
 				
@@ -4909,3 +4921,5 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 		calculateGuiPositionSize(attachSource,_,_,_,offsetW,offsetH,sizeRlt)
 	end
 end)
+
+loadStyleConfig()

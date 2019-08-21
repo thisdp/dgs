@@ -103,7 +103,7 @@ preFetch = 0
 folderGetting = {}
 function getGitHubTree(path,nextPath)
 	nextPath = nextPath or ""
-	fetchRemote(path or "https://api.github.com/repos/thisdp/dgs/git/trees/master",{},function(data,err)
+	fetchRemote(path or "https://api.github.com/repos/thisdp/dgs/git/trees/master",function(data,err)
 		if err.success then
 			local theTable = fromJSON(data)
 			folderGetting[theTable.sha] = nil

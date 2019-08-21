@@ -17,6 +17,7 @@
 	
 	<script src="PropertyManager.lua" type="client" />
 	<script src="TypeManager.lua" type="client" />
+	<script src="ParentManager.lua" type="client" />
 	<script src="client.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/cmd.lua" type="client" />
@@ -41,7 +42,6 @@
 	<script src="Core/arrowlist.lua" type="client" />
 	<script src="Core/switchbutton.lua" type="client" />
 	
-	<script src="ParentManager.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
@@ -62,10 +62,10 @@
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
 	
-	<script src="test.lua" type="client" />
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
 	<script src="G2DManager_s.lua" type="server" />
+	<script src="test.lua" type="client" />
 	
 	<!--$Add Your Styles Here-->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->

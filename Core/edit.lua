@@ -450,7 +450,7 @@ function checkEditMousePosition(button,state,x,y)
 	if dgsGetType(source) == "dgs-dxedit" then
 		if state == "down" then
 			local shift = getKeyState("lshift") or getKeyState("rshift")
-			local pos = searchEditMousePosition(source,x,y)
+			local pos = searchEditMousePosition(source,x)
 			dgsEditSetCaretPosition(source,pos,shift)
 		end
 	end

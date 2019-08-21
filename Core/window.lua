@@ -38,10 +38,12 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	triggerEvent("onDgsCreate",window,sourceResource)
 	if not noCloseButton then
 		local buttonOff = dgsCreateButton(40,0,40,24,styleSettings.window.closeButtonText,false,window,_,_,_,_,_,_,styleSettings.window.closeButtonColor[1],styleSettings.window.closeButtonColor[2],styleSettings.window.closeButtonColor[3],true)
-		addEventHandler("onDgsMouseClickUp",buttonOff,function()
-			local window = dgsGetParent(source)
-			if isElement(window) then
-				dgsCloseWindow(window)
+		addEventHandler("onDgsMouseClickUp",buttonOff,function(button)
+			if button == "left" then
+				local window = dgsGetParent(source)
+				if isElement(window) then
+					dgsCloseWindow(window)
+				end
 			end
 		end,false)
 		dgsSetData(window,"closeButtonSize",{40,24,false})

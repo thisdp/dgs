@@ -162,6 +162,8 @@ end
 
 scanCustomStyle()
 dgsSetCurrentStyle("Default")
-if dgsGetCurrentStyle() ~= styleManager.customStyle then
-	dgsSetCurrentStyle(styleManager.customStyle)
+function loadStyleConfig()
+	if dgsGetCurrentStyle() ~= styleManager.customStyle then
+		dgsSetCurrentStyle(styleManager.customStyle)
+	end
 end

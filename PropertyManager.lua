@@ -29,7 +29,6 @@ function dgsSetData(element,key,value,nocheck)
 									local currentGrade = math.floor(value/100*grades+0.5)
 									dgsSetData(element,"currentGrade",currentGrade)
 									dgsElementData[element][key] = currentGrade/grades*100
-									print(value/100*grades+0.5,currentGrade)
 									triggerEvent("onDgsScrollBarScroll",element,dgsElementData[element][key],oldValue)
 								else
 									triggerEvent("onDgsScrollBarScroll",element,value,oldValue)

@@ -76,7 +76,7 @@ function dgsGetGuiLocationOnScreen(dgsElement,relative,rndsup)
 	return false
 end
 
-function getParentLocation(dgsElement,rndsup,x,y,includeSide)
+function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 	local eleData
 	local x,y = 0,0
 	repeat
@@ -94,29 +94,33 @@ function getParentLocation(dgsElement,rndsup,x,y,includeSide)
 				addPosY = pSize[2]-addPosY
 			end
 		end
-		x,y = x+addPosX,y+addPosY
 		if dgsElementType[dgsElement] == "dgs-dxtab" then
 			dgsElement = eleData.parent
 			eleData = dgsElementData[dgsElement]
 			local h = eleData.absSize[2]
 			local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+			x,y = x+eleData.absPos[1],y+eleData.absPos[2]
 			y = y+tabHeight
-		elseif dgsElementType[FatherTable[dgsElement]] == "dgs-dxwindow" then
-			local titleHeight = 0
-			if not eleData.ignoreParentTitle and not dgsElementData[FatherTable[dgsElement]].ignoreTitle then
-				titleHeight = dgsElementData[FatherTable[dgsElement]].titleHeight or 0
-			end
-			y = y+titleHeight
 		end
 		dgsElement = FatherTable[dgsElement]
-	until(not isElement(dgsElement) or (rndsup and dgsElementData[dgsElement].renderTarget_parent))
+		if dgsElementType[dgsElement] == "dgs-dxwindow" then
+			local titleHeight = 0
+			if not eleData.ignoreParentTitle and not dgsElementData[dgsElement].ignoreTitle then
+				titleHeight = dgsElementData[dgsElement].titleHeight or 0
+			end
+			x,y = x+addPosX,y+addPosY
+			y = y+titleHeight
+		else
+			x,y = x+addPosX,y+addPosY
+		end
+	until(not isElement(dgsElement) or (rndSuspend and dgsElementData[dgsElement].renderTarget_parent))
 	return x,y
 end
 
-function dgsGetPosition(dgsElement,bool,includeParent,rndsupport,includeSide)
+function dgsGetPosition(dgsElement,bool,includeParent,rndSuspend,includeSide)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	if includeParent then
-		guielex,guieley = getParentLocation(dgsElement,rndsupport,dgsElementData[dgsElement].absPos[1],dgsElementData[dgsElement].absPos[2],includeSide)
+		guielex,guieley = getParentLocation2(dgsElement,rndSuspend,dgsElementData[dgsElement].absPos[1],dgsElementData[dgsElement].absPos[2],includeSide)
 		if relative then
 			return guielex/sW,guieley/sH
 		else
