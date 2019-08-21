@@ -1770,9 +1770,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				rndtgt = eleData.renderTarget_parent
 				dxSetRenderTarget(rndtgt,true)
-				if eleData.color then
+				if eleData.bgColor then
 					local width, height = dxGetMaterialSize(rndtgt)
-					dxDrawRectangle(0,0,width,height,eleData.color)
+					dxDrawRectangle(0,0,width,height,eleData.bgColor)
 				end
 				dxSetRenderTarget()
 				dxSetBlendMode("add")
