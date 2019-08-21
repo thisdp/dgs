@@ -294,7 +294,7 @@ function dgsCoreRender()
 			dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
 			dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
 		end
-		local version = getElementData(resourceRoot,"Version")
+		local version = getElementData(resourceRoot,"Version") or "?"
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-129,sW,sH,black)
 		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-130)
 		dxDrawText("Version: "..version,6,sH*0.4-114,sW,sH,black)
