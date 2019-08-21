@@ -294,7 +294,7 @@ function dgsCoreRender()
 			dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
 			dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
 		end
-		local version = getElementData(resourceRoot,"Version")
+		local version = getElementData(resourceRoot,"Version") or "?"
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-129,sW,sH,black)
 		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-130)
 		dxDrawText("Version: "..version,6,sH*0.4-114,sW,sH,black)
@@ -1771,7 +1771,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				rndtgt = eleData.renderTarget_parent
 				dxSetRenderTarget(rndtgt,true)
 				dxSetRenderTarget()
-				dxSetBlendMode("add")
 				local scrollbar = eleData.scrollbars
 				local scbThick = eleData.scrollBarThick
 				local scbstate = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
@@ -1798,8 +1797,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				------------------------------------
 				if rndtgt then
+					local bgColor = eleData.bgColor
+					if eleData.bgImage then
+						bgColor = bgColor or 0xFFFFFFFF
+						dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
+						bgColor = applyColorAlpha(bgColor,galpha)
+					elseif eleData.bgColor then
+						bgColor = applyColorAlpha(bgColor,galpha)
+						dxDrawRectangle(x,y,relSizX,relSizY,bgColor)
+					end
 					dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
 				end
+				dxSetBlendMode("add")
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -4684,7 +4693,19 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			end
 		end
 		if not isElement(guiele) then return end
-		if MouseData.clickl == guiele then
+		if state == "up" then
+			if button == "left" then
+				if MouseData.clickl == guiele then
+					triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
+				end
+			elseif button == "right" then
+				if MouseData.clickr == guiele then
+					triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
+				end
+			else
+				triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
+			end
+		else
 			triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
 		end
 		if not isElement(guiele) then return end

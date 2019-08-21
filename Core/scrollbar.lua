@@ -23,6 +23,8 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	dgsSetData(scrollbar,"multiplier",{1,false})
 	dgsSetData(scrollbar,"scrollArrow",styleSettings.scrollbar.scrollArrow)
 	dgsSetData(scrollbar,"locked",false)
+	dgsSetData(scrollbar,"grades",false)
+	dgsSetData(scrollbar,"currentGrade",0)
 	dgsSetData(scrollbar,"cursorWidth",styleSettings.scrollbar.cursorWidth or {1,true})
 	dgsSetData(scrollbar,"troughWidth",styleSettings.scrollbar.troughWidth or styleSettings.scrollbar.cursorWidth or {1,true})
 	dgsSetData(scrollbar,"arrowWidth",styleSettings.scrollbar.arrowWidth or styleSettings.scrollbar.cursorWidth or {1,true})
@@ -51,6 +53,20 @@ end
 function dgsScrollBarGetLocked(scrollbar)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetLocked at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	return dgsElementData[scrollbar].locked
+end
+
+function dgsScrollBarSetGrades(scrollbar,grades,remainMultipler)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetGrades at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	assert(not grades or type(grades) == "number","Bad argument @dgsScrollBarSetGrades at argument at 2, expect false or a number got "..dgsGetType(grades))
+	dgsSetData(scrollbar,"grades",grades)
+	if not remainMultipler then
+		dgsSetData(scrollbar,"multiplier",{1/grades,true})
+	end
+end
+
+function dgsScrollBarGetGrades(scrollbar)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetGrades at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	return dgsElementData[scrollbar].grades
 end
 
 function scrollScrollBar(scrollbar,button)

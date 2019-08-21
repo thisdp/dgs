@@ -24,10 +24,27 @@ function dgsSetData(element,key,value,nocheck)
 					elseif key == "position" then
 						if not dgsElementData[element].locked then
 							if oldValue and oldValue ~= value then
-								triggerEvent("onDgsScrollBarScroll",element,value,oldValue)
+								local grades = dgsElementData[element].grades
+								if grades then
+									local currentGrade = math.floor(value/100*grades+0.5)
+									dgsSetData(element,"currentGrade",currentGrade)
+									dgsElementData[element][key] = currentGrade/grades*100
+									print(value/100*grades+0.5,currentGrade)
+									triggerEvent("onDgsScrollBarScroll",element,dgsElementData[element][key],oldValue)
+								else
+									triggerEvent("onDgsScrollBarScroll",element,value,oldValue)
+								end
 							end
 						else
 							dgsElementData[element][key] = oldValue
+						end
+					elseif key == "grades" then
+						if value then
+							local pos = dgsElementData[element].position
+							local currentGrade = math.floor(pos/100*value+0.5)
+							dgsSetData(element,"currentGrade",currentGrade)
+						else
+							dgsSetData(element,"currentGrade",false)
 						end
 					end
 				elseif dgsType == "dgs-dxgridlist" then

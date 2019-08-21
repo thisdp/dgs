@@ -89,11 +89,12 @@ function createTest()
 end
 
 function createScrollPane()
-	pane = dgsCreateScrollPane(200,200,200,200,false)
-	gdlt = dgsCreateImage(0,0,1.5,1.5,_,true,pane,tocolor(0,0,0,10))
-	text = dgsCreateLabel(0,0,1,1,_,true,pane,tocolor(255,255,255,255))
+	pane = dgsCreateScrollPane(200,200,400,400,false)
+	a = dgsCreateImage(0,0,1,1,_,true,pane,tocolor(255,255,0,200))
+	text = dgsCreateImage(0,0,1,1,"styleManager/Default/Images/checkbox/cb_f_s.png",true,pane,tocolor(255,255,255,255))
 	dgsSetProperty(pane,"scrollBarLength",{{10,false}})
 end
+createScrollPane()
 
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
@@ -365,7 +366,8 @@ function testScrollBar()
 	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
 	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
 	dgsSetProperty(scrollbar,"scrollArrow",false)
-	scrollbar = dgsCreateScrollBar(400,530,180,20,true,false)
+	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
+	dgsScrollBarSetGrades(scrollbar,5)
 end
 
 function languageTest_GridList()

@@ -1,6 +1,5 @@
 --Check whether you enable/disable dgs update system..
 --If you don't trust dgs.. Please Disable It In "config.txt"
-if dgsConfig.updateSystemDisabled then return end
 
 local check
 if fileExists("update.cfg") then
@@ -11,6 +10,8 @@ end
 local allstr = fileRead(check,fileGetSize(check))
 setElementData(resourceRoot,"Version",allstr)
 fileClose(check)
+
+if dgsConfig.updateSystemDisabled then return end
 Version = tonumber(allstr) or 0
 RemoteVersion = 0
 ManualUpdate = false

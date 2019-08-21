@@ -389,6 +389,8 @@
 	<export function="dgsScrollBarGetCursorLength" type="client" />
 	<export function="dgsScrollBarSetLocked" type="client" />
 	<export function="dgsScrollBarGetLocked" type="client" />
+	<export function="dgsScrollBarSetGrades" type="client" />
+	<export function="dgsScrollBarGetGrades" type="client" />
 	
 	<export function="dgsCreateSwitchButton" type="client" />
 	<export function="dgsSwitchButtonGetState" type="client" />
