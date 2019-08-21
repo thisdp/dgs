@@ -263,7 +263,7 @@ function dgsCoreRender()
 	local ticks = getTickCount()-tk
 	if debugMode then
 		if isElement(MouseData.hit) and debugMode == 2 then
-			local scAbsX,scAbsY = dgsGetPosition2(MouseData.hit,false,true,false,true)
+			local scAbsX,scAbsY = dgsGetPosition(MouseData.hit,false,true,false,true)
 			local absX,absY = dgsGetPosition(MouseData.hit,false)
 			local rltX,rltY = dgsGetPosition(MouseData.hit,true)
 			local absW,absH = dgsGetSize(MouseData.hit,false)
