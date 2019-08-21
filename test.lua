@@ -90,11 +90,12 @@ end
 
 function createScrollPane()
 	pane = dgsCreateScrollPane(200,200,400,400,false)
-	a = dgsCreateImage(0,0,1,1,_,true,pane,tocolor(255,255,0,200))
+	a = dgsCreateImage(0,0,1,1,_,true,pane,tocolor(255,255,0,255))
+	x = dgsCreateLabel(700,700,200,50,"test",false)
+	dgsSetProperty(x,"textSize",{4,4})
 	text = dgsCreateImage(0,0,1,1,"styleManager/Default/Images/checkbox/cb_f_s.png",true,pane,tocolor(255,255,255,255))
 	dgsSetProperty(pane,"scrollBarLength",{{10,false}})
 end
-createScrollPane()
 
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)

@@ -1770,10 +1770,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				rndtgt = eleData.renderTarget_parent
 				dxSetRenderTarget(rndtgt,true)
-				if eleData.bgColor then
-					local width, height = dxGetMaterialSize(rndtgt)
-					dxDrawRectangle(0,0,width,height,eleData.bgColor)
-				end
 				dxSetRenderTarget()
 				local scrollbar = eleData.scrollbars
 				local scbThick = eleData.scrollBarThick
@@ -2976,6 +2972,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local rendt = eleData.renderTarget
 					if isElement(rendt) then
 						dxSetRenderTarget(rendt,true)
+						dxSetBlendMode("add")
 						local tabSideSize = eleData.tabSideSize[2] and eleData.tabSideSize[1]*w or eleData.tabSideSize[1]
 						local tabsize = -eleData.taboffperc*(dgsTabPanelGetWidth(v)-w)
 						local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
@@ -3032,6 +3029,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						eleData.preSelect = -1
+						dxSetBlendMode("blend")
 						dxSetRenderTarget()
 						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),rendSet)
 						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,galpha)
@@ -3699,8 +3697,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				isElementInside = isElementInside or renderGUI(child,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
 			end
 		end
-		dxSetBlendMode(currentBlendMode)
 	end
+	dxSetBlendMode("blend")
 	return isElementInside or v == checkElement
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
