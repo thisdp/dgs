@@ -315,7 +315,15 @@ function dgsCoreRender()
 		end
 		dxDrawText("Focused: "..Focused,6,sH*0.4-84,sW,sH,black)
 		dxDrawText("Focused: "..Focused,5,sH*0.4-85)
-		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).."("..tostring(MouseData.hit)..")" or "None"
+		local enterStr = "None"
+		if MouseData.hit then
+			local id = dgsGetID(MouseData.hit)
+			if id then
+				enterStr = table.concat({dgsGetType(MouseData.hit)," (",id,")"}, "")
+			else
+				enterStr = table.concat({dgsGetType(MouseData.hit)," (",tostring(MouseData.hit),")"}, "")
+			end
+		end
 		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
 		dxDrawText("Enter: "..enterStr,10,sH*0.4-70)
 		dxDrawText("Click:",11,sH*0.4-54,sW,sH,black)

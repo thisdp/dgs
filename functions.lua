@@ -834,6 +834,16 @@ function dgsGetTranslationName(dgsEle)
 	return dgsElementData[dgsEle]._translang
 end
 
+function dgsSetID(dgsEle,id)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetID at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
+	return dgsSetProperty(dgsEle,"_DGSID",id)
+end
+
+function dgsGetID(dgsEle,id)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetID at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
+	return dgsGetProperty(dgsEle,"_DGSID")
+end
+
 --------------Translation Interior
 LanguageTranslationSupport = {
 	"dgs-dx3dtext",
