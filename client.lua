@@ -4637,33 +4637,33 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 											dgsElementData[guiele].itemClick = clicked
 										end
 									else
-										dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
 										dgsElementData[guiele].itemClick = preSelect
 									end
 								else
-									dgsGridListSetSelectedItem(guiele,preSelect[1],1)
+									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
 									dgsElementData[guiele].itemClick = preSelect
 								end
 							elseif selectionMode == 2 then
 								if multiSelection then
 									if ctrl then
 										local selected = dgsGridListItemIsSelected(guiele,1,preSelect[2])
-										dgsGridListSelectItem(guiele,1,preSelect[2],not selected)
+										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
 									elseif shift then
 										if clicked and #clicked == 2 then
 											dgsGridListSetSelectedItem(guiele,-1,-1)
 											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
 											for column = startColumn, endColumn do
-												dgsGridListSelectItem(guiele,1,column,true)
+												dgsGridListSelectItem(guiele,preSelect[1],column,true)
 											end
 											dgsElementData[guiele].itemClick = clicked
 										end
 									else
-										dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
 										dgsElementData[guiele].itemClick = preSelect
 									end
 								else
-									dgsGridListSetSelectedItem(guiele,1,preSelect[2])
+									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
 									dgsElementData[guiele].itemClick = preSelect
 								end
 							elseif selectionMode == 3 then
