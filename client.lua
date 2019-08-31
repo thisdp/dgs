@@ -317,11 +317,11 @@ function dgsCoreRender()
 		dxDrawText("Focused: "..Focused,5,sH*0.4-85)
 		local enterStr = "None"
 		if MouseData.hit then
-			local id = dgsGetID(MouseData.hit)
+			local id = getElementID(MouseData.hit)
 			if id then
-				enterStr = table.concat({dgsGetType(MouseData.hit)," (",id,")"}, "")
+				enterStr = dgsGetType(MouseData.hit).." ("..tostring(id)..")"
 			else
-				enterStr = table.concat({dgsGetType(MouseData.hit)," (",tostring(MouseData.hit),")"}, "")
+				enterStr = dgsGetType(MouseData.hit).." ("..tostring(MouseData.hit)..")"
 			end
 		end
 		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
