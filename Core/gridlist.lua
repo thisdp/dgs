@@ -106,6 +106,8 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,false})
 	dgsSetData(scrollbar2,"multiplier",{1,false})
+	addEventHandler("onDgsElementScroll",scrollbar1,checkGLScrollBar,false)
+	addEventHandler("onDgsElementScroll",scrollbar2,checkGLScrollBar,false)
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(gridlist,"FromTo",{1,0})
 	triggerEvent("onDgsCreate",gridlist,sourceResource)
@@ -1251,7 +1253,7 @@ function dgsGridListSetRowBackGroundImage(gridlist,row,norimage,selimage,cliimag
 	return dgsSetData(gridlist,"rowData",rowData)
 end
 
-addEventHandler("onDgsScrollBarScroll",root,function(new,old)
+function checkGLScrollBar(scb,new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxgridlist" then
 		local scrollbars = dgsElementData[parent].scrollbars
@@ -1265,8 +1267,7 @@ addEventHandler("onDgsScrollBarScroll",root,function(new,old)
 				local temp = dgsElementData[parent].scrollFloor[1] and math.floor(temp) or temp 
 				dgsSetData(parent,"rowMoveOffset",temp)
 			end
-			local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
-			triggerEvent("onDgsGridListScroll",parent,source,pos1,pos2)
+			triggerEvent("onDgsElementScroll",parent,source,new,old)
 		elseif source == scrollbars[2] then
 			local scbThickV = dgsElementData[scrollbars[1]].visible and scbThick or 0
 			local columnCount =  dgsGridListGetColumnCount(parent)
@@ -1277,11 +1278,10 @@ addEventHandler("onDgsScrollBarScroll",root,function(new,old)
 				local temp = dgsElementData[parent].scrollFloor[2] and math.floor(temp) or temp
 				dgsSetData(parent,"columnMoveOffset",temp)
 			end
-			local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
-			triggerEvent("onDgsGridListScroll",parent,source,pos1,pos2)
+			triggerEvent("onDgsElementScroll",parent,source,new,old)
 		end
 	end
-end)
+end
 
 function configGridList(source)
 	local scrollbar = dgsElementData[source].scrollbars

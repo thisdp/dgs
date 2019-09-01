@@ -1,4 +1,4 @@
-<meta>
+﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
 	<file src="dsm.ttf" />
 	<file src="media.html" />
@@ -120,8 +120,6 @@
 	<export function="dgsGetProperties" type="client" />
 	<export function="dgsSetProperties" type="client" />
 	<export function="dgsSetPropertyInherit" type="client" />
-	<export function="dgsGetID" type="client" />
-	<export function="dgsSetID" type="client" />
 	<export function="dgsGetVisible" type="client" />
 	<export function="dgsSetVisible" type="client" />
 	<export function="dgsGetEnabled" type="client" />

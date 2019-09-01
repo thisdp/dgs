@@ -101,6 +101,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(scrollbar,"myCombo",combobox)
 	dgsSetVisible(scrollbar,false)
 	dgsSetVisible(box,false)
+	addEventHandler("onDgsElementScroll",scrollbar,checkCBScrollBar,false)
 	dgsSetData(combobox,"scrollbar",scrollbar)
 	addEventHandler("onDgsBlur",box,function(nextFocused)
 		local combobox = dgsElementData[source].myCombo
@@ -352,7 +353,7 @@ function configComboBox(combobox)
 	dgsSetData(combobox,"configNextFrame",false)
 end
 
-addEventHandler("onDgsScrollBarScroll",resourceRoot,function(new,old)
+function checkCBScrollBar(scb,new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxcombobox-Box" then
 		local combobox = dgsElementData[parent].myCombo
@@ -363,10 +364,10 @@ addEventHandler("onDgsScrollBarScroll",resourceRoot,function(new,old)
 			local temp = -new*(itemLength-sy)/100
 			local temp = dgsElementData[combobox].scrollFloor and math.floor(temp) or temp 
 			dgsSetData(combobox,"itemMoveOffset",temp)
-			triggerEvent("onDgsComboBoxScroll",combobox,source,new)
+			triggerEvent("onDgsElementScroll",combobox,source,new,old)
 		end
 	end
-end)
+end
 
 addEventHandler("onDgsComboBoxStateChange",resourceRoot,function(state)
 	if not wasEventCancelled() then

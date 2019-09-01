@@ -122,7 +122,6 @@ end,500,0)
 
 function dgsCoreRender()
 	triggerEvent("onDgsPreRender",resourceRoot)
-	MouseData.hit = false
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
 	local topTableSize = #TopFatherTable
@@ -185,23 +184,23 @@ function dgsCoreRender()
 			local v = dx3DTextTable[i]
 			local eleData = dgsData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
-				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
+				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 			end
 		end
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		for i=1,centerTableSize do
 			local v = CenterFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		for i=1,topTableSize do
 			local v = TopFatherTable[i]
 			local eleData = dgsData[v]
-			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible)
+			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		if intfaceClickElementl then
 			MouseX,MouseY = intfaceMx,intfaceMy
@@ -263,11 +262,15 @@ function dgsCoreRender()
 	local ticks = getTickCount()-tk
 	if debugMode then
 		if isElement(MouseData.hit) and debugMode == 2 then
-			local scAbsX,scAbsY = dgsGetPosition(MouseData.hit,false,true,false,true)
-			local absX,absY = dgsGetPosition(MouseData.hit,false)
-			local rltX,rltY = dgsGetPosition(MouseData.hit,true)
-			local absW,absH = dgsGetSize(MouseData.hit,false)
-			local rltW,rltH = dgsGetSize(MouseData.hit,true)
+			local highlight = MouseData.hit
+			if dgsElementType[MouseData.hit] == "dgs-dxtab" then
+				highlight = dgsElementData[highlight].parent
+			end
+			local scAbsX,scAbsY = dgsGetPosition(highlight,false,true,false,true)
+			local absX,absY = dgsGetPosition(highlight,false)
+			local rltX,rltY = dgsGetPosition(highlight,true)
+			local absW,absH = dgsGetSize(highlight,false)
+			local rltW,rltH = dgsGetSize(highlight,true)
 			dxDrawText("ABS X: "..absX , sW*0.5-99,11,sW,sH,black)
 			dxDrawText("ABS Y: "..absY , sW*0.5-99,26,sW,sH,black)
 			dxDrawText("RLT X: "..rltX , sW*0.5-99,41,sW,sH,black)
@@ -309,27 +312,16 @@ function dgsCoreRender()
 			tickColor = red
 		end
 		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-100,_,_,tickColor)
-		local Focused = "None"
-		if isElement(MouseData.nowShow) then
-			Focused = dgsGetType(MouseData.nowShow).."("..tostring(MouseData.nowShow)..")"
-		end
+		local Focused = MouseData.nowShow and dgsGetType(MouseData.nowShow).."("..(getElementID(MouseData.hit) or tostring(MouseData.nowShow))..")" or "None"
+		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).." ("..(getElementID(MouseData.hit) or tostring(MouseData.hit))..")" or "None"
+		local leftStr = MouseData.clickl and dgsGetType(MouseData.clickl).." ("..(getElementID(MouseData.clickl) or tostring(MouseData.clickl))..")" or "None"
+		local rightStr = MouseData.clickr and dgsGetType(MouseData.clickr).." ("..(getElementID(MouseData.clickr) or tostring(MouseData.clickr))..")" or "None"
 		dxDrawText("Focused: "..Focused,6,sH*0.4-84,sW,sH,black)
 		dxDrawText("Focused: "..Focused,5,sH*0.4-85)
-		local enterStr = "None"
-		if MouseData.hit then
-			local id = getElementID(MouseData.hit)
-			if id then
-				enterStr = dgsGetType(MouseData.hit).." ("..tostring(id)..")"
-			else
-				enterStr = dgsGetType(MouseData.hit).." ("..tostring(MouseData.hit)..")"
-			end
-		end
 		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
 		dxDrawText("Enter: "..enterStr,10,sH*0.4-70)
 		dxDrawText("Click:",11,sH*0.4-54,sW,sH,black)
 		dxDrawText("Click:",10,sH*0.4-55)
-		local leftStr = MouseData.clickl and dgsGetType(MouseData.clickl).."("..tostring(MouseData.clickl)..")" or "None"
-		local rightStr = MouseData.clickr and dgsGetType(MouseData.clickr).."("..tostring(MouseData.clickr)..")" or "None"
 		dxDrawText("  Left: "..leftStr,11,sH*0.4-39,sW,sH,black)
 		dxDrawText("  Left: "..leftStr,10,sH*0.4-40)
 		dxDrawText("  Right: "..rightStr,11,sH*0.4-24,sW,sH,black)
@@ -450,6 +442,7 @@ end
 addEventHandler("onClientPreRender",root,interfaceRender)
 
 function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visible,checkElement)
+	local rndtgt = isElement(rndtgt) and rndtgt or false
 	local globalBlendMode = rndtgt and "modulate_add" or "blend"
 	dxSetBlendMode(globalBlendMode)
 	local isElementInside = false
@@ -1336,6 +1329,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,false,pColorcoded)
 						end
 					end
+					if eleData.autoCompleteShow then
+						dxDrawText(eleData.autoCompleteShow[2],textX_Left,0,textX_Right-posFix,h-sidelength,applyColorAlpha(textColor,0.2),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+					end
 					dxDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 					if eleData.underline then
 						local textHeight = dxGetFontHeight(txtSizY,font)
@@ -1345,7 +1341,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
 					end
 					dxSetRenderTarget(rndtgt)
-					dxSetBlendMode(rndtgt and "modulate_add" or "add")
+					dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 					local finalcolor
 					if not enabled[1] and not enabled[2] then
 						if type(eleData.disabledColor) == "number" then
@@ -1372,6 +1368,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							local pColor = applyColorAlpha(eleData.placeHolderColor,galpha)
 							local pFont = eleData.placeHolderFont
 							local pColorcoded = eleData.placeHolderColorcoded
+							dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 							dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,rendSet,pColorcoded)
 						end
 					end
@@ -1698,7 +1695,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 						end
 						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+						dxSetBlendMode(rndtgt and "modulate_add" or "add")
 						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 						if MouseData.nowShow == v and MouseData.editMemoCursor then
 							local CaretShow = true
 							if eleData.readOnly then
@@ -1776,16 +1775,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local oldRndTgt = rndtgt
-				local postgui = noRenderTarget
-				if rndtgt then
-					if rndtgt == eleData.renderTarget_parent then
-						postgui = true
-					end
-				end
-				rndtgt = eleData.renderTarget_parent
-				dxSetRenderTarget(rndtgt,true)
-				dxSetRenderTarget()
 				local scrollbar = eleData.scrollbars
 				local scbThick = eleData.scrollBarThick
 				local scbstate = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
@@ -1811,19 +1800,26 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
-				if rndtgt then
+				local newRndTgt = eleData.renderTarget_parent
+				if newRndTgt then
+					dxSetRenderTarget(rndtgt)
 					local bgColor = eleData.bgColor
+					dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 					if eleData.bgImage then
 						bgColor = bgColor or 0xFFFFFFFF
-						dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
+						dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						bgColor = applyColorAlpha(bgColor,galpha)
 					elseif eleData.bgColor then
 						bgColor = applyColorAlpha(bgColor,galpha)
 						dxDrawRectangle(x,y,relSizX,relSizY,bgColor)
 					end
-					dxSetBlendMode("add")
-					dxDrawImage(x,y,relSizX,relSizY,rndtgt,0,0,0,tocolor(255,255,255,255*galpha),postgui)
+					dxSetBlendMode(rndtgt and "modulate_add" or "add")
+					dxDrawImage(x,y,relSizX,relSizY,newRndTgt,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
+				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+				rndtgt = newRndTgt
+				dxSetRenderTarget(newRndTgt,true)
+				dxSetRenderTarget()
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -4036,12 +4032,12 @@ addEventHandler("onClientGUIBlur",resourceRoot,function()
 		if guitype == "gui-edit" then
 			local edit = dgsElementData[source].linkedDxEdit
 			if isElement(edit) and MouseData.nowShow == edit then
-				MouseData.nowShow = false
+				dgsBlur(edit)
 			end
 		elseif guitype == "gui-memo" then
 			local memo = dgsElementData[source].linkedDxMemo
 			if isElement(memo) and MouseData.nowShow == memo then
-				MouseData.nowShow = false
+				dgsBlur(memo)
 			end
 		end
 	end
@@ -4881,16 +4877,18 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 	local childrenCnt = #children
 	for k=1,childrenCnt do
 		local child = children[k]
-		local relt = dgsElementData[child].relative
-		local relativePos,relativeSize = relt[1],relt[2]
-		local x,y,sx,sy
-		if relativePos then
-			x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
+		if dgsElementType[child] ~= "dgs-dxtab" then
+			local relt = dgsElementData[child].relative
+			local relativePos,relativeSize = relt[1],relt[2]
+			local x,y,sx,sy
+			if relativePos then
+				x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
+			end
+			if relativeSize then
+				sx,sy = dgsElementData[child].rltSize[1],dgsElementData[child].rltSize[2]
+			end
+			calculateGuiPositionSize(child,x,y,relativePos,sx,sy,relativeSize)
 		end
-		if relativeSize then
-			sx,sy = dgsElementData[child].rltSize[1],dgsElementData[child].rltSize[2]
-		end
-		calculateGuiPositionSize(child,x,y,relativePos,sx,sy,relativeSize)
 	end
 	local typ = dgsGetType(source)
 	local absSize = dgsElementData[source].absSize

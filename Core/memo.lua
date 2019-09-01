@@ -98,6 +98,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
+	addEventHandler("onDgsElementScroll",scrollbar1,checkMMScrollBar,false)
+	addEventHandler("onDgsElementScroll",scrollbar2,checkMMScrollBar,false)
 	local renderTarget = dxCreateRenderTarget(abx-4,aby,true)
 	if not isElement(renderTarget) and (abx-4)*aby ~= 0 then
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
@@ -1008,7 +1010,6 @@ function configMemo(source)
 	dgsSetData(scrollbar[2],"length",{widLen,true})
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
-	
 	local scrollBarAfter = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
 	if scrollBarAfter[1] ~= scrollBarBefore[1] or scrollBarAfter[2] ~= scrollBarBefore[2] then
 		dgsSetData(source,"rebuildMapTableNextFrame",true)
@@ -1027,7 +1028,7 @@ function configMemo(source)
 	dgsSetData(source,"configNextFrame",false)
 end
 
-addEventHandler("onDgsScrollBarScroll",root,function(new,old)
+function checkMMScrollBar(source,new,old)
 	local memo = dgsGetParent(source)
 	if dgsGetType(memo) == "dgs-dxmemo" then
 		local scrollbars = dgsElementData[memo].scrollbars
@@ -1072,7 +1073,7 @@ addEventHandler("onDgsScrollBarScroll",root,function(new,old)
 			dgsSetData(memo,"showPos",temp)
 		end
 	end
-end)
+end
 
 function syncScrollBars(memo,which)
 	local scrollbars = dgsElementData[memo].scrollbars

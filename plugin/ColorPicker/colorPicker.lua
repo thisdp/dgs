@@ -371,7 +371,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 		setfenv(tempColorChange,newEnv)
 		setfenv(tempScPosChange,newEnv)
 		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange,false)
-		addEventHandler("onDgsScrollBarScrollPositionChange",show,tempScPosChange,false)
+		addEventHandler("onDgsElementScroll",show,tempScPosChange,false)
 		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
 		dgsElementData[show].bindColorPicker_Fnc2 = tempScPosChange
 		tempColorChange()

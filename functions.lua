@@ -110,6 +110,16 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 			end
 			x,y = x+addPosX,y+addPosY
 			y = y+titleHeight
+		elseif dgsElementType[dgsElement] == "dgs-dxscrollpane" then
+			local scrollbar = dgsElementData[dgsElement].scrollbars
+			local scbThick = dgsElementData[dgsElement].scrollBarThick
+			local size = dgsElementData[dgsElement].absSize
+			local relSizX,relSizY = size[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0),size[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0)
+			local maxSize = dgsElementData[dgsElement].maxChildSize
+			local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
+			maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
+			x,y = x+addPosX,y+addPosY
+			x,y = x-maxX*dgsElementData[scrollbar[2]].position*0.01,y-maxY*dgsElementData[scrollbar[1]].position*0.01
 		else
 			x,y = x+addPosX,y+addPosY
 		end
@@ -423,8 +433,10 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y)
 end)
 
 addEvent("onDgsScrollBarScrollPositionChange",true)
-addEventHandler("onDgsScrollBarScroll",resourceRoot,function(...)
-	triggerEvent("onDgsScrollBarScrollPositionChange",source,...)
+addEventHandler("onDgsElementScroll",resourceRoot,function(scb,new,old)
+	if dgsGetType(source) == "scrollbar" then
+		triggerEvent("onDgsScrollBarScrollPositionChange",source,new,old)
+	end
 end)
 
 addEvent("onDgsCursorMove",true)

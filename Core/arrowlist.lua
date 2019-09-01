@@ -51,6 +51,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	local scrollbar = dgsCreateScrollBar(abx-scbThick,0,scbThick,aby,false,false,arrowlist)
 	dgsSetData(arrowlist,"renderTarget",rndtgt)
 	dgsSetData(scrollbar,"length",{0,true})
+	addEventHandler("onDgsElementScroll",scrollbar,checkALScrollBar,false)
 	dgsSetData(arrowlist,"scrollbar",scrollbar)
 	dgsSetVisible(scrollbar,false)
 	triggerEvent("onDgsCreate",arrowlist,sourceResource)
@@ -272,7 +273,7 @@ function dgsArrowListClear(arrowlist)
 	dgsSetData(arrowlist,"configNextFrame",true)
 end
 
-addEventHandler("onDgsScrollBarScroll",root,function(new,old)
+function checkALScrollBar(scb,new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxarrowlist" then
 		local scrollBar = dgsElementData[parent].scrollbar
@@ -285,7 +286,7 @@ addEventHandler("onDgsScrollBarScroll",root,function(new,old)
 			dgsSetData(parent,"itemMoveOffset",temp)
 		end
 	end
-end)
+end
 
 function configArrowList(arrowlist)
 	local size = dgsElementData[arrowlist].absSize

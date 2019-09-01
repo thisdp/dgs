@@ -33,15 +33,28 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	return scrollbar
 end
 
-function dgsScrollBarSetScrollPosition(scrollbar,pos)
+function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetScrollPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	assert(type(pos) == "number","Bad argument @dgsScrollBarSetScrollPosition at argument at 2, expect number got "..type(pos))
-	dgsSetData(scrollbar,"position",pos)
+	if isGrade then
+		local grades = dgsElementData[scrollbar].grades
+		local newPos = pos/grades*100
+		dgsSetData(scrollbar,"position",newPos)
+	else
+		dgsSetData(scrollbar,"position",pos)
+	end
 end
 
-function dgsScrollBarGetScrollPosition(scrollbar)
+function dgsScrollBarGetScrollPosition(scrollbar,isGrade)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetScrollPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	return dgsElementData[scrollbar].position
+	if isGrade then
+		local pos = dgsElementData[scrollbar].position
+		local grades = dgsElementData[scrollbar].grades
+		if not grades then return pos end
+		return math.floor(pos/100*grades+0.5)
+	else
+		return dgsElementData[scrollbar].position
+	end
 end
 
 function dgsScrollBarSetLocked(scrollbar,state)

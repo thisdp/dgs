@@ -73,14 +73,14 @@ function createTest()
 		dgsElementData[self].multiplier = dgsElementData[scb].multiplier
 		dgsElementData[self].length = dgsElementData[scb].length
 	]])
-	addEventHandler("onDgsScrollPaneScroll",pane,function(vertical)
+	addEventHandler("onDgsElementScroll",pane,function(vertical)
 		dgsScrollBarSetScrollPosition(scrollbar,vertical)
-	end)
+	end,false)
 	
-	addEventHandler("onDgsScrollBarScrollPositionChange",scrollbar,function(value)
+	addEventHandler("onDgsElementScroll",scrollbar,function(value)
 		local scbs = dgsScrollPaneGetScrollBar(pane)
 		dgsScrollBarSetScrollPosition(scbs[1],value)
-	end)
+	end,false)
 	
 	gdlt = dgsCreateImage(0.5,0,1.1,1.1,_,true,pane,tocolor(255,255,255,255))
 	gdlt2 = dgsCreateImage(0.1,0,0.7,0.7,_,true,pane,tocolor(0,255,255,255))
@@ -88,12 +88,14 @@ function createTest()
 end
 
 function createScrollPane()
-	pane = dgsCreateScrollPane(200,200,400,400,false)
-	a = dgsCreateImage(0,0,1,1,_,true,pane,tocolor(255,255,0,255))
-	x = dgsCreateLabel(700,700,200,50,"test",false)
-	dgsSetProperty(x,"textSize",{4,4})
-	text = dgsCreateImage(0,0,1,1,"styleManager/Default/Images/checkbox/cb_f_s.png",true,pane,tocolor(255,255,255,255))
-	dgsSetProperty(pane,"scrollBarLength",{{10,false}})
+	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.6*sH,"Example Scroll Pane (exclude this window)",false)
+	pane1 = dgsCreateScrollPane(0,0,400,400,false,wind)
+	a = dgsCreateImage(0,0,1,1,_,true,pane1,tocolor(255,0,0,100))
+	dgsSetEnabled(a,false)
+	pane = dgsCreateScrollPane(0,0,600,200,false,pane1)
+	a = dgsCreateImage(0,0,1,1,_,true,pane,tocolor(255,255,0,100))
+	dgsSetEnabled(a,false)
+	
 end
 
 function createTest2()
@@ -115,13 +117,14 @@ end
 
 function createTest4()
 	local window = dgsCreateWindow(100,100,400,400,"test",false)
-	tabp = dgsCreateTabPanel(0,0,400,400,false,window)
+	tabp = dgsCreateTabPanel(0,0,0.8,0.8,true,window)
 	tab1 = dgsCreateTab("DGS",tabp)
 	rb1 = dgsCreateComboBox(0,0,200,30,"test",false,tab1)
 	for i=1,20 do
 		dgsComboBoxAddItem(rb1,i)
 	end
 end
+
 function createTest5()
 	local cb1 = dgsCreateCheckBox(500,500,200,30,"test_indeterminate",false)
 	local cb2 = dgsCreateCheckBox(500,520,200,30,"test_checked",false)
@@ -205,6 +208,7 @@ function editTest() --Test Tab Switch for edit.
 	dgsEditSetCaretPosition (edit, 1)
 	dgsSetProperty(edit2,"placeHolder","Type something if you want to tell me")
 	dgsSetProperty(edit2,"placeHolderIgnoreRenderTarget",true)
+	dgsEditAddAutoComplete(edit3,"mypass",false)
 	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
 end
 
@@ -368,6 +372,7 @@ function testScrollBar()
 	dgsSetProperty(scrollbar,"scrollArrow",false)
 	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
 	dgsScrollBarSetGrades(scrollbar,5)
+	dgsScrollBarSetScrollPosition(scrollbar,3,true)
 end
 
 function languageTest_GridList()

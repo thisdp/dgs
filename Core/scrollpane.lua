@@ -50,6 +50,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
+	addEventHandler("onDgsElementScroll",scrollbar1,checkSPScrollBar,false)
+	addEventHandler("onDgsElementScroll",scrollbar2,checkSPScrollBar,false)
 	triggerEvent("onDgsCreate",scrollpane,sourceResource)
 	return scrollpane
 end
@@ -203,6 +205,7 @@ function configScrollPane(source)
 	local renderTarget = dgsElementData[source].renderTarget_parent
 	if isElement(renderTarget) then
 		destroyElement(renderTarget)
+		dgsElementData[source].renderTarget = nil
 	end
 	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true)
 	if not isElement(renderTarget) then
@@ -316,13 +319,12 @@ function dgsScrollPaneGetScrollBarState(scrollpane)
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
 end
 
-addEventHandler("onDgsScrollBarScroll",resourceRoot,function(new,old)
+function checkSPScrollBar(scb,new,old)
 	local parent = dgsElementData[source].attachedToParent
 	if dgsGetType(parent) == "dgs-dxscrollpane" then
 		local scrollbars = dgsElementData[parent].scrollbars
 		if source == scrollbars[1] or source == scrollbars[2] then
-			local pos1,pos2 = dgsElementData[scrollbars[1]].position,dgsElementData[scrollbars[2]].position
-			triggerEvent("onDgsScrollPaneScroll",parent,source,pos1,pos2)
+			triggerEvent("onDgsElementScroll",parent,source,new,old)
 		end
 	end
-end)
+end
