@@ -28,13 +28,13 @@ local splitChar2 = "\n"
 local editsCount = 1
 ----
 function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor,selectMode)
-	assert(type(x) == "number","Bad argument @dgsCreateEdit at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateEdit at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateEdit at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateEdit at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateEdit at argument 1, expect number, got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateEdit at argument 2, expect number, got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateEdit at argument 3, expect number, got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateEdit at argument 4, expect number, got "..type(sy))
 	text = tostring(text)
 	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsCreateEdit argument 7,expect dgs-dxgui got "..dgsGetType(parent))
+		assert(dgsIsDxElement(parent),"@dgsCreateEdit argument 7,expect dgs-dxgui, got "..dgsGetType(parent))
 	end
 	local edit = createElement("dgs-dxedit")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or tableInsert(CenterFatherTable,edit)
@@ -73,6 +73,9 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"lastSwitchPosition",-1)
 	dgsSetData(edit,"lockView",false)
 	dgsSetData(edit,"allowCopy",true)
+	dgsSetData(edit,"autoCompleteShow",false)
+	dgsSetData(edit,"autoCompleteSkip",false)
+	dgsSetData(edit,"autoComplete",{})
 	dgsSetData(edit,"selectColor",styleSettings.edit.selectColor)
 	dgsSetData(edit,"selectColorBlur",styleSettings.edit.selectColorBlur)
 	dgsSetData(edit,"historyMaxRecords",100)
@@ -96,23 +99,47 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"renderTarget",renderTarget)
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
+	addEventHandler("onDgsTextChange",edit,function()
+		if not dgsElementData[source].autoCompleteSkip then
+			local text = dgsElementData[source].text
+			dgsSetData(source,"autoCompleteShow",false)
+			if text ~= "" then
+				local lowertxt = utf8.lower(text)
+				local textLen = utf8.len(text)
+				local acTable = dgsElementData[source].autoComplete
+				for k,v in pairs(acTable) do
+					if v == true then
+						if utf8.sub(k,1,textLen) == text then
+							dgsSetData(source,"autoCompleteShow",{k,k})
+							break
+						end
+					elseif v == false then
+						if utf8.lower(utf8.sub(k,1,textLen)) == lowertxt then
+							dgsSetData(source,"autoCompleteShow",{k,text..utf8.sub(k,textLen+1)})
+							break
+						end
+					end
+				end
+			end
+		end
+	end)
 	triggerEvent("onDgsCreate",edit,sourceResource)
 	return edit
 end
 
 function dgsEditSetMasked(edit,masked)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetMasked at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetMasked at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	return dgsSetData(edit,"masked",masked and true or false)
 end
 
 function dgsEditGetMasked(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetMasked at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetMasked at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].masked
 end
 
 function dgsEditMoveCaret(edit,offset,selectText)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditMoveCaret at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(offset) == "number","Bad argument @dgsEditMoveCaret at argument 2, expect number got "..type(offset))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditMoveCaret at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
+	assert(type(offset) == "number","Bad argument @dgsEditMoveCaret at argument 2, expect number, got "..type(offset))
 	local text = dgsElementData[edit].text
 	if dgsElementData[edit].masked then
 		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
@@ -138,8 +165,8 @@ function dgsEditMoveCaret(edit,offset,selectText)
 end
 
 function dgsEditSetCaretPosition(edit,pos,doSelect)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetCaretPosition at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(pos) == "number","Bad argument @dgsEditSetCaretPosition at argument 2, expect number got "..type(pos))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetCaretPosition at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
+	assert(type(pos) == "number","Bad argument @dgsEditSetCaretPosition at argument 2, expect number, got "..type(pos))
 	local text = dgsElementData[edit].text
 	if dgsElementData[edit].masked then
 		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
@@ -160,24 +187,24 @@ function dgsEditSetCaretPosition(edit,pos,doSelect)
 end
 
 function dgsEditGetCaretPosition(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetCaretPosition at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetCaretPosition at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].caretPos
 end
 
 function dgsEditSetCaretStyle(edit,style)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetCaretStyle at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(style) == "number","Bad argument @dgsEditSetCaretStyle at argument 2, expect number got "..type(style))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetCaretStyle at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
+	assert(type(style) == "number","Bad argument @dgsEditSetCaretStyle at argument 2, expect number, got "..type(style))
 	return dgsSetData(edit,"caretStyle",style)
 end
 
 function dgsEditGetCaretStyle(edit,style)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetCaretStyle at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetCaretStyle at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].caretStyle
 end
 
 function dgsEditSetMaxLength(edit,maxLength,nonTextCut)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetMaxLength at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	assert(type(maxLength) == "number","Bad argument @dgsEditSetMaxLength at argument 2, expect number got "..type(maxLength))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetMaxLength at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
+	assert(type(maxLength) == "number","Bad argument @dgsEditSetMaxLength at argument 2, expect number, got "..type(maxLength))
 	if not nonTextCut then
 		local text = dgsElementData[edit].text
 		dgsEditDeleteText(edit,maxLength,utf8Len(text),true)
@@ -186,22 +213,22 @@ function dgsEditSetMaxLength(edit,maxLength,nonTextCut)
 end
 
 function dgsEditGetMaxLength(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetMaxLength at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetMaxLength at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].maxLength
 end
 
 function dgsEditSetReadOnly(edit,state)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetReadOnly at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetReadOnly at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	return dgsSetData(edit,"readOnly",state and true or false)
 end
 
 function dgsEditGetReadOnly(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetReadOnly at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetReadOnly at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].readOnly
 end
 
 function dgsEditSetWhiteList(edit,str)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetWhiteList at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetWhiteList at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	if type(str) == "string" then
 		dgsSetData(edit,"whiteList",str)
 	else
@@ -225,8 +252,8 @@ function dgsEditSetWhiteList(edit,str)
 end
 
 function dgsEditInsertText(edit,index,text)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditInsertText at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	assert(dgsGetType(index) == "number","Bad argument @dgsEditInsertText at argument 2, expect number got "..dgsGetType(index))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditInsertText at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
+	assert(dgsGetType(index) == "number","Bad argument @dgsEditInsertText at argument 2, expect number, got "..dgsGetType(index))
 	return handleDxEditText(edit,tostring(text),true,index)
 end
 
@@ -246,9 +273,9 @@ function dgsEditReplaceText(edit,fromIndex,toIndex,text,noAffectCaret,historyRec
 end
 
 function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditDeleteText at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
-	assert(dgsGetType(fromIndex) == "number","Bad argument @dgsEditDeleteText at argument 2, expect number got "..dgsGetType(fromIndex))
-	assert(dgsGetType(toIndex) == "number","Bad argument @dgsEditDeleteText at argument 3, expect number got "..dgsGetType(toIndex))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditDeleteText at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
+	assert(dgsGetType(fromIndex) == "number","Bad argument @dgsEditDeleteText at argument 2, expect number, got "..dgsGetType(fromIndex))
+	assert(dgsGetType(toIndex) == "number","Bad argument @dgsEditDeleteText at argument 3, expect number, got "..dgsGetType(toIndex))
 	local text = dgsElementData[edit].text
 	local textLen = utf8Len(text)
 	local fromIndex = (fromIndex < 0 and 0) or (fromIndex > textLen and textLen) or fromIndex
@@ -290,7 +317,7 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 end
 
 function dgsEditClearText(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditClearText at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditClearText at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	dgsElementData[edit].text = ""
 	dgsSetData(edit,"caretPos",0)
 	dgsSetData(edit,"selectFrom",0)
@@ -300,7 +327,7 @@ function dgsEditClearText(edit)
 end
 
 function dgsEditGetPartOfText(edit,fromIndex,toIndex,delete)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetPartOfText at argument 1, expect dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetPartOfText at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	local text = dgsElementData[edit].text
 	local textLen = utf8Len(text)
 	local fromIndex,toIndex = fromIndex or 0,toIndex or textLen
@@ -318,38 +345,38 @@ function dgsEditGetPartOfText(edit,fromIndex,toIndex,delete)
 end
 
 function dgsEditSetHorizontalAlign(edit,align)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetHorizontalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetHorizontalAlign at argument 1, except a dgs-dxedit, got "..dgsGetType(edit))
 	assert(HorizontalAlign[align],"Bad argument @dgsEditSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
 	local alignment = dgsElementData[edit].alignment
 	return dgsSetData(edit,"alignment",{align,alignment[2]})
 end
 
 function dgsEditSetVerticalAlign(edit,align)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetVerticalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetVerticalAlign at argument 1, except a dgs-dxedit, got "..dgsGetType(edit))
 	assert(VerticalAlign[align],"Bad argument @dgsEditSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
 	local alignment = dgsElementData[edit].alignment
 	return dgsSetData(edit,"alignment",{alignment[1],align})
 end
 
 function dgsEditGetHorizontalAlign(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetHorizontalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetHorizontalAlign at argument 1, except a dgs-dxedit, got "..dgsGetType(edit))
 	local alignment = dgsElementData[edit].alignment
 	return alignment[1]
 end
 
 function dgsEditGetVerticalAlign(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetVerticalAlign at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetVerticalAlign at argument 1, except a dgs-dxedit, got "..dgsGetType(edit))
 	local alignment = dgsElementData[edit].alignment
 	return alignment[2]
 end
 
 function dgsEditSetUnderlined(edit,state)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetUnderlined at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetUnderlined at argument 1, except a dgs-dxedit, got "..dgsGetType(edit))
 	return dgsSetData(edit,"underline",state and true or false)
 end
 
 function dgsEditGetUnderlined(edit,state)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetUnderlined at argument 1, except a dgs-dxedit got "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetUnderlined at argument 1, except a dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].underline
 end
 
@@ -460,7 +487,13 @@ addEventHandler("onDgsMouseClick",root,checkEditMousePosition)
 addEventHandler("onClientGUIAccepted",resourceRoot,function()
 	local dxEdit = dgsElementData[source].linkedDxEdit
 	if dgsGetType(dxEdit) == "dgs-dxedit" then
-		triggerEvent("onDgsEditAccepted",dxEdit)
+		local autoCompleteShow = dgsElementData[dxEdit].autoCompleteShow
+		triggerEvent("onDgsEditAccepted",dxEdit,autoCompleteShow)
+		if not wasEventCancelled() then
+			if autoCompleteShow then
+				dgsSetText(dxEdit,autoCompleteShow[1])
+			end
+		end
 		local cmd = dgsElementData[dxEdit].mycmd
 		if dgsGetType(cmd) == "dgs-dxcmd" then
 			local text = dgsElementData[dxEdit].text
@@ -576,8 +609,8 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 end
 
 function dgsEditSetTypingSound(edit,sound)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetTypingSound at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
-	assert(type(sound) == "string" or not sound,"Bad argument @dgsEditSetTypingSound at argument 2, expect a string or nil got "..dgsGetType(sound))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetTypingSound at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
+	assert(type(sound) == "string" or not sound,"Bad argument @dgsEditSetTypingSound at argument 2, expect a string or nil, got "..dgsGetType(sound))
 	local path = sound
 	if sourceResource then
 		if not find(sound,":") then
@@ -589,12 +622,12 @@ function dgsEditSetTypingSound(edit,sound)
 end
 
 function dgsEditGetTypingSound(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetTypingSound at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetTypingSound at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].typingSound
 end
 
 function dgsEditSetAlignment(edit,horizontal,vertical)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetAlignment at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetAlignment at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
 	local alignment = dgsElementData[edit].alignment
 	horizontal = horizontal or alignment[1] or "left"
 	vertical = vertical or alignment[2] or "top"
@@ -603,21 +636,66 @@ function dgsEditSetAlignment(edit,horizontal,vertical)
 	return dgsSetData(edit,"alignment",{horizontal,vertical})
 end
 function dgsEditGetAlignment(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetAlignment at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetAlignment at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
 	local alignment = dgsElementData[edit].alignment
 	return alignment[1],alignment[2]
 end
 
 function dgsEditSetPlaceHolder(edit,placeHolder)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetPlaceHolder at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetPlaceHolder at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
 	return dgsSetData(edit,"placeHolder",placeHolder)
 end
 
 function dgsEditGetPlaceHolder(edit)
-	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetPlaceHolder at argument 1, expect a dgs-dxedit "..dgsGetType(edit))
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetPlaceHolder at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
 	return dgsElementData[edit].placeHolder
 end
 
+function dgsEditAddAutoComplete(edit,str,isSensitive)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditAddAutoComplete at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
+	local strTyp = type(str)
+	if strTyp == "table" then
+		local autoComplete = dgsElementData[edit].autoComplete
+		for k,v in pairs(str) do
+			autoComplete[k] = isSensitive == nil and v or isSensitive
+		end
+		return true
+	elseif strTyp == "string" then
+		local autoComplete = dgsElementData[edit].autoComplete
+		autoComplete[str] = isSensitive
+		return true
+	end
+	return false
+end
+
+function dgsEditSetAutoComplete(edit,acTable)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetAutoComplete at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
+	assert(type(acTable) == "table","Bad argument @dgsEditSetAutoComplete at argument 2, expect a table, got "..type(edit))
+	local autoComplete = dgsElementData[edit].autoComplete
+	return dgsSetData(edit,"autoComplete",acTable)
+end
+
+function dgsEditDeleteAutoComplete(edit,str)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditDeleteAutoComplete at argument 1, expect a dgs-dxedit, got "..dgsGetType(edit))
+	local strTyp = type(str)
+	if strTyp == "table" then
+		local autoComplete = dgsElementData[edit].autoComplete
+		for k,v in pairs(str) do
+			autoComplete[k] = isSensitive == nil and v or isSensitive
+		end
+		return true
+	elseif strTyp == "string" then
+		local autoComplete = dgsElementData[edit].autoComplete
+		autoComplete[str] = nil
+		return true
+	end
+	return false
+end
+
+function dgsEditGetAutoComplete(edit)
+	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditGetAutoComplete at argument 1, expect a dgs-dxedit,1   "..dgsGetType(edit))
+	return dgsElementData[edit].autoComplete
+end
 
 --[[
 	historyRecState:
