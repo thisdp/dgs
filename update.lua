@@ -104,7 +104,7 @@ folderGetting = {}
 function getGitHubTree(path,nextPath)
 	nextPath = nextPath or ""
 	fetchRemote(path or "https://api.github.com/repos/thisdp/dgs/git/trees/master",function(data,err)
-		if err.success then
+		if err == 0 then
 			local theTable = fromJSON(data)
 			folderGetting[theTable.sha] = nil
 			for k,v in pairs(theTable.tree) do
