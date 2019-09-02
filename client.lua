@@ -4503,9 +4503,9 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
 		if state == "down" then
-			triggerEvent("onDgsMouseDown",guiele,button,state,MouseX or x,MouseY or y)
+			triggerEvent("onDgsMouseDown",guiele,button,MouseX or x,MouseY or y)
 		elseif state == "up" then
-			triggerEvent("onDgsMouseUp",guiele,button,state,MouseX or x,MouseY or y)
+			triggerEvent("onDgsMouseUp",guiele,button,MouseX or x,MouseY or y)
 		end
 		local gtype = dgsGetType(guiele)
 		if gtype == "dgs-dxbrowser" then
