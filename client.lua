@@ -1811,15 +1811,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						bgColor = applyColorAlpha(bgColor,galpha)
 					elseif eleData.bgColor then
 						bgColor = applyColorAlpha(bgColor,galpha)
-						dxDrawRectangle(x,y,relSizX,relSizY,bgColor)
+						dxDrawRectangle(x,y,relSizX,relSizY,bgColor,rendSet)
 					end
 					dxSetBlendMode(rndtgt and "modulate_add" or "add")
 					dxDrawImage(x,y,relSizX,relSizY,newRndTgt,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-				rndtgt = newRndTgt
-				dxSetRenderTarget(newRndTgt,true)
-				dxSetRenderTarget()
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -1853,6 +1850,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
+				dxSetRenderTarget(newRndTgt,true)
+				rndtgt = newRndTgt
+				dxSetRenderTarget(rndtgt)
 				if enabled[1] and mx then
 					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
 						MouseData.scrollPane = v
