@@ -297,6 +297,10 @@
 	<export function="dgsEditGetAlignment" type="client" />
 	<export function="dgsEditSetPlaceHolder" type="client" />
 	<export function="dgsEditGetPlaceHolder" type="client" />
+	<export function="dgsEditAddAutoComplete" type="client" />
+	<export function="dgsEditRemoveAutoComplete" type="client" />
+	<export function="dgsEditSetAutoComplete" type="client" />
+	<export function="dgsEditGetAutoComplete" type="client" />
 	
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />

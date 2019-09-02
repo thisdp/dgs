@@ -650,6 +650,18 @@ function dgsImportOOPClass()
 				newTable.setPlaceHolder = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEditSetPlaceHolder",self.dgsElement,...)
 				end
+				newTable.setAutoComplete = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditSetAutoComplete",self.dgsElement,...)
+				end
+				newTable.getAutoComplete = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditGetAutoComplete",self.dgsElement,...)
+				end
+				newTable.addAutoComplete = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditAddAutoComplete",self.dgsElement,...)
+				end
+				newTable.removeAutoComplete = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsEditRemoveAutoComplete",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxeda" then
 				newTable.setDebugModeEnabled = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsEDASetDebugModeEnabled",self.dgsElement,...)
@@ -670,6 +682,18 @@ function dgsImportOOPClass()
 				end
 				newTable.getScrollPosition = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListGetScrollPosition",self.dgsElement,...)
+				end
+				newTable.setHorizontalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListSetHorizontalScrollPosition",self.dgsElement,...)
+				end
+				newTable.getHorizontalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListGetHorizontalScrollPosition",self.dgsElement,...)
+				end
+				newTable.setVerticalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListSetVerticalScrollPosition",self.dgsElement,...)
+				end
+				newTable.getVerticalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListGetVerticalScrollPosition",self.dgsElement,...)
 				end
 				newTable.resetScrollBarPosition = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListResetScrollBarPosition",self.dgsElement,...)
@@ -715,6 +739,9 @@ function dgsImportOOPClass()
 				end
 				newTable.addRow = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListAddRow",self.dgsElement,...)
+				end
+				newTable.insertRowAfter = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsGridListInsertRowAfter",self.dgsElement,...)
 				end
 				newTable.removeRow = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsGridListRemoveRow",self.dgsElement,...)
@@ -874,6 +901,18 @@ function dgsImportOOPClass()
 				newTable.getScrollPosition = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsMemoGetScrollPosition",self.dgsElement,...)
 				end
+				newTable.setHorizontalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoSetHorizontalScrollPosition",self.dgsElement,...)
+				end
+				newTable.getHorizontalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoGetHorizontalScrollPosition",self.dgsElement,...)
+				end
+				newTable.setVerticalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoSetVerticalScrollPosition",self.dgsElement,...)
+				end
+				newTable.getVerticalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsMemoGetVerticalScrollPosition",self.dgsElement,...)
+				end
 				newTable.setCaretPosition = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsMemoSetCaretPosition",self.dgsElement,...)
 				end
@@ -1004,6 +1043,18 @@ function dgsImportOOPClass()
 				newTable.getScrollPosition = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetScrollPosition",self.dgsElement,...)
 				end
+				newTable.setHorizontalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollPaneSetHorizontalScrollPosition",self.dgsElement,...)
+				end
+				newTable.getHorizontalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetHorizontalScrollPosition",self.dgsElement,...)
+				end
+				newTable.setVerticalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollPaneSetVerticalScrollPosition",self.dgsElement,...)
+				end
+				newTable.getVerticalScrollPosition = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetVerticalScrollPosition",self.dgsElement,...)
+				end
 				newTable.setScrollBarState = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollPaneSetScrollBarState",self.dgsElement,...)
 				end
@@ -1122,6 +1173,30 @@ function dgsImportOOPClass()
 			end,
 			setAttachTranslation = function(self,...)
 				return call(dgsOOPHead.dgsRes,"dgsSetAttachTranslation",...)
+			end,
+			setDoubleClickInterval = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsSetDoubleClickInterval",...)
+			end,
+			getDoubleClickInterval = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsGetDoubleClickInterval",...)
+			end,
+			RGBToHSV = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsRGBToHSV",...)
+			end,
+			RGBToHSL = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsRGBToHSL",...)
+			end,
+			HSLToRGB = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsHSLToRGB",...)
+			end,
+			HSVToRGB = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsHSVToRGB",...)
+			end,
+			HSVToHSL = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsHSVToHSL",...)
+			end,
+			HSLToHSV = function(self,...)
+				return call(dgsOOPHead.dgsRes,"dgsHSLToHSV",...)
 			end,
 		}
 		for k,v in pairs(dgsOOPHead.NoParent) do
