@@ -90,12 +90,17 @@ end
 function createScrollPane()
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.6*sH,"Example Scroll Pane (exclude this window)",false)
 	pane1 = dgsCreateScrollPane(0,0,400,400,false,wind)
-	a = dgsCreateImage(0,0,1,1,_,true,pane1,tocolor(255,0,0,100))
-	dgsSetEnabled(a,false)
-	pane = dgsCreateScrollPane(0,0,600,200,false,pane1)
-	a = dgsCreateImage(0,0,1,1,_,true,pane,tocolor(255,255,0,100))
-	dgsSetEnabled(a,false)
 	
+	gridlist = dgsCreateGridList(0,0,500,500,false,pane1)
+	local dsm = dxCreateFont("dsm.ttf")
+	dgsSetFont(gridlist,dsm)
+	dgsGridListAddColumn(gridlist,"test1",0.3)
+	dgsGridListAddColumn(gridlist,"test2",0.3)
+	for i=1,200 do
+		local row = dgsGridListAddRow(gridlist)
+		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
+		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
+	end
 end
 
 function createTest2()

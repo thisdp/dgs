@@ -312,7 +312,7 @@ function dgsCoreRender()
 			tickColor = red
 		end
 		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-100,_,_,tickColor)
-		local Focused = MouseData.nowShow and dgsGetType(MouseData.nowShow).."("..(getElementID(MouseData.hit) or tostring(MouseData.nowShow))..")" or "None"
+		local Focused = MouseData.nowShow and dgsGetType(MouseData.nowShow).."("..(getElementID(MouseData.nowShow) or tostring(MouseData.nowShow))..")" or "None"
 		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).." ("..(getElementID(MouseData.hit) or tostring(MouseData.hit))..")" or "None"
 		local leftStr = MouseData.clickl and dgsGetType(MouseData.clickl).." ("..(getElementID(MouseData.clickl) or tostring(MouseData.clickl))..")" or "None"
 		local rightStr = MouseData.clickr and dgsGetType(MouseData.clickr).." ("..(getElementID(MouseData.clickr) or tostring(MouseData.clickr))..")" or "None"
@@ -2176,6 +2176,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
+				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 				if bgImage then
 					dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,rendSet)
 				else
@@ -2425,6 +2426,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						whichColumnToStart,whichColumnToEnd = columnCount,columnCount
 					end
 					column_x = cx-cpos[whichColumnToStart]+columnOffset
+					dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 					for i=whichColumnToStart,whichColumnToEnd or columnCount do
 						local data = columnData[i]
 						local _columnTextColor = data[5] or columnTextColor
@@ -2571,6 +2573,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						end
 					end
 				end
+				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -4509,9 +4512,9 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
 		if state == "down" then
-			triggerEvent("onDgsMouseDown",guiele,button,state,MouseX or x,MouseY or y)
+			triggerEvent("onDgsMouseDown",guiele,button,MouseX or x,MouseY or y)
 		elseif state == "up" then
-			triggerEvent("onDgsMouseUp",guiele,button,state,MouseX or x,MouseY or y)
+			triggerEvent("onDgsMouseUp",guiele,button,MouseX or x,MouseY or y)
 		end
 		local gtype = dgsGetType(guiele)
 		if gtype == "dgs-dxbrowser" then
