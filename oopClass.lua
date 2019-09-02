@@ -1033,6 +1033,12 @@ function dgsImportOOPClass()
 				newTable.getLocked = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetLocked",self.dgsElement,...)
 				end
+				newTable.setGrades = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetGrades",self.dgsElement,...)
+				end
+				newTable.getGrades = function(self,...)
+					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetGrades",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxscrollpane" then
 				newTable.getScrollBar = function(self,...)
 					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetScrollBar",self.dgsElement,...)
