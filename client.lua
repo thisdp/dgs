@@ -1600,7 +1600,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 						end
 						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+						dxSetBlendMode("add")
 						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 						if MouseData.nowShow == v and MouseData.editMemoCursor then
 							local CaretShow = true
 							if eleData.readOnly then
@@ -1695,7 +1697,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
 						end
 						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
-						dxSetBlendMode(rndtgt and "modulate_add" or "add")
+						dxSetBlendMode("add")
 						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 						if MouseData.nowShow == v and MouseData.editMemoCursor then
@@ -1813,7 +1815,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						bgColor = applyColorAlpha(bgColor,galpha)
 						dxDrawRectangle(x,y,relSizX,relSizY,bgColor,rendSet)
 					end
-					dxSetBlendMode(rndtgt and "modulate_add" or "add")
+					dxSetBlendMode("add")
 					dxDrawImage(x,y,relSizX,relSizY,newRndTgt,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
@@ -2306,6 +2308,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								local textBuffer = {}
 								local textBufferCnt = 1
 								if not cPosStart or not cPosEnd then break end
+								dxSetBlendMode("modulate_add")
 								for id = cPosStart,cPosEnd do
 									local currentRowData = lc_rowData[id]
 									local text = currentRowData[1]
@@ -2381,7 +2384,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 					dxSetRenderTarget(rndtgt)
-					dxSetBlendMode(rndtgt and "modulate_add" or "add")
+					dxSetBlendMode("add")
 					if isDraw2 then
 						dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,renderTarget[2],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					end
@@ -2909,8 +2912,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawText(text,textSide[1],_y,_sx,_sy,textColor,textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
 					end
 					dxSetRenderTarget(rndtgt)
-					dxSetBlendMode(rndtgt and "modulate_add" or "add")
+					dxSetBlendMode("add")
 					dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -3047,8 +3051,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						end
 						eleData.preSelect = -1
 						dxSetRenderTarget(rndtgt)
-						dxSetBlendMode(rndtgt and "modulate_add" or "add")
+						dxSetBlendMode("add")
 						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),rendSet)
+						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,galpha)
 						if dgsElementData[tabs[selected]].bgImage then
 							dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgImage,0,0,0,colors,rendSet)
@@ -3404,8 +3409,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						end
 					end
 					dxSetRenderTarget(rndtgt)
-					dxSetBlendMode(rndtgt and "modulate_add" or "add")
+					dxSetBlendMode("add")
 					dxDrawImage(x,y,rndtgtWidth,h,rendTarget,0,0,0,tocolor(255,255,255,galpha*255),rendSet)
+					dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 				else
 				
 				end
