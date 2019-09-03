@@ -1365,7 +1365,7 @@ function configGridList(source)
 				outputDebugString("Failed to create render target for column of dgs-dxgridlist [Expected:"..(0.0000076*relSizX*columnHeight).."MB/Free:"..videoMemory.."MB]",2)
 			end
 			local rowRender = dxCreateRenderTarget(relSizX,rowShowRange,true)
-			if not isElement(rowRender) and relSizX*(relSizY-columnHeight-scbThick) ~= 0 then
+			if not isElement(rowRender) and relSizX*rowShowRange ~= 0 then
 				local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
 				outputDebugString("Failed to create render target for row of dgs-dxgridlist [Expected:"..(0.0000076*relSizX*rowShowRange).."MB/Free:"..videoMemory.."MB]",2)
 			end
