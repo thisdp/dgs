@@ -56,6 +56,7 @@ function createFullDemo()
 	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+
 ------------
 
 function createTest()
@@ -87,11 +88,12 @@ function createTest()
 	dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 
+
 function createScrollPane()
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.6*sH,"Example Scroll Pane (exclude this window)",false)
 	pane1 = dgsCreateScrollPane(0,0,400,400,false,wind)
 	
-	gridlist = dgsCreateGridList(0,0,500,500,false,pane1)
+	gridlist = dgsCreateGridList(0,0,5000,5000,false,pane1)
 	local dsm = dxCreateFont("dsm.ttf")
 	dgsSetFont(gridlist,dsm)
 	dgsGridListAddColumn(gridlist,"test1",0.3)
@@ -101,6 +103,10 @@ function createScrollPane()
 		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
+	setTimer(function()
+	local x,y = dgsScrollPaneGetViewOffset(pane1)
+	dgsScrollPaneSetViewOffset(pane1,x+10)
+	end,50,0)
 end
 
 function createTest2()

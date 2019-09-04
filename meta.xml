@@ -235,6 +235,8 @@
 	<export function="dgsScrollPaneGetHorizontalScrollPosition" type="client" />
 	<export function="dgsScrollPaneSetVerticalScrollPosition" type="client" />
 	<export function="dgsScrollPaneGetVerticalScrollPosition" type="client" />
+	<export function="dgsScrollPaneSetViewOffset" type="client" />
+	<export function="dgsScrollPaneGetViewOffset" type="client" />
 	
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
