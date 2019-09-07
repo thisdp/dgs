@@ -180,6 +180,7 @@ function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,offse
 		relativeSize = false
 	end
 	offsetX,offsetY = offsetX or 0,offsetY or 0
+	local attachedTable = {attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize}
 	local attachedBy = dgsElementData[attachTo].attachedBy
 	table.insert(attachedBy,dgsElement)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
