@@ -332,15 +332,39 @@ function testBrowser()
 end
 
 function test3DInterface()
-	material = dgsCreate3DInterface(-2060,-1790,290,100,100,500,500,tocolor(255,255,255,255),-1,0,1,_,0)
+	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
-	local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
-	dgsSetData(material,"filterShader",shader)
+	--local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
 	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
-	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)
+	--edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
+	
+	local window = dgsCreateWindow(0,0,300,200,"test",false)
+	dgsSetParent(window,material)
 	--edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
 	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+end
+
+function testBlurBox()
+	local bb1 = dgsCreateBlurBox()
+	local bb2 = dgsCreateBlurBox()
+	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"functions",[[
+		local arguments = {...}
+		local blurbox = arguments[1]
+		local renderArguments = renderArguments
+		local x,y,w,h = renderArguments[1],renderArguments[2],renderArguments[3],renderArguments[4]
+		dgsBlurBoxRender(blurbox,x,y,w,h)
+	]],bb1)
+	
+	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"functions",[[
+		local arguments = {...}
+		local blurbox = arguments[1]
+		local renderArguments = renderArguments
+		local x,y,w,h = renderArguments[1],renderArguments[2],renderArguments[3],renderArguments[4]
+		dgsBlurBoxRender(blurbox,x,y,w,h)
+	]],bb2)
 end
 
 function exampleDetectArea()

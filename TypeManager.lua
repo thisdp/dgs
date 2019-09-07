@@ -53,5 +53,5 @@ function dgsSetType(dgsGUI,myType)
 end
 
 function dgsIsDxElement(element)
-	return isElement(element) and ((dgsElementType[element] or ""):sub(1,6) == "dgs-dx")
+	return isElement(element) and ((dgsElementType[element] or (dgsElementData[element] and dgsElementData[element].asPlugin) or ""):sub(1,6) == "dgs-dx")
 end

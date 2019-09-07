@@ -45,6 +45,7 @@ blue = 0xFF0000FF
 yellow = 0xFFFFFF00
 fontSize = {}
 systemFont = styleSettings.systemFont
+self,renderArguments = false,false
 dgsRenderSetting = {
 	postGUI = nil,
 	renderPriority = "normal",
@@ -504,6 +505,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 		local x,y,cx,cy = position[1],position[2],position[3],position[4]
 		eleData.rndTmpData.coordinate = {x,y,cx,cy}
 		self = v
+		renderArguments = {x,y,w,h}
 		local interrupted = false
 		local rendSet = not debugMode and noRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
 		if dxType == "dgs-dxwindow" then
@@ -4470,7 +4472,7 @@ function checkScale(source)
 		return true
 	elseif dgsGetType(source) == "dgs-dxwindow" then
 		local mx,my = getCursorPosition()
-		mx,my = (mx or -1)*sW,(my or -1)*sH
+		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
 		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 		local offsets = {mx-x,my-y,mx-x-w,my-y-h}

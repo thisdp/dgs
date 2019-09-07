@@ -169,18 +169,17 @@ function dgsSetSize(dgsElement,x,y,bool)
 	return true
 end
 
-function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize)
+function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dxgui got "..dgsGetType(attachTo))
 	assert(not dgsGetParent(dgsElement),"Bad argument @dgsAttachElements at argument 1, source dgs element shouldn't have a parent")
 	dgsDetachElements(dgsElement)
-	if not width or not height then
+	if not offsetW or not offsetH then
 		local size = dgsElementData[dgsElement].absSize
-		width,height = size[1],size[2]
+		offsetW,offsetH = size[1],size[2]
 		relativeSize = false
 	end
 	offsetX,offsetY = offsetX or 0,offsetY or 0
-	local attachedTable = {attachTo,offsetX,offsetY,relativePos,width,height,relativeSize}
 	local attachedBy = dgsElementData[attachTo].attachedBy
 	table.insert(attachedBy,dgsElement)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
@@ -189,8 +188,10 @@ function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width
 	local absx,absy = dgsGetPosition(attachTo,false,true)
 	local absw,absh = dgsElementData[attachTo].absSize[1],dgsElementData[attachTo].absSize[2]
 	offsetX,offsetY = relativePos and absw*offsetX or offsetX, relativePos and absh*offsetY or offsetY
+	offsetW,offsetH = relativeSize and absw*offsetW or offsetW, relativeSize and absh*offsetH or offsetH
+	offsetW,offsetH = relativeSize and offsetW/sW or offsetW,relativeSize and offsetH/sH or offsetH
 	local resX,resY = (absx+offsetX)/sW,(absy+offsetY)/sH
-	calculateGuiPositionSize(dgsElement,resX,resY,relativePos,width,height,relativeSize)
+	calculateGuiPositionSize(dgsElement,resX,resY,relativePos,offsetW,offsetH,relativeSize)
 	return true
 end
 
@@ -708,11 +709,6 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	addEventHandler("onDgsFocus",source,function()
 		dgsElementData[this].isFocused = true
 	end,getPropagated)
-end)
-
-addEventHandler("onDgsPluginCreate",root,function(theResource)
-	ChildrenTable[source] = ChildrenTable[source] or {}
-	insertResource(theResource,source)
 end)
 
 function dgsClear(theType,res)

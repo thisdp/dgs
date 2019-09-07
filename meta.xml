@@ -51,6 +51,9 @@
 	<script src="oopClass.lua" type="client" />
 	
 	
+	<script src="plugin/pluginManager.lua" type="client" />
+	<script src="plugin/BlurBox/BlurBox.lua" type="client" />
+	<file src="plugin/BlurBox/BlurBox.fx" type="client" />
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
 	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
@@ -512,6 +515,9 @@
 	<export function="dgsUnbindFromColorPicker" type="client" />
 	<export function="dgsColorPickerGetColor" type="client" />
 	<export function="dgsColorPickerSetColor" type="client" />
+	
+	<export function="dgsCreateBlurBox" type="client" />
+	<export function="dgsBlurBoxRender" type="client" />
 	
 	<export function="dgsRGBToHSV" type="client" />
 	<export function="dgsRGBToHSL" type="client" />
