@@ -1,7 +1,7 @@
 BlurBoxGlobalScreenSource = false
 
 function dgsCreateBlurBox()
-	if not BlurBoxGlobalScreenSource then
+	if not isElement(BlurBoxGlobalScreenSource) then
 		BlurBoxGlobalScreenSource = dxCreateScreenSource(sW,sH)
 	end
 	local shader = dxCreateShader("plugin/BlurBox/BlurBox.fx")
@@ -13,6 +13,7 @@ end
 
 function dgsBlurBoxRender(blurBox,x,y,w,h,postGUI)
 	dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	print(w,h)
 	dxDrawImageSection(x,y,w,h,x,y,w,h,blurBox,0,0,0,0xFFFFFFFF,postGUI or false)
 end
 
