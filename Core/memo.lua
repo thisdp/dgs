@@ -706,6 +706,18 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	end
 end
 
+function dgsMemoAppendText(memo,text,isWriteLine)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoAppendText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsMemoAppendText at argument 4, expect string/number got "..dgsGetType(text))
+	local textTable = dgsElementData[memo].text
+	local line = #textTable
+	local index = textTable[line][-1]
+	if line ~= 1 or index ~= 0 then
+		text = "\n"..text
+	end
+	return handleDxMemoText(memo,tostring(text),true,noAffectCaret,index,line)
+end
+
 function dgsMemoInsertText(memo,index,line,text,noAffectCaret)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoInsertText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	assert(dgsGetType(index) == "number","Bad argument @dgsMemoInsertText at argument 2, expect number got "..dgsGetType(index))
@@ -1013,18 +1025,18 @@ function configMemo(source)
 	local scrollBarAfter = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
 	if scrollBarAfter[1] ~= scrollBarBefore[1] or scrollBarAfter[2] ~= scrollBarBefore[2] then
 		dgsSetData(source,"rebuildMapTableNextFrame",true)
-		local px,py = size[1]-size[1]%1-scbTakes1, size[2]-size[2]%1-scbTakes2
-		local rnd = dgsElementData[source].renderTarget
-		if isElement(rnd) then
-			destroyElement(rnd)
-		end
-		local renderTarget = dxCreateRenderTarget(px,py,true)
-		if not isElement(renderTarget) and px*py ~= 0 then
-			local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-			outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
-		end
-		dgsSetData(source,"renderTarget",renderTarget)
 	end
+	local px,py = size[1]-size[1]%1-scbTakes1, size[2]-size[2]%1-scbTakes2
+	local rnd = dgsElementData[source].renderTarget
+	if isElement(rnd) then
+		destroyElement(rnd)
+	end
+	local renderTarget = dxCreateRenderTarget(px,py,true)
+	if not isElement(renderTarget) and px*py ~= 0 then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
+	end
+	dgsSetData(source,"renderTarget",renderTarget)
 	dgsSetData(source,"configNextFrame",false)
 end
 

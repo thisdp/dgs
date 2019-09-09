@@ -4,7 +4,6 @@ triggerServerEvent("getMyIP",localPlayer)
 addEventHandler("giveIPBack",root,function(ip)
 	dgs_MyIP = ip
 end)
-local dsm = dxCreateFont("dsm.ttf",9)
 
 cmdSystem = {}
 netSystem = {}
@@ -13,17 +12,15 @@ addCommandHandler("cmd",function()
 	guiSetInputMode("no_binds_when_editing")
 	if not isElement(cmdSystem["window"]) then
 		cmdSystem["window"] = dgsCreateWindow(sW*0.5-20,sH*0.5,40,25,"CMD",false,tocolor(255,0,0,255),_,_,tocolor(80,140,200,255))
+		dgsWindowSetSizable(cmdSystem["window"],false)
 		dgsSetProperty(cmdSystem["window"],"outline",{"out",1,tocolor(100,100,100,255)})
-		dgsSetFont(cmdSystem["window"],dsm)
 		dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.5,false,false,"OutQuad",300)
 		dgsSizeTo(cmdSystem["window"],sW*0.5,25,false,false,"OutQuad",300)
 		setTimer(function()
 			dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.25,false,false,"InQuad",300)
 			dgsSizeTo(cmdSystem["window"],sW*0.5,sH*0.6,false,false,"InQuad",300)
 			setTimer(function()
-				cmdSystem["cmd"] = dgsCreateCmd(0,0,1,1,true,cmdSystem["window"],1,1)
-				dgsSetFont(cmdSystem.cmd,dsm)
-				dgsSetFont(dgsElementData[cmdSystem.cmd].cmdEdit,dsm)
+				cmdSystem["cmd"] = dgsCreateCmd(0,0,sW*0.5,sH*0.6-45,false,cmdSystem["window"],1,1)
 				dgsCmdAddEventToWhiteList(cmdSystem["cmd"],{"changeMode"})
 				local version = getElementData(resourceRoot,"Version") or "N/A"
 				outputCmdMessage(cmdSystem["cmd"],"( Thisdp's Dx Graphical User Interface System ) Version: "..version)

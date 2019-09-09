@@ -2,17 +2,17 @@ dgsResName = getResourceName(getThisResource())
 function dgsImportOOPClass()
 	return [[
 	--Check Error Message Above
-	if not dgsOOPHead then
+	if not dgsOOP then
 		local getResourceRootElement = getResourceRootElement
 		local call = call
 		local getResourceFromName = getResourceFromName
-		dgsOOPHead = {}
-		dgsOOPHead.dgsName = "]]..dgsResName..[["
-		dgsOOPHead.dgsRes = getResourceFromName(dgsOOPHead.dgsName)
-		dgsRoot = getResourceRootElement(dgsOOPHead.dgsRes)
-		dgsOOPHead.dgsRoot = dgsRoot
-		dgsOOPHead.dgsClass = {}
-		dgsOOPHead.transfromEventName = function(eventName,isReverse)
+		dgsOOP = {}
+		dgsOOP.dgsName = "]]..dgsResName..[["
+		dgsOOP.dgsRes = getResourceFromName(dgsOOP.dgsName)
+		dgsRoot = getResourceRootElement(dgsOOP.dgsRes)
+		dgsOOP.dgsRoot = dgsRoot
+		dgsOOP.dgsClass = {}
+		dgsOOP.transfromEventName = function(eventName,isReverse)
 			if isReverse then
 				local head = eventName:sub(3,3):lower()
 				return head..eventName:sub(4)
@@ -22,15 +22,15 @@ function dgsImportOOPClass()
 			end
 		end
 		
-		dgsOOPHead.AccessTable = {
+		dgsOOP.AccessTable = {
 			__index=function(self,key)
 				if key == "parent" then
-					local parent = call(dgsOOPHead.dgsRes,"dgsGetParent",self.dgsElement,key)
+					local parent = call(dgsOOP.dgsRes,"dgsGetParent",self.dgsElement,key)
 					return parent and dgsGetClass(parent) or false
 				elseif key == "children" then
 					return self:getChildren()
 				end
-				return call(dgsOOPHead.dgsRes,"dgsGetProperty",self.dgsElement,key)
+				return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
 			end,
 			__newindex=function(self,key,value)
 				if key == "parent" then
@@ -38,143 +38,143 @@ function dgsImportOOPClass()
 					if type(value) == "table" then
 						targetEle = value.dgsElement
 					end
-					return call(dgsOOPHead.dgsRes,"dgsSetParent",self.dgsElement,targetEle)
+					return call(dgsOOP.dgsRes,"dgsSetParent",self.dgsElement,targetEle)
 				end
-				return call(dgsOOPHead.dgsRes,"dgsSetProperty",self.dgsElement,key,value)
+				return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,key,value)
 			end,
 			__metatable=true
 		}
 
-		dgsOOPHead.NoParent = {
+		dgsOOP.NoParent = {
 			createWindow = function(self,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateWindow",...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateWindow",...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			create3DInterface = function(self,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreate3DInterface",...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 		}
 
-		dgsOOPHead.HaveParent = {
+		dgsOOP.HaveParent = {
 			createButton = function(self,x,y,w,h,text,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateButton",x,y,w,h,text,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateButton",x,y,w,h,text,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createBrowser = function(self,x,y,w,h,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateBrowser",x,y,w,h,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateBrowser",x,y,w,h,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createCheckBox = function(self,x,y,w,h,text,state,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateCheckBox",x,y,w,h,text,state,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateCheckBox",x,y,w,h,text,state,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createRadioButton = function(self,x,y,w,h,text,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateRadioButton",x,y,w,h,text,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateRadioButton",x,y,w,h,text,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createComboBox = function(self,x,y,w,h,caption,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateComboBox",x,y,w,h,caption,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateComboBox",x,y,w,h,caption,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createEdit = function(self,x,y,w,h,text,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateEdit",x,y,w,h,text,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateEdit",x,y,w,h,text,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createDetectArea = function(self,x,y,w,h,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateDetectArea",x,y,w,h,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateDetectArea",x,y,w,h,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createGridList = function(self,x,y,w,h,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateGridList",x,y,w,h,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateGridList",x,y,w,h,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createImage = function(self,x,y,w,h,image,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateImage",x,y,w,h,image,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateImage",x,y,w,h,image,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createMemo = function(self,x,y,w,h,text,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateMemo",x,y,w,h,text,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateMemo",x,y,w,h,text,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createLabel = function(self,x,y,w,h,text,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateLabel",x,y,w,h,text,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateLabel",x,y,w,h,text,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createProgressBar = function(self,x,y,w,h,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateProgressBar",x,y,w,h,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateProgressBar",x,y,w,h,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createScrollBar = function(self,x,y,w,h,voh,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateScrollBar",x,y,w,h,voh,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateScrollBar",x,y,w,h,voh,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createScrollPane = function(self,x,y,w,h,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateScrollPane",x,y,w,h,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateScrollPane",x,y,w,h,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createTabPanel = function(self,x,y,w,h,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateTabPanel",x,y,w,h,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateTabPanel",x,y,w,h,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createArrowList = function(self,x,y,w,h,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateArrowList",x,y,w,h,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateArrowList",x,y,w,h,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 			createSwitchButton = function(self,x,y,w,h,textOn,textOff,state,relative,...)
-				local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateSwitchButton",x,y,w,h,textOn,textOff,state,relative,self.dgsElement,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateSwitchButton",x,y,w,h,textOn,textOff,state,relative,self.dgsElement,...)
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
 		}
 
 		function dgsGetClass(dgsElement)
-			local originalClass = dgsOOPHead.dgsClass[dgsElement]
+			local originalClass = dgsOOP.dgsClass[dgsElement]
 			if originalClass then
 				if originalClass.dgsElement == dgsElement then
 					return originalClass
 				end
 			end
-			local newTable = {
+			local nTab = {
 				dgsElement = dgsElement,
 				getPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetPosition",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetPosition",self.dgsElement,...)
 				end,
 				setPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetPosition",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetPosition",self.dgsElement,...)
 				end,
 				getParent = function(self,...)
-					return dgsGetClass(call(dgsOOPHead.dgsRes,"dgsGetParent",self.dgsElement,...))
+					return dgsGetClass(call(dgsOOP.dgsRes,"dgsGetParent",self.dgsElement,...))
 				end,
 				setParent = function(self,parent,nocheck)
 					if type(parent) == "table" and isElement(parent.dgsElement) then
 						parent = parent.dgsElement
 					end
-					return call(dgsOOPHead.dgsRes,"dgsSetParent",self.dgsElement,parent,nocheck)
+					return call(dgsOOP.dgsRes,"dgsSetParent",self.dgsElement,parent,nocheck)
 				end,
 				getChild = function(self,...)
-					return dgsGetClass(call(dgsOOPHead.dgsRes,"dgsGetChild",self.dgsElement,...))
+					return dgsGetClass(call(dgsOOP.dgsRes,"dgsGetChild",self.dgsElement,...))
 				end,
 				getChildren = function(self,...)
-					local children = call(dgsOOPHead.dgsRes,"dgsGetChildren",self.dgsElement,...)
+					local children = call(dgsOOP.dgsRes,"dgsGetChildren",self.dgsElement,...)
 					local newChildren = {}
 					for i=1,#children do
 						newChildren[i] = dgsGetClass(children[i])
@@ -182,130 +182,130 @@ function dgsImportOOPClass()
 					return newChildren
 				end,
 				getSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetSize",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetSize",self.dgsElement,...)
 				end,
 				setSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetSize",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetSize",self.dgsElement,...)
 				end,
 				getType = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetType",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetType",self.dgsElement,...)
 				end,
 				setLayer = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetLayer",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetLayer",self.dgsElement,...)
 				end,
 				getLayer = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetLayer",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetLayer",self.dgsElement,...)
 				end,
 				setCurrentLayerIndex = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetCurrentLayerIndex",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetCurrentLayerIndex",self.dgsElement,...)
 				end,
 				getCurrentLayerIndex = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetCurrentLayerIndex",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetCurrentLayerIndex",self.dgsElement,...)
 				end,
 				getProperty = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetProperty",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,...)
 				end,
 				setProperty = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetProperty",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,...)
 				end,
 				getProperties = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetProperties",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetProperties",self.dgsElement,...)
 				end,
 				setProperties = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetProperties",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetProperties",self.dgsElement,...)
 				end,
 				getVisible = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetVisible",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetVisible",self.dgsElement,...)
 				end,
 				setVisible = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetVisible",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetVisible",self.dgsElement,...)
 				end,
 				getEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetEnabled",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetEnabled",self.dgsElement,...)
 				end,
 				setEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetEnabled",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetEnabled",self.dgsElement,...)
 				end,
 				blur = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsBlur",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsBlur",self.dgsElement,...)
 				end,
 				focus = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsFocus",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsFocus",self.dgsElement,...)
 				end,
 				getSide = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetSide",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetSide",self.dgsElement,...)
 				end,
 				setSide = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetSide",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetSide",self.dgsElement,...)
 				end,
 				getAlpha = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetAlpha",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetAlpha",self.dgsElement,...)
 				end,
 				setAlpha = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetAlpha",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetAlpha",self.dgsElement,...)
 				end,
 				getFont = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetFont",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetFont",self.dgsElement,...)
 				end,
 				setFont = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetFont",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetFont",self.dgsElement,...)
 				end,
 				getText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetText",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetText",self.dgsElement,...)
 				end,
 				setText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetText",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSetText",self.dgsElement,...)
 				end,
 				bringToFront = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsBringToFront",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsBringToFront",self.dgsElement,...)
 				end,
 				moveToBack = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMoveToBack",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsMoveToBack",self.dgsElement,...)
 				end,
 				simulateClick = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSimulateClick",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSimulateClick",self.dgsElement,...)
 				end,
 				animTo = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsAnimTo",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsAnimTo",self.dgsElement,...)
 				end,
 				isAniming = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsIsAniming",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsIsAniming",self.dgsElement,...)
 				end,
 				stopAniming = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsStopAniming",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsStopAniming",self.dgsElement,...)
 				end,
 				moveTo = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMoveTo",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsMoveTo",self.dgsElement,...)
 				end,
 				isMoving = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsIsMoving",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsIsMoving",self.dgsElement,...)
 				end,
 				stopMoving = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsStopMoving",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsStopMoving",self.dgsElement,...)
 				end,
 				sizeTo = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSizeTo",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsSizeTo",self.dgsElement,...)
 				end,
 				isSizing = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsIsSizing",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsIsSizing",self.dgsElement,...)
 				end,
 				stopSizing = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsStopSizing",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsStopSizing",self.dgsElement,...)
 				end,
 				alphaTo = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsAlphaTo",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsAlphaTo",self.dgsElement,...)
 				end,
 				isAlphaing = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsIsAlphaing",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsIsAlphaing",self.dgsElement,...)
 				end,
 				stopAlphaing = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsStopAlphaing",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsStopAlphaing",self.dgsElement,...)
 				end,
 				getPostGUI = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetPostGUI",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetPostGUI",self.dgsElement,...)
 				end,
 				setPostGUI = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetPostGUI",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetPostGUI",self.dgsElement,...)
 				end,
 				destroy = function(self,...)
 					return destroyElement(self.dgsElement)
@@ -317,34 +317,34 @@ function dgsImportOOPClass()
 					return self.dgsElement
 				end,
 				addMoveHandler = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsAddMoveHandler",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsAddMoveHandler",self.dgsElement,...)
 				end,
 				removeMoveHandler = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsRemoveMoveHandler",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsRemoveMoveHandler",self.dgsElement,...)
 				end,
 				isMoveHandled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsIsMoveHandled",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsIsMoveHandled",self.dgsElement,...)
 				end,
 				addSizeHandler = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsAddSizeHandler",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsAddSizeHandler",self.dgsElement,...)
 				end,
 				removeSizeHandler = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsRemoveSizeHandler",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsRemoveSizeHandler",self.dgsElement,...)
 				end,
 				isSizeHandled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsIsSizeHandled",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsIsSizeHandled",self.dgsElement,...)
 				end,
 				attachToTranslation = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsAttachToTranslation",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsAttachToTranslation",self.dgsElement,...)
 				end,
 				detachFromTranslation = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsDetachFromTranslation",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsDetachFromTranslation",self.dgsElement,...)
 				end,
 				getTranslationName = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetTranslationName",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsGetTranslationName",self.dgsElement,...)
 				end,
 				on = function(self,eventName,theFnc)
-					local eventName = dgsOOPHead.transfromEventName(eventName)
+					local eventName = dgsOOP.transfromEventName(eventName)
 					removeEventHandler(eventName,self.dgsElement,theFnc)
 					local newfenv = {self=self}
 					setmetatable(newfenv,{__index = _G})
@@ -352,763 +352,769 @@ function dgsImportOOPClass()
 					addEventHandler(eventName,self.dgsElement,theFnc)
 				end,
 				removeOn = function(self,eventName,theFnc)
-					local eventName = dgsOOPHead.transfromEventName(eventName)
+					local eventName = dgsOOP.transfromEventName(eventName)
 					removeEventHandler(eventName,self.dgsElement,theFnc)
 				end,
 				attach = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsAttachElements",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsAttachElements",self.dgsElement,...)
 				end,
 				detach = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsDetachElements",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsDetachElements",self.dgsElement,...)
 				end,
 				isAttached = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsElementIsAttached",self.dgsElement,...)
+					return call(dgsOOP.dgsRes,"dgsElementIsAttached",self.dgsElement,...)
 				end,
 			}
-			for k,v in pairs(dgsOOPHead.HaveParent) do
-				newTable[k]=v
+			for k,v in pairs(dgsOOP.HaveParent) do
+				nTab[k]=v
 			end
 			
-			local dgsType = call(dgsOOPHead.dgsRes,"dgsGetType",dgsElement)
+			local dgsType = call(dgsOOP.dgsRes,"dgsGetType",dgsElement)
 			if dgsType == "dgs-dxwindow" then
-				newTable.setSizable = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowSetSizable",self.dgsElement,...)
+				nTab.setSizable = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowSetSizable",self.dgsElement,...)
 				end
-				newTable.setMovable = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowSetMovable",self.dgsElement,...)
+				nTab.setMovable = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowSetMovable",self.dgsElement,...)
 				end
-				newTable.getSizable = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowGetSizable",self.dgsElement,...)
+				nTab.getSizable = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowGetSizable",self.dgsElement,...)
 				end
-				newTable.getMovable = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowGetMovable",self.dgsElement,...)
+				nTab.getMovable = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowGetMovable",self.dgsElement,...)
 				end
-				newTable.close = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsCloseWindow",self.dgsElement,...)
+				nTab.close = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCloseWindow",self.dgsElement,...)
 				end
-				newTable.setCloseButtonEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowSetCloseButtonEnabled",self.dgsElement,...)
+				nTab.setCloseButtonEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowSetCloseButtonEnabled",self.dgsElement,...)
 				end
-				newTable.getCloseButtonEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowGetCloseButtonEnabled",self.dgsElement,...)
+				nTab.getCloseButtonEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowGetCloseButtonEnabled",self.dgsElement,...)
 				end
-				newTable.setCloseButtonSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowSetCloseButtonSize",self.dgsElement,...)
+				nTab.setCloseButtonSize = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowSetCloseButtonSize",self.dgsElement,...)
 				end
-				newTable.getCloseButtonSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowGetCloseButtonSize",self.dgsElement,...)
+				nTab.getCloseButtonSize = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowGetCloseButtonSize",self.dgsElement,...)
 				end
-				newTable.getCloseButton = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsWindowGetCloseButton",self.dgsElement,...)
+				nTab.getCloseButton = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsWindowGetCloseButton",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dx3dinterface" then
-				newTable.getBlendMode = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetBlendMode",self.dgsElement,...)
+				nTab.getBlendMode = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetBlendMode",self.dgsElement,...)
 				end
-				newTable.setBlendMode = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetBlendMode",self.dgsElement,...)
+				nTab.setBlendMode = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceSetBlendMode",self.dgsElement,...)
 				end
-				newTable.getPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetPosition",self.dgsElement,...)
+				nTab.getPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetPosition",self.dgsElement,...)
 				end
-				newTable.setPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetPosition",self.dgsElement,...)
+				nTab.setPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceSetPosition",self.dgsElement,...)
 				end
-				newTable.getSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetSize",self.dgsElement,...)
+				nTab.getSize = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetSize",self.dgsElement,...)
 				end
-				newTable.setSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetSize",self.dgsElement,...)
+				nTab.setSize = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceSetSize",self.dgsElement,...)
 				end
-				newTable.getResolution = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetResolution",self.dgsElement,...)
+				nTab.getResolution = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetResolution",self.dgsElement,...)
 				end
-				newTable.setResolution = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetResolution",self.dgsElement,...)
+				nTab.setResolution = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceSetResolution",self.dgsElement,...)
 				end
-				newTable.attachToElement = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceAttachToElement",self.dgsElement,...)
+				nTab.attachToElement = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceAttachToElement",self.dgsElement,...)
 				end
-				newTable.isAttached = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceIsAttached",self.dgsElement,...)
+				nTab.isAttached = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceIsAttached",self.dgsElement,...)
 				end
-				newTable.detachFromElement = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceDetachFromElement",self.dgsElement,...)
+				nTab.detachFromElement = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceDetachFromElement",self.dgsElement,...)
 				end
-				newTable.setAttachedOffsets = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetAttachedOffsets",self.dgsElement,...)
+				nTab.setAttachedOffsets = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceSetAttachedOffsets",self.dgsElement,...)
 				end
-				newTable.getAttachedOffsets = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetAttachedOffsets",self.dgsElement,...)
+				nTab.getAttachedOffsets = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetAttachedOffsets",self.dgsElement,...)
 				end
-				newTable.setRotation = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceSetRotation",self.dgsElement,...)
+				nTab.setRotation = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceSetRotation",self.dgsElement,...)
 				end
-				newTable.getRotation = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgs3DInterfaceGetRotation",self.dgsElement,...)
+				nTab.getRotation = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetRotation",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxarrowlist" then
-				newTable.addItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListAddItem",self.dgsElement,...)
+				nTab.addItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListAddItem",self.dgsElement,...)
 				end
-				newTable.removeItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListRemoveItem",self.dgsElement,...)
+				nTab.removeItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListRemoveItem",self.dgsElement,...)
 				end
-				newTable.setItemText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListSetItemText",self.dgsElement,...)
+				nTab.setItemText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListSetItemText",self.dgsElement,...)
 				end
-				newTable.getItemText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListGetItemText",self.dgsElement,...)
+				nTab.getItemText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListGetItemText",self.dgsElement,...)
 				end
-				newTable.setItemValue = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListSetItemValue",self.dgsElement,...)
+				nTab.setItemValue = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListSetItemValue",self.dgsElement,...)
 				end
-				newTable.getItemValue = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListGetItemValue",self.dgsElement,...)
+				nTab.getItemValue = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListGetItemValue",self.dgsElement,...)
 				end
-				newTable.setItemRange = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListSetItemRange",self.dgsElement,...)
+				nTab.setItemRange = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListSetItemRange",self.dgsElement,...)
 				end
-				newTable.getItemRange = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListGetItemRange",self.dgsElement,...)
+				nTab.getItemRange = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListGetItemRange",self.dgsElement,...)
 				end
-				newTable.setItemTranslationTable = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListSetItemTranslationTable",self.dgsElement,...)
+				nTab.setItemTranslationTable = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListSetItemTranslationTable",self.dgsElement,...)
 				end
-				newTable.getItemTranslationTable = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListGetItemTranslationTable",self.dgsElement,...)
+				nTab.getItemTranslationTable = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListGetItemTranslationTable",self.dgsElement,...)
 				end
-				newTable.setItemStep = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListSetItemStep",self.dgsElement,...)
+				nTab.setItemStep = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListSetItemStep",self.dgsElement,...)
 				end
-				newTable.getItemStep = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListGetItemStep",self.dgsElement,...)
+				nTab.getItemStep = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListGetItemStep",self.dgsElement,...)
 				end
-				newTable.getItemTranslatedValue = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListGetItemTranslatedValue",self.dgsElement,...)
+				nTab.getItemTranslatedValue = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListGetItemTranslatedValue",self.dgsElement,...)
 				end
-				newTable.clear = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsArrowListClear",self.dgsElement,...)
+				nTab.clear = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsArrowListClear",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxcheckbox" then
-				newTable.getSelected = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsCheckBoxGetSelected",self.dgsElement,...)
+				nTab.getSelected = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCheckBoxGetSelected",self.dgsElement,...)
 				end
-				newTable.setSelected = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsCheckBoxSetSelected",self.dgsElement,...)
+				nTab.setSelected = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCheckBoxSetSelected",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxradiobutton" then
-				newTable.getSelected = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsRadioButtonGetSelected",self.dgsElement,...)
+				nTab.getSelected = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsRadioButtonGetSelected",self.dgsElement,...)
 				end
-				newTable.setSelected = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsRadioButtonSetSelected",self.dgsElement,...)
+				nTab.setSelected = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsRadioButtonSetSelected",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxcombobox" then
-				newTable.addItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxAddItem",self.dgsElement,...)
+				nTab.addItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxAddItem",self.dgsElement,...)
 				end
-				newTable.removeItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxRemoveItem",self.dgsElement,...)
+				nTab.removeItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxRemoveItem",self.dgsElement,...)
 				end
-				newTable.setItemText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetItemText",self.dgsElement,...)
+				nTab.setItemText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetItemText",self.dgsElement,...)
 				end
-				newTable.getItemText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetItemText",self.dgsElement,...)
+				nTab.getItemText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetItemText",self.dgsElement,...)
 				end
-				newTable.clear = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxClear",self.dgsElement,...)
+				nTab.clear = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxClear",self.dgsElement,...)
 				end
-				newTable.setSelectedItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetSelectedItem",self.dgsElement,...)
+				nTab.setSelectedItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetSelectedItem",self.dgsElement,...)
 				end
-				newTable.getSelectedItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetSelectedItem",self.dgsElement,...)
+				nTab.getSelectedItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetSelectedItem",self.dgsElement,...)
 				end
-				newTable.setItemColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetItemColor",self.dgsElement,...)
+				nTab.setItemColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetItemColor",self.dgsElement,...)
 				end
-				newTable.getItemColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetItemColor",self.dgsElement,...)
+				nTab.getItemColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetItemColor",self.dgsElement,...)
 				end
-				newTable.getState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetState",self.dgsElement,...)
+				nTab.getState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetState",self.dgsElement,...)
 				end
-				newTable.setState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetState",self.dgsElement,...)
+				nTab.setState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetState",self.dgsElement,...)
 				end
-				newTable.getItemCount = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetItemCount",self.dgsElement,...)
+				nTab.getItemCount = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetItemCount",self.dgsElement,...)
 				end
-				newTable.getBoxHeight = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetBoxHeight",self.dgsElement,...)
+				nTab.getBoxHeight = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetBoxHeight",self.dgsElement,...)
 				end
-				newTable.setBoxHeight = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetBoxHeight",self.dgsElement,...)
+				nTab.setBoxHeight = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetBoxHeight",self.dgsElement,...)
 				end
-				newTable.getScrollBar = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetScrollBar",self.dgsElement,...)
+				nTab.getScrollBar = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetScrollBar",self.dgsElement,...)
 				end
-				newTable.setScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetScrollPosition",self.dgsElement,...)
+				nTab.setScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetScrollPosition",self.dgsElement,...)
 				end
-				newTable.getScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetScrollPosition",self.dgsElement,...)
+				nTab.getScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetScrollPosition",self.dgsElement,...)
 				end
-				newTable.setCaptionText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxSetCaptionText",self.dgsElement,...)
+				nTab.setCaptionText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetCaptionText",self.dgsElement,...)
 				end
-				newTable.getCaptionText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsComboBoxGetCaptionText",self.dgsElement,...)
+				nTab.getCaptionText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetCaptionText",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxedit" then
-				newTable.moveCaret = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditMoveCaret",self.dgsElement,...)
+				nTab.moveCaret = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditMoveCaret",self.dgsElement,...)
 				end
-				newTable.getCaretPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetCaretPosition",self.dgsElement,...)
+				nTab.getCaretPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetCaretPosition",self.dgsElement,...)
 				end
-				newTable.setCaretPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetCaretPosition",self.dgsElement,...)
+				nTab.setCaretPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetCaretPosition",self.dgsElement,...)
 				end
-				newTable.setCaretStyle = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetCaretStyle",self.dgsElement,...)
+				nTab.setCaretStyle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetCaretStyle",self.dgsElement,...)
 				end
-				newTable.getCaretStyle = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetCaretStyle",self.dgsElement,...)
+				nTab.getCaretStyle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetCaretStyle",self.dgsElement,...)
 				end
-				newTable.setWhiteList = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetWhiteList",self.dgsElement,...)
+				nTab.setWhiteList = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetWhiteList",self.dgsElement,...)
 				end
-				newTable.getMaxLength = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetMaxLength",self.dgsElement,...)
+				nTab.getMaxLength = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetMaxLength",self.dgsElement,...)
 				end
-				newTable.setMaxLength = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetMaxLength",self.dgsElement,...)
+				nTab.setMaxLength = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetMaxLength",self.dgsElement,...)
 				end
-				newTable.setReadOnly = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetReadOnly",self.dgsElement,...)
+				nTab.setReadOnly = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetReadOnly",self.dgsElement,...)
 				end
-				newTable.getReadOnly = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetReadOnly",self.dgsElement,...)
+				nTab.getReadOnly = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetReadOnly",self.dgsElement,...)
 				end
-				newTable.setMasked = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetMasked",self.dgsElement,...)
+				nTab.setMasked = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetMasked",self.dgsElement,...)
 				end
-				newTable.getMasked = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetMasked",self.dgsElement,...)
+				nTab.getMasked = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetMasked",self.dgsElement,...)
 				end
-				newTable.setUnderlined = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetUnderlined",self.dgsElement,...)
+				nTab.setUnderlined = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetUnderlined",self.dgsElement,...)
 				end
-				newTable.getUnderlined = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetUnderlined",self.dgsElement,...)
+				nTab.getUnderlined = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetUnderlined",self.dgsElement,...)
 				end
-				newTable.setHorizontalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetHorizontalAlign",self.dgsElement,...)
+				nTab.setHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetHorizontalAlign",self.dgsElement,...)
 				end
-				newTable.getHorizontalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetHorizontalAlign",self.dgsElement,...)
+				nTab.getHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetHorizontalAlign",self.dgsElement,...)
 				end
-				newTable.setVerticalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetVerticalAlign",self.dgsElement,...)
+				nTab.setVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetVerticalAlign",self.dgsElement,...)
 				end
-				newTable.getVerticalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetVerticalAlign",self.dgsElement,...)
+				nTab.getVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetVerticalAlign",self.dgsElement,...)
 				end
-				newTable.setAlignment = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetAlignment ",self.dgsElement,...)
+				nTab.setAlignment = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetAlignment ",self.dgsElement,...)
 				end
-				newTable.getAlignment = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetAlignment ",self.dgsElement,...)
+				nTab.getAlignment = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetAlignment ",self.dgsElement,...)
 				end
-				newTable.insertText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditInsertText",self.dgsElement,...)
+				nTab.insertText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditInsertText",self.dgsElement,...)
 				end
-				newTable.deleteText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditDeleteText",self.dgsElement,...)
+				nTab.deleteText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditDeleteText",self.dgsElement,...)
 				end
-				newTable.getPartOfText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetPartOfText",self.dgsElement,...)
+				nTab.getPartOfText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetPartOfText",self.dgsElement,...)
 				end
-				newTable.clearText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditClearText",self.dgsElement,...)
+				nTab.clearText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditClearText",self.dgsElement,...)
 				end
-				newTable.replaceText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditReplaceText",self.dgsElement,...)
+				nTab.replaceText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditReplaceText",self.dgsElement,...)
 				end
-				newTable.getTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetTypingSound",self.dgsElement,...)
+				nTab.getTypingSound = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetTypingSound",self.dgsElement,...)
 				end
-				newTable.setTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetTypingSound",self.dgsElement,...)
+				nTab.setTypingSound = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetTypingSound",self.dgsElement,...)
 				end
-				newTable.getPlaceHolder = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetPlaceHolder",self.dgsElement,...)
+				nTab.getPlaceHolder = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetPlaceHolder",self.dgsElement,...)
 				end
-				newTable.setPlaceHolder = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetPlaceHolder",self.dgsElement,...)
+				nTab.setPlaceHolder = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetPlaceHolder",self.dgsElement,...)
 				end
-				newTable.setAutoComplete = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditSetAutoComplete",self.dgsElement,...)
+				nTab.setAutoComplete = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditSetAutoComplete",self.dgsElement,...)
 				end
-				newTable.getAutoComplete = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditGetAutoComplete",self.dgsElement,...)
+				nTab.getAutoComplete = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditGetAutoComplete",self.dgsElement,...)
 				end
-				newTable.addAutoComplete = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditAddAutoComplete",self.dgsElement,...)
+				nTab.addAutoComplete = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditAddAutoComplete",self.dgsElement,...)
 				end
-				newTable.removeAutoComplete = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEditRemoveAutoComplete",self.dgsElement,...)
+				nTab.removeAutoComplete = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEditRemoveAutoComplete",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxeda" then
-				newTable.setDebugModeEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEDASetDebugModeEnabled",self.dgsElement,...)
+				nTab.setDebugModeEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEDASetDebugModeEnabled",self.dgsElement,...)
 				end
-				newTable.getDebugModeEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsEDAGetDebugModeEnabled",self.dgsElement,...)
+				nTab.getDebugModeEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsEDAGetDebugModeEnabled",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxdetectarea" then
-				newTable.setFunction = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsDetectAreaSetFunction",self.dgsElement,...)
+				nTab.setFunction = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsDetectAreaSetFunction",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxgridlist" then
-				newTable.getScrollBar = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetScrollBar",self.dgsElement,...)
+				nTab.getScrollBar = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetScrollBar",self.dgsElement,...)
 				end
-				newTable.setScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetScrollPosition",self.dgsElement,...)
+				nTab.setScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetScrollPosition",self.dgsElement,...)
 				end
-				newTable.getScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetScrollPosition",self.dgsElement,...)
+				nTab.getScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetScrollPosition",self.dgsElement,...)
 				end
-				newTable.setHorizontalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetHorizontalScrollPosition",self.dgsElement,...)
+				nTab.setHorizontalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetHorizontalScrollPosition",self.dgsElement,...)
 				end
-				newTable.getHorizontalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetHorizontalScrollPosition",self.dgsElement,...)
+				nTab.getHorizontalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetHorizontalScrollPosition",self.dgsElement,...)
 				end
-				newTable.setVerticalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetVerticalScrollPosition",self.dgsElement,...)
+				nTab.setVerticalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetVerticalScrollPosition",self.dgsElement,...)
 				end
-				newTable.getVerticalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetVerticalScrollPosition",self.dgsElement,...)
+				nTab.getVerticalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetVerticalScrollPosition",self.dgsElement,...)
 				end
-				newTable.resetScrollBarPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListResetScrollBarPosition",self.dgsElement,...)
+				nTab.resetScrollBarPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListResetScrollBarPosition",self.dgsElement,...)
 				end
-				newTable.setColumnRelative = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnRelative",self.dgsElement,...)
+				nTab.setColumnRelative = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetColumnRelative",self.dgsElement,...)
 				end
-				newTable.getColumnRelative = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnRelative",self.dgsElement,...)
+				nTab.getColumnRelative = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetColumnRelative",self.dgsElement,...)
 				end
-				newTable.addColumn = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListAddColumn",self.dgsElement,...)
+				nTab.addColumn = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListAddColumn",self.dgsElement,...)
 				end
-				newTable.getColumnCount = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnCount",self.dgsElement,...)
+				nTab.getColumnCount = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetColumnCount",self.dgsElement,...)
 				end
-				newTable.removeColumn = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListRemoveColumn",self.dgsElement,...)
+				nTab.removeColumn = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListRemoveColumn",self.dgsElement,...)
 				end
-				newTable.getColumnAllWidth = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnAllWidth",self.dgsElement,...)
+				nTab.getColumnAllWidth = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetColumnAllWidth",self.dgsElement,...)
 				end
-				newTable.getColumnWidth = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnWidth",self.dgsElement,...)
+				nTab.getColumnHeight = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetColumnHeight",self.dgsElement,...)
 				end
-				newTable.setColumnWidth = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnWidth",self.dgsElement,...)
+				nTab.setColumnHeight = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetColumnHeight",self.dgsElement,...)
 				end
-				newTable.autoSizeColumn = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListAutoSizeColumn",self.dgsElement,...)
+				nTab.getColumnWidth = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetColumnWidth",self.dgsElement,...)
 				end
-				newTable.getColumnTitle = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnTitle",self.dgsElement,...)
+				nTab.setColumnWidth = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetColumnWidth",self.dgsElement,...)
 				end
-				newTable.setColumnTitle = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnTitle",self.dgsElement,...)
+				nTab.autoSizeColumn = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListAutoSizeColumn",self.dgsElement,...)
 				end
-				newTable.getColumnFont = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetColumnFont",self.dgsElement,...)
+				nTab.getColumnTitle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetColumnTitle",self.dgsElement,...)
 				end
-				newTable.setColumnFont = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetColumnFont",self.dgsElement,...)
+				nTab.setColumnTitle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetColumnTitle",self.dgsElement,...)
 				end
-				newTable.addRow = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListAddRow",self.dgsElement,...)
+				nTab.getColumnFont = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetColumnFont",self.dgsElement,...)
 				end
-				newTable.insertRowAfter = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListInsertRowAfter",self.dgsElement,...)
+				nTab.setColumnFont = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetColumnFont",self.dgsElement,...)
 				end
-				newTable.removeRow = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListRemoveRow",self.dgsElement,...)
+				nTab.addRow = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListAddRow",self.dgsElement,...)
 				end
-				newTable.clearRow = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListClearRow",self.dgsElement,...)
+				nTab.insertRowAfter = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListInsertRowAfter",self.dgsElement,...)
 				end
-				newTable.clearColumn = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListClearColumn",self.dgsElement,...)
+				nTab.removeRow = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListRemoveRow",self.dgsElement,...)
 				end
-				newTable.clear = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListClear",self.dgsElement,...)
+				nTab.clearRow = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListClearRow",self.dgsElement,...)
 				end
-				newTable.getRowCount = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetRowCount",self.dgsElement,...)
+				nTab.clearColumn = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListClearColumn",self.dgsElement,...)
 				end
-				newTable.setItemText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetRowCount",self.dgsElement,...)
+				nTab.clear = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListClear",self.dgsElement,...)
 				end
-				newTable.getItemText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetItemText",self.dgsElement,...)
+				nTab.getRowCount = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetRowCount",self.dgsElement,...)
 				end
-				newTable.getSelectedItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetSelectedItem",self.dgsElement,...)
+				nTab.setItemText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetRowCount",self.dgsElement,...)
 				end
-				newTable.setSelectedItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetSelectedItem",self.dgsElement,...)
+				nTab.getItemText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetItemText",self.dgsElement,...)
 				end
-				newTable.setItemColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetItemColor",self.dgsElement,...)
+				nTab.getSelectedItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetSelectedItem",self.dgsElement,...)
 				end
-				newTable.getItemColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetItemColor",self.dgsElement,...)
+				nTab.setSelectedItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetSelectedItem",self.dgsElement,...)
 				end
-				newTable.setItemData = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetItemData",self.dgsElement,...)
+				nTab.setItemColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetItemColor",self.dgsElement,...)
 				end
-				newTable.getItemData = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetItemData",self.dgsElement,...)
+				nTab.getItemColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetItemColor",self.dgsElement,...)
 				end
-				newTable.setItemImage = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetItemImage",self.dgsElement,...)
+				nTab.setItemData = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetItemData",self.dgsElement,...)
 				end
-				newTable.getItemImage = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetItemImage",self.dgsElement,...)
+				nTab.getItemData = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetItemData",self.dgsElement,...)
 				end
-				newTable.removeItemImage = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListRemoveItemImage",self.dgsElement,...)
+				nTab.setItemImage = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetItemImage",self.dgsElement,...)
 				end
-				newTable.getRowBackGroundImage = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetRowBackGroundImage",self.dgsElement,...)
+				nTab.getItemImage = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetItemImage",self.dgsElement,...)
 				end
-				newTable.setRowBackGroundImage = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetRowBackGroundImage",self.dgsElement,...)
+				nTab.removeItemImage = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListRemoveItemImage",self.dgsElement,...)
 				end
-				newTable.setRowBackGroundColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetRowBackGroundColor",self.dgsElement,...)
+				nTab.getRowBackGroundImage = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetRowBackGroundImage",self.dgsElement,...)
 				end
-				newTable.getRowBackGroundColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetRowBackGroundColor",self.dgsElement,...)
+				nTab.setRowBackGroundImage = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetRowBackGroundImage",self.dgsElement,...)
 				end
-				newTable.setRowAsSection = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetRowAsSection",self.dgsElement,...)
+				nTab.setRowBackGroundColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetRowBackGroundColor",self.dgsElement,...)
 				end
-				newTable.selectItem = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSelectItem",self.dgsElement,...)
+				nTab.getRowBackGroundColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetRowBackGroundColor",self.dgsElement,...)
 				end
-				newTable.itemIsSelected = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListItemIsSelected",self.dgsElement,...)
+				nTab.setRowAsSection = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetRowAsSection",self.dgsElement,...)
 				end
-				newTable.setMultiSelectionEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetMultiSelectionEnabled",self.dgsElement,...)
+				nTab.selectItem = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSelectItem",self.dgsElement,...)
 				end
-				newTable.getMultiSelectionEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetMultiSelectionEnabled",self.dgsElement,...)
+				nTab.itemIsSelected = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListItemIsSelected",self.dgsElement,...)
 				end
-				newTable.setSelectionMode = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetSelectionMode",self.dgsElement,...)
+				nTab.setMultiSelectionEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetMultiSelectionEnabled",self.dgsElement,...)
 				end
-				newTable.getSelectionMode = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetSelectionMode",self.dgsElement,...)
+				nTab.getMultiSelectionEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetMultiSelectionEnabled",self.dgsElement,...)
 				end
-				newTable.getSelectedItems = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetSelectedItems",self.dgsElement,...)
+				nTab.setSelectionMode = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetSelectionMode",self.dgsElement,...)
 				end
-				newTable.setSelectedItems = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetSelectedItems",self.dgsElement,...)
+				nTab.getSelectionMode = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetSelectionMode",self.dgsElement,...)
 				end
-				newTable.getSelectedCount = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetSelectedCount",self.dgsElement,...)
+				nTab.getSelectedItems = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetSelectedItems",self.dgsElement,...)
 				end
-				newTable.setSortFunction = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetSortFunction",self.dgsElement,...)
+				nTab.setSelectedItems = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetSelectedItems",self.dgsElement,...)
 				end
-				newTable.setAutoSortEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetAutoSortEnabled",self.dgsElement,...)
+				nTab.getSelectedCount = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetSelectedCount",self.dgsElement,...)
 				end
-				newTable.getAutoSortEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetAutoSortEnabled",self.dgsElement,...)
+				nTab.setSortFunction = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetSortFunction",self.dgsElement,...)
 				end
-				newTable.setSortEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetSortEnabled",self.dgsElement,...)
+				nTab.setAutoSortEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetAutoSortEnabled",self.dgsElement,...)
 				end
-				newTable.getSortEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetSortEnabled",self.dgsElement,...)
+				nTab.getAutoSortEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetAutoSortEnabled",self.dgsElement,...)
 				end
-				newTable.setSortColumn = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetSortColumn",self.dgsElement,...)
+				nTab.setSortEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetSortEnabled",self.dgsElement,...)
 				end
-				newTable.getSortColumn = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetSortColumn",self.dgsElement,...)
+				nTab.getSortEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetSortEnabled",self.dgsElement,...)
 				end
-				newTable.getEnterColumn = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetEnterColumn",self.dgsElement,...)
+				nTab.setSortColumn = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetSortColumn",self.dgsElement,...)
 				end
-				newTable.sort = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSort",self.dgsElement,...)
+				nTab.getSortColumn = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetSortColumn",self.dgsElement,...)
 				end
-				newTable.setNavigationEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListSetNavigationEnabled",self.dgsElement,...)
+				nTab.getEnterColumn = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetEnterColumn",self.dgsElement,...)
 				end
-				newTable.getNavigationEnabled = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGridListGetNavigationEnabled",self.dgsElement,...)
+				nTab.sort = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSort",self.dgsElement,...)
+				end
+				nTab.setNavigationEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListSetNavigationEnabled",self.dgsElement,...)
+				end
+				nTab.getNavigationEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGridListGetNavigationEnabled",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dximage" then
-				newTable.setImage = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageSetImage",self.dgsElement,...)
+				nTab.setImage = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsImageSetImage",self.dgsElement,...)
 				end
-				newTable.getImage = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageGetImage",self.dgsElement,...)
+				nTab.getImage = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsImageGetImage",self.dgsElement,...)
 				end
-				newTable.setUVSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageSetUVSize",self.dgsElement,...)
+				nTab.setUVSize = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsImageSetUVSize",self.dgsElement,...)
 				end
-				newTable.getUVSize = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageGetUVSize",self.dgsElement,...)
+				nTab.getUVSize = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsImageGetUVSize",self.dgsElement,...)
 				end
-				newTable.setUVPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageSetUVPosition",self.dgsElement,...)
+				nTab.setUVPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsImageSetUVPosition",self.dgsElement,...)
 				end
-				newTable.getUVPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsImageGetUVPosition",self.dgsElement,...)
+				nTab.getUVPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsImageGetUVPosition",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxmemo" then
-				newTable.moveCaret = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoMoveCaret",self.dgsElement,...)
+				nTab.moveCaret = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoMoveCaret",self.dgsElement,...)
 				end
-				newTable.seekPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSeekPosition",self.dgsElement,...)
+				nTab.seekPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSeekPosition",self.dgsElement,...)
 				end
-				newTable.getScrollBar = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetScrollBar",self.dgsElement,...)
+				nTab.getScrollBar = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetScrollBar",self.dgsElement,...)
 				end
-				newTable.setScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetScrollPosition",self.dgsElement,...)
+				nTab.setScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetScrollPosition",self.dgsElement,...)
 				end
-				newTable.getScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetScrollPosition",self.dgsElement,...)
+				nTab.getScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetScrollPosition",self.dgsElement,...)
 				end
-				newTable.setHorizontalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetHorizontalScrollPosition",self.dgsElement,...)
+				nTab.setHorizontalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetHorizontalScrollPosition",self.dgsElement,...)
 				end
-				newTable.getHorizontalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetHorizontalScrollPosition",self.dgsElement,...)
+				nTab.getHorizontalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetHorizontalScrollPosition",self.dgsElement,...)
 				end
-				newTable.setVerticalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetVerticalScrollPosition",self.dgsElement,...)
+				nTab.setVerticalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetVerticalScrollPosition",self.dgsElement,...)
 				end
-				newTable.getVerticalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetVerticalScrollPosition",self.dgsElement,...)
+				nTab.getVerticalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetVerticalScrollPosition",self.dgsElement,...)
 				end
-				newTable.setCaretPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetCaretPosition",self.dgsElement,...)
+				nTab.setCaretPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetCaretPosition",self.dgsElement,...)
 				end
-				newTable.getCaretPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetCaretPosition",self.dgsElement,...)
+				nTab.getCaretPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetCaretPosition",self.dgsElement,...)
 				end
-				newTable.setCaretStyle = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetCaretStyle",self.dgsElement,...)
+				nTab.setCaretStyle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetCaretStyle",self.dgsElement,...)
 				end
-				newTable.getCaretStyle = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetCaretStyle",self.dgsElement,...)
+				nTab.getCaretStyle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetCaretStyle",self.dgsElement,...)
 				end
-				newTable.setReadOnly = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetReadOnly",self.dgsElement,...)
+				nTab.setReadOnly = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetReadOnly",self.dgsElement,...)
 				end
-				newTable.getReadOnly = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetReadOnly",self.dgsElement,...)
+				nTab.getReadOnly = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetReadOnly",self.dgsElement,...)
 				end
-				newTable.getPartOfText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetPartOfText",self.dgsElement,...)
+				nTab.getPartOfText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetPartOfText",self.dgsElement,...)
 				end
-				newTable.deleteText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoDeleteText",self.dgsElement,...)
+				nTab.deleteText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoDeleteText",self.dgsElement,...)
 				end
-				newTable.insertText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoInsertText",self.dgsElement,...)
+				nTab.insertText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoInsertText",self.dgsElement,...)
 				end
-				newTable.clearText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoClearText",self.dgsElement,...)
+				nTab.clearText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoClearText",self.dgsElement,...)
 				end
-				newTable.getTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetTypingSound",self.dgsElement,...)
+				nTab.getTypingSound = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetTypingSound",self.dgsElement,...)
 				end
-				newTable.setTypingSound = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetTypingSound",self.dgsElement,...)
+				nTab.setTypingSound = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetTypingSound",self.dgsElement,...)
 				end
-				newTable.getLineCount = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetLineCount",self.dgsElement,...)
+				nTab.getLineCount = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetLineCount",self.dgsElement,...)
 				end
-				newTable.setWordWarpState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetWordWarpState",self.dgsElement,...)
+				nTab.setWordWarpState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetWordWarpState",self.dgsElement,...)
 				end
-				newTable.getWordWarpState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetWordWarpState",self.dgsElement,...)
+				nTab.getWordWarpState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetWordWarpState",self.dgsElement,...)
 				end
-				newTable.setScrollBarState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoSetScrollBarState",self.dgsElement,...)
+				nTab.setScrollBarState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoSetScrollBarState",self.dgsElement,...)
 				end
-				newTable.getScrollBarState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsMemoGetScrollBarState",self.dgsElement,...)
+				nTab.getScrollBarState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoGetScrollBarState",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxlabel" then
-				newTable.setColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelSetColor",self.dgsElement,...)
+				nTab.setColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelSetColor",self.dgsElement,...)
 				end
-				newTable.getColor = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelGetColor",self.dgsElement,...)
+				nTab.getColor = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelGetColor",self.dgsElement,...)
 				end
-				newTable.setHorizontalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelSetHorizontalAlign",self.dgsElement,...)
+				nTab.setHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelSetHorizontalAlign",self.dgsElement,...)
 				end
-				newTable.getHorizontalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelGetHorizontalAlign",self.dgsElement,...)
+				nTab.getHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelGetHorizontalAlign",self.dgsElement,...)
 				end
-				newTable.setVerticalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelSetVerticalAlign",self.dgsElement,...)
+				nTab.setVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelSetVerticalAlign",self.dgsElement,...)
 				end
-				newTable.getVerticalAlign = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelGetVerticalAlign",self.dgsElement,...)
+				nTab.getVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelGetVerticalAlign",self.dgsElement,...)
 				end
-				newTable.getTextExtent = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelGetTextExtent",self.dgsElement,...)
+				nTab.getTextExtent = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelGetTextExtent",self.dgsElement,...)
 				end
-				newTable.getFontHeight = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsLabelGetFontHeight",self.dgsElement,...)
+				nTab.getFontHeight = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsLabelGetFontHeight",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxprogressbar" then
-				newTable.getProgress = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarGetProgress",self.dgsElement,...)
+				nTab.getProgress = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarGetProgress",self.dgsElement,...)
 				end
-				newTable.setProgress = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarSetProgress",self.dgsElement,...)
+				nTab.setProgress = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarSetProgress",self.dgsElement,...)
 				end
-				newTable.getMode = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarGetMode",self.dgsElement,...)
+				nTab.getMode = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarGetMode",self.dgsElement,...)
 				end
-				newTable.setMode = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarSetMode",self.dgsElement,...)
+				nTab.setMode = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarSetMode",self.dgsElement,...)
 				end
-				newTable.getVerticalSide = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarGetVerticalSide",self.dgsElement,...)
+				nTab.getVerticalSide = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarGetVerticalSide",self.dgsElement,...)
 				end
-				newTable.setVerticalSide = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarSetVerticalSide",self.dgsElement,...)
+				nTab.setVerticalSide = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarSetVerticalSide",self.dgsElement,...)
 				end
-				newTable.getHorizontalSide = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarGetHorizontalSide",self.dgsElement,...)
+				nTab.getHorizontalSide = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarGetHorizontalSide",self.dgsElement,...)
 				end
-				newTable.setHorizontalSide = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsProgressBarSetHorizontalSide",self.dgsElement,...)
+				nTab.setHorizontalSide = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarSetHorizontalSide",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxscrollbar" then
-				newTable.setScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetScrollPosition",self.dgsElement,...)
+				nTab.setScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarSetScrollPosition",self.dgsElement,...)
 				end
-				newTable.getScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetScrollPosition",self.dgsElement,...)
+				nTab.getScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarGetScrollPosition",self.dgsElement,...)
 				end
-				newTable.setCursorLength = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetCursorLength",self.dgsElement,...)
+				nTab.setCursorLength = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarSetCursorLength",self.dgsElement,...)
 				end
-				newTable.getCursorLength = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetCursorLength",self.dgsElement,...)
+				nTab.getCursorLength = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarGetCursorLength",self.dgsElement,...)
 				end
-				newTable.setLocked = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetLocked",self.dgsElement,...)
+				nTab.setLocked = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarSetLocked",self.dgsElement,...)
 				end
-				newTable.getLocked = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetLocked",self.dgsElement,...)
+				nTab.getLocked = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarGetLocked",self.dgsElement,...)
 				end
-				newTable.setGrades = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarSetGrades",self.dgsElement,...)
+				nTab.setGrades = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarSetGrades",self.dgsElement,...)
 				end
-				newTable.getGrades = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollBarGetGrades",self.dgsElement,...)
+				nTab.getGrades = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollBarGetGrades",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxscrollpane" then
-				newTable.getScrollBar = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetScrollBar",self.dgsElement,...)
+				nTab.getScrollBar = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneGetScrollBar",self.dgsElement,...)
 				end
-				newTable.setScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneSetScrollPosition",self.dgsElement,...)
+				nTab.setScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneSetScrollPosition",self.dgsElement,...)
 				end
-				newTable.getScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetScrollPosition",self.dgsElement,...)
+				nTab.getScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneGetScrollPosition",self.dgsElement,...)
 				end
-				newTable.setHorizontalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneSetHorizontalScrollPosition",self.dgsElement,...)
+				nTab.setHorizontalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneSetHorizontalScrollPosition",self.dgsElement,...)
 				end
-				newTable.getHorizontalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetHorizontalScrollPosition",self.dgsElement,...)
+				nTab.getHorizontalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneGetHorizontalScrollPosition",self.dgsElement,...)
 				end
-				newTable.setVerticalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneSetVerticalScrollPosition",self.dgsElement,...)
+				nTab.setVerticalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneSetVerticalScrollPosition",self.dgsElement,...)
 				end
-				newTable.getVerticalScrollPosition = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetVerticalScrollPosition",self.dgsElement,...)
+				nTab.getVerticalScrollPosition = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneGetVerticalScrollPosition",self.dgsElement,...)
 				end
-				newTable.setScrollBarState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneSetScrollBarState",self.dgsElement,...)
+				nTab.setScrollBarState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneSetScrollBarState",self.dgsElement,...)
 				end
-				newTable.getScrollBarState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsScrollPaneGetScrollBarState",self.dgsElement,...)
+				nTab.getScrollBarState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsScrollPaneGetScrollBarState",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxswitchbutton" then
-				newTable.getState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonGetState",self.dgsElement,...)
+				nTab.getState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsSwitchButtonGetState",self.dgsElement,...)
 				end
-				newTable.setState = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonSetState",self.dgsElement,...)
+				nTab.setState = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsSwitchButtonSetState",self.dgsElement,...)
 				end
-				newTable.setText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonSetText",self.dgsElement,...)
+				nTab.setText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsSwitchButtonSetText",self.dgsElement,...)
 				end
-				newTable.getText = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSwitchButtonGetText",self.dgsElement,...)
+				nTab.getText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsSwitchButtonGetText",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxtabpanel" then
-				newTable.getSelectedTab = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsGetSelectedTab",self.dgsElement,...)
+				nTab.getSelectedTab = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsGetSelectedTab",self.dgsElement,...)
 				end
-				newTable.setSelectedTab = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsSetSelectedTab",self.dgsElement,...)
+				nTab.setSelectedTab = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsSetSelectedTab",self.dgsElement,...)
 				end
-				newTable.getTabFromID = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsTabPanelGetTabFromID",self.dgsElement,...)
+				nTab.getTabFromID = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsTabPanelGetTabFromID",self.dgsElement,...)
 				end
-				newTable.moveTab = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsTabPanelMoveTab",self.dgsElement,...)
+				nTab.moveTab = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsTabPanelMoveTab",self.dgsElement,...)
 				end
-				newTable.getTabID = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsTabPanelGetTabID",self.dgsElement,...)
+				nTab.getTabID = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsTabPanelGetTabID",self.dgsElement,...)
 				end
-				newTable.createTab = function(self,text,...)
-					local dxgui = call(dgsOOPHead.dgsRes,"dgsCreateTab",text,self.dgsElement,...)
+				nTab.createTab = function(self,text,...)
+					local dxgui = call(dgsOOP.dgsRes,"dgsCreateTab",text,self.dgsElement,...)
 					return dgsGetClass(dxgui)
 				end
 			elseif dgsType == "dgs-dxtab" then
-				newTable.deleteTab = function(self,...)
-					return call(dgsOOPHead.dgsRes,"dgsDeleteTab",self.dgsElement,...)
+				nTab.deleteTab = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsDeleteTab",self.dgsElement,...)
 				end
 			end
-			setmetatable(newTable,dgsOOPHead.AccessTable)
+			setmetatable(nTab,dgsOOP.AccessTable)
 			
-			dgsOOPHead.dgsClass[dgsElement] = newTable
-			return newTable
+			dgsOOP.dgsClass[dgsElement] = nTab
+			return nTab
 		end
 
 		DGSClass = {
@@ -1116,16 +1122,16 @@ function dgsImportOOPClass()
 				return dgsGetClass(dgsElement)
 			end,
 			isStyleAvailable = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsIsStyleAvailable",...)
+				return call(dgsOOP.dgsRes,"dgsIsStyleAvailable",...)
 			end,
 			getLoadedStyleList = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsGetLoadedStyleList",...)
+				return call(dgsOOP.dgsRes,"dgsGetLoadedStyleList",...)
 			end,
 			setCurrentStyle = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsSetCurrentStyle",...)
+				return call(dgsOOP.dgsRes,"dgsSetCurrentStyle",...)
 			end,
 			getCurrentStyle = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsGetCurrentStyle",...)
+				return call(dgsOOP.dgsRes,"dgsGetCurrentStyle",...)
 			end,
 			getScreenSize = function(self)
 				return guiGetScreenSize()
@@ -1143,13 +1149,13 @@ function dgsImportOOPClass()
 				return dgsGetInputMode(...)
 			end,
 			setRenderSetting = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsSetRenderSetting",...)
+				return call(dgsOOP.dgsRes,"dgsSetRenderSetting",...)
 			end,
 			getRenderSetting = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsGetRenderSetting",...)
+				return call(dgsOOP.dgsRes,"dgsGetRenderSetting",...)
 			end,
 			getLayerElements = function(self,...)
-				local elements = call(dgsOOPHead.dgsRes,"dgsGetLayerElements",...)
+				local elements = call(dgsOOP.dgsRes,"dgsGetLayerElements",...)
 				local newElements = {}
 				for i=1,#elements do
 					newElements[i] = dgsGetClass(elements[i])
@@ -1157,58 +1163,58 @@ function dgsImportOOPClass()
 				return newElements
 			end,
 			addEasingFunction = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsAddEasingFunction",...)
+				return call(dgsOOP.dgsRes,"dgsAddEasingFunction",...)
 			end,
 			easingFunctionExists = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsEasingFunctionExists",...)
+				return call(dgsOOP.dgsRes,"dgsEasingFunctionExists",...)
 			end,
 			removeEasingFunction = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsRemoveEasingFunction",...)
+				return call(dgsOOP.dgsRes,"dgsRemoveEasingFunction",...)
 			end,
 			getSystemFont = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsGetSystemFont",...)
+				return call(dgsOOP.dgsRes,"dgsGetSystemFont",...)
 			end,
 			setSystemFont = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsSetSystemFont",...)
+				return call(dgsOOP.dgsRes,"dgsSetSystemFont",...)
 			end,
 			translationTableExists = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsTranslationTableExists",...)
+				return call(dgsOOP.dgsRes,"dgsTranslationTableExists",...)
 			end,
 			setTranslationTable = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsSetTranslationTable",...)
+				return call(dgsOOP.dgsRes,"dgsSetTranslationTable",...)
 			end,
 			setAttachTranslation = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsSetAttachTranslation",...)
+				return call(dgsOOP.dgsRes,"dgsSetAttachTranslation",...)
 			end,
 			setDoubleClickInterval = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsSetDoubleClickInterval",...)
+				return call(dgsOOP.dgsRes,"dgsSetDoubleClickInterval",...)
 			end,
 			getDoubleClickInterval = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsGetDoubleClickInterval",...)
+				return call(dgsOOP.dgsRes,"dgsGetDoubleClickInterval",...)
 			end,
 			RGBToHSV = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsRGBToHSV",...)
+				return call(dgsOOP.dgsRes,"dgsRGBToHSV",...)
 			end,
 			RGBToHSL = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsRGBToHSL",...)
+				return call(dgsOOP.dgsRes,"dgsRGBToHSL",...)
 			end,
 			HSLToRGB = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsHSLToRGB",...)
+				return call(dgsOOP.dgsRes,"dgsHSLToRGB",...)
 			end,
 			HSVToRGB = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsHSVToRGB",...)
+				return call(dgsOOP.dgsRes,"dgsHSVToRGB",...)
 			end,
 			HSVToHSL = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsHSVToHSL",...)
+				return call(dgsOOP.dgsRes,"dgsHSVToHSL",...)
 			end,
 			HSLToHSV = function(self,...)
-				return call(dgsOOPHead.dgsRes,"dgsHSLToHSV",...)
+				return call(dgsOOP.dgsRes,"dgsHSLToHSV",...)
 			end,
 		}
-		for k,v in pairs(dgsOOPHead.NoParent) do
+		for k,v in pairs(dgsOOP.NoParent) do
 			DGSClass[k] = v
 		end
-		for k,v in pairs(dgsOOPHead.HaveParent) do
+		for k,v in pairs(dgsOOP.HaveParent) do
 			DGSClass[k] = v
 		end
 	end

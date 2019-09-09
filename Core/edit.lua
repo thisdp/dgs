@@ -122,7 +122,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 				end
 			end
 		end
-	end)
+	end,false)
 	triggerEvent("onDgsCreate",edit,sourceResource)
 	return edit
 end
@@ -493,14 +493,6 @@ addEventHandler("onClientGUIAccepted",resourceRoot,function()
 			if autoCompleteShow then
 				dgsSetText(dxEdit,autoCompleteShow[1])
 			end
-		end
-		local cmd = dgsElementData[dxEdit].mycmd
-		if dgsGetType(cmd) == "dgs-dxcmd" then
-			local text = dgsElementData[dxEdit].text
-			if text ~= "" then
-				receiveCmdEditInput(cmd,text)
-			end
-			dgsEditClearText(dxEdit)
 		end
 	end
 end)

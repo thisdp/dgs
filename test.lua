@@ -252,12 +252,12 @@ function gridlistTest()
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
 	dgsGridListSetMultiSelectionEnabled(gridlist,true)
-	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
+	dgsGridListSetSelectedItems(gridlist,{{1,1},{1,2}})
 	configGridList(gridlist)
 	dgsGridListSetColumnFont(gridlist,1,"default-bold")
 	dgsGridListSetScrollPosition(gridlist,100)
 end
-
+gridlistTest()
 function centerEdit()
 	edit = dgsCreateEdit(100,300,300,100,"TestTestTest",false)
 	dgsSetProperty(edit,"alignment",{"left","center"})

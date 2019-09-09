@@ -20,7 +20,6 @@
 	<script src="ParentManager.lua" type="client" />
 	<script src="client.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
-	<script src="Core/cmd.lua" type="client" />
 	<script src="Core/eda.lua" type="client" />
 	<script src="Core/detectarea.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
@@ -47,11 +46,10 @@
 	<script src="plugin/media.lua" type="client" />
 	<script src="plugin/roundRect.lua" type="client" />
 	<script src="animation.lua" type="client" />
-	<script src="dxCmdEvent.lua" type="client" />
-	<script src="oopClass.lua" type="client" />
 	
 	
 	<script src="plugin/pluginManager.lua" type="client" />
+	<script src="plugin/cmd.lua" type="client" />
 	<script src="plugin/BlurBox/BlurBox.lua" type="client" />
 	<file src="plugin/BlurBox/BlurBox.fx" type="client" />
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
@@ -64,6 +62,9 @@
 	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
+	
+	<script src="dxCmdEvent.lua" type="client" />
+	<script src="oopClass.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
@@ -418,6 +419,8 @@
 	<export function="dgsGridListGetColumnAllWidth" type="client" />
 	<export function="dgsGridListGetColumnWidth" type="client" />
 	<export function="dgsGridListSetColumnWidth" type="client" />
+	<export function="dgsGridListGetColumnHeight" type="client" />
+	<export function="dgsGridListSetColumnHeight" type="client" />
 	<export function="dgsGridListAutoSizeColumn" type="client" />
 	<export function="dgsGridListGetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnTitle" type="client" />
