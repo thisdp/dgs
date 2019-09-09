@@ -257,7 +257,7 @@ function gridlistTest()
 	dgsGridListSetColumnFont(gridlist,1,"default-bold")
 	dgsGridListSetScrollPosition(gridlist,100)
 end
-gridlistTest()
+
 function centerEdit()
 	edit = dgsCreateEdit(100,300,300,100,"TestTestTest",false)
 	dgsSetProperty(edit,"alignment",{"left","center"})
