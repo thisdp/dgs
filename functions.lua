@@ -4,6 +4,7 @@ local tableRemove = table.remove
 local assert = assert
 local isElement = isElement
 local destroyElement = destroyElement
+local tableFind = table.find
 
 resourceTranslation = {}
 LanguageTranslation = {}
@@ -206,7 +207,7 @@ function dgsDetachElements(dgsElement)
 	local attachedTable = dgsElementData[dgsElement].attachedTo or {}
 	if isElement(attachedTable[1]) then
 		local attachedBy = dgsElementData[attachedTable[1]].attachedBy
-		local id = table.find(attachedBy,dgsElement)
+		local id = tableFind(attachedBy or {},dgsElement)
 		if id then
 			table.remove(attachedBy,dgsElement)
 		end
@@ -488,6 +489,10 @@ function dgsGetInputMode(...)
 	return guiGetInputMode(...)
 end
 
+function dgsGetBrowser(...)
+	return ...
+end
+
 function dgsFocus(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsFocus at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastFront = MouseData.nowShow
@@ -700,6 +705,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"attachedTo",false) --Attached To
 	dgsSetData(source,"attachedBy",{}) --Attached By
 	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!
+	dgsSetData(source,"enableFullEnterLeaveCheck",false)
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
@@ -710,7 +716,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	addEventHandler("onDgsFocus",source,function()
 		dgsElementData[this].isFocused = true
 	end,getPropagated)
-end)
+end,true)
 
 function dgsClear(theType,res)
 	if res == true then
@@ -809,7 +815,7 @@ function dgsAttachToTranslation(dgsEle,name)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsAttachToTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastTrans = dgsElementData[dgsEle]._translang
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
-		local id = table.find(LanguageTranslationAttach[name])
+		local id = tableFind(LanguageTranslationAttach[name])
 		if id then
 			table.remove(LanguageTranslationAttach[name])
 		end
@@ -825,7 +831,7 @@ function dgsDetachFromTranslation(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsDetachFromTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastTrans = dgsElementData[dgsEle]._translang
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
-		local id = table.find(LanguageTranslationAttach[name])
+		local id = tableFind(LanguageTranslationAttach[name])
 		if id then
 			table.remove(LanguageTranslationAttach[name])
 		end

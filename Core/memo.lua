@@ -320,6 +320,18 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	return true
 end
 
+function dgsMemoGetLineCount(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	local textTable = dgsElementData[memo].text
+	return #textTable
+end
+
+function dgsMemoGetLineLength(memo,line)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	local textTable = dgsElementData[memo].text
+	return textTable[line] and textTable[line][-1] or false
+end
+
 function dgsMemoGetCaretPosition(memo,detail)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]

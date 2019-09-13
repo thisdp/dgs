@@ -61,13 +61,6 @@ addEventHandler("onDgsWindowClose",root,function()
 			destroyElement(cmdSystem["window"])
 		end,500,1)
 	elseif dgsGetData(source,"animated") == 1 then
-		if isElement(cmdSystem["cmd"]) then
-			if source == netSystem["window"] then
-				outputCmdMessage(cmdSystem["cmd"],"Network Monitor: OFF")
-			elseif source == dxStatus["window"] then
-				outputCmdMessage(cmdSystem["cmd"],"Dx Status Monitor: OFF")
-			end
-		end
 		cancelEvent()
 		local children = dgsGetChildren(source)
 		for i=1,#children do
@@ -86,7 +79,8 @@ end)
 
 ----------------------------------------Insides
 dgsCmdAddCommandHandler("version",function(cmd)
-	outputCmdMessage(cmd,"[Version]1.62")
+	local version = getElementData(resourceRoot,"Version") or "N/A"
+	outputCmdMessage(cmd,version)
 end)
 
 dgsCmdAddCommandHandler("mode",function(cmd,cmdtype)
@@ -128,7 +122,7 @@ dgsCmdAddCommandHandler("dxstatus",function(cmd)
 		dgsShowCursor(true,"dx")
 	else
 		outputCmdMessage(cmd,"Dx Status Monitor: OFF")
-		triggerEvent("onDgsWindowClose",dxStatus["window"])
+		dgsCloseWindow(dxStatus["window"])
 	end
 end)
 
@@ -141,15 +135,20 @@ function netstatus(cmd)
 		dgsShowCursor(true,"net")
 	else
 		outputCmdMessage(cmd,"Network Monitor: OFF")
-		triggerEvent("onDgsWindowClose",netSystem["window"])
+		dgsCloseWindow(netSystem["window"])
 	end
 end
 dgsCmdAddCommandHandler("netstatus",netstatus)
 
 dgsCmdAddCommandHandler("help",function(cmd)
 	outputCmdMessage(cmd,"Help Commands:")
-	outputCmdMessage(cmd,"  Network Status ........ netstatus")
-	outputCmdMessage(cmd,"  Graphics Status ....... dxstatus")
+	outputCmdMessage(cmd," dxstatus")
+	outputCmdMessage(cmd," exit")
+	outputCmdMessage(cmd," mtaversion")
+	outputCmdMessage(cmd," mode")
+	outputCmdMessage(cmd," netstatus")
+	outputCmdMessage(cmd," serial")
+	outputCmdMessage(cmd," version")
 end)
 
 --[[

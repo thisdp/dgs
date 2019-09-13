@@ -30,10 +30,10 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent)
 		local cmd = dgsElementData[source].mycmd
 		if dgsGetPluginType(cmd) == "dgs-dxcmd" then
 			local text = dgsElementData[source].text
+			dgsEditClearText(source)
 			if text ~= "" then
 				receiveCmdEditInput(cmd,text)
 			end
-			dgsEditClearText(source)
 		end
 	end,false)
 	
@@ -145,6 +145,8 @@ end
 function outputCmdMessage(cmd,str)
 	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
 	dgsMemoAppendText(cmd,str,true)
+	local textTable = dgsElementData[cmd].text
+	dgsMemoSetCaretPosition(cmd,textTable[#textTable][-1])
 end
 
 function receiveCmdEditInput(cmd,str)
@@ -196,16 +198,19 @@ function executeCmdCommand(cmd,str,...)
 	local ifound = false
 	local cmdType = dgsGetData(cmd,"cmdType")
 	if cmdType == "function" then
+		outputCmdMessage(cmd,"Execute: "..str)
 		for k,v in pairs(eventHandlers[str] or {}) do
 			if type(v) == "function" then
 				ifound = true
 				v(cmd,unpack(arg))
+				break
 			end
 		end
 		if not ifound then
-			outputCmdMessage(cmd,"Coundn't Find Such Command:"..str)
+			outputCmdMessage(cmd,"Coundn't Find Command:"..str)
 		end
 	elseif cmdType == "event" then
+		outputCmdMessage(cmd,"Trigger: "..str)
 		if dgsCmdIsInWhiteList(cmd,dgsGetData(cmd,"preName")..str) then
 			ifound = true
 			triggerEvent(dgsGetData(cmd,"preName")..str,cmd,...)

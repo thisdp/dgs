@@ -470,6 +470,23 @@ function testShader()
 	local circle = dxCreateShader("shaders/circle.fx")
 	local image = dgsCreateImage(300,300,400,400,circle,false)
 end
+-----------------------------Plugin Test
+function scrollPane3DEffectTest()
+	material = dgsCreate3DInterface(0,0,4,4,4,500,500,tocolor(255,255,255,255),1,0,0,_,0)
+	dgsSetProperty(material,"maxDistance",1000)
+	dgsSetProperty(material,"fadeDistance",1000)
+	local img = dgsCreateImage(0,0,1,1,_,true,material,tocolor(0,0,0,180))
+	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,img)
+	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Interface Edit 2",false,img)
+	
+	local effect3d = dgsCreateEffect3D(20)
+	local sp = dgsCreateScrollPane(300,300,500,500,false)
+	local img = dgsCreateImage(0,0,1,1,_,true,sp,tocolor(0,0,0,180))
+	dgsEffect3DApplyToScrollPane(effect3d,sp)
+	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
+	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
+end
+
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass())()-- load OOP class

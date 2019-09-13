@@ -28,9 +28,10 @@ G2DHelp = {
 	{"-bk","	","Toggle backup (Be careful)"},
 	{"-c","	","Clear selections"},
 	{"-h","	","G2D Help"},
-	{"-s","	","Start Convert"},
 	{"-sel","Resource Name","Clear selections and select other resources (Support Pattern Match)"},
 	{"-l","	","List all selected resources"},
+	{"-e","	","Start to convert"},
+	{"-q","	","Stop converting process"},
 }
 
 function table.len(tab)
@@ -83,7 +84,33 @@ addCommandHandler("g2d",function(player,command,...)
 			elseif args[1] == "-bk" then
 				G2D.backup = not G2D.backup
 				outputDebugString(G2D.backup and "[DGS-G2D] Backup is enabled" or "[DGS-G2D] Backup is disabled, all operations will be irreversible!")
-				
+			elseif args[1] == "-e" then
+				if not G2D.Process then
+					print("[DGS-G2D] Scanning files...")
+					local process = {}
+					for resN,res in pairs(G2D.select) do
+						local xml = xmlLoadFile(":"..resN.."/meta.xml")
+						for k,v in pairs(xmlNodeGetChildren(xml)) do
+							if xmlNodeGetName(v) == "script" and xmlNodeGetAttribute(v,"type") == "client" then
+								local path = xmlNodeGetAttribute(v,"src")
+								table.insert(process,":"..resN.."/"..path)
+							end
+						end
+					end
+					print("[DGS-G2D] "..#process.." files to be converted")
+					G2D.Process = true
+					G2DStart(process)
+				else
+					print("[DGS-G2D] G2D is running!")
+				end
+			elseif args[1] == "-q" then
+				if G2D.Process then
+					
+					print("[DGS-G2D] G2D process terminated!")
+					G2D.Process = false
+				else
+					print("[DGS-G2D] G2D is not running!")
+				end
 			else
 				outputDebugString("[DGS-G2D] Command help")
 				outputDebugString("Option		Arguments		Comment")
@@ -537,27 +564,32 @@ setmetatable(AnalyzerState,{
 			return {
 				tokenIndex=0,
 				separatorDepth = 0,
+				blockDepth = 0,
 				lexResult=lexResult,
+				externalFunction = {},
 				replacedFunction = {},
+				replacedEvent = {},
 				executeProcess = function(self)
 					local GUIFnc = self.replacedFunction[1]
 					local DGSFnc = self.replacedFunction[2]
+					
+					local GUIEvt = self.replacedEvent[1]
+					local DGSEvt = self.replacedEvent[2]
 					local resLen = #self.lexResult
 					while(true) do
 						local arguments = {}
 						local argument = {}
 						local item = self:getNext()
 						if not item then break end
-						if item[2] == "identifier" then
+						if item[2] == "identifier" and GUIFnc then
 							if item[1] == GUIFnc[1] then	-- matched, get into the process
 								self.lexResult[self.tokenIndex][1] = DGSFnc[1]
-								--print("Found "..GUIFnc[1].." in line "..self.lexResult[self.tokenIndex][3])
 								local enterArgs = false
 								while(true) do
 									local continue = false
 									item = self:getNext()
 									if not item then break end
-									if item[2] ~= "space" then
+									--if item[2] ~= "space" then
 										if item[2] == "separator" then
 											if item[1] == "(" then
 												enterArgs = true
@@ -581,18 +613,35 @@ setmetatable(AnalyzerState,{
 										if self.separatorDepth == 0 and enterArgs then
 											break
 										end
-									end
+									--end
 									if self.separatorDepth >= 1 and not continue and enterArgs then
 										table.insert(argument,self.tokenIndex)
 									end
 								end
 							end
+						elseif item[2] == "short string" and DGSEvt then
+							if item[1] == GUIEvt[1] then
+								self.lexResult[self.tokenIndex][1] = DGSEvt[1]
+							end
 						end
 					end
 				end,
-				getNext = function(self)
+				getNext = function(self,dontSkipSpace)
 					self.tokenIndex = self.tokenIndex+1
+					if self.lexResult[self.tokenIndex][2] == "space" and not dontSkipSpace then
+						return self:getNext()
+					end
 					return self.lexResult[self.tokenIndex]
+				end,
+				getCurrent = function(self)
+					return self.lexResult[self.tokenIndex]
+				end,
+				removeCurrent = function(self)
+					table.remove(self.lexResult,self.tokenIndex)
+					return self.tokenIndex
+				end,
+				insertCurrent = function(self,insert)
+					table.insert(self.lexResult,self.tokenIndex,insert)
 				end,
 				set = function(self,repFnc)
 					self.replacedFunction = repFnc
@@ -602,6 +651,7 @@ setmetatable(AnalyzerState,{
 				generateFile = function(self)
 					local file = fileCreate("tmp.txt")
 					local newtab = {}
+					local isDGSDef = false
 					for i=1,#self.lexResult do
 						if self.lexResult[i][2] == "short comment" then
 							newtab[i] = "--"..self.lexResult[i][1]
@@ -612,8 +662,14 @@ setmetatable(AnalyzerState,{
 						elseif self.lexResult[i][2] == "long string" then
 							newtab[i] = "[["..self.lexResult[i][1].."]]"
 						else
+							if newtab[i][1] == "__DGSDef" then
+								isDGSDef = true
+							end
 							newtab[i] = self.lexResult[i][1]
 						end
+					end
+					if not isDGSDef then
+						table.insert(newtab,Hooker)
 					end
 					fileWrite(file,table.concat(newtab))
 					fileClose(file)
@@ -750,27 +806,46 @@ convertFunctionTable = {
 	{{"guiScrollPaneSetHorizontalScrollPosition"},{"dgsScrollPaneSetHorizontalScrollPosition"}},
 	{{"guiScrollPaneSetVerticalScrollPosition"},{"dgsScrollPaneSetVerticalScrollPosition"}},
 	{{"guiGridListInsertRowAfter"},{"dgsGridListInsertRowAfter"}},
-	{{"guiGetBrowser"},{""}},
+	{{"guiGetBrowser"},{"dgsGetBrowser"}},
 }
 
+Hooker = [[
+--G2D Converted
+if not __DGSDef then
+	addEvent("onDgsEditAccepted-C",true)
+	addEvent("onDgsTextChange-C",true)
+	addEvent("onDgsComboBoxSelect-C",true)
+	addEvent("onDgsTabSelect-C",true)
+	function fncTrans(...)
+		triggerEvent(eventName.."-C",source,source,...)
+	end
+	addEventHandler("onDgsEditAccepted",root,fncTrans)
+	addEventHandler("onDgsTextChange",root,fncTrans)
+	addEventHandler("onDgsComboBoxSelect",root,fncTrans)
+	addEventHandler("onDgsTabSelect",root,fncTrans)
+	loadstring(exports.dgs:dgsImportFunction())()
+	__DGSDef = true
+end
+]]
+
 converEventTable = {
-	{{"onClientGUIAccepted"},{"onDgsEditAccepted"}},
-	{{"onClientGUIBlur"},{"onDgsBlur"}},
-	{{"onClientGUIChanged"},{"onDgsTextChange"}},
-	{{"onClientGUIClick"},{"onDgsMouseClickUp"}},
-	{{"onClientGUIComboBoxAccepted"},{"onDgsComboBoxSelect"}},
-	{{"onClientGUIDoubleClick"},{"onDgsMouseDoubleClick"}},
-	{{"onClientGUIFocus"},{"onDgsFocus"}},
-	{{"onClientGUIMouseDown"},{"onDgsMouseDown"}},
-	{{"onClientGUIMouseUp"},{"onDgsMouseUp"}},
-	{{"onClientGUIMove"},{"onDgsElementMove"}},
-	{{"onClientGUIScroll"},{"onDgsScrollBarScroll"}},
-	{{"onClientGUISize"},{"onDgsElementSize"}},
-	{{"onClientGUITabSwitched"},{"onDgsTabSelect"}},
-	{{"onClientMouseEnter"},{"onDgsMouseEnter"}},
-	{{"onClientMouseLeave"},{"onDgsMouseLeave"}},
-	{{"onClientMouseMove"},{"onDgsMouseMove"}},
-	{{"onClientMouseWheel"},{"onDgsMouseWheel"}},
+	{{"onClientGUIAccepted",			},{"onDgsEditAccepted-C"}},
+	{{"onClientGUIBlur",				},{"onDgsBlur"}},
+	{{"onClientGUIChanged",				},{"onDgsTextChange-C"}},
+	{{"onClientGUIClick",				},{"onDgsMouseClickUp"}},
+	{{"onClientGUIComboBoxAccepted",	},{"onDgsComboBoxSelect-C"}},
+	{{"onClientGUIDoubleClick",			},{"onDgsMouseDoubleClick"}},
+	{{"onClientGUIFocus",				},{"onDgsFocus"}},
+	{{"onClientGUIMouseDown",			},{"onDgsMouseDown"}},
+	{{"onClientGUIMouseUp",				},{"onDgsMouseUp"}},
+	{{"onClientGUIMove",				},{"onDgsElementMove"}},
+	{{"onClientGUIScroll",				},{"onDgsElementScroll"}},
+	{{"onClientGUISize",				},{"onDgsElementSize"}},
+	{{"onClientGUITabSwitched",			},{"onDgsTabSelect-C"}},
+	{{"onClientMouseEnter",				},{"onDgsMouseEnter"}},
+	{{"onClientMouseLeave",				},{"onDgsMouseLeave"}},
+	{{"onClientMouseMove",				},{"onDgsMouseMove"}},
+	{{"onClientMouseWheel",				},{"onDgsMouseWheel"}},
 }
 
 
@@ -783,39 +858,39 @@ G2DRunningData = {
 	Timer= false
 }
 
-function G2DStart()
-	local file = fileOpen("client.lua")
+function G2DStart(fileNames)
+	print("[G2D] Start coroutine")
+	local cor = coroutine.create(processFile)
+	print(coroutine.resume(cor,cor,fileNames))
+	
+end
+
+function processFile(cor,files,index)
+	local k,filename = next(files,index)
+	if not k then return print("[G2D] Process Complete") end
+	print("[G2D] Starting to process file '"..filename.."'")
+	local file = fileOpen(filename)
 	local str = fileRead(file,fileGetSize(file))
 	fileClose(file)
 	local ls = LexState(str)
 	DGSLLex(ls)
 	local az = AnalyzerState(ls.result)
-	local runningProcess = 1
-	local getTickCount = getTickCount
 	local convTabCnt = #convertFunctionTable
-	setTimer(function()
-		local tick = getTickCount()
-		for i=runningProcess,convTabCnt do
-			if not convertFunctionTable[i] then break end
-			az:set(convertFunctionTable[i])
-			az:executeProcess()
-			runningProcess = i
-			if getTickCount()-tick >= 95 then
-				runningProcess = i+1
-				tick = getTickCount()
-				break
-			end
+	local tick = getTickCount()
+	for i=1,convTabCnt do
+		az:set(convertFunctionTable[i])
+		az:executeProcess()
+		if getTickCount()-tick >= 95 then
+			showProgress((i-1)/convTabCnt*100)
+			setTimer(function(cor)
+				coroutine.resume(cor)
+			end,25,1,cor)
+			coroutine.yield(filename)
 		end
-		if runningProcess >= convTabCnt then
-			showProgress(100)
-			killTimer(sourceTimer)
-			
-			print("[G2D]Generating file...")
-			az:generateFile()
-			print("[G2D]Saved to file")
-			
-		else
-			showProgress((runningProcess-1)/convTabCnt*100)
-		end
-	end,100,0)
+	end
+	showProgress(100)
+	print("[G2D] Generating file...")
+	az:generateFile()
+	print("[G2D] Saved to file")
+	return processFile(cor,files,k)
 end

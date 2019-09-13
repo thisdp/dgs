@@ -1818,7 +1818,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawRectangle(x,y,relSizX,relSizY,bgColor,rendSet)
 					end
 					dxSetBlendMode("add")
-					dxDrawImage(x,y,relSizX,relSizY,newRndTgt,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					local filter = eleData.filter
+					local drawTarget = newRndTgt
+					if filter then
+						if isElement(filter[1]) then
+							dxSetShaderValue(filter[1],"gTexture",newRndTgt)
+							dxSetShaderTransform(filter[1],filter[2],filter[3],filter[4],filter[5],filter[6],filter[7],filter[8],filter[9],filter[10],filter[11])
+							drawTarget = filter[1]
+						end
+					end
+					dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 				------------------------------------OutLine
@@ -3618,6 +3627,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 		else
 			interrupted = true
 		end
+		local oldMouseIn = eleData.rndTmp_mouseIn or false
+		local newMouseIn = MouseData.hit and true or false
+		if eleData.enableFullEnterLeaveCheck then
+			if oldMouseIn ~= newMouseIn then
+				eleData.rndTmp_mouseIn = newMouseIn
+				triggerEvent("onDgsElement"..(newMouseIn and "Enter" or "Leave"),v)
+			end
+		end
 		if eleData.renderEventCall then
 			triggerEvent("onDgsElementRender",v,x,y,w,h)
 		end
@@ -4290,7 +4307,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			else
 				local id = tableFind(ChildrenTable[parent] or {},source)
 				if id then
-					tableRemove(ChildrenTable[parent] or {},id)
+					tableRemove(ChildrenTable[parent],id)
 				end
 			end
 		end
