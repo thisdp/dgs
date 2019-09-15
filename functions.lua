@@ -4,6 +4,7 @@ local tableRemove = table.remove
 local assert = assert
 local isElement = isElement
 local destroyElement = destroyElement
+local tableFind = table.find
 
 resourceTranslation = {}
 LanguageTranslation = {}
@@ -169,18 +170,18 @@ function dgsSetSize(dgsElement,x,y,bool)
 	return true
 end
 
-function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width,height,relativeSize)
+function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dxgui got "..dgsGetType(attachTo))
 	assert(not dgsGetParent(dgsElement),"Bad argument @dgsAttachElements at argument 1, source dgs element shouldn't have a parent")
 	dgsDetachElements(dgsElement)
-	if not width or not height then
+	if not offsetW or not offsetH then
 		local size = dgsElementData[dgsElement].absSize
-		width,height = size[1],size[2]
+		offsetW,offsetH = size[1],size[2]
 		relativeSize = false
 	end
 	offsetX,offsetY = offsetX or 0,offsetY or 0
-	local attachedTable = {attachTo,offsetX,offsetY,relativePos,width,height,relativeSize}
+	local attachedTable = {attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize}
 	local attachedBy = dgsElementData[attachTo].attachedBy
 	table.insert(attachedBy,dgsElement)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
@@ -189,8 +190,10 @@ function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,width
 	local absx,absy = dgsGetPosition(attachTo,false,true)
 	local absw,absh = dgsElementData[attachTo].absSize[1],dgsElementData[attachTo].absSize[2]
 	offsetX,offsetY = relativePos and absw*offsetX or offsetX, relativePos and absh*offsetY or offsetY
+	offsetW,offsetH = relativeSize and absw*offsetW or offsetW, relativeSize and absh*offsetH or offsetH
+	offsetW,offsetH = relativeSize and offsetW/sW or offsetW,relativeSize and offsetH/sH or offsetH
 	local resX,resY = (absx+offsetX)/sW,(absy+offsetY)/sH
-	calculateGuiPositionSize(dgsElement,resX,resY,relativePos,width,height,relativeSize)
+	calculateGuiPositionSize(dgsElement,resX,resY,relativePos,offsetW,offsetH,relativeSize)
 	return true
 end
 
@@ -204,7 +207,7 @@ function dgsDetachElements(dgsElement)
 	local attachedTable = dgsElementData[dgsElement].attachedTo or {}
 	if isElement(attachedTable[1]) then
 		local attachedBy = dgsElementData[attachedTable[1]].attachedBy
-		local id = table.find(attachedBy,dgsElement)
+		local id = tableFind(attachedBy or {},dgsElement)
 		if id then
 			table.remove(attachedBy,dgsElement)
 		end
@@ -486,6 +489,10 @@ function dgsGetInputMode(...)
 	return guiGetInputMode(...)
 end
 
+function dgsGetBrowser(...)
+	return ...
+end
+
 function dgsFocus(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsFocus at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastFront = MouseData.nowShow
@@ -698,6 +705,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"attachedTo",false) --Attached To
 	dgsSetData(source,"attachedBy",{}) --Attached By
 	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!
+	dgsSetData(source,"enableFullEnterLeaveCheck",false)
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
@@ -708,12 +716,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	addEventHandler("onDgsFocus",source,function()
 		dgsElementData[this].isFocused = true
 	end,getPropagated)
-end)
-
-addEventHandler("onDgsPluginCreate",root,function(theResource)
-	ChildrenTable[source] = ChildrenTable[source] or {}
-	insertResource(theResource,source)
-end)
+end,true)
 
 function dgsClear(theType,res)
 	if res == true then
@@ -812,7 +815,7 @@ function dgsAttachToTranslation(dgsEle,name)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsAttachToTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastTrans = dgsElementData[dgsEle]._translang
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
-		local id = table.find(LanguageTranslationAttach[name])
+		local id = tableFind(LanguageTranslationAttach[name])
 		if id then
 			table.remove(LanguageTranslationAttach[name])
 		end
@@ -828,7 +831,7 @@ function dgsDetachFromTranslation(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsDetachFromTranslation at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastTrans = dgsElementData[dgsEle]._translang
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
-		local id = table.find(LanguageTranslationAttach[name])
+		local id = tableFind(LanguageTranslationAttach[name])
 		if id then
 			table.remove(LanguageTranslationAttach[name])
 		end

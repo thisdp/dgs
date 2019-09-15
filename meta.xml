@@ -20,7 +20,6 @@
 	<script src="ParentManager.lua" type="client" />
 	<script src="client.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
-	<script src="Core/cmd.lua" type="client" />
 	<script src="Core/eda.lua" type="client" />
 	<script src="Core/detectarea.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
@@ -47,10 +46,14 @@
 	<script src="plugin/media.lua" type="client" />
 	<script src="plugin/roundRect.lua" type="client" />
 	<script src="animation.lua" type="client" />
-	<script src="dxCmdEvent.lua" type="client" />
-	<script src="oopClass.lua" type="client" />
 	
 	
+	<script src="plugin/pluginManager.lua" type="client" />
+	<script src="plugin/cmd.lua" type="client" />
+	<script src="plugin/BlurBox/BlurBox.lua" type="client" />
+	<file src="plugin/BlurBox/BlurBox.fx" type="client" />
+	<script src="plugin/Effect3D/Effect3D.lua" type="client" />
+	<file src="plugin/Effect3D/Effect3D.fx" type="client" />
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
 	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
@@ -61,6 +64,9 @@
 	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
+	
+	<script src="dxCmdEvent.lua" type="client" />
+	<script src="oopClass.lua" type="client" />
 	
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
@@ -174,6 +180,7 @@
 	<export function="dgsGetCursorPosition" type="client" />
 	<export function="dgsSetDoubleClickInterval" type="client" />
 	<export function="dgsGetDoubleClickInterval" type="client" />
+	<export function="dgsGetBrowser" type="client" />
 
 	<export function="dgsTranslationTableExists" type="client" />
 	<export function="dgsSetTranslationTable" type="client" />
@@ -235,6 +242,8 @@
 	<export function="dgsScrollPaneGetHorizontalScrollPosition" type="client" />
 	<export function="dgsScrollPaneSetVerticalScrollPosition" type="client" />
 	<export function="dgsScrollPaneGetVerticalScrollPosition" type="client" />
+	<export function="dgsScrollPaneSetViewOffset" type="client" />
+	<export function="dgsScrollPaneGetViewOffset" type="client" />
 	
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
@@ -329,6 +338,8 @@
 	<export function="dgsMemoGetWordWarpState" type="client" />
 	<export function="dgsMemoSetScrollBarState" type="client" />
 	<export function="dgsMemoGetScrollBarState" type="client" />
+	<export function="dgsMemoGetLineLength" type="client" />
+	<export function="dgsMemoGetLineCount" type="client" />
 
 	<export function="dgsCreateMediaBrowser" type="client" />
 	<export function="dgsMediaLoadMedia" type="client" />
@@ -413,6 +424,8 @@
 	<export function="dgsGridListGetColumnAllWidth" type="client" />
 	<export function="dgsGridListGetColumnWidth" type="client" />
 	<export function="dgsGridListSetColumnWidth" type="client" />
+	<export function="dgsGridListGetColumnHeight" type="client" />
+	<export function="dgsGridListSetColumnHeight" type="client" />
 	<export function="dgsGridListAutoSizeColumn" type="client" />
 	<export function="dgsGridListGetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnTitle" type="client" />
@@ -510,6 +523,13 @@
 	<export function="dgsUnbindFromColorPicker" type="client" />
 	<export function="dgsColorPickerGetColor" type="client" />
 	<export function="dgsColorPickerSetColor" type="client" />
+	
+	<export function="dgsCreateBlurBox" type="client" />
+	<export function="dgsBlurBoxRender" type="client" />
+	
+	<export function="dgsCreateEffect3D" type="client" />
+	<export function="dgsEffect3DApplyToScrollPane" type="client" />
+	<export function="dgsEffect3DRemoveFromScrollPane" type="client" />
 	
 	<export function="dgsRGBToHSV" type="client" />
 	<export function="dgsRGBToHSL" type="client" />

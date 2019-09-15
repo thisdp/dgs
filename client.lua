@@ -45,6 +45,7 @@ blue = 0xFF0000FF
 yellow = 0xFFFFFF00
 fontSize = {}
 systemFont = styleSettings.systemFont
+self,renderArguments = false,false
 dgsRenderSetting = {
 	postGUI = nil,
 	renderPriority = "normal",
@@ -513,6 +514,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 		local x,y,cx,cy = position[1],position[2],position[3],position[4]
 		eleData.rndTmpData.coordinate = {x,y,cx,cy}
 		self = v
+		renderArguments = {x,y,w,h}
 		local interrupted = false
 		local rendSet = not debugMode and noRenderTarget and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
 		if dxType == "dgs-dxwindow" then
@@ -1825,7 +1827,16 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawRectangle(x,y,relSizX,relSizY,bgColor,rendSet)
 					end
 					dxSetBlendMode("add")
-					dxDrawImage(x,y,relSizX,relSizY,newRndTgt,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+					local filter = eleData.filter
+					local drawTarget = newRndTgt
+					if filter then
+						if isElement(filter[1]) then
+							dxSetShaderValue(filter[1],"gTexture",newRndTgt)
+							dxSetShaderTransform(filter[1],filter[2],filter[3],filter[4],filter[5],filter[6],filter[7],filter[8],filter[9],filter[10],filter[11])
+							drawTarget = filter[1]
+						end
+					end
+					dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end
 				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 				------------------------------------OutLine
@@ -3167,98 +3178,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			else
 				visible = false
 			end
-		elseif dxType == "dgs-dxcmd" then
-			if x and y then
-				if eleData.PixelInt then
-					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
-				end
-				local colors,imgs = eleData.bgColor,eleData.bgImage
-				colors = applyColorAlpha(colors,galpha)
-				------------------------------------
-				if eleData.functionRunBefore then
-					local fnc = eleData.functions
-					if type(fnc) == "table" then
-						fnc[1](unpack(fnc[2]))
-					end
-				end
-				------------------------------------
-				if imgs then
-					dxDrawImage(x,y,w,h,imgs,0,0,0,colors,rendSet)
-				else
-					dxDrawRectangle(x,y,w,h,colors,rendSet)
-				end
-				local leading,cmdtexts = eleData.leading,eleData.texts or {}
-				local canshow = floor(h/eleData.leading)-1
-				local rowoffset = 0
-				local readyToRenderTable = {}
-				local font = eleData.font
-				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
-				for i=1,#cmdtexts do
-					local movex = 0
-					local rndStr = ""
-					for cnt=1,#cmdtexts[i] do
-						local letter = cmdtexts[i][cnt]
-						rndStr = rndStr..letter
-						local width = dxGetTextWidth(letter,txtSizX,font)
-						movex = movex+width
-						if movex+25 >= w then
-							tableInsert(readyToRenderTable,{rndStr,movex})
-							rndStr = ""
-							movex = 0
-						end
-					end
-					if rndStre ~= "" then
-						tableInsert(readyToRenderTable,{rndStr,movex})
-					end
-					if #readyToRenderTable >= canshow then
-						break
-					end
-				end
-				for i=#readyToRenderTable,1,-1 do
-					local width = readyToRenderTable[i][2]
-					dxDrawText(readyToRenderTable[i][1],x+5,y+(i-1)*leading,x+width+5,y+i*leading,white,txtSizX,txtSizY,font,"left","bottom",false,true,rendSet)
-				end
-				------------------------------------OutLine
-				local outlineData = eleData.outline
-				if outlineData then
-					local sideColor = outlineData[3]
-					local sideSize = outlineData[2]
-					local hSideSize = sideSize*0.5
-					sideColor = applyColorAlpha(sideColor,galpha)
-					local side = outlineData[1]
-					if side == "in" then
-						dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize,rendSet)
-					elseif side == "center" then
-						dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
-					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
-					end
-				end
-				------------------------------------
-				if not eleData.functionRunBefore then
-					local fnc = eleData.functions
-					if type(fnc) == "table" then
-						fnc[1](unpack(fnc[2]))
-					end
-				end
-				------------------------------------
-				if enabled[1] and mx then
-					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-						MouseData.hit = v
-					end
-				end
-			else
-				visible = false
-			end
 		elseif dxType == "dgs-dx3dinterface" then
 			local pos = eleData.position
 			local size = eleData.size
@@ -3717,6 +3636,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 		else
 			interrupted = true
 		end
+		local oldMouseIn = eleData.rndTmp_mouseIn or false
+		local newMouseIn = MouseData.hit and true or false
+		if eleData.enableFullEnterLeaveCheck then
+			if oldMouseIn ~= newMouseIn then
+				eleData.rndTmp_mouseIn = newMouseIn
+				triggerEvent("onDgsElement"..(newMouseIn and "Enter" or "Leave"),v)
+			end
+		end
 		if eleData.renderEventCall then
 			triggerEvent("onDgsElementRender",v,x,y,w,h)
 		end
@@ -3838,7 +3765,7 @@ function onClientKeyTriggered(button)
 			dgsEditMoveCaret(dgsEdit,1,shift)
 		elseif button == "arrow_u" then
 			local cmd = dgsElementData[dgsEdit].mycmd
-			if dgsGetType(cmd) == "dgs-dxcmd" then
+			if dgsGetPluginType(cmd) == "dgs-dxcmd" then
 				local int = dgsElementData[cmd].cmdCurrentHistory+1
 				local history = dgsElementData[cmd].cmdHistory
 				if history[int] then
@@ -3849,7 +3776,7 @@ function onClientKeyTriggered(button)
 			end
 		elseif button == "arrow_d" then
 			local cmd = dgsElementData[dgsEdit].mycmd
-			if dgsGetType(cmd) == "dgs-dxcmd" then
+			if dgsGetPluginType(cmd) == "dgs-dxcmd" then
 				local int = dgsElementData[cmd].cmdCurrentHistory-1
 				local history = dgsElementData[cmd].cmdHistory
 				if history[int] then
@@ -4065,7 +3992,7 @@ addEventHandler("onDgsTextChange",root,function()
 	local text = dgsElementData[source].text
 	local parent = dgsElementData[source].mycmd
 	if isElement(parent) then
-		if dgsGetType(parent) == "dgs-dxcmd" then
+		if dgsGetPluginType(parent) == "dgs-dxcmd" then
 			local hisid = dgsElementData[parent].cmdCurrentHistory
 			local history = dgsElementData[parent].cmdHistory
 			if history[hisid] ~= text then
@@ -4389,7 +4316,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			else
 				local id = tableFind(ChildrenTable[parent] or {},source)
 				if id then
-					tableRemove(ChildrenTable[parent] or {},id)
+					tableRemove(ChildrenTable[parent],id)
 				end
 			end
 		end
@@ -4479,7 +4406,7 @@ function checkScale(source)
 		return true
 	elseif dgsGetType(source) == "dgs-dxwindow" then
 		local mx,my = getCursorPosition()
-		mx,my = (mx or -1)*sW,(my or -1)*sH
+		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
 		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 		local offsets = {mx-x,my-y,mx-x-w,my-y-h}
@@ -4630,7 +4557,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						local column = dgsElementData[guiele].selectedColumn
 						if column and column >= 1 then
 							local sortFunction = dgsElementData[guiele].sortFunction
-							local targetfunction = sortFunction == sortFunctions_upper and sortFunctions_lower or sortFunctions_upper
+							local targetfunction = (sortFunction == sortFunctions_upper or dgsElementData[guiele].sortColumn ~= column) and sortFunctions_lower or sortFunctions_upper
 							dgsGridListSetSortFunction(guiele,targetfunction)
 							dgsGridListSetSortColumn(guiele,column)
 						end
@@ -4913,8 +4840,6 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 	if absSize[1] ~= oldSizeAbsx or absSize[2] ~= oldSizeAbsy then
 		if typ == "dgs-dxgridlist" then
 			configGridList(source)
-		elseif typ == "dgs-dxcmd" then
-			configCMD(source)
 		elseif typ == "dgs-dxedit" then
 			configEdit(source)
 		elseif typ == "dgs-dxscrollpane" then

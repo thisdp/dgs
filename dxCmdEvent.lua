@@ -4,7 +4,6 @@ triggerServerEvent("getMyIP",localPlayer)
 addEventHandler("giveIPBack",root,function(ip)
 	dgs_MyIP = ip
 end)
-local dsm = dxCreateFont("dsm.ttf",9)
 
 cmdSystem = {}
 netSystem = {}
@@ -13,17 +12,15 @@ addCommandHandler("cmd",function()
 	guiSetInputMode("no_binds_when_editing")
 	if not isElement(cmdSystem["window"]) then
 		cmdSystem["window"] = dgsCreateWindow(sW*0.5-20,sH*0.5,40,25,"CMD",false,tocolor(255,0,0,255),_,_,tocolor(80,140,200,255))
+		dgsWindowSetSizable(cmdSystem["window"],false)
 		dgsSetProperty(cmdSystem["window"],"outline",{"out",1,tocolor(100,100,100,255)})
-		dgsSetFont(cmdSystem["window"],dsm)
 		dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.5,false,false,"OutQuad",300)
 		dgsSizeTo(cmdSystem["window"],sW*0.5,25,false,false,"OutQuad",300)
 		setTimer(function()
 			dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.25,false,false,"InQuad",300)
 			dgsSizeTo(cmdSystem["window"],sW*0.5,sH*0.6,false,false,"InQuad",300)
 			setTimer(function()
-				cmdSystem["cmd"] = dgsCreateCmd(0,0,1,1,true,cmdSystem["window"],1,1)
-				dgsSetFont(cmdSystem.cmd,dsm)
-				dgsSetFont(dgsElementData[cmdSystem.cmd].cmdEdit,dsm)
+				cmdSystem["cmd"] = dgsCreateCmd(0,0,sW*0.5,sH*0.6-45,false,cmdSystem["window"],1,1)
 				dgsCmdAddEventToWhiteList(cmdSystem["cmd"],{"changeMode"})
 				local version = getElementData(resourceRoot,"Version") or "N/A"
 				outputCmdMessage(cmdSystem["cmd"],"( Thisdp's Dx Graphical User Interface System ) Version: "..version)
@@ -64,13 +61,6 @@ addEventHandler("onDgsWindowClose",root,function()
 			destroyElement(cmdSystem["window"])
 		end,500,1)
 	elseif dgsGetData(source,"animated") == 1 then
-		if isElement(cmdSystem["cmd"]) then
-			if source == netSystem["window"] then
-				outputCmdMessage(cmdSystem["cmd"],"Network Monitor: OFF")
-			elseif source == dxStatus["window"] then
-				outputCmdMessage(cmdSystem["cmd"],"Dx Status Monitor: OFF")
-			end
-		end
 		cancelEvent()
 		local children = dgsGetChildren(source)
 		for i=1,#children do
@@ -89,7 +79,8 @@ end)
 
 ----------------------------------------Insides
 dgsCmdAddCommandHandler("version",function(cmd)
-	outputCmdMessage(cmd,"[Version]1.62")
+	local version = getElementData(resourceRoot,"Version") or "N/A"
+	outputCmdMessage(cmd,version)
 end)
 
 dgsCmdAddCommandHandler("mode",function(cmd,cmdtype)
@@ -131,7 +122,7 @@ dgsCmdAddCommandHandler("dxstatus",function(cmd)
 		dgsShowCursor(true,"dx")
 	else
 		outputCmdMessage(cmd,"Dx Status Monitor: OFF")
-		triggerEvent("onDgsWindowClose",dxStatus["window"])
+		dgsCloseWindow(dxStatus["window"])
 	end
 end)
 
@@ -144,15 +135,20 @@ function netstatus(cmd)
 		dgsShowCursor(true,"net")
 	else
 		outputCmdMessage(cmd,"Network Monitor: OFF")
-		triggerEvent("onDgsWindowClose",netSystem["window"])
+		dgsCloseWindow(netSystem["window"])
 	end
 end
 dgsCmdAddCommandHandler("netstatus",netstatus)
 
 dgsCmdAddCommandHandler("help",function(cmd)
 	outputCmdMessage(cmd,"Help Commands:")
-	outputCmdMessage(cmd,"  Network Status ........ netstatus")
-	outputCmdMessage(cmd,"  Graphics Status ....... dxstatus")
+	outputCmdMessage(cmd," dxstatus")
+	outputCmdMessage(cmd," exit")
+	outputCmdMessage(cmd," mtaversion")
+	outputCmdMessage(cmd," mode")
+	outputCmdMessage(cmd," netstatus")
+	outputCmdMessage(cmd," serial")
+	outputCmdMessage(cmd," version")
 end)
 
 --[[
@@ -453,7 +449,7 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local LineBlue = tocolor(80,180,255,255)
 			for i=1,#speedSend-1 do
 				local nextone = speedSend[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedSend[i]/maxPos)-1,LineBlue,1,not DEBUG_MODE)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedSend[i]/maxPos)-1,LineBlue,1,dgsRenderSetting.postGUI)
 			end
 			dgsSetText(netSystem["picture_sen_max"],maxPos.."Byte/s")
 		end)
@@ -465,7 +461,7 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local LineBlue = tocolor(80,180,255,255)
 			for i=1,#speedRecv-1 do
 				local nextone = speedRecv[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedRecv[i]/maxPos)-1,LineBlue,1,not DEBUG_MODE)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedRecv[i]/maxPos)-1,LineBlue,1,dgsRenderSetting.postGUI)
 			end
 			dgsSetText(netSystem["picture_rec_max"],maxPos.."Byte/s")
 		end)
@@ -476,7 +472,7 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local LineBlue = tocolor(80,180,255,255)
 			for i=1,#percentLoss-1 do
 				local nextone = percentLoss[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/100)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(percentLoss[i]/100)-1,LineBlue,1,not DEBUG_MODE)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/100)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(percentLoss[i]/100)-1,LineBlue,1,dgsRenderSetting.postGUI)
 			end
 		end)
 		

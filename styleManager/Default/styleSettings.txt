@@ -253,7 +253,7 @@
 		rowHeight = 15,
 		sectionColumnOffset = -10,
 		defaultColumnOffset = 0,
-		backgroundOffset = -5,
+		backgroundOffset = -10,
 		scrollBarThick = 20,
 	},
 

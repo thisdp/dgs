@@ -20,31 +20,23 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 	resizeBrowser(browser,browserw or size[1],browserh or size[2])
 	dgsSetData(browser,"browserSize",{browserw or size[1],browserh or size[2]})
 	triggerEvent("onDgsCreate",browser,sourceResource)
-	return browser
-end
-
-addEventHandler("onDgsCursorMove",resourceRoot,function(x,y)
-	if dgsGetType(source) == "dgs-dxbrowser" then
+	addEventHandler("onDgsMouseMove",browser,function(x,y)
 		local size = dgsElementData[source].absSize
 		local brosize = dgsElementData[source].browserSize
 		local startX,startY = dgsGetPosition(source,false,true)
 		injectBrowserMouseMove(source,(x-startX)/size[1]*brosize[1],(y-startY)/size[2]*brosize[2])
-	end
-end)
-
-addEventHandler("onDgsMouseWheel",resourceRoot,function(upOrDown)
-	if dgsGetType(source) == "dgs-dxbrowser" then
+	end,false)
+	addEventHandler("onDgsMouseWheel",browser,function(upOrDown)
 		injectBrowserMouseWheel(source,upOrDown*40,0)
-	end
-end)
-
-addEventHandler("onDgsMouseClick",resourceRoot,function(button,state)
-	if dgsGetType(source) == "dgs-dxbrowser" then
+	end)
+	addEventHandler("onDgsMouseClick",browser,function(button,state)
 		focusBrowser(source)
 		if state == "down" then
 			injectBrowserMouseDown(source, button)
 		else
 			injectBrowserMouseUp(source, button)
-		end 
-	end
-end)
+		end
+	end)
+	return browser
+end
+

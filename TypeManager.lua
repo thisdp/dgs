@@ -4,7 +4,6 @@ dgsType = {
 	"dgs-dx3dtext",
 	"dgs-dxarrowlist",
 	"dgs-dxbutton",
-	"dgs-dxcmd",
 	"dgs-dxedit",
 	"dgs-dxmemo",
 	"dgs-dxeda",
@@ -41,7 +40,7 @@ function dgsGetType(dgsGUI)
 end
 
 function dgsGetPluginType(dgsGUI)
-	return dgsGUI and dgsElementData[dgsGUI].asPlugin or false
+	return dgsGUI and dgsElementData[dgsGUI].asPlugin or dgsGetType(dgsGUI)
 end
 
 function dgsSetType(dgsGUI,myType)
@@ -53,5 +52,5 @@ function dgsSetType(dgsGUI,myType)
 end
 
 function dgsIsDxElement(element)
-	return isElement(element) and ((dgsElementType[element] or ""):sub(1,6) == "dgs-dx")
+	return isElement(element) and ((dgsElementType[element] or (dgsElementData[element] and dgsElementData[element].asPlugin) or ""):sub(1,6) == "dgs-dx")
 end

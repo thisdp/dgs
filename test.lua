@@ -56,6 +56,7 @@ function createFullDemo()
 	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+
 ------------
 
 function createTest()
@@ -87,11 +88,12 @@ function createTest()
 	dgsSizeTo(wind,0.5*sW,0.5*sH,false,false,"test_line",1000)
 end
 
+
 function createScrollPane()
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.6*sH,"Example Scroll Pane (exclude this window)",false)
 	pane1 = dgsCreateScrollPane(0,0,400,400,false,wind)
 	
-	gridlist = dgsCreateGridList(0,0,500,500,false,pane1)
+	gridlist = dgsCreateGridList(0,0,5000,5000,false,pane1)
 	local dsm = dxCreateFont("dsm.ttf")
 	dgsSetFont(gridlist,dsm)
 	dgsGridListAddColumn(gridlist,"test1",0.3)
@@ -101,6 +103,10 @@ function createScrollPane()
 		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
+	setTimer(function()
+	local x,y = dgsScrollPaneGetViewOffset(pane1)
+	dgsScrollPaneSetViewOffset(pane1,x+10)
+	end,50,0)
 end
 
 function createTest2()
@@ -246,7 +252,7 @@ function gridlistTest()
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
 	dgsGridListSetMultiSelectionEnabled(gridlist,true)
-	dgsGridListSetSelectedItems(gridlist,{{true,true,true}})
+	dgsGridListSetSelectedItems(gridlist,{{1,1},{1,2}})
 	configGridList(gridlist)
 	dgsGridListSetColumnFont(gridlist,1,"default-bold")
 	dgsGridListSetScrollPosition(gridlist,100)
@@ -326,15 +332,39 @@ function testBrowser()
 end
 
 function test3DInterface()
-	material = dgsCreate3DInterface(-2060,-1790,290,100,100,500,500,tocolor(255,255,255,255),-1,0,1,_,0)
+	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
-	local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
-	dgsSetData(material,"filterShader",shader)
+	--local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
 	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
-	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)
+	--edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
+	
+	local window = dgsCreateWindow(0,0,300,200,"test",false)
+	dgsSetParent(window,material)
 	--edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
 	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+end
+
+function testBlurBox()
+	local bb1 = dgsCreateBlurBox()
+	local bb2 = dgsCreateBlurBox()
+	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"functions",[[
+		local arguments = {...}
+		local blurbox = arguments[1]
+		local renderArguments = renderArguments
+		local x,y,w,h = renderArguments[1],renderArguments[2],renderArguments[3],renderArguments[4]
+		dgsBlurBoxRender(blurbox,x,y,w,h)
+	]],bb1)
+	
+	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"functions",[[
+		local arguments = {...}
+		local blurbox = arguments[1]
+		local renderArguments = renderArguments
+		local x,y,w,h = renderArguments[1],renderArguments[2],renderArguments[3],renderArguments[4]
+		dgsBlurBoxRender(blurbox,x,y,w,h)
+	]],bb2)
 end
 
 function exampleDetectArea()
@@ -440,6 +470,23 @@ function testShader()
 	local circle = dxCreateShader("shaders/circle.fx")
 	local image = dgsCreateImage(300,300,400,400,circle,false)
 end
+-----------------------------Plugin Test
+function scrollPane3DEffectTest()
+	material = dgsCreate3DInterface(0,0,4,4,4,500,500,tocolor(255,255,255,255),1,0,0,_,0)
+	dgsSetProperty(material,"maxDistance",1000)
+	dgsSetProperty(material,"fadeDistance",1000)
+	local img = dgsCreateImage(0,0,1,1,_,true,material,tocolor(0,0,0,180))
+	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,img)
+	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Interface Edit 2",false,img)
+	
+	local effect3d = dgsCreateEffect3D(20)
+	local sp = dgsCreateScrollPane(300,300,500,500,false)
+	local img = dgsCreateImage(0,0,1,1,_,true,sp,tocolor(0,0,0,180))
+	dgsEffect3DApplyToScrollPane(effect3d,sp)
+	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
+	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
+end
+
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass())()-- load OOP class
