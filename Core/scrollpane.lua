@@ -298,12 +298,12 @@ function dgsScrollPaneSetViewOffset(scrollpane,x,y)
 	local scrollbar = eleData.scrollbars
 	local scbThick = eleData.scrollBarThick
 	if type(x) == "number" then
-		local pos1 = -x*100/(size[1]-eleData.maxChildSize[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0))
-		dgsScrollBarSetScrollPosition(scrollbar[1],math.restrict(pos1,0,100))
+		local pos1 = x*100/(eleData.maxChildSize[1]-size[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0))
+		dgsScrollBarSetScrollPosition(scrollbar[2],math.restrict(pos1,0,100))
 	end
 	if type(y) == "number" then
-		local pos2 = -y*100/(size[2]-eleData.maxChildSize[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0))
-		dgsScrollBarSetScrollPosition(scrollbar[2],math.restrict(pos2,0,100))
+		local pos2 = y*100/(eleData.maxChildSize[2]-size[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0))
+		dgsScrollBarSetScrollPosition(scrollbar[1],math.restrict(pos2,0,100))
 	end
 	return true
 end
