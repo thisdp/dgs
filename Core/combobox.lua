@@ -69,7 +69,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"itemTextSide",styleSettings.combobox.itemTextSide)
 	dgsSetData(combobox,"comboTextSide",styleSettings.combobox.comboTextSide)
 	dgsSetData(combobox,"arrowColor",styleSettings.combobox.arrowColor)
-	dgsSetData(combobox,"arrowSettings",{"height",0.15})
+	dgsSetData(combobox,"arrowSettings",styleSettings.combobox.arrowSettings or {0.3,0.15,0.04})
 	dgsSetData(combobox,"arrowOutSideColor",styleSettings.combobox.arrowOutSideColor)
 	local scbThick = styleSettings.combobox.scrollBarThick
 	dgsSetData(combobox,"scrollBarThick",scbThick,true)

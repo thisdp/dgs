@@ -33,6 +33,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"columnMoveOffset",0)
 	dgsSetData(gridlist,"columnRelative",true)
 	dgsSetData(gridlist,"columnShadow",false)
+	dgsSetData(gridlist,"guiCompat",false)
 	local columnHeight = tonumber(columnHeight) or styleSettings.gridlist.columnHeight
 	dgsSetData(gridlist,"columnHeight",columnHeight,true)
 	dgsSetData(gridlist,"selectedColumn",-1)
@@ -662,9 +663,11 @@ function dgsGridListSetItemClickable(gridlist,row,column,state)
 	assert(row >= 1,"Bad argument @dgsGridListSetItemClickable at argument 2, expect number >= 1 got "..row)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListSetItemClickable at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
-	assert(rowData[row],"Bad argument @dgsGridListSetItemClickable at argument 2, row "..row.." doesn't exist")
-	rowData[row][column][9] = not state or nil
-	return true
+	if rowData[row] then
+		rowData[row][column][9] = not state or nil
+		return true
+	end
+	return false
 end
 
 function dgsGridListSetItemSelectable(gridlist,row,column,state)
@@ -675,9 +678,11 @@ function dgsGridListSetItemSelectable(gridlist,row,column,state)
 	assert(row >= 1,"Bad argument @dgsGridListSetItemSelectable at argument 2, expect number >= 1 got "..row)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListSetItemSelectable at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
-	assert(rowData[row],"Bad argument @dgsGridListSetItemSelectable at argument 2, row "..row.." doesn't exist")
-	rowData[row][column][8] = not state or nil
-	return true
+	if rowData[row] then
+		rowData[row][column][8] = not state or nil
+		return true
+	end
+	return false
 end
 
 function dgsGridListGetItemClickable(gridlist,row,column,state)
@@ -688,8 +693,10 @@ function dgsGridListGetItemClickable(gridlist,row,column,state)
 	assert(row >= 1,"Bad argument @dgsGridListGetItemClickable at argument 2, expect number >= 1 got "..row)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListGetItemClickable at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
-	assert(rowData[row],"Bad argument @dgsGridListGetItemClickable at argument 2, row "..row.." doesn't exist")
-	return not (rowData[row][column][9] and true or false)
+	if rowData[row] then
+		return not (rowData[row][column][9] and true or false)
+	end
+	return false
 end
 
 function dgsGridListGetItemSelectable(gridlist,row,column,state)
@@ -700,8 +707,10 @@ function dgsGridListGetItemSelectable(gridlist,row,column,state)
 	assert(row >= 1,"Bad argument @dgsGridListGetItemSelectable at argument 2, expect number >= 1 got "..row)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListGetItemSelectable at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
-	assert(rowData[row],"Bad argument @dgsGridListGetItemSelectable at argument 2, row "..row.." doesn't exist")
-	return not (rowData[row][column][8] and true or false)
+	if rowData[row] then
+		return not (rowData[row][column][8] and true or false)
+	end
+	return false
 end
 
 function dgsGridListSetRowBackGroundColor(gridlist,row,norcolor,selcolor,clicolor)
@@ -783,7 +792,8 @@ function dgsGridListClear(gridlist,clearRow,clearColumn)
 	clearColumn = clearColumn and true or false
  	if clearRow then
 		dgsGridListClearRow(gridlist)
-	elseif clearColumn then
+	end
+	if clearColumn then
 		dgsGridListClearColumn(gridlist)
 	end
 	return true
@@ -850,22 +860,23 @@ function dgsGridListSetItemText(gridlist,row,column,text,isSection)
 	assert(row >= 1,"Bad argument @dgsGridListSetItemText at argument 2, expect number >= 1 got "..row)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListSetItemText at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
-	assert(rowData[row],"Bad argument @dgsGridListSetItemText at argument 2, row "..row.." doesn't exist")
-	if column <= -5 then
-		rowData[row][column] = text
-		return true
-	elseif rowData[row][column] then
-		if type(text) == "table" then
-			rowData[row][column]._translationText = text
-			text = dgsTranslate(gridlist,text,sourceResource)
-		else
-			rowData[row][column]._translationText = nil
+	if rowData[row] then
+		if column <= -5 then
+			rowData[row][column] = text
+			return true
+		elseif rowData[row][column] then
+			if type(text) == "table" then
+				rowData[row][column]._translationText = text
+				text = dgsTranslate(gridlist,text,sourceResource)
+			else
+				rowData[row][column]._translationText = nil
+			end
+			rowData[row][column][1] = tostring(text)
+			if isSection then
+				dgsGridListSetRowAsSection(gridlist,row,true)
+			end
+			return true
 		end
-		rowData[row][column][1] = tostring(text)
-		if isSection then
-			dgsGridListSetRowAsSection(gridlist,row,true)
-		end
-		return true
 	end
 	return false
 end
@@ -900,11 +911,14 @@ function dgsGridListGetItemText(gridlist,row,column)
 	assert(type(row) == "number","Bad argument @dgsGridListGetItemText at argument 2, expect number got "..type(row))
 	assert(type(column) == "number","Bad argument @dgsGridListGetItemText at argument 3, expect number got "..type(column))
 	row,column = row-row%1,column-column%1
+	if row == -1 then return false end
 	assert(row >= 1,"Bad argument @dgsGridListGetItemText at argument 2, expect number >= 1 got "..row)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListGetItemText at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
-	assert(rowData[row],"Bad argument @dgsGridListGetItemText at argument 2, row "..row.." doesn't exist")
-	return rowData[row][column][1],rowData[row][column][7]
+	if rowData[row] then
+		return rowData[row][column][1],rowData[row][column][7]
+	end
+	return false
 end
 
 function dgsGridListGetSelectedItem(gridlist)

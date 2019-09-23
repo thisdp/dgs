@@ -56,7 +56,7 @@ function createFullDemo()
 	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
-
+createFullDemo()
 ------------
 
 function createTest()
@@ -112,10 +112,11 @@ end
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
 	tab1 = dgsCreateTab("DGS",tabp)
-	tab2 = dgsCreateTab("Tab",tabp)
+	tab2 = dgsCreateTab("Tab123123123123",tabp)
 	for i=1,10 do
 		dgsCreateTab(i.."Panel",tabp)
 	end
+	dgsSetText(tab2,"12")
 	gdlt2 = dgsCreateButton(0,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
 	dgsSetProperty(gdlt2,"shadow",{1,1,tocolor(0,0,0,255),true})
 end

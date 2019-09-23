@@ -17,6 +17,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	dgsSetData(scrollbar,"arrowColor",{arrowColorNormal or styleSettings.scrollbar.arrowColor[1],arrowColorHover or styleSettings.scrollbar.arrowColor[2],arrowColorClick or styleSettings.scrollbar.arrowColor[3]})
 	dgsSetData(scrollbar,"cursorColor",{cursorColorNormal or styleSettings.scrollbar.cursorColor[1],cursorColorHover or styleSettings.scrollbar.cursorColor[2],cursorColorClick or styleSettings.scrollbar.cursorColor[3]})
 	dgsSetData(scrollbar,"troughColor",troughColor or styleSettings.scrollbar.troughColor)
+	dgsSetData(scrollbar,"arrowBgColor",styleSettings.scrollbar.arrowBgColor or false)
 	dgsSetData(scrollbar,"voh",voh or false) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
 	dgsSetData(scrollbar,"length",{30,false},true)

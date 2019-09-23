@@ -1897,6 +1897,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local cursorWidth = eleData.cursorWidth
 				local troughWidth = eleData.troughWidth
 				local arrowWidth = eleData.arrowWidth
+				local arrowBgColor = eleData.arrowBgColor
 				local troughPadding,cursorPadding,arrowPadding
 				if voh then
 					troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
@@ -2000,6 +2001,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawRectangle(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
+						if arrowBgColor then
+							dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[1]],rendSet)
+							dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[4]],rendSet)
+						end
 						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],270,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
 						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],90,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
@@ -2015,6 +2020,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawRectangle(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
+						if arrowBgColor then
+							dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[1]],rendSet)
+							dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[4]],rendSet)
+						end
 						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],0,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
 						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
@@ -2778,7 +2787,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					eleData.listStateAnim = listState == -1 and max(stat,listState) or min(stat,listState)
 				end
 				if eleData.arrowSettings then
-					dxSetShaderValue(shader,eleData.arrowSettings[1],eleData.arrowSettings[2]*eleData.listStateAnim)
+					dxSetShaderValue(shader,"width",eleData.arrowSettings[1])
+					dxSetShaderValue(shader,"height",eleData.arrowSettings[2]*eleData.listStateAnim)
+					dxSetShaderValue(shader,"linewidth",eleData.arrowSettings[3])
 				end
 				local r,g,b,a = fromcolor(arrowColor,true)
 				dxSetShaderValue(shader,"_color",{r/255,g/255,b/255,a/255*galpha})
