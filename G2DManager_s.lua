@@ -912,7 +912,7 @@ function processExpired(isEnd)
 		setTimer(function()
 			G2D.StartTick = getTickCount()
 			coroutine.resume(G2D.Running[1])
-		end,10,1)
+		end,50,1)
 	else
 		G2DStart()
 	end
