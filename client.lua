@@ -2028,7 +2028,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
 					if image[2] then
-						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],0,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
 						dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
