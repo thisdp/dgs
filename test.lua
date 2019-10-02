@@ -164,7 +164,6 @@ function testProgressBar()
 		start = start + 0.1
 	end)
 end
-testProgressBar()
 
 function testButtonPerformance()
 	for i=1,1000 do
