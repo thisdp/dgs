@@ -18,7 +18,7 @@ end
 ------------Full demo
 function createFullDemo()
 	loadstring(dgsImportOOPClass())()
-	local window = DGSClass:createWindow(400,200,600,500,"DGS Full Demo",false)
+	local window = DGSClass:createWindow(0,0,600,600,"DGS Full Demo",false)
 	local button = window:createButton(10,210,80,50,"Test Button",false)
 	local switchButton1 = window:createSwitchButton(100,210,60,20,"","",false)
 	local switchButton2 = window:createSwitchButton(100,240,60,20,"","",true)
@@ -56,6 +56,7 @@ function createFullDemo()
 	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+
 ------------
 
 function createTest()
@@ -154,9 +155,16 @@ function testMoveHandler()
 end
 
 function testProgressBar()
-	local pb= dgsCreateProgressBar(500,500,200,30,false)
-	dgsProgressBarSetProgress(pb,50)
+	local pb= dgsCreateProgressBar(500,200,600,600,false)
+	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
+	dgsProgressBarSetStyle(pb,"ring-round")
+	local start = 0
+	addEventHandler("onClientRender",root,function()
+		dgsProgressBarSetProgress(pb,start)
+		start = start + 0.1
+	end)
 end
+testProgressBar()
 
 function testButtonPerformance()
 	for i=1,1000 do
@@ -345,6 +353,15 @@ function test3DInterface()
 	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
 end
 
+function test3DInterfaceAttach()
+	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
+	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
+	dgsSetProperty(material,"maxDistance",1000)
+	dgsSetProperty(material,"fadeDistance",1000)
+	local window = dgsCreateWindow(0,0,600,600,"test",false)
+	dgsSetParent(window,material)
+end
+
 function testBlurBox()
 	local bb1 = dgsCreateBlurBox()
 	local bb2 = dgsCreateBlurBox()
@@ -486,7 +503,6 @@ function scrollPane3DEffectTest()
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
 end
-
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass())()-- load OOP class

@@ -89,6 +89,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"configNextFrame",false)
 	dgsSetData(memo,"rebuildMapTableNextFrame",false)
 	dgsSetData(memo,"maxLength",0x3FFFFFFF)
+	dgsSetData(memo,"scrollBarLength",{},true)
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
@@ -1023,15 +1024,17 @@ function configMemo(source)
 	dgsSetSize(scrollbar[1],scbThick,size[2]-scbTakes2,false)
 	dgsSetSize(scrollbar[2],size[1]-scbTakes1,scbThick,false)
 
+	local scbLengthVrt = dgsElementData[source].scrollBarLength[1]
 	local higLen = 1-(textCnt-canHold)/textCnt
 	higLen = higLen >= 0.95 and 0.95 or higLen
-	dgsSetData(scrollbar[1],"length",{higLen,true})
+	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = dgsElementData[source].scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
+	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
 	local widLen = 1-(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/dgsElementData[source].rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	dgsSetData(scrollbar[2],"length",{widLen,true})
+	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	local scrollBarAfter = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}

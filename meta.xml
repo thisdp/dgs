@@ -4,12 +4,12 @@
 	<file src="media.html" />
 	<file src="meta.xml" />
 	<file src="styleManager/styleMapper.lua"/>
-	<file src="shaders/circle.fx"/>
 	<file src="shaders/textureRelight.fx" />
 	<file src="shaders/mta-helper.fx" />
 	<file src="shaders/ButtonEffect.fx" />
 	<file src="shaders/roundRect.fx" />
 	<file src="shaders/pixelWithoutBlur.fx" />
+	<file src="shaders/ring-round.fx"/>
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -19,27 +19,28 @@
 	<script src="TypeManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
 	<script src="client.lua" type="client" />
-	<script src="Core/button.lua" type="client" />
-	<script src="Core/eda.lua" type="client" />
-	<script src="Core/detectarea.lua" type="client" />
-	<script src="Core/edit.lua" type="client" />
-	<script src="Core/gridlist.lua" type="client" />
-	<script src="Core/image.lua" type="client" />
-	<script src="Core/label.lua" type="client" />
-	<script src="Core/scrollbar.lua" type="client" />
-	<script src="Core/scrollpane.lua" type="client" />
-	<script src="Core/tabpanel.lua" type="client" />
-	<script src="Core/window.lua" type="client" />
-	<script src="Core/progressbar.lua" type="client" />
-	<script src="Core/radiobutton.lua" type="client" />
-	<script src="Core/combobox.lua" type="client" />
-	<script src="Core/memo.lua" type="client" />
-	<script src="Core/checkbox.lua" type="client" />
-	<script src="Core/browser.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
 	<script src="Core/arrowlist.lua" type="client" />
+	<script src="Core/browser.lua" type="client" />
+	<script src="Core/button.lua" type="client" />
+	<script src="Core/combobox.lua" type="client" />
+	<script src="Core/checkbox.lua" type="client" />
+	<script src="Core/eda.lua" type="client" />
+	<script src="Core/edit.lua" type="client" />
+	<script src="Core/detectarea.lua" type="client" />
+	<script src="Core/gridlist.lua" type="client" />
+	<script src="Core/image.lua" type="client" />
+	<script src="Core/label.lua" type="client" />
+	<script src="Core/memo.lua" type="client" />
+	<script src="Core/menulist.lua" type="client" />
+	<script src="Core/progressbar.lua" type="client" />
+	<script src="Core/radiobutton.lua" type="client" />
+	<script src="Core/tabpanel.lua" type="client" />
+	<script src="Core/scrollbar.lua" type="client" />
+	<script src="Core/scrollpane.lua" type="client" />
 	<script src="Core/switchbutton.lua" type="client" />
+	<script src="Core/window.lua" type="client" />
 	
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
@@ -248,10 +249,18 @@
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
 	<export function="dgsRadioButtonSetSelected" type="client" />
+	<export function="dgsRadioButtonSetHorizontalAlign" type="client" />
+	<export function="dgsRadioButtonSetVerticalAlign" type="client" />
+	<export function="dgsRadioButtonGetHorizontalAlign" type="client" />
+	<export function="dgsRadioButtonGetVerticalAlign" type="client" />
 	
 	<export function="dgsCreateCheckBox" type="client" />
 	<export function="dgsCheckBoxGetSelected" type="client" />
 	<export function="dgsCheckBoxSetSelected" type="client" />
+	<export function="dgsCheckBoxSetHorizontalAlign" type="client" />
+	<export function="dgsCheckBoxSetVerticalAlign" type="client" />
+	<export function="dgsCheckBoxGetHorizontalAlign" type="client" />
+	<export function="dgsCheckBoxGetVerticalAlign" type="client" />
 
 	<export function="dgsCreateComboBox" type="client" />
 	<export function="dgsComboBoxAddItem" type="client" />
@@ -377,6 +386,11 @@
 	<export function="dgsProgressBarSetVerticalSide" type="client" />
 	<export function="dgsProgressBarGetHorizontalSide" type="client" />
 	<export function="dgsProgressBarSetHorizontalSide" type="client" />
+	<export function="dgsProgressBarGetStyle" type="client" />
+	<export function="dgsProgressBarSetStyle" type="client" />
+	<export function="dgsProgressBarGetStyleProperty" type="client" />
+	<export function="dgsProgressBarGetStyleProperties" type="client" />
+	<export function="dgsProgressBarSetStyleProperty" type="client" />
 
 	<export function="dgsCreateLabel" type="client" />
 	<export function="dgsLabelGetColor" type="client" />

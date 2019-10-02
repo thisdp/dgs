@@ -596,7 +596,6 @@ setmetatable(AnalyzerState,{
 				separatorDepth = 0,
 				blockDepth = 0,
 				lexResult=lexResult,
-				externalFunction = {},
 				replacedFunction = {},
 				replacedEvent = {},
 				executeProcess = function(self)
@@ -673,8 +672,14 @@ setmetatable(AnalyzerState,{
 				insertCurrent = function(self,insert)
 					table.insert(self.lexResult,self.tokenIndex,insert)
 				end,
-				set = function(self,repFnc)
-					self.replacedFunction = repFnc
+				set = function(self,repFnc,isEvent)
+					if isEvent then
+						self.replacedEvent = repFnc
+						self.replacedFunction = {}
+					else
+						self.replacedEvent = {}
+						self.replacedFunction = repFnc
+					end
 					self.tokenIndex=0
 					self.separatorDepth = 0
 				end,
@@ -933,8 +938,20 @@ function processFile(filename)
 	DGSLLex(ls)
 	local az = AnalyzerState(ls.result)
 	local convTabCnt = #convertFunctionTable
+	print("[G2D] Replacing Functions")
 	for i=1,convTabCnt do
 		az:set(convertFunctionTable[i])
+		az:executeProcess()
+		if getTickCount()-G2D.StartTick >= 100 then
+			showProgress((i-1)/convTabCnt*100)
+			processExpired()
+			coroutine.yield()
+		end
+	end
+	local convTabCnt = #converEventTable
+	print("[G2D] Replacing Events")
+	for i=1,convTabCnt do
+		az:set(converEventTable[i],true)
 		az:executeProcess()
 		if getTickCount()-G2D.StartTick >= 100 then
 			showProgress((i-1)/convTabCnt*100)

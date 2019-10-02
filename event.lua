@@ -247,6 +247,18 @@ function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
 	local rot = findRotation(posX,posY,x,y,offsetFix)
 	return rot,(x-posX)/absSize[1],(y-posY)/absSize[2]
 end
+--------------------------------Built-in Utility
+HorizontalAlign = {
+	left = true,
+	center = true,
+	right = true,
+}
+
+VerticalAlign = {
+	top = true,
+	center = true,
+	bottom = true,
+}
 --------------------------------Color Utility
 function fromcolor(int,useMath,relative)
 	local a,r,g,b

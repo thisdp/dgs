@@ -1120,9 +1120,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					buttonSizeX = _buttonSize[2] and _buttonSize[1]*h or _buttonSize[1]
 					buttonSizeY = buttonSizeX
 				end
-				if eleData.CheckBoxState == true then
+				if eleData.state == true then
 					image,color = image_t,color_t
-				elseif eleData.CheckBoxState == false then 
+				elseif eleData.state == false then 
 					image,color = image_f,color_f
 				else
 					image,color = image_i,color_i
@@ -2634,12 +2634,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local bgColor = applyColorAlpha(eleData.bgColor,galpha)
-				local indicatorColor = applyColorAlpha(eleData.indicatorColor,galpha)
 				local bgImage = eleData.bgImage
+				local bgColor = applyColorAlpha(eleData.bgColor,galpha)
 				local indicatorImage = eleData.indicatorImage
+				local indicatorColor = applyColorAlpha(eleData.indicatorColor,galpha)
 				local indicatorMode = eleData.indicatorMode
 				local padding = eleData.padding
+				local percent = eleData.progress*0.01
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -2648,26 +2649,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
-				if bgImage then
-					dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet)
-				else
-					dxDrawRectangle(x,y,w,h,bgColor,rendSet)
-				end
-				local percent = eleData.progress*0.01
-				local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],(w-padding[1]*2)*percent,h-padding[2]*2
-				if isElement(indicatorImage) then
-					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-					if indicatorMode then
-						if not sx or not sy then
-							sx,sy = dxGetMaterialSize(indicatorImage)
-						end
-						dxDrawImageSection(iPosX,iPosY,iSizX,iSizY,1,1,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet)
-					else
-						dxDrawImage(iPosX,iPosY,iSizX,iSizY,indicatorImage,0,0,0,indicatorColor,rendSet)
-					end
-				else
-					dxDrawRectangle(iPosX,iPosY,iSizX,iSizY,indicatorColor,rendSet)
-				end
+				ProgressBarStyle[eleData.style](v,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 				------------------------------------OutLine
 				local outlineData = eleData.outline
 				if outlineData then
@@ -3490,7 +3472,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local image,color,textColor,text
 				local cursorImage,cursorColor = eleData.cursorImage,eleData.cursorColor
 				local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
-				if eleData.state == 1 then
+				if eleData.state then
 					image,color,textColor,text,xAdd = image_t,color_t,eleData.textColor_t,eleData.textOn,-xAdd
 				else 
 					image,color,textColor,text = image_f,color_f,eleData.textColor_f,eleData.textOff
@@ -3589,7 +3571,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					dxDrawRectangle(cursorX,y,cursorWidth,h,cursorColor,rendSet)
 				end
 				
-				local state = eleData.state
+				local state = eleData.state and 1 or -1
 				if eleData.stateAnim ~= state then
 					local stat = eleData.stateAnim+eleData.state*eleData.cursorMoveSpeed
 					eleData.stateAnim = state == -1 and max(stat,state) or min(stat,state)
@@ -4513,7 +4495,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				elseif gtype == "dgs-dxradiobutton" then
 					dgsRadioButtonSetSelected(guiele,true)
 				elseif gtype == "dgs-dxcheckbox" then
-					local state = dgsElementData[guiele].CheckBoxState
+					local state = dgsElementData[guiele].state
 					dgsCheckBoxSetSelected(guiele,not state)
 				elseif guitype == "dgs-dxcombobox-Box" then
 					local combobox = dgsElementData[guiele].myCombo

@@ -81,6 +81,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
 	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
 	dgsSetData(gridlist,"scrollSize",60)	--60 pixels
+	dgsSetData(gridlist,"scrollBarLength",{},true)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsSetData(gridlist,"configNextFrame",false)
 	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
@@ -1368,15 +1369,17 @@ function configGridList(source)
 	local scroll2 = dgsElementData[scrollbar[2]].position
 	dgsSetData(source,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
 	
+	local scbLengthVrt = dgsElementData[source].scrollBarLength[1]
 	local higLen = 1-(rowLength-rowShowRange)/rowLength
 	higLen = higLen >= 0.95 and 0.95 or higLen
-	dgsSetData(scrollbar[1],"length",{higLen,true})
+	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = dgsElementData[source].scrollSize/(rowLength-rowShowRange)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
+	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
 	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	dgsSetData(scrollbar[2],"length",{widLen,true})
+	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(columnWidth-columnShowRange)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 
