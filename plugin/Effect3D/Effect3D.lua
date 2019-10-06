@@ -18,6 +18,10 @@ function dgsEffect3DApplyToScrollPane(effect3d,scrollpane)
 	dgsSetData(scrollpane,"filter",{effect3d,0,0,0})
 	dgsSetData(scrollpane,"enableFullEnterLeaveCheck",true)
 	local function mouseMoveCheck()
+		if not isElement(source) then
+			removeEventHandler("onClientRender",root,mouseMoveCheck)
+			return
+		end
 		local x,y = dgsGetCursorPosition()
 		local spx,spy = dgsGetPosition(source,false,true)
 		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
@@ -27,7 +31,7 @@ function dgsEffect3DApplyToScrollPane(effect3d,scrollpane)
 		local dx,dy = -dx/w*rotFactor,dy/h*rotFactor
 		dgsSetData(source,"filter",{effect3d,dx,dy,0,0,0})
 	end
-	local newEnv = {source=scrollpane}
+	local newEnv = {source=scrollpane,mouseMoveCheck=mouseMoveCheck}
 	setmetatable(newEnv,{__index=_G})
 	setfenv(mouseMoveCheck,newEnv)
 	
