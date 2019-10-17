@@ -186,18 +186,18 @@ function configScrollPane(source)
 	dgsSetEnabled(scrollbar[1],lengthVertical ~= 1 and true or false)
 	dgsSetEnabled(scrollbar[2],lengthHorizontal  ~= 1 and true or false)
 
-	local scbLengthHoz = dgsElementData[source].scrollBarLength[1]
+	local scbLengthVrt = dgsElementData[source].scrollBarLength[1]
 	local higLen = 1-(childBounding[2]-relSizY)/childBounding[2]
 	higLen = higLen >= 0.95 and 0.95 or higLen
-	length = scbLengthHoz or {higLen,true}
+	length = scbLengthVrt or {higLen,true}
 	dgsSetData(scrollbar[1],"length",length)
 	local verticalScrollSize = dgsElementData[source].scrollSize/(childBounding[2]-relSizY)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
-	local scbLengthVec = dgsElementData[source].scrollBarLength[2]
+	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
 	local widLen = 1-(childBounding[1]-relSizX)/childBounding[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	local length = scbLengthVec or {widLen,true}
+	local length = scbLengthHoz or {widLen,true}
 	dgsSetData(scrollbar[2],"length",length)
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(childBounding[1]-relSizX)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
@@ -298,12 +298,12 @@ function dgsScrollPaneSetViewOffset(scrollpane,x,y)
 	local scrollbar = eleData.scrollbars
 	local scbThick = eleData.scrollBarThick
 	if type(x) == "number" then
-		local pos1 = -x*100/(size[1]-eleData.maxChildSize[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0))
-		dgsScrollBarSetScrollPosition(scrollbar[1],math.restrict(pos1,0,100))
+		local pos1 = x*100/(eleData.maxChildSize[1]-size[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0))
+		dgsScrollBarSetScrollPosition(scrollbar[2],math.restrict(pos1,0,100))
 	end
 	if type(y) == "number" then
-		local pos2 = -y*100/(size[2]-eleData.maxChildSize[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0))
-		dgsScrollBarSetScrollPosition(scrollbar[2],math.restrict(pos2,0,100))
+		local pos2 = y*100/(eleData.maxChildSize[2]-size[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0))
+		dgsScrollBarSetScrollPosition(scrollbar[1],math.restrict(pos2,0,100))
 	end
 	return true
 end

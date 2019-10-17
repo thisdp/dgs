@@ -108,6 +108,7 @@ function dgsSetData(element,key,value,nocheck)
 						end
 						dgsElementData[element].text = tostring(value)
 						dgsSetData(element,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[tabpanel].font),minwidth,maxwidth))
+						
 						return triggerEvent("onDgsTextChange",element)
 					elseif key == "width" then
 						local tabpanel = dgsElementData[element].parent

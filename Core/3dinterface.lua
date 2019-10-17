@@ -184,7 +184,7 @@ function dgs3DInterfaceAttachToElement(interface,element,offX,offY,offZ,offFaceX
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceAttachToElement at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(isElement(element),"Bad argument @dgs3DInterfaceAttachToElement at argument 2, expect an element got "..dgsGetType(element))
 	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
-	local offFaceX,offFaceY,offFaceZ = offFaceX or 0,offFaceY or 0,offFaceZ or 0
+	local offFaceX,offFaceY,offFaceZ = offFaceX or 0,offFaceY or 1,offFaceZ or 0
 	return dgsSetData(interface,"attachTo",{element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ})
 end
 

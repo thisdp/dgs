@@ -52,7 +52,7 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	dgsSetData(switchbutton,"shadow",{_,_,_})
 	dgsSetData(switchbutton,"font",systemFont)
 	dgsSetData(switchbutton,"textOffset",{0.25,true})
-	dgsSetData(switchbutton,"state",state and 1 or -1)
+	dgsSetData(switchbutton,"state",state and true or false)
 	dgsSetData(switchbutton,"cursorMoveSpeed",0.2)
 	dgsSetData(switchbutton,"stateAnim",state and 1 or -1)
 	dgsSetData(switchbutton,"clickType",1)	--1:LMB;2:Wheel;3:RMB
@@ -72,7 +72,7 @@ end
 
 function dgsSwitchButtonSetState(switchbutton,state)
 	assert(dgsGetType(switchbutton) == "dgs-dxswitchbutton","Bad argument @dgsSwitchButtonSetState at argument at 1, expect dgs-dxswitchbutton got "..dgsGetType(switchbutton))
-	return dgsSetData(switchbutton,"state",state and 1 or -1)
+	return dgsSetData(switchbutton,"state",state and true or false)
 end
 
 function dgsSwitchButtonSetText(switchbutton,textOn,textOff)

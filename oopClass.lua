@@ -497,12 +497,36 @@ function dgsImportOOPClass()
 				nTab.setSelected = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsCheckBoxSetSelected",self.dgsElement,...)
 				end
+				nTab.getHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCheckBoxGetHorizontalAlign",self.dgsElement,...)
+				end
+				nTab.setHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCheckBoxSetHorizontalAlign",self.dgsElement,...)
+				end
+				nTab.setVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCheckBoxGetVerticalAlign",self.dgsElement,...)
+				end
+				nTab.setVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCheckBoxSetVerticalAlign",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxradiobutton" then
 				nTab.getSelected = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsRadioButtonGetSelected",self.dgsElement,...)
 				end
 				nTab.setSelected = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsRadioButtonSetSelected",self.dgsElement,...)
+				end
+				nTab.getHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsRadioButtonGetHorizontalAlign",self.dgsElement,...)
+				end
+				nTab.setHorizontalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsRadioButtonSetHorizontalAlign",self.dgsElement,...)
+				end
+				nTab.setVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsRadioButtonGetVerticalAlign",self.dgsElement,...)
+				end
+				nTab.setVerticalAlign = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsRadioButtonSetVerticalAlign",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxcombobox" then
 				nTab.addItem = function(self,...)
@@ -1019,6 +1043,21 @@ function dgsImportOOPClass()
 				end
 				nTab.setHorizontalSide = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsProgressBarSetHorizontalSide",self.dgsElement,...)
+				end
+				nTab.getStyle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarGetStyle",self.dgsElement,...)
+				end
+				nTab.setStyle = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarSetStyle",self.dgsElement,...)
+				end
+				nTab.getStyleProperties = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarGetStyleProperties",self.dgsElement,...)
+				end
+				nTab.setStyleProperty = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarSetStyleProperty",self.dgsElement,...)
+				end
+				nTab.getStyleProperty = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsProgressBarGetStyleProperty",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxscrollbar" then
 				nTab.setScrollPosition = function(self,...)

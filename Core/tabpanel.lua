@@ -57,6 +57,7 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	local t_minWid,t_maxWid = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*tp_w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*tp_w or t_maxWid[1]
 	local wid = math.restrict(dxGetTextWidth(text,textSizex or 1,font),minwidth,maxwidth)
+	print(dxGetTextWidth(text,textSizex or 1,font))
 	local t_sideSize = dgsElementData[tabpanel].tabSideSize
 	local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
 	local t_gapSize = dgsElementData[tabpanel].tabGapSize

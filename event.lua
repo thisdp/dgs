@@ -5,50 +5,50 @@ ClientInfo = {
 	SupportedPixelShader={}
 }
 dgs = exports[getResourceName(getThisResource())]
-addEvent("onDgsMouseLeave",true)
-addEvent("onDgsMouseEnter",true)
-addEvent("onDgsMouseClick",true)
-addEvent("onDgsMouseWheel",true)
-addEvent("onDgsMouseClickUp",true)
-addEvent("onDgsMouseClickDown",true)
-addEvent("onDgsMouseDoubleClick",true)
-addEvent("onDgsWindowClose",true)
-addEvent("onDgsPositionChange",true)
-addEvent("onDgsSizeChange",true)
-addEvent("onDgsTextChange",true)
-addEvent("onDgsElementScroll",true)
-addEvent("onDgsDestroy",true)
-addEvent("onDgsSwitchButtonStateChange",true)
-addEvent("onDgsGridListSelect",true)
-addEvent("onDgsGridListItemDoubleClick",true)
-addEvent("onDgsProgressBarChange",true)
-addEvent("onDgsCreate",true)
-addEvent("onDgsPluginCreate",true)
-addEvent("onDgsPreRender",true)
-addEvent("onDgsRender",true)
-addEvent("onDgsElementRender",true)
-addEvent("onDgsElementLeave",true)
-addEvent("onDgsElementEnter",true)
-addEvent("onDgsElementMove",true)
-addEvent("onDgsElementSize",true)
-addEvent("onDgsFocus",true)
-addEvent("onDgsBlur",true)
-addEvent("onDgsMouseMove",true)
-addEvent("onDgsTabSelect",true)
-addEvent("onDgsTabPanelTabSelect",true)
-addEvent("onDgsRadioButtonChange",true)
-addEvent("onDgsCheckBoxChange",true)
-addEvent("onDgsComboBoxSelect",true)
-addEvent("onDgsComboBoxStateChange",true)
-addEvent("onDgsEditPreSwitch",true)
-addEvent("onDgsEditSwitched",true)
-addEvent("onDgsEditAccepted",true)
-addEvent("onDgsStopMoving",true)
-addEvent("onDgsStopSizing",true)
-addEvent("onDgsStopAlphaing",true)
-addEvent("onDgsStopAniming",true)
-addEvent("onDgsArrowListValueChange",true)
-addEvent("onDgsMouseDrag",true)
+addEvent("onDgsMouseLeave")
+addEvent("onDgsMouseEnter")
+addEvent("onDgsMouseClick")
+addEvent("onDgsMouseWheel")
+addEvent("onDgsMouseClickUp")
+addEvent("onDgsMouseClickDown")
+addEvent("onDgsMouseDoubleClick")
+addEvent("onDgsWindowClose")
+addEvent("onDgsPositionChange")
+addEvent("onDgsSizeChange")
+addEvent("onDgsTextChange")
+addEvent("onDgsElementScroll")
+addEvent("onDgsDestroy")
+addEvent("onDgsSwitchButtonStateChange")
+addEvent("onDgsGridListSelect")
+addEvent("onDgsGridListItemDoubleClick")
+addEvent("onDgsProgressBarChange")
+addEvent("onDgsCreate")
+addEvent("onDgsPluginCreate")
+addEvent("onDgsPreRender")
+addEvent("onDgsRender")
+addEvent("onDgsElementRender")
+addEvent("onDgsElementLeave")
+addEvent("onDgsElementEnter")
+addEvent("onDgsElementMove")
+addEvent("onDgsElementSize")
+addEvent("onDgsFocus")
+addEvent("onDgsBlur")
+addEvent("onDgsMouseMove")
+addEvent("onDgsTabSelect")
+addEvent("onDgsTabPanelTabSelect")
+addEvent("onDgsRadioButtonChange")
+addEvent("onDgsCheckBoxChange")
+addEvent("onDgsComboBoxSelect")
+addEvent("onDgsComboBoxStateChange")
+addEvent("onDgsEditPreSwitch")
+addEvent("onDgsEditSwitched")
+addEvent("onDgsEditAccepted")
+addEvent("onDgsStopMoving")
+addEvent("onDgsStopSizing")
+addEvent("onDgsStopAlphaing")
+addEvent("onDgsStopAniming")
+addEvent("onDgsArrowListValueChange")
+addEvent("onDgsMouseDrag")
 -------
 addEvent("giveIPBack",true)
 
@@ -247,6 +247,18 @@ function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
 	local rot = findRotation(posX,posY,x,y,offsetFix)
 	return rot,(x-posX)/absSize[1],(y-posY)/absSize[2]
 end
+--------------------------------Built-in Utility
+HorizontalAlign = {
+	left = true,
+	center = true,
+	right = true,
+}
+
+VerticalAlign = {
+	top = true,
+	center = true,
+	bottom = true,
+}
 --------------------------------Color Utility
 function fromcolor(int,useMath,relative)
 	local a,r,g,b

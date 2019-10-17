@@ -45,18 +45,6 @@ function dgsLabelGetColor(label,notSplit)
 	return notSplit and dgsElementData[label].textColor or fromcolor(dgsElementData[label].textColor)
 end
 
-local HorizontalAlign = {
-	left = true,
-	center = true,
-	right = true,
-}
-
-local VerticalAlign = {
-	top = true,
-	center = true,
-	bottom = true,
-}
-
 function dgsLabelSetHorizontalAlign(label,align)
 	assert(dgsGetType(label) == "dgs-dxlabel","Bad argument @dgsLabelSetHorizontalAlign at argument 1, except a dgs-dxlabel got "..dgsGetType(label))
 	assert(HorizontalAlign[align],"Bad argument @dgsLabelSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))

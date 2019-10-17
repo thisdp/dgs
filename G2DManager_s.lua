@@ -24,11 +24,10 @@ end)
 
 G2DHelp = {
 	--Options,Extra,Argument,Comment
-	{"-add","Resource Name","Retain selections and select other resources (Support Pattern Match)"},
-	{"-bk","	","Toggle backup (Be careful)"},
+	{"-add","Resource Name","Retain selections and select other resources (-m :Pattern Match)"},
 	{"-c","	","Clear selections"},
 	{"-h","	","G2D Help"},
-	{"-sel","Resource Name","Clear selections and select other resources (Support Pattern Match)"},
+	{"-rm","Remove Name","Remove specific selected resources from list  (-m :Pattern Match)"},
 	{"-l","	","List all selected resources"},
 	{"-e","	","Start to convert"},
 	{"-q","	","Stop converting process"},
@@ -48,43 +47,55 @@ addCommandHandler("g2d",function(player,command,...)
 		local accn = getAccountName(account)
 		if accn == "Console" then
 			local args = {...}
-			if args[1] == "-sel" then
+			if args[1] == "-rm" or args[1] == "-remove" then
 				if args[2] and args[2] ~= "" then
-					G2D.select = {}
-					for k,v in ipairs(getResources()) do
-						local resN = getResourceName(v)
-						if string.match(resN,args[2]) then
-							G2D.select[resN] = v
+					if args[3] == "-m" or args[3] == "-match" then
+						for k,v in pairs(G2D.select) do
+							if string.match(k:lower(),args[2]:lower()) then
+								G2D.select[k] = nil
+							end
+						end
+					else
+						for k,v in pairs(G2D.select) do
+							if k:lower() == args[2]:lower() then
+								G2D.select[k] = nil
+							end
 						end
 					end
 					outputDebugString("[DGS-G2D] Selected "..table.len(G2D.select).." resources, to see the selections, use -l")
 				else
 					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, use -l")
 				end
-			elseif args[1] == "-add" then
+			elseif args[1] == "-a" or args[1] == "-add" then
 				if args[2] and args[2] ~= "" then
-					for k,v in ipairs(getResources()) do
-						local resN = getResourceName(v)
-						if string.match(resN,args[2]) then
-							G2D.select[resN] = v
+					if args[3] == "-m" or args[3] == "-match" then
+						for k,v in ipairs(getResources()) do
+							local resN = getResourceName(v)
+							if string.match(resN:lower(),args[2]:lower()) then
+								G2D.select[resN] = v
+							end
+						end
+					else
+						for k,v in ipairs(getResources()) do
+							local resN = getResourceName(v)
+							if resN:lower() == args[2]:lower() then
+								G2D.select[resN] = v
+							end
 						end
 					end
 					outputDebugString("[DGS-G2D] Selected "..table.len(G2D.select).." resources, to see the selections, use -l")
 				else
 					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, use -l")
 				end
-			elseif args[1] == "-l" then
+			elseif args[1] == "-l" or args[1] == "-list" then
 				outputDebugString("[DGS-G2D] There are "..table.len(G2D.select).." resources selected:")
 				for k,v in pairs(G2D.select) do
 					outputDebugString(k)
 				end
-			elseif args[1] == "-c" then
+			elseif args[1] == "-c" or args[1] == "-clear" then
 				G2D.select = {}
 				outputDebugString("[DGS-G2D] Selections cleared!")
-			elseif args[1] == "-bk" then
-				G2D.backup = not G2D.backup
-				outputDebugString(G2D.backup and "[DGS-G2D] Backup is enabled" or "[DGS-G2D] Backup is disabled, all operations will be irreversible!")
-			elseif args[1] == "-e" then
+			elseif args[1] == "-e" or args[1] == "-exe" then
 				if not G2D.Process then
 					print("[DGS-G2D] Scanning files...")
 					local process = {}
@@ -99,13 +110,14 @@ addCommandHandler("g2d",function(player,command,...)
 					end
 					print("[DGS-G2D] "..#process.." files to be converted")
 					G2D.Process = true
-					G2DStart(process)
+					G2D.Running = {}
+					G2D.Files = process
+					G2DStart()
 				else
 					print("[DGS-G2D] G2D is running!")
 				end
 			elseif args[1] == "-q" then
 				if G2D.Process then
-					
 					print("[DGS-G2D] G2D process terminated!")
 					G2D.Process = false
 				else
@@ -193,20 +205,20 @@ end
 
 local function isDigital(letter,isHex)
 	if isHex then
-		return digital[letter] or digitalHex[letter]
+		return digital[letter] or digitalHex[letter] or false
 	else
-		return digital[letter]
+		return digital[letter] or false
 	end
 end
 
 local transfer = {
-a = "\a",
-b = "\b",
-f = "\f",
-n = "\n",
-r = "\r",
-t = "\t",
-v = "\v",
+a = "\\a",
+b = "\\b",
+f = "\\f",
+n = "\\n",
+r = "\\r",
+t = "\\t",
+v = "\\v",
 }
 LexState = {}
 
@@ -235,6 +247,9 @@ setmetatable(LexState,{
 					end
 					self.checkindex = self.index
 					return self.current
+				end,
+				outputnext=function(self)
+					return self.readText:sub(self.index+1,self.index+1)
 				end,
 				checknext=function(self,target,...)
 					self.checkindex = self.checkindex+1
@@ -294,6 +309,7 @@ setmetatable(LexState,{
 })
 
 local function throw(ls,err)
+	G2D.Process = false
 	assert(false,"[Line:"..ls.prevLine..",Index:"..ls.prevIndex.."]"..err)
 end
 
@@ -308,12 +324,14 @@ local function readstring(ls,terminal)
 				ls:save(transfer[ls.current])
 			elseif ls.current == "\r" or ls.current == "\n" then
 				if ls.current == "\r" then
-					ls:save()
+					ls:save("\\r")
 					ls:next()
 				end
 				if ls.current == "\n" then
-					ls:save()
+					ls:save("\\n")
 				end
+			elseif ls.current == "\\" then
+				ls:save("\\\\")
 			elseif isDigital(ls.current) then
 				local i = 1
 				local c = ""
@@ -325,6 +343,7 @@ local function readstring(ls,terminal)
 				end
 				ls.save(c:char())
 			else
+				ls:save("\\")
 				ls:save()
 			end
 		else
@@ -356,28 +375,30 @@ end
 local function readnumber(ls)
 	ls:saveline()
 	local isHex
-	if ls.current == "0" and ls:checknext("Xx") then
+	if ls.current == "0" and ls:checksamenext("Xx") then
 		ls:save()	--save 0
 		ls:next()	--next
 		ls:save()	--save x
 		ls:next()	--next
 		isHex = true
 		if not isDigital(ls.current,isHex) then
-			throw(ls,"malformed number")
+			throw(ls,"malformed number (1)")
 		end
 	end
 	repeat
 		ls:save()
 		if not ls:checknext(isDigital,isHex) then break end
 	until(not ls:next())
-	if not isHex and ls:checkcurrent("Ee") then
+	if not isHex and ls:checksamenext("Ee") then
+		ls:next()
 		ls:save()
 		ls:next()
 		if ls:checkcurrent("+-") then
 			ls:save()
 			ls:next()
 		end
-	elseif ls.current == "." then
+	elseif ls:checksamenext(".") then
+		ls:next()
 		ls:save()
 		ls:next()
 	else
@@ -385,15 +406,23 @@ local function readnumber(ls)
 		return
 	end
 	if not isDigital(ls.current,isHex) then
-		throw(ls,"malformed number")
+		throw(ls,"malformed number (2)")
 	end
 	repeat
 		ls:save()
-		if not ls:checknext(isDigital,isHex) then break end
+		if not ls:checksamenext(isDigital,isHex) then break end
 	until(not ls:next())
-	--until(ls:next() and not isDigital(ls.current,isHex))
-	if not isLetter(ls.current,true) and ls.current ~= "." then
-		throw(ls,"malformed number")
+	if ls.current == "e" then
+		ls:next()
+		if isLetter(ls.current,true) or ls:checkcurrent(".") then
+			throw(ls,"malformed number (3) "..ls.current.."")
+		end
+		repeat
+			ls:save()
+			if not ls:checknext(isDigital,isHex) then break end
+		until(not ls:next())
+	elseif isLetter(ls.current,true) or ls:checkcurrent(".") then
+		throw(ls,"malformed number (3) "..ls.current.."")
 	end
 	ls:finish("number")
 end
@@ -479,8 +508,8 @@ local function DGSLLex(ls)
 				ls:finish("operator")
 			end
 		elseif ls.current == "." then
-			ls:save()
 			if ls:checknext(".") then
+				ls:save()
 				ls:next()
 				ls:save()
 				if ls:checknext(".") then
@@ -494,6 +523,7 @@ local function DGSLLex(ls)
 				if ls:checknext(isDigital) then
 					readnumber(ls)
 				else
+					ls:save()
 					ls:finish("operator")
 				end
 			end
@@ -566,7 +596,6 @@ setmetatable(AnalyzerState,{
 				separatorDepth = 0,
 				blockDepth = 0,
 				lexResult=lexResult,
-				externalFunction = {},
 				replacedFunction = {},
 				replacedEvent = {},
 				executeProcess = function(self)
@@ -628,7 +657,7 @@ setmetatable(AnalyzerState,{
 				end,
 				getNext = function(self,dontSkipSpace)
 					self.tokenIndex = self.tokenIndex+1
-					if self.lexResult[self.tokenIndex][2] == "space" and not dontSkipSpace then
+					if self.lexResult[self.tokenIndex] and self.lexResult[self.tokenIndex][2] == "space" and not dontSkipSpace then
 						return self:getNext()
 					end
 					return self.lexResult[self.tokenIndex]
@@ -643,13 +672,20 @@ setmetatable(AnalyzerState,{
 				insertCurrent = function(self,insert)
 					table.insert(self.lexResult,self.tokenIndex,insert)
 				end,
-				set = function(self,repFnc)
-					self.replacedFunction = repFnc
+				set = function(self,repFnc,isEvent)
+					if isEvent then
+						self.replacedEvent = repFnc
+						self.replacedFunction = {}
+					else
+						self.replacedEvent = {}
+						self.replacedFunction = repFnc
+					end
 					self.tokenIndex=0
 					self.separatorDepth = 0
 				end,
-				generateFile = function(self)
-					local file = fileCreate("tmp.txt")
+				generateFile = function(self,filename)
+					local path = filename:sub(2)
+					local file = fileCreate("G2DOutput/"..path)
 					local newtab = {}
 					local isDGSDef = false
 					for i=1,#self.lexResult do
@@ -662,14 +698,14 @@ setmetatable(AnalyzerState,{
 						elseif self.lexResult[i][2] == "long string" then
 							newtab[i] = "[["..self.lexResult[i][1].."]]"
 						else
-							if newtab[i][1] == "__DGSDef" then
+							if newtab[i] == "__DGSDef" then
 								isDGSDef = true
 							end
 							newtab[i] = self.lexResult[i][1]
 						end
 					end
 					if not isDGSDef then
-						table.insert(newtab,Hooker)
+						table.insert(newtab,1,Hooker)
 					end
 					fileWrite(file,table.concat(newtab))
 					fileClose(file)
@@ -810,8 +846,10 @@ convertFunctionTable = {
 }
 
 Hooker = [[
---G2D Converted
-if not __DGSDef then
+
+----------GUI To DGS Converted----------
+if not getElementData(root,"__DGSDef") then
+	setElementData(root,"__DGSDef",true)
 	addEvent("onDgsEditAccepted-C",true)
 	addEvent("onDgsTextChange-C",true)
 	addEvent("onDgsComboBoxSelect-C",true)
@@ -824,8 +862,9 @@ if not __DGSDef then
 	addEventHandler("onDgsComboBoxSelect",root,fncTrans)
 	addEventHandler("onDgsTabSelect",root,fncTrans)
 	loadstring(exports.dgs:dgsImportFunction())()
-	__DGSDef = true
 end
+----------GUI To DGS Converted----------
+
 ]]
 
 converEventTable = {
@@ -850,7 +889,7 @@ converEventTable = {
 
 
 function showProgress(progress)
-	print("[G2D]Progress "..string.format("%.2f",progress).."%")
+	print("[G2D] Progress "..string.format("%.2f",progress).."%")
 end
 
 G2DRunningData = {
@@ -858,39 +897,69 @@ G2DRunningData = {
 	Timer= false
 }
 
-function G2DStart(fileNames)
-	print("[G2D] Start coroutine")
+function G2DStart()
+	local k,filename = next(G2D.Files,(G2D.Running or {})[2])
+	if not filename then
+		G2D.Process = false
+		return print("[G2D] Process Done")
+	end
 	local cor = coroutine.create(processFile)
-	print(coroutine.resume(cor,cor,fileNames))
-	
+	G2D.Running = {cor,k}
+	G2D.StartTick = getTickCount()
+	local result,errmess = coroutine.resume(cor,filename)
+	if not result then
+		print(errmess)
+	end
 end
 
-function processFile(cor,files,index)
-	local k,filename = next(files,index)
-	if not k then return print("[G2D] Process Complete") end
-	print("[G2D] Starting to process file '"..filename.."'")
+function processExpired(isEnd)
+	if not isEnd then
+		setTimer(function()
+			G2D.StartTick = getTickCount()
+			coroutine.resume(G2D.Running[1])
+		end,50,1)
+	else
+		G2DStart()
+	end
+end
+
+function processFile(filename)
+	print("[G2D] Start to process file '"..filename.."'")
 	local file = fileOpen(filename)
 	local str = fileRead(file,fileGetSize(file))
+	local utf8BOM = false
+	local txtByte = {str:byte(1,3)}
+	if txtByte[1] == 0xEF and txtByte[2] == 0xBB and txtByte[3] == 0xBF then
+		str = str:sub(4)
+		utf8BOM = true
+	end
 	fileClose(file)
 	local ls = LexState(str)
 	DGSLLex(ls)
 	local az = AnalyzerState(ls.result)
 	local convTabCnt = #convertFunctionTable
-	local tick = getTickCount()
+	print("[G2D] Replacing Functions")
 	for i=1,convTabCnt do
 		az:set(convertFunctionTable[i])
 		az:executeProcess()
-		if getTickCount()-tick >= 95 then
+		if getTickCount()-G2D.StartTick >= 100 then
 			showProgress((i-1)/convTabCnt*100)
-			setTimer(function(cor)
-				coroutine.resume(cor)
-			end,25,1,cor)
-			coroutine.yield(filename)
+			processExpired()
+			coroutine.yield()
+		end
+	end
+	local convTabCnt = #converEventTable
+	print("[G2D] Replacing Events")
+	for i=1,convTabCnt do
+		az:set(converEventTable[i],true)
+		az:executeProcess()
+		if getTickCount()-G2D.StartTick >= 100 then
+			showProgress((i-1)/convTabCnt*100)
+			processExpired()
+			coroutine.yield()
 		end
 	end
 	showProgress(100)
-	print("[G2D] Generating file...")
-	az:generateFile()
-	print("[G2D] Saved to file")
-	return processFile(cor,files,k)
+	az:generateFile(filename,utf8BOM)
+	return processExpired(true)
 end

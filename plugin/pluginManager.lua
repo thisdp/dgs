@@ -11,7 +11,7 @@ end)
 addEventHandler("onDgsDestroy",resourceRoot,function()
 	local typ = dgsElementData[source].asPlugin
 	if typ then
-		local id = table.find(dgsPluginTable[typ],source)
+		local id = table.find(dgsPluginTable[typ] or {},source)
 		if id then
 			table.remove(dgsPluginTable[typ],id)
 		end

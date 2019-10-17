@@ -64,7 +64,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	dgsSetData(cb,"clip",false)
 	dgsSetData(cb,"wordbreak",false)
 	dgsSetData(cb,"colorcoded",false)
-	dgsSetData(cb,"CheckBoxState",state)
+	dgsSetData(cb,"state",state)
 	dgsSetData(cb,"alignment",{"left","center"})
 	calculateGuiPositionSize(cb,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",cb,sourceResource)
@@ -73,21 +73,47 @@ end
 
 function dgsCheckBoxGetSelected(cb)
 	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxGetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
-	return dgsElementData[cb].CheckBoxState
+	return dgsElementData[cb].state
 end
 
 function dgsCheckBoxSetSelected(cb,state)
 	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxSetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
 	assert(not state or state == true,"Bad argument @dgsCheckBoxSetSelected at argument 2,expect boolean/nil got "..type(state))
-	local oldState = dgsElementData[cb].CheckBoxState
+	local oldState = dgsElementData[cb].state
 	if state ~= oldState then
 		triggerEvent("onDgsCheckBoxChange",cb,state,oldState)
 	end
 	return true
 end
 
+function dgsCheckBoxSetHorizontalAlign(checkbox,align)
+	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxSetHorizontalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
+	assert(HorizontalAlign[align],"Bad argument @dgsCheckBoxSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
+	local alignment = dgsElementData[checkbox].alignment
+	return dgsSetData(checkbox,"alignment",{align,alignment[2]})
+end
+
+function dgsCheckBoxSetVerticalAlign(checkbox,align)
+	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxSetVerticalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
+	assert(VerticalAlign[align],"Bad argument @dgsCheckBoxSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
+	local alignment = dgsElementData[checkbox].alignment
+	return dgsSetData(checkbox,"alignment",{alignment[1],align})
+end
+
+function dgsCheckBoxGetHorizontalAlign(checkbox)
+	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxGetHorizontalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
+	local alignment = dgsElementData[checkbox].alignment
+	return alignment[1]
+end
+
+function dgsCheckBoxGetVerticalAlign(checkbox)
+	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxGetVerticalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
+	local alignment = dgsElementData[checkbox].alignment
+	return alignment[2]
+end
+
 addEventHandler("onDgsCheckBoxChange",resourceRoot,function(state)
 	if not wasEventCancelled() then
-		dgsSetData(source,"CheckBoxState",state)
+		dgsSetData(source,"state",state)
 	end
 end)

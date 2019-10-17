@@ -84,3 +84,29 @@ function dgsRadioButtonSetSelected(rb,state)
 		return true
 	end
 end
+
+function dgsRadioButtonSetHorizontalAlign(radiobutton,align)
+	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonSetHorizontalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
+	assert(HorizontalAlign[align],"Bad argument @dgsRadioButtonSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
+	local alignment = dgsElementData[radiobutton].alignment
+	return dgsSetData(radiobutton,"alignment",{align,alignment[2]})
+end
+
+function dgsRadioButtonSetVerticalAlign(radiobutton,align)
+	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonSetVerticalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
+	assert(VerticalAlign[align],"Bad argument @dgsRadioButtonSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
+	local alignment = dgsElementData[radiobutton].alignment
+	return dgsSetData(radiobutton,"alignment",{alignment[1],align})
+end
+
+function dgsRadioButtonGetHorizontalAlign(radiobutton)
+	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonGetHorizontalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
+	local alignment = dgsElementData[radiobutton].alignment
+	return alignment[1]
+end
+
+function dgsRadioButtonGetVerticalAlign(radiobutton)
+	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonGetVerticalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
+	local alignment = dgsElementData[radiobutton].alignment
+	return alignment[2]
+end

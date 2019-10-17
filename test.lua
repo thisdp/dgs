@@ -18,7 +18,7 @@ end
 ------------Full demo
 function createFullDemo()
 	loadstring(dgsImportOOPClass())()
-	local window = DGSClass:createWindow(400,200,600,500,"DGS Full Demo",false)
+	local window = DGSClass:createWindow(0,0,600,600,"DGS Full Demo",false)
 	local button = window:createButton(10,210,80,50,"Test Button",false)
 	local switchButton1 = window:createSwitchButton(100,210,60,20,"","",false)
 	local switchButton2 = window:createSwitchButton(100,240,60,20,"","",true)
@@ -112,10 +112,11 @@ end
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
 	tab1 = dgsCreateTab("DGS",tabp)
-	tab2 = dgsCreateTab("Tab",tabp)
+	tab2 = dgsCreateTab("Tab123123123123",tabp)
 	for i=1,10 do
 		dgsCreateTab(i.."Panel",tabp)
 	end
+	dgsSetText(tab2,"12")
 	gdlt2 = dgsCreateButton(0,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
 	dgsSetProperty(gdlt2,"shadow",{1,1,tocolor(0,0,0,255),true})
 end
@@ -154,8 +155,14 @@ function testMoveHandler()
 end
 
 function testProgressBar()
-	local pb= dgsCreateProgressBar(500,500,200,30,false)
-	dgsProgressBarSetProgress(pb,50)
+	local pb= dgsCreateProgressBar(500,200,600,600,false)
+	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
+	dgsProgressBarSetStyle(pb,"ring-round")
+	local start = 0
+	addEventHandler("onClientRender",root,function()
+		dgsProgressBarSetProgress(pb,start)
+		start = start + 0.1
+	end)
 end
 
 function testButtonPerformance()
@@ -345,6 +352,15 @@ function test3DInterface()
 	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
 end
 
+function test3DInterfaceAttach()
+	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
+	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
+	dgsSetProperty(material,"maxDistance",1000)
+	dgsSetProperty(material,"fadeDistance",1000)
+	local window = dgsCreateWindow(0,0,600,600,"test",false)
+	dgsSetParent(window,material)
+end
+
 function testBlurBox()
 	local bb1 = dgsCreateBlurBox()
 	local bb2 = dgsCreateBlurBox()
@@ -486,7 +502,6 @@ function scrollPane3DEffectTest()
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
 end
-
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass())()-- load OOP class
