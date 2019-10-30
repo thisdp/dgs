@@ -61,13 +61,7 @@ function dgsSetSystemFont(font,size,bold,quality)
 		systemFont = font
 		return true
 	elseif sourceResource then
-		local path
-		if not find(font,":") then
-			local resname = getResourceName(sourceResource)
-			path = ":"..resname.."/"..font
-		else
-			path = font
-		end
+		local path = font:find(":") and font or ":"..getResourceName(sourceResource).."/"..font
 		assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
 		local font = dxCreateFont(path,size,bold,quality)
 		if isElement(font) then
@@ -3895,6 +3889,7 @@ function onClientKeyTriggered(button)
 				end
 			end
 		elseif button == "a" then
+			print(ctrl)
 			if ctrl then
 				dgsMemoSetSelectedArea(memo,0,1,"all")
 			end

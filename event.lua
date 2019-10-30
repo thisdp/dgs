@@ -116,23 +116,6 @@ function table.find(tab,ke,num)
 	return false
 end
 
-function table.arrayFind(tab,ke,num)
-	if num then
-		for i=1,#tab do
-			if tab[i][num] == ke then
-				return i
-			end
-		end
-	else
-		for i=1,#tab do
-			if tab[i] == ke then
-				return i
-			end
-		end
-	end
-	return false
-end
-
 function table.count(tabl)
 	local cnt = 0
 	for k,v in pairs(tabl) do
@@ -187,13 +170,7 @@ function table.deepcopy(obj)
     end
     return Func(obj)
 end
-
 --------------------------------String Utility
-function string.count(str)
-	local _,count = gsub(str,"[^\128-\193]","")
-	return count
-end
-
 function string.split(s, delim)
 	local delimLen = len(delim)
     if type(delim) ~= "string" or delimLen <= 0 then return false end
@@ -353,14 +330,8 @@ function RGB2HSL(R,G,B)
 	local delta = max-min
 	local L,H,S = (max+min)/2,0,0
 	if delta ~= 0 then
-		if L < 0.5 then
-			S = delta/(max+min)
-		else
-			S = delta/(2-max-min)
-		end	
-		local dR = ((max-R)/6+delta/2)/delta
-		local dG = ((max-G)/6+delta/2)/delta
-		local dB = ((max-B)/6+delta/2)/delta
+		S = L < 0.5 and delta/(max+min) or delta/(2-max-min)
+		local dR,dG,dB = ((max-R)/6+delta/2)/delta,((max-G)/6+delta/2)/delta,((max-B)/6+delta/2)/delta
 		if R == max then
 			H = dB-dG
 		elseif G == max then
@@ -379,15 +350,9 @@ end
 
 function RGB2HSV(R,G,B)
 	local R,G,B = R/255,G/255,B/255
-	local min = math.min(R,G,B)
-	local max = math.max(R,G,B)
-	local V,H,S = max,0,0
-	local delta = max - min
-	if max ~= 0 then
-		S = delta / max
-	else
-		S = 0
-	end
+	local min,max = math.min(R,G,B),math.max(R,G,B)
+	local V,H,S,delta = max,0,0,max - min
+	S = max == 0 and 0 or delta / max
 	local dR = R/6
 	local dG = G/6
 	local dB = B/6
@@ -432,8 +397,7 @@ end
 function HSV2HSL(H,S,V)
 	H,S,V = H/360,S/100,V/100
 	local HSL_L = (2 - S) * V / 2
-	local HSL_S
-	HSL_S = HSL_L == 0 and 0 or (HSL_L < 1 and S*V/(HSL_L < 0.5 and HSL_L*2 or 2-HSL_L*2) or S)
+	local HSL_S = HSL_L == 0 and 0 or (HSL_L < 1 and S*V/(HSL_L < 0.5 and HSL_L*2 or 2-HSL_L*2) or S)
 	return H*360,HSL_S*100,HSL_L*100
 end
 
@@ -451,6 +415,29 @@ function dgsRunString(func,...)
 	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
 	return fnc(...)
 end
+
+keyStateMap = {
+	lctrl=getKeyState("lctrl"),
+	rctrl=getKeyState("rctrl"),
+	lshift=getKeyState("lshift"),
+	rshift=getKeyState("rshift"),
+	lalt=getKeyState("lalt"),
+	ralt=getKeyState("ralt"),
+}
+_getKeyState = getKeyState
+function getKeyState(key)
+	if keyStateMap[key] ~= nil then
+		return keyStateMap[key]
+	else
+		return _getKeyState(key)
+	end
+end
+
+addEventHandler("onClientKey",root,function(but,state)
+	if keyStateMap[but] ~= nil then
+		keyStateMap[but] = state
+	end
+end)
 
 --------------------------------OOP Utility
 
