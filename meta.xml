@@ -212,6 +212,8 @@
 	<export function="dgs3DInterfaceSetSize" type="client" />
 	<export function="dgs3DInterfaceGetResolution" type="client" />
 	<export function="dgs3DInterfaceSetResolution" type="client" />
+	<export function="dgs3DInterfaceGetFaceTo" type="client" />
+	<export function="dgs3DInterfaceSetFaceTo" type="client" />
 	<export function="dgs3DInterfaceAttachToElement" type="client" />
 	<export function="dgs3DInterfaceIsAttached" type="client" />
 	<export function="dgs3DInterfaceDetachFromElement" type="client" />

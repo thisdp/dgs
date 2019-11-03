@@ -54,6 +54,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"renderBuffer",{})
 	dgsSetData(memo,"bgColor",bgColor or styleSettings.memo.bgColor)
 	dgsSetData(memo,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.memo.bgImage))
+	dgsSetData(memo,"bgColorBlur",styleSettings.memo.bgColorBlur)
+	dgsSetData(memo,"bgImageBlur",dgsCreateTextureFromStyle(styleSettings.memo.bgImageBlur))
 	dgsSetData(memo,"font",systemFont,true)
 	dgsElementData[memo].text = {}
 	dgsSetData(memo,"wordWarp",false,true)	--false:Normal Mode; 1:Word warp by character; 2:Word warp by word;
