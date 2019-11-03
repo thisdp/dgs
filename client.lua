@@ -3892,6 +3892,7 @@ function onClientKeyTriggered(button)
 				end
 			end
 		elseif button == "a" then
+			print(ctrl)
 			if ctrl then
 				dgsMemoSetSelectedArea(memo,0,1,"all")
 			end
