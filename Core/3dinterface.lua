@@ -120,6 +120,7 @@ function dgs3DInterfaceGetFaceTo(interface)
 	local faceRelativeTo = dgsElementData[interface].faceRelativeTo or "self"
 	return faceTo[1],faceTo[2],faceTo[3],faceRelativeTo
 end
+
 function dgs3DInterfaceSetBlendMode(interface,blend)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetBlendMode at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(type(blend) == "string","Bad argument @dgs3DInterfaceSetBlendMode at argument 2, expect a string got "..dgsGetType(blend))
