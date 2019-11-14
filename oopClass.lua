@@ -447,6 +447,12 @@ function dgsImportOOPClass()
 				nTab.getRotation = function(self,...)
 					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetRotation",self.dgsElement,...)
 				end
+				nTab.setFaceTo = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceSetFaceTo",self.dgsElement,...)
+				end
+				nTab.getFaceTo = function(self,...)
+					return call(dgsOOP.dgsRes,"dgs3DInterfaceGetFaceTo",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxarrowlist" then
 				nTab.addItem = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsArrowListAddItem",self.dgsElement,...)

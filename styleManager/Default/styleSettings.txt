@@ -203,13 +203,15 @@
 	edit = {
 	---Color
 		bgColor = tocolor(85,90,100,255),		--Background color of edit
+		bgColorBlur = nil,		--Background color of edit when blur, set to nil to use bgColor
 		textColor = tocolor(255,255,255,255),			--Text color
 		caretColor = tocolor(255,255,255,255),		--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
 		selectColorBlur = tocolor(140,140,140,200),	--Selected background color when blurred
 		placeHolderColor = tocolor(200,200,200,255),		--Place holder text color
 	---Image
-		bgImage = {},
+		bgImage = {},	--Background image of edit
+		bgImageBlur = {},	--Background image of edit when blur, set to empty or nil to use bgImage
 	---Values
 		textSize = {1,1},	--Text size
 		maskText = "*",
@@ -272,12 +274,14 @@
 	memo = {
 	---Color
 		bgColor = tocolor(85,90,100,255),	--Background color of memo
+		bgColorBlur = nil,		--Background color of memo when blur, set to nil to use bgColor
 		textColor = tocolor(255,255,255,255),		--Text color
 		caretColor = tocolor(255,255,255,255),	--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
 		selectColorBlur = tocolor(140,140,140,200),	--Selected background color when blurred
 	---Image
-		bgImage = {},
+		bgImage = {},	--Background image of memo
+		bgImageBlur = {},	--Background image of memo when blur, set to empty or nil to use bgImage
 	---Values
 		textSize = {1,1},	--Text size
 		maskText = "*",

@@ -1,8 +1,6 @@
-dgsConfig.updateSystemDisabled = false
+dgsConfig.g2d = false
 dgsConfig.updateCheckNoticeInterval = 120
 dgsConfig.updateCheckAuto = true
-dgsConfig.backup = true
-dgsConfig.updateCheckInterval = 120
-dgsConfig.backupMeta = true
 dgsConfig.backupStyleMeta = false
-dgsConfig.g2d = false
+dgsConfig.backupMeta = true
+dgsConfig.updateCheckInterval = 120

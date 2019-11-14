@@ -15,6 +15,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"position",{x,y,z})
 	dgsSetData(interface,"faceTo",{faceX,faceY,faceZ})
 	dgsSetData(interface,"size",{w,h})
+	dgsSetData(interface,"faceRelativeTo","self")
 	dgsSetData(interface,"color",color or tocolor(255,255,255,255))
 	dgsSetData(interface,"resolution",{resolX,resolY})
 	dgsSetData(interface,"maxDistance",distance or 200)
@@ -97,6 +98,27 @@ end
 function dgs3DInterfaceGetRotation(interface)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetRotation at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	return dgsElementData[interface].rotation
+end
+
+
+function dgs3DInterfaceSetFaceTo(interface,fx,fy,fz,relativeTo)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetFaceTo at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not fx and not fy and not fz then
+		return dgsSetData(interface,"faceTo",nil)
+	else
+		assert(type(fx) == "number","Bad argument @dgs3DInterfaceSetFaceTo at argument 2, expect a number got "..dgsGetType(fx))
+		assert(type(fy) == "number","Bad argument @dgs3DInterfaceSetFaceTo at argument 3, expect a number got "..dgsGetType(fy))
+		assert(type(fz) == "number","Bad argument @dgs3DInterfaceSetFaceTo at argument 4, expect a number got "..dgsGetType(fz))
+		relativeTo = relativeTo == "world" and "world" or "self"
+		return dgsSetData(interface,"faceTo",{fx,fy,fz}) and dgsSetData(interface,"faceRelativeTo",relativeTo)
+	end
+end
+
+function dgs3DInterfaceGetFaceTo(interface)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetFaceTo at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	local faceTo = dgsElementData[interface].faceTo or {}
+	local faceRelativeTo = dgsElementData[interface].faceRelativeTo or "self"
+	return faceTo[1],faceTo[2],faceTo[3],faceRelativeTo
 end
 
 function dgs3DInterfaceSetBlendMode(interface,blend)

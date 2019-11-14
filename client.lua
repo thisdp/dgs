@@ -61,13 +61,7 @@ function dgsSetSystemFont(font,size,bold,quality)
 		systemFont = font
 		return true
 	elseif sourceResource then
-		local path
-		if not find(font,":") then
-			local resname = getResourceName(sourceResource)
-			path = ":"..resname.."/"..font
-		else
-			path = font
-		end
+		local path = font:find(":") and font or ":"..getResourceName(sourceResource).."/"..font
 		assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
 		local font = dxCreateFont(path,size,bold,quality)
 		if isElement(font) then
@@ -405,7 +399,7 @@ function interfaceRender()
 			end
 			local pos = eleData.position
 			local size = eleData.size
-			local faceTo = eleData.faceTo
+			local faceTo = eleData.faceTo or {}
 			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 			eleData.hit = false
 			if x and y and z and w and h then
@@ -434,6 +428,9 @@ function interfaceRender()
 					local colors = applyColorAlpha(eleData.color,eleData.alpha*addalp)
 					if not fx or not fy or not fz then
 						fx,fy,fz = camX-x,camY-y,camZ-z
+					end
+					if eleData.faceRelativeTo == "world" then
+						fx,fy,fz = fx-x,fy-y,fz-z
 					end
 					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
 				end
@@ -1255,8 +1252,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local bgImage = eleData.bgImage
-				local bgColor = eleData.bgColor
+				local bgImage = eleData.isFocused and eleData.bgImage or (eleData.bgImageBlur or eleData.bgImage)
+				local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
 				
 				bgColor = applyColorAlpha(bgColor,galpha)
 				if MouseData.nowShow == v then
@@ -3904,6 +3901,7 @@ function onClientKeyTriggered(button)
 				end
 			end
 		elseif button == "a" then
+			print(ctrl)
 			if ctrl then
 				dgsMemoSetSelectedArea(memo,0,1,"all")
 			end

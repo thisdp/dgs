@@ -228,6 +228,7 @@ function editTest() --Test Tab Switch for edit.
 	dgsSetProperty(edit2,"placeHolderIgnoreRenderTarget",true)
 	dgsEditAddAutoComplete(edit3,"mypass",false)
 	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
+	dgsSetProperty(edit,"bgColorBlur",tocolor(255,255,255,100))
 end
 
 function editTest4()
@@ -342,6 +343,7 @@ function test3DInterface()
 	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
+	dgsSetProperty(material,"faceTo",{-10,0,4})
 	--local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
 	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
 	--edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
@@ -355,6 +357,7 @@ end
 function test3DInterfaceAttach()
 	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
+	dgsSetProperty(material,"faceRelativeTo","world")
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
 	local window = dgsCreateWindow(0,0,600,600,"test",false)

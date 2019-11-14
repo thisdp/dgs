@@ -40,8 +40,10 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or tableInsert(CenterFatherTable,edit)
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetData(edit,"renderBuffer",{})
-	dgsSetData(edit,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.edit.bgImage))
 	dgsSetData(edit,"bgColor",bgColor or styleSettings.edit.bgColor)
+	dgsSetData(edit,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.edit.bgImage))
+	dgsSetData(edit,"bgColorBlur",styleSettings.edit.bgColorBlur)
+	dgsSetData(edit,"bgImageBlur",dgsCreateTextureFromStyle(styleSettings.edit.bgImageBlur))
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.edit.textSize[1], tonumber(scaley) or styleSettings.edit.textSize[2]
 	dgsSetData(edit,"textSize",{textSizeX,textSizeY},true)
 	dgsSetData(edit,"font",systemFont,true)
