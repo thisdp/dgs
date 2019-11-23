@@ -10,7 +10,7 @@ local min = math.min
 local max = math.max
 local tocolor = tocolor
 local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImage
+local _dxDrawImage = dxDrawImage
 local dxDrawImageSection = dxDrawImageSection
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
@@ -34,6 +34,16 @@ local tostring = tostring
 local tonumber = tonumber
 local type = type
 local isElement = isElement
+
+local function dxDrawImage( posX, posY, width, height, image, rotation, rotationX, rotationY, color, postGUI )
+	if type(image) == "table" then
+		return dxDrawImageSection( posX, posY, width, height, 
+			image[2], image[3], image[4], image[5], image[1],
+			  rotation, rotationX, rotationY, color, postGUI )
+	else
+		return _dxDrawImage( posX, posY, width, height, image, rotation, rotationX, rotationY, color, postGUI )
+	end
+end
 
 ----
 sW,sH = guiGetScreenSize()
