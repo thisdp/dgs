@@ -1,6 +1,9 @@
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format = string.gsub,string.sub,string.len,string.find,string.format
+local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
 local insert = table.insert
+local _dxDrawImageSection = dxDrawImageSection
+local _dxDrawImage = dxDrawImage
 ClientInfo = {
 	SupportedPixelShader={}
 }
@@ -166,12 +169,12 @@ function table.deepcopy(obj)
         for k,v in pairs(obj) do
             NewTable[Func(k)] = Func(v)  
         end
-        return setmetatable(NewTable, getmetatable(obj))
+        return setmetatable(NewTable,getmetatable(obj))
     end
     return Func(obj)
 end
 --------------------------------String Utility
-function string.split(s, delim)
+function string.split(s,delim)
 	local delimLen = len(delim)
     if type(delim) ~= "string" or delimLen <= 0 then return false end
 	local start,index,t = 1,1,{}
@@ -214,7 +217,7 @@ function getPositionFromElementOffset(element,offX,offY,offZ)
     local x = offX * m[1][1] + offY * m[2][1] + offZ * m[3][1] + m[4][1]
     local y = offX * m[1][2] + offY * m[2][2] + offZ * m[3][2] + m[4][2]
     local z = offX * m[1][3] + offY * m[2][3] + offZ * m[3][3] + m[4][3]
-    return x, y, z
+    return x,y,z
 end
 
 function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
@@ -286,7 +289,7 @@ end
 
 --If you are trying to edit following code...
 --You should know that
---HSL and HSV are not the same thing, while HSB is the same as HSV...
+--HSL and HSV are not the same thing,while HSB is the same as HSV...
 
 function HSL2RGB(H,S,L)
 	local H,S,L = H/360,S/100,L/100
@@ -407,6 +410,14 @@ function HSL2HSV(H,S,L)
 	local HSV_V = L+tmp
 	local HSV_S = L>0 and 2*tmp/HSV_V or S
 	return H*360,HSV_S*100,HSV_V*100
+end
+--------------------------------Dx Utility
+function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+	if type(image) == "table" then
+		return _dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
+	else
+		return _dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+	end
 end
 
 --------------------------------Other Utility

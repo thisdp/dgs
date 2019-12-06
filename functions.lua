@@ -701,7 +701,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"disabledColorPercent",styleSettings.disabledColorPercent)
 	dgsSetData(source,"postGUI",dgsRenderSetting.postGUI == nil and true or false)
 	dgsSetData(source,"outline",false) --{side,width,color}
-	dgsSetData(source,"changeOrder",true) --Change the order when "bring to front" or clicked
+	dgsSetData(source,"changeOrder",styleSettings.changeOrder) --Change the order when "bring to front" or clicked
 	dgsSetData(source,"attachedTo",false) --Attached To
 	dgsSetData(source,"attachedBy",{}) --Attached By
 	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!

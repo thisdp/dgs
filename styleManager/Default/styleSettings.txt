@@ -13,6 +13,7 @@
 	disabledColor = true,
 	disabledColorPercent = 0.8,
 	systemFont="default",
+	changeOrder=true,	--Change render order when click dgs element
 ---------------------------------------------------------------------------------------------------Cursor Image
 
 ---------------------------------------------------------------------------------------------------Unique
