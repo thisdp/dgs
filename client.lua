@@ -35,7 +35,8 @@ local tostring = tostring
 local tonumber = tonumber
 local type = type
 local isElement = isElement
-
+local _getElementID = getElementID
+local getElementID = function(ele) return isElement(ele) and _getElementID(ele) or tostring(ele) end
 ----
 sW,sH = guiGetScreenSize()
 white = 0xFFFFFFFF
@@ -308,10 +309,10 @@ function dgsCoreRender()
 			tickColor = red
 		end
 		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-100,_,_,tickColor)
-		local Focused = MouseData.nowShow and dgsGetType(MouseData.nowShow).."("..(getElementID(MouseData.nowShow) or tostring(MouseData.nowShow))..")" or "None"
-		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).." ("..(getElementID(MouseData.hit) or tostring(MouseData.hit))..")" or "None"
-		local leftStr = MouseData.clickl and dgsGetType(MouseData.clickl).." ("..(getElementID(MouseData.clickl) or tostring(MouseData.clickl))..")" or "None"
-		local rightStr = MouseData.clickr and dgsGetType(MouseData.clickr).." ("..(getElementID(MouseData.clickr) or tostring(MouseData.clickr))..")" or "None"
+		local Focused = MouseData.nowShow and dgsGetType(MouseData.nowShow).."("..getElementID(MouseData.nowShow)..")" or "None"
+		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
+		local leftStr = MouseData.clickl and dgsGetType(MouseData.clickl).." ("..getElementID(MouseData.clickl)..")" or "None"
+		local rightStr = MouseData.clickr and dgsGetType(MouseData.clickr).." ("..getElementID(MouseData.clickr)..")" or "None"
 		dxDrawText("Focused: "..Focused,6,sH*0.4-84,sW,sH,black)
 		dxDrawText("Focused: "..Focused,5,sH*0.4-85)
 		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
@@ -1451,8 +1452,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
 				local bgImage = eleData.bgImage
-				local bgColor = eleData.bgColor
-				bgColor = applyColorAlpha(bgColor,galpha)
+				local bgColor = applyColorAlpha(eleData.bgColor,galpha)
+				local caretColor = applyColorAlpha(eleData.caretColor,galpha)
 				if MouseData.nowShow == v then
 					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 						MouseData.nowShow = false
@@ -1469,6 +1470,20 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local wordwarp = eleData.wordWarp
 				local scbThick = eleData.scrollBarThick
 				local scrollbars = eleData.scrollbars
+				local finalcolor
+				if not enabled[1] and not enabled[2] then
+					if type(eleData.disabledColor) == "number" then
+						finalcolor = eleData.disabledColor
+					elseif eleData.disabledColor == true then
+						local r,g,b,a = fromcolor(bgColor,true)
+						local average = (r+g+b)/3*eleData.disabledColorPercent
+						finalcolor = tocolor(average,average,average,a)
+					else
+						finalcolor = bgColor
+					end
+				else
+					finalcolor = bgColor
+				end
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -1580,20 +1595,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						end
 						dxSetRenderTarget(rndtgt)
 						dxSetBlendMode(rndtgt and "modulate_add" or "add")
-						local finalcolor
-						if not enabled[1] and not enabled[2] then
-							if type(eleData.disabledColor) == "number" then
-								finalcolor = eleData.disabledColor
-							elseif eleData.disabledColor == true then
-								local r,g,b,a = fromcolor(bgColor,true)
-								local average = (r+g+b)/3*eleData.disabledColorPercent
-								finalcolor = tocolor(average,average,average,a)
-							else
-								finalcolor = bgColor
-							end
-						else
-							finalcolor = bgColor
-						end
 						if bgImage then
 							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 						else
@@ -1612,7 +1613,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								local caretStyle = eleData.caretStyle
 								local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
 								if caretStyle == 0 then
-									dxDrawLine(caretRenderX,caretDrawPos[2],caretRenderX,caretDrawPos[2]+fontHeight*(1-caretHeight),eleData.caretColor,eleData.caretThick,noRenderTarget)
+									dxDrawLine(caretRenderX,caretDrawPos[2],caretRenderX,caretDrawPos[2]+fontHeight*(1-caretHeight),caretColor,eleData.caretThick,noRenderTarget)
 								elseif caretStyle == 1 then
 									local cursorWidth = dxGetTextWidth(caretDrawPos[4],txtSizX,font)
 									if cursorWidth == 0 then
@@ -1621,7 +1622,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 									local offset = eleData.caretOffset
 									local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
 									local caretRenderY = caretDrawPos[2]+fontHeight*(1-caretHeight)*0.85+offset-2
-									dxDrawLine(caretRenderX,caretRenderY,caretRenderX+cursorWidth,caretRenderY,eleData.caretColor,eleData.caretThick,noRenderTarget)
+									dxDrawLine(caretRenderX,caretRenderY,caretRenderX+cursorWidth,caretRenderY,caretColor,eleData.caretThick,noRenderTarget)
 								end
 							end
 						end
@@ -1677,20 +1678,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						end
 						dxSetRenderTarget(rndtgt)
 						dxSetBlendMode(rndtgt and "modulate_add" or "add")
-						local finalcolor
-						if not enabled[1] and not enabled[2] then
-							if type(eleData.disabledColor) == "number" then
-								finalcolor = eleData.disabledColor
-							elseif eleData.disabledColor == true then
-								local r,g,b,a = fromcolor(bgColor,true)
-								local average = (r+g+b)/3*eleData.disabledColorPercent
-								finalcolor = tocolor(average,average,average,a)
-							else
-								finalcolor = bgColor
-							end
-						else
-							finalcolor = bgColor
-						end
 						if bgImage then
 							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 						else
@@ -1716,12 +1703,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 									if eleData.caretStyle == 0 then
 										local selStartY = y+lineStart+fontHeight*(1-caretHeight)
 										local selEndY = y+lineStart+fontHeight*caretHeight
-										dxDrawLine(x+width-showPos+1,selStartY,x+width-showPos+1,selEndY,eleData.caretColor,eleData.caretThick,noRenderTarget)
+										dxDrawLine(x+width-showPos+1,selStartY,x+width-showPos+1,selEndY,caretColor,eleData.caretThick,noRenderTarget)
 									elseif eleData.caretStyle == 1 then
 										local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 										cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
 										local offset = eleData.caretOffset
-										dxDrawLine(x+width-showPos+1,y+h-4+offset,x+width-showPos+cursorWidth+2,y+h-4+offset,eleData.caretColor,eleData.caretThick,noRenderTarget)
+										dxDrawLine(x+width-showPos+1,y+h-4+offset,x+width-showPos+cursorWidth+2,y+h-4+offset,caretColor,eleData.caretThick,noRenderTarget)
 									end
 								end
 							end
@@ -3737,6 +3724,7 @@ addEventHandler("onClientKey",root,function(button,state)
 end)
 
 function onClientKeyTriggered(button)
+	local makeEventCancelled = false
 	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
 		local dgsEdit = MouseData.nowShow
 		local text = dgsElementData[dgsEdit].text
@@ -3815,7 +3803,7 @@ function onClientKeyTriggered(button)
 				dgsEditDoOpposite(dgsEdit,false)
 			end
 		elseif button == "tab" then
-			cancelEvent()
+			makeEventCancelled = true
 			triggerEvent("onDgsEditPreSwitch",dgsEdit)
 		elseif button == "a" then
 			if ctrl then
@@ -3894,7 +3882,6 @@ function onClientKeyTriggered(button)
 				end
 			end
 		elseif button == "a" then
-			print(ctrl)
 			if ctrl then
 				dgsMemoSetSelectedArea(memo,0,1,"all")
 			end
@@ -3931,6 +3918,7 @@ function onClientKeyTriggered(button)
 			end
 		end
 	end
+	return makeEventCancelled
 end
 
 KeyHolder = {}
@@ -3949,28 +3937,13 @@ function onClientKeyCheck(button,state)
 				KeyHolder.repeatStartTick = getTickCount()
 				KeyHolder.repeatDuration = 25
 			end,400,1)
-			onClientKeyTriggered(button)
+			if onClientKeyTriggered(button) then
+				cancelEvent()
+			end
 		end
 	end
 end
 addEventHandler("onClientKey",root,onClientKeyCheck)
-
-addEventHandler("onClientGUIBlur",resourceRoot,function()
-	local guitype = getElementType(source)
-	if dgsElementData[source] then
-		if guitype == "gui-edit" then
-			local edit = dgsElementData[source].linkedDxEdit
-			if isElement(edit) and MouseData.nowShow == edit then
-				dgsBlur(edit)
-			end
-		elseif guitype == "gui-memo" then
-			local memo = dgsElementData[source].linkedDxMemo
-			if isElement(memo) and MouseData.nowShow == memo then
-				dgsBlur(memo)
-			end
-		end
-	end
-end)
 
 addEventHandler("onDgsTextChange",root,function()
 	local text = dgsElementData[source].text

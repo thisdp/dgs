@@ -21,7 +21,7 @@ local acceptedAlignment = {
 VerticalAlign = {top=true,center=true,bottom=true}
 HorizontalAlign = {left=true,center=true,right=true}
 GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
-GlobalEdit = guiCreateEdit(-1,0,0,0,"",true)
+GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
 dgsSetData(GlobalEdit,"linkedDxEdit",nil)
 local splitChar = "\r\n"
 local splitChar2 = "\n"
@@ -521,10 +521,10 @@ addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
 			end
 			local theResult = Next or theFirst
 			if theResult then
-				dgsBringToFront(theResult)
 				if dgsElementData[theResult].clearSwitchPos then
 					dgsEditSetCaretPosition(theResult,utf8Len(dgsElementData[theResult].text or ""))
 				end
+				dgsBringToFront(theResult)
 				triggerEvent("onDgsEditSwitched",theResult,source)
 			end
 		end
@@ -812,13 +812,15 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 			local text = guiGetText(source)
 			local cool = dgsElementData[dxEdit].CoolTime
 			if #text ~= 0 then
-				if not cool and not dgsElementData[dxEdit].readOnly then
-					local caretPos = dgsElementData[dxEdit].caretPos
-					local selectFrom = dgsElementData[dxEdit].selectFrom
-					if selectFrom-caretPos ~= 0 then
-						dgsEditReplaceText(dxEdit,caretPos,selectFrom,text)
-					else
-						handleDxEditText(dxEdit,text,true)
+				if not cool then
+					if not dgsElementData[dxEdit].readOnly then
+						local caretPos = dgsElementData[dxEdit].caretPos
+						local selectFrom = dgsElementData[dxEdit].selectFrom
+						if selectFrom-caretPos ~= 0 then
+							dgsEditReplaceText(dxEdit,caretPos,selectFrom,text)
+						else
+							handleDxEditText(dxEdit,text,true)
+						end
 					end
 					dgsElementData[dxEdit].CoolTime = true
 					guiSetText(source,"")

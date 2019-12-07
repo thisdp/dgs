@@ -5,6 +5,11 @@ local assert = assert
 local isElement = isElement
 local destroyElement = destroyElement
 local tableFind = table.find
+local guiBlur = function()
+	destroyElement(guiCreateLabel(0,0,0,0,"",false))
+end
+
+local guiFocus = guiBringToFront
 
 resourceTranslation = {}
 LanguageTranslation = {}
@@ -493,10 +498,18 @@ function dgsGetBrowser(...)
 	return ...
 end
 
+function GlobalEditMemoBlurCheck()
+	local dxChild = source == GlobalEdit and dgsElementData[source].linkedDxEdit or dgsElementData[source].linkedDxMemo
+	if isElement(dxChild) and MouseData.nowShow == dxChild then
+		dgsBlur(dxChild)
+	end
+end
+addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
+addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
+
 function dgsFocus(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsFocus at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	local lastFront = MouseData.nowShow
-	dgsBlur()
 	MouseData.nowShow = dgsEle
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
@@ -504,36 +517,36 @@ function dgsFocus(dgsEle)
 	elseif eleType == "dgs-dxedit" then
 		MouseData.editCursor = true
 		resetTimer(MouseData.EditMemoTimer)
-		dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
 		guiFocus(GlobalEdit)
+		dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
 	elseif eleType == "dgs-dxmemo" then
 		MouseData.editCursor = true
 		resetTimer(MouseData.EditMemoTimer)
-		dgsElementData[GlobalEdit].linkedDxMemo = dgsEle
 		guiFocus(GlobalMemo)
+		dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 	end
-	MouseData.nowShow = dgsEle
 	triggerEvent("onDgsFocus",dgsEle,lastFront)
+	MouseData.nowShow = dgsEle
 	return true
 end
 
 function dgsBlur(dgsEle)
-	if not isElement(MouseData.nowShow) or dgsEle ~= MouseData.nowShow then return end
+	if not dgsEle or not isElement(MouseData.nowShow) or dgsEle ~= MouseData.nowShow then return end
 	if not dgsEle then
 		dgsEle = MouseData.nowShow
 	end
-	MouseData.nowShow = nil
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser()
 	elseif eleType == "dgs-dxedit" then
-		dgsElementData[GlobalEdit].linkedDxEdit = nil
 		guiBlur(GlobalEdit)
+		dgsElementData[GlobalEdit].linkedDxEdit = nil
 	elseif eleType == "dgs-dxmemo" then
-		dgsElementData[GlobalEdit].linkedDxMemo = nil
 		guiBlur(GlobalMemo)
+		dgsElementData[GlobalEdit].linkedDxMemo = nil
 	end
 	triggerEvent("onDgsBlur",dgsEle)
+	MouseData.nowShow = nil
 	return true
 end
 
