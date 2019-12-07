@@ -1885,9 +1885,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local image = eleData.image
 				local pos = eleData.position
 				local length,lrlt = eleData.length[1],eleData.length[2]
-				local cursorColor,arrowColor,troughColor = eleData.cursorColor,eleData.arrowColor,eleData.troughColor
+				local cursorColor,arrowColor,troughColor,arrowBgColor = eleData.cursorColor,eleData.arrowColor,eleData.troughColor,eleData.arrowBgColor
 				local tempCursorColor = {applyColorAlpha(cursorColor[1],galpha),applyColorAlpha(cursorColor[2],galpha),applyColorAlpha(cursorColor[3],galpha)}
 				local tempArrowColor = {applyColorAlpha(arrowColor[1],galpha),applyColorAlpha(arrowColor[2],galpha),applyColorAlpha(arrowColor[3],galpha)}
+				local tempArrowBgColor = {applyColorAlpha(arrowBgColor[1],galpha),applyColorAlpha(arrowBgColor[2],galpha),applyColorAlpha(arrowBgColor[3],galpha)}
 				local tempTroughColor = applyColorAlpha(troughColor,galpha)
 				local colorImageIndex = {1,1,1,1}
 				local slotRange
@@ -1895,7 +1896,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local cursorWidth = eleData.cursorWidth
 				local troughWidth = eleData.troughWidth
 				local arrowWidth = eleData.arrowWidth
-				local arrowBgColor = eleData.arrowBgColor
 				local troughPadding,cursorPadding,arrowPadding
 				if voh then
 					troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
@@ -1999,9 +1999,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawRectangle(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
-						if arrowBgColor then
-							dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[1]],rendSet)
-							dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[4]],rendSet)
+						if tempArrowBgColor then
+							dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
+							dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
 						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],270,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
 						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],90,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
@@ -2018,9 +2018,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxDrawRectangle(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,tempTroughColor,rendSet)
 					end
 					if scrollArrow then
-						if arrowBgColor then
-							dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[1]],rendSet)
-							dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,arrowBgColor[colorImageIndex[4]],rendSet)
+						if tempArrowBgColor then
+							dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
+							dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
 						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],0,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
 						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
@@ -2697,6 +2697,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
+				local captionEdit = eleData.captionEdit
 				local colors,imgs = eleData.color,eleData.image
 				local colorimgid = 1
 				local textBox = eleData.textBox
@@ -2776,7 +2777,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local r,g,b,a = fromcolor(arrowOutSideColor,true)
 				dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*galpha})
 				dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,rendSet)
-				if textBox then
+				if textBox and not captionEdit then
 					local textSide = eleData.comboTextSide
 					local font = eleData.font or systemFont
 					local textColor = eleData.textColor
@@ -4501,6 +4502,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local preSelect = dgsElementData[combobox].preSelect
 					local oldSelect = dgsElementData[combobox].select
 					dgsElementData[combobox].select = preSelect
+					local captionEdit = dgsElementData[combobox].captionEdit
+					local selection = dgsElementData[combobox].select
+					local itemData = dgsElementData[combobox].itemData
+					dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
 					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 					if dgsElementData[combobox].autoHideAfterSelected then
 						dgsSetData(combobox,"listState",-1)

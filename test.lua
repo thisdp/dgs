@@ -33,6 +33,7 @@ function createFullDemo()
 		arrowlist:addItem(i,1,10)
 	end
 	local combobox = window:createComboBox(10,270,150,30,"test",false)
+	combobox:setEditEnabled(true)
 	for i=1,100 do
 		combobox:addItem(i)
 	end

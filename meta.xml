@@ -283,6 +283,9 @@
 	<export function="dgsComboBoxGetScrollPosition" type="client" />
 	<export function="dgsComboBoxSetCaptionText" type="client" />
 	<export function="dgsComboBoxGetCaptionText" type="client" />
+	<export function="dgsComboBoxSetEditEnabled" type="client" />
+	<export function="dgsComboBoxGetEditEnabled" type="client" />
+	<export function="dgsComboBoxGetText" type="client" />
 	<export function="dgsComboBoxGetItemCount" type="client" />
 	
 	<export function="dgsCreateButton" type="client" />
