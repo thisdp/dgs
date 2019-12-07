@@ -1249,6 +1249,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
 				
 				bgColor = applyColorAlpha(bgColor,galpha)
+				local caretColor = applyColorAlpha(eleData.caretColor,galpha)
 				if MouseData.nowShow == v then
 					if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 						MouseData.nowShow = false
@@ -1386,7 +1387,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
 									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
 									local selEndY = (h-sideheight*2)*caretHeight
-									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,eleData.caretColor,eleData.caretThick,noRenderTarget)
+									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,caretColor,eleData.caretThick,noRenderTarget)
 								end
 							elseif caretStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
@@ -1396,7 +1397,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 									local offset = eleData.caretOffset
 									local selStartY = y+h-sideheight*2
-									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,eleData.caretColor,eleData.caretThick,noRenderTarget)
+									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,caretColor,eleData.caretThick,noRenderTarget)
 								end
 							end
 						end
