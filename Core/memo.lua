@@ -8,7 +8,8 @@ local utf8Len = utf8.len
 local utf8Insert = utf8.insert
 local utf8Byte = utf8.byte
 local _dxGetTextWidth = dxGetTextWidth
-GlobalMemo = guiCreateMemo(-1,0,0,0,"",true)
+GlobalMemoParent = guiCreateLabel(-1,0,0,0,"",true)
+GlobalMemo = guiCreateMemo(-1,0,0,0,"",true,GlobalMemoParent)
 dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 --[[
 ---------------In Normal Mode------------------

@@ -87,6 +87,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 		caption = dgsTranslate(combobox,caption,sourceResource)
 	end
 	dgsSetData(combobox,"caption",tostring(caption),true)
+	dgsSetData(combobox,"captionEdit",false)
 	dgsSetData(combobox,"arrow",dgsCreateTextureFromStyle(styleSettings.combobox.arrow))
 	calculateGuiPositionSize(combobox,x,y,relative or false,sx,sy,relative or false,true)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
@@ -124,18 +125,59 @@ end
 
 function dgsComboBoxSetCaptionText(combobox,caption)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	if type(caption) == "table" then
-		dgsElementData[combobox]._translationText = caption
-		caption = dgsTranslate(combobox,caption,sourceResource)
-	else
-		dgsElementData[combobox]._translationText = nil
-	end
 	return dgsSetData(combobox,"caption",caption)
+end
+
+function dgsComboBoxGetText(combobox)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	local captionEdit = dgsElementData[combobox].captionEdit
+	local selection = dgsElementData[combobox].select
+	local itemData = dgsElementData[combobox].itemData
+	local text = itemData[selection] and itemData[selection][1]
+	if captionEdit then
+		text = text or dgsGetText(captionEdit)
+	else
+		text = text or dgsElementData[combobox].caption
+	end
+	return text or false
 end
 
 function dgsComboBoxGetCaptionText(combobox)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	return dgsElementData[combobox].caption
+end
+
+function dgsComboBoxSetEditEnabled(combobox,enabled)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetEditEnabled at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	local captionEdit = dgsElementData[combobox].captionEdit
+	if enabled then
+		if not isElement(captionEdit) then
+			local size = dgsElementData[combobox].absSize
+			local w,h = size[1],size[2]
+			local buttonLen_t = dgsElementData[combobox].buttonLen
+			local buttonLen = 0
+			if dgsElementData[combobox].textBox then
+				buttonLen = w - (buttonLen_t[2] and buttonLen_t[1]*h or buttonLen_t[1])
+			end
+			local edit = dgsCreateEdit(0,0,buttonLen,h,dgsElementData[combobox].caption,false,combobox)
+			dgsSetData(edit,"bgColor",0)
+			dgsSetData(combobox,"captionEdit",edit)
+			if not dgsElementData[combobox].textBox then
+				dgsSetVisible(edit,false)
+			end
+		end
+	else
+		if isElement(captionEdit) then
+			destroyElement(captionEdit)
+			dgsSetData(combobox,"captionEdit",false)
+		end
+	end
+end
+
+
+function dgsComboBoxGetEditEnabled(combobox,enabled)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetEditEnabled at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	return dgsElementData[combobox].captionEdit
 end
 
 function dgsComboBoxSetBoxHeight(combobox,height,relative)
@@ -329,28 +371,43 @@ function dgsComboBoxGetSelectedItem(combobox)
 	end
 end
 
-function configComboBox(combobox)
-	local box = dgsElementData[combobox].myBox
-	local boxsiz = dgsElementData[box].absSize
-	local rendertarget = dgsElementData[combobox].renderTarget
-	if isElement(rendertarget) then
-		destroyElement(rendertarget)
+function configComboBox(combobox,remainBox)
+	if not remainBox then
+		local box = dgsElementData[combobox].myBox
+		local boxsiz = dgsElementData[box].absSize
+		local rendertarget = dgsElementData[combobox].renderTarget
+		if isElement(rendertarget) then
+			destroyElement(rendertarget)
+		end
+		local sbt = dgsElementData[combobox].scrollBarThick
+		local rendertarget = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true)
+		dgsSetData(combobox,"renderTarget",rendertarget)
+		local scrollbar = dgsElementData[combobox].scrollbar
+		dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
+		dgsSetSize(scrollbar,sbt,boxsiz[2],false)
+		local itemData = dgsElementData[combobox].itemData
+		local itemHeight = dgsElementData[combobox].itemHeight
+		local itemLength = itemHeight*#itemData
+		local higLen = 1-(itemLength-boxsiz[2])/itemLength
+		higLen = higLen >= 0.95 and 0.95 or higLen
+		dgsSetData(scrollbar,"length",{higLen,true})
+		local verticalScrollSize = dgsElementData[combobox].scrollSize/(itemLength-boxsiz[2])
+		dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
+		dgsSetData(combobox,"configNextFrame",false)
 	end
-	local sbt = dgsElementData[combobox].scrollBarThick
-	local rendertarget = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true)
-	dgsSetData(combobox,"renderTarget",rendertarget)
-	local scrollbar = dgsElementData[combobox].scrollbar
-	dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
-	dgsSetSize(scrollbar,sbt,boxsiz[2],false)
-	local itemData = dgsElementData[combobox].itemData
-	local itemHeight = dgsElementData[combobox].itemHeight
-	local itemLength = itemHeight*#itemData
-	local higLen = 1-(itemLength-boxsiz[2])/itemLength
-	higLen = higLen >= 0.95 and 0.95 or higLen
-	dgsSetData(scrollbar,"length",{higLen,true})
-	local verticalScrollSize = dgsElementData[combobox].scrollSize/(itemLength-boxsiz[2])
-	dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
-	dgsSetData(combobox,"configNextFrame",false)
+	---------------Caption edit
+	local edit = dgsElementData[combobox].captionEdit
+	if edit then
+		local size = dgsElementData[combobox].absSize
+		local w,h = size[1],size[2]
+		local buttonLen_t = dgsElementData[combobox].buttonLen
+		local buttonLen = 0
+		if dgsElementData[combobox].textBox then
+			buttonLen = w - (buttonLen_t[2] and buttonLen_t[1]*h or buttonLen_t[1])
+		end
+		dgsSetSize(edit,buttonLen,h,false)
+		dgsSetVisible(edit,dgsElementData[combobox].textBox)
+	end
 end
 
 function checkCBScrollBar(scb,new,old)

@@ -33,6 +33,7 @@ function createFullDemo()
 		arrowlist:addItem(i,1,10)
 	end
 	local combobox = window:createComboBox(10,270,150,30,"test",false)
+	combobox:setEditEnabled(true)
 	for i=1,100 do
 		combobox:addItem(i)
 	end
@@ -56,7 +57,6 @@ function createFullDemo()
 	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
-
 ------------
 
 function createTest()

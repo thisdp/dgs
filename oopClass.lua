@@ -592,6 +592,15 @@ function dgsImportOOPClass()
 				nTab.getCaptionText = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsComboBoxGetCaptionText",self.dgsElement,...)
 				end
+				nTab.setEditEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxSetEditEnabled",self.dgsElement,...)
+				end
+				nTab.getEditEnabled = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetEditEnabled",self.dgsElement,...)
+				end
+				nTab.getText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsComboBoxGetText",self.dgsElement,...)
+				end
 			elseif dgsType == "dgs-dxedit" then
 				nTab.moveCaret = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsEditMoveCaret",self.dgsElement,...)

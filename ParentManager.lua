@@ -195,13 +195,13 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 		if dgsGetType(dgsEle) == "dgs-dxedit" then
 			MouseData.editCursor = true
 			resetTimer(MouseData.EditMemoTimer)
-			dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
 			guiFocus(GlobalEdit)
+			dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
 		elseif dgsElementType[dgsEle] == "dgs-dxmemo" then
 			MouseData.editCursor = true
 			resetTimer(MouseData.EditMemoTimer)
-			dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 			guiFocus(GlobalMemo)
+			dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 		elseif dgsEle ~= lastFront then
 			local dgsType = dgsGetType(lastFront)
 			if dgsType == "dgs-dxedit" then
@@ -259,10 +259,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 			end
 		end
 	end
-	if isElement(lastFront) and lastFront ~= dgsEle then
-		triggerEvent("onDgsBlur",lastFront,dgsEle)
-	end
-	triggerEvent("onDgsFocus",dgsEle,lastFront)
+	dgsFocus(dgsEle)
 	lastFront = dgsEle
 	if mouse == "left" then
 		MouseData.clickl = dgsEle
