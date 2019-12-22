@@ -52,6 +52,7 @@ addEvent("onDgsStopAlphaing")
 addEvent("onDgsStopAniming")
 addEvent("onDgsArrowListValueChange")
 addEvent("onDgsMouseDrag")
+addEvent("onDgsStart")
 -------
 addEvent("giveIPBack",true)
 
