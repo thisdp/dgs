@@ -4477,9 +4477,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local oldSelect = dgsElementData[combobox].select
 					dgsElementData[combobox].select = preSelect
 					local captionEdit = dgsElementData[combobox].captionEdit
-					local selection = dgsElementData[combobox].select
-					local itemData = dgsElementData[combobox].itemData
-					dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
+					if isElement(captionEdit) then
+						local selection = dgsElementData[combobox].select
+						local itemData = dgsElementData[combobox].itemData
+						dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
+					end
 					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 					if dgsElementData[combobox].autoHideAfterSelected then
 						dgsSetData(combobox,"listState",-1)
