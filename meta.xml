@@ -533,6 +533,8 @@
 	<export function="dgsRoundRectGetRadius" type="client" />
 	<export function="dgsRoundRectSetColor" type="client" />
 	<export function="dgsRoundRectGetColor" type="client" />
+	<export function="dgsRoundRectSetColorOverwritten" type="client" />
+	<export function="dgsRoundRectGetColorOverwritten" type="client" />
 	
 	<export function="dgsCreateColorPicker" type="client" />
 	<export function="dgsColorPickerCreateComponentSelector" type="client" />
