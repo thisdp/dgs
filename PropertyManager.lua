@@ -174,7 +174,8 @@ function dgsSetData(element,key,value,nocheck)
 							dgsElementData[element].renderBuffer.UVPos = {x,y}
 						end
 					elseif key == "image" then
-						if isElement(value) and getElementType(value) ~= "shader" then
+						local imgType = dgsGetType(value)
+						if isElement(value) and imgType ~= "shader" and imgType ~= "dgs-dxcustomrenderer" then
 							local UVPos,UVSize = dgsElementData[element].UVPos or {0,0,true},dgsElementData[element].UVSize or {1,1,true}
 							local x,y,relative = UVPos[1],UVPos[2],UVPos[3]
 							local sx,sy,relative = UVSize[1],UVSize[2],UVSize[3]

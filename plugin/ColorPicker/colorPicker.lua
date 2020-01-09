@@ -94,14 +94,12 @@ function dgsColorPickerCreateComponentSelector(x,y,w,h,voh,relative,parent,thick
 end
 
 function dgsComponentSelectorSetCursorThickness(cs,thickness)
-	local csTyp = dgsGetPluginType(cs) or dgsGetType(cs)
-	assert(csTyp == "dgs-dxcomponentselector","Bad argument @dgsComponentSelectorSetCursorThickness at argument 1, expect a dgs-dxcomponentselector plugin, got "..csTyp)
+	assert(dgsGetPluginType(cs) == "dgs-dxcomponentselector","Bad argument @dgsComponentSelectorSetCursorThickness at argument 1, expect plugin dgs-dxcomponentselector, got "..dgsGetPluginType(cs))
 	return dgsSetData(cs,"thickness",thickness)
 end
 
 function dgsComponentSelectorGetCursorThickness(cs)
-	local csTyp = dgsGetPluginType(cs) or dgsGetType(cs)
-	assert(csTyp == "dgs-dxcomponentselector","Bad argument @dgsComponentSelectorGetCursorThickness at argument 1, expect a dgs-dxcomponentselector plugin, got "..csTyp)
+	assert(dgsGetPluginType(cs) == "dgs-dxcomponentselector","Bad argument @dgsComponentSelectorGetCursorThickness at argument 1, expect plugin dgs-dxcomponentselector, got "..dgsGetPluginType(cs))
 	return dgsElementData[cs].thickness
 end
 
@@ -138,14 +136,12 @@ end
 
 
 function dgsColorPickerGetComponentSelectorValue(cs)
-	local csTyp = dgsGetPluginType(cs) or dgsGetType(cs)
-	assert(csTyp == "dgs-dxcomponentselector","Bad argument @dgsColorPickerGetComponentSelectorValue at argument 1, expect a dgs-dxcomponentselector plugin, got "..csTyp)
+	assert(dgsGetPluginType(cs) == "dgs-dxcomponentselector","Bad argument @dgsColorPickerGetComponentSelectorValue at argument 1, expect plugin dgs-dxcomponentselector, got "..dgsGetPluginType(cs))
 	return dgsElementData[cs].value
 end
 
 function dgsColorPickerSetComponentSelectorValue(cs,value)
-	local csTyp = dgsGetPluginType(cs) or dgsGetType(cs)
-	assert(csTyp == "dgs-dxcomponentselector","Bad argument @dgsColorPickerSetComponentSelectorValue at argument 1, expect a dgs-dxcomponentselector plugin, got "..csTyp)
+	assert(dgsGetPluginType(cs) == "dgs-dxcomponentselector","Bad argument @dgsColorPickerSetComponentSelectorValue at argument 1, expect plugin dgs-dxcomponentselector, got "..dgsGetPluginType(cs))
 	assert(type(value) == "number","Bad argument @dgsColorPickerSetComponentSelectorValue at argument 2, expect a number, got "..type(value))
 	local thickness = dgsElementData[cs].thickness
 	local offset =  dgsElementData[cs].offset
@@ -177,9 +173,8 @@ ColorAttributeOrder = {
 	HSV={"H","S","V"},
 }
 function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMode)
-	assert(dgsIsDxElement(show),"Bad argument @dgsBindToColorPicker at argument 1, expect a dgs-dxgui plugin, got "..dgsGetType(show))
-	local cpTyp = dgsGetPluginType(colorPicker) or dgsGetType(colorPicker)
-	assert(cpTyp == "dgs-dxcolorpicker","Bad argument @dgsBindToColorPicker at argument 2, expect a dgs-dxcolorpicker plugin, got "..cpTyp)
+	assert(dgsIsDxElement(show),"Bad argument @dgsBindToColorPicker at argument 1, expect a dgs-dxgui, got "..dgsGetType(show))
+	assert(dgsGetPluginType(colorPicker) == "dgs-dxcolorpicker","Bad argument @dgsBindToColorPicker at argument 2, expect plugin dgs-dxcolorpicker, got "..dgsGetPluginType(colorPicker))
 	if colorAttribute ~= "A" then
 		assert(AvailableColorType[colorType],"Bad argument @dgsBindToColorPicker at argument 3, only RGB/HSL/HSV supported, got "..tostring(colorType))
 		assert(AvailableColorType[colorType][colorAttribute],"Bad argument @dgsBindToColorPicker at argument 3, attribute "..tostring(colorAttribute).." doesn't exist in "..colorType)
@@ -443,6 +438,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 end
 
 function dgsUnbindFromColorPicker(show)
+	assert(dgsIsDxElement(show),"Bad argument @dgsUnbindFromColorPicker at argument 1, expect a dgs-dxgui, got "..dgsGetType(show))
 	local bound = dgsElementData[show].bindColorPicker
 	if bound then
 		local tempColorChange = dgsElementData[show].bindColorPicker_Fnc1
@@ -478,6 +474,7 @@ function dgsColorPickerUpdate(cp)
 end
 
 function dgsColorPickerSetColor(cp,...)
+	assert(dgsGetPluginType(cp) == "dgs-dxcolorpicker","Bad argument @dgsColorPickerSetColor at argument 1, expect plugin dgs-dxcolorpicker, got "..dgsGetPluginType(cp))
 	local args = {...}
 	local newColorRGB,newColorHSL,newColorHSV
 	args[5] = args[5] or "RGB"
@@ -523,6 +520,7 @@ function dgsColorPickerSetColor(cp,...)
 end
 
 function dgsColorPickerGetColor(cp,mode)
+	assert(dgsGetPluginType(cp) == "dgs-dxcolorpicker","Bad argument @dgsColorPickerGetColor at argument 1, expect plugin dgs-dxcolorpicker, got "..dgsGetPluginType(cp))
 	mode = mode or "RGB"
 	local COLOR = dgsElementData[cp][mode] or {}
 	local A = dgsElementData[cp].A or false

@@ -414,8 +414,11 @@ function HSL2HSV(H,S,L)
 end
 --------------------------------Dx Utility
 function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
-	if type(image) == "table" then
+	local theType = dgsGetType(image)
+	if theType == "table" then
 		return _dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
+	elseif theType == "dgs-dxcustomrenderer" then
+		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	else
 		return _dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	end

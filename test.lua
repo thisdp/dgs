@@ -340,22 +340,40 @@ function testBrowser()
 end
 
 function test3DInterface()
+	--[[local vehicle = createVehicle(411,0,0,0)
+	local element = exports.object_preview:createObjectPreview(vehicle,0,0,0,500,0,1000,1000)
+	local vehicle = createVehicle(411,0,0,0)
+	local element = exports.object_preview:createObjectPreview(vehicle,0,0,0,0,0,1000,1000)
+	local vehicle = createVehicle(411,0,0,0)
+	local element = exports.object_preview:createObjectPreview(vehicle,0,0,0,250,0,1000,1000,false,true)]]
 	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
 	dgsSetProperty(material,"faceTo",{-10,0,4})
-	--local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
-	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
-	--edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
+	--dgsCreateImage(0,0,1,1,exports.object_preview:getRenderTarget(),true)
+	local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
+	material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
+	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
 	
 	local window = dgsCreateWindow(0,0,300,200,"test",false)
 	dgsSetParent(window,material)
-	--edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
-	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+	edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
+	edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+end
+
+function test3DInterface()
+	material = dgsCreate3DInterface(0,0,7,6*1.896296296296296,6,2048,1080,tocolor(255,255,255,255),1,0,0,_,0)
+	browser = dgsCreateBrowser(0,0,2048,1080,false,material,false,true)
+	toggleBrowserDevTools(browser,true,true)
+	addEventHandler("onClientBrowserCreated",browser,function()
+		loadBrowserURL(browser,"http://angel.thisdp.cn:1314/")
+	end)
+	dgsSetProperty(material,"maxDistance",1000)
+	dgsSetProperty(material,"fadeDistance",1000)
 end
 
 function test3DInterfaceAttach()
-	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
+	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
 	dgsSetProperty(material,"faceRelativeTo","world")
 	dgsSetProperty(material,"maxDistance",1000)
@@ -368,6 +386,7 @@ function testBlurBox()
 	local bb1 = dgsCreateBlurBox()
 	local bb2 = dgsCreateBlurBox()
 	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"color",tocolor(0,0,0,100))
 	dgsSetProperty(window,"functions",[[
 		local arguments = {...}
 		local blurbox = arguments[1]
@@ -377,6 +396,7 @@ function testBlurBox()
 	]],bb1)
 	
 	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"color",tocolor(0,0,0,100))
 	dgsSetProperty(window,"functions",[[
 		local arguments = {...}
 		local blurbox = arguments[1]
@@ -488,6 +508,12 @@ function testShader()
 	--Circle
 	local circle = dxCreateShader("shaders/circle.fx")
 	local image = dgsCreateImage(300,300,400,400,circle,false)
+end
+
+function test9SliceScale()
+	local img = dxCreateTexture("yourTexture.png")
+	local nSli = dgsCreateNineSlice(img,0.2,0.8,0.4,0.6)
+	local image = dgsCreateImage(400,400,400,400,nSli,false)
 end
 -----------------------------Plugin Test
 function scrollPane3DEffectTest()

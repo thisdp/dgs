@@ -61,7 +61,7 @@ VIDEO="video",
 IMAGE="img",
 }
 function dgsMediaLoadMedia(media,path,theType,sourceRes)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaLoadMedia at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaLoadMedia at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	assert(type(path) == "string","Bad argument @dgsMediaLoadMedia at argument 2, expect string got "..type(path))
 	local sR = sourceResource or sourceRes or getThisResource()
 	local name = getResourceName(sR)
@@ -135,7 +135,7 @@ function dgsMediaGetMediaPath(media)
 end
 
 function dgsMediaClearMedia(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaClearMedia at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaClearMedia at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaClearMedia,media})
@@ -147,7 +147,7 @@ function dgsMediaClearMedia(media)
 end
 
 function dgsMediaPlay(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaPlay at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaPlay at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaPlay,media})
@@ -158,7 +158,7 @@ function dgsMediaPlay(media)
 end
 
 function dgsMediaPause(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaPause at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaPause at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaPause,media})
@@ -169,7 +169,7 @@ function dgsMediaPause(media)
 end
 
 function dgsMediaStop(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaStop at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaStop at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaStop,media})
@@ -180,7 +180,7 @@ function dgsMediaStop(media)
 end
 
 function dgsMediaSetFullScreen(media,state)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetFullScreen at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetFullScreen at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaSetFullScreen,media,state})
@@ -193,12 +193,12 @@ function dgsMediaSetFullScreen(media,state)
 end
 
 function dgsMediaGetFullScreen(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetFullScreen at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetFullScreen at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	return dgsElementData[media].fullscreen
 end
 
 function dgsMediaSetFilled(media,state)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetFilled at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetFilled at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaSetFilled,media,state})
@@ -211,17 +211,17 @@ function dgsMediaSetFilled(media,state)
 end
 
 function dgsMediaGetFilled(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetFilled at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetFilled at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	return dgsElementData[media].filled
 end
 
 function dgsMediaGetLooped(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetLooped at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetLooped at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	return dgsElementData[media].loop
 end
 
 function dgsMediaSetLooped(media,state)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetLooped at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetLooped at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
 		table.insert(buffer,{[0]=dgsMediaSetLooped,media,state})
@@ -234,7 +234,7 @@ function dgsMediaSetLooped(media,state)
 end
 
 function dgsMediaSetSize(media,w,h)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetSize at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetSize at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	assert(type(w) == "number" and w > 0,"Bad argument @dgsMediaSetSize at argument 2, expect number ( > 0 ) got "..type(w).."("..tostring(w)..")")
 	assert(type(h) == "number" and h > 0,"Bad argument @dgsMediaSetSize at argument 3, expect number ( > 0 ) got "..type(h).."("..tostring(h)..")")
 	if not dgsElementData[media].started then
@@ -251,17 +251,17 @@ function dgsMediaSetSize(media,w,h)
 end
 
 function dgsMediaGetDuration(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetDuration at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetDuration at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	return dgsElementData[media].duration
 end
 
 function dgsMediaGetCurrentPosition(media)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetCurrentPosition at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaGetCurrentPosition at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	return dgsElementData[media].current
 end
 
 function dgsMediaSetCurrentPosition(media,position) --Failed to Set current position ( IDK Why it will go back to 0 !)
-	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetCurrentPosition at argument 1, expect dgs-dxmedia got "..dgsGetType(media))
+	assert(dgsGetType(media) == "dgs-dxmedia","Bad argument @dgsMediaSetCurrentPosition at argument 1, expect plugin dgs-dxmedia got "..dgsGetType(media))
 	assert(type(position) == "number" and position >= 0,"Bad argument @dgsMediaSetCurrentPosition at argument 2, expect number ( >= 0 ) got "..type(position).."("..tostring(position)..")")
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer

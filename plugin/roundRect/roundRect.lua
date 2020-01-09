@@ -1,4 +1,4 @@
-rectShaderPath = "shaders/roundRect.fx"
+rectShaderPath = "plugin/roundRect/roundRect.fx"
 
 function dgsCreateRoundRect(radius,color,texture)
 	assert(dgsGetType(radius) == "number","Bad argument @dgsCreateRoundRect at argument 1, expect number got "..dgsGetType(radius))

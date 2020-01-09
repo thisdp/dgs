@@ -22,6 +22,7 @@ dgsType = {
 	"dgs-dxtab",
 	"dgs-dxcombobox",
 	"dgs-dxcombobox-Box",
+	"dgs-dxcustomrenderer",
 	"dgs-dxbrowser",
 }
 

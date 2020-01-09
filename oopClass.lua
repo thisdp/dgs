@@ -144,6 +144,11 @@ function dgsImportOOPClass()
 				local dxguiTable = dgsGetClass(dxgui)
 				return dxguiTable
 			end,
+			createCustomRenderer = function(self,customFnc)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateCustomRenderer",customFnc)
+				local dxguiTable = dgsGetClass(dxgui)
+				return dxguiTable
+			end,
 		}
 
 		function dgsGetClass(dgsElement)
@@ -514,6 +519,10 @@ function dgsImportOOPClass()
 				end
 				nTab.setVerticalAlign = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsCheckBoxSetVerticalAlign",self.dgsElement,...)
+				end
+			elseif dgsType == "dgs-dxcustomrenderer" then
+				nTab.setFunction = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCustomRendererSetFunction",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxradiobutton" then
 				nTab.getSelected = function(self,...)
