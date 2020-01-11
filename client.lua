@@ -3383,6 +3383,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local x,y = getScreenFromWorldPosition(wx,wy,wz)
 				if x and y then
 					local x,y = x-x%1,y-y%1
+					if eleData.fixTextSize then
+						distance = 50
+					end
 					local antiDistance = 1/distance
 					local sizeX = textSizeX*textSizeX/distance*50
 					local sizeY = textSizeY*textSizeY/distance*50
