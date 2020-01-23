@@ -1287,8 +1287,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
 					local caretHeight = eleData.caretHeight
 					local textX_Left,textX_Right
-					local selStartY = (h-sideheight)*(1-caretHeight)
-					local selEndY = (h-sideheight)*caretHeight-sideheight
+					local insideH = h-sideheight*2
+					local selStartY = insideH/2-insideH/2*caretHeight
+					local selEndY = (insideH/2-selStartY)*2
 					local width,selectX,selectW
 					local posFix = 0
 					local placeHolder = eleData.placeHolder
@@ -1385,9 +1386,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							selStartX = selStartX-selStartX%1-1
 							if caretStyle == 0 then
 								if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
-									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
-									local selEndY = (h-sideheight*2)*caretHeight
-									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,caretColor,eleData.caretThick,noRenderTarget)
+									local selStartY = h/2-h/2*caretHeight+sideheight
+									local selEndY = (h/2-selStartY)*2
+									dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,noRenderTarget)
 								end
 							elseif caretStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
@@ -1396,7 +1397,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								end
 								if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 									local offset = eleData.caretOffset
-									local selStartY = y+h-sideheight*2
+									local selStartY = y+h/2-h/2*caretHeight+sideheight
 									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,caretColor,eleData.caretThick,noRenderTarget)
 								end
 							end
