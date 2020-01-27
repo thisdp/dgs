@@ -15,6 +15,7 @@ function editTest()
 	end
 end
 
+
 ------------Full demo
 function createFullDemo()
 	loadstring(dgsImportOOPClass())()
@@ -565,6 +566,16 @@ function testColorPicker()
 	
 	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false)
 	dgsBindToColorPicker(A,cp,"RGB","A")
+end
+-----------------------------DGS Object Preview Support Test
+function testObjectPreview()
+	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
+	local objPrevName = "object_preview"
+	dgsLocateObjectPreviewResource(objPrevName)
+	local veh = createVehicle(411,0,0,3)
+	local objPrev = dgsCreateObjectPreviewHandle(veh,0,0,0)
+	local image = dgsCreateImage(20,20,300,300,_,false,wind)
+	dgsAttachObjectPreviewToImage(objPrev,image)
 end
 -----------------------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect

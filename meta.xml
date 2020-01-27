@@ -48,6 +48,7 @@
 	
 	
 	<script src="plugin/pluginManager.lua" type="client" />
+	<script src="plugin/objPrevSupport.lua" type="client" />
 	<script src="plugin/cmd.lua" type="client" />
 	<script src="plugin/BlurBox/BlurBox.lua" type="client" />
 	<file src="plugin/BlurBox/BlurBox.fx" type="client" />
@@ -565,6 +566,13 @@
 	<export function="dgsCreateNineSlice" type="client" />
 	<export function="dgsNineSliceSetGrid" type="client" />
 	<export function="dgsNineSliceGetGrid" type="client" />
+	
+	<export function="dgsLocateObjectPreviewResource" type="client" />
+	<export function="dgsCreateObjectPreviewHandle" type="client" />
+	<export function="dgsAttachObjectPreviewToImage" type="client" />
+	<export function="dgsRemoveObjectPreviewFromImage" type="client" />
+	<export function="dgsObjectPreviewGetHandleByID" type="client" />
+	<export function="dgsConfigureObjectPreview" type="client" />
 
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />

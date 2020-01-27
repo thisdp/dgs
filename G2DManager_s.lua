@@ -1,3 +1,4 @@
+local tableCount = table.count
 G2DActivation = false
 G2D = {}
 G2D.backup = true
@@ -33,14 +34,6 @@ G2DHelp = {
 	{"-q","	","Stop converting process"},
 }
 
-function table.len(tab)
-	local cnt = 0
-	for k,v in pairs(tab) do
-		cnt = cnt+1
-	end
-	return cnt
-end
-
 addCommandHandler("g2d",function(player,command,...)
 	local account = getPlayerAccount(player)
 	if account then
@@ -62,7 +55,7 @@ addCommandHandler("g2d",function(player,command,...)
 							end
 						end
 					end
-					outputDebugString("[DGS-G2D] Selected "..table.len(G2D.select).." resources, to see the selections, use -l")
+					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, use -l")
 				else
 					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, use -l")
 				end
@@ -83,12 +76,12 @@ addCommandHandler("g2d",function(player,command,...)
 							end
 						end
 					end
-					outputDebugString("[DGS-G2D] Selected "..table.len(G2D.select).." resources, to see the selections, use -l")
+					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, use -l")
 				else
 					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, use -l")
 				end
 			elseif args[1] == "-l" or args[1] == "-list" then
-				outputDebugString("[DGS-G2D] There are "..table.len(G2D.select).." resources selected:")
+				outputDebugString("[DGS-G2D] There are "..tableCount(G2D.select).." resources selected:")
 				for k,v in pairs(G2D.select) do
 					outputDebugString(k)
 				end
