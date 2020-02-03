@@ -336,7 +336,7 @@ function dgsImportOOPClass()
 					local newfenv = {self=self}
 					setmetatable(newfenv,{__index = _G})
 					setfenv(theFnc,newfenv)
-					addEventHandler(eventName,self.dgsElement,theFnc)
+					addEventHandler(eventName,self.dgsElement,theFnc,false)
 				end,
 				removeOn = function(self,eventName,theFnc)
 					local eventName = dgsOOP.transfromEventName(eventName)
