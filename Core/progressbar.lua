@@ -29,6 +29,9 @@ ProgressBarStyle = {
 		local startPoint,endPoint = (styleData.rotation/360)%1,(percent+styleData.rotation/360)%1
 		dxSetShaderValue(circle,"progress",{styleData.isReverse and endPoint or startPoint,not styleData.isReverse and endPoint or startPoint})
 		dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
+		dxSetShaderValue(circle,"thickness",styleData.thickness)
+		dxSetShaderValue(circle,"radius",styleData.radius)
+		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
 		dxDrawImage(x,y,w,h,circle,0,0,0,bgColor,rendSet)
 	end,
 }
@@ -88,6 +91,9 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			styleData.elements.circleShader = dxCreateShader("shaders/ring-round.fx")
 			styleData.isReverse = false
 			styleData.rotation = 90
+			styleData.antiAliased = 0.005
+			styleData.radius = 0.2
+			styleData.thickness = 0.02
 		end
 		for k,v in pairs(settingTable or {}) do
 			dgsElementData[progressbar].styleData[k] = v
