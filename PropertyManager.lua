@@ -242,12 +242,13 @@ function dgsSetProperty(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
 	if isTable then
+		if key == "functions" then
+			local fnc = loadstring(value)
+			assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
+			value = {fnc,{...}}
+		end
 		for k,v in ipairs(dxgui) do
-			if key == "functions" then
-				local fnc = loadstring(value)
-				assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
-				value = {fnc,{...}}
-			elseif key == "textColor" then
+			if key == "textColor" then
 				assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 			elseif key == "text" then
 				if dgsElementType[v] == "dgs-dxmemo" then
