@@ -1,6 +1,6 @@
 rectShaderPath = "plugin/roundRect/roundRect.fx"
 
-function dgsCreateRoundRect(radius,color,texture)
+function dgsCreateRoundRect(radius,color,texture,relative)
 	assert(dgsGetType(radius) == "number","Bad argument @dgsCreateRoundRect at argument 1, expect number got "..dgsGetType(radius))
 	local shader = dxCreateShader(rectShaderPath)
 	local color = color or tocolor(255,255,255,255)
@@ -8,7 +8,7 @@ function dgsCreateRoundRect(radius,color,texture)
 	dgsSetData(shader,"radius",radius)
 	dgsSetData(shader,"color",color)
 	dgsSetData(shader,"colorOverwritten",true)
-	dgsRoundRectSetRadius(shader,radius)
+	dgsRoundRectSetRadius(shader,radius,relative)
 	dgsRoundRectSetTexture(shader,texture)
 	dgsRoundRectSetColor(shader,color)
 	triggerEvent("onDgsPluginCreate",shader,sourceResource)
@@ -27,11 +27,13 @@ function dgsRoundRectSetTexture(rectShader,texture)
 	return true
 end
 
-function dgsRoundRectSetRadius(rectShader,radius)
+function dgsRoundRectSetRadius(rectShader,radius,relative)
 	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetRadius at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
 	assert(dgsGetType(radius) == "number","Bad argument @dgsRoundRectSetRadius at argument 2, expect number got "..dgsGetType(radius))
 	dxSetShaderValue(rectShader,"radius",radius)
+	dxSetShaderValue(rectShader,"isRelative",not (relative == false))
 	dgsSetData(rectShader,"radius",radius)
+	dgsSetData(rectShader,"isRelative",not (relative == false))
 	return true
 end
 

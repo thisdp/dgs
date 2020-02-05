@@ -1,8 +1,9 @@
 texture background;
 float4 color = float4(1,1,1,1);
 bool textureLoad;
-float radius = 0.5;
-float borderSoft = 0.009;
+bool isRelative = true;
+float radius = 0.2;
+float borderSoft = 0.01;
 bool colorOverwritten = true;
 
 SamplerState tSampler
@@ -22,24 +23,44 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0
 		result = tex2D(tSampler,tex)*color;
 	else
 		result = color;
-	float a = ddx(tex.x)/ddy(tex.y);
+		
+	float dx = ddx(tex.x);
+	float dy = ddy(tex.y);
+	float a = dx/dy;
 	float2 nTex = tex;
-	nTex.x /= a;
-	float2 center = float2(0.5/a,0.5);
-	float2 fixedPos = abs(nTex-center);
+	float2 center;
 	float nRadius = radius/2;
-	float2 corner = center-float2(nRadius,nRadius);
-	if(fixedPos.x-corner.x >= 0 && fixedPos.y-corner.y >= 0)
+	float aA = borderSoft;
+	if(a<=1)
 	{
-		if(distance(fixedPos,corner) > nRadius-borderSoft)
-			result.a *= 1-(distance(fixedPos,corner)-nRadius+borderSoft)/borderSoft;
+		nTex.x /= a;
+		center = float2(0.5/a,0.5);
+		aA *= dy*100;
+		if(!isRelative)
+			nRadius = radius*dy;
 	}
 	else
 	{
-		if(fixedPos.x-corner.x > nRadius-borderSoft)
-			result.a *= 1-(fixedPos.x-corner.x-nRadius+borderSoft)/borderSoft;
-		else if(fixedPos.y-corner.y > nRadius-borderSoft)
-			result.a *= 1-(fixedPos.y-corner.y-nRadius+borderSoft)/borderSoft;
+		nTex.y *= a;
+		a = 1/a;
+		center = float2(0.5,0.5/a);
+		aA *= dx*100;
+		if(!isRelative)
+			nRadius = radius*dx;
+	}
+	float2 fixedPos = abs(nTex-center);
+	float2 corner = center-float2(nRadius,nRadius);
+	if(fixedPos.x-corner.x >= 0 && fixedPos.y-corner.y >= 0)
+	{
+		if(distance(fixedPos,corner) > nRadius-aA)
+			result.a *= 1-(distance(fixedPos,corner)-nRadius+aA)/aA;
+	}
+	else
+	{
+		if(fixedPos.x-corner.x > nRadius-aA)
+			result.a *= 1-(fixedPos.x-corner.x-nRadius+aA)/aA;
+		else if(fixedPos.y-corner.y > nRadius-aA)
+			result.a *= 1-(fixedPos.y-corner.y-nRadius+aA)/aA;
 	}
 	result = clamp(result,0,1);
 	result.rgb *= colorOverwritten ? 1 : _color.rgb;
