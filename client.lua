@@ -1383,7 +1383,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						if CaretShow then
 							local caretStyle = eleData.caretStyle
 							local selStartX = selectX+x+sidelength
-							selStartX = selStartX-selStartX%1-1
+							selStartX = selStartX-selStartX%1
 							if caretStyle == 0 then
 								if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
 									local selStartY = h/2-h/2*caretHeight+sideheight
@@ -1885,6 +1885,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local cursorWidth = eleData.cursorWidth
 				local troughWidth = eleData.troughWidth
 				local arrowWidth = eleData.arrowWidth
+				local imgRot = eleData.imageRotation
 				local troughPadding,cursorPadding,arrowPadding
 				if voh then
 					troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
@@ -1982,8 +1983,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				------------------------------------
 				if voh then
+					local imgRotVert = imgRot[2]
 					if image[3] then
-						dxDrawImage(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,image[3],0,0,0,tempTroughColor,rendSet)
+						dxDrawImage(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,image[3],imgRotVert[3],0,0,tempTroughColor,rendSet)
 					else
 						dxDrawRectangle(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,tempTroughColor,rendSet)
 					end
@@ -1992,17 +1994,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
 							dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
-						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],270,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],90,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],imgRotVert[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],imgRotVert[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
 					if image[2] then
-						dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,image[2],imgRotVert[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
 						dxDrawRectangle(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
 				else
+					local imgRotHorz = imgRot[1]
 					if image[3] then
-						dxDrawImage(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,image[3],0,0,0,tempTroughColor,rendSet)
+						dxDrawImage(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,image[3],imgRotHorz[3],0,0,tempTroughColor,rendSet)
 					else
 						dxDrawRectangle(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,tempTroughColor,rendSet)
 					end
@@ -2011,11 +2014,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
 							dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
-						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],0,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],imgRotHorz[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],imgRotHorz[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
 					if image[2] then
-						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],0,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
 						dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
