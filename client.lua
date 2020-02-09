@@ -2279,6 +2279,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 					dxSetRenderTarget(renderTarget[2],true)
+						local preSelectLastFrame = DataTab.preSelect
 						if MouseData.enter == v then		-------PreSelect
 							if mouseInsideRow then
 								local toffset = (DataTab.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
@@ -2303,6 +2304,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						local preSelect = DataTab.preSelect
+						if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
+							triggerEvent("onDgsGridListHover",v,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
+						end
 						local Select = DataTab.rowSelect
 						local sectionFont = eleData.sectionFont or font
 						for i=DataTab.FromTo[1],DataTab.FromTo[2] do
