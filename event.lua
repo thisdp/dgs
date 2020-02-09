@@ -1,5 +1,5 @@
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
-local gsub,sub,len,find,format = string.gsub,string.sub,string.len,string.find,string.format
+local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.find,string.format,byte
 local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
 local insert = table.insert
 local _dxDrawImageSection = dxDrawImageSection
@@ -436,9 +436,9 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 end
 
 --------------------------------Other Utility
-function urlEncode(s)     
+function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)
-		return format("%%%02X",byte(c))
+		return string.format("%%%02X",c:byte())
 	end)    
     return gsub(s," ","+")
 end 
