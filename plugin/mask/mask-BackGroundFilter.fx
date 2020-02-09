@@ -1,6 +1,6 @@
 texture sourceTexture;
 float3 filterRGB = 0;
-float filterRadius = 0.05;
+float filterRange = 0.05;
 bool isPixelated = false;
 
 SamplerState sourceSampler
@@ -12,6 +12,7 @@ SamplerState sourceSampler
 	AddressU = Wrap;
 	AddressV = Wrap;
 };
+
 
 SamplerState sourceSamplerPixelated
 {
@@ -27,7 +28,7 @@ float4 maskBGFilter(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0
 {
 	float4 sampledTexture = isPixelated?tex2D(sourceSamplerPixelated,tex):tex2D(sourceSampler,tex);
 	float diffRGB = distance(sampledTexture.rgb,filterRGB);
-	sampledTexture.a *= (diffRGB-filterRadius)/filterRadius;
+	sampledTexture.a *= (diffRGB-filterRange)/filterRange;
 	return sampledTexture*_color;
 }
 
