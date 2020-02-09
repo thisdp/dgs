@@ -1,4 +1,5 @@
-float borderSoft = 0.01;
+#define PI 3.1415926
+float borderSoft = 0.02;
 float Hue = 1;
 float sqrt3 = sqrt(float(3));
 
@@ -18,9 +19,11 @@ float4 HSV2RGB(float4 HSVA)
 
 float4 PS(float2 tex : TEXCOORD0, float4 _color : COLOR0) : COLOR0
 {
+	float2 dxy = float2(ddx(tex.x),ddy(tex.y));
+	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float2 newTex = tex*2-1;
-	float rot = (Hue+0.5)*3.1415926*2;
-	float2 transi = float2(cos(rot+3.1415926/2),sin(rot+3.1415926/2));
+	float rot = (Hue+0.5)*PI*2;
+	float2 transi = float2(cos(rot+PI*0.5),sin(rot+PI*0.5));
 	float2 transj = float2(cos(rot),sin(rot));
 	newTex = float2(newTex.x*transi.x+newTex.y*transj.x,newTex.x*transi.y+newTex.y*transj.y);
 	float deg = degrees(atan2(newTex.y,newTex.x))+60;
@@ -38,7 +41,7 @@ float4 PS(float2 tex : TEXCOORD0, float4 _color : COLOR0) : COLOR0
 		theVector = float2(-0.21650635,-0.125);
 	float theVectorLen = length(theVector);
 	float res = abs(dot(newTex,theVector))/theVectorLen-theVectorLen-0.25050927;
-	color = HSV2RGB(float4(Hue,(1-2*newTex.y)/(sqrt3*(-newTex.x)-newTex.y+2),(sqrt3*(-newTex.x)-newTex.y+2)/3,1-(res+borderSoft*0.5)/borderSoft));
+	color = HSV2RGB(float4(Hue,(1-2*newTex.y)/(sqrt3*(-newTex.x)-newTex.y+2),(sqrt3*(-newTex.x)-newTex.y+2)/3,1-(res+nBorderSoft)/nBorderSoft));
 	color.a = clamp(color.a,0,1)*_color.a;
     return color;
 }

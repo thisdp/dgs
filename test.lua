@@ -24,6 +24,7 @@ function createFullDemo()
 	local switchButton1 = window:createSwitchButton(100,210,60,20,"","",false)
 	local switchButton2 = window:createSwitchButton(100,240,60,20,"","",true)
 	local gridlist = window:createGridList(0,0,290,200,false)
+	gridlist:setMultiSelectionEnabled(true)
 	gridlist:addColumn("Column 1",0.5,true)
 	gridlist:addColumn("Column 2",0.5,true)
 	for i=1,100 do
@@ -231,7 +232,37 @@ function editTest() --Test Tab Switch for edit.
 	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
 	dgsSetProperty(edit,"bgColorBlur",tocolor(255,255,255,100))
 end
+--edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"",true)
+--[[
+local arabicUnicode = {{0x0600,0x06FF},{0x08A0,0x08FF},{0x0750,0x077F},{0xFB50,0xFDFF},{0xFE70,0xFEFF},{0x1EE00,0x1EEFF}}
+local arabicPattern = ""
+for i=1,#arabicUnicode do
+	arabicPattern = arabicPattern..utf8.char(arabicUnicode[i][1]).."-"..utf8.char(arabicUnicode[i][2])
+end
+arabicPattern = "["..arabicPattern.."]"
+function hasArabicCharacters(text)
+	return utf8.find(text,arabicPattern)
+end
 
+function isArabicCharacters(character)
+	local code = utf8.byte(character)
+	local isArabic = code >= arabicUnicode[1][1] and code <= arabicUnicode[1][2] 
+	isArabic = isArabic or (code >= arabicUnicode[2][1] and code <= arabicUnicode[2][2])
+	isArabic = isArabic or (code >= arabicUnicode[3][1] and code <= arabicUnicode[3][2])
+	isArabic = isArabic or (code >= arabicUnicode[4][1] and code <= arabicUnicode[4][2])
+	isArabic = isArabic or (code >= arabicUnicode[5][1] and code <= arabicUnicode[5][2])
+	isArabic = isArabic or (code >= arabicUnicode[6][1] and code <= arabicUnicode[6][2])
+	return isArabic
+end
+print(hasArabicCharacters("aلعت القياسا"))
+
+0x08A0-0x08FF
+0x0750-0x077F
+0xFB50-0xFDFF
+0xFE70-0xFEFF
+0x1EE00-0x1EEFF
+
+]]
 function editTest4()
 	window = dgsCreateWindow(200,200,800,600,"",false)
 	tabp = dgsCreateTabPanel(400,200,400,400,false,window)
@@ -341,21 +372,13 @@ function testBrowser()
 end
 
 function test3DInterface()
-	--[[local vehicle = createVehicle(411,0,0,0)
-	local element = exports.object_preview:createObjectPreview(vehicle,0,0,0,500,0,1000,1000)
-	local vehicle = createVehicle(411,0,0,0)
-	local element = exports.object_preview:createObjectPreview(vehicle,0,0,0,0,0,1000,1000)
-	local vehicle = createVehicle(411,0,0,0)
-	local element = exports.object_preview:createObjectPreview(vehicle,0,0,0,250,0,1000,1000,false,true)]]
 	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
 	dgsSetProperty(material,"faceTo",{-10,0,4})
-	--dgsCreateImage(0,0,1,1,exports.object_preview:getRenderTarget(),true)
 	local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
 	material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
-	
 	local window = dgsCreateWindow(0,0,300,200,"test",false)
 	dgsSetParent(window,material)
 	edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
@@ -495,10 +518,10 @@ function languageTest_TabPanel()
 end
 
 function dgsRoundRectTest()
-	local rndRect1 = dgsCreateRoundRect(1,tocolor(0,0,0,150))
-	local image1 = dgsCreateImage(200,200,400,100,rndRect1,false)
-	local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
-	local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
+	local rndRect1 = dgsCreateRoundRect(50,tocolor(0,0,0,150),_,false)
+	local image1 = dgsCreateImage(200,200,400,400,rndRect1,false)
+	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
+	--local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
 end
 
 function test_switchButton()
@@ -542,29 +565,33 @@ function oopTest()
 end
 
 function testColorPicker()
-	cp = dgsCreateColorPicker("HSVRing",50,50,300,300,false)
-	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false)
+	--material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
+	cp = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material1)
+	cp = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
+	cp = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
+	cp = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material1)
+	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false,material1)
 	dgsBindToColorPicker(r,cp,"RGB","R",true)
-	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false)
+	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false,material1)
 	dgsBindToColorPicker(g,cp,"RGB","G",true)
-	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false)
+	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false,material1)
 	dgsBindToColorPicker(b,cp,"RGB","B",true)
 	
-	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false)
+	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false,material1)
 	dgsBindToColorPicker(H,cp,"HSL","H",true)
-	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false)
+	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false,material1)
 	dgsBindToColorPicker(S,cp,"HSL","S",true)
-	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false)
+	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false,material1)
 	dgsBindToColorPicker(L,cp,"HSL","L",true)
 	
-	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false)
+	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false,material1)
 	dgsBindToColorPicker(H,cp,"HSV","H",true)
-	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false)
+	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false,material1)
 	dgsBindToColorPicker(S,cp,"HSV","S",true)
-	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false)
+	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material1)
 	dgsBindToColorPicker(V,cp,"HSV","V",true)
 	
-	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false)
+	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false,material1)
 	dgsBindToColorPicker(A,cp,"RGB","A")
 end
 -----------------------------DGS Object Preview Support Test

@@ -318,7 +318,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 			local dgsType = dgsElementType[v]
 			for key,value in pairs(theTable) do
 				local skip = false
-				if key == "functions" then
+				if key == "functions" and type(value) == "string" then
 					value = {loadstring(value),additionArg.functions or {}}
 				elseif key == "textColor" then
 					if not tonumber(value) then

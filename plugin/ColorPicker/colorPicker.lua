@@ -54,6 +54,52 @@ function dgsCreateColorPicker(style,...)
 			end
 		end,false)
 		mainElement = HSLSquareImg
+	elseif style == "HSDisk" then
+		local x,y,w,h,relative,parent = args[1],args[2],args[3],args[4],args[5],args[6]
+		local HSDisk = dxCreateShader("plugin/ColorPicker/HSDisk.fx")
+		local HSDiskImg = dgsCreateImage(x,y,w,h,HSDisk,relative or false,parent)
+		dgsSetData(HSDiskImg,"asPlugin","dgs-dxcolorpicker")
+		local PickCircle = dxCreateShader("plugin/ColorPicker/PickCircle.fx")
+		local PickCircleImg = dgsCreateImage(0,0,0.06,0.06,PickCircle,true,HSDiskImg)
+		dgsSetEnabled(PickCircleImg,false)
+		dgsAddMoveHandler(PickCircleImg)
+		dgsSetData(HSDiskImg,"cp_shaders",{HSDisk,PickCircle})
+		dgsSetData(HSDiskImg,"cp_images",{HSDiskImg,PickCircleImg})
+		addEventHandler("onDgsMouseDrag",HSDiskImg,HSDiskChange,false)
+		addEventHandler("onDgsMouseClickDown",HSDiskImg,HSDiskChange,false)
+		dgsSetData(HSDiskImg,"style",style)
+		dgsColorPickerSetColor(HSDiskImg,0,0,255,255)
+		addEventHandler("onDgsDestroy",HSDiskImg,function()
+			for k,v in ipairs(dgsElementData[source].cp_shaders) do
+				if isElement(v) then
+					destroyElement(v)
+				end
+			end
+		end,false)
+		mainElement = HSDiskImg
+	elseif style == "HLDisk" then
+		local x,y,w,h,relative,parent = args[1],args[2],args[3],args[4],args[5],args[6]
+		local HLDisk = dxCreateShader("plugin/ColorPicker/HLDisk.fx")
+		local HLDiskImg = dgsCreateImage(x,y,w,h,HLDisk,relative or false,parent)
+		dgsSetData(HLDiskImg,"asPlugin","dgs-dxcolorpicker")
+		local PickCircle = dxCreateShader("plugin/ColorPicker/PickCircle.fx")
+		local PickCircleImg = dgsCreateImage(0,0,0.06,0.06,PickCircle,true,HLDiskImg)
+		dgsSetEnabled(PickCircleImg,false)
+		dgsAddMoveHandler(PickCircleImg)
+		dgsSetData(HLDiskImg,"cp_shaders",{HLDisk,PickCircle})
+		dgsSetData(HLDiskImg,"cp_images",{HLDiskImg,PickCircleImg})
+		addEventHandler("onDgsMouseDrag",HLDiskImg,HLDiskChange,false)
+		addEventHandler("onDgsMouseClickDown",HLDiskImg,HLDiskChange,false)
+		dgsSetData(HLDiskImg,"style",style)
+		dgsColorPickerSetColor(HLDiskImg,0,0,255,255)
+		addEventHandler("onDgsDestroy",HLDiskImg,function()
+			for k,v in ipairs(dgsElementData[source].cp_shaders) do
+				if isElement(v) then
+					destroyElement(v)
+				end
+			end
+		end,false)
+		mainElement = HLDiskImg
 	else
 		assert(false,"Bad argument @dgsCreateColorPicker at argument 1, unsupported type "..style)
 	end
@@ -467,7 +513,21 @@ function dgsColorPickerUpdate(cp)
 	elseif style == "HSLSquare" then
 		local pAbsSize = dgsElementData[ images[1] ].absSize
 		local absSize = dgsElementData[ images[2] ].absSize
-		local x,y = HSToXY(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[2])
+		local x,y = HSLToXY(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[2])
+		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
+		dgsSetPosition(images[2],x,y,true)
+	elseif style == "HSDisk" then
+		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSV[1]/360)
+		local pAbsSize = dgsElementData[ images[1] ].absSize
+		local absSize = dgsElementData[ images[2] ].absSize
+		local x,y = HSToRR(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[2])
+		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
+		dgsSetPosition(images[2],x,y,true)
+	elseif style == "HLDisk" then
+		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSV[1]/360)
+		local pAbsSize = dgsElementData[ images[1] ].absSize
+		local absSize = dgsElementData[ images[2] ].absSize
+		local x,y = HLToRR(dgsElementData[cp].HSV[1],dgsElementData[cp].HSV[2])
 		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[2],x,y,true)
 	end
@@ -531,19 +591,19 @@ function dgsColorPickerGetColor(cp,mode)
 	return COLOR[1],COLOR[2],COLOR[3],A
 end
 
----------------------HSLCircle Color Picker
+---------------------HSLSquare Color Picker
 function HSLSquareChange()
 	local cx,cy = dgsGetCursorPosition(source)
 	local absSize = dgsElementData[source].absSize
-	local H,S = XYToHS(cx/absSize[1],cy/absSize[2])
+	local H,S = XYToHSL(cx/absSize[1],cy/absSize[2])
 	dgsColorPickerSetColor(source,H,S,_,_,"HSL")
 end
 
-function HSToXY(H,S)
+function HSLToXY(H,S)
 	return H/360,1-S/100
 end
 
-function XYToHS(X,Y)
+function XYToHSL(X,Y)
 	local H,S = X*360,Y*100
 	return H-H%1,100-(S-S%1)
 end
@@ -594,6 +654,39 @@ function dgsProjectHXYToSV(H,x,y)
 	x,y = x/0.4,y/0.4
 	local S,V = (1-2*y)/(math.sqrt(3)*x-y+2)*100,(math.sqrt(3)*x-y+2)/3*100
 	return S-S%1,V-V%1
+end
+
+
+---------------------HSDisk Color Picker
+function HSDiskChange()
+	local cx,cy = dgsGetCursorPosition()
+	local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
+	local clickRadius = (CenDisX^2+CenDisY^2)^0.5*2
+	clickRadius = clickRadius<=1 and clickRadius or 1
+	dgsColorPickerSetColor(source,rot,clickRadius*100,_,_,"HSL")
+end
+
+function HSToRR(H,S)
+	local H = math.rad(H)
+	local S = S/100/2
+	local x,y = math.cos(H)*S,math.sin(H)*S
+	return x+0.5,y+0.5
+end
+
+---------------------HLDisk Color Picker
+function HLDiskChange()
+	local cx,cy = dgsGetCursorPosition()
+	local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
+	local clickRadius = (CenDisX^2+CenDisY^2)^0.5
+	clickRadius = clickRadius<=1 and clickRadius or 1
+	dgsColorPickerSetColor(source,rot,_,(1-clickRadius)*100,_,"HSL")
+end
+
+function HLToRR(H,L)
+	local H = math.rad(H)
+	local L = L/100/2
+	local x,y = math.cos(H)*L,math.sin(H)*L
+	return x+0.5,y+0.5
 end
 
 ----Output Functions

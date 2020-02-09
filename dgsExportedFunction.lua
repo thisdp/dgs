@@ -29,7 +29,6 @@ function dgsImportFunction(name,nameAs)
 	if not name then
 		local allCode = [[
 		--Check Error Message Above
-
 		if not dgsImportHead then
 			local getResourceRootElement = getResourceRootElement
 			local call = call
@@ -37,7 +36,7 @@ function dgsImportFunction(name,nameAs)
 			local tostring = tostring
 			local outputDebugString = outputDebugString
 			local DGSCallMT = {}
-			dgsImportHead = {}
+			local dgsImportHead = {}
 			dgsImportHead.dgsName = "]]..dgsResName..[["
 			dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
 			dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
@@ -56,7 +55,7 @@ function dgsImportFunction(name,nameAs)
 				if type(k) ~= 'string' then k = tostring(k) end
 				self[k] = function(...)
 					assert(dgsImportHead,"DGS import data is missing or DGS is not running, please reimport dgs functions("..getResourceName(getThisResource())..")")
-					if type(dgsImportHead.dgsResource) == 'userdata' and getResourceRootElement(dgsImportHead.dgsResource) then
+					if isElement(dgsRoot) then
 						return call(dgsImportHead.dgsResource, k, ...)
 					else
 						dgsImportHead = nil

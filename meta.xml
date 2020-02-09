@@ -62,11 +62,20 @@
 	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
 	<file src="plugin/ColorPicker/HSLSquare.fx" type="client" />
+	<file src="plugin/ColorPicker/HSDisk.fx" type="client" />
+	<file src="plugin/ColorPicker/HLDisk.fx" type="client" />
 	<file src="plugin/ColorPicker/PickCircle.fx" type="client" />
 	<file src="plugin/ColorPicker/HSLComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
+	<script src="plugin/poop/poop.lua" type="client" />
+	<file src="plugin/poop/poop.fx" type="client" />
+	<script src="plugin/QRCode.lua" type="client" />
+	<script src="plugin/mask/mask.lua" type="client" />
+	<file src="plugin/mask/maskTexture.fx" type="client" />
+	<file src="plugin/mask/mask-Circle.fx" type="client" />
+	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
 	
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
@@ -573,6 +582,13 @@
 	<export function="dgsRemoveObjectPreviewFromImage" type="client" />
 	<export function="dgsObjectPreviewGetHandleByID" type="client" />
 	<export function="dgsConfigureObjectPreview" type="client" />
+	
+	<export function="dgsCreateMask" type="client" />
+	<export function="dgsMaskGetSetting" type="client" />
+	<export function="dgsMaskSetSetting" type="client" />
+	
+	<export function="dgsRequestQRCode" type="client" />
+	<export function="dgsGetQRCodeLoaded" type="client" />
 
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />

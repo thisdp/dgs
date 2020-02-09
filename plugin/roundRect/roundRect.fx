@@ -63,7 +63,8 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0
 			result.a *= 1-(fixedPos.y-corner.y-nRadius+aA)/aA;
 	}
 	result = clamp(result,0,1);
-	result.rgb *= colorOverwritten ? 1 : _color.rgb;
+	if(!colorOverwritten)
+		result.rgb = _color.rgb;
 	result.a *= _color.a;
 	return result;
 	

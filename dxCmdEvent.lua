@@ -1,7 +1,6 @@
-﻿addEvent("giveIPBack",true)
-dgs_MyIP = "Unknown"
-triggerServerEvent("getMyIP",localPlayer)
-addEventHandler("giveIPBack",root,function(ip)
+﻿dgs_MyIP = "Unknown"
+triggerServerEvent("DGSI_RequestIP",localPlayer)
+addEventHandler("DGSI_ReceiveIP",root,function(ip)
 	dgs_MyIP = ip
 end)
 

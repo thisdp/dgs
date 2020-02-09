@@ -8,6 +8,8 @@ ClientInfo = {
 	SupportedPixelShader={}
 }
 dgs = exports[getResourceName(getThisResource())]
+
+------Event for developers
 addEvent("onDgsMouseLeave")
 addEvent("onDgsMouseEnter")
 addEvent("onDgsMouseClick")
@@ -53,8 +55,9 @@ addEvent("onDgsStopAniming")
 addEvent("onDgsArrowListValueChange")
 addEvent("onDgsMouseDrag")
 addEvent("onDgsStart")
--------
-addEvent("giveIPBack",true)
+-------internal events
+addEvent("DGSI_ReceiveIP",true)
+addEvent("DGSI_ReceiveQRCode",true)
 
 -------
 fontDxHave = {
@@ -211,6 +214,14 @@ function math.inRange(n_min,n_max,value)
 		return true
 	end
 	return false
+end
+
+function math.seekEmpty(list)
+	local cnt = 1
+	while(list[cnt]) do
+		cnt = cnt+1
+	end
+	return cnt
 end
 
 function getPositionFromElementOffset(element,offX,offY,offZ)
@@ -425,6 +436,20 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 end
 
 --------------------------------Other Utility
+function urlEncode(s)     
+    s = gsub(s,"([^%w%.%- ])",function(c)
+		return format("%%%02X",byte(c))
+	end)    
+    return gsub(s," ","+")
+end 
+
+function urlDecode(s)    
+    s = gsub(s,'%%(%x%x)',function(h) 
+		return char(tonumber(h,16))
+	end)    
+    return s
+end
+
 function dgsRunString(func,...)
 	local fnc = loadstring(func)
 	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
