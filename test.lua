@@ -15,7 +15,6 @@ function editTest()
 	end
 end
 
-
 ------------Full demo
 function createFullDemo()
 	loadstring(dgsImportOOPClass())()
@@ -59,6 +58,7 @@ function createFullDemo()
 	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+
 ------------
 
 function createTest()
@@ -365,7 +365,7 @@ function Plugin_media()
 end
 
 function testBrowser()
-	local browser = dgsCreateBrowser(200,200,400,400,false,_,false,true)
+	local browser = dgsCreateBrowser(100,100,1400,700,false,_,false,true)
 	addEventHandler("onClientBrowserCreated",browser,function()
 		loadBrowserURL(browser,"http://www.youtube.com")
 	end)
@@ -555,6 +555,16 @@ function scrollPane3DEffectTest()
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
 end
+-----QRCode
+function QRCodeTest()
+	local QRCode = dgsRequestQRCode("https://wiki.multitheftauto.com/wiki/Resource:Dgs")
+	local image = dgsCreateImage(200,200,128,128,QRCode,false)
+	outputChatBox(dgsGetQRCodeLoaded(QRCode) and "Loaded" or "Loading")
+	addEventHandler("onDgsQRCodeLoad",QRCode,function()
+		outputChatBox(dgsGetQRCodeLoaded(source) and "Loaded" or "Loading")
+	end,false)
+end
+
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass())()-- load OOP class
@@ -566,34 +576,48 @@ end
 
 function testColorPicker()
 	--material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
-	cp = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material1)
-	cp = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
-	cp = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
-	cp = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material1)
+	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material1)
+	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
+	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
+	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material1)
+	--[[function syncColorPicker(oldRGB)
+		local color = {dgsColorPickerGetColor(source,"RGB")}
+		if oldRGB[1] ~= color[1] or oldRGB[2] ~= color[2] or oldRGB[3] ~= color[3] then
+			dgsColorPickerSetColor(colorPicker_HLDisk,color[1],color[2],color[3],color[4],"RGB")
+			dgsColorPickerSetColor(colorPicker_HSDisk,color[1],color[2],color[3],color[4],"RGB")
+			dgsColorPickerSetColor(colorPicker_HSLSquare,color[1],color[2],color[3],color[4],"RGB")
+			dgsColorPickerSetColor(colorPicker_HSVRing,color[1],color[2],color[3],color[4],"RGB")
+		end
+	end]]
+	addEventHandler("onDgsColorPickerChange",colorPicker_HLDisk,syncColorPicker)
+	addEventHandler("onDgsColorPickerChange",colorPicker_HSDisk,syncColorPicker)
+	addEventHandler("onDgsColorPickerChange",colorPicker_HSLSquare,syncColorPicker)
+	addEventHandler("onDgsColorPickerChange",colorPicker_HSVRing,syncColorPicker)
 	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false,material1)
-	dgsBindToColorPicker(r,cp,"RGB","R",true)
+	dgsBindToColorPicker(r,colorPicker_HSVRing,"RGB","R",true,true)
 	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false,material1)
-	dgsBindToColorPicker(g,cp,"RGB","G",true)
+	dgsBindToColorPicker(g,colorPicker_HSVRing,"RGB","G",true,true)
 	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false,material1)
-	dgsBindToColorPicker(b,cp,"RGB","B",true)
+	dgsBindToColorPicker(b,colorPicker_HSVRing,"RGB","B",true,true)
 	
 	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false,material1)
-	dgsBindToColorPicker(H,cp,"HSL","H",true)
+	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSL","H",true,true)
 	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false,material1)
-	dgsBindToColorPicker(S,cp,"HSL","S",true)
+	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSL","S",true,true)
 	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false,material1)
-	dgsBindToColorPicker(L,cp,"HSL","L",true)
+	dgsBindToColorPicker(L,colorPicker_HSVRing,"HSL","L",true,true)
 	
 	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false,material1)
-	dgsBindToColorPicker(H,cp,"HSV","H",true)
+	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSV","H",true,true)
 	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false,material1)
-	dgsBindToColorPicker(S,cp,"HSV","S",true)
+	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSV","S",true,true)
 	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material1)
-	dgsBindToColorPicker(V,cp,"HSV","V",true)
+	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
 	
-	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false,material1)
-	dgsBindToColorPicker(A,cp,"RGB","A")
+	A = dgsColorPickerCreateComponentSelector(500,260,10,200,false,false,material1)
+	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
 end
+
 -----------------------------DGS Object Preview Support Test
 function testObjectPreview()
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)

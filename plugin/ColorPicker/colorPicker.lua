@@ -177,6 +177,8 @@ function ComponentChange()
 	else
 		position = cy/absSize[2]*100
 	end
+	local isReversed = dgsElementData[source].isReversed
+	position = isReversed and 100-position or position
 	dgsColorPickerSetComponentSelectorValue(source,position)
 end
 
@@ -197,14 +199,14 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	dgsSetData(cs,"value",value)
 	local absSize = dgsElementData[cs].absSize
 	local images = dgsElementData[cs].cp_images
-	local position
+	local isReversed = dgsElementData[cs].isReversed
+	value = isReversed and 100-value or value
 	if voh then
-		position = value*absSize[1]/100
-		dgsSetPosition(images[2],position-thickness/2,-offset,false)
+		dgsSetPosition(images[2],value*absSize[1]/100-thickness/2,-offset,false)
 	else
-		position = value*absSize[2]/100
-		dgsSetPosition(images[2],-offset,position-thickness/2,false)
+		dgsSetPosition(images[2],-offset,value*absSize[2]/100-thickness/2,false)
 	end
+	
 	triggerEvent("onDgsColorPickerComponentSelectorChange",cs,value,oldV)
 end
 
@@ -218,7 +220,7 @@ ColorAttributeOrder = {
 	HSL={"H","S","L"},
 	HSV={"H","S","V"},
 }
-function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMode)
+function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMode,isReversed)
 	assert(dgsIsDxElement(show),"Bad argument @dgsBindToColorPicker at argument 1, expect a dgs-dxgui, got "..dgsGetType(show))
 	assert(dgsGetPluginType(colorPicker) == "dgs-dxcolorpicker","Bad argument @dgsBindToColorPicker at argument 2, expect plugin dgs-dxcolorpicker, got "..dgsGetPluginType(colorPicker))
 	if colorAttribute ~= "A" then
@@ -236,6 +238,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			dgsSetData(show,"shader",ALPComponent)
 			dgsImageSetImage(show,ALPComponent)
 			dxSetShaderValue(ALPComponent,"vertical",dgsElementData[show].voh)
+			dxSetShaderValue(ALPComponent,"isReversed",isReversed and true or false)
 		elseif colorType == "RGB" then
 			local RGBComponent = dxCreateShader("plugin/ColorPicker/RGBComponent.fx")
 			dgsSetData(show,"shader",RGBComponent)
@@ -245,6 +248,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			dgsImageSetImage(show,RGBComponent)
 			dxSetShaderValue(RGBComponent,"RGB_Chg",RGBCHG)
 			dxSetShaderValue(RGBComponent,"vertical",dgsElementData[show].voh)
+			dxSetShaderValue(RGBComponent,"isReversed",isReversed and true or false)
 			if staticMode then
 				dxSetShaderValue(RGBComponent,"StaticMode",{0,0,0})
 			else
@@ -259,6 +263,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			HSLCHG[colorID] = 1
 			dxSetShaderValue(HSLComponent,"HSL_Chg",HSLCHG)
 			dxSetShaderValue(HSLComponent,"vertical",dgsElementData[show].voh)
+			dxSetShaderValue(HSLComponent,"isReversed",isReversed and true or false)
 			if staticMode then
 				dxSetShaderValue(HSLComponent,"StaticMode",{1,0,0})
 			else
@@ -273,6 +278,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			HSVCHG[colorID] = 1
 			dxSetShaderValue(HSVComponent,"HSV_Chg",HSVCHG)
 			dxSetShaderValue(HSVComponent,"vertical",dgsElementData[show].voh)
+			dxSetShaderValue(HSVComponent,"isReversed",isReversed and true or false)
 			if staticMode then
 				dxSetShaderValue(HSVComponent,"StaticMode",{1,0,0})
 			else
@@ -481,6 +487,8 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 	else	
 		assert(false,"Bad argument at argument 1, unsupported type "..targetType)
 	end
+	dgsSetData(show,"isReversed",isReversed)
+	return true
 end
 
 function dgsUnbindFromColorPicker(show)
