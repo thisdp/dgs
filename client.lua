@@ -1472,6 +1472,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local wordwarp = eleData.wordWarp
 				local scbThick = eleData.scrollBarThick
 				local scrollbars = eleData.scrollbars
+				local selectVisible = eleData.selectVisible
 				local finalcolor
 				if not enabled[1] and not enabled[2] then
 					if type(eleData.disabledColor) == "number" then
@@ -1506,14 +1507,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local caretHeight = eleData.caretHeight-1
 						local canHoldLines = floor((h-4)/fontHeight)
 						canHoldLines = canHoldLines > allLines and allLines or canHoldLines
-						local selPosStart,selPosEnd,selStart,selEnd
 						dxSetRenderTarget(renderTarget,true)
 						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						local caretRltHeight = fontHeight*caretHeight
 						local caretDrawPos
-						local tk = getTickCount()
-						if allLines > 0 then
+						local selPosStart,selPosEnd,selStart,selEnd
+						if selectVisible and allLines > 0 then
 							if selectFro[2] > caretPos[2] then
 								selStart,selEnd = caretPos[2],selectFro[2]
 								selPosStart,selPosEnd = caretPos[1],selectFro[1]
@@ -1639,7 +1639,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxSetRenderTarget(renderTarget,true)
 						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
-						if allLine > 0 then
+						if selectVisible and allLine > 0 then
 							local toShowLine = showLine+canHoldLines
 							toShowLine = toShowLine > allLine and allLine or toShowLine
 							if selectFro[2] > caretPos[2] then
