@@ -1,6 +1,6 @@
-float borderSoft = 0.02;
-float radiusSize = 0.05;
-float radius = 0.45;
+#define PIx2 6.2831852
+float borderSoft = 0.01;
+float radius = 0.5;
 
 float HUE2RGB(float v1,float v2,float vH)
 {
@@ -42,10 +42,9 @@ float4 myShader(float2 tex : TEXCOORD0, float4 _color : COLOR0) : COLOR0
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float2 newTex = tex-0.5;
 	float _radius = length(newTex);
-	float angle = degrees(atan2(newTex.y,newTex.x))/360;
-	float4 color = HSL2RGB(float4(angle,1,0.5,1));
-	color.a = 1-(abs(_radius-radius)+nBorderSoft-radiusSize)/nBorderSoft;
-	color.a = clamp(color.a,0,1)*_color.a;
+	float angle = atan2(newTex.y,newTex.x)/PIx2;
+	float4 color = HSL2RGB(float4(angle,_radius*2,0.5,1));
+	color.a = 1-(_radius-radius+nBorderSoft)/nBorderSoft;
 	return color;
 }
 

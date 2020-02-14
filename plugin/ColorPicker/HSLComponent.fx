@@ -3,6 +3,8 @@ float3 HSL = float3(0,0,0);
 float3 HSL_Chg = float3(0,0,0);
 float3 defHSL = float3(0,1,0.5);
 float3 StaticMode = float3(1,1,1);
+bool isReversed = false;
+
 float HUE2RGB(float v1,float v2,float vH)
 {
 	if (vH < 0)
@@ -18,9 +20,9 @@ float HUE2RGB(float v1,float v2,float vH)
 	return v1;
 }
 
-float4 HSL2RGB(float4 hsl)
+float3 HSL2RGB(float3 hsl)
 {
-	float4 RGBA = float4(hsl.b,hsl.b,hsl.b,hsl.a);
+	float3 RGB = float3(hsl.b,hsl.b,hsl.b);
 	if (hsl.g != 0)
 	{
 		float var_2 = 0;
@@ -30,19 +32,20 @@ float4 HSL2RGB(float4 hsl)
 			var_2 = hsl.b+hsl.g-hsl.g*hsl.b;
 		float var_1 = 2*hsl.b-var_2;
 		float oPt = float(1)/float(3);
-		RGBA.r = HUE2RGB(var_1,var_2,hsl.r+oPt);
-		RGBA.g = HUE2RGB(var_1,var_2,hsl.r);
-		RGBA.b = HUE2RGB(var_1,var_2,hsl.r-oPt);
+		RGB.r = HUE2RGB(var_1,var_2,hsl.r+oPt);
+		RGB.g = HUE2RGB(var_1,var_2,hsl.r);
+		RGB.b = HUE2RGB(var_1,var_2,hsl.r-oPt);
 	}
-	return RGBA;
+	return RGB;
 }
 
-float4 HSLComponent(float2 tex : TEXCOORD0) : COLOR0
+float4 HSLComponent(float2 tex : TEXCOORD0, float4 color : COLOR0) : COLOR0
 {
 	float kValue = tex[!vertical];
+	kValue = isReversed?(1-kValue):kValue;
 	float3 nHSL = HSL*StaticMode+defHSL*(1-StaticMode);
 	float3 hsl = HSL_Chg*kValue+nHSL*(1-HSL_Chg);
-	float4 color = HSL2RGB(float4(hsl.x,hsl.y,hsl.z,1));
+	color.rgb = HSL2RGB(float3(hsl.x,hsl.y,hsl.z));
 	return color;
 }
 

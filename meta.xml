@@ -1,13 +1,11 @@
 <meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
-	<file src="dsm.ttf" />
 	<file src="media.html" />
 	<file src="meta.xml" />
 	<file src="styleManager/styleMapper.lua"/>
 	<file src="shaders/textureRelight.fx" />
 	<file src="shaders/mta-helper.fx" />
 	<file src="shaders/ButtonEffect.fx" />
-	<file src="shaders/roundRect.fx" />
 	<file src="shaders/pixelWithoutBlur.fx" />
 	<file src="shaders/ring-round.fx"/>
 	
@@ -24,8 +22,9 @@
 	<script src="Core/arrowlist.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
-	<script src="Core/combobox.lua" type="client" />
 	<script src="Core/checkbox.lua" type="client" />
+	<script src="Core/combobox.lua" type="client" />
+	<script src="Core/customRenderer.lua" type="client" />
 	<script src="Core/eda.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
 	<script src="Core/detectarea.lua" type="client" />
@@ -45,26 +44,38 @@
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
-	<script src="plugin/roundRect.lua" type="client" />
 	<script src="animation.lua" type="client" />
 	
 	
 	<script src="plugin/pluginManager.lua" type="client" />
+	<script src="plugin/objPrevSupport.lua" type="client" />
 	<script src="plugin/cmd.lua" type="client" />
 	<script src="plugin/BlurBox/BlurBox.lua" type="client" />
 	<file src="plugin/BlurBox/BlurBox.fx" type="client" />
 	<script src="plugin/Effect3D/Effect3D.lua" type="client" />
 	<file src="plugin/Effect3D/Effect3D.fx" type="client" />
+	<script src="plugin/roundRect/roundRect.lua" type="client" />
+	<file src="plugin/roundRect/roundRect.fx" />
+	<script src="plugin/nineSlice/nineSlice.lua" type="client" />
+	<file src="plugin/nineSlice/nineSlice.fx" />
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
 	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
-	
 	<file src="plugin/ColorPicker/HSLSquare.fx" type="client" />
+	<file src="plugin/ColorPicker/HSDisk.fx" type="client" />
+	<file src="plugin/ColorPicker/HLDisk.fx" type="client" />
 	<file src="plugin/ColorPicker/PickCircle.fx" type="client" />
 	<file src="plugin/ColorPicker/HSLComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
+	<script src="plugin/poop/poop.lua" type="client" />
+	<file src="plugin/poop/poop.fx" type="client" />
+	<script src="plugin/QRCode.lua" type="client" />
+	<script src="plugin/mask/mask.lua" type="client" />
+	<file src="plugin/mask/maskTexture.fx" type="client" />
+	<file src="plugin/mask/mask-Circle.fx" type="client" />
+	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
 	
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
@@ -201,7 +212,9 @@
 	<export function="dgsWindowSetCloseButtonSize" type="client" />
 	<export function="dgsWindowGetCloseButtonSize" type="client" />
 	<export function="dgsWindowGetCloseButton" type="client" />
-	
+
+	<export function="dgsCreateCustomRenderer" type="client" />
+	<export function="dgsCustomRendererSetFunction" type="client" />
 
 	<export function="dgsCreate3DInterface" type="client" />
 	<export function="dgs3DInterfaceGetBlendMode" type="client" />
@@ -533,6 +546,8 @@
 	<export function="dgsRoundRectGetRadius" type="client" />
 	<export function="dgsRoundRectSetColor" type="client" />
 	<export function="dgsRoundRectGetColor" type="client" />
+	<export function="dgsRoundRectSetColorOverwritten" type="client" />
+	<export function="dgsRoundRectGetColorOverwritten" type="client" />
 	
 	<export function="dgsCreateColorPicker" type="client" />
 	<export function="dgsColorPickerCreateComponentSelector" type="client" />
@@ -557,11 +572,33 @@
 	<export function="dgsHSLToHSV" type="client" />
 	<export function="dgsHSVToHSL" type="client" />
 	
+	<export function="dgsCreateNineSlice" type="client" />
+	<export function="dgsNineSliceSetGrid" type="client" />
+	<export function="dgsNineSliceGetGrid" type="client" />
+	
+	<export function="dgsLocateObjectPreviewResource" type="client" />
+	<export function="dgsCreateObjectPreviewHandle" type="client" />
+	<export function="dgsAttachObjectPreviewToImage" type="client" />
+	<export function="dgsRemoveObjectPreviewFromImage" type="client" />
+	<export function="dgsObjectPreviewGetHandleByID" type="client" />
+	<export function="dgsConfigureObjectPreview" type="client" />
+	
+	<export function="dgsCreateMask" type="client" />
+	<export function="dgsMaskGetSetting" type="client" />
+	<export function="dgsMaskSetSetting" type="client" />
+	
+	<export function="dgsRequestQRCode" type="client" />
+	<export function="dgsGetQRCodeLoaded" type="client" />
+
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
 	<export function="dgsImportOOPClass" type="client" />
 	<export function="dgsG2DLoadHooker" type="client" />
 
 	<min_mta_version server="1.5.6-9.16361" client="1.5.6-9.16361" />
+	<aclrequest>
+		<right name="function.fetchRemote" access="true" />
+		<right name="function.getClientIP" access="true" />
+	</aclrequest>
 	<download_priority_group>999</download_priority_group>
 </meta>

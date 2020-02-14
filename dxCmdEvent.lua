@@ -1,7 +1,6 @@
-﻿addEvent("giveIPBack",true)
-dgs_MyIP = "Unknown"
-triggerServerEvent("getMyIP",localPlayer)
-addEventHandler("giveIPBack",root,function(ip)
+﻿dgs_MyIP = "Unknown"
+triggerServerEvent("DGSI_RequestIP",localPlayer)
+addEventHandler("DGSI_ReceiveIP",root,function(ip)
 	dgs_MyIP = ip
 end)
 
@@ -447,9 +446,10 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local sx,sy = dgsGetSize(source,false)
 			local maxPos = math.floor((speedSend[0] or 0)*1.2)
 			local LineBlue = tocolor(80,180,255,255)
+			local isPostGUI = dgsGetPostGUI(source)
 			for i=1,#speedSend-1 do
 				local nextone = speedSend[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedSend[i]/maxPos)-1,LineBlue,1,dgsRenderSetting.postGUI)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedSend[i]/maxPos)-1,LineBlue,1,isPostGUI)
 			end
 			dgsSetText(netSystem["picture_sen_max"],maxPos.."Byte/s")
 		end)
@@ -459,9 +459,10 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local sx,sy = dgsGetSize(source,false)
 			local maxPos = math.floor((speedRecv[0] or 0)*1.2)
 			local LineBlue = tocolor(80,180,255,255)
+			local isPostGUI = dgsGetPostGUI(source)
 			for i=1,#speedRecv-1 do
 				local nextone = speedRecv[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedRecv[i]/maxPos)-1,LineBlue,1,dgsRenderSetting.postGUI)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedRecv[i]/maxPos)-1,LineBlue,1,isPostGUI)
 			end
 			dgsSetText(netSystem["picture_rec_max"],maxPos.."Byte/s")
 		end)
@@ -470,9 +471,10 @@ addEventHandler("onAnimationWindowCreate",root,function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
 			local LineBlue = tocolor(80,180,255,255)
+			local isPostGUI = dgsGetPostGUI(source)
 			for i=1,#percentLoss-1 do
 				local nextone = percentLoss[i+1] or 0 
-				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/100)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(percentLoss[i]/100)-1,LineBlue,1,dgsRenderSetting.postGUI)
+				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/100)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(percentLoss[i]/100)-1,LineBlue,1,isPostGUI)
 			end
 		end)
 		

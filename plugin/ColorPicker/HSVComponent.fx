@@ -3,29 +3,30 @@ float3 HSV = float3(0,0,0);
 float3 defHSV = float3(0,1,1);
 float3 HSV_Chg = float3(0,0,0);
 float3 StaticMode = float3(1,1,1);
+bool isReversed = false;
 
-
-float4 HSV2RGB(float4 HSVA)
+float3 HSV2RGB(float3 HSV)
 {
-	HSVA.x*=6;
-	float chroma = HSVA.z * HSVA.y;
-	float interm = chroma * (1 - abs(HSVA.x % 2.0 - 1));
-	float shift = HSVA.z - chroma;
-	if (HSVA.x < 1 ) return float4(shift + chroma, shift + interm, shift + 0, HSVA.a);
-	if (HSVA.x < 2 ) return float4(shift + interm, shift + chroma, shift + 0, HSVA.a);
-	if (HSVA.x < 3 ) return float4(shift + 0, shift + chroma, shift + interm, HSVA.a);
-	if (HSVA.x < 4 ) return float4(shift + 0, shift + interm, shift + chroma, HSVA.a);
-	if (HSVA.x < 5 ) return float4(shift + interm, shift + 0, shift + chroma, HSVA.a);
-	return float4(shift + chroma, shift + 0, shift + interm, HSVA.a);
+	HSV.x*=6;
+	float chroma = HSV.z * HSV.y;
+	float interm = chroma * (1 - abs(HSV.x % 2.0 - 1));
+	float shift = HSV.z - chroma;
+	if (HSV.x < 1 ) return float3(shift + chroma, shift + interm, shift + 0);
+	if (HSV.x < 2 ) return float3(shift + interm, shift + chroma, shift + 0);
+	if (HSV.x < 3 ) return float3(shift + 0, shift + chroma, shift + interm);
+	if (HSV.x < 4 ) return float3(shift + 0, shift + interm, shift + chroma);
+	if (HSV.x < 5 ) return float3(shift + interm, shift + 0, shift + chroma);
+	return float3(shift + chroma, shift + 0, shift + interm);
 }
 
 
-float4 HSVComponent(float2 tex : TEXCOORD0) : COLOR0
+float4 HSVComponent(float2 tex : TEXCOORD0, float4 color : COLOR0) : COLOR0
 {
 	float kValue = tex[!vertical];
+	kValue = isReversed?(1-kValue):kValue;
 	float3 nHSV = HSV*StaticMode+defHSV*(1-StaticMode);
 	float3 hsv = HSV_Chg*kValue+nHSV*(1-HSV_Chg);
-	float4 color = HSV2RGB(float4(hsv.x,hsv.y,hsv.z,1));
+	color.rgb = HSV2RGB(float3(hsv.x,hsv.y,hsv.z));
 	return color;
 }
 

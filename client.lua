@@ -1296,8 +1296,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
 					local caretHeight = eleData.caretHeight
 					local textX_Left,textX_Right
-					local selStartY = (h-sideheight)*(1-caretHeight)
-					local selEndY = (h-sideheight)*caretHeight-sideheight
+					local insideH = h-sideheight*2
+					local selStartY = insideH/2-insideH/2*caretHeight
+					local selEndY = (insideH/2-selStartY)*2
 					local width,selectX,selectW
 					local posFix = 0
 					local placeHolder = eleData.placeHolder
@@ -1391,12 +1392,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						if CaretShow then
 							local caretStyle = eleData.caretStyle
 							local selStartX = selectX+x+sidelength
-							selStartX = selStartX-selStartX%1-1
+							selStartX = selStartX-selStartX%1
 							if caretStyle == 0 then
 								if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
-									local selStartY = y+sideheight+(h-sideheight*2)*(1-caretHeight)
-									local selEndY = (h-sideheight*2)*caretHeight
-									dxDrawLine(selStartX,selStartY,selStartX,selEndY+selStartY,caretColor,eleData.caretThick,noRenderTarget)
+									local selStartY = h/2-h/2*caretHeight+sideheight
+									local selEndY = (h/2-selStartY)*2
+									dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,noRenderTarget)
 								end
 							elseif caretStyle == 1 then
 								local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
@@ -1405,7 +1406,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								end
 								if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 									local offset = eleData.caretOffset
-									local selStartY = y+h-sideheight*2
+									local selStartY = y+h/2-h/2*caretHeight+sideheight
 									dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,caretColor,eleData.caretThick,noRenderTarget)
 								end
 							end
@@ -1480,6 +1481,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local wordwarp = eleData.wordWarp
 				local scbThick = eleData.scrollBarThick
 				local scrollbars = eleData.scrollbars
+				local selectVisible = eleData.selectVisible
 				local finalcolor
 				if not enabled[1] and not enabled[2] then
 					if type(eleData.disabledColor) == "number" then
@@ -1514,14 +1516,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local caretHeight = eleData.caretHeight-1
 						local canHoldLines = floor((h-4)/fontHeight)
 						canHoldLines = canHoldLines > allLines and allLines or canHoldLines
-						local selPosStart,selPosEnd,selStart,selEnd
 						dxSetRenderTarget(renderTarget,true)
 						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						local caretRltHeight = fontHeight*caretHeight
 						local caretDrawPos
-						local tk = getTickCount()
-						if allLines > 0 then
+						local selPosStart,selPosEnd,selStart,selEnd
+						if selectVisible and allLines > 0 then
 							if selectFro[2] > caretPos[2] then
 								selStart,selEnd = caretPos[2],selectFro[2]
 								selPosStart,selPosEnd = caretPos[1],selectFro[1]
@@ -1647,7 +1648,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxSetRenderTarget(renderTarget,true)
 						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
-						if allLine > 0 then
+						if selectVisible and allLine > 0 then
 							local toShowLine = showLine+canHoldLines
 							toShowLine = toShowLine > allLine and allLine or toShowLine
 							if selectFro[2] > caretPos[2] then
@@ -1893,6 +1894,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local cursorWidth = eleData.cursorWidth
 				local troughWidth = eleData.troughWidth
 				local arrowWidth = eleData.arrowWidth
+				local imgRot = eleData.imageRotation
 				local troughPadding,cursorPadding,arrowPadding
 				if voh then
 					troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
@@ -1990,8 +1992,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				------------------------------------
 				if voh then
+					local imgRotVert = imgRot[2]
 					if image[3] then
-						dxDrawImage(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,image[3],0,0,0,tempTroughColor,rendSet)
+						dxDrawImage(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,image[3],imgRotVert[3],0,0,tempTroughColor,rendSet)
 					else
 						dxDrawRectangle(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,tempTroughColor,rendSet)
 					end
@@ -2000,17 +2003,18 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
 							dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
-						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],270,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],90,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],imgRotVert[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],imgRotVert[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
 					if image[2] then
-						dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,image[2],270,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,image[2],imgRotVert[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
 						dxDrawRectangle(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
 				else
+					local imgRotHorz = imgRot[1]
 					if image[3] then
-						dxDrawImage(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,image[3],0,0,0,tempTroughColor,rendSet)
+						dxDrawImage(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,image[3],imgRotHorz[3],0,0,tempTroughColor,rendSet)
 					else
 						dxDrawRectangle(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,tempTroughColor,rendSet)
 					end
@@ -2019,11 +2023,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
 							dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
-						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],0,0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],imgRotHorz[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],imgRotHorz[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
 					if image[2] then
-						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],0,0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
 						dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
@@ -2284,6 +2288,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 					dxSetRenderTarget(renderTarget[2],true)
+						local preSelectLastFrame = DataTab.preSelect
 						if MouseData.enter == v then		-------PreSelect
 							if mouseInsideRow then
 								local toffset = (DataTab.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
@@ -2308,6 +2313,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						local preSelect = DataTab.preSelect
+						if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
+							triggerEvent("onDgsGridListHover",v,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
+						end
 						local Select = DataTab.rowSelect
 						local sectionFont = eleData.sectionFont or font
 						for i=DataTab.FromTo[1],DataTab.FromTo[2] do
@@ -3392,6 +3400,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local x,y = getScreenFromWorldPosition(wx,wy,wz)
 				if x and y then
 					local x,y = x-x%1,y-y%1
+					if eleData.fixTextSize then
+						distance = 50
+					end
 					local antiDistance = 1/distance
 					local sizeX = textSizeX*textSizeX/distance*50
 					local sizeY = textSizeY*textSizeY/distance*50
@@ -4486,9 +4497,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local oldSelect = dgsElementData[combobox].select
 					dgsElementData[combobox].select = preSelect
 					local captionEdit = dgsElementData[combobox].captionEdit
-					local selection = dgsElementData[combobox].select
-					local itemData = dgsElementData[combobox].itemData
-					dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
+					if isElement(captionEdit) then
+						local selection = dgsElementData[combobox].select
+						local itemData = dgsElementData[combobox].itemData
+						dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
+					end
 					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 					if dgsElementData[combobox].autoHideAfterSelected then
 						dgsSetData(combobox,"listState",-1)

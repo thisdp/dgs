@@ -14,6 +14,7 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	local cursorImage = cursorImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.image[2])
 	local troughImage = troughImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.image[3])
 	dgsSetData(scrollbar,"image",{arrowImage,cursorImage,troughImage})
+	dgsSetData(scrollbar,"imageRotation",{{0,0,0},{270,270,270}})	--{Horizontal},{Vertical}
 	dgsSetData(scrollbar,"arrowColor",{arrowColorNormal or styleSettings.scrollbar.arrowColor[1],arrowColorHover or styleSettings.scrollbar.arrowColor[2],arrowColorClick or styleSettings.scrollbar.arrowColor[3]})
 	dgsSetData(scrollbar,"cursorColor",{cursorColorNormal or styleSettings.scrollbar.cursorColor[1],cursorColorHover or styleSettings.scrollbar.cursorColor[2],cursorColorClick or styleSettings.scrollbar.cursorColor[3]})
 	dgsSetData(scrollbar,"troughColor",troughColor or styleSettings.scrollbar.troughColor)

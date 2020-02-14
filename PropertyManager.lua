@@ -156,25 +156,35 @@ function dgsSetData(element,key,value,nocheck)
 					end
 				elseif dgsType == "dgs-dximage" then
 					if key == "UVSize" then
-						local texture = dgsElementData[element].image
-						if isElement(texture) and getElementType(texture) ~= "shader" then
-							local sx,sy,relative = value[1],value[2],value[3]
-							local mx,my = dxGetMaterialSize(texture)
-							local sx,sy = tonumber(sx),tonumber(sy)
-							local sx,sy = relative and (sx or 1)*mx or (sx or mx),relative and (sy or 1)*my or (sy or my)
-							dgsElementData[element].renderBuffer.UVSize = {sx,sy}
+						local sx,sy,relative = value[1],value[2],value[3]
+						if not sx and not sy then
+							dgsElementData[element].renderBuffer.UVSize = {}
+						else
+							local texture = dgsElementData[element].image
+							if isElement(texture) and getElementType(texture) ~= "shader" then
+								local mx,my = dxGetMaterialSize(texture)
+								local sx,sy = tonumber(sx),tonumber(sy)
+								local sx,sy = relative and (sx or 1)*mx or (sx or mx),relative and (sy or 1)*my or (sy or my)
+								dgsElementData[element].renderBuffer.UVSize = {sx,sy}
+							end
 						end
 					elseif key == "UVPos" then
-						local texture = dgsElementData[element].image
-						if isElement(texture) and getElementType(texture) ~= "shader" then
-							local x,y,relative = value[1],value[2],value[3]
-							local mx,my = dxGetMaterialSize(texture)
-							local x,y = tonumber(x),tonumber(y)
-							local x,y = relative and (x or 0)*mx or (x or mx),relative and (y or 0)*my or (y or my)
-							dgsElementData[element].renderBuffer.UVPos = {x,y}
+						local x,y,relative = value[1],value[2],value[3]
+						if not x and not y then
+							dgsElementData[element].renderBuffer.UVPos = {}
+						else
+							local texture = dgsElementData[element].image
+							if isElement(texture) and getElementType(texture) ~= "shader" then
+								local x,y,relative = value[1],value[2],value[3]
+								local mx,my = dxGetMaterialSize(texture)
+								local x,y = tonumber(x),tonumber(y)
+								local x,y = relative and (x or 0)*mx or (x or mx),relative and (y or 0)*my or (y or my)
+								dgsElementData[element].renderBuffer.UVPos = {x,y}
+							end
 						end
 					elseif key == "image" then
-						if isElement(value) and getElementType(value) ~= "shader" then
+						local imgType = dgsGetType(value)
+						if isElement(value) and imgType ~= "shader" and imgType ~= "dgs-dxcustomrenderer" then
 							local UVPos,UVSize = dgsElementData[element].UVPos or {0,0,true},dgsElementData[element].UVSize or {1,1,true}
 							local x,y,relative = UVPos[1],UVPos[2],UVPos[3]
 							local sx,sy,relative = UVSize[1],UVSize[2],UVSize[3]
@@ -232,12 +242,13 @@ function dgsSetProperty(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
 	if isTable then
+		if key == "functions" then
+			local fnc = loadstring(value)
+			assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
+			value = {fnc,{...}}
+		end
 		for k,v in ipairs(dxgui) do
-			if key == "functions" then
-				local fnc = loadstring(value)
-				assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
-				value = {fnc,{...}}
-			elseif key == "textColor" then
+			if key == "textColor" then
 				assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 			elseif key == "text" then
 				if dgsElementType[v] == "dgs-dxmemo" then
@@ -259,9 +270,16 @@ function dgsSetProperty(dxgui,key,value,...)
 		return true
 	else
 		if key == "functions" then
-			local fnc = loadstring(value)
-			assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
-			value = {fnc,{...}}
+			if value then
+				local fnc
+				if type(value) == "function" then
+					fnc = value
+				else
+					fnc = loadstring(value)
+				end
+				assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
+				value = {fnc,{...}}
+			end
 		elseif key == "textColor" then
 			assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 		elseif key == "text" then
@@ -300,7 +318,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 			local dgsType = dgsElementType[v]
 			for key,value in pairs(theTable) do
 				local skip = false
-				if key == "functions" then
+				if key == "functions" and type(value) == "string" then
 					value = {loadstring(value),additionArg.functions or {}}
 				elseif key == "textColor" then
 					if not tonumber(value) then

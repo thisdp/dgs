@@ -3,9 +3,7 @@ function dgsImportOOPClass()
 	return [[
 	--Check Error Message Above
 	if not dgsOOP then
-		local getResourceRootElement = getResourceRootElement
-		local call = call
-		local getResourceFromName = getResourceFromName
+		local getResourceRootElement,call,getResourceFromName = getResourceRootElement,call,getResourceFromName
 		dgsOOP = {}
 		dgsOOP.dgsName = "]]..dgsResName..[["
 		dgsOOP.dgsRes = getResourceFromName(dgsOOP.dgsName)
@@ -48,101 +46,90 @@ function dgsImportOOPClass()
 		dgsOOP.NoParent = {
 			createWindow = function(self,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateWindow",...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			create3DInterface = function(self,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
+			end,
+			create3DText = function(self,...)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreate3DText",...)
+				return dgsGetClass(dxgui)
 			end,
 		}
 
 		dgsOOP.HaveParent = {
 			createButton = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateButton",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createBrowser = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateBrowser",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createCheckBox = function(self,x,y,w,h,text,state,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateCheckBox",x,y,w,h,text,state,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createRadioButton = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateRadioButton",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createComboBox = function(self,x,y,w,h,caption,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateComboBox",x,y,w,h,caption,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createEdit = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateEdit",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createDetectArea = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateDetectArea",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createGridList = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateGridList",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createImage = function(self,x,y,w,h,image,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateImage",x,y,w,h,image,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createMemo = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateMemo",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createLabel = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateLabel",x,y,w,h,text,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createProgressBar = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateProgressBar",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createScrollBar = function(self,x,y,w,h,voh,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateScrollBar",x,y,w,h,voh,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createScrollPane = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateScrollPane",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createTabPanel = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateTabPanel",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createArrowList = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateArrowList",x,y,w,h,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
 			end,
 			createSwitchButton = function(self,x,y,w,h,textOn,textOff,state,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateSwitchButton",x,y,w,h,textOn,textOff,state,relative,self.dgsElement,...)
-				local dxguiTable = dgsGetClass(dxgui)
-				return dxguiTable
+				return dgsGetClass(dxgui)
+			end,
+			createCustomRenderer = function(self,customFnc)
+				local dxgui = call(dgsOOP.dgsRes,"dgsCreateCustomRenderer",customFnc)
+				return dgsGetClass(dxgui)
 			end,
 		}
 
@@ -349,7 +336,7 @@ function dgsImportOOPClass()
 					local newfenv = {self=self}
 					setmetatable(newfenv,{__index = _G})
 					setfenv(theFnc,newfenv)
-					addEventHandler(eventName,self.dgsElement,theFnc)
+					addEventHandler(eventName,self.dgsElement,theFnc,false)
 				end,
 				removeOn = function(self,eventName,theFnc)
 					local eventName = dgsOOP.transfromEventName(eventName)
@@ -514,6 +501,10 @@ function dgsImportOOPClass()
 				end
 				nTab.setVerticalAlign = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsCheckBoxSetVerticalAlign",self.dgsElement,...)
+				end
+			elseif dgsType == "dgs-dxcustomrenderer" then
+				nTab.setFunction = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCustomRendererSetFunction",self.dgsElement,...)
 				end
 			elseif dgsType == "dgs-dxradiobutton" then
 				nTab.getSelected = function(self,...)
@@ -1191,16 +1182,16 @@ function dgsImportOOPClass()
 				return guiGetScreenSize()
 			end,
 			setInputEnabled = function(self,...)
-				return dgsSetInputEnabled(...)
+				return guiSetInputEnabled(...)
 			end,
 			getInputEnabled = function(self,...)
-				return dgsGetInputEnabled(...)
+				return guiGetInputEnabled(...)
 			end,
 			setInputMode = function(self,...)
-				return dgsSetInputMode(...)
+				return guiSetInputMode(...)
 			end,
 			getInputMode = function(self,...)
-				return dgsGetInputMode(...)
+				return guiGetInputMode(...)
 			end,
 			setRenderSetting = function(self,...)
 				return call(dgsOOP.dgsRes,"dgsSetRenderSetting",...)

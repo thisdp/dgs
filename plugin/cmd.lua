@@ -23,7 +23,7 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent)
 	dgsSetData(cmdMemo,"cmdHistory",{[0]=""})
 	dgsSetData(cmdMemo,"cmdCurrentHistory",0)
 	local sx,sy = dgsGetSize(cmdMemo,false)
-	local edit = dgsCreateEdit(0,0,sx,20,"",false,cmdMemo,tocolor(0,0,0,255))
+	local edit = dgsCreateEdit(0,0,sx,20,"",false,cmdMemo,tocolor(255,255,255,255))
 	dgsSetData(edit,"textSize",{1.4,1.4})
 	dgsSetFont(edit,"arial")
 	addEventHandler("onDgsEditAccepted",edit,function()
@@ -48,7 +48,7 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent)
 end
 
 function dgsCmdSetMode(cmd,mode,output)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsCmdSetMode at argument 1, expect dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
+	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsCmdSetMode at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
 	assert(type(mode) == "string","Bad argument @dgsCMDSetMode at argument 2, expect string [ got "..type(mode).." ]")
 	if mode == "function" or mode == "event" then
 		triggerEvent("onCMDModePreChange",cmd,mode)
@@ -64,12 +64,12 @@ function dgsCmdSetMode(cmd,mode,output)
 end
 
 function dgsCmdClearText(cmd)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsCmdSetMode at argument 1, expect dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
+	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsCmdSetMode at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
 	dgsSetData(cmd,"texts",{})
 end
 
 function dgsCmdAddEventToWhiteList(cmd,rules)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdAddEventToWhiteList at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
+	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdAddEventToWhiteList at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
 	assert(type(rules) == "table","Bad argument @dgsCmdAddEventToWhiteList at argument 2, expect table [ got "..type(rules).." ]")
 	if cmd == "all" then
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
@@ -90,7 +90,7 @@ function dgsCmdAddEventToWhiteList(cmd,rules)
 end
 
 function dgsCmdRemoveEventFromWhiteList(cmd,rules)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdRemoveEventFromWhiteList at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
+	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdRemoveEventFromWhiteList at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
 	assert(type(rules) == "table","Bad argument @dgsCmdAddEventToWhiteList at argument 2, expect table [ got "..type(rules).." ]")
 	if cmd == "all" then
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
@@ -111,7 +111,7 @@ function dgsCmdRemoveEventFromWhiteList(cmd,rules)
 end
 
 function dgsCmdRemoveAllEvents(cmd)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdRemoveAllEvents at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
+	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdRemoveAllEvents at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
 	if cmd == "all" then
 		cmdBaseWhiteList = {}
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
@@ -123,7 +123,7 @@ function dgsCmdRemoveAllEvents(cmd)
 end
 
 function dgsCmdIsInWhiteList(cmd,rule)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdIsInWhiteList at argument 1, expect dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
+	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdIsInWhiteList at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
 	assert(type(rule) == "string","Bad argument @dgsCmdIsInWhiteList at argument 2, expect string [ got "..type(rule).." ]")
 	if table.find(preinstallWhiteList,rule) then
 		return true
@@ -143,7 +143,7 @@ function dgsCmdIsInWhiteList(cmd,rule)
 end
 
 function outputCmdMessage(cmd,str)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
+	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
 	dgsMemoAppendText(cmd,str,true)
 	local textTable = dgsElementData[cmd].text
 	dgsMemoSetCaretPosition(cmd,textTable[#textTable][-1])
@@ -222,7 +222,7 @@ function executeCmdCommand(cmd,str,...)
 end
 
 function dgsEventCmdSetPreName(cmd,preName)
-    assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsEventCmdSetPreName at argument 1, expect dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
+    assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsEventCmdSetPreName at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
     assert(type(preName) == "string","Bad argument @dgsEventCmdSetPreName at argument 2, expect string [ got "..type(preName).." ]")
     return dgsSetData(cmd,"preName",preName)
 end

@@ -23,6 +23,7 @@ function createFullDemo()
 	local switchButton1 = window:createSwitchButton(100,210,60,20,"","",false)
 	local switchButton2 = window:createSwitchButton(100,240,60,20,"","",true)
 	local gridlist = window:createGridList(0,0,290,200,false)
+	gridlist:setMultiSelectionEnabled(true)
 	gridlist:addColumn("Column 1",0.5,true)
 	gridlist:addColumn("Column 2",0.5,true)
 	for i=1,100 do
@@ -57,6 +58,7 @@ function createFullDemo()
 	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+
 ------------
 
 function createTest()
@@ -230,7 +232,37 @@ function editTest() --Test Tab Switch for edit.
 	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
 	dgsSetProperty(edit,"bgColorBlur",tocolor(255,255,255,100))
 end
+--edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"",true)
+--[[
+local arabicUnicode = {{0x0600,0x06FF},{0x08A0,0x08FF},{0x0750,0x077F},{0xFB50,0xFDFF},{0xFE70,0xFEFF},{0x1EE00,0x1EEFF}}
+local arabicPattern = ""
+for i=1,#arabicUnicode do
+	arabicPattern = arabicPattern..utf8.char(arabicUnicode[i][1]).."-"..utf8.char(arabicUnicode[i][2])
+end
+arabicPattern = "["..arabicPattern.."]"
+function hasArabicCharacters(text)
+	return utf8.find(text,arabicPattern)
+end
 
+function isArabicCharacters(character)
+	local code = utf8.byte(character)
+	local isArabic = code >= arabicUnicode[1][1] and code <= arabicUnicode[1][2] 
+	isArabic = isArabic or (code >= arabicUnicode[2][1] and code <= arabicUnicode[2][2])
+	isArabic = isArabic or (code >= arabicUnicode[3][1] and code <= arabicUnicode[3][2])
+	isArabic = isArabic or (code >= arabicUnicode[4][1] and code <= arabicUnicode[4][2])
+	isArabic = isArabic or (code >= arabicUnicode[5][1] and code <= arabicUnicode[5][2])
+	isArabic = isArabic or (code >= arabicUnicode[6][1] and code <= arabicUnicode[6][2])
+	return isArabic
+end
+print(hasArabicCharacters("aلعت القياسا"))
+
+0x08A0-0x08FF
+0x0750-0x077F
+0xFB50-0xFDFF
+0xFE70-0xFEFF
+0x1EE00-0x1EEFF
+
+]]
 function editTest4()
 	window = dgsCreateWindow(200,200,800,600,"",false)
 	tabp = dgsCreateTabPanel(400,200,400,400,false,window)
@@ -333,7 +365,7 @@ function Plugin_media()
 end
 
 function testBrowser()
-	local browser = dgsCreateBrowser(200,200,400,400,false,_,false,true)
+	local browser = dgsCreateBrowser(100,100,1400,700,false,_,false,true)
 	addEventHandler("onClientBrowserCreated",browser,function()
 		loadBrowserURL(browser,"http://www.youtube.com")
 	end)
@@ -344,18 +376,28 @@ function test3DInterface()
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
 	dgsSetProperty(material,"faceTo",{-10,0,4})
-	--local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
-	--material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
-	--edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
-	
+	local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
+	material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
+	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
 	local window = dgsCreateWindow(0,0,300,200,"test",false)
 	dgsSetParent(window,material)
-	--edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
-	--edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+	edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
+	edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+end
+
+function test3DInterface()
+	material = dgsCreate3DInterface(0,0,7,6*1.896296296296296,6,2048,1080,tocolor(255,255,255,255),1,0,0,_,0)
+	browser = dgsCreateBrowser(0,0,2048,1080,false,material,false,true)
+	toggleBrowserDevTools(browser,true,true)
+	addEventHandler("onClientBrowserCreated",browser,function()
+		loadBrowserURL(browser,"http://angel.thisdp.cn:1314/")
+	end)
+	dgsSetProperty(material,"maxDistance",1000)
+	dgsSetProperty(material,"fadeDistance",1000)
 end
 
 function test3DInterfaceAttach()
-	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
+	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
 	dgsSetProperty(material,"faceRelativeTo","world")
 	dgsSetProperty(material,"maxDistance",1000)
@@ -368,6 +410,7 @@ function testBlurBox()
 	local bb1 = dgsCreateBlurBox()
 	local bb2 = dgsCreateBlurBox()
 	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"color",tocolor(0,0,0,100))
 	dgsSetProperty(window,"functions",[[
 		local arguments = {...}
 		local blurbox = arguments[1]
@@ -377,6 +420,7 @@ function testBlurBox()
 	]],bb1)
 	
 	local window = dgsCreateWindow(200,200,600,500,"test",false)
+	dgsSetProperty(window,"color",tocolor(0,0,0,100))
 	dgsSetProperty(window,"functions",[[
 		local arguments = {...}
 		local blurbox = arguments[1]
@@ -474,10 +518,10 @@ function languageTest_TabPanel()
 end
 
 function dgsRoundRectTest()
-	local rndRect1 = dgsCreateRoundRect(1,tocolor(0,0,0,150))
-	local image1 = dgsCreateImage(200,200,400,100,rndRect1,false)
-	local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
-	local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
+	local rndRect1 = dgsCreateRoundRect(50,tocolor(0,0,0,150),_,false)
+	local image1 = dgsCreateImage(200,200,400,400,rndRect1,false)
+	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
+	--local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
 end
 
 function test_switchButton()
@@ -488,6 +532,12 @@ function testShader()
 	--Circle
 	local circle = dxCreateShader("shaders/circle.fx")
 	local image = dgsCreateImage(300,300,400,400,circle,false)
+end
+
+function test9SliceScale()
+	local img = dxCreateTexture("yourTexture.png")
+	local nSli = dgsCreateNineSlice(img,0.2,0.8,0.4,0.6)
+	local image = dgsCreateImage(400,400,400,400,nSli,false)
 end
 -----------------------------Plugin Test
 function scrollPane3DEffectTest()
@@ -505,6 +555,16 @@ function scrollPane3DEffectTest()
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
 end
+-----QRCode
+function QRCodeTest()
+	local QRCode = dgsRequestQRCode("https://wiki.multitheftauto.com/wiki/Resource:Dgs")
+	local image = dgsCreateImage(200,200,128,128,QRCode,false)
+	outputChatBox(dgsGetQRCodeLoaded(QRCode) and "Loaded" or "Loading")
+	addEventHandler("onDgsQRCodeLoad",QRCode,function()
+		outputChatBox(dgsGetQRCodeLoaded(source) and "Loaded" or "Loading")
+	end,false)
+end
+
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass())()-- load OOP class
@@ -515,30 +575,58 @@ function oopTest()
 end
 
 function testColorPicker()
-	cp = dgsCreateColorPicker("HSVRing",50,50,300,300,false)
-	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false)
-	dgsBindToColorPicker(r,cp,"RGB","R",true)
-	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false)
-	dgsBindToColorPicker(g,cp,"RGB","G",true)
-	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false)
-	dgsBindToColorPicker(b,cp,"RGB","B",true)
+	--material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
+	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material1)
+	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
+	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
+	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material1)
+	--[[function syncColorPicker(oldRGB)
+		local color = {dgsColorPickerGetColor(source,"RGB")}
+		if oldRGB[1] ~= color[1] or oldRGB[2] ~= color[2] or oldRGB[3] ~= color[3] then
+			dgsColorPickerSetColor(colorPicker_HLDisk,color[1],color[2],color[3],color[4],"RGB")
+			dgsColorPickerSetColor(colorPicker_HSDisk,color[1],color[2],color[3],color[4],"RGB")
+			dgsColorPickerSetColor(colorPicker_HSLSquare,color[1],color[2],color[3],color[4],"RGB")
+			dgsColorPickerSetColor(colorPicker_HSVRing,color[1],color[2],color[3],color[4],"RGB")
+		end
+	end]]
+	addEventHandler("onDgsColorPickerChange",colorPicker_HLDisk,syncColorPicker)
+	addEventHandler("onDgsColorPickerChange",colorPicker_HSDisk,syncColorPicker)
+	addEventHandler("onDgsColorPickerChange",colorPicker_HSLSquare,syncColorPicker)
+	addEventHandler("onDgsColorPickerChange",colorPicker_HSVRing,syncColorPicker)
+	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false,material1)
+	dgsBindToColorPicker(r,colorPicker_HSVRing,"RGB","R",true,true)
+	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false,material1)
+	dgsBindToColorPicker(g,colorPicker_HSVRing,"RGB","G",true,true)
+	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false,material1)
+	dgsBindToColorPicker(b,colorPicker_HSVRing,"RGB","B",true,true)
 	
-	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false)
-	dgsBindToColorPicker(H,cp,"HSL","H",true)
-	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false)
-	dgsBindToColorPicker(S,cp,"HSL","S",true)
-	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false)
-	dgsBindToColorPicker(L,cp,"HSL","L",true)
+	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false,material1)
+	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSL","H",true,true)
+	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false,material1)
+	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSL","S",true,true)
+	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false,material1)
+	dgsBindToColorPicker(L,colorPicker_HSVRing,"HSL","L",true,true)
 	
-	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false)
-	dgsBindToColorPicker(H,cp,"HSV","H",true)
-	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false)
-	dgsBindToColorPicker(S,cp,"HSV","S",true)
-	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false)
-	dgsBindToColorPicker(V,cp,"HSV","V",true)
+	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false,material1)
+	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSV","H",true,true)
+	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false,material1)
+	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSV","S",true,true)
+	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material1)
+	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
 	
-	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false)
-	dgsBindToColorPicker(A,cp,"RGB","A")
+	A = dgsColorPickerCreateComponentSelector(500,260,10,200,false,false,material1)
+	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
+end
+
+-----------------------------DGS Object Preview Support Test
+function testObjectPreview()
+	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
+	local objPrevName = "object_preview"
+	dgsLocateObjectPreviewResource(objPrevName)
+	local veh = createVehicle(411,0,0,3)
+	local objPrev = dgsCreateObjectPreviewHandle(veh,0,0,0)
+	local image = dgsCreateImage(20,20,300,300,_,false,wind)
+	dgsAttachObjectPreviewToImage(objPrev,image)
 end
 -----------------------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect

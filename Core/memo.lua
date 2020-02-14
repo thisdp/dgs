@@ -89,6 +89,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(memo,"typingSound",styleSettings.memo.typingSound)
 	dgsSetData(memo,"selectColor",styleSettings.memo.selectColor)
 	dgsSetData(memo,"selectColorBlur",styleSettings.memo.selectColorBlur)
+	dgsSetData(memo,"selectVisible",styleSettings.memo.selectVisible)
 	dgsSetData(memo,"configNextFrame",false)
 	dgsSetData(memo,"rebuildMapTableNextFrame",false)
 	dgsSetData(memo,"maxLength",0x3FFFFFFF)

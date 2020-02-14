@@ -3,6 +3,10 @@ dgsResName = getResourceName(getThisResource())
 local metafile = xmlLoadFile("meta.xml")
 local nodes = xmlNodeGetChildren(metafile)
 
+addEventHandler("onClientResourceStart",resourceRoot,function()
+	triggerEvent("onDgsStart",resourceRoot,dgsResName)
+end)
+
 for k,v in ipairs(nodes) do
 	if xmlNodeGetName(v) == "export" then
 		local func = xmlNodeGetAttribute(v,"function")
@@ -25,7 +29,6 @@ function dgsImportFunction(name,nameAs)
 	if not name then
 		local allCode = [[
 		--Check Error Message Above
-
 		if not dgsImportHead then
 			local getResourceRootElement = getResourceRootElement
 			local call = call
@@ -33,19 +36,30 @@ function dgsImportFunction(name,nameAs)
 			local tostring = tostring
 			local outputDebugString = outputDebugString
 			local DGSCallMT = {}
-			dgsImportHead = {}
+			local dgsImportHead = {}
 			dgsImportHead.dgsName = "]]..dgsResName..[["
 			dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
 			dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
+			addEventHandler("onClientResourceStop",dgsRoot,function()
+				outputDebugString("[DGS] Alert! DGS has stopped. Everything keeps disconnected from DGS till the next time DGS starts!",2)
+				function onDgsStart(dResN)
+					outputDebugString("[DGS] DGS has started, reconnecting to DGS...",3)
+					dgsImportHead = nil
+					loadstring(exports[dResN]:dgsImportFunction())()
+					removeEventHandler("onDgsStart",root,onDgsStart)
+				end
+				addEventHandler("onDgsStart",root,onDgsStart)
+			end)
 
 			function DGSCallMT:__index(k)
 				if type(k) ~= 'string' then k = tostring(k) end
 				self[k] = function(...)
 					assert(dgsImportHead,"DGS import data is missing or DGS is not running, please reimport dgs functions("..getResourceName(getThisResource())..")")
-					if type(dgsImportHead.dgsResource) == 'userdata' and getResourceRootElement(dgsImportHead.dgsResource) then
+					if isElement(dgsRoot) then
 						return call(dgsImportHead.dgsResource, k, ...)
 					else
 						dgsImportHead = nil
+						dgsRoot = nil
 						return nil
 					end
 				end

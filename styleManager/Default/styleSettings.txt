@@ -291,6 +291,7 @@
 		caretOffset = 3,
 		caretHeight = 1,
 		scrollBarThick = 15,
+		selectVisible = true,
 		typingSound = nil,
 	},
 

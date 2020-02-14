@@ -392,7 +392,7 @@ end)
 
 function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings,self)
 	if SelfEasing[easing] then
-		local nx,ny,nz = 0,0,0
+		local nx,ny,nz = x,y,z
 		local temp = SelfEasing[easing](percent,settings,self)
 		local diff = {tx-x,ty-y,tz-z}
 		if diff[1] ~= 0 then

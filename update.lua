@@ -12,6 +12,17 @@ setElementData(resourceRoot,"Version",allstr)
 fileClose(check)
 
 if dgsConfig.updateSystemDisabled then return end
+
+local _fetchRemote = fetchRemote
+function fetchRemote(...)
+	if hasObjectPermissionTo(getThisResource(),"function.fetchRemote",true) then
+		return _fetchRemote(...)
+	else
+		outputDebugString("[DGS]Request 'fetchRemote', but access denied. Use the command 'aclrequest allow dgs all'",2)
+	end
+	return false
+end
+
 Version = tonumber(allstr) or 0
 RemoteVersion = 0
 ManualUpdate = false

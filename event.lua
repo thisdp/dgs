@@ -1,5 +1,5 @@
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
-local gsub,sub,len,find,format = string.gsub,string.sub,string.len,string.find,string.format
+local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.find,string.format,byte
 local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
 local insert = table.insert
 local _dxDrawImageSection = dxDrawImageSection
@@ -8,6 +8,8 @@ ClientInfo = {
 	SupportedPixelShader={}
 }
 dgs = exports[getResourceName(getThisResource())]
+
+------Event for developers
 addEvent("onDgsMouseLeave")
 addEvent("onDgsMouseEnter")
 addEvent("onDgsMouseClick")
@@ -23,6 +25,7 @@ addEvent("onDgsElementScroll")
 addEvent("onDgsDestroy")
 addEvent("onDgsSwitchButtonStateChange")
 addEvent("onDgsGridListSelect")
+addEvent("onDgsGridListHover")
 addEvent("onDgsGridListItemDoubleClick")
 addEvent("onDgsProgressBarChange")
 addEvent("onDgsCreate")
@@ -52,8 +55,10 @@ addEvent("onDgsStopAlphaing")
 addEvent("onDgsStopAniming")
 addEvent("onDgsArrowListValueChange")
 addEvent("onDgsMouseDrag")
--------
-addEvent("giveIPBack",true)
+addEvent("onDgsStart")
+-------internal events
+addEvent("DGSI_ReceiveIP",true)
+addEvent("DGSI_ReceiveQRCode",true)
 
 -------
 fontDxHave = {
@@ -210,6 +215,14 @@ function math.inRange(n_min,n_max,value)
 		return true
 	end
 	return false
+end
+
+function math.seekEmpty(list)
+	local cnt = 1
+	while(list[cnt]) do
+		cnt = cnt+1
+	end
+	return cnt
 end
 
 function getPositionFromElementOffset(element,offX,offY,offZ)
@@ -413,14 +426,31 @@ function HSL2HSV(H,S,L)
 end
 --------------------------------Dx Utility
 function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
-	if type(image) == "table" then
+	local theType = dgsGetType(image)
+	if theType == "table" then
 		return _dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
+	elseif theType == "dgs-dxcustomrenderer" then
+		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	else
 		return _dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	end
 end
 
 --------------------------------Other Utility
+function urlEncode(s)
+    s = gsub(s,"([^%w%.%- ])",function(c)
+		return string.format("%%%02X",c:byte())
+	end)    
+    return gsub(s," ","+")
+end 
+
+function urlDecode(s)    
+    s = gsub(s,'%%(%x%x)',function(h) 
+		return char(tonumber(h,16))
+	end)    
+    return s
+end
+
 function dgsRunString(func,...)
 	local fnc = loadstring(func)
 	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
