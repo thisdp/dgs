@@ -1,4 +1,4 @@
-float antiAliased = 0.005;
+float borderSoft = 0.02;
 float radius = 0.2;
 float thickness = 0.02;
 float2 progress = float2(0,0.1);
@@ -14,11 +14,13 @@ float4 blend(float4 c1, float4 c2)
 
 float4 myShader(float2 tex : TEXCOORD0, float4 color : COLOR0 ) : COLOR0
 {
+	float2 dxy = float2(ddx(tex.x),ddy(tex.y));
+	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float4 bgColor = color;
 	float4 inColor = 0;
 	float2 texFixed = tex-0.5;
 	float dis = abs(length(texFixed)-radius);
-	float delta = clamp(1-(dis-thickness+antiAliased)/antiAliased,0,1);
+	float delta = clamp(1-(dis-thickness+nBorderSoft)/nBorderSoft,0,1);
 	bgColor.a *= delta;
 	float2 progressFixed = progress*PI2;
 	float angle = atan2(tex.y-0.5,0.5-tex.x)+0.5*PI2;
@@ -28,7 +30,7 @@ float4 myShader(float2 tex : TEXCOORD0, float4 color : COLOR0 ) : COLOR0
 	float4 Color1,Color2;
 	if(dis_<=thickness)
 	{
-		float tmpDelta = clamp(1-(dis_-thickness+antiAliased)/antiAliased,0,1);
+		float tmpDelta = clamp(1-(dis_-thickness+nBorderSoft)/nBorderSoft,0,1);
 		Color1 = indicatorColor;
 		inColor = indicatorColor;
 		Color1.a *= tmpDelta;
@@ -36,7 +38,7 @@ float4 myShader(float2 tex : TEXCOORD0, float4 color : COLOR0 ) : COLOR0
 	dis_ = distance(float2(cos(progressFixed.y),-sin(progressFixed.y))*radius,texFixed);
 	if(dis_<=thickness)
 	{
-		float tmpDelta = clamp(1-(dis_-thickness+antiAliased)/antiAliased,0,1);
+		float tmpDelta = clamp(1-(dis_-thickness+nBorderSoft)/nBorderSoft,0,1);
 		Color2 = indicatorColor;
 		inColor = indicatorColor;
 		Color2.a *= tmpDelta;
