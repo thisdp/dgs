@@ -575,6 +575,8 @@
 	<export function="dgsCreateNineSlice" type="client" />
 	<export function="dgsNineSliceSetGrid" type="client" />
 	<export function="dgsNineSliceGetGrid" type="client" />
+	<export function="dgsNineSliceSetTexture" type="client" />
+	<export function="dgsNineSliceGetTexture" type="client" />
 	
 	<export function="dgsLocateObjectPreviewResource" type="client" />
 	<export function="dgsCreateObjectPreviewHandle" type="client" />
