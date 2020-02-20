@@ -1,7 +1,7 @@
 texture background;
 float4 color = float4(1,1,1,1);
 bool textureLoad;
-bool isRelative = true;
+bool isRelative = false;
 float radius = 0.2;
 float borderSoft = 0.01;
 bool colorOverwritten = true;

@@ -31,9 +31,9 @@ function dgsRoundRectSetRadius(rectShader,radius,relative)
 	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetRadius at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
 	assert(dgsGetType(radius) == "number","Bad argument @dgsRoundRectSetRadius at argument 2, expect number got "..dgsGetType(radius))
 	dxSetShaderValue(rectShader,"radius",radius)
-	dxSetShaderValue(rectShader,"isRelative",not (relative == false))
+	dxSetShaderValue(rectShader,"isRelative",relative and true or false)
 	dgsSetData(rectShader,"radius",radius)
-	dgsSetData(rectShader,"isRelative",not (relative == false))
+	dgsSetData(rectShader,"isRelative",relative and true or false)
 	return true
 end
 
