@@ -8,7 +8,7 @@ function nineSliceRender(posX,posY,width,height,self,rotation,rotationCenterOffs
 end
 
 function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,relative)
-	relative = relative ~= false and true or false
+	relative = relative and true or false
 	assert(dgsGetType(texture) == "texture","Bad argument @dgsCreateNineSlice at argument 1, expect texture got "..dgsGetType(texture))
 	assert(type(gridXLeft) == "number","Bad argument @dgsCreateNineSlice at argument 2, expect number got "..type(gridXLeft))
 	assert(type(gridXRight) == "number","Bad argument @dgsCreateNineSlice at argument 3, expect number got "..type(gridXRight))
@@ -35,7 +35,7 @@ function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,re
 end
 
 function dgsNineSliceSetGrid(nineSlice,gridXLeft,gridXRight,gridYTop,gridYBottom,relative)
-	relative = relative ~= false and true or false
+	relative = relative and true or false
 	assert(dgsGetPluginType(nineSlice) == "dgs-dxnineslice","Bad argument @dgsCreateNineSlice at argument 1, expect plugin dgs-dxnineslice got "..dgsGetPluginType(nineSlice))
 	local oGridX = dgsElementData[nineSlice].gridX
 	local oGridY = dgsElementData[nineSlice].gridY
