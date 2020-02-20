@@ -1,8 +1,6 @@
 nineSliceShader = "plugin/nineSlice/nineSlice.fx"
 function nineSliceRender(posX,posY,width,height,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
 	local selfData = dgsElementData[self]
-	width = width+math.cos(getTickCount()%3600/1800*math.pi)*150
-	height = height+math.cos(getTickCount()%3600/1800*math.pi)*150
 	dxSetShaderValue(selfData.renderShader,"rR",{width,height})
 	dxSetShaderValue(selfData.renderShader,"gdX",selfData.gridX)
 	dxSetShaderValue(selfData.renderShader,"gdY",selfData.gridY)
