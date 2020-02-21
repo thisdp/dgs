@@ -118,13 +118,13 @@ MouseData.EditMemoTimer = setTimer(function()
 end,500,0)
 
 function dgsCoreRender()
+	local tk = getTickCount()
 	triggerEvent("onDgsPreRender",resourceRoot)
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
 	local topTableSize = #TopFatherTable
 	local dx3DInterfaceTableSize = #dx3DInterfaceTable
 	local dx3DTextTableSize = #dx3DTextTable
-	local tk = getTickCount()
 	MouseData.hit = false
 	DGSShow = 0
 	wX,wY,wZ = nil,nil,nil
@@ -408,12 +408,7 @@ function interfaceRender()
 				local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
 				eleData.cameraDistance = cameraDistance
 				if cameraDistance <= eleData.maxDistance then
-					local filter = eleData.filterShader
 					local renderThing = eleData.renderTarget_parent
-					if isElement(filter) then
-						dxSetShaderValue(filter,"gTexture",renderThing)
-						renderThing = filter
-					end
 					local addalp = 1
 					if cameraDistance >= eleData.fadeDistance then
 						addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)
@@ -424,6 +419,11 @@ function interfaceRender()
 					end
 					if eleData.faceRelativeTo == "world" then
 						fx,fy,fz = fx-x,fy-y,fz-z
+					end
+					local filter = eleData.filterShader
+					if isElement(filter) then
+						dgsSetDepthBufferShader(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing)
+						renderThing = filter
 					end
 					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
 				end

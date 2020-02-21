@@ -1,4 +1,29 @@
-local cos,sin,rad,atan2 = math.cos,math.sin,math.rad,math.atan2
+local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.acos,math.deg
+function LookRotation(x,y,z,rot)
+	local rx = deg(acos(((x^2+z^2)/(x^2+y^2+z^2))^0.5))
+	if (y > 0) then
+		rx = 360-rx
+	end
+	local ry = deg(atan2(x, z))
+	if (ry < 0) then
+		ry = ry+ 180
+	end
+	if (x < 0) then
+		ry = ry+ 180
+	end
+	rz = rot
+	return rz,ry,rz
+end
+
+depthBuffer = dxCreateShader("shaders/textureRelight.fx")
+function dgsSetDepthBufferShader(shader,x,y,z,fx,fy,fz,rotation,w,h,tex)
+	local rx,ry,rz = LookRotation(fx,fy,fz,rotation)
+	dxSetShaderValue(shader, "sElementRotation", rad(rx), rad(ry), rad(rz))
+	dxSetShaderValue(shader, "sElementPosition", x, y, z )
+	dxSetShaderValue(shader, "sElementSize", w, h )
+	dxSetShaderValue(shader, "sTexColor", tex )
+end
+
 
 function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot)
 	assert(tonumber(x),"Bad argument @dgsCreate3DInterface at argument 1, expect a number got "..type(x))
@@ -48,6 +73,24 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
 	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
 	local x1,y1,z1 = _x*h,_y*h,_z*h
 	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,color,x+vx,y+vy,z+vz)
+end
+
+function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
+	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
+	local offFaceZ = atan2(vx,vy)
+	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
+	w,h = w/2,h/2
+	local topX,topY,topZ = _x*h,_y*h,_z*h
+	local leftX,leftY,leftZ = topY*vz-vy*topZ,topZ*vx-vz*topX,topX*vy-vx*topY --Left Point
+	local leftModel = (leftX^2+leftY^2+leftZ^2)^0.5
+	local leftX,leftY,leftZ = leftX/leftModel*w,leftY/leftModel*w,leftZ/leftModel*w
+	local r,g,b = fromcolor(color)
+	color = tocolor(r,g,b)
+	local leftTop = {leftX+topX+x,leftY+topY+y,leftZ-topZ+z,color,0,0}
+	local leftBottom = {leftX-topX+x,leftY-topY+y,leftZ+topZ+z,color,0,1}
+	local rightTop = {-leftX+topX+x,-leftY+topY+y,-leftZ-topZ+z,color,1,0}
+	local rightBottom = {-leftX-topX+x,-leftY-topY+y,-leftZ+topZ+z,color,1,1}
+	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop,leftBottom,rightTop,rightBottom)
 end
 
 function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVec,lnPnt,rot)
