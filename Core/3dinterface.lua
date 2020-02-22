@@ -15,13 +15,8 @@ function LookRotation(x,y,z,rot)
 	return rz,ry,rz
 end
 
---depthBuffer = dxCreateShader("shaders/textureRelight.fx")
-function dgsSetDepthBufferShader(shader,x,y,z,fx,fy,fz,rotation,w,h,tex)
-	local rx,ry,rz = LookRotation(fx,fy,fz,rotation)
-	dxSetShaderValue(shader, "sElementRotation", rad(rx), rad(ry), rad(rz))
-	dxSetShaderValue(shader, "sElementPosition", x, y, z )
-	dxSetShaderValue(shader, "sElementSize", w, h )
-	dxSetShaderValue(shader, "sTexColor", tex )
+function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
+	
 end
 
 
@@ -86,10 +81,10 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
 	local leftX,leftY,leftZ = leftX/leftModel*w,leftY/leftModel*w,leftZ/leftModel*w
 	local r,g,b = fromcolor(color)
 	color = tocolor(r,g,b)
-	local leftTop = {leftX+topX+x,leftY+topY+y,leftZ-topZ+z,color,0,0}
-	local leftBottom = {leftX-topX+x,leftY-topY+y,leftZ+topZ+z,color,0,1}
-	local rightTop = {-leftX+topX+x,-leftY+topY+y,-leftZ-topZ+z,color,1,0}
-	local rightBottom = {-leftX-topX+x,-leftY-topY+y,-leftZ+topZ+z,color,1,1}
+	local rightBottom = {leftX+topX+x,leftY+topY+y,leftZ+topZ+z,color,0,1}
+	local rightTop = {leftX-topX+x,leftY-topY+y,leftZ-topZ+z,color,0,0}
+	local leftBottom = {-leftX+topX+x,-leftY+topY+y,-leftZ+topZ+z,color,1,1}
+	local leftTop= {-leftX-topX+x,-leftY-topY+y,-leftZ-topZ+z,color,1,0}
 	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop,leftBottom,rightTop,rightBottom)
 end
 
