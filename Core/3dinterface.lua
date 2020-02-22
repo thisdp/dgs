@@ -15,7 +15,7 @@ function LookRotation(x,y,z,rot)
 	return rz,ry,rz
 end
 
-depthBuffer = dxCreateShader("shaders/textureRelight.fx")
+--depthBuffer = dxCreateShader("shaders/textureRelight.fx")
 function dgsSetDepthBufferShader(shader,x,y,z,fx,fy,fz,rotation,w,h,tex)
 	local rx,ry,rz = LookRotation(fx,fy,fz,rotation)
 	dxSetShaderValue(shader, "sElementRotation", rad(rx), rad(ry), rad(rz))

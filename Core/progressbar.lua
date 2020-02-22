@@ -26,13 +26,13 @@ ProgressBarStyle = {
 		local eleData = dgsElementData[source]
 		local styleData = eleData.styleData
 		local circle = styleData.elements.circleShader
-		local startPoint,endPoint = (styleData.rotation/360)%1,(percent+styleData.rotation/360)%1
+		local startPoint,endPoint = 0,percent
 		dxSetShaderValue(circle,"progress",{styleData.isReverse and endPoint or startPoint,not styleData.isReverse and endPoint or startPoint})
 		dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
 		dxSetShaderValue(circle,"thickness",styleData.thickness)
 		dxSetShaderValue(circle,"radius",styleData.radius)
 		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
-		dxDrawImage(x,y,w,h,circle,0,0,0,bgColor,rendSet)
+		dxDrawImage(x,y,w,h,circle,eleData.rotation,0,0,bgColor,rendSet)
 	end,
 }
 
