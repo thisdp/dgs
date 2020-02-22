@@ -422,8 +422,9 @@ function interfaceRender()
 					end
 					local filter = eleData.filterShader
 					if isElement(filter) then
-						dgsSetDepthBufferShader(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing)
+						dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing,fromcolor(colors))
 						renderThing = filter
+						colors = white
 					end
 					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
 				end
@@ -3163,8 +3164,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			local faceTo = eleData.faceTo
 			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 			rndtgt = eleData.renderTarget_parent
-			if x and y and z and w and h then
-				local intfaceHit = eleData.hit
+			if x and y and z and w and h and enabled[1] and mx then
 				local lnVec,lnPnt
 				local camX,camY,camZ = getCameraMatrix()
 				if not fx or not fy or not fz then
@@ -3174,36 +3174,33 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					lnVec = {wX-camX,wY-camY,wZ-camZ}
 					lnPnt = {camX,camY,camZ}
 				end
-				local intfaceHit
 				if eleData.cameraDistance or 0 <= eleData.maxDistance then
 					eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVec,lnPnt,rot)}
-					intfaceHit = eleData.hit
 				else
 					eleData.hit = {}
 				end
-				local hit,hitX,hitY
-				if intfaceHit then
-					hit,hitX,hitY,x,y,z = intfaceHit[1],intfaceHit[2],intfaceHit[3],intfaceHit[4],intfaceHit[5]
-				end
-				dxSetRenderTarget(rndtgt,true)
-				dxSetRenderTarget()
-				if enabled[1] and mx then
+				local hitData = eleData.hit or {}
+				if #hitData > 0 then
+					local hit,hitX,hitY,hx,hy,hz = hitData[1],hitData[2],hitData[3],hitData[4],hitData[5],hitData[6]
+					local distance = ((camX-hx)^2+(camY-hy)^2+(camZ-hz)^2)^0.5
+				
 					local oldPos = MouseData.interfaceHit
-					local distance = eleData.cameraDistance
 					if isElement(MouseData.lock3DInterface) then
 						if MouseData.lock3DInterface == v then
 							MouseData.hit = v
 							mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
 							MouseX,MouseY = mx,my
-							MouseData.interfaceHit = {x,y,z,distance,v}
+							MouseData.interfaceHit = {hx,hy,hz,distance,v}
 						end
 					elseif (not oldPos[4] or distance <= oldPos[4]) and hit then
 						MouseData.hit = v
 						mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
 						MouseX,MouseY = mx,my
-						MouseData.interfaceHit = {x,y,z,distance,v}
+						MouseData.interfaceHit = {hx,hy,hz,distance,v}
 					end
 				end
+				dxSetRenderTarget(rndtgt,true)
+				dxSetRenderTarget()
 			else
 				visible = false
 			end
