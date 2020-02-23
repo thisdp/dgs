@@ -15,8 +15,11 @@ function LookRotation(x,y,z,rot)
 	return rz,ry,rz
 end
 
+depthBuffer = dxCreateShader("shaders/textureRelight.fx")
 function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
-	
+	local rx,ry,rz = LookRotation(fx,fy,fz,rotation)
+	dxSetShaderValue(shader, "sElementColor",r/255,g/255,b/255,a/255)
+	dxSetShaderValue(shader, "sTexColor", tex )
 end
 
 

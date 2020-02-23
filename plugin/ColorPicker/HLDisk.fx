@@ -38,7 +38,7 @@ float4 HSL2RGB(float4 hsl)
 
 float4 myShader(float2 tex : TEXCOORD0, float4 _color : COLOR0) : COLOR0
 {
-	float2 dxy = float2(ddx(tex.x),ddy(tex.y));
+	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float2 newTex = tex-0.5;
 	float _radius = length(newTex);

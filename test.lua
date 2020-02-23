@@ -159,7 +159,7 @@ end
 function testProgressBar()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
-	dgsProgressBarSetStyle(pb,"ring-round")
+	dgsProgressBarSetStyle(pb,"ring-round",{rotation=90})
 	local start = 0
 	addEventHandler("onClientRender",root,function()
 		dgsProgressBarSetProgress(pb,start)
@@ -372,17 +372,11 @@ function testBrowser()
 end
 
 function test3DInterface()
-	material = dgsCreate3DInterface(0,0,4,4,4,600,600,tocolor(255,255,255,255),1,0,0,_,0)
-	dgsSetProperty(material,"maxDistance",1000)
-	dgsSetProperty(material,"fadeDistance",1000)
-	dgsSetProperty(material,"faceTo",{-10,0,4})
-	local shader = dxCreateShader("shaders/pixelWithoutBlur.fx")
-	material2 = dgsCreate3DInterface(0,0,3,2,2,400,400,tocolor(255,255,255,255),1,0,0)
-	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,material)
-	local window = dgsCreateWindow(0,0,300,200,"test",false)
-	dgsSetParent(window,material)
-	edit2 = dgsCreateEdit(0,0,0.4,0.2,"DGS 3D Interface Edit 1",true,material2)
-	edit2 = dgsCreateEdit(0,100,200,50,"DGS 3D Interface Edit 2",false,material)
+	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
+	dgsSetProperty(material,"faceTo",{-10,-10,0})
+	material2 = dgsCreate3DInterface(0,0,5,4,4,400,400,tocolor(255,255,255,255),1,0,0)
+	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)
+	edit2 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material2)
 end
 
 function test3DInterface()
@@ -520,6 +514,7 @@ end
 function dgsRoundRectTest()
 	local rndRect1 = dgsCreateRoundRect(50,tocolor(0,0,0,150),_,false)
 	local image1 = dgsCreateImage(200,200,400,400,rndRect1,false)
+	dgsSetProperty(image1,"rotation",45)
 	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
 	--local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
 end
@@ -614,7 +609,7 @@ function testColorPicker()
 	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material1)
 	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
 	
-	A = dgsColorPickerCreateComponentSelector(500,260,10,200,false,false,material1)
+	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false,material1)
 	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
 end
 

@@ -1,0 +1,32 @@
+<html>
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="imagetoolbar" content="no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<head>
+		<meta charset="utf-8" />
+		<script type="text/javascript">
+			
+		</script>
+	</head>
+	 <body contenteditable=true>
+      <div id="content">
+          苹果含有丰富的糖类、维生素、微量元素以及水溶性食物纤维和有机酸，是人们公认的健康之果。不仅如此，苹果还具有天然的怡人香气，这种清香气味对于人体来说，有舒缓压力、提神醒脑的功效，而苹果中充足的矿物质硼，也同样可以使困倦的大脑快速恢复清醒状态。喝杯咖啡不如吃个苹果的道理就正在于此了
+      </div>
+      <input type="text" id="text" placeholder="请输入关键字"/>
+      <input type="button" id="button" value="确定"/>
+      <script>
+         var content = document.getElementById("content");
+         var contents = content.innerHTML;
+         var text = document.getElementById("text");
+		 console.log(text);
+         var button = document.getElementById("button");
+         button.onclick = function() {
+             var value = text.value;
+             var values = contents.split(value);
+             content.innerHTML = values.join('<span style="color:red;">' + value + '</span>');
+         };
+      </script>
+    </body>
+</html>

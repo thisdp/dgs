@@ -24,8 +24,8 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0
 	else
 		result = color;
 		
-	float dx = ddx(tex.x);
-	float dy = ddy(tex.y);
+	float dx = length(ddx(tex));
+	float dy = length(ddy(tex));
 	float a = dx/dy;
 	float2 nTex = tex;
 	float2 center;

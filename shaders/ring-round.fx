@@ -14,7 +14,7 @@ float4 blend(float4 c1, float4 c2)
 
 float4 myShader(float2 tex : TEXCOORD0, float4 color : COLOR0 ) : COLOR0
 {
-	float2 dxy = float2(ddx(tex.x),ddy(tex.y));
+	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float4 bgColor = color;
 	float4 inColor = 0;

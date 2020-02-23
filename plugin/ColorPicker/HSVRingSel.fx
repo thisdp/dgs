@@ -19,7 +19,7 @@ float4 HSV2RGB(float4 HSVA)
 
 float4 PS(float2 tex : TEXCOORD0, float4 _color : COLOR0) : COLOR0
 {
-	float2 dxy = float2(ddx(tex.x),ddy(tex.y));
+	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float2 newTex = tex*2-1;
 	float rot = (Hue+0.5)*PI*2;

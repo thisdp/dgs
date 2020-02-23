@@ -22,7 +22,7 @@ function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,re
 	local matX,matY = dxGetMaterialSize(texture)
 	dxSetShaderValue(shader,"tR",{matX,matY})
 	dgsSetData(nineSlice,"textureResolution",{matX,matY})
-	if not relative then
+	if relative then
 		gridXLeft,gridXRight = gridXLeft/matX,gridXRight/matX
 		gridYTop,gridYBottom = gridYTop/matY,gridYBottom/matY
 	end
