@@ -134,6 +134,7 @@ function dgsImportOOPClass()
 		}
 
 		function dgsGetClass(dgsElement)
+			if not isElement(dgsElement) then return false end
 			local originalClass = dgsOOP.dgsClass[dgsElement]
 			if originalClass then
 				if originalClass.dgsElement == dgsElement then
@@ -386,7 +387,7 @@ function dgsImportOOPClass()
 					return call(dgsOOP.dgsRes,"dgsWindowGetCloseButtonSize",self.dgsElement,...)
 				end
 				nTab.getCloseButton = function(self,...)
-					return call(dgsOOP.dgsRes,"dgsWindowGetCloseButton",self.dgsElement,...)
+					return dgsGetClass(call(dgsOOP.dgsRes,"dgsWindowGetCloseButton",self.dgsElement,...))
 				end
 			elseif dgsType == "dgs-dx3dinterface" then
 				nTab.getBlendMode = function(self,...)
