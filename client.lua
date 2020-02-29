@@ -4452,19 +4452,20 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local length,lrlt = dgsElementData[guiele].length[1],dgsElementData[guiele].length[2]
 					local slotRange
 					local arrowPos = 0
+					local arrowWid = dgsElementData[guiele].arrowWidth
 					if voh then
 						if scrollArrow then
-							arrowPos = h
+							arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 						end
 						slotRange = w-arrowPos*2
 					else
 						if scrollArrow then
-							arrowPos = w
+							arrowPos = arrowWid[2] and w*arrowWid[1] or arrowWid[1]
 						end
 						slotRange = h-arrowPos*2
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
-					local py =  pos*0.01*(slotRange-cursorRange)
+					local py = pos*0.01*(slotRange-cursorRange)
 					checkScrollBar(guiele,py,voh)
 					local parent = dgsElementData[guiele].attachedToParent
 					if isElement(parent) then

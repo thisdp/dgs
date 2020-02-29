@@ -92,14 +92,15 @@ function scrollScrollBar(scrollbar,button)
 	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local voh = eleData.voh
+	local arrowWid = eleData.arrowWidth
 	if voh then
 		if scrollArrow then
-			arrowPos = h
+			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 		end
-		slotRange = w-arrowPos*2
+			slotRange = w-arrowPos*2
 	else
 		if scrollArrow then
-			arrowPos = w
+			arrowPos = arrowWid[2] and w*arrowWid[1] or arrowWid[1]
 		end
 		slotRange = h-arrowPos*2
 	end
@@ -122,14 +123,15 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 	local scrollArrow = eleData.scrollArrow
 	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local arrowWid = eleData.arrowWidth
 	if voh then
 		if scrollArrow then
-			arrowPos = h
+			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 		end
 		slotRange = w-arrowPos*2
 	else
 		if scrollArrow then
-			arrowPos = w
+			arrowPos = arrowWid[2] and w*arrowWid[1] or arrowWid[1]
 		end
 		slotRange = h-arrowPos*2
 	end
