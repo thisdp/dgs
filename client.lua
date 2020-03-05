@@ -3368,7 +3368,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			local text = eleData.text
 			local font = eleData.font or systemFont
 			local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
-			local colorcoded = eleData.colorcode
+			local colorcoded = eleData.colorcoded
 			local maxDistance = eleData.maxDistance
 			if attachTable then
 				if isElement(attachTable[1]) then
