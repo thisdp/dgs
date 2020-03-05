@@ -586,8 +586,8 @@
 	<export function="dgsCreateMask" type="client" />
 	<export function="dgsMaskGetSetting" type="client" />
 	<export function="dgsMaskSetSetting" type="client" />
-	<export function="dgsMaskCenterSourceTexture" type="client" />
-	<export function="dgsMaskAdaptSourceTexture" type="client" />
+	<export function="dgsMaskCenterTexturePosition" type="client" />
+	<export function="dgsMaskAdaptTextureSize" type="client" />
 	
 	<export function="dgsRequestQRCode" type="client" />
 	<export function="dgsGetQRCodeLoaded" type="client" />

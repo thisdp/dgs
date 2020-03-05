@@ -46,15 +46,15 @@ function dgsMaskSetSetting(mask,settingName,value)
 	return true
 end
 
-function dgsMaskCenterSourceTexture(dgsMask,w,h)
-	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskCenterlizeSourceTexture at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
+function dgsMaskCenterTexturePosition(dgsMask,w,h)
+	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskCenterTexturePosition at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
 	local ratio = w/h
 	local scaleW,scaleH = (ratio>1 and ratio or 1),(1/ratio>1 and 1/ratio or 1)
 	dgsMaskSetSetting(mask,"offset",{scaleW/2-0.5,scaleH/2-0.5,1})
 end
 
-function dgsMaskAdaptSourceTexture(dgsMask,w,h)
-	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskAdaptSourceTexture at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
+function dgsMaskAdaptTextureSize(dgsMask,w,h)
+	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskAdaptTextureSize at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
 	local ratio = w/h
 	local scaleW,scaleH = (ratio>1 and ratio or 1),(1/ratio>1 and 1/ratio or 1)
 	dgsMaskSetSetting(mask,"scale",{scaleW,scaleH,1})
