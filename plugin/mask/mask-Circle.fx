@@ -1,5 +1,5 @@
 texture sourceTexture;
-float borderSoft = 0.05;
+float borderSoft = 0.02;
 float radius = 0.5;
 float3 offset = float3(0,0,1);
 float3 scale = float3(1,1,1);

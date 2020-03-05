@@ -69,8 +69,6 @@
 	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
-	<script src="plugin/poop/poop.lua" type="client" />
-	<file src="plugin/poop/poop.fx" type="client" />
 	<script src="plugin/QRCode.lua" type="client" />
 	<script src="plugin/mask/mask.lua" type="client" />
 	<file src="plugin/mask/maskTexture.fx" type="client" />
@@ -588,6 +586,7 @@
 	<export function="dgsCreateMask" type="client" />
 	<export function="dgsMaskGetSetting" type="client" />
 	<export function="dgsMaskSetSetting" type="client" />
+	<export function="dgsMaskCenterSourceTexture" type="client" />
 	
 	<export function="dgsRequestQRCode" type="client" />
 	<export function="dgsGetQRCodeLoaded" type="client" />

@@ -45,4 +45,11 @@ function dgsMaskSetSetting(mask,settingName,value)
 	assert(dxSetShaderValue(mask,settingName,value),"Bad argument @dgsMaskSetSetting, failed to call dxSetShaderValue")
 	return true
 end
-	
+
+function dgsMaskCenterSourceTexture(dgsMask,w,h)
+	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskCenterlizeSourceTexture at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
+	local ratio = w/h
+	local scaleW,scaleH = (ratio>1 and ratio or 1),(1/ratio>1 and 1/ratio or 1)
+	dgsMaskSetSetting(mask,"offset",{scaleW/2-0.5,scaleH/2-0.5,1})
+	dgsMaskSetSetting(mask,"scale",{scaleW,scaleH,1})
+end
