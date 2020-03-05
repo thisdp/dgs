@@ -47,14 +47,14 @@ function dgsMaskSetSetting(mask,settingName,value)
 end
 
 function dgsMaskCenterTexturePosition(dgsMask,w,h)
-	assert(dgsGetPluginType(dgsMask) == "dgs-dxmask","Bad argument @dgsMaskCenterTexturePosition at argument 1, expect dgs-dxmask got "..dgsGetPluginType(mask))
+	assert(dgsGetPluginType(dgsMask) == "dgs-dxmask","Bad argument @dgsMaskCenterTexturePosition at argument 1, expect dgs-dxmask got "..dgsGetPluginType(dgsMask))
 	local ratio = w/h
 	local scaleW,scaleH = (ratio>1 and ratio or 1),(1/ratio>1 and 1/ratio or 1)
 	dgsMaskSetSetting(dgsMask,"offset",{scaleW/2-0.5,scaleH/2-0.5,1})
 end
 
 function dgsMaskAdaptTextureSize(dgsMask,w,h)
-	assert(dgsGetPluginType(dgsMask) == "dgs-dxmask","Bad argument @dgsMaskAdaptTextureSize at argument 1, expect dgs-dxmask got "..dgsGetPluginType(mask))
+	assert(dgsGetPluginType(dgsMask) == "dgs-dxmask","Bad argument @dgsMaskAdaptTextureSize at argument 1, expect dgs-dxmask got "..dgsGetPluginType(dgsMask))
 	local ratio = w/h
 	local scaleW,scaleH = (ratio>1 and ratio or 1),(1/ratio>1 and 1/ratio or 1)
 	dgsMaskSetSetting(dgsMask,"scale",{scaleW,scaleH,1})
