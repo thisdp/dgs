@@ -34,6 +34,16 @@ function dgsCreateMask(texture1,texture2,settings)
 	return maskResult
 end
 
+function dgsMaskSetTexture(mask,texture)
+	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskSetTexture at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
+	return dgsSetData(mask,"sourceTexture",texture)
+end
+
+function dgsMaskGetTexture(mask)
+	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskGetTexture at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
+	return dgsElementData[mask].sourceTexture
+end
+
 function dgsMaskGetSetting(mask,settingName)
 	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskGetSetting at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
 	return dgsElementData[mask][settingName]

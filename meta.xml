@@ -586,6 +586,8 @@
 	<export function="dgsCreateMask" type="client" />
 	<export function="dgsMaskGetSetting" type="client" />
 	<export function="dgsMaskSetSetting" type="client" />
+	<export function="dgsMaskGetTexture" type="client" />
+	<export function="dgsMaskSetTexture" type="client" />
 	<export function="dgsMaskCenterTexturePosition" type="client" />
 	<export function="dgsMaskAdaptTextureSize" type="client" />
 	
