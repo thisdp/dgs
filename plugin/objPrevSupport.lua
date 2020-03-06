@@ -61,6 +61,7 @@ function dgsCreateObjectPreviewHandle(objEle,rX,rY,rZ)
 		dgsElementData[objEle] = nil
 		dgsElementData[source] = nil
 	end,false)
+	triggerEvent("onDgsPluginCreate",objPrevEle,sourceResource)
 	return objPrevEle
 end
 

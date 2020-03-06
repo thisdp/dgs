@@ -9,6 +9,7 @@ function dgsRequestQRCode(str,w,h)
 	local index = math.seekEmpty(QRCodeQueue)
 	QRCodeQueue[index] = QRCode
 	triggerServerEvent("DGSI_RequestQRCode",localPlayer,encodedStr,w,h,index)
+	triggerEvent("onDgsPluginCreate",QRCode,sourceResource)
 	return QRCode
 end
 
@@ -20,7 +21,7 @@ end
 addEventHandler("DGSI_ReceiveQRCode",localPlayer,function(data,isSuccess,index)
 	local QRCode = QRCodeQueue[index]
 	QRCodeQueue[index] = nil
-	if isSuccess then
+	if isSuccess and isElement(QRCode) then
 		local tmp = dxCreateTexture(data)
 		local pixels = dxGetTexturePixels(tmp)
 		destroyElement(tmp)

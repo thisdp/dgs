@@ -26,6 +26,7 @@ function dgsCreateRemoteImage(website)
 	if website then
 		dgsRemoteImageRequest(remoteImage,website)
 	end
+	triggerEvent("onDgsPluginCreate",remoteImage,sourceResource)
 	return remoteImage
 end
 
