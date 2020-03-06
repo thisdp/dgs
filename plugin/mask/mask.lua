@@ -36,6 +36,7 @@ end
 
 function dgsMaskSetTexture(mask,texture)
 	assert(dgsGetPluginType(mask) == "dgs-dxmask","Bad argument @dgsMaskSetTexture at argument 1, expect dgs-dxmask "..dgsGetPluginType(mask))
+	dxSetShaderValue(mask,"sourceTexture",texture)
 	return dgsSetData(mask,"sourceTexture",texture)
 end
 
