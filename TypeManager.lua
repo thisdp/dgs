@@ -41,7 +41,7 @@ function dgsGetType(dgsGUI)
 end
 
 function dgsGetPluginType(dgsGUI)
-	return dgsGUI and dgsElementData[dgsGUI].asPlugin or dgsGetType(dgsGUI)
+	return dgsGUI and (dgsElementData[dgsGUI] and dgsElementData[dgsGUI].asPlugin or false) or dgsGetType(dgsGUI)
 end
 
 function dgsSetType(dgsGUI,myType)
