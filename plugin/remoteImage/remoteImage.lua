@@ -56,7 +56,7 @@ function dgsRemoteImageAbort(remoteImage)
 end
 
 function dgsRemoteImageGetTexture(remoteImage)
-	return dgsElementData[source].textureRef
+	return dgsElementData[remoteImage].textureRef
 end
 
 function dgsGetRemoteImageLoadState(remoteImage)
