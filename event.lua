@@ -56,9 +56,12 @@ addEvent("onDgsStopAniming")
 addEvent("onDgsArrowListValueChange")
 addEvent("onDgsMouseDrag")
 addEvent("onDgsStart")
+-------Plugin events
+addEvent("onDgsRemoteImageLoad")
 -------internal events
 addEvent("DGSI_ReceiveIP",true)
 addEvent("DGSI_ReceiveQRCode",true)
+addEvent("DGSI_ReceiveRemoteImage",true)
 
 -------
 fontDxHave = {
@@ -94,6 +97,11 @@ builtins = {
 	SineCurve = true,
 	CosineCurve = true,
 }
+-------DGS Built-in Texture
+DGSBuiltInTex = {
+	transParent_1x1 = dxCreateTexture(1,1,"dxt5"),
+}
+
 -------DEBUG
 addCommandHandler("debugdgs",function(command,arg)
 	if not arg then
@@ -177,6 +185,14 @@ function table.deepcopy(obj)
         return setmetatable(NewTable,getmetatable(obj))
     end
     return Func(obj)
+end
+
+function table.shallowCopy(obj)
+	local InTable = {}
+	for k,v in pairs(obj) do
+		InTable[k] = v
+	end
+	return InTable
 end
 --------------------------------String Utility
 function string.split(s,delim)
@@ -450,6 +466,8 @@ function urlDecode(s)
 	end)    
     return s
 end
+
+--------------------------------Other Utility
 
 function dgsRunString(func,...)
 	local fnc = loadstring(func)

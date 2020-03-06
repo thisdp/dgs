@@ -12,15 +12,13 @@ remoteImageDefaultImages = {
 		3 = failed
 ]]
 function dgsCreateRemoteImage(website)
-	if not isElement(remoteImage) then
-		remoteImage = dxCreateShader("plugin/remoteImage/remoteImage.fx")
-		dgsSetData(remoteImage,"asPlugin","dgs-dxremoteimage")
-		addEventHandler("onClientElementDestroy",remoteImage,function()
-			if isElement(dgsElementData[source].textureRef) then
-				destroyElement(dgsElementData[source].textureRef)
-			end
-		end,false)
-	end
+	local remoteImage = dxCreateShader("plugin/remoteImage/remoteImage.fx")
+	dgsSetData(remoteImage,"asPlugin","dgs-dxremoteimage")
+	addEventHandler("onClientElementDestroy",remoteImage,function()
+		if isElement(dgsElementData[source].textureRef) then
+			destroyElement(dgsElementData[source].textureRef)
+		end
+	end,false)
 	dgsSetData(remoteImage,"defaultImages",table.shallowCopy(remoteImageDefaultImages))
 	dgsSetData(remoteImage,"loadState",0)	--unloaded
 	dgsSetData(remoteImage,"textureRef",false)
