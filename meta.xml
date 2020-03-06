@@ -70,6 +70,8 @@
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
 	<script src="plugin/QRCode.lua" type="client" />
+	<script src="plugin/remoteImage/remoteImage.lua" type="client" />
+	<file src="plugin/remoteImage/remoteImage.fx" type="client" />
 	<script src="plugin/mask/mask.lua" type="client" />
 	<file src="plugin/mask/maskTexture.fx" type="client" />
 	<file src="plugin/mask/mask-Circle.fx" type="client" />
@@ -591,15 +593,22 @@
 	<export function="dgsMaskCenterTexturePosition" type="client" />
 	<export function="dgsMaskAdaptTextureSize" type="client" />
 	
+	<export function="dgsCreateRemoteImage" type="client" />
+	<export function="dgsRemoteImageRequest" type="client" />
+	<export function="dgsRemoteImageAbort" type="client" />
+	<export function="dgsRemoteImageGetTexture" type="client" />
+	<export function="dgsGetRemoteImageLoadState" type="client" />
+	
 	<export function="dgsRequestQRCode" type="client" />
 	<export function="dgsGetQRCodeLoaded" type="client" />
+	
 
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
 	<export function="dgsImportOOPClass" type="client" />
 	<export function="dgsG2DLoadHooker" type="client" />
 
-	<min_mta_version server="1.5.6-9.16361" client="1.5.6-9.16361" />
+	<min_mta_version client="1.5.6-9.16361" />
 	<aclrequest>
 		<right name="function.fetchRemote" access="true" />
 		<right name="function.getClientIP" access="true" />
