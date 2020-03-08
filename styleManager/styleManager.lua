@@ -114,7 +114,7 @@ function dgsSetCurrentStyle(styleName)
 		styleSettings = customStyleSettings
 		return
 	else
-		for dgsType,settings in pairs(styleSettings) do
+		for dgsType,settings in pairs(customStyleSettings) do
 			if customStyleSettings[dgsType] then
 				if type(settings) == "table" then
 					for dgsProperty,value in pairs(settings) do
