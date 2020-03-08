@@ -9,7 +9,7 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	dgsSetData(text3d,"position",{x,y,z})
 	dgsSetData(text3d,"textSize",{sizeX or 1,sizeY or 1})
 	dgsSetData(text3d,"fixTextSize",false)
-	dgsSetData(text3d,"font",font or systemFont)
+	dgsSetData(text3d,"font",font or styleSettings.text3D.font or systemFont)
 	dgsSetData(text3d,"color",color or tocolor(255,255,255,255))
 	dgsSetData(text3d,"maxDistance",maxDistance or 80)
 	dgsSetData(text3d,"fadeDistance",maxDistance or 80)

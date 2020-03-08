@@ -11,7 +11,7 @@ function dgsCreateArrowList(x,y,sx,sy,relative,parent,itemHeight,itemTextColor,s
 	dgsSetType(arrowlist,"dgs-dxarrowlist")
 	dgsSetData(arrowlist,"renderBuffer",{})
 	dgsSetData(arrowlist,"mode",false)
-	dgsSetData(arrowlist,"font",systemFont)
+	dgsSetData(arrowlist,"font",styleSettings.arrowlist.font or systemFont)
 	dgsSetData(arrowlist,"bgColor",styleSettings.arrowlist.bgColor)
 	dgsSetData(arrowlist,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.arrowlist.bgImage0))
 	local scbThick = styleSettings.arrowlist.scrollBarThick

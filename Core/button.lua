@@ -28,7 +28,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.button.textSize[1], tonumber(scaley) or styleSettings.button.textSize[2]
 	dgsSetData(button,"textSize",{textSizeX,textSizeY})
 	dgsSetData(button,"shadow",{_,_,_})
-	dgsSetData(button,"font",systemFont)
+	dgsSetData(button,"font",styleSettings.button.font or systemFont)
 	dgsSetData(button,"clickoffset",{0,0})
 	dgsSetData(button,"textOffset",{0,0,false})
 	dgsSetData(button,"clip",false)

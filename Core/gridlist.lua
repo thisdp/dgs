@@ -63,7 +63,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"backgroundOffset",styleSettings.gridlist.backgroundOffset)
 	local scbThick = styleSettings.gridlist.scrollBarThick
 	dgsSetData(gridlist,"scrollBarThick",scbThick,true)
-	dgsSetData(gridlist,"font",systemFont)
+	dgsSetData(gridlist,"font",styleSettings.gridlist.font or systemFont)
 	dgsSetData(gridlist,"sectionFont",systemFont)
 	dgsSetData(gridlist,"colorcoded",false)
 	dgsSetData(gridlist,"selectionMode",1)

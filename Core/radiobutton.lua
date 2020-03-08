@@ -46,7 +46,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	dgsSetData(rb,"textImageSpace",styleSettings.radiobutton.textImageSpace)
 	dgsSetData(rb,"buttonSize",styleSettings.radiobutton.buttonSize)
 	dgsSetData(rb,"shadow",{_,_,_})
-	dgsSetData(rb,"font",systemFont)
+	dgsSetData(rb,"font",styleSettings.radiobutton.font or systemFont)
 	dgsSetData(rb,"clip",false)
 	dgsSetData(rb,"wordbreak",false)
 	dgsSetData(rb,"colorcoded",false)

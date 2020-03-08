@@ -53,7 +53,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"textSize",{textScaleX or styleSettings.combobox.textSize[1],textScaleY or styleSettings.combobox.textSize[2]})
 	dgsSetData(combobox,"itemTextSize",{textScaleX or styleSettings.combobox.itemTextSize[1],textScaleY or styleSettings.combobox.itemTextSize[2]})
 	dgsSetData(combobox,"shadow",false)
-	dgsSetData(combobox,"font",systemFont)
+	dgsSetData(combobox,"font",styleSettings.combobox.font or systemFont)
 	dgsSetData(combobox,"bgColor",styleSettings.combobox.bgColor)
 	dgsSetData(combobox,"bgImage",dgsCreateTextureFromStyle(styleSettings.combobox.bgImage))
 	dgsSetData(combobox,"buttonLen",{1,true}) --1,isRelative

@@ -2,7 +2,6 @@
 local mathFloor = math.floor
 local utf8Sub = utf8.sub
 local utf8Len = utf8.len
-local utf8Find = utf8.find
 local utf8Gsub = utf8.gsub
 local strRep = string.rep
 local tableInsert = table.insert
@@ -46,7 +45,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"bgImageBlur",dgsCreateTextureFromStyle(styleSettings.edit.bgImageBlur))
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.edit.textSize[1], tonumber(scaley) or styleSettings.edit.textSize[2]
 	dgsSetData(edit,"textSize",{textSizeX,textSizeY},true)
-	dgsSetData(edit,"font",systemFont,true)
+	dgsSetData(edit,"font",styleSettings.edit.font or systemFont,true)
 	dgsElementData[edit].text = ""
 	dgsSetData(edit,"textColor",textColor or styleSettings.edit.textColor)
 	dgsSetData(edit,"caretPos",0)
@@ -86,6 +85,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"redoHistory",{})
 	dgsSetData(edit,"typingSound",styleSettings.edit.typingSound)
 	dgsSetData(edit,"maxLength",0x3FFFFFFF)
+	dgsSetData(edit,"rtl",nil)	--nil: auto; false:disabled; true: enabled
 	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
 	editsCount = editsCount+1
 	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
@@ -409,9 +409,13 @@ function resetEdit(x,y)
 end
 addEventHandler("onClientCursorMove",root,resetEdit)
 
---Optimize Mark: Can be optimized with showPos
 function searchEditMousePosition(dxedit,posx)
-	local text = dgsElementData[dxedit].text
+	local text
+	if dgsElementData[dxedit].isRTL then
+		text = dgsElementData[dxedit].text:reverse()
+	else
+		text = dgsElementData[dxedit].text
+	end
 	local sfrom,sto = 0,utf8Len(text)
 	if dgsElementData[dxedit].masked then
 		text = strRep(dgsElementData[dxedit].maskText,sto)
@@ -438,6 +442,7 @@ function searchEditMousePosition(dxedit,posx)
 		local stoSfrom_Half = (sto+sfrom)*0.5
 		local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
 		local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
+	--print(strlen)
 		local len1 = strlen+templen
 		if pos < len1 then
 			sto = stoSfrom_Half

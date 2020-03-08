@@ -14,7 +14,6 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,defbgColor)
 	dgsSetData(tabpanel,"tabHeight",{tabHeight,false})
 	dgsSetData(tabpanel,"tabMaxWidth",{10000,false})
 	dgsSetData(tabpanel,"tabMinWidth",{10,false})
-	dgsSetData(tabpanel,"font",systemFont)
 	dgsSetData(tabpanel,"bgColor",tonumber(defbgColor) or styleSettings.tabpanel.bgColor)
 	dgsSetData(tabpanel,"tabs",{})
 	dgsSetData(tabpanel,"selected",-1)
@@ -53,7 +52,8 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	table.insert(tabs,id,tab)
 	dgsSetData(tab,"id",id)
 	local tp_w = dgsElementData[tabpanel].absSize[1]
-	local font = dgsElementData[tabpanel].font
+	dgsSetData(tab,"font",styleSettings.tab.font)
+	local font = styleSettings.tab.font or dgsElementData[tabpanel].font
 	local t_minWid,t_maxWid = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*tp_w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*tp_w or t_maxWid[1]
 	local wid = math.restrict(dxGetTextWidth(text,textSizex or 1,font),minwidth,maxwidth)

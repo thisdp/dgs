@@ -60,7 +60,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	dgsSetData(cb,"textImageSpace",styleSettings.checkbox.textImageSpace)
 	dgsSetData(cb,"buttonSize",styleSettings.checkbox.buttonSize)
 	dgsSetData(cb,"shadow",{_,_,_})
-	dgsSetData(cb,"font",systemFont)
+	dgsSetData(cb,"font",styleSettings.checkbox.font or systemFont)
 	dgsSetData(cb,"clip",false)
 	dgsSetData(cb,"wordbreak",false)
 	dgsSetData(cb,"colorcoded",false)

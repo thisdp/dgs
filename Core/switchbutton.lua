@@ -50,7 +50,7 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.switchbutton.textSize[1], tonumber(scaley) or styleSettings.switchbutton.textSize[2]
 	dgsSetData(switchbutton,"textSize",{textSizeX,textSizeY})
 	dgsSetData(switchbutton,"shadow",{_,_,_})
-	dgsSetData(switchbutton,"font",systemFont)
+	dgsSetData(switchbutton,"font",styleSettings.switchbutton.font or systemFont)
 	dgsSetData(switchbutton,"textOffset",{0.25,true})
 	dgsSetData(switchbutton,"state",state and true or false)
 	dgsSetData(switchbutton,"cursorMoveSpeed",0.2)

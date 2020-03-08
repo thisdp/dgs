@@ -3040,7 +3040,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 									if eleData.PixelInt then
 										_tabsize,_width = tabsize-tabsize%1,floor(width+tabsize)
 									end
-									dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textColor,textSize[1],textSize[2],font,"center","center",false,false,false,colorcoded,true)
+									dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textColor,textSize[1],textSize[2],dgsElementData[t].font or font,"center","center",false,false,false,colorcoded,true)
 									if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and dgsElementData[t].enabled and enabled[2] then
 										eleData.rndPreSelect = d
 										MouseData.hit = t

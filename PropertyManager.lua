@@ -107,7 +107,7 @@ function dgsSetData(element,key,value,nocheck)
 							dgsElementData[element]._translationText = nil
 						end
 						dgsElementData[element].text = tostring(value)
-						dgsSetData(element,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[tabpanel].font),minwidth,maxwidth))
+						dgsSetData(element,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[element].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
 						
 						return triggerEvent("onDgsTextChange",element)
 					elseif key == "width" then
@@ -328,7 +328,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 					if dgsType == "dgs-dxtab" then
 						local tabpanel = dgsElementData[v].parent
 						local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
-						local wid = math.restrict(dxGetTextWidth(value,dgsElementData[v].textSize[1],dgsElementData[tabpanel].font),minW,maxW)
+						local wid = math.restrict(dxGetTextWidth(value,dgsElementData[v].textSize[1],dgsElementData[v].font or dgsElementData[tabpanel].font),minW,maxW)
 						local owid = dgsElementData[tab].width
 						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
 						dgsSetData(v,"width",wid)
@@ -369,7 +369,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 				if dgsType == "dgs-dxtab" then
 					local tabpanel = dgsElementData[dxgui].parent
 					local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
-					local wid = math.restrict(dxGetTextWidth(value,dgsElementData[dxgui].textSize[1],dgsElementData[tabpanel].font),minW,maxW)
+					local wid = math.restrict(dxGetTextWidth(value,dgsElementData[dxgui].textSize[1],dgsElementData[dxgui].font or dgsElementData[tabpanel].font),minW,maxW)
 					local owid = dgsElementData[tab].width
 					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
 					dgsSetData(dxgui,"width",wid)

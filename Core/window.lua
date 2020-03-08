@@ -31,7 +31,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"wordbreak",false)
 	dgsSetData(window,"alignment",{"center","center"})
 	dgsSetData(window,"movetyp",false) --false only title;true are all
-	dgsSetData(window,"font",systemFont)
+	dgsSetData(window,"font",styleSettings.window.font or systemFont)
 	dgsSetData(window,"minSize",{60,60})
 	dgsSetData(window,"maxSize",{20000,20000})
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)

@@ -176,7 +176,7 @@ addEventHandler("onClientRender",root,function()
 				local propertyName,targetValue,oldValue,easing,thetime,isReversed = data[1],data[2],data[3],data[4],data[5],data.reverseProgress
 				local changeTime = tickCount-data[0]
 				local ctPercent = changeTime/thetime
-				linearProgress = ctPercent >= 1 and 1 or ctPercent
+				local linearProgress = ctPercent >= 1 and 1 or ctPercent
 				linearProgress = isReversed and 1-linearProgress or linearProgress
 				if builtins[easing] then
 					local percent = oldValue+getEasingValue(linearProgress,easing)*(targetValue-oldValue)
