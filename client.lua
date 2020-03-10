@@ -2262,10 +2262,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 									local textPosR = _tempEndx+columnTextPosOffset[1]
 									local textPosB = columnHeight+columnTextPosOffset[2]
 									if sortColumn == id and sortIcon then
+										local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
+										local iconTextPosL = textPosL-iconWidth
+										local iconTextPosR = textPosR-iconWidth
 										if DataTab.columnShadow then
-											dxDrawText(sortIcon,textPosL+9,textPosT,textPosR+9,textPosB,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
+											dxDrawText(sortIcon,iconTextPosL,textPosT,iconTextPosR,textPosB,black,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,false,false,true)
 										end
-										dxDrawText(sortIcon,textPosL-10,textPosT,textPosR-10,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,false,false,true)
+										dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,false,false,true)
 									end
 									if DataTab.columnShadow then
 										dxDrawText(data[1],textPosL+1,textPosT+1,textPosR+1,textPosB+1,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,false,true)
@@ -2450,10 +2453,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local textPosR = column_sx+columnTextPosOffset[1]
 						local textPosB = ypcolumn+columnTextPosOffset[2]
 						if sortColumn == i and sortIcon then
+							local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
+							local iconTextPosL = textPosL-iconWidth
+							local iconTextPosR = textPosR-iconWidth
 							if DataTab.columnShadow then
-								dxDrawText(sortIcon,textPosL-9,textPosT+1,textPosR-9,textPosB+1,black,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
+								dxDrawText(sortIcon,iconTextPosL,textPosT,iconTextPosR,textPosB,black,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,rendSet,false,true)
 							end
-							dxDrawText(sortIcon,textPosL-10,textPosT,textPosR-10,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,"left","center",clip,false,rendSet,false,true)
+							dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,rendSet,false,true)
 						end
 						if DataTab.columnShadow then
 							dxDrawText(data[1],textPosL+1,textPos+1,textPosR+1,textPosB+1,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,rendSet,false,true)
