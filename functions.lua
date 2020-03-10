@@ -877,6 +877,7 @@ LanguageTranslationSupport = {
 	"dgs-dxcombobox-Box",
 }
 function dgsTranslate(dgsEle,textTable,sourceResource)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsTranslate at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	if type(textTable) == "table" then
 		local translation = dgsElementData[dgsEle]._translang or resourceTranslation[sourceResource or getThisResource()]
 		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
@@ -903,23 +904,23 @@ function dgsApplyLanguageChange(name,translation,attach)
 					if col._translationText then
 						local text = col._translationText
 						if text then
-							columnData[i][1] = dgsTranslate(gridlist,text,sourceResource)
+							columnData[i][1] = dgsTranslate(v,text,sourceResource)
 						end
 					end
 				end
-				dgsSetData(gridlist,"columnData",columnData)
+				dgsSetData(v,"columnData",columnData)
 				local rowData = dgsElementData[v].rowData
 				for _r,row in ipairs(rowData) do
 					for _c,item in ipairs(row) do
 						if item._translationText then
 							local text = item._translationText
 							if text then
-								rowData[_r][_c][1] = dgsTranslate(gridlist,text,sourceResource)
+								rowData[_r][_c][1] = dgsTranslate(v,text,sourceResource)
 							end
 						end
 					end
 				end
-				dgsSetData(gridlist,"rowData",rowData)
+				dgsSetData(v,"rowData",rowData)
 			elseif dgsType == "dgs-dxarrowlist" then
 				local itemData = dgsElementData[v].itemData
 				for i,item in ipairs(itemData) do
