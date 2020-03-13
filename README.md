@@ -46,10 +46,10 @@ This resource is protected by **DPL v1**(DGS Public License v1)
 
 * 1.Any of the private edition of dgs should be the branch of dgs-master
 
-* 2.You are not allowed to republish your edition of dgs.
+* 2.You are not permitted to republish your edition of dgs.
 
 * 3.You are encouraged to edit the dgs code.
 
-* 4.Selling DGS is not allowed. This menas you should exclude DGS from your price when you are going to sell your DGS based scripts.
+* 4.You are not permitted to sell DGS. This menas you should exclude DGS from your price when you are going to sell your DGS based scripts.
 
 * 5.Items not mentioned are allowed!
