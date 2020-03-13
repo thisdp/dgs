@@ -48,8 +48,6 @@ This resource is protected by **DPL v1**(DGS Public License v1)
 
 * 2.You are not permitted to republish your edition of dgs.
 
-* 3.You are encouraged to edit the dgs code.
+* 3.You are not permitted to sell DGS. This menas you should exclude DGS from your price when you are going to sell your DGS based scripts.
 
-* 4.You are not permitted to sell DGS. This menas you should exclude DGS from your price when you are going to sell your DGS based scripts.
-
-* 5.Items not mentioned are allowed!
+* 4.Items not mentioned are allowed!
