@@ -1,4 +1,4 @@
-texture background;
+texture sourceTexture;
 float4 color = float4(1,1,1,1);
 bool textureLoad;
 bool isRelative = false;
@@ -8,7 +8,7 @@ bool colorOverwritten = true;
 
 SamplerState tSampler
 {
-	Texture = background;
+	Texture = sourceTexture;
 	MinFilter = Linear;
 	MagFilter = Linear;
 	MipFilter = Linear;

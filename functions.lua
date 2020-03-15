@@ -85,6 +85,7 @@ end
 function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 	local eleData
 	local x,y = 0,0
+	local startEle = dgsElement
 	repeat
 		eleData = dgsElementData[dgsElement]
 		local absPos = eleData.absPos or {0,0}
@@ -129,6 +130,7 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 		else
 			x,y = x+addPosX,y+addPosY
 		end
+		assert(startEle == dgsElement,"Find an infinite loop")
 	until(not isElement(dgsElement) or (rndSuspend and dgsElementData[dgsElement].renderTarget_parent))
 	return x,y
 end
@@ -228,13 +230,28 @@ end
 
 function dgsSetVisible(dgsEle,visible)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	local originalVisible = dgsElementData[dgsEle].visible
-	local visible = visible and true or false
-	if visible == originalVisible then
-		return true
+	if type(dgsEle) == "table" then
+		local result = true
+		for i=1,#dgsEle do
+			local dEle = dgsEle[i]
+			local originalVisible = dgsElementData[dEle].visible
+			local visible = visible and true or false
+			if visible == originalVisible then
+				return true
+			end
+			dgsApplyVisible(dEle,visible)
+			result = result and dgsSetData(dEle,"visible",visible)
+		end
+		return result
+	else
+		local originalVisible = dgsElementData[dgsEle].visible
+		local visible = visible and true or false
+		if visible == originalVisible then
+			return true
+		end
+		dgsApplyVisible(dgsEle,visible)
+		return dgsSetData(dgsEle,"visible",visible)
 	end
-	dgsApplyVisible(dgsEle,visible)
-	return dgsSetData(dgsEle,"visible",visible)
 end
 
 function dgsGetVisible(dgsEle)

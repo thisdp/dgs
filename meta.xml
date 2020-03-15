@@ -76,6 +76,7 @@
 	<file src="plugin/mask/maskTexture.fx" type="client" />
 	<file src="plugin/mask/mask-Circle.fx" type="client" />
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
+	<script src="plugin/canvas/canvas.lua" type="client" />
 	
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
@@ -601,6 +602,8 @@
 	
 	<export function="dgsRequestQRCode" type="client" />
 	<export function="dgsGetQRCodeLoaded" type="client" />
+	
+	<export function="dgsCreateCanvas" type="client" />
 	
 
 	<export function="dgsGetExportedFunctionName" type="client" />

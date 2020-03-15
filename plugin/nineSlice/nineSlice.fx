@@ -1,4 +1,4 @@
-texture gTex;
+texture sourceTexture;
 float2 gdX = float2(1/3.0,2/3.0);	//Grid X
 float2 gdY = float2(1/3.0,2/3.0);	//Grid Y
 float2 tR = float2(32,32);	//Texture Resolution
@@ -6,7 +6,7 @@ float2 rR = float2(32,32);	//Render Image Resolution
 
 sampler2D Sampler = sampler_state
 {
-    Texture		= gTex;
+    Texture		= sourceTexture;
     MinFilter	= None;
     MagFilter	= None;
     MipFilter	= None;

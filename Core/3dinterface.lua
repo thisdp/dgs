@@ -66,16 +66,6 @@ end
 function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
 	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
 	local offFaceZ = atan2(vx,vy)
-	local _h=h
-	h=h*0.5
-	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
-	local x1,y1,z1 = _x*h,_y*h,_z*h
-	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,color,x+vx,y+vy,z+vz)
-end
-
-function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
-	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
-	local offFaceZ = atan2(vx,vy)
 	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
 	w,h = w/2,h/2
 	local topX,topY,topZ = _x*h,_y*h,_z*h

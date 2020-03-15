@@ -19,10 +19,10 @@ function dgsRoundRectSetTexture(rectShader,texture)
 	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetTexture at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
 	if isElement(texture) then
 		dxSetShaderValue(rectShader,"textureLoad",true)
-		dxSetShaderValue(rectShader,"background",texture)
+		dxSetShaderValue(rectShader,"sourceTexture",texture)
 	else
 		dxSetShaderValue(rectShader,"textureLoad",false)
-		dxSetShaderValue(rectShader,"background",0)
+		dxSetShaderValue(rectShader,"sourceTexture",0)
 	end
 	return true
 end

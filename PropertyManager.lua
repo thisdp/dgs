@@ -79,18 +79,18 @@ function dgsSetData(element,key,value,nocheck)
 						if isElement(tabs[new]) then
 							triggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
 						end
-					elseif key == "tabSideSize" then
+					elseif key == "tabPadding" then
 						local width = dgsElementData[element].absSize[1]
 						local change = value[2] and value[1]*width or value[1]
 						local old = oldValue[2] and oldValue[1]*width or oldValue[1]
 						local tabs = dgsElementData[element].tabs
-						dgsSetData(element,"allleng",dgsElementData[element].allleng+(change-old)*#tabs*2)
+						dgsSetData(element,"tabLengthAll",dgsElementData[element].tabLengthAll+(change-old)*#tabs*2)
 					elseif key == "tabGapSize" then
 						local width = dgsElementData[element].absSize[1]
 						local change = value[2] and value[1]*width or value[1]
 						local old = oldValue[2] and oldValue[1]*width or oldValue[1]
 						local tabs = dgsElementData[element].tabs
-						dgsSetData(element,"allleng",dgsElementData[element].allleng+(change-old)*math.max((#tabs-1),1))
+						dgsSetData(element,"tabLengthAll",dgsElementData[element].tabLengthAll+(change-old)*math.max((#tabs-1),1))
 					end
 				elseif dgsType == "dgs-dxtab" then
 					if key == "text" then
@@ -112,7 +112,7 @@ function dgsSetData(element,key,value,nocheck)
 						return triggerEvent("onDgsTextChange",element)
 					elseif key == "width" then
 						local tabpanel = dgsElementData[element].parent
-						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng+(value-oldValue))
+						dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll+(value-oldValue))
 					end
 				elseif dgsType == "dgs-dxedit" then
 					if key == "text" then
@@ -330,7 +330,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 						local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
 						local wid = math.restrict(dxGetTextWidth(value,dgsElementData[v].textSize[1],dgsElementData[v].font or dgsElementData[tabpanel].font),minW,maxW)
 						local owid = dgsElementData[tab].width
-						dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
+						dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-owid+wid)
 						dgsSetData(v,"width",wid)
 					elseif dgsType == "dgs-dxmemo" then
 						success = success and handleDxMemoText(v,value)
@@ -371,7 +371,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 					local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
 					local wid = math.restrict(dxGetTextWidth(value,dgsElementData[dxgui].textSize[1],dgsElementData[dxgui].font or dgsElementData[tabpanel].font),minW,maxW)
 					local owid = dgsElementData[tab].width
-					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-owid+wid)
+					dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-owid+wid)
 					dgsSetData(dxgui,"width",wid)
 				elseif dgsType == "dgs-dxmemo" then
 					success = success and handleDxMemoText(dxgui,value)

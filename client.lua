@@ -11,7 +11,7 @@ local max = math.max
 local tocolor = tocolor
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSection
+local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
@@ -3000,8 +3000,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					if isElement(rendt) then
 						dxSetRenderTarget(rendt,true)
 						dxSetBlendMode("modulate_add")
-						local tabSideSize = eleData.tabSideSize[2] and eleData.tabSideSize[1]*w or eleData.tabSideSize[1]
-						local tabsize = -eleData.taboffperc*(dgsTabPanelGetWidth(v)-w)
+						local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
+						local tabsize = -eleData.showPos*(dgsTabPanelGetWidth(v)-w)
 						local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
 						if eleData.PixelInt then
 							x,y,w,height = x-x%1,y-y%1,w-w%1,height-height%1
@@ -3009,10 +3009,10 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						for d=1,#tabs do
 							local t = tabs[d]
 							if dgsElementData[t].visible then
-								local width = dgsElementData[t].width+tabSideSize*2
+								local width = dgsElementData[t].width+tabPadding*2
 								local _width = 0
 								if tabs[d+1] then
-									_width = dgsElementData[tabs[d+1]].width+tabSideSize*2
+									_width = dgsElementData[tabs[d+1]].width+tabPadding*2
 								end
 								if tabsize+width >= 0 and tabsize <= w then
 									local tabImage = dgsElementData[t].tabImage
@@ -3708,9 +3708,9 @@ addEventHandler("onClientKey",root,function(button,state)
 				local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*h or dgsElementData[tabpanel].tabHeight[1]
 				if my < y+height then
 					local speed = dgsElementData[tabpanel].scrollSpeed[2] and dgsElementData[tabpanel].scrollSpeed[1] or dgsElementData[tabpanel].scrollSpeed[1]/width
-					local orgoff = dgsElementData[tabpanel].taboffperc
+					local orgoff = dgsElementData[tabpanel].showPos
 					orgoff = math.restrict(orgoff+scroll*speed,0,1)
-					dgsSetData(tabpanel,"taboffperc",orgoff)
+					dgsSetData(tabpanel,"showPos",orgoff)
 				end
 			end
 		elseif dgsType == "dgs-dxcombobox-Box" then
@@ -4207,14 +4207,14 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if not isRemove then
 				local tabpanel = dgsElementData[source].parent
 				if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
-					local tp_w = dgsElementData[tabpanel].absSize[1]
+					local w = dgsElementData[tabpanel].absSize[1]
 					local wid = dgsElementData[source].width
 					local tabs = dgsElementData[tabpanel].tabs
-					local t_sideSize = dgsElementData[tabpanel].tabSideSize
-					local sidesize = t_sideSize[2] and t_sideSize[1]*tp_w or t_sideSize[1]
-					local t_gapSize = dgsElementData[tabpanel].tabGapSize
-					local gapsize = t_gapSize[2] and t_gapSize[1]*tp_w or t_gapSize[1]
-					dgsSetData(tabpanel,"allleng",dgsElementData[tabpanel].allleng-wid-sidesize*2-gapsize*min(#tabs,1))
+					local tabPadding = dgsElementData[tabpanel].tabPadding
+					local sidesize = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
+					local tabGapSize = dgsElementData[tabpanel].tabGapSize
+					local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
+					dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-wid-sidesize*2-gapSize*min(#tabs,1))
 					local id = dgsElementData[source].id
 					for i=id,#tabs do
 						dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
