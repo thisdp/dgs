@@ -86,6 +86,7 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 	local eleData
 	local x,y = 0,0
 	local startEle = dgsElement
+	local duplicateTimes = 0
 	repeat
 		eleData = dgsElementData[dgsElement]
 		local absPos = eleData.absPos or {0,0}
@@ -130,7 +131,11 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 		else
 			x,y = x+addPosX,y+addPosY
 		end
-		assert(startEle == dgsElement,"Find an infinite loop")
+		duplicateTimes = duplicateTimes+1
+		if startEle == dgsElement then
+			duplicateTimes = duplicateTimes+1
+			assert(false,"Find an infinite loop")
+		end
 	until(not isElement(dgsElement) or (rndSuspend and dgsElementData[dgsElement].renderTarget_parent))
 	return x,y
 end
