@@ -415,7 +415,7 @@
 		bgImage = {},
 	---Values
 		font = nil,	--Using systemFont
-		tabSideSize = {4,false},
+		tabPadding = {4,false},
 		tabGapSize = {1,false},
 		scrollSpeed = {10,false},
 		tabHeight = 20,
