@@ -1,4 +1,10 @@
-local tableCount = table.count
+local function tableCount(tabl)
+	local cnt = 0
+	for k,v in pairs(tabl) do
+		cnt = cnt + 1
+	end
+	return cnt
+end
 G2DActivation = false
 G2D = {}
 G2D.backup = true
