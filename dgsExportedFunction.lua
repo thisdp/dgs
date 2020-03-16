@@ -85,7 +85,8 @@ end
 
 function dgsG2DLoadHooker()
 	return [[
-		local isGUIGridList = {}
+		if isGUIGridList then return end
+		isGUIGridList = {}
 		loadstring(exports.dgs:dgsImportFunction())()
 		_guiBringToFront = guiBringToFront
 		_guiCreateFont = guiCreateFont
@@ -454,6 +455,7 @@ function dgsG2DLoadHooker()
 			onClientMouseWheel="onDgsMouseWheel",
 		}
 		_addEventHandler = addEventHandler
+		
 		addEventHandler = function(even,...)
 			_addEventHandler(eventReplace[even] or even,...)
 		end
