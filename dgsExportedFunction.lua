@@ -318,9 +318,7 @@ function dgsG2DLoadHooker()
 			row = isGUIGridList[gl] and row+1 or row
 			return dgsGridListSetItemText(gl,row,...)
 		end
-		guiGridListGetSelectedCount = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
-			return dgsGridListGetSelectedCount(gl,row,...)
+		guiGridListGetSelectedCount = dgsGridListGetSelectedCount
 		end
 		guiGridListGetSelectedItem = function(gl)
 			if isGUIGridList[gl] then
