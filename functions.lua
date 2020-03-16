@@ -451,9 +451,9 @@ end
 addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y)
 	if not isElement(source) then return end
 	if state == "down" then
-		triggerEvent("onDgsMouseClickDown",source,button,x,y)
+		triggerEvent("onDgsMouseClickDown",source,button,state,x,y)
 	elseif state == "up" then
-		triggerEvent("onDgsMouseClickUp",source,button,x,y)
+		triggerEvent("onDgsMouseClickUp",source,button,state,x,y)
 	end
 end)
 
