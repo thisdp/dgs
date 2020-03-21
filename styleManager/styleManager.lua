@@ -116,32 +116,30 @@ function dgsSetCurrentStyle(styleName)
 	else
 		for dgsType,settings in pairs(customStyleSettings) do
 			if customStyleSettings[dgsType] then
-				if type(settings) == "table" then
+				if dgsType == "systemFont" then
+					local newFont = customStyleSettings[dgsType]
+					local fontSize = 12
+					local fontBold = false
+					local fontQuality = "proof"
+					if type(newFont) == "table" then
+						fontSize = newFont[2] or fontSize
+						fontBold = newFont[3] or fontBold
+						fontQuality = newFont[4] or fontQuality
+						newFont = newFont[1]
+					end
+					if not fontDxHave[newFont] then
+						newFont = path..newFont
+					end
+					dgsSetSystemFont(newFont,fontSize,fontBold,fontQuality)
+				elseif type(settings) == "table" then
 					for dgsProperty,value in pairs(settings) do
 						if customStyleSettings[dgsType][dgsProperty] ~= nil then
 							styleSettings[dgsType] = styleSettings[dgsType] or {}
 							styleSettings[dgsType][dgsProperty] = customStyleSettings[dgsType][dgsProperty]
 						end
 					end
-				else
-					if dgsType == "systemFont" then
-						local newFont = customStyleSettings[dgsType]
-						local fontSize = 12
-						local fontBold = false
-						local fontQuality = "proof"
-						if type(newFont) == "table" then
-							fontSize = newFont[2] or fontSize
-							fontBold = newFont[3] or fontBold
-							fontQuality = newFont[4] or fontQuality
-							newFont = newFont[1]
-						end
-						if not fontDxHave[newFont] then
-							newFont = path..newFont
-						end
-						dgsSetSystemFont(newFont,fontSize,fontBold,fontQuality)
-					elseif customStyleSettings[dgsType] ~= nil then
-						styleSettings[dgsType] = customStyleSettings[dgsType]
-					end
+				elseif customStyleSettings[dgsType] ~= nil then
+					styleSettings[dgsType] = customStyleSettings[dgsType]
 				end
 			end
 		end
