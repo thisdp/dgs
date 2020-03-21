@@ -11,7 +11,7 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	dgsSetType(detectarea,"dgs-dxdetectarea")
 	dgsSetData(detectarea,"renderBuffer",{})
 	dgsSetData(detectarea,"checkFunction",dgsDetectAreaDefaultFunction)
-	dgsSetData(detectarea,"debug",false)
+	dgsSetData(detectarea,"debugMode",false)
 	--dgsSetData(detectarea,"rot",0)
 	calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",detectarea,sourceResource)
@@ -42,4 +42,47 @@ function dgsDetectAreaSetFunction(detectarea,fncStr)
 		dgsSetData(detectarea,"checkFunctionImage",fncStr)
 		return true
 	end
+end
+
+function dgsDetectAreaSetDebugModeEnabled(detectarea,state)
+	dgsSetData(detectarea,"debugMode",state)
+	if state then
+		dgsDetectAreaUpdateDebugView(detectarea)
+	elseif isElement(dgsElementData[detectarea].debugTexture) then
+		destroyElement(dgsElementData[detectarea].debugTexture)
+	end
+end
+
+function dgsDetectAreaGetDebugModeEnabled(detectarea)
+	return dgsElementData[detectarea].debugMode
+end
+
+function dgsDetectAreaUpdateDebugView(detectarea)
+	local checkFunction = dgsElementData[detectarea].checkFunction
+	local absSize = dgsElementData[detectarea].absSize
+	if isElement(dgsElementData[detectarea].debugTexture) then
+		local mX,mY = dxGetMaterialSize(dgsElementData[detectarea].debugTexture)
+		if mX ~= absSize[1] and mY ~= absSize[2] then
+			if isElement(dgsElementData[detectarea].debugTexture) then
+				destroyElement(dgsElementData[detectarea].debugTexture)
+			end
+		end
+	end
+	if not isElement(dgsElementData[detectarea].debugTexture) then
+		local texture = dxCreateTexture(absSize[1],absSize[2])
+		dgsSetData(detectarea,"debugTexture",texture)
+	end
+	if type(checkFunction) == "function" then
+		local pixels = dxGetTexturePixels(dgsElementData[detectarea].debugTexture)
+		for i=0,absSize[1]-1 do
+			for j=0,absSize[2]-1 do
+				local color = checkFunction((i+1)/absSize[1],(j+1)/absSize[2]) and {255,255,255,255} or {0,0,0,0}
+				dxSetPixelColor(pixels,i,j,color[1],color[2],color[3],color[4])
+			end
+		end
+		dxSetTexturePixels(dgsElementData[detectarea].debugTexture,pixels)
+	else
+		dxSetTexturePixels(dgsElementData[detectarea].debugTexture,checkFunction)
+	end
+	return true
 end

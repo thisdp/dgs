@@ -45,8 +45,6 @@
 	<script src="functions.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
-         <script src="c_Aboutdgs.lua" type="client" />
-	<script src="s_Aboutdgs.lua" type="server" />
 	
 	<script src="plugin/pluginManager.lua" type="client" />
 	<script src="plugin/objPrevSupport.lua" type="client" />

@@ -121,6 +121,7 @@ function createTest2()
 	dgsSetText(tab2,"12")
 	gdlt2 = dgsCreateButton(0,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
 	dgsSetProperty(gdlt2,"shadow",{1,1,tocolor(0,0,0,255),true})
+	dgsSetProperty(tabp,"tabPadding",{20,false})
 end
 
 function createTest3()
@@ -425,14 +426,14 @@ function testBlurBox()
 end
 
 function exampleDetectArea()
-	local image = dgsCreateImage(200,200,100,100,_,false)
+	local image = dgsCreateImage(200,200,100,100,_,false,_,tocolor(255,255,255,128))
 	local da = dgsCreateDetectArea(0,0,100,100,false,image)
 	dgsDetectAreaSetFunction(da,[[
 		if mxRlt^2+myRlt^2 < 0.5 then
 			return true
 		end
-
 	]])
+	dgsDetectAreaSetDebugModeEnabled(da,true)
 end
 
 function test3DText()

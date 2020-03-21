@@ -489,3 +489,43 @@ addEventHandler("onAnimationWindowCreate",root,function()
 		addEventHandler("onClientRender",root,dxStatusUpdate)
 	end
 end)
+
+---------About DGS (Contributed by Ahmed Ly)
+addEvent("DGSI_SendAboutData",true)
+AboutDGS = {}
+AboutDGS.coolDown = 0
+function createAboutDGS()
+	if not isElement(AboutDGS.window) then
+		if getTickCount()-AboutDGS.coolDown < 5000 then return outputChatBox("[DGS]Operation is too frequent, try later",255,0,0) end
+		triggerServerEvent("DGSI_RequestAboutData",localPlayer,localPlayer)
+		AboutDGS.window = dgsCreateWindow(sW/2-350, sH/2-200, 700, 400, "About DGS", false)
+		dgsWindowSetSizable(AboutDGS.window, false)
+		showCursor(true)
+		dgsSetAlpha(AboutDGS.window,0)
+		dgsAlphaTo(AboutDGS.window,1,false,"Linear",1000)
+		setTimer(function()
+			if isElement(AboutDGS.window) then
+				AboutDGS.content = dgsCreateMemo(10, 5, 680, 360, "Loading...", false,AboutDGS.window)
+				dgsSetProperty(AboutDGS.content,"bgColor",tocolor(0,0,0,50))
+				dgsMemoSetReadOnly(AboutDGS.content,true)
+			end
+		end,1000,1)
+		addEventHandler("onDgsWindowClose",AboutDGS.window,function()
+			cancelEvent()
+			dgsAlphaTo(source,0,false,"Linear",1000)
+			showCursor(false)
+			setTimer(function(source)
+				destroyElement(source)
+			end,1000,1,source)
+		end)
+	else
+		dgsCloseWindow(AboutDGS.window)
+	end
+end
+addCommandHandler ("aboutdgs", createAboutDGS )
+
+addEventHandler("DGSI_SendAboutData",root,function(Data)
+	if isElement(AboutDGS.content) then
+		dgsSetText(AboutDGS.content,Data)
+	end
+end)
