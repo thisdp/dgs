@@ -36,6 +36,17 @@ To prevent bugs and issues with the resource, keep the resource names as **dgs**
 The reason why I released DGS is because I am ready to leave MTA. This is my one contribution to the MTA community.
 Finally, I am glad to provide the DGS resource, and everyone is welcome to adjust the code and help make it better by editting the code, adding functions or events.
 
+# Commands
+all comands type it on F8 console
+* **Cmd:**  to show you serial and version etc . type help  on it to see all comands on it
+* **aboutdgs:** to show eveything about dgs to work this comand must be **connect internet** 
+* **updatedgs:** then type command on console  will be download the **last update of dgs** 
+* **dgsver:** to show version dgs on **debugscript** 
+
+
+
+
+
 **Thanks for your support.**
 
 # License
