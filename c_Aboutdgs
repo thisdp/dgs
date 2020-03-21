@@ -1,18 +1,17 @@
 
 
 
-font_Dgs = dgsCreateFont("font.ttf")
+
 
        wind = dgs:dgsCreateWindow(430, 188, 722, 395, "DGS", false,tocolor(255,0,0),false,false,tocolor(0,0,255),false,tocolor(0,255,0))
     dgsWindowSetSizable(wind, false)
      dgsSetVisible(wind,false)
- dgsSetFont(wind,font_Dgs)
+
         button11 = dgsCreateButton(198, 330, 264, 42, "close", false,wind,tocolor(255,0,0),false,false,false,false,false,tocolor(0,0,255),tocolor(150,50,100))
        Memo22 = dgsCreateMemo(22, 45, 676, 272, "", false,wind,tocolor(50,255,50))    
 
 
-       dgsSetFont(Memo22,font_Dgs)
-       dgsSetFont(button11,font_Dgs)
+
        dgsSetAlpha(wind,0)
 
 
