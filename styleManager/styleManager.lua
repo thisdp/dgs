@@ -119,6 +119,7 @@ function dgsSetCurrentStyle(styleName)
 				if type(settings) == "table" then
 					for dgsProperty,value in pairs(settings) do
 						if customStyleSettings[dgsType][dgsProperty] ~= nil then
+							styleSettings[dgsType] = styleSettings[dgsType] or {}
 							styleSettings[dgsType][dgsProperty] = customStyleSettings[dgsType][dgsProperty]
 						end
 					end
