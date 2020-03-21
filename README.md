@@ -38,10 +38,11 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 
 # Commands
 all comands type it on F8 console
-* **Cmd:**  to show you serial and version etc . type help  on it to see all comands on it
-* **aboutdgs:** to show eveything about dgs to work this comand must be **connect internet** 
-* **updatedgs:** then type command on console  will be download the **last update of dgs** 
-* **dgsver:** to show version dgs on **debugscript** 
+* **cmd:**  to show you serial and version etc. type help  on it to see all comands on it.
+** **help**  to list the available commands in cmd.
+* **aboutdgs:** to show eveything about dgs to work this comand must be **connected to internet** .
+* **updatedgs:** to download the **last verion of dgs** ***Request Admin Rights***
+* **dgsver:** to show version dgs on **debugscript** and **game console**
 
 
 
