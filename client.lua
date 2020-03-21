@@ -800,30 +800,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				------------------------------------				local outlineData = eleData.outline
-				if outlineData then
-					local sideColor = outlineData[3]
-					local sideSize = outlineData[2]
-					local hSideSize = sideSize*0.5
-					sideColor = applyColorAlpha(sideColor,galpha)
-					local side = outlineData[1]
-					if side == "in" then
-						dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize,rendSet)
-					elseif side == "center" then
-						dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize,rendSet)
-						dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
-					elseif side == "out" then
-						dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,rendSet)
-						dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
-						dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
-					end
-				end
+				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
 					if type(fnc) == "table" then
@@ -831,16 +808,17 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
+				local color = 0xFFFFFFFF
 				if enabled[1] and mx then
 					local checkPixel = eleData.checkFunction
 					if checkPixel then
-						local color = 0xFFFFFFFF
 						local _mx,_my = (mx-x)/w,(my-y)/h
 						if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
 							if type(checkPixel) == "function" then
 								local checkFnc = eleData.checkFunction
 								if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
 									MouseData.hit = v
+									color = 0xFFFF0000
 								end
 							else
 								local px,py = dxGetPixelsSize(checkPixel)
@@ -853,13 +831,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 										color = 0xFFFF0000
 									end
 								end
-								local detectAreaImage = eleData.checkFunctionImage
-								if eleData.debug and isElement(detectAreaImage) then
-									dxDrawImage(x,y,w,h,detectAreaImage,0,0,0,color,rendSet)
-								end
 							end
 						end
 					end
+				end
+				local debugTexture = eleData.debugTexture
+				if isElement(debugTexture) then
+					dxDrawImage(x,y,w,h,debugTexture,0,0,0,color,rendSet)
 				end
 				------------------------------------OutLine
 				local outlineData = eleData.outline
@@ -2291,7 +2269,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								sid = (tempID-tempID%1)+DataTab.FromTo[1]+1
 								if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
 									DataTab.oPreSelect = sid
-									if rowData[sid][-2] then
+									if rowData[sid][-2] ~= false then
 										DataTab.preSelect = {sid,mouseSelectColumn}
 									else
 										DataTab.preSelect = {-1,mouseSelectColumn}
@@ -2315,7 +2293,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local sectionFont = eleData.sectionFont or font
 						for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 							local lc_rowData = rowData[i]
-							local image,columnOffset,isSection,color = lc_rowData[-3],lc_rowData[-4],lc_rowData[-5],lc_rowData[0]
+							local image,columnOffset,isSection,color = lc_rowData[-3] or eleData.rowImage,lc_rowData[-4] or eleData.columnOffset,lc_rowData[-5],lc_rowData[0] or eleData.rowColor
 							if isDraw2 then
 								local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading
 								local rowpos_1 = rowpos-rowHeight
@@ -2325,6 +2303,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 								end
 								local textBuffer = {}
 								local textBufferCnt = 1
+								
 								if not cPosStart or not cPosEnd then break end
 								dxSetBlendMode("modulate_add")
 								for id = cPosStart,cPosEnd do
@@ -2483,7 +2462,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							sid = (tempID-tempID%1)+DataTab.FromTo[1]+1
 							if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+_rowMoveOffset then
 								DataTab.oPreSelect = sid
-								if rowData[sid][-2] then
+								if rowData[sid][-2] ~= false then
 									DataTab.preSelect = {sid,mouseSelectColumn}
 								else
 									DataTab.preSelect = {-1,mouseSelectColumn}
@@ -4542,7 +4521,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						end
 					end
 					--------
-					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] then 
+					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] ~= false then 
 						local old1,old2
 						local selectionMode = dgsElementData[guiele].selectionMode
 						local multiSelection = dgsElementData[guiele].multiSelection
