@@ -1,5 +1,7 @@
+local effect3DShader
+
 function dgsCreateEffect3D(rotFactor)
-	local shader = dxCreateShader("plugin/Effect3D/Effect3D.fx")
+	local shader = dxCreateShader(effect3DShader)
 	dgsSetData(shader,"asPlugin","dgs-dxeffect3d")
 	dgsSetData(shader,"rotFactor",rotFactor or 2)
 	dgsSetData(shader,"applyToScrollPane",nil)
@@ -77,3 +79,15 @@ function dgsEffect3DRemoveFromScrollPane(effect3d)
 	return false
 end
 
+----------------Shader
+effect3DShader = [[
+texture gTexture;
+
+technique effect3D
+{
+	pass p0
+	{
+		Texture[0] = gTexture;
+	}
+}
+]]

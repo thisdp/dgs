@@ -60,6 +60,7 @@ addEvent("onDgsStart")
 addEvent("onDgsRemoteImageLoad")
 -------internal events
 addEvent("DGSI_ReceiveIP",true)
+addEvent("DGSI_SendAboutData",true)
 addEvent("DGSI_ReceiveQRCode",true)
 addEvent("DGSI_ReceiveRemoteImage",true)
 

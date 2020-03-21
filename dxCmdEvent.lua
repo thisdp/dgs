@@ -496,7 +496,6 @@ addEventHandler("onAnimationWindowCreate",root,function()
 end)
 
 ---------About DGS (Contributed by Ahmed Ly)
-addEvent("DGSI_SendAboutData",true)
 AboutDGS = {}
 AboutDGS.coolDown = 0
 function createAboutDGS()

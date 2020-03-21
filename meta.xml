@@ -49,14 +49,6 @@
 	<script src="plugin/pluginManager.lua" type="client" />
 	<script src="plugin/objPrevSupport.lua" type="client" />
 	<script src="plugin/cmd.lua" type="client" />
-	<script src="plugin/BlurBox/BlurBox.lua" type="client" />
-	<file src="plugin/BlurBox/BlurBox.fx" type="client" />
-	<script src="plugin/Effect3D/Effect3D.lua" type="client" />
-	<file src="plugin/Effect3D/Effect3D.fx" type="client" />
-	<script src="plugin/roundRect/roundRect.lua" type="client" />
-	<file src="plugin/roundRect/roundRect.fx" />
-	<script src="plugin/nineSlice/nineSlice.lua" type="client" />
-	<file src="plugin/nineSlice/nineSlice.fx" />
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
 	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
@@ -68,14 +60,17 @@
 	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
+	<script src="plugin/Effect3D.lua" type="client" />
+	<script src="plugin/roundRect.lua" type="client" />
 	<script src="plugin/QRCode.lua" type="client" />
-	<script src="plugin/remoteImage/remoteImage.lua" type="client" />
-	<file src="plugin/remoteImage/remoteImage.fx" type="client" />
+	<script src="plugin/remoteImage.lua" type="client" />
 	<script src="plugin/mask/mask.lua" type="client" />
+	<script src="plugin/canvas.lua" type="client" />
+	<script src="plugin/nineSlice.lua" type="client" />
+	<script src="plugin/BlurBox.lua" type="client" />
 	<file src="plugin/mask/maskTexture.fx" type="client" />
 	<file src="plugin/mask/mask-Circle.fx" type="client" />
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
-	<script src="plugin/canvas/canvas.lua" type="client" />
 	
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
@@ -521,6 +516,8 @@
 	
 	<export function="dgsCreateDetectArea" type="client" />
 	<export function="dgsDetectAreaSetFunction" type="client" />
+	<export function="dgsDetectAreaSetDebugModeEnabled" type="client" />
+	<export function="dgsDetectAreaGetDebugModeEnabled" type="client" />
 	
 	<export function="dgsCreateArrowList" type="client" />
 	<export function="dgsArrowListAddItem" type="client" />

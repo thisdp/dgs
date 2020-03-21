@@ -12,7 +12,6 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	dgsSetData(detectarea,"renderBuffer",{})
 	dgsSetData(detectarea,"checkFunction",dgsDetectAreaDefaultFunction)
 	dgsSetData(detectarea,"debugMode",false)
-	--dgsSetData(detectarea,"rot",0)
 	calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",detectarea,sourceResource)
 	return detectarea
@@ -35,13 +34,13 @@ function dgsDetectAreaSetFunction(detectarea,fncStr)
 		assert(type(fnc) == "function","Bad argument @dgsDetectAreaSetFunction at argument 2, failed to load function")
 		dgsSetData(detectarea,"checkFunction",fnc)
 		dgsSetData(detectarea,"checkFunctionImage",nil)
-		return true
 	else
 		local pixels = dxGetTexturePixels(fncStr)
 		dgsSetData(detectarea,"checkFunction",pixels)
 		dgsSetData(detectarea,"checkFunctionImage",fncStr)
-		return true
 	end
+	dgsDetectAreaUpdateDebugView(detectarea)
+	return true
 end
 
 function dgsDetectAreaSetDebugModeEnabled(detectarea,state)

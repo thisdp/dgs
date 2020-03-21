@@ -1,3 +1,24 @@
+BlurBoxGlobalScreenSource = false
+local blurBoxShader 
+
+function dgsCreateBlurBox()
+	if not isElement(BlurBoxGlobalScreenSource) then
+		BlurBoxGlobalScreenSource = dxCreateScreenSource(sW,sH)
+	end
+	local shader = dxCreateShader(blurBoxShader)
+	dgsSetData(shader,"asPlugin","dgs-dxblurbox")
+	dxSetShaderValue(shader,"screenSource",BlurBoxGlobalScreenSource)
+	triggerEvent("onDgsPluginCreate",shader,sourceResource)
+	return shader
+end
+
+function dgsBlurBoxRender(blurBox,x,y,w,h,postGUI)
+	dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	dxDrawImageSection(x,y,w,h,x,y,w,h,blurBox,0,0,0,0xFFFFFFFF,postGUI or false)
+end
+
+----------------Shader
+blurBoxShader = [[
 texture screenSource;
 float brightness = 1;
 
@@ -28,4 +49,4 @@ technique fxBlur
         PixelShader = compile ps_2_a PixelShaderFunction();
     }
 }
-
+]]

@@ -1,3 +1,4 @@
+local remoteImagePlaceHolder
 remoteImageQueue = {}
 remoteImageDefaultImages = {
 	unloadedTex = DGSBuiltInTex.transParent_1x1,
@@ -12,7 +13,7 @@ remoteImageDefaultImages = {
 		3 = failed
 ]]
 function dgsCreateRemoteImage(website)
-	local remoteImage = dxCreateShader("plugin/remoteImage/remoteImage.fx")
+	local remoteImage = dxCreateShader(remoteImagePlaceHolder)
 	dgsSetData(remoteImage,"asPlugin","dgs-dxremoteimage")
 	addEventHandler("onClientElementDestroy",remoteImage,function()
 		if isElement(dgsElementData[source].textureRef) then
@@ -92,3 +93,16 @@ addEventHandler("DGSI_ReceiveRemoteImage",localPlayer,function(data,response,ind
 		triggerEvent("onDgsRemoteImageLoad",remoteImage,response)
 	end
 end)
+
+--------------Shader
+remoteImagePlaceHolder = [[
+texture textureRef;
+
+technique remoteImage
+{
+	Pass P0
+	{
+		Texture[0] = textureRef;
+	}
+}
+]]
