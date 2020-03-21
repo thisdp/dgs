@@ -7,7 +7,7 @@ end)
 cmdSystem = {}
 netSystem = {}
 dxStatus = {}
-addCommandHandler("cmd",function()
+function dgsBuildInCMD(command)
 	guiSetInputMode("no_binds_when_editing")
 	if not isElement(cmdSystem["window"]) then
 		cmdSystem["window"] = dgsCreateWindow(sW*0.5-20,sH*0.5,40,25,"CMD",false,tocolor(255,0,0,255),_,_,tocolor(80,140,200,255))
@@ -15,17 +15,20 @@ addCommandHandler("cmd",function()
 		dgsSetProperty(cmdSystem["window"],"outline",{"out",1,tocolor(100,100,100,255)})
 		dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.5,false,false,"OutQuad",300)
 		dgsSizeTo(cmdSystem["window"],sW*0.5,25,false,false,"OutQuad",300)
-		setTimer(function()
+		setTimer(function(command)
 			dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.25,false,false,"InQuad",300)
 			dgsSizeTo(cmdSystem["window"],sW*0.5,sH*0.6,false,false,"InQuad",300)
-			setTimer(function()
+			setTimer(function(command)
 				cmdSystem["cmd"] = dgsCreateCmd(0,0,sW*0.5,sH*0.6-45,false,cmdSystem["window"],1,1)
 				dgsCmdAddEventToWhiteList(cmdSystem["cmd"],{"changeMode"})
 				local version = getElementData(resourceRoot,"Version") or "N/A"
 				outputCmdMessage(cmdSystem["cmd"],"( Thisdp's Dx Graphical User Interface System ) Version: "..version)
-			end,310,1)
+				if command == "cmd" then
+					outputCmdMessage(cmdSystem["cmd"],"[Warnning]Command 'cmd' is deprecated, use 'dgscmd' instead")
+				end
+			end,310,1,command)
 			dgsShowCursor(true,"cmd")
-		end,310,1)
+		end,310,1,command)
 	else
 		for k,v in pairs(cmdSystem) do
 			if k ~= "window" then
@@ -41,7 +44,9 @@ addCommandHandler("cmd",function()
 			destroyElement(cmdSystem["window"])
 		end,500,1)
 	end
-end)
+end
+addCommandHandler("cmd",dgsBuildInCMD)
+addCommandHandler("dgscmd",dgsBuildInCMD)
 
 addEventHandler("onDgsWindowClose",root,function()
 	if source == cmdSystem["window"] then
