@@ -36,7 +36,13 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"maxSize",{20000,20000})
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
 	triggerEvent("onDgsCreate",window,sourceResource)
-	if not noCloseButton then
+	local createCloseButton = false
+	if noCloseButton == nil then
+		createCloseButton = styleSettings.window.closeButton
+	elseif noCloseButton then
+		createCloseButton = true
+	end
+	if createCloseButton then
 		local buttonOff = dgsCreateButton(40,0,40,24,styleSettings.window.closeButtonText,false,window,_,_,_,_,_,_,styleSettings.window.closeButtonColor[1],styleSettings.window.closeButtonColor[2],styleSettings.window.closeButtonColor[3],true)
 		addEventHandler("onDgsMouseClickUp",buttonOff,function(button)
 			if button == "left" then
@@ -65,8 +71,8 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 			local cbSize = dgsElementData[window].closeButtonSize
 			local buttonOff = dgsCreateButton(40,0,cbSize[1],cbSize[2],"×",cbSize[3],window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
 			dgsSetData(window,"closeButton",buttonOff)
-			dgsSetSide(buttonOff,"right",false)
 			dgsSetData(buttonOff,"ignoreParentTitle",true)
+			dgsSetSide(buttonOff,"right",false)
 			return true
 		end
 	else

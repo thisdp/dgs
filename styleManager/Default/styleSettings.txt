@@ -457,8 +457,10 @@
 		},
 	---Image
 		image = {},
-		font = nil,	--Using systemFont
 		titleImage = {},
+	---Values
+		closeButton = true,
+		font = nil,	--Using systemFont
 		textSize = {1,1},
 		titleHeight = 25,
 		borderSize = 5,
