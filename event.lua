@@ -443,13 +443,13 @@ function HSL2HSV(H,S,L)
 end
 --------------------------------Dx Utility
 function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
-	local theType = dgsGetPluginType(image)
-	if theType == "table" then
+	local dgsBasicType = dgsGetType(image)
+	if dgsBasicType == "table" then
 		return _dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
-	elseif theType == "dgs-dxcustomrenderer" then
+	elseif dgsBasicType == "dgs-dxcustomrenderer" then
 		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	else
-		if theType == "dgs-dxcanvas" then
+		if dgsGetPluginType(image) == "dgs-dxcanvas" then
 			dgsCanvasRender(image)
 		end
 		return _dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
@@ -457,11 +457,11 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 end
 
 function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
-	local theType = dgsGetPluginType(image)
-	if theType == "dgs-dxcustomrenderer" then
+	local dgsBasicType = dgsGetType(image)
+	if dgsBasicType == "dgs-dxcustomrenderer" then
 		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	else
-		if theType == "dgs-dxcanvas" then
+		if dgsGetPluginType(image) == "dgs-dxcanvas" then
 			dgsCanvasRender(image)
 		end
 		return _dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
