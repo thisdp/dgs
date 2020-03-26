@@ -4,7 +4,6 @@ function nineSliceRender(posX,posY,width,height,self,rotation,rotationCenterOffs
 	dxSetShaderValue(selfData.renderShader,"rR",{width,height})
 	dxSetShaderValue(selfData.renderShader,"gdX",selfData.gridX)
 	dxSetShaderValue(selfData.renderShader,"gdY",selfData.gridY)
-	print(posX,posY,width,height)
 	dxDrawImage(posX,posY,width,height,dgsElementData[self].renderShader,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
 end
 
