@@ -4,6 +4,7 @@ function nineSliceRender(posX,posY,width,height,self,rotation,rotationCenterOffs
 	dxSetShaderValue(selfData.renderShader,"rR",{width,height})
 	dxSetShaderValue(selfData.renderShader,"gdX",selfData.gridX)
 	dxSetShaderValue(selfData.renderShader,"gdY",selfData.gridY)
+	print(posX,posY,width,height)
 	dxDrawImage(posX,posY,width,height,dgsElementData[self].renderShader,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
 end
 
@@ -22,7 +23,7 @@ function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,re
 	local matX,matY = dxGetMaterialSize(texture)
 	dxSetShaderValue(shader,"tR",{matX,matY})
 	dgsSetData(nineSlice,"textureResolution",{matX,matY})
-	if relative then
+	if not relative then
 		gridXLeft,gridXRight = gridXLeft/matX,gridXRight/matX
 		gridYTop,gridYBottom = gridYTop/matY,gridYBottom/matY
 	end
@@ -117,7 +118,7 @@ float4 nineSlice(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0
 		P = float2(map(t.x,tR.x*gdX[0],rR.x-tR.x*(1-gdX[1]),gdX[0],gdX[1]),map(t.y,vect,vect+tR.y*gdY[0],0,gdY[0]));
 	else
 		P = float2(map(t.x,tR.x*gdX[0],rR.x-tR.x*(1-gdX[1]),gdX[0],gdX[1]),map(t.y,tR.y*gdY[0],rR.y-tR.y*(1-gdY[1]),gdY[0],gdY[1]));
-	color = tex2D(Sampler,P);
+	color *= tex2D(Sampler,P);
 	return color;
 }
 
