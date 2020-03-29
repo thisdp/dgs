@@ -41,6 +41,8 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 		createCloseButton = styleSettings.window.closeButton
 	elseif noCloseButton then
 		createCloseButton = true
+	else
+		createCloseButton = false
 	end
 	if createCloseButton then
 		local buttonOff = dgsCreateButton(40,0,40,24,styleSettings.window.closeButtonText,false,window,_,_,_,_,_,_,styleSettings.window.closeButtonColor[1],styleSettings.window.closeButtonColor[2],styleSettings.window.closeButtonColor[3],true)
