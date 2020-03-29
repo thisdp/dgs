@@ -36,12 +36,10 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	dgsSetData(window,"maxSize",{20000,20000})
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
 	triggerEvent("onDgsCreate",window,sourceResource)
-	local createCloseButton = false
+	local createCloseButton = true
 	if noCloseButton == nil then
 		createCloseButton = styleSettings.window.closeButton
 	elseif noCloseButton then
-		createCloseButton = true
-	else
 		createCloseButton = false
 	end
 	if createCloseButton then
