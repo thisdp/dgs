@@ -111,6 +111,8 @@ addCommandHandler("debugdgs",function(command,arg)
 	elseif arg == "2" then
 		debugMode = 2
 		setElementData(localPlayer,"DGS-DEBUG",2,false)
+	elseif arg == "c" then
+		setElementData(localPlayer,"DGS-DEBUG-C",not getElementData(localPlayer,"DGS-DEBUG-C"),false)
 	end
 end)
 

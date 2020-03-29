@@ -1,6 +1,6 @@
 local roundRectShader
 
-function dgsCreateRoundRect(radius,color,texture,relative)
+function Old_dgsCreateRoundRect(radius,color,texture,relative)
 	assert(dgsGetType(radius) == "number","Bad argument @dgsCreateRoundRect at argument 1, expect number got "..dgsGetType(radius))
 	local shader = dxCreateShader(roundRectShader)
 	local color = color or tocolor(255,255,255,255)
@@ -8,6 +8,28 @@ function dgsCreateRoundRect(radius,color,texture,relative)
 	dgsSetData(shader,"radius",radius)
 	dgsSetData(shader,"color",color)
 	dgsSetData(shader,"colorOverwritten",true)
+	dgsRoundRectSetRadius(shader,radius,relative)
+	dgsRoundRectSetTexture(shader,texture)
+	dgsRoundRectSetColor(shader,color)
+	triggerEvent("onDgsPluginCreate",shader,sourceResource)
+	return shader
+end
+
+function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten)
+	assert(dgsGetType(radius) == "number","Bad argument @dgsCreateRoundRect at argument 1, expect number got "..dgsGetType(radius))
+	if not getElementData(localPlayer,"DGS-DEBUG-C") then
+		if type(relative) == "number" then
+			outputDebugString("Deprecated argument usage @dgsCreateRoundRect, run it again with command /debugdgs c",2)
+			return Old_dgsCreateRoundRect(radius,relative,color,texture)
+		end
+	end
+	assert(dgsGetType(relative) == "boolean","Bad argument @dgsCreateRoundRect at argument 2, expect boolean got "..dgsGetType(relative))
+	local shader = dxCreateShader(roundRectShader)
+	local color = color or tocolor(255,255,255,255)
+	dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
+	dgsSetData(shader,"radius",radius)
+	dgsSetData(shader,"color",color)
+	dgsRoundRectSetColorOverwritten(shader,colorOverwritten ~= false)
 	dgsRoundRectSetRadius(shader,radius,relative)
 	dgsRoundRectSetTexture(shader,texture)
 	dgsRoundRectSetColor(shader,color)
