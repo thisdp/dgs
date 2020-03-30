@@ -1949,21 +1949,25 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							colorImageIndex[MouseData.enterData] = 2
 						end
 					else
-						colorImageIndex[MouseData.clickData] = 3
-						if MouseData.clickData == 2 then
-							local position = 0
-							local mvx,mvy = MouseData.MoveScroll[1],MouseData.MoveScroll[2]
-							local ax,ay = dgsGetPosition(v,false)
-							if csRange ~= 0 then
-								if isHorizontal then
-									local gx = (mx-mvx-ax)/csRange
-									position = (gx < 0 and 0) or (gx > 1 and 1) or gx
-								else
-									local gy = (my-mvy-ay)/csRange
-									position = (gy < 0 and 0) or (gy > 1 and 1) or gy
+						if MouseData.clickl == v then
+							colorImageIndex[MouseData.clickData] = 3
+							if MouseData.clickData == 2 then
+								local position = 0
+								local mvx,mvy = MouseData.MoveScroll[1],MouseData.MoveScroll[2]
+								local ax,ay = dgsGetPosition(v,false)
+								if csRange ~= 0 then
+									if isHorizontal then
+										local gx = (mx-mvx-ax)/csRange
+										position = (gx < 0 and 0) or (gx > 1 and 1) or gx
+									else
+										local gy = (my-mvy-ay)/csRange
+										position = (gy < 0 and 0) or (gy > 1 and 1) or gy
+									end
 								end
+								dgsSetData(v,"position",position*100)
 							end
-							dgsSetData(v,"position",position*100)
+						else
+							colorImageIndex[MouseData.clickData] = 2
 						end
 					end
 				end
