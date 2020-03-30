@@ -1,4 +1,4 @@
-function dgsCreateScrollBar(x,y,sx,sy,isVertical,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
+function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollBar at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
@@ -22,7 +22,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isVertical,relative,parent,arrowImage,trou
 	dgsSetData(scrollbar,"cursorImage",cursorImage)
 	dgsSetData(scrollbar,"troughImage",troughImage)
 	dgsSetData(scrollbar,"arrowBgColor",styleSettings.scrollbar.arrowBgColor or false)
-	dgsSetData(scrollbar,"isVertical",isVertical or false) --vertical or horizontal
+	dgsSetData(scrollbar,"isHorizontal",isHorizontal or false) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
 	dgsSetData(scrollbar,"length",{30,false},true)
 	dgsSetData(scrollbar,"multiplier",{1,false})
@@ -94,9 +94,9 @@ function scrollScrollBar(scrollbar,button)
 	local scrollArrow = eleData.scrollArrow
 	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
-	local isVertical = eleData.isVertical
+	local isHorizontal = eleData.isHorizontal
 	local arrowWid = eleData.arrowWidth
-	if isVertical then
+	if isHorizontal then
 		if scrollArrow then
 			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 		end
@@ -127,7 +127,7 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local arrowWid = eleData.arrowWidth
-	if isVertical then
+	if isHorizontal then
 		if scrollArrow then
 			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 		end

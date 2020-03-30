@@ -1857,7 +1857,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local isVertical = eleData.isVertical
+				local isHorizontal = eleData.isHorizontal
 				local image = eleData.image or {}
 				local arrowImage = eleData.arrowImage or image[1]
 				local cursorImage = eleData.cursorImage or image[2]
@@ -1880,7 +1880,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local arrowWidth = eleData.arrowWidth
 				local imgRot = eleData.imageRotation
 				local troughPadding,cursorPadding,arrowPadding
-				if isVertical then
+				if isHorizontal then
 					troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
 					cursorWidth = cursorWidth[2] and cursorWidth[1]*h or cursorWidth[1]
 					troughPadding = (h-troughWidth)/2
@@ -1912,7 +1912,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if MouseData.enter == v then
 					if not MouseData.clickData then
 						MouseData.enterData = false
-						if isVertical then
+						if isHorizontal then
 							if my >= cy and my <= cy+h then
 								if mx >= cx and mx <= cx+arrowWidth then					------left
 									if abs(cy+h/2-my) <= arrowWidth then
@@ -1955,7 +1955,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							local mvx,mvy = MouseData.MoveScroll[1],MouseData.MoveScroll[2]
 							local ax,ay = dgsGetPosition(v,false)
 							if csRange ~= 0 then
-								if isVertical then
+								if isHorizontal then
 									local gx = (mx-mvx-ax)/csRange
 									position = (gx < 0 and 0) or (gx > 1 and 1) or gx
 								else
@@ -1975,7 +1975,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
-				if isVertical then
+				if isHorizontal then
 					local cursorCenter = pos*0.01*csRange+cursorRange/2
 					local troughPart1 = {x+arrowWidth,cursorCenter}
 					local troughPart2 = {x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter}
@@ -4456,13 +4456,13 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local scrollArrow = dgsElementData[guiele].scrollArrow
 					local x,y = dgsGetPosition(guiele,false,true)
 					local w,h = dgsGetSize(guiele,false)
-					local isVertical = dgsElementData[guiele].isVertical
+					local isHorizontal = dgsElementData[guiele].isHorizontal
 					local pos = dgsElementData[guiele].position
 					local length,lrlt = dgsElementData[guiele].length[1],dgsElementData[guiele].length[2]
 					local slotRange
 					local arrowPos = 0
 					local arrowWid = dgsElementData[guiele].arrowWidth
-					if isVertical then
+					if isHorizontal then
 						if scrollArrow then
 							arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 						end
@@ -4475,7 +4475,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
 					local py = pos*0.01*(slotRange-cursorRange)
-					checkScrollBar(guiele,py,isVertical)
+					checkScrollBar(guiele,py,isHorizontal)
 					local parent = dgsElementData[guiele].attachedToParent
 					if isElement(parent) then
 						if guiele == dgsElementData[parent].scrollbars[1] then
