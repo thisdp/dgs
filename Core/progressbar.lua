@@ -13,7 +13,7 @@ ProgressBarStyle = {
 				if not sx or not sy then
 					sx,sy = dxGetMaterialSize(indicatorImage)
 				end
-				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY,1,1,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet)
+				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet)
 			else
 				dxDrawImage(iPosX,iPosY,iSizX,iSizY,indicatorImage,0,0,0,indicatorColor,rendSet)
 			end

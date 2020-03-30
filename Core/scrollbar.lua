@@ -1,4 +1,4 @@
-function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
+function dgsCreateScrollBar(x,y,sx,sy,isVertical,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollBar at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
 	end
@@ -10,16 +10,19 @@ function dgsCreateScrollBar(x,y,sx,sy,voh,relative,parent,arrowImage,troughImage
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true,true) or table.insert(CenterFatherTable,scrollbar)
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
 	dgsSetData(scrollbar,"renderBuffer",{})
-	local arrowImage = arrowImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.image[1])
-	local cursorImage = cursorImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.image[2])
-	local troughImage = troughImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.image[3])
-	dgsSetData(scrollbar,"image",{arrowImage,cursorImage,troughImage})
+	local deprecatedImage = styleSettings.scrollbar.image or {}
+	local arrowImage = arrowImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage) or dgsCreateTextureFromStyle(deprecatedImage[1])
+	local cursorImage = cursorImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.cursorImage) or dgsCreateTextureFromStyle(deprecatedImage[2])
+	local troughImage = troughImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.troughImage) or dgsCreateTextureFromStyle(deprecatedImage[3])
 	dgsSetData(scrollbar,"imageRotation",{{0,0,0},{270,270,270}})	--{Horizontal},{Vertical}
 	dgsSetData(scrollbar,"arrowColor",{arrowColorNormal or styleSettings.scrollbar.arrowColor[1],arrowColorHover or styleSettings.scrollbar.arrowColor[2],arrowColorClick or styleSettings.scrollbar.arrowColor[3]})
 	dgsSetData(scrollbar,"cursorColor",{cursorColorNormal or styleSettings.scrollbar.cursorColor[1],cursorColorHover or styleSettings.scrollbar.cursorColor[2],cursorColorClick or styleSettings.scrollbar.cursorColor[3]})
 	dgsSetData(scrollbar,"troughColor",troughColor or styleSettings.scrollbar.troughColor)
+	dgsSetData(scrollbar,"arrowImage",arrowImage)
+	dgsSetData(scrollbar,"cursorImage",cursorImage)
+	dgsSetData(scrollbar,"troughImage",troughImage)
 	dgsSetData(scrollbar,"arrowBgColor",styleSettings.scrollbar.arrowBgColor or false)
-	dgsSetData(scrollbar,"voh",voh or false) --vertical or horizontal
+	dgsSetData(scrollbar,"isVertical",isVertical or false) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
 	dgsSetData(scrollbar,"length",{30,false},true)
 	dgsSetData(scrollbar,"multiplier",{1,false})
@@ -91,9 +94,9 @@ function scrollScrollBar(scrollbar,button)
 	local scrollArrow = eleData.scrollArrow
 	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
-	local voh = eleData.voh
+	local isVertical = eleData.isVertical
 	local arrowWid = eleData.arrowWidth
-	if voh then
+	if isVertical then
 		if scrollArrow then
 			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 		end
@@ -124,7 +127,7 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local arrowWid = eleData.arrowWidth
-	if voh then
+	if isVertical then
 		if scrollArrow then
 			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 		end

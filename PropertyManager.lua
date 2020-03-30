@@ -18,8 +18,8 @@ function dgsSetData(element,key,value,nocheck)
 					if key == "length" then
 						local w,h = dgsGetSize(element,false)
 						local voh = dgsElementData[element].voh
-						if (value[2] and value[1]*(voh and w-h*2 or h-w*2) or value[1]) < 10 then
-							dgsElementData[element].length = {10,false}
+						if (value[2] and value[1]*(voh and w-h*2 or h-w*2) or value[1]) < 5 then
+							dgsElementData[element].length = {5,false}
 						end
 					elseif key == "position" then
 						if not dgsElementData[element].locked then
@@ -238,6 +238,30 @@ function dgsSetData(element,key,value,nocheck)
 	return false
 end
 
+compatibility = {
+	["dgs-dxscrollbar"] = {
+		image = "arrowImage/cursorImage/troughImage",
+	}
+}
+
+function checkCompatibility(dxgui,key)
+	local eleTyp = dgsGetType(dxgui)
+	if compatibility[eleTyp] then
+		for k,v in pairs(compatibility[eleTyp]) do
+			if key == k then
+				if not getElementData(localPlayer,"DGS-DEBUG-C") then
+					outputDebugString("Deprecated property '"..k.."' @dgsSetProperty with "..eleTyp..", run it again with command /debugdgs c",2)
+					return true
+				else
+					outputDebugString("Found deprecated property '"..k.."' @dgsSetProperty with "..eleTyp..", replace with "..v,2)
+					return false
+				end
+			end
+		end
+	end
+	return true
+end
+
 function dgsSetProperty(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
@@ -248,6 +272,7 @@ function dgsSetProperty(dxgui,key,value,...)
 			value = {fnc,{...}}
 		end
 		for k,v in ipairs(dxgui) do
+			assert(checkCompatibility(v,key),"DGS Compatibility Check")
 			if key == "textColor" then
 				assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 			elseif key == "text" then
@@ -269,6 +294,7 @@ function dgsSetProperty(dxgui,key,value,...)
 		end
 		return true
 	else
+		assert(checkCompatibility(dxgui,key),"DGS Compatibility Check")
 		if key == "functions" then
 			if value then
 				local fnc

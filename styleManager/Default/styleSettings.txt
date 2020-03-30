@@ -335,13 +335,14 @@
 			tocolor(90,160,230,255),		--Hover
 			tocolor(60,110,180,255),		--Click
 		},
-		troughColor = tocolor(30,30,30,255),	--Trough color
-	---Image
-		image = {
-			{"Images/scrollbar/scrollbar_arrow.png"},	--Arrow image
-			{},											--Cursor image
-			{},											--Trough image
+		troughColor = {	--Trough color
+			tocolor(30,30,30,255),	--Part 1
+			tocolor(30,30,30,255),	--Part 2
 		},
+	---Image
+		arrowImage = {"Images/scrollbar/scrollbar_arrow.png"},		--Arrow image
+		cursorImage = nil,											--Cursor image
+		troughImage = nil,											--Trough image
 		arrowBgColor = {
 			tocolor(30,30,30,255),	--Normal
 			tocolor(30,30,30,255),	--Hover

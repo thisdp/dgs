@@ -102,6 +102,7 @@
 	<!--(Custom Style 2) -->
 	
 	<!--&Add Your Styles Here-->
+	<export function="applyColorAlpha" type="client" />
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
 	<export function="dgsRemoveEasingFunction" type="client" />

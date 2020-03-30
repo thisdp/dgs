@@ -1,6 +1,10 @@
 focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 --Speed Up
+--[[
+local applyColorAlpha = function(...)
+	return exports[getResourceName(getThisResource())]:applyColorAlpha(...)
+end]]
 local abs = math.abs
 local find = string.find
 local rep = string.rep
@@ -1492,7 +1496,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local caretRltHeight = fontHeight*caretHeight
 						local caretDrawPos
 						local selPosStart,selPosEnd,selStart,selEnd
-						if selectVisible and allLines > 0 then
+						if allLines > 0 then
 							if selectFro[2] > caretPos[2] then
 								selStart,selEnd = caretPos[2],selectFro[2]
 								selPosStart,selPosEnd = caretPos[1],selectFro[1]
@@ -1522,37 +1526,39 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 									if b >= rndPos then
 										local ypos = lineCnt*fontHeight
 										local renderingText = text[a][1][b][0]
-										if a == selStart or a == selEnd then
-											if a == selStart and a == selEnd then
-												if selPosStart >= weakLinePos then
-													local startPosX = dxGetTextWidth(utf8Sub(renderingText,0,selPosStart-weakLinePos),txtSizX,font)
-													local selectLen = dxGetTextWidth(utf8Sub(renderingText,selPosStart-weakLinePos+1,selPosEnd-weakLinePos),txtSizX,font)
-													dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
-												elseif selPosStart < weakLinePos and selPosEnd > weakLinePos+weakLineLen then
-													local startPosX = dxGetTextWidth(renderingText,txtSizX,font)
-													dxDrawRectangle(-showPos,ypos-caretRltHeight,startPosX,caretRltHeight+fontHeight,selectColor)
-												elseif selPosEnd >= weakLinePos and selPosEnd <= weakLinePos+weakLineLen then
-													local selectLen = dxGetTextWidth(utf8Sub(renderingText,0,selPosEnd-weakLinePos),txtSizX,font)
-													dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+										if selectVisible then
+											if a == selStart or a == selEnd then
+												if a == selStart and a == selEnd then
+													if selPosStart >= weakLinePos then
+														local startPosX = dxGetTextWidth(utf8Sub(renderingText,0,selPosStart-weakLinePos),txtSizX,font)
+														local selectLen = dxGetTextWidth(utf8Sub(renderingText,selPosStart-weakLinePos+1,selPosEnd-weakLinePos),txtSizX,font)
+														dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+													elseif selPosStart < weakLinePos and selPosEnd > weakLinePos+weakLineLen then
+														local startPosX = dxGetTextWidth(renderingText,txtSizX,font)
+														dxDrawRectangle(-showPos,ypos-caretRltHeight,startPosX,caretRltHeight+fontHeight,selectColor)
+													elseif selPosEnd >= weakLinePos and selPosEnd <= weakLinePos+weakLineLen then
+														local selectLen = dxGetTextWidth(utf8Sub(renderingText,0,selPosEnd-weakLinePos),txtSizX,font)
+														dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+													end
+												elseif a == selStart then
+													if selPosStart >= weakLinePos and selPosStart <= weakLinePos+weakLineLen then
+														local startPosX = dxGetTextWidth(utf8Sub(renderingText,0,selPosStart-weakLinePos),txtSizX,font)
+														local selectLen = dxGetTextWidth(utf8Sub(renderingText,selPosStart-weakLinePos+1),txtSizX,font)
+														dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+													elseif selPosStart <= weakLinePos then
+														dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
+													end
+												elseif a == selEnd then
+													if selPosEnd >= weakLinePos and selPosEnd <= weakLinePos+weakLineLen then
+														local selectLen = dxGetTextWidth(utf8Sub(renderingText,0,selPosEnd-weakLinePos),txtSizX,font)
+														dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+													elseif selPosEnd >= weakLinePos then
+														dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
+													end
 												end
-											elseif a == selStart then
-												if selPosStart >= weakLinePos and selPosStart <= weakLinePos+weakLineLen then
-													local startPosX = dxGetTextWidth(utf8Sub(renderingText,0,selPosStart-weakLinePos),txtSizX,font)
-													local selectLen = dxGetTextWidth(utf8Sub(renderingText,selPosStart-weakLinePos+1),txtSizX,font)
-													dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
-												elseif selPosStart <= weakLinePos then
-													dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
-												end
-											elseif a == selEnd then
-												if selPosEnd >= weakLinePos and selPosEnd <= weakLinePos+weakLineLen then
-													local selectLen = dxGetTextWidth(utf8Sub(renderingText,0,selPosEnd-weakLinePos),txtSizX,font)
-													dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
-												elseif selPosEnd >= weakLinePos then
-													dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
-												end
+											elseif a > selStart and a < selEnd then
+												dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
 											end
-										elseif a > selStart and a < selEnd then
-											dxDrawRectangle(-showPos,ypos-caretRltHeight,dxGetTextWidth(renderingText,txtSizX,font),caretRltHeight+fontHeight,selectColor)
 										end
 										if caretPos[2] == a then
 											if caretPos[1] >= weakLinePos and caretPos[1] <= weakLinePos+weakLineLen then
@@ -1618,7 +1624,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxSetRenderTarget(renderTarget,true)
 						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
-						if selectVisible and allLine > 0 then
+						if allLine > 0 then
 							local toShowLine = showLine+canHoldLines
 							toShowLine = toShowLine > allLine and allLine or toShowLine
 							if selectFro[2] > caretPos[2] then
@@ -1638,21 +1644,23 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							local caretRltHeight = fontHeight*caretHeight
 							for i=showLine,toShowLine do
 								local ypos = (i-showLine)*fontHeight
-								if i == selStart or i == selEnd then
-									if i == selStart and i == selEnd then
-										local startPosX = dxGetTextWidth(utf8Sub(text[i][0],0,selPosStart),txtSizX,font)
-										local selectLen = dxGetTextWidth(utf8Sub(text[i][0],selPosStart+1,selPosEnd),txtSizX,font)
-										dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
-									elseif i == selStart then
-										local startPosX = dxGetTextWidth(utf8Sub(text[i][0],0,selPosStart),txtSizX,font)
-										local selectLen = dxGetTextWidth(utf8Sub(text[i][0],selPosStart+1),txtSizX,font)
-										dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
-									elseif i == selEnd then
-										local selectLen = dxGetTextWidth(utf8Sub(text[i][0],0,selPosEnd),txtSizX,font)
-										dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+								if selectVisible then
+									if i == selStart or i == selEnd then
+										if i == selStart and i == selEnd then
+											local startPosX = dxGetTextWidth(utf8Sub(text[i][0],0,selPosStart),txtSizX,font)
+											local selectLen = dxGetTextWidth(utf8Sub(text[i][0],selPosStart+1,selPosEnd),txtSizX,font)
+											dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+										elseif i == selStart then
+											local startPosX = dxGetTextWidth(utf8Sub(text[i][0],0,selPosStart),txtSizX,font)
+											local selectLen = dxGetTextWidth(utf8Sub(text[i][0],selPosStart+1),txtSizX,font)
+											dxDrawRectangle(-showPos+startPosX,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+										elseif i == selEnd then
+											local selectLen = dxGetTextWidth(utf8Sub(text[i][0],0,selPosEnd),txtSizX,font)
+											dxDrawRectangle(-showPos,ypos-caretRltHeight,selectLen,caretRltHeight+fontHeight,selectColor)
+										end
+									elseif i > selStart and i < selEnd then
+										dxDrawRectangle(-showPos,ypos-caretRltHeight,text[i][-1],caretRltHeight+fontHeight,selectColor)
 									end
-								elseif i > selStart and i < selEnd then
-									dxDrawRectangle(-showPos,ypos-caretRltHeight,text[i][-1],caretRltHeight+fontHeight,selectColor)
 								end
 								dxDrawText(text[i][0],-showPos,ypos,-showPos,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
 							end
@@ -1849,15 +1857,21 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local voh = eleData.voh
-				local image = eleData.image
+				local isVertical = eleData.isVertical
+				local image = eleData.image or {}
+				local arrowImage = eleData.arrowImage or image[1]
+				local cursorImage = eleData.cursorImage or image[2]
+				local troughImage = eleData.troughImage or image[3]
 				local pos = eleData.position
 				local length,lrlt = eleData.length[1],eleData.length[2]
-				local cursorColor,arrowColor,troughColor,arrowBgColor = eleData.cursorColor,eleData.arrowColor,eleData.troughColor,eleData.arrowBgColor
+				local cursorColor = eleData.cursorColor
+				local arrowColor = eleData.arrowColor
+				local troughColor = type(eleData.troughColor) == "table" and eleData.troughColor or {eleData.troughColor,eleData.troughColor}
+				local arrowBgColor = eleData.arrowBgColor
 				local tempCursorColor = {applyColorAlpha(cursorColor[1],galpha),applyColorAlpha(cursorColor[2],galpha),applyColorAlpha(cursorColor[3],galpha)}
 				local tempArrowColor = {applyColorAlpha(arrowColor[1],galpha),applyColorAlpha(arrowColor[2],galpha),applyColorAlpha(arrowColor[3],galpha)}
 				local tempArrowBgColor = {applyColorAlpha(arrowBgColor[1],galpha),applyColorAlpha(arrowBgColor[2],galpha),applyColorAlpha(arrowBgColor[3],galpha)}
-				local tempTroughColor = applyColorAlpha(troughColor,galpha)
+				local tempTroughColor = {applyColorAlpha(troughColor[1],galpha),applyColorAlpha(troughColor[2],galpha)}
 				local colorImageIndex = {1,1,1,1}
 				local slotRange
 				local scrollArrow =  eleData.scrollArrow
@@ -1866,7 +1880,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local arrowWidth = eleData.arrowWidth
 				local imgRot = eleData.imageRotation
 				local troughPadding,cursorPadding,arrowPadding
-				if voh then
+				if isVertical then
 					troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
 					cursorWidth = cursorWidth[2] and cursorWidth[1]*h or cursorWidth[1]
 					troughPadding = (h-troughWidth)/2
@@ -1898,13 +1912,13 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if MouseData.enter == v then
 					if not MouseData.clickData then
 						MouseData.enterData = false
-						if voh then
+						if isVertical then
 							if my >= cy and my <= cy+h then
-								if mx >= cx and mx <= cx+arrowWidth then			------left
+								if mx >= cx and mx <= cx+arrowWidth then					------left
 									if abs(cy+h/2-my) <= arrowWidth then
 										MouseData.enterData = 1
 									end
-								elseif mx >= cx+w-arrowWidth and mx <= cx+w then		------right
+								elseif mx >= cx+w-arrowWidth and mx <= cx+w then			------right
 									if abs(cy+h/2-my) <= arrowWidth then
 										MouseData.enterData = 4
 									end
@@ -1916,7 +1930,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						else
 							if mx >= cx and mx <= cx+w then
-								if my >= cy and my <= cy+arrowWidth then			------up
+								if my >= cy and my <= cy+arrowWidth then					------up
 									if abs(cx+w/2-mx) <= arrowWidth then
 										MouseData.enterData = 1
 									end
@@ -1941,7 +1955,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							local mvx,mvy = MouseData.MoveScroll[1],MouseData.MoveScroll[2]
 							local ax,ay = dgsGetPosition(v,false)
 							if csRange ~= 0 then
-								if voh then
+								if isVertical then
 									local gx = (mx-mvx-ax)/csRange
 									position = (gx < 0 and 0) or (gx > 1 and 1) or gx
 								else
@@ -1961,43 +1975,53 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
-				if voh then
+				if isVertical then
+					local cursorCenter = pos*0.01*csRange+cursorRange/2
+					local troughPart1 = {x+arrowWidth,cursorCenter}
+					local troughPart2 = {x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter}
 					local imgRotVert = imgRot[2]
-					if image[3] then
-						dxDrawImage(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,image[3],imgRotVert[3],0,0,tempTroughColor,rendSet)
+					if troughImage then
+						dxDrawImage(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,troughImage,imgRotVert[3],0,0,tempTroughColor[1],rendSet)
+						dxDrawImage(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,troughImage,imgRotVert[3],0,0,tempTroughColor[2],rendSet)
 					else
-						dxDrawRectangle(x+arrowWidth,y+troughPadding,w-2*arrowWidth,troughWidth,tempTroughColor,rendSet)
+						dxDrawRectangle(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,tempTroughColor[1],rendSet)
+						dxDrawRectangle(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,tempTroughColor[2],rendSet)
 					end
 					if scrollArrow then
 						if tempArrowBgColor then
 							dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
 							dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
-						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,image[1],imgRotVert[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,image[1],imgRotVert[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,arrowImage,imgRotVert[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,arrowImage,imgRotVert[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
-					if image[2] then
-						dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,image[2],imgRotVert[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+					if cursorImage then
+						dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,cursorImage,imgRotVert[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
 						dxDrawRectangle(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
 				else
+					local cursorCenter = pos*0.01*csRange+cursorRange/2
+					local troughPart1 = {y+arrowWidth,cursorCenter}
+					local troughPart2 = {y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter}
 					local imgRotHorz = imgRot[1]
-					if image[3] then
-						dxDrawImage(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,image[3],imgRotHorz[3],0,0,tempTroughColor,rendSet)
+					if troughImage then
+						dxDrawImage(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],troughImage,imgRotHorz[3],0,0,tempTroughColor[1],rendSet)
+						dxDrawImage(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],troughImage,imgRotHorz[3],0,0,tempTroughColor[2],rendSet)
 					else
-						dxDrawRectangle(x+troughPadding,y+arrowWidth,troughWidth,h-2*arrowWidth,tempTroughColor,rendSet)
+						dxDrawRectangle(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],tempTroughColor[1],rendSet)
+						dxDrawRectangle(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],tempTroughColor[2],rendSet)
 					end
 					if scrollArrow then
 						if tempArrowBgColor then
 							dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
 							dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],rendSet)
 						end
-						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,image[1],imgRotHorz[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
-						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,image[1],imgRotHorz[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
+						dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,arrowImage,imgRotHorz[1],0,0,tempArrowColor[colorImageIndex[1]],rendSet)
+						dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,arrowImage,imgRotHorz[1]+180,0,0,tempArrowColor[colorImageIndex[4]],rendSet)
 					end
-					if image[2] then
-						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,image[2],imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
+					if cursorImage then
+						dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,cursorImage,imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[2]],rendSet)
 					else
 						dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[2]],rendSet)
 					end
@@ -4432,13 +4456,13 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local scrollArrow = dgsElementData[guiele].scrollArrow
 					local x,y = dgsGetPosition(guiele,false,true)
 					local w,h = dgsGetSize(guiele,false)
-					local voh = dgsElementData[guiele].voh
+					local isVertical = dgsElementData[guiele].isVertical
 					local pos = dgsElementData[guiele].position
 					local length,lrlt = dgsElementData[guiele].length[1],dgsElementData[guiele].length[2]
 					local slotRange
 					local arrowPos = 0
 					local arrowWid = dgsElementData[guiele].arrowWidth
-					if voh then
+					if isVertical then
 						if scrollArrow then
 							arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
 						end
@@ -4451,7 +4475,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
 					local py = pos*0.01*(slotRange-cursorRange)
-					checkScrollBar(guiele,py,voh)
+					checkScrollBar(guiele,py,isVertical)
 					local parent = dgsElementData[guiele].attachedToParent
 					if isElement(parent) then
 						if guiele == dgsElementData[parent].scrollbars[1] then
