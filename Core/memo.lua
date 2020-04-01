@@ -99,8 +99,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
 	dgsSetVisible(scrollbar1,false)
-	dgsSetData(scrollbar1,"length",{0.2,true})
-	dgsSetData(scrollbar2,"length",{0.2,true})
+	dgsSetData(scrollbar1,"length",{0,true})
+	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	addEventHandler("onDgsElementScroll",scrollbar1,checkMMScrollBar,false)
@@ -1121,10 +1121,12 @@ function syncScrollBars(memo,which)
 		if isWordWrap then
 			local line = #dgsElementData[memo].wordWrapMapText
 			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].wordWrapShowLine[3]-1)*100/(line-canHold)
+			print(new)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		else
 			local line = #dgsElementData[memo].text
 			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(line-canHold)
+			print(new)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		end
 	end
@@ -1132,6 +1134,7 @@ function syncScrollBars(memo,which)
 		local len = dgsElementData[memo].rightLength[1]
 		local canHold = mathFloor(len-size[1]+scbTakes1+2)*0.01
 		local new = dgsElementData[memo].showPos/canHold
+		if new >= 100 then new = 100 end
 		dgsScrollBarSetScrollPosition(scrollbars[2],new)
 	end
 end
