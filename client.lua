@@ -50,36 +50,11 @@ red = 0xFFFF0000
 blue = 0xFF0000FF
 yellow = 0xFFFFFF00
 fontSize = {}
-systemFont = styleSettings.systemFont
 self,renderArguments = false,false
 dgsRenderSetting = {
 	postGUI = nil,
 	renderPriority = "normal",
 }
-
-function dgsSetSystemFont(font,size,bold,quality)
-	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
-	if isElement(systemFont) then
-		destroyElement(systemFont)
-	end
-	sourceResource = sourceResource or getThisResource()
-	if fontDxHave[font] then
-		systemFont = font
-		return true
-	elseif sourceResource then
-		local path = font:find(":") and font or ":"..getResourceName(sourceResource).."/"..font
-		assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
-		local font = dxCreateFont(path,size,bold,quality)
-		if isElement(font) then
-			systemFont = font
-		end
-	end
-	return false
-end
-
-function dgsGetSystemFont()
-	return systemFont
-end
 
 function dgsGetRenderSetting(name)
 	return dgsRenderSetting[name]

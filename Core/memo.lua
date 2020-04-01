@@ -99,8 +99,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
 	dgsSetVisible(scrollbar1,false)
-	dgsSetData(scrollbar1,"length",{0,true})
-	dgsSetData(scrollbar2,"length",{0,true})
+	dgsSetData(scrollbar1,"length",{0.2,true})
+	dgsSetData(scrollbar2,"length",{0.2,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	addEventHandler("onDgsElementScroll",scrollbar1,checkMMScrollBar,false)
@@ -1038,6 +1038,7 @@ function configMemo(source)
 	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
 	local widLen = 1-(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/dgsElementData[source].rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
+	print(widLen)
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})

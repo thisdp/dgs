@@ -11,10 +11,10 @@
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
+	<script src="TypeManager.lua" type="client" />
 	<script src="styleManager/styleManager.lua" type="client" />
 	
 	<script src="PropertyManager.lua" type="client" />
-	<script src="TypeManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
 	<script src="client.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
