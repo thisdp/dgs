@@ -17,8 +17,8 @@ function dgsSetData(element,key,value,nocheck)
 				if dgsType == "dgs-dxscrollbar" then
 					if key == "length" then
 						local w,h = dgsGetSize(element,false)
-						local voh = dgsElementData[element].voh
-						if (value[2] and value[1]*(voh and w-h*2 or h-w*2) or value[1]) < 5 then
+						local isHorizontal = dgsElementData[element].isHorizontal
+						if (value[2] and value[1]*(isHorizontal and w-h*2 or h-w*2) or value[1]) < 5 then
 							dgsElementData[element].length = {5,false}
 						end
 					elseif key == "position" then
