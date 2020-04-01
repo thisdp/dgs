@@ -1,3 +1,6 @@
+---Speed UP
+utf8Sub = utf8.sub
+
 local function tableCount(tabl)
 	local cnt = 0
 	for k,v in pairs(tabl) do
@@ -234,29 +237,29 @@ setmetatable(LexState,{
 				lineIndex=0,
 				current="",
 				result={},
-				textLength=#readText,
+				textLength=utf8.len(readText),
 				readText=readText,
 				next=function(self)
 					self.index = self.index+1
 					self.lineIndex = self.lineIndex+1
-					self.current = self.readText:sub(self.index,self.index)
+					self.current = utf8Sub(self.readText,self.index,self.index)
 					if self.current == "\n" then
 						self.line = self.line+1
 						self.lineIndex=1
 					end
 					self.checkindex = self.index
-					return self.current
+					return self.current ~= "" and self.current or false
 				end,
 				outputnext=function(self)
-					return self.readText:sub(self.index+1,self.index+1)
+					return utf8Sub(self.readText,self.index+1,self.index+1)
 				end,
 				checknext=function(self,target,...)
 					self.checkindex = self.checkindex+1
-					local nextStr = self.readText:sub(self.checkindex,self.checkindex)
+					local nextStr = utf8Sub(self.readText,self.checkindex,self.checkindex)
 					local targetType = type(target)
 					if targetType == "string" then
 						for i=1,#target do
-							if target:sub(i,i) == nextStr then
+							if utf8Sub(target,i,i) == nextStr then
 								return true
 							end
 						end
@@ -266,11 +269,11 @@ setmetatable(LexState,{
 					return false
 				end,
 				checksamenext=function(self,target,...)
-					local nextStr = self.readText:sub(self.checkindex,self.checkindex)
+					local nextStr = utf8Sub(self.readText,self.checkindex,self.checkindex)
 					local targetType = type(target)
 					if targetType == "string" then
 						for i=1,#target do
-							if target:sub(i,i) == nextStr then
+							if utf8Sub(target,i,i) == nextStr then
 								return true
 							end
 						end
@@ -281,7 +284,7 @@ setmetatable(LexState,{
 				end,
 				checkcurrent=function(self,target)
 					for i=1,#target do
-						if target:sub(i,i) == self.current then
+						if utf8Sub(target,i,i) == nextStr then
 							return true
 						end
 					end
@@ -449,8 +452,12 @@ local function DGSLLex(ls)
 					if ls:checkcurrent("\r\n") then
 						ls:finish("short comment")
 					else
+						local nnext
 						repeat
-							if ls:checknext("\r\n") then ls:save() break end
+							if ls:checknext("\r\n") then
+								ls:save()
+								break
+							end
 							ls:save()
 						until(not ls:next())
 						ls:finish("short comment")
@@ -600,52 +607,15 @@ setmetatable(AnalyzerState,{
 				executeProcess = function(self)
 					local GUIFnc = self.replacedFunction[1]
 					local DGSFnc = self.replacedFunction[2]
-					
 					local GUIEvt = self.replacedEvent[1]
 					local DGSEvt = self.replacedEvent[2]
 					local resLen = #self.lexResult
 					while(true) do
-						local arguments = {}
-						local argument = {}
 						local item = self:getNext()
 						if not item then break end
 						if item[2] == "identifier" and GUIFnc then
 							if item[1] == GUIFnc[1] then	-- matched, get into the process
 								self.lexResult[self.tokenIndex][1] = DGSFnc[1]
-								local enterArgs = false
-								while(true) do
-									local continue = false
-									item = self:getNext()
-									if not item then break end
-									--if item[2] ~= "space" then
-										if item[2] == "separator" then
-											if item[1] == "(" then
-												enterArgs = true
-												self.separatorDepth = self.separatorDepth + 1
-												if self.separatorDepth == 1 then
-													continue = true
-												end
-											elseif item[1] == ")" then
-												self.separatorDepth = self.separatorDepth - 1
-												if self.separatorDepth == 0 then
-													table.insert(arguments,argument)
-													argument = {}
-													continue = true
-												end
-											elseif self.separatorDepth == 1 and item[1] == "," then
-												table.insert(arguments,argument)
-												argument = {}
-												continue = true
-											end
-										end
-										if self.separatorDepth == 0 and enterArgs then
-											break
-										end
-									--end
-									if self.separatorDepth >= 1 and not continue and enterArgs then
-										table.insert(argument,self.tokenIndex)
-									end
-								end
 							end
 						elseif item[2] == "short string" and DGSEvt then
 							if item[1] == GUIEvt[1] then
@@ -697,10 +667,10 @@ setmetatable(AnalyzerState,{
 						elseif self.lexResult[i][2] == "long string" then
 							newtab[i] = "[["..self.lexResult[i][1].."]]"
 						else
-							if newtab[i] == "__DGSDef" then
-								isDGSDef = true
-							end
 							newtab[i] = self.lexResult[i][1]
+						end
+						if self.lexResult[i][1] == "__DGSDef" then
+							isDGSDef = true
 						end
 					end
 					if not isDGSDef then

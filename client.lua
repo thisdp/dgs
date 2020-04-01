@@ -1452,7 +1452,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 				local renderTarget = eleData.renderTarget
 				local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
-				local wordwarp = eleData.wordWarp
+				local wordwrap = eleData.wordWrap
 				local scbThick = eleData.scrollBarThick
 				local scrollbars = eleData.scrollbars
 				local selectVisible = eleData.selectVisible
@@ -1479,14 +1479,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				end
 				------------------------------------
 				if isElement(renderTarget) then
-					if wordwarp then
+					if wordwrap then
 						if eleData.rebuildMapTableNextFrame then
-							dgsMemoRebuildWordWarpMapTable(v)
+							dgsMemoRebuildWordWrapMapTable(v)
 						end
-						local allLines = #eleData.wordWarpMapText
+						local allLines = #eleData.wordWrapMapText
 						local textColor = eleData.textColor
 						local showLine = eleData.showLine
-						local wordWarpShowLine = eleData.wordWarpShowLine
+						local wordWrapShowLine = eleData.wordWrapShowLine
 						local caretHeight = eleData.caretHeight-1
 						local canHoldLines = floor((h-4)/fontHeight)
 						canHoldLines = canHoldLines > allLines and allLines or canHoldLines
@@ -1513,7 +1513,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 							local isInWeakLine = false
 							local lineCnt = 0
-							local rndLine,rndPos,totalLine = eleData.wordWarpShowLine[1],eleData.wordWarpShowLine[2],eleData.wordWarpShowLine[3]
+							local rndLine,rndPos,totalLine = eleData.wordWrapShowLine[1],eleData.wordWrapShowLine[2],eleData.wordWrapShowLine[3]
 							if rndLine <= 1 then
 								rndLine = 1
 							end
@@ -3838,7 +3838,7 @@ function onClientKeyTriggered(button)
 		local memo = MouseData.nowShow
 		local shift = getKeyState("lshift") or getKeyState("rshift")
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
-		local isWordWarp = dgsElementData[memo].wordWarp
+		local isWordWrap = dgsElementData[memo].wordWrap
 		if button == "arrow_l" then
 			dgsMemoMoveCaret(memo,-1,0,shift)
 		elseif button == "arrow_r" then
@@ -3848,7 +3848,7 @@ function onClientKeyTriggered(button)
 		elseif button == "arrow_d" then
 			dgsMemoMoveCaret(memo,0,1,shift,true)
 		elseif button == "home" then
-			if isWordWarp then
+			if isWordWrap then
 				local text = dgsElementData[memo].text
 				local index,line = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
 				local weakLineIndex,weakLine = dgsMemoFindWeakLineInStrongLine(text[line],index)
@@ -3860,7 +3860,7 @@ function onClientKeyTriggered(button)
 		elseif button == "end" then
 			local text = dgsElementData[memo].text
 			local index,line = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
-			if isWordWarp then
+			if isWordWrap then
 				local weakLineIndex,weakLine = dgsMemoFindWeakLineInStrongLine(dgsElementData[memo].text[line],index,true)
 				local currentPos = utf8Len(dgsElementData[memo].text[line][0],1,index)-utf8Len(text[line][1][weakLine][0],1,weakLineIndex)+dgsElementData[memo].text[line][1][weakLine][3]
 				dgsMemoSetCaretPosition(memo,currentPos,ctrl and #text,shift,not ctrl and true)

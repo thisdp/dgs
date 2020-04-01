@@ -136,9 +136,9 @@ function dgsSetData(element,key,value,nocheck)
 						dgsMemoRebuildTextTable(element)
 					elseif key == "font" then
 						dgsMemoRebuildTextTable(element)
-					elseif key == "wordWarp" then
+					elseif key == "wordWrap" then
 						if value then
-							dgsMemoRebuildWordWarpMapTable(element)
+							dgsMemoRebuildWordWrapMapTable(element)
 						end
 					end
 				elseif dgsType == "dgs-dxprogressbar" then

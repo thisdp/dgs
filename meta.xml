@@ -357,6 +357,8 @@
 	<export function="dgsMemoSetTypingSound" type="client" />
 	<export function="dgsMemoGetTypingSound" type="client" />
 	<export function="dgsMemoGetLineCount" type="client" />
+	<export function="dgsMemoSetWordWrapState" type="client" />
+	<export function="dgsMemoGetWordWrapState" type="client" />
 	<export function="dgsMemoSetWordWarpState" type="client" />
 	<export function="dgsMemoGetWordWarpState" type="client" />
 	<export function="dgsMemoSetScrollBarState" type="client" />
