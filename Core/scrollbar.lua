@@ -44,9 +44,9 @@ function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade)
 	if isGrade then
 		local grades = dgsElementData[scrollbar].grades
 		local newPos = pos/grades*100
-		dgsSetData(scrollbar,"position",newPos)
+		return dgsSetData(scrollbar,"position",newPos)
 	else
-		dgsSetData(scrollbar,"position",pos)
+		return dgsSetData(scrollbar,"position",pos)
 	end
 end
 
@@ -76,10 +76,10 @@ end
 function dgsScrollBarSetGrades(scrollbar,grades,remainMultipler)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetGrades at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	assert(not grades or type(grades) == "number","Bad argument @dgsScrollBarSetGrades at argument at 2, expect false or a number got "..dgsGetType(grades))
-	dgsSetData(scrollbar,"grades",grades)
 	if not remainMultipler then
-		dgsSetData(scrollbar,"multiplier",{1/grades,true})
+		return dgsSetData(scrollbar,"multiplier",{1/grades,true})
 	end
+	return dgsSetData(scrollbar,"grades",grades)
 end
 
 function dgsScrollBarGetGrades(scrollbar)
