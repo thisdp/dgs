@@ -368,14 +368,14 @@
 -----------------------------------------------------------------------------------DGS Switch Buttoon
 	switchbutton = {
 	---Color
-		textColor_t = tocolor(250,250,250,255),	--Text Color
-		textColor_f = tocolor(250,250,250,255),	--Text Color
-		color_f = {	--Default image color when state is false ( unselected )
+		textColorOn = tocolor(250,250,250,255),	--Text Color
+		textColorOff = tocolor(250,250,250,255),	--Text Color
+		colorOn = {	--Default image color when state is false ( unselected )
 			tocolor(60,60,60,255),	--Normal
 			tocolor(60,60,60,255),	--Hover
 			tocolor(60,60,60,255),	--Click
 		},
-		color_t = {	--Default image color when state is true ( selected )
+		colorOff = {	--Default image color when state is true ( selected )
 			tocolor(90,160,230,255),	--Normal
 			tocolor(90,160,230,255),	--Hover
 			tocolor(90,160,230,255),	--Click
@@ -386,12 +386,12 @@
 			tocolor(200,200,200,255),	--Click
 		},
 	---Image
-		image_f = {	--Default image when state is false ( unchecked )
+		imageOn = {	--Default image when state is false ( unchecked )
 			{},		--Normal
-			{},	--Hover
+			{},		--Hover
 			{},		--Click
 		},
-		image_t = {	--Default image when state is true ( checked )
+		imageOff = {	--Default image when state is true ( checked )
 			{},		--Normal
 			{},	--Hover
 			{},		--Click

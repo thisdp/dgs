@@ -3450,69 +3450,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				if eleData.PixelInt then
 					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
 				end
-				local image_f,image_t = eleData.image_f,eleData.image_t
-				local color_f,color_t = eleData.color_f,eleData.color_t
-				local image,color,textColor,text
-				local cursorImage,cursorColor = eleData.cursorImage,eleData.cursorColor
-				local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
-				if eleData.state then
-					image,color,textColor,text,xAdd = image_t,color_t,eleData.textColor_t,eleData.textOn,-xAdd
-				else 
-					image,color,textColor,text = image_f,color_f,eleData.textColor_f,eleData.textOff
-				end
-				local colorImgBgID = 1
-				local colorImgID = 1
-				local cursorWidth = eleData.cursorWidth[2] and w*eleData.cursorWidth[1] or eleData.cursorWidth[1]
-				local cursorX = x+(eleData.stateAnim+1)*0.5*(w-cursorWidth)
-				if MouseData.enter == v then
-					local isHitCursor = mx >= cursorX and mx <= cursorX+cursorWidth
-					colorImgBgID = 2
-					if isHitCursor then
-						colorImgID = 2
-					end
-					if eleData.clickType == 1 then
-						if MouseData.clickl == v then
-							colorImgBgID = 3
-							if isHitCursor then
-								colorImgID = 3
-							end
-						end
-					elseif eleData.clickType == 2 then
-						if MouseData.clickr == v then
-							colorImgBgID = 3
-							if isHitCursor then
-								colorImgID = 3
-							end
-						end
-					else
-						if MouseData.clickl == v or MouseData.clickr == v then
-							colorImgBgID = 3
-							if isHitCursor then
-								colorImgID = 3
-							end
-						end
-					end
-				end
-				local cursorImage = cursorImage[colorImgID]
-				local finalcolor
-				if not enabled[1] and not enabled[2] then
-					if type(eleData.disabledColor) == "number" then
-						finalcolor = applyColorAlpha(eleData.disabledColor,galpha)
-					elseif eleData.disabledColor == true then
-						local r,g,b,a = fromcolor(color[1],true)
-						local average = (r+g+b)/3*eleData.disabledColorPercent
-						finalcolor = tocolor(average,average,average,a*galpha)
-						local r,g,b,a = fromcolor(cursorColor[1],true)
-						local average = (r+g+b)/3*eleData.disabledColorPercent
-						cursorColor = tocolor(average,average,average,a*galpha)
-					else
-						finalcolor = color[colorImgBgID]
-						cursorColor = cursorColor[colorImgID]
-					end
-				else
-					finalcolor = applyColorAlpha(color[colorImgBgID],galpha)
-					cursorColor = applyColorAlpha(cursorColor[colorImgID],galpha)
-				end
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
@@ -3521,10 +3458,97 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
-				if image[colorImgBgID] then
-					dxDrawImage(x,y,w,h,image[colorImgBgID],0,0,0,finalcolor,rendSet)
+				local imageOff,imageOn = eleData.imageOff,eleData.imageOn
+				local colorOff,colorOn = eleData.colorOff,eleData.colorOn
+				local textColor,text
+				local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
+				if eleData.state then
+					textColor,text,xAdd = eleData.textColorOn,eleData.textOn,-xAdd
+				else 
+					textColor,text = eleData.textColorOff,eleData.textOff
+				end
+				local style = eleData.style
+				local colorImgBgID = 1
+				local colorImgID = 1
+				local cursorWidth = eleData.cursorWidth[2] and w*eleData.cursorWidth[1] or eleData.cursorWidth[1]
+				local animProgress = (eleData.stateAnim+1)*0.5
+				local cursorX = x+animProgress*(w-cursorWidth)
+				if MouseData.enter == v then
+					local isHitCursor = mx >= cursorX and mx <= cursorX+cursorWidth
+					colorImgBgID = 2
+					if isHitCursor then
+						colorImgID = 2
+					end
+					if eleData.clickType == 1 and MouseData.clickl == v then
+						colorImgBgID = 3
+						colorImgID = isHitCursor and 3 or colorImgID
+					elseif eleData.clickType == 2 and MouseData.clickr == v then
+						colorImgBgID = 3
+						colorImgID = isHitCursor and 3 or colorImgID
+					else
+						if MouseData.clickl == v or MouseData.clickr == v then
+							colorImgBgID = 3
+							colorImgID = isHitCursor and 3 or colorImgID
+						end
+					end
+				end
+				local cursorImage = eleData.cursorImage[colorImgID]
+				local cursorColor = eleData.cursorColor[colorImgID]
+				if not enabled[1] and not enabled[2] then
+					if type(eleData.disabledColor) == "number" then
+						color = applyColorAlpha(eleData.disabledColor,galpha)
+					elseif eleData.disabledColor == true then
+						local r,g,b,a = fromcolor(cursorColor,true)
+						local average = (r+g+b)/3*eleData.disabledColorPercent
+						cursorColor = tocolor(average,average,average,a*galpha)
+					end
 				else
-					dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
+					cursorColor = applyColorAlpha(cursorColor,galpha)
+				end
+				if not style then
+					local color = colorOff[colorImgID]+(colorOn[colorImgID]-colorOff[colorImgID])*animProgress
+					if not enabled[1] and not enabled[2] then
+						if type(eleData.disabledColor) == "number" then
+							color = applyColorAlpha(eleData.disabledColor,galpha)
+						elseif eleData.disabledColor == true then
+							local r,g,b,a = fromcolor(color,true)
+							local average = (r+g+b)/3*eleData.disabledColorPercent
+							color = tocolor(average,average,average,a*galpha)
+						end
+					else
+						color = applyColorAlpha(color,galpha)
+					end
+					if animProgress == 0 then
+						local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,color,rendSet) or dxDrawRectangle(x,y,w,h,color,rendSet)
+					elseif animProgress == 1 then
+						local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,color,rendSet) or dxDrawRectangle(x,y,w,h,color,rendSet)
+					else
+						local offColor = applyColorAlpha(color,1-animProgress)
+						local onColor = applyColorAlpha(color,animProgress)
+						local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,offColor,rendSet) or dxDrawRectangle(x,y,w,h,offColor,rendSet)
+						local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,onColor,rendSet) or dxDrawRectangle(x,y,w,h,onColor,rendSet)
+					end
+				elseif style == 1 then
+					local colorOn = colorOn[colorImgID]
+					local colorOff = colorOff[colorImgID]
+					if not enabled[1] and not enabled[2] then
+						if type(eleData.disabledColor) == "number" then
+							colorOn = applyColorAlpha(eleData.disabledColor,galpha)
+							colorOff = applyColorAlpha(eleData.disabledColor,galpha)
+						elseif eleData.disabledColor == true then
+							local r,g,b,a = fromcolor(colorOn,true)
+							local average = (r+g+b)/3*eleData.disabledColorPercent
+							colorOn = tocolor(average,average,average,a*galpha)
+							local r,g,b,a = fromcolor(colorOff,true)
+							local average = (r+g+b)/3*eleData.disabledColorPercent
+							colorOff = tocolor(average,average,average,a*galpha)
+						end
+					else
+						colorOn = applyColorAlpha(colorOn,galpha)
+						colorOff = applyColorAlpha(colorOff,galpha)
+					end
+					local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,cursorX-x+cursorWidth/2,h,imageOff[colorImgBgID],0,0,0,colorOff,rendSet) or dxDrawRectangle(x,y,cursorX-x+cursorWidth/2,h,colorOff,rendSet)
+					local _empty = imageOn[colorImgBgID] and dxDrawImage(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,imageOn[colorImgBgID],0,0,0,colorOn,rendSet) or dxDrawRectangle(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,colorOn,rendSet)
 				end
 				local font = eleData.font or systemFont
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
@@ -4411,21 +4435,17 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		local parent = dgsGetParent(guiele)
 		local guitype = dgsGetType(guiele)
+		if guitype == "dgs-dxswitchbutton" then
+			if dgsElementData[guiele].clickState == state and dgsElementData[guiele].clickButton == button then
+				dgsSetData(guiele,"state", not dgsElementData[guiele].state)
+			end
+		end
 		if state == "down" then
 			dgsBringToFront(guiele,button)
 			if guitype == "dgs-dxscrollpane" then
 				local scrollbar = dgsElementData[guiele].scrollbars
 				dgsBringToFront(scrollbar[1],"left",_,true)
 				dgsBringToFront(scrollbar[2],"left",_,true)
-			elseif guitype == "dgs-dxswitchbutton" then
-				local clickType = dgsElementData[guiele].clickType
-				if clickType == 1 and button == "left" then
-					dgsSetData(guiele,"state", not dgsElementData[guiele].state)
-				elseif clickType == 2 and button == "middle" then
-					dgsSetData(guiele,"state", not dgsElementData[guiele].state)
-				elseif clickType == 3 and button == "right" then
-					dgsSetData(guiele,"state", not dgsElementData[guiele].state)
-				end
 			end
 			if button == "left" then
 				if not checkScale(guiele) then

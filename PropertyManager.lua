@@ -242,6 +242,14 @@ compatibility = {
 	["dgs-dxscrollbar"] = {
 		image = "arrowImage/cursorImage/troughImage",
 	}
+	["dgs-dxswitchbutton"] = {
+		textColor_t = "textColorOn",
+		textColor_f = "textColorOff",
+		image_t = "imageOn",
+		image_f = "imageOff",
+		textColor_t = "textColorOn",
+		textColor_f = "textColorOff",
+	}
 }
 
 function checkCompatibility(dxgui,key)

@@ -1,4 +1,4 @@
-function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColor_t,textColor_f,scalex,scaley)
+function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
 	assert(tonumber(x),"Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx))
@@ -11,21 +11,29 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
 	dgsSetData(switchbutton,"renderBuffer",{})
 
-	dgsSetData(switchbutton,"color_t",styleSettings.switchbutton.color_t)
-	dgsSetData(switchbutton,"color_f",styleSettings.switchbutton.color_f)
+	dgsSetData(switchbutton,"colorOn",styleSettings.switchbutton.colorOn)
+	dgsSetData(switchbutton,"colorOff",styleSettings.switchbutton.colorOff)
 	dgsSetData(switchbutton,"cursorColor",styleSettings.switchbutton.cursorColor)
 	
-	local imageOn = styleSettings.switchbutton.image_t
-	local norimg_t = dgsCreateTextureFromStyle(imageOn[1])
-	local hovimg_t = dgsCreateTextureFromStyle(imageOn[2])
-	local cliimg_t = dgsCreateTextureFromStyle(imageOn[3])
-	dgsSetData(switchbutton,"image_t",{norimg_t,selimg_t,cliimg_t})
+	local imageOn = styleSettings.switchbutton.imageOn
+	local imageNormalOn = dgsCreateTextureFromStyle(imageOn[1])
+	local imageHoverOn = dgsCreateTextureFromStyle(imageOn[2])
+	local imageClickOn = dgsCreateTextureFromStyle(imageOn[3])
 	
-	local imageOff = styleSettings.switchbutton.image_f
-	local norimg_f = dgsCreateTextureFromStyle(imageOff[1])
-	local hovimg_f = dgsCreateTextureFromStyle(imageOff[2])
-	local cliimg_f = dgsCreateTextureFromStyle(imageOff[3])
-	dgsSetData(switchbutton,"image_f",{norimg_f,selimg_f,cliimg_f})
+	--[[local imageNormalOn = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
+	local imageHoverOn = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
+	local imageClickOn = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)]]
+	dgsSetData(switchbutton,"imageOn",{imageNormalOn,imageHoverOn,imageClickOn})
+	
+	local imageOff = styleSettings.switchbutton.imageOff
+	local imageNormalOff = dgsCreateTextureFromStyle(imageOff[1])
+	local imageHoverOff = dgsCreateTextureFromStyle(imageOff[2])
+	local imageClickOff = dgsCreateTextureFromStyle(imageOff[3])
+	
+	--[[local imageNormalOff = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
+	local imageHoverOff = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
+	local imageClickOff = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)]]
+	dgsSetData(switchbutton,"imageOff",{imageNormalOff,imageHoverOff,imageClickOff})
 	
 	local cursorImage = styleSettings.switchbutton.cursorImage
 	local norimg_c = dgsCreateTextureFromStyle(cursorImage[1])
@@ -44,8 +52,8 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	end
 	dgsSetData(switchbutton,"textOn",tostring(textOn))
 	dgsSetData(switchbutton,"textOff",tostring(textOff))
-	dgsSetData(switchbutton,"textColor_t",tonumber(textColor_t) or styleSettings.switchbutton.textColor_t)
-	dgsSetData(switchbutton,"textColor_f",tonumber(textColor_f) or styleSettings.switchbutton.textColor_f)
+	dgsSetData(switchbutton,"textColorOn",tonumber(textColorOn) or styleSettings.switchbutton.textColorOn)
+	dgsSetData(switchbutton,"textColorOff",tonumber(textColorOff) or styleSettings.switchbutton.textColorOff)
 	
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.switchbutton.textSize[1], tonumber(scaley) or styleSettings.switchbutton.textSize[2]
 	dgsSetData(switchbutton,"textSize",{textSizeX,textSizeY})
@@ -55,11 +63,13 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	dgsSetData(switchbutton,"state",state and true or false)
 	dgsSetData(switchbutton,"cursorMoveSpeed",0.2)
 	dgsSetData(switchbutton,"stateAnim",state and 1 or -1)
-	dgsSetData(switchbutton,"clickType",1)	--1:LMB;2:Wheel;3:RMB
+	dgsSetData(switchbutton,"clickButton","left")	--"left":LMB;"middle":Wheel;"right":RMB
+	dgsSetData(switchbutton,"clickState","up")	--"down":Down;"up":Up
 	dgsSetData(switchbutton,"cursorWidth",styleSettings.switchbutton.cursorWidth)
 	dgsSetData(switchbutton,"clip",false)
 	dgsSetData(switchbutton,"wordbreak",false)
 	dgsSetData(switchbutton,"colorcoded",false)
+	dgsSetData(switchbutton,"style",1)	--default
 	calculateGuiPositionSize(switchbutton,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",switchbutton,sourceResource)
 	return switchbutton
