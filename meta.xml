@@ -100,7 +100,7 @@
 	<!--(Custom Style 1) -->
 
 	<!--(Custom Style 2) -->
-	
+
 	<!--&Add Your Styles Here-->
 	<export function="applyColorAlpha" type="client" />
 	<export function="dgsAddEasingFunction" type="client" />
@@ -232,7 +232,7 @@
 	<export function="dgs3DInterfaceGetDimension" type="client" />
 	<export function="dgs3DInterfaceSetRotation" type="client" />
 	<export function="dgs3DInterfaceGetRotation" type="client" />
-	
+
 	<export function="dgsCreate3DText" type="client" />
 	<export function="dgs3DTextGetPosition" type="client" />
 	<export function="dgs3DTextSetPosition" type="client" />
@@ -243,7 +243,7 @@
 	<export function="dgs3DTextGetAttachedOffsets" type="client" />
 	<export function="dgs3DTextSetDimension" type="client" />
 	<export function="dgs3DTextGetDimension" type="client" />
-	
+
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
 	<export function="dgsScrollPaneSetScrollBarState" type="client" />
@@ -256,7 +256,7 @@
 	<export function="dgsScrollPaneGetVerticalScrollPosition" type="client" />
 	<export function="dgsScrollPaneSetViewOffset" type="client" />
 	<export function="dgsScrollPaneGetViewOffset" type="client" />
-	
+
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
 	<export function="dgsRadioButtonSetSelected" type="client" />
@@ -264,7 +264,7 @@
 	<export function="dgsRadioButtonSetVerticalAlign" type="client" />
 	<export function="dgsRadioButtonGetHorizontalAlign" type="client" />
 	<export function="dgsRadioButtonGetVerticalAlign" type="client" />
-	
+
 	<export function="dgsCreateCheckBox" type="client" />
 	<export function="dgsCheckBoxGetSelected" type="client" />
 	<export function="dgsCheckBoxSetSelected" type="client" />
@@ -296,7 +296,7 @@
 	<export function="dgsComboBoxGetEditEnabled" type="client" />
 	<export function="dgsComboBoxGetText" type="client" />
 	<export function="dgsComboBoxGetItemCount" type="client" />
-	
+
 	<export function="dgsCreateButton" type="client" />
 
 	<export function="dgsCreateEdit" type="client" />
@@ -333,7 +333,7 @@
 	<export function="dgsEditRemoveAutoComplete" type="client" />
 	<export function="dgsEditSetAutoComplete" type="client" />
 	<export function="dgsEditGetAutoComplete" type="client" />
-	
+
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />
 	<export function="dgsMemoSeekPosition" type="client" />
@@ -392,7 +392,7 @@
 	<export function="dgsImageSetUVPosition" type="client" />
 	<export function="dgsImageGetUVPosition" type="client" />
 	<export function="dgsImageGetNativeSize" type="client" />
-	
+
 	<export function="dgsCreateProgressBar" type="client" />
 	<export function="dgsProgressBarGetProgress" type="client" />
 	<export function="dgsProgressBarSetProgress" type="client" />
@@ -436,7 +436,7 @@
 	<export function="dgsScrollBarGetLocked" type="client" />
 	<export function="dgsScrollBarSetGrades" type="client" />
 	<export function="dgsScrollBarGetGrades" type="client" />
-	
+
 	<export function="dgsCreateSwitchButton" type="client" />
 	<export function="dgsSwitchButtonGetState" type="client" />
 	<export function="dgsSwitchButtonSetState" type="client" />
@@ -510,18 +510,18 @@
 	<export function="dgsGridListGetVerticalScrollPosition" type="client" />
 	<export function="dgsGridListSetNavigationEnabled" type="client" />
 	<export function="dgsGridListGetNavigationEnabled" type="client" />
-	
+
 	<export function="dgsCreateBrowser" type="client" />
-	
+
 	<export function="dgsCreateEDA" type="client" />
 	<export function="dgsEDASetDebugModeEnabled" type="client" />
 	<export function="dgsEDAGetDebugModeEnabled" type="client" />
-	
+
 	<export function="dgsCreateDetectArea" type="client" />
 	<export function="dgsDetectAreaSetFunction" type="client" />
 	<export function="dgsDetectAreaSetDebugModeEnabled" type="client" />
 	<export function="dgsDetectAreaGetDebugModeEnabled" type="client" />
-	
+
 	<export function="dgsCreateArrowList" type="client" />
 	<export function="dgsArrowListAddItem" type="client" />
 	<export function="dgsArrowListRemoveItem" type="client" />
@@ -539,7 +539,7 @@
 	<export function="dgsArrowListGetItemTranslatedValue" type="client" />
 	<!-- Plugins -->
 	<export function="dgsGetPluginType" type="client" />
-	
+
 	<export function="dgsCreateRoundRect" type="client" />
 	<export function="dgsRoundRectSetTexture" type="client" />
 	<export function="dgsRoundRectSetRadius" type="client" />
@@ -548,7 +548,7 @@
 	<export function="dgsRoundRectGetColor" type="client" />
 	<export function="dgsRoundRectSetColorOverwritten" type="client" />
 	<export function="dgsRoundRectGetColorOverwritten" type="client" />
-	
+
 	<export function="dgsCreateColorPicker" type="client" />
 	<export function="dgsColorPickerCreateComponentSelector" type="client" />
 	<export function="dgsColorPickerGetComponentSelectorValue" type="client" />
@@ -557,21 +557,21 @@
 	<export function="dgsUnbindFromColorPicker" type="client" />
 	<export function="dgsColorPickerGetColor" type="client" />
 	<export function="dgsColorPickerSetColor" type="client" />
-	
+
 	<export function="dgsCreateBlurBox" type="client" />
 	<export function="dgsBlurBoxRender" type="client" />
-	
+
 	<export function="dgsCreateEffect3D" type="client" />
 	<export function="dgsEffect3DApplyToScrollPane" type="client" />
 	<export function="dgsEffect3DRemoveFromScrollPane" type="client" />
-	
+
 	<export function="dgsRGBToHSV" type="client" />
 	<export function="dgsRGBToHSL" type="client" />
 	<export function="dgsHSLToRGB" type="client" />
 	<export function="dgsHSVToRGB" type="client" />
 	<export function="dgsHSLToHSV" type="client" />
 	<export function="dgsHSVToHSL" type="client" />
-	
+
 	<export function="dgsCreateNineSlice" type="client" />
 	<export function="dgsNineSliceSetGrid" type="client" />
 	<export function="dgsNineSliceGetGrid" type="client" />
@@ -584,7 +584,7 @@
 	<export function="dgsRemoveObjectPreviewFromImage" type="client" />
 	<export function="dgsObjectPreviewGetHandleByID" type="client" />
 	<export function="dgsConfigureObjectPreview" type="client" />
-	
+
 	<export function="dgsCreateMask" type="client" />
 	<export function="dgsMaskGetSetting" type="client" />
 	<export function="dgsMaskSetSetting" type="client" />
@@ -592,18 +592,17 @@
 	<export function="dgsMaskSetTexture" type="client" />
 	<export function="dgsMaskCenterTexturePosition" type="client" />
 	<export function="dgsMaskAdaptTextureSize" type="client" />
-	
+
 	<export function="dgsCreateRemoteImage" type="client" />
 	<export function="dgsRemoteImageRequest" type="client" />
 	<export function="dgsRemoteImageAbort" type="client" />
 	<export function="dgsRemoteImageGetTexture" type="client" />
 	<export function="dgsGetRemoteImageLoadState" type="client" />
-	
+
 	<export function="dgsRequestQRCode" type="client" />
 	<export function="dgsGetQRCodeLoaded" type="client" />
-	
+
 	<export function="dgsCreateCanvas" type="client" />
-	
 
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
