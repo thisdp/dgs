@@ -241,7 +241,7 @@ end
 compatibility = {
 	["dgs-dxscrollbar"] = {
 		image = "arrowImage/cursorImage/troughImage",
-	}
+	},
 	["dgs-dxswitchbutton"] = {
 		textColor_t = "textColorOn",
 		textColor_f = "textColorOff",
