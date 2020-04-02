@@ -93,6 +93,22 @@ function checkStyle(styleName)
 	end
 end
 
+function loadStyleFont(newFont,path)
+	local fontSize = 12
+	local fontBold = false
+	local fontQuality = "proof"
+	if type(newFont) == "table" then
+		fontSize = newFont[2] or fontSize
+		fontBold = newFont[3] or fontBold
+		fontQuality = newFont[4] or fontQuality
+		newFont = newFont[1]
+	end
+	if not fontDxHave[newFont] then
+		newFont = path..newFont
+	end
+	dgsSetSystemFont(newFont,fontSize,fontBold,fontQuality)
+end
+
 function dgsSetCurrentStyle(styleName)
 	local styleName = styleName or "Default"
 	local id = table.find(styleManager.styleHistory,styleName)
@@ -112,25 +128,13 @@ function dgsSetCurrentStyle(styleName)
 	local customStyleSettings = fnc()
 	if not next(styleSettings) then
 		styleSettings = customStyleSettings
+		loadStyleFont(styleSettings.systemFont,path)
 		return
 	else
 		for dgsType,settings in pairs(customStyleSettings) do
 			if customStyleSettings[dgsType] then
 				if dgsType == "systemFont" then
-					local newFont = customStyleSettings[dgsType]
-					local fontSize = 12
-					local fontBold = false
-					local fontQuality = "proof"
-					if type(newFont) == "table" then
-						fontSize = newFont[2] or fontSize
-						fontBold = newFont[3] or fontBold
-						fontQuality = newFont[4] or fontQuality
-						newFont = newFont[1]
-					end
-					if not fontDxHave[newFont] then
-						newFont = path..newFont
-					end
-					dgsSetSystemFont(newFont,fontSize,fontBold,fontQuality)
+					loadStyleFont(customStyleSettings.systemFont,path)
 				elseif type(settings) == "table" then
 					for dgsProperty,value in pairs(settings) do
 						if customStyleSettings[dgsType][dgsProperty] ~= nil then

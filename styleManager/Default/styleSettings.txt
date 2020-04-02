@@ -12,7 +12,7 @@
 	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent creating duplicated texture elements)
 	disabledColor = true,
 	disabledColorPercent = 0.8,
-	systemFont="default",
+	systemFont="default",	--For custom, systemFont="font.ttf", or systemFont={"font.ttf",Size,isBold,Quality}
 	changeOrder=true,	--Change render order when click dgs element
 ---------------------------------------------------------------------------------------------------Cursor Image
 

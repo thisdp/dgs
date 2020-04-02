@@ -17,48 +17,50 @@ end
 
 ------------Full demo
 function createFullDemo()
-	loadstring(dgsImportOOPClass())()
-	local window = DGSClass:createWindow(0,0,600,600,"DGS Full Demo",false)
-	local button = window:createButton(10,210,80,50,"Test Button",false)
-	local switchButton1 = window:createSwitchButton(100,210,60,20,"","",false)
-	local switchButton2 = window:createSwitchButton(100,240,60,20,"","",true)
-	local gridlist = window:createGridList(0,0,290,200,false)
+	loadstring(dgsImportOOPClass(true))()
+	local window = DGSClass:Window(0,0,600,600,"DGS Full Demo",false)
+	local button = window:Button(10,210,80,50,"Test Button",false)
+	local switchButton1 = window:SwitchButton(100,210,60,20,"","",false)
+	local switchButton2 = window:SwitchButton(100,240,60,20,"","",true)
+	local gridlist = window:GridList(0,0,290,200,false)
 	gridlist:setMultiSelectionEnabled(true)
 	gridlist:addColumn("Column 1",0.5,true)
 	gridlist:addColumn("Column 2",0.5,true)
 	for i=1,100 do
 		gridlist:addRow(i,i,math.random(1,500))
 	end
-	local arrowlist = window:createArrowList(300,0,290,200,false)
-	for i=1,100 do
-		arrowlist:addItem(i,1,10)
-	end
-	local combobox = window:createComboBox(10,270,150,30,"test",false)
+	local combobox = window:ComboBox(10,270,150,30,"test",false)
 	combobox:setEditEnabled(true)
 	for i=1,100 do
 		combobox:addItem(i)
 	end
 	
-	local tabPanel = window:createTabPanel(290,210,280,220,false)
-	local tab1 = tabPanel:createTab("Tab1")
-	local memo = tab1:createMemo(10,10,260,100,"This is a memo for demo",false)
-	local tab2 = tabPanel:createTab("Tab2")
-	local edit1 = tab1:createEdit(10,120,260,30,"",false)
+	local tabPanel = window:TabPanel(290,210,280,220,false)
+	local tab1 = tabPanel:Tab("Tab1")
+	local memo = tab1:Memo(10,10,260,100,"This is a memo for demo",false)
+	local tab2 = tabPanel:Tab("Tab2")
+	local edit1 = tab1:Edit(10,120,260,30,"",false)
 	edit1:setPlaceHolder("I am the place holder, and this edit is for demo")
-	local edit2 = tab1:createEdit(10,160,260,30,"This is a edit for demo",false)
-	local progressBar = window:createProgressBar(10,440,580,25,false)
+	local edit2 = tab1:Edit(10,160,260,30,"This is a edit for demo",false)
+	local progressBar = window:ProgressBar(10,440,580,25,false)
 	progressBar:setProperty("functions",[[
 		local progress = dgsGetProperty(self,"progress")
 		dgsSetProperty(self,"progress",(progress+0.5)%100)
 		return true
 	]])
-	local RadioButton1 = window:createRadioButton(10,380,180,30,"This is a radio button for demo",false)
-	local RadioButton2 = window:createRadioButton(10,410,180,30,"This is a radio button for demo",false)
-	RadioButton1:setSelected(true)
-	local CheckBox1 = window:createCheckBox(10,320,180,30,"This is a check box for demo",true,false)
-	local CheckBox2 = window:createCheckBox(10,350,180,30,"This is a check box for demo",false,false)
+	local RadioButton1 = window:RadioButton(10,380,180,30,"This is a radio button for demo",false)
+	local RadioButton2 = window:RadioButton(10,410,180,30,"This is a radio button for demo",false)
+	local CheckBox1 = window:CheckBox(10,320,180,30,"This is a check box for demo",true,false)
+	local CheckBox2 = window:CheckBox(10,350,180,30,"This is a check box for demo",false,false)
+	
+	local scb = window
+		:ScrollBar(320,50,260,20,true,false)
+		:setAlpha(0.5)
+		:setScrollPosition(50)
+		:setGrades(10)
+		:setProperty("length",{0.8,true})
+			
 end
-
 ------------
 
 function createTest()
@@ -206,13 +208,14 @@ function createTestMemo()
 	10]],false)
 	--dgsMemoSetReadOnly(memo,true)
 	dgsSetFont(memo,"default-bold")
+	dgsSetProperty(memo,"selectVisible",false)
 end
 
 function createTestMemo()
 	local sW,sH = dgsGetScreenSize()
 	local memo = dgsCreateMemo(500,200,150,100,[[DGS Dx Memo Line Changing Test]],false)
 	--dgsMemoSetScrollBarState(memo,false,false)
-	dgsMemoSetWordWarpState(memo,false)
+	dgsMemoSetWordWrapState(memo,false)
 	--dgsMemoSetReadOnly(memo,true)
 end
 
@@ -464,8 +467,8 @@ function testScrollBar()
 	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
 	dgsSetProperty(scrollbar,"scrollArrow",false)
 	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
-	dgsScrollBarSetGrades(scrollbar,5)
-	dgsScrollBarSetScrollPosition(scrollbar,3,true)
+	--dgsScrollBarSetGrades(scrollbar,5)
+	--dgsScrollBarSetScrollPosition(scrollbar,3,true)
 end
 
 function languageTest_GridList()
@@ -513,9 +516,9 @@ function languageTest_TabPanel()
 end
 
 function dgsRoundRectTest()
-	local rndRect1 = dgsCreateRoundRect(50,tocolor(0,0,0,150),_,false)
-	local image1 = dgsCreateImage(200,200,400,400,rndRect1,false)
-	dgsSetProperty(image1,"rotation",45)
+	local rndRect = dgsCreateRoundRect(50,false,tocolor(255,255,255,150),_,true)
+	local button = dgsCreateButton(200,200,400,400,"text",false)
+	dgsSetProperty(button,"image",{rndRect,rndRect,rndRect})
 	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
 	--local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
 end
@@ -576,15 +579,6 @@ function testColorPicker()
 	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
 	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
 	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material1)
-	--[[function syncColorPicker(oldRGB)
-		local color = {dgsColorPickerGetColor(source,"RGB")}
-		if oldRGB[1] ~= color[1] or oldRGB[2] ~= color[2] or oldRGB[3] ~= color[3] then
-			dgsColorPickerSetColor(colorPicker_HLDisk,color[1],color[2],color[3],color[4],"RGB")
-			dgsColorPickerSetColor(colorPicker_HSDisk,color[1],color[2],color[3],color[4],"RGB")
-			dgsColorPickerSetColor(colorPicker_HSLSquare,color[1],color[2],color[3],color[4],"RGB")
-			dgsColorPickerSetColor(colorPicker_HSVRing,color[1],color[2],color[3],color[4],"RGB")
-		end
-	end]]
 	addEventHandler("onDgsColorPickerChange",colorPicker_HLDisk,syncColorPicker)
 	addEventHandler("onDgsColorPickerChange",colorPicker_HSDisk,syncColorPicker)
 	addEventHandler("onDgsColorPickerChange",colorPicker_HSLSquare,syncColorPicker)
