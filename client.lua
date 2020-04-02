@@ -3556,7 +3556,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				
 				local state = eleData.state and 1 or -1
 				if eleData.stateAnim ~= state then
-					local stat = eleData.stateAnim+eleData.state*eleData.cursorMoveSpeed
+					local stat = eleData.stateAnim+state*eleData.cursorMoveSpeed
 					eleData.stateAnim = state == -1 and max(stat,state) or min(stat,state)
 				end
 				------------------------------------OutLine
@@ -4420,11 +4420,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			elseif guitype == "dgs-dxswitchbutton" then
 				local clickType = dgsElementData[guiele].clickType
 				if clickType == 1 and button == "left" then
-					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
+					dgsSetData(guiele,"state", not dgsElementData[guiele].state)
 				elseif clickType == 2 and button == "middle" then
-					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
+					dgsSetData(guiele,"state", not dgsElementData[guiele].state)
 				elseif clickType == 3 and button == "right" then
-					dgsSetData(guiele,"state", -dgsElementData[guiele].state)
+					dgsSetData(guiele,"state", not dgsElementData[guiele].state)
 				end
 			end
 			if button == "left" then
