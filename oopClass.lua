@@ -937,6 +937,9 @@ function dgsImportOOPClass(state)
 				nTab.insertText = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsMemoInsertText",self.dgsElement,...) #SyntaxSugar#
 				end
+				nTab.appendText = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsMemoAppendText",self.dgsElement,...) #SyntaxSugar#
+				end
 				nTab.clearText = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsMemoClearText",self.dgsElement,...) #SyntaxSugar#
 				end

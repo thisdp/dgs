@@ -144,7 +144,7 @@ end
 
 function outputCmdMessage(cmd,str)
 	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
-	dgsMemoAppendText(cmd,str,true)
+	dgsMemoAppendText(cmd,str.."\n",true)
 	local textTable = dgsElementData[cmd].text
 	dgsMemoSetCaretPosition(cmd,textTable[#textTable][-1])
 end

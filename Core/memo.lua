@@ -723,15 +723,12 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	end
 end
 
-function dgsMemoAppendText(memo,text,isWriteLine)
+function dgsMemoAppendText(memo,text,noAffectCaret)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoAppendText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsMemoAppendText at argument 4, expect string/number got "..dgsGetType(text))
+	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsMemoAppendText at argument 2, expect string/number got "..dgsGetType(text))
 	local textTable = dgsElementData[memo].text
 	local line = #textTable
 	local index = textTable[line][-1]
-	if line ~= 1 or index ~= 0 then
-		text = "\n"..text
-	end
 	return handleDxMemoText(memo,tostring(text),true,noAffectCaret,index,line)
 end
 

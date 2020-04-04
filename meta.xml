@@ -346,6 +346,7 @@
 	<export function="dgsMemoGetPartOfText" type="client" />
 	<export function="dgsMemoDeleteText" type="client" />
 	<export function="dgsMemoInsertText" type="client" />
+	<export function="dgsMemoAppendText" type="client" />
 	<export function="dgsMemoClearText" type="client" />
 	<export function="dgsMemoGetScrollBar" type="client" />
 	<export function="dgsMemoSetScrollPosition" type="client" />
