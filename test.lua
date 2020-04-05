@@ -516,7 +516,7 @@ function languageTest_TabPanel()
 end
 
 function dgsRoundRectTest()
-	local rndRect = dgsCreateRoundRect(50,false,tocolor(255,255,255,150),_,true)
+	local rndRect = dgsCreateRoundRect({{50,false},{20,false},{10,false},{0,false}},tocolor(0,0,0,150))
 	local button = dgsCreateButton(200,200,400,400,"text",false)
 	dgsSetProperty(button,"image",{rndRect,rndRect,rndRect})
 	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
