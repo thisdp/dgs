@@ -334,7 +334,6 @@ function dgsCoreRender()
 		dxDrawText("Size:"..size,300,sH*0.4-70)
 		dxDrawText("Alpha:"..alp,301,sH*0.4-54,sW,sH,black)
 		dxDrawText("Alpha:"..alp,300,sH*0.4-55)
-		
 		ResCount = 0
 		for ka,va in pairs(boundResource) do
 			if type(ka) == "userdata" and va then

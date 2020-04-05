@@ -16,6 +16,7 @@ local acceptedAlignment = {
 	right=1,
 	left=1,
 }
+
 ----Initialize
 VerticalAlign = {top=true,center=true,bottom=true}
 HorizontalAlign = {left=true,center=true,right=true}

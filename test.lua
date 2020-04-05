@@ -303,7 +303,7 @@ function gridlistTest()
 end
 
 function centerEdit()
-	edit = dgsCreateEdit(100,300,300,100,"TestTestTest",false)
+	edit = dgsCreateEdit(100,300,300,100,"center edit",false)
 	dgsSetProperty(edit,"alignment",{"left","center"})
 	dgsEditSetWhiteList(edit,"%l")
 end

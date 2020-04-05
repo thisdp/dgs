@@ -132,11 +132,15 @@ addCommandHandler("debugdgs",function(command,arg)
 	if not arg then
 		debugMode = (not getElementData(localPlayer,"DGS-DEBUG")) and 1 or false
 		setElementData(localPlayer,"DGS-DEBUG",debugMode,false)
+		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
 	elseif arg == "2" then
 		debugMode = 2
 		setElementData(localPlayer,"DGS-DEBUG",2,false)
+		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 2 )"),255,255,255,true)
 	elseif arg == "c" then
-		setElementData(localPlayer,"DGS-DEBUG-C",not getElementData(localPlayer,"DGS-DEBUG-C"),false)
+		local comp = not getElementData(localPlayer,"DGS-DEBUG-C")
+		outputChatBox("[DGS]Debug Mode For Compatibility Check "..(comp and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
+		setElementData(localPlayer,"DGS-DEBUG-C",comp,false)
 	end
 end)
 
@@ -493,6 +497,7 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 		return _dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	end
 end
+
 
 --------------------------------Other Utility
 function urlEncode(s)
