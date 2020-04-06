@@ -2,6 +2,8 @@ styleSettings = {}
 styleManager = {}
 styleManager.customStyle = "Default"
 styleManager.sharedTexture = {}
+styleManager.createdTexture = {}
+styleManager.createdShader = {}
 styleManager.styles = {Default="Default"}
 styleManager.styleHistory = {"Default"}
 
@@ -39,25 +41,44 @@ function getAvailableFilePath(path)
 	end
 end
 
+function newTexture(texture,...)
+	if not isElement(texture) then
+		texture = dxCreateTexture(texture,...)
+	end
+	styleManager.createdTexture[texture] = true
+	return texture
+end
+
+function newShader(shader,...)
+	if not isElement(shader) then
+		shader = dxCreateShader(shader,...)
+	end
+	styleManager.createdShader[shader] = true
+	return shader
+end
+
 function dgsCreateTextureFromStyle(theTable)
 	if theTable then
 		local filePath,textureType,shaderSettings = theTable[1],theTable[2],theTable[3]
 		if filePath then
 			textureType = textureType or "image"
-			local thePath = getAvailableFilePath(filePath)
+			local thePath = filePath
+			if not isElement(filePath) then
+				thePath = getAvailableFilePath(filePath)
+			end
 			if textureType == "image" then
 				if styleSettings.sharedTexture then
 					if isElement(styleManager.sharedTexture[thePath]) then
 						return styleManager.sharedTexture[thePath]
 					else
-						styleManager.sharedTexture[thePath] = dxCreateTexture(thePath)
+						styleManager.sharedTexture[thePath] = newTexture(thePath)
 						return styleManager.sharedTexture[thePath]
 					end
 				else
-					return dxCreateTexture(thePath)
+					return newTexture(thePath)
 				end
 			elseif textureType == "shader" then
-				local shader = dxCreateShader(thePath)
+				local shader = newShader(thePath)
 				for k,v in pairs(shaderSettings or {}) do
 					dxSetShaderValue(shader,k,v)
 				end
@@ -163,6 +184,18 @@ function dgsIsStyleAvailable(styleName)
 	return styleManager.styles[styleName]
 end
 
+function dgsStyleClear()
+	for k,v in pairs(styleManager.createdTexture) do
+		if isElement(v) then destroyElement(v) end
+	end
+	for k,v in pairs(styleManager.createdShader) do
+		if isElement(v) then destroyElement(v) end
+	end
+	for k,v in pairs(styleManager.sharedTexture) do
+		if isElement(v) then destroyElement(v) end
+	end
+end
+
 scanCustomStyle()
 dgsSetCurrentStyle("Default")
 function loadStyleConfig()
@@ -170,3 +203,5 @@ function loadStyleConfig()
 		dgsSetCurrentStyle(styleManager.customStyle)
 	end
 end
+
+loadStyleConfig()

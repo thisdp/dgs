@@ -61,6 +61,7 @@ function createFullDemo()
 		:setProperty("length",{0.8,true})
 			
 end
+
 ------------
 
 function createTest()
@@ -516,8 +517,8 @@ function languageTest_TabPanel()
 end
 
 function dgsRoundRectTest()
-	local rndRect = dgsCreateRoundRect({{50,false},{20,false},{10,false},{0,false}},tocolor(0,0,0,150))
-	local button = dgsCreateButton(200,200,400,400,"text",false)
+	local rndRect = dgsCreateRoundRect({{80,false},{60,false},{40,false},{20,false}},tocolor(0,0,0,150))
+	local button = dgsCreateButton(200,200,400,600,"text",false)
 	dgsSetProperty(button,"image",{rndRect,rndRect,rndRect})
 	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
 	--local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))

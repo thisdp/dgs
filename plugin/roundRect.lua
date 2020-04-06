@@ -1,5 +1,101 @@
-local roundRectShader
+local roundRectShader = [[
+texture sourceTexture;
+float4 color = float4(1,1,1,1);
+bool textureLoad;
+float4 isRelative = 1;
+float4 radius = 5;
+float borderSoft = 0.01;
+bool colorOverwritten = true;
 
+SamplerState tSampler
+{
+	Texture = sourceTexture;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+
+float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
+	float4 result = textureLoad?tex2D(tSampler,tex)*color:color;
+	float2 dd = float2(length(ddx(tex)),length(ddy(tex)));
+	float a = dd.x/dd.y;
+	float2 nTex = tex;
+	float2 center = float2(0.5/(a<=1?a:1),0.5*(a<=1?1:a));
+	float4 nRadius;
+	float aA = borderSoft*100;
+	if(a<=1){
+		nTex.x /= a;
+		aA *= dd.y;
+		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.y,isRelative.y==1?radius.y/2:radius.y*dd.y,isRelative.z==1?radius.z/2:radius.z*dd.y,isRelative.w==1?radius.w/2:radius.w*dd.y);
+	}
+	else{
+		nTex.y *= a;
+		a = 1/a;
+		aA *= dd.x;
+		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.x,isRelative.y==1?radius.y/2:radius.y*dd.x,isRelative.z==1?radius.z/2:radius.z*dd.x,isRelative.w==1?radius.w/2:radius.w*dd.x);
+	}
+	float2 fixedPos = nTex-center;
+	float2 corner[] = {center-nRadius.x,center-nRadius.y,center-nRadius.z,center-nRadius.w};
+	//LTCorner
+	if(-fixedPos.x >= corner[0].x && -fixedPos.y >= corner[0].y)
+	{
+		float dis = distance(-fixedPos,corner[0]);
+		if(dis > nRadius.x-aA)
+			result.a *= 1-(dis-nRadius.x+aA)/aA;
+	}
+	//RTCorner
+    if(fixedPos.x >= corner[1].x && -fixedPos.y >= corner[1].y)
+    {
+        float dis = distance(float2(fixedPos.x,-fixedPos.y),corner[1]);
+        if(dis > nRadius.y-aA)
+            result.a *= 1-(dis-nRadius.y+aA)/aA;
+    }
+    //RBCorner
+    if(fixedPos.x >= corner[2].x && fixedPos.y >= corner[2].y)
+    {
+        float dis = distance(float2(fixedPos.x,fixedPos.y),corner[2]);
+        if(dis > nRadius.z-aA)
+            result.a *= 1-(dis-nRadius.z+aA)/aA;
+    }
+    //LBCorner
+    if(-fixedPos.x >= corner[3].x && fixedPos.y >= corner[3].y)
+    {
+        float dis = distance(float2(-fixedPos.x,fixedPos.y),corner[3]);
+        if(dis > nRadius.w-aA)
+            result.a *= 1-(dis-nRadius.w+aA)/aA;
+    }
+	if (fixedPos.y <= 0 && -fixedPos.x <= corner[0].x && fixedPos.x <= corner[1].x){
+		result.a *= clamp((fixedPos.y+center.y)/aA,0,1);
+	}
+	
+	if (fixedPos.y >= 0 && -fixedPos.x <= corner[3].x && fixedPos.x <= corner[2].x){
+		result.a *= clamp((-fixedPos.y+center.y)/aA,0,1);
+	}
+	
+	if (fixedPos.x <= 0 && -fixedPos.y <= corner[0].y && fixedPos.y <= corner[3].y){
+		result.a *= clamp((fixedPos.x+center.x)/aA,0,1);
+	}
+	
+	if (fixedPos.x >= 0 && -fixedPos.y <= corner[1].y && fixedPos.y <= corner[2].y){
+		result.a *= clamp((-fixedPos.x+center.x)/aA,0,1);
+	}
+
+	result = clamp(result,0,1);
+	if(!colorOverwritten)
+		result.rgb = _color.rgb;
+	result.a *= _color.a;
+	return result;
+}
+technique rndRectTech
+{
+	pass P0
+	{
+		PixelShader = compile ps_2_a rndRect();
+	}
+}
+]]
 function Old_dgsCreateRoundRect(radius,color,texture,relative)
 	assert(dgsGetType(radius) == "number","Bad argument @dgsCreateRoundRect at argument 1, expect number got "..dgsGetType(radius))
 	local shader = dxCreateShader(roundRectShader)
@@ -125,92 +221,7 @@ function dgsRoundRectSetColorOverwritten(rectShader,colorOverwritten)
 end
 
 ----------------Shader
-roundRectShader = [[
-texture sourceTexture;
-float4 color = float4(1,1,1,1);
-bool textureLoad;
-float4 isRelative = 1;
-float4 radius = 5;
-float borderSoft = 0.01;
-bool colorOverwritten = true;
 
-SamplerState tSampler
-{
-	Texture = sourceTexture;
-	MinFilter = Linear;
-	MagFilter = Linear;
-	MipFilter = Linear;
-	AddressU = Wrap;
-	AddressV = Wrap;
-};
-
-float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
-	float4 result = textureLoad?tex2D(tSampler,tex)*color:color;
-	float2 dd = float2(length(ddx(tex)),length(ddy(tex)));
-	float a = dd.x/dd.y;
-	float2 nTex = tex;
-	float2 center = float2(0.5/(a<=1?a:1),0.5/(a>=1?a:1));
-	float4 nRadius;
-	float aA = borderSoft*100;
-	float2 fixedPos = nTex-center;
-	float2 fPos,corner;
-	if(a<=1){
-		nTex.x /= a;
-		aA *= dd.y;
-		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.y,isRelative.y==1?radius.y/2:radius.y*dd.y,isRelative.z==1?radius.z/2:radius.z*dd.y,isRelative.w==1?radius.w/2:radius.w*dd.y);
-	}
-	else{
-		nTex.y *= a;
-		a = 1/a;
-		aA *= dd.x;
-		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.x,isRelative.y==1?radius.y/2:radius.y*dd.x,isRelative.z==1?radius.z/2:radius.z*dd.x,isRelative.w==1?radius.w/2:radius.w*dd.x);
-	}
-	//LTCorner
-	corner = center-nRadius.x;
-	fPos = -fixedPos;
-	if(fPos.x >= corner.x && fPos.y >= corner.y)
-	{
-		if(distance(fPos,corner) > nRadius.x-aA)
-			result.a *= 1-(distance(fPos,corner)-nRadius.x+aA)/aA;
-	}
-	//RTCorner
-	corner = center-nRadius.y;
-	fPos = float2(fixedPos.x,-fixedPos.y);
-	if(fPos.x >= corner.x && fPos.y >= corner.y)
-	{
-		if(distance(fPos,corner) > nRadius.y-aA)
-			result.a *= 1-(distance(fPos,corner)-nRadius.y+aA)/aA;
-	}
-	//RBCorner
-	corner = center-nRadius.z;
-	fPos = float2(fixedPos.x,fixedPos.y);
-	if(fPos.x >= corner.x && fPos.y >= corner.y)
-	{
-		if(distance(fPos,corner) > nRadius.z-aA)
-			result.a *= 1-(distance(fPos,corner)-nRadius.z+aA)/aA;
-	}
-	//LBCorner
-	corner = center-nRadius.w;
-	fPos = float2(-fixedPos.x,fixedPos.y);
-	if(fPos.x >= corner.x && fPos.y >= corner.y)
-	{
-		if(distance(fPos,corner) > nRadius.w-aA)
-			result.a *= 1-(distance(fPos,corner)-nRadius.w+aA)/aA;
-	}
-	result = clamp(result,0,1);
-	if(!colorOverwritten)
-		result.rgb = _color.rgb;
-	result.a *= _color.a;
-	return result;
-}
-technique rndRectTech
-{
-	pass P0
-	{
-		PixelShader = compile ps_2_a rndRect();
-	}
-}
-]]
 --[[
 roundRectShader = [
 texture sourceTexture;

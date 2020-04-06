@@ -4850,5 +4850,3 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 		calculateGuiPositionSize(attachSource,_,_,_,offsetW,offsetH,sizeRlt)
 	end
 end)
-
-loadStyleConfig()
