@@ -66,19 +66,19 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
         if(dis > nRadius.w-aA)
             result.a *= 1-(dis-nRadius.w+aA)/aA;
     }
-	if (fixedPos.y <= 0 && -fixedPos.x <= corner[0].x && fixedPos.x <= corner[1].x){
+	if (fixedPos.y <= 0 && -fixedPos.x <= corner[0].x && fixedPos.x <= corner[1].x && (nRadius[0] || nRadius[1])){
 		result.a *= clamp((fixedPos.y+center.y)/aA,0,1);
 	}
 	
-	if (fixedPos.y >= 0 && -fixedPos.x <= corner[3].x && fixedPos.x <= corner[2].x){
+	if (fixedPos.y >= 0 && -fixedPos.x <= corner[3].x && fixedPos.x <= corner[2].x && (nRadius[2] || nRadius[3])){
 		result.a *= clamp((-fixedPos.y+center.y)/aA,0,1);
 	}
 	
-	if (fixedPos.x <= 0 && -fixedPos.y <= corner[0].y && fixedPos.y <= corner[3].y){
+	if (fixedPos.x <= 0 && -fixedPos.y <= corner[0].y && fixedPos.y <= corner[3].y && (nRadius[0] || nRadius[3])){
 		result.a *= clamp((fixedPos.x+center.x)/aA,0,1);
 	}
 	
-	if (fixedPos.x >= 0 && -fixedPos.y <= corner[1].y && fixedPos.y <= corner[2].y){
+	if (fixedPos.x >= 0 && -fixedPos.y <= corner[1].y && fixedPos.y <= corner[2].y && (nRadius[1] || nRadius[2])){
 		result.a *= clamp((-fixedPos.x+center.x)/aA,0,1);
 	}
 

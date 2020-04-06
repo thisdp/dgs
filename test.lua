@@ -517,11 +517,19 @@ function languageTest_TabPanel()
 end
 
 function dgsRoundRectTest()
-	local rndRect = dgsCreateRoundRect({{80,false},{60,false},{40,false},{20,false}},tocolor(0,0,0,150))
-	local button = dgsCreateButton(200,200,400,600,"text",false)
+	local rndRect = dgsCreateRoundRect(0.5,true,tocolor(0,0,0,150))
+	local button = dgsCreateButton(200,200,800,400,"text",false)
 	dgsSetProperty(button,"image",{rndRect,rndRect,rndRect})
 	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
 	--local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
+end
+
+function dgsRoundRectWithWindowText()
+	local titleRoundRect = dgsCreateRoundRect({{5,false},{5,false}},tocolor(0,0,0,150))
+	local bgRoundRect = dgsCreateRoundRect({_,_,{5,false},{5,false}},tocolor(0,0,0,150))
+	local window = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example window",false)
+	dgsSetProperty(window,"titleImage",titleRoundRect)
+	dgsSetProperty(window,"image",bgRoundRect)
 end
 
 function test_switchButton()
