@@ -430,7 +430,7 @@
 		tabColor = {	--Background color of tab
 			tocolor(50,50,50,180),	--Normal
 			tocolor(80,80,80,190),	--Hover
-			tocolor(54,57,64,255),		--Select
+			tocolor(54,57,64,255),	--Select
 		},
 	---Image
 		bgImage = {},

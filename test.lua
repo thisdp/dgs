@@ -525,9 +525,11 @@ function dgsRoundRectTest()
 end
 
 function dgsRoundRectWithWindowText()
-	local titleRoundRect = dgsCreateRoundRect({{5,false},{5,false}},tocolor(0,0,0,150))
-	local bgRoundRect = dgsCreateRoundRect({_,_,{5,false},{5,false}},tocolor(0,0,0,150))
+	local titleRoundRect = dgsCreateRoundRect({{10,false},{10,false}},tocolor(0,0,0,255))
+	local bgRoundRect = dgsCreateRoundRect({_,_,{10,false},{10,false}},tocolor(0,0,0,255))
 	local window = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example window",false)
+	dgsRoundRectSetColorOverwritten(titleRoundRect,false)
+	dgsRoundRectSetColorOverwritten(bgRoundRect,false)
 	dgsSetProperty(window,"titleImage",titleRoundRect)
 	dgsSetProperty(window,"image",bgRoundRect)
 end
@@ -662,3 +664,4 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
+
