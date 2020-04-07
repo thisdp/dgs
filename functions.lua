@@ -365,6 +365,12 @@ function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notri
 end
 
 function dgsSetAlpha(dgsEle,alpha,absolute)
+	if type(dgsEle) == "table" then
+		for i=1,#dgsEle do
+			dgsSetAlpha(dgsEle[i],alpha,absolute)
+		end
+		return true
+	end
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	assert(type(alpha) == "number","Bad argument @dgsSetAlpha at argument 2, expect a number got "..type(alpha))
 	alpha = absolute and alpha/255 or alpha
