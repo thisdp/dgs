@@ -76,6 +76,12 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 end
 
 function dgsProgressBarSetStyle(progressbar,style,settingTable)
+	if type(progressbar) == "table" then
+		for i=1,#progressbar do
+			dgsProgressBarSetStyle(progressbar[i],style,settingTable)
+		end
+		return true
+	end
 	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetStyle at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
 	if ProgressBarStyle[style] then
 		dgsSetData(progressbar,"style",style)

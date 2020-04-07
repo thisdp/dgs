@@ -24,12 +24,12 @@ SamplerState sourceSamplerPixelated
 	AddressV = Wrap;
 };
 
-float4 maskBGFilter(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0
+float4 maskBGFilter(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0
 {
 	float4 sampledTexture = isPixelated?tex2D(sourceSamplerPixelated,tex):tex2D(sourceSampler,tex);
 	float diffRGB = distance(sampledTexture.rgb,filterRGB);
 	sampledTexture.a *= (diffRGB-filterRange)/filterRange;
-	return sampledTexture*_color;
+	return sampledTexture*color;
 }
 
 technique maskTech

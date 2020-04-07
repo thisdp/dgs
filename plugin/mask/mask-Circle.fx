@@ -9,7 +9,7 @@ SamplerState sourceSampler
 	Texture = sourceTexture;
 };
 
-float4 maskCircle(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0
+float4 maskCircle(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0
 {
 	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
 	float2 texOffset = offset.z ? offset.xy : offset.xy*dxy;
@@ -17,7 +17,7 @@ float4 maskCircle(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0
 	float4 sampledTexture = tex2D(sourceSampler,(tex+texOffset)/texScale);
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	sampledTexture.a *= (1-distance(tex,0.5)-radius-borderSoft)/nBorderSoft;
-	return sampledTexture;
+	return sampledTexture*color;
 }
 
 technique maskTech
