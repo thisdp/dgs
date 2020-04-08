@@ -39,6 +39,7 @@
 	<script src="Core/scrollpane.lua" type="client" />
 	<script src="Core/switchbutton.lua" type="client" />
 	<script src="Core/window.lua" type="client" />
+	<script src="Core/external.lua" type="client" />
 	
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
@@ -300,6 +301,8 @@
 	<export function="dgsComboBoxGetItemCount" type="client" />
 
 	<export function="dgsCreateButton" type="client" />
+	
+	<export function="dgsCreateExternal" type="client" />
 
 	<export function="dgsCreateEdit" type="client" />
 	<export function="dgsEditMoveCaret" type="client" />
@@ -611,6 +614,7 @@
 	<export function="dgsImportFunction" type="client" />
 	<export function="dgsImportOOPClass" type="client" />
 	<export function="dgsG2DLoadHooker" type="client" />
+	<export function="dgsConfigureTDX" type="client" />
 
 	<min_mta_version server="1.5.4-9.11342" client="1.5.6-9.16361" />
 	<aclrequest>

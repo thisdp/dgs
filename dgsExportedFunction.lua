@@ -16,6 +16,121 @@ for k,v in ipairs(nodes) do
 		end
 	end
 end
+-------------------------------TDX Lib Support
+
+--[[
+
+		local _dxDrawCircle = dxDrawCircle
+		dxDrawCircle = function(posX,posY,radius,startAngle,stopAngle,theColor,theCenterColor,segments,ratio,postGUI)
+			_dxDrawCircle(posX,posY,radius,startAngle,stopAngle,theColor,theCenterColor,segments,ratio,postGUI,true)
+		end
+		local _dxDrawImage = dxDrawImage
+		dxDrawImage = function(posX,posY,width,height,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
+			_dxDrawImage(posX,posY,width,height,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,true)
+		end
+		local _dxDrawImageSection = dxDrawImageSection
+		dxDrawImageSection = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
+			_dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,true)
+		end
+		local _dxDrawLine = dxDrawLine
+		dxDrawLine = function(startX,startY,endX,endY,color,width,postGUI) 
+			_dxDrawLine(startX,startY,endX,endY,color,width,true)
+		end
+		local _dxDrawLine3D = dxDrawLine3D
+		dxDrawLine3D = function(startX,startY,startZ,endX,endY,endZ,color,width,postGUI) 
+			_dxDrawLine3D(startX,startY,startZ,endX,endY,endZ,color,width,true)
+		end
+		local _dxDrawRectangle = dxDrawRectangle
+		dxDrawRectangle = function(startX,startY,width,height,color,postGUI,subPixelPositioning)
+			_dxDrawRectangle(startX,startY,width,height,color,true,subPixelPositioning)
+		end
+		local _dxDrawText = dxDrawText
+		dxDrawText = function(text,leftX,topY,rightX,bottomY,color,scaleXY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRotation,fRotationCenterX,fRotationCenterY)
+			_dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleXY,font,alignX,alignY,clip,wordBreak,true,colorCoded,subPixelPositioning,fRotation,fRotationCenterX,fRotationCenterY)
+		end]]
+
+function dgsConfigureTDX()
+	return [[
+		---
+		addEvent("onDgsRenderTDX",true)
+		local DGSResName = "]]..getResourceName(getThisResource())..[["
+		exports[DGSResName]:dgsSetRenderSetting("postGUI",false)	--for compatibility for TDX
+		local __addEventHandler = addEventHandler
+		local __removeEventHandler = removeEventHandler
+		local DGSTDXRef = {}
+		local TDXDGSRef = {}
+		local TDXClassFncRef = {}
+		local DGSTDXQueue = {
+			onClientRender={},
+			onClientPreRender={},
+		}
+		local eventRep = {
+			onClientRender		=	"DGSI_onClientRender_",
+			onClientPreRender	=	"DGSI_onClientPreRender_",
+		}
+		DGSConfigured = true
+		function addEventHandler(eventN,sourceEle,fnc,...)
+			if eventRep[eventN] then
+				DGSTDXQueue[eventN][fnc] = true
+			end
+			eventN = eventRep[eventN] or eventN
+			return __addEventHandler(eventN,sourceEle,fnc,...)
+		end
+		
+		function removeEventHandler(eventN,sourceEle,fnc,...)
+			if eventRep[eventN] then
+				DGSTDXQueue[eventN][fnc] = nil
+			end
+			eventN = eventRep[eventN] or eventN
+			return __addEventHandler(eventN,sourceEle,fnc,...)
+		end
+		
+		local _new = new
+		local _delete = delete
+		local _getPrivateMethod = getPrivateMethod
+		local _DxElementBringToFront = DxElement.bringToFront
+		local _DxElementSendToBack = DxElement.sendToBack
+		DxElement.bringToFront = function(self,...)
+			_DxElementBringToFront(self,...)
+			if TDXDGSRef[self] then
+				exports[DGSResName]:dgsBringToFront(TDXDGSRef[self])
+			end
+		end
+		DxElement.sendToBack = function(self,...)
+			_DxElementSendToBack(self,...)
+			if TDXDGSRef[self] then
+				exports[DGSResName]:dgsMoveToBack(TDXDGSRef[self])
+			end
+		end
+		new = function(...)
+			local result = _new(...)
+			TDXDGSRef[result] = exports[DGSResName]:dgsCreateExternal(_,_,"onDgsRenderTDX")
+			DGSTDXRef[ TDXDGSRef[result] ] = result
+			return result
+		end
+		delete = function(self,...)
+			if isElement(TDXDGSRef[self]) then
+				DGSTDXRef[ TDXDGSRef[self] ] = nil
+				destroyElement(TDXDGSRef[self])
+				TDXDGSRef[self] = nil
+				TDXClassFncRef[self] = nil
+			end
+			return _delete(self,...)
+		end
+		
+		addEventHandler("onDgsRenderTDX",root,function()
+			local self = DGSTDXRef[source]
+			local renderFnc = getPrivateMethod(self, "render")
+			local prerenderFnc = getPrivateMethod(self, "prerender")
+			if DGSTDXQueue["onClientPreRender"][prerenderFnc] then
+				prerenderFnc()
+			end
+			if DGSTDXQueue["onClientRender"][renderFnc] then
+				renderFnc()
+			end
+		end)
+	]]
+end
 
 function dgsGetExportedFunctionName(name)
 	if name then

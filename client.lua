@@ -3623,6 +3623,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 			else
 				visible = false
 			end
+		elseif dxType == "dgs-dxexternal" then
+			local renderEvent = eleData.externalRenderer
+			if renderEvent then
+				triggerEvent(renderEvent,v)
+			end
 		else
 			interrupted = true
 		end
