@@ -325,12 +325,6 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	return true
 end
 
-function dgsMemoGetLineCount(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	local textTable = dgsElementData[memo].text
-	return #textTable
-end
-
 function dgsMemoGetLineLength(memo,line)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	local textTable = dgsElementData[memo].text
