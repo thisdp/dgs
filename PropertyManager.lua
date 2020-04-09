@@ -203,7 +203,6 @@ function dgsSetData(element,key,value,nocheck)
 						dgsElementData[element]._translationText = value
 						value = dgsTranslate(element,value,sourceResource)
 					else
-						print(dgsElementData[element]._translationText,value,"set nil")
 						dgsElementData[element]._translationText = nil
 					end
 					dgsElementData[element].text = tostring(value)
