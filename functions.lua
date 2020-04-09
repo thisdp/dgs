@@ -885,6 +885,12 @@ function dgsGetTranslationName(dgsEle)
 	return dgsElementData[dgsEle]._translang
 end
 
+function dgsGetTranslationValue(name,key)
+	if name and LanguageTranslation[name] then
+		return LanguageTranslation[name][key]
+	end
+	return false
+end
 --------------Translation Interior
 LanguageTranslationSupport = {
 	"dgs-dx3dtext",
