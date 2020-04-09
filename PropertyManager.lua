@@ -94,18 +94,18 @@ function dgsSetData(element,key,value,nocheck)
 					end
 				elseif dgsType == "dgs-dxtab" then
 					if key == "text" then
-						local tabpanel = dgsElementData[element].parent
-						local w = dgsElementData[tabpanel].absSize[1]
-						local t_minWid = dgsElementData[tabpanel].tabMinWidth
-						local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-						local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-						local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 						if type(value) == "table" then
 							dgsElementData[element]._translationText = value
 							value = dgsTranslate(element,value,sourceResource)
 						else
 							dgsElementData[element]._translationText = nil
 						end
+						local tabpanel = dgsElementData[element].parent
+						local w = dgsElementData[tabpanel].absSize[1]
+						local t_minWid = dgsElementData[tabpanel].tabMinWidth
+						local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
+						local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
+						local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 						dgsElementData[element].text = tostring(value)
 						dgsSetData(element,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[element].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
 						
@@ -203,6 +203,7 @@ function dgsSetData(element,key,value,nocheck)
 						dgsElementData[element]._translationText = value
 						value = dgsTranslate(element,value,sourceResource)
 					else
+						print(dgsElementData[element]._translationText,value,"set nil")
 						dgsElementData[element]._translationText = nil
 					end
 					dgsElementData[element].text = tostring(value)

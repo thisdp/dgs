@@ -44,11 +44,6 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	dgsSetParent(tab,tabpanel,true,true)
 	dgsSetData(tab,"parent",tabpanel)
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or getThisResource()])
-	if type(text) == "table" then
-		dgsElementData[tab]._translationText = text
-		text = dgsTranslate(tab,text,sourceResource)
-	end
-	dgsSetData(tab,"text",tostring(text),true)
 	local tabs = dgsElementData[tabpanel].tabs
 	local id = #tabs+1
 	table.insert(tabs,id,tab)
@@ -82,6 +77,12 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	dgsSetData(tab,"tabColor",{tabnorcolor,tabhovcolor,tabclicolor})
 	if dgsElementData[tabpanel].selected == -1 then
 		dgsSetData(tabpanel,"selected",id)
+	end
+	if type(text) == "table" then
+		dgsElementData[tab]._translationText = text
+		dgsSetData(tab,"text",text)
+	else
+		dgsSetData(tab,"text",tostring(text))
 	end
 	triggerEvent("onDgsCreate",tab)
 	return tab

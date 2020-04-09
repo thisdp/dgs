@@ -21,9 +21,10 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[button]._translationText = text
-		text = dgsTranslate(button,text,sourceResource)
+		dgsSetData(button,"text",text)
+	else
+		dgsSetData(button,"text",tostring(text))
 	end
-	dgsSetData(button,"text",tostring(text))
 	dgsSetData(button,"textColor",tonumber(textColor) or styleSettings.button.textColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.button.textSize[1], tonumber(scaley) or styleSettings.button.textSize[2]
 	dgsSetData(button,"textSize",{textSizeX,textSizeY})

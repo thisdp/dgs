@@ -18,9 +18,10 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	dgsAttachToTranslation(text3d,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[text3d]._translationText = text
-		text = dgsTranslate(text3d,text,sourceResource)
+		dgsSetData(text3d,"text",text)
+	else
+		dgsSetData(text3d,"text",tostring(text))
 	end
-	dgsSetData(text3d,"text",tostring(text))
 	dgsSetData(text3d,"colorcode",colorcode or false)
 	triggerEvent("onDgsCreate",text3d,sourceResource)
 	return text3d

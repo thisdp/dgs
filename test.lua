@@ -665,3 +665,62 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
 
+addEventHandler("onClientResourceStart", getRootElement(), function()
+    showChat(false)
+end)
+local chatBox = {
+    main = {},
+    tab = {},
+    edit = {}
+}
+local screenW, screenH = guiGetScreenSize()
+local categoryTable = {"IC", "OOC", "Admin", "Faction"}
+local maxOutputs = 5
+
+chatBox.main[1] = exports['dgs']:dgsCreateTabPanel(screenW * 0.0052, screenH * 0.0093, screenW * 0.2219, screenH * 0.2843, false)
+for i, name in pairs(categoryTable) do 
+    chatBox.tab[i] = exports['dgs']:dgsCreateTab(name, chatBox.main[1])
+    exports['dgs']:dgsSetProperty(chatBox.tab[i], "width", dxGetTextWidth(name) * 2)
+
+    chatBox.edit[i] = exports['dgs']:dgsCreateEdit(0.01, 0.248, 0.21, 0.035, "", true)
+    exports['dgs']:dgsEditSetPlaceHolder(chatBox.edit[i], "Press 'T' to write")
+
+end
+
+function getActiveTab()
+    local selected = exports['dgs']:dgsGetSelectedTab(chatBox.main[1])
+    return exports['dgs']:dgsTabPanelGetTabID(selected)
+end
+
+bindKey("t", "down", function()
+    exports['dgs']:dgsFocus(chatBox.edit[getActiveTab()])
+	showCursor(true)
+end)
+
+addEventHandler("onDgsEditAccepted", chatBox.edit[getActiveTab()], function()
+    if source == chatBox.edit[getActiveTab()] then
+        showCursor(false)
+        local text = exports['dgs']:dgsGetText(chatBox.edit[getActiveTab()])
+        outputDebugString(text)
+        exports['dgs']:dgsEditClearText(chatBox.edit[getActiveTab()])
+        exports['dgs']:dgsBlur(chatBox.edit[getActiveTab()])
+    end
+end)
+
+DGS = exports.dgs
+TranslationTable = {}
+TranslationTable.EN ={
+	login = "Login",
+	register = "Register",
+}
+TranslationTable.CN ={
+	login = "登录",
+	register = "注册",
+}
+
+dgsSetTranslationTable("Locale",TranslationTable.EN) --Use "TranslationTable.EN" as global translation table
+dgsSetAttachTranslation("Locale") --Set global translation table
+button = DGS:dgsCreateButton(200,200,200,100,{"login"},false) --Create a button with "login"
+setTimer(function()
+	dgsSetTranslationTable("Locale",TranslationTable.CN) --Use "TranslationTable.CN" as global translation table
+end,1000,1)

@@ -14,9 +14,10 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[label]._translationText = text
-		text = dgsTranslate(label,text,sourceResource)
+		dgsSetData(label,"text",text)
+	else
+		dgsSetData(label,"text",tostring(text))
 	end
-	dgsSetData(label,"text",tostring(text))
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.label.textSize[1], tonumber(scaley) or styleSettings.label.textSize[2]
 	dgsSetData(label,"textSize",{textSizeX,textSizeY})
 	dgsSetData(label,"clip",false)
