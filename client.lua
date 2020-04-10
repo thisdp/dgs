@@ -133,6 +133,9 @@ function dgsCoreRender()
 		MouseData.arrowListEnter = false
 	end
 	local normalMx,normalMy = mx,my
+	if BlurBoxGlobalScreenSource then
+		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	end
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize ~= 0 then
 		local dgsData = dgsElementData
 		dxSetRenderTarget()
@@ -1555,7 +1558,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
-						dxSetBlendMode(rndtgt and "modulate_add" or "add")
+						dxSetBlendMode("blend")
 						if bgImage then
 							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 						else
@@ -1640,7 +1643,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
-						dxSetBlendMode(rndtgt and "modulate_add" or "add")
+						dxSetBlendMode("blend")
 						if bgImage then
 							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 						else
@@ -4252,6 +4255,14 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(image) then
 				if dgsElementData[image] and dgsElementData[image].parent == image then
 					destroyElement(image)
+				end
+			end
+		elseif dgsType == "shader" then
+			if dgsElementData[source].asPlugin == "dgs-dxblurbox" then
+				blurboxShaders = blurboxShaders-1
+				if blurboxShaders == 0 and BlurBoxGlobalScreenSource then
+					destroyElement(BlurBoxGlobalScreenSource)
+					BlurBoxGlobalScreenSource = nil
 				end
 			end
 		end
