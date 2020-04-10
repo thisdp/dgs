@@ -19,7 +19,7 @@ function dgsBlurBoxRender(blurBox,x,y,w,h,postGUI,updateScreenSource)
 	if updateScreenSource then
 		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 	end
-	dxDrawImageSection(x,y,w,h,x,y,w,h,blurBox,0,0,0,0xFFFFFFFF,postGUI or false)
+	dxDrawImageSection(x,y,w,h,x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,blurBox,0,0,0,0xFFFFFFFF,postGUI or false)
 end
 
 ----------------Shader
