@@ -1,4 +1,5 @@
 BlurBoxGlobalScreenSource = false
+blurboxShaders = 0
 local blurBoxShader 
 
 function dgsCreateBlurBox()
@@ -8,12 +9,15 @@ function dgsCreateBlurBox()
 	local shader = dxCreateShader(blurBoxShader)
 	dgsSetData(shader,"asPlugin","dgs-dxblurbox")
 	dxSetShaderValue(shader,"screenSource",BlurBoxGlobalScreenSource)
+	blurboxShaders = blurboxShaders+1
 	triggerEvent("onDgsPluginCreate",shader,sourceResource)
 	return shader
 end
 
-function dgsBlurBoxRender(blurBox,x,y,w,h,postGUI)
-	dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+function dgsBlurBoxRender(blurBox,x,y,w,h,postGUI,updateScreenSource)
+	if updateScreenSource then
+		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	end
 	dxDrawImageSection(x,y,w,h,x,y,w,h,blurBox,0,0,0,0xFFFFFFFF,postGUI or false)
 end
 
