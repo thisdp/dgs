@@ -132,10 +132,10 @@ function dgsCoreRender()
 		end
 		MouseData.arrowListEnter = false
 	end
-	local normalMx,normalMy = mx,my
 	if BlurBoxGlobalScreenSource then
 		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 	end
+	local normalMx,normalMy = mx,my
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize ~= 0 then
 		local dgsData = dgsElementData
 		dxSetRenderTarget()
@@ -4260,7 +4260,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		elseif dgsType == "shader" then
 			if dgsElementData[source].asPlugin == "dgs-dxblurbox" then
 				blurboxShaders = blurboxShaders-1
-				if blurboxShaders == 0 and BlurBoxGlobalScreenSource then
+				if blurboxShaders == 0 and isElement(BlurBoxGlobalScreenSource) then
 					destroyElement(BlurBoxGlobalScreenSource)
 					BlurBoxGlobalScreenSource = nil
 				end
