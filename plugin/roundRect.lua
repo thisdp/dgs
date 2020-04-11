@@ -1,10 +1,11 @@
-local roundRectShader = [[
+roundRectShader = [[
 texture sourceTexture;
 float4 color = float4(1,1,1,1);
-bool textureLoad;
+bool textureLoad = false;
+bool textureRotated = false;
 float4 isRelative = 1;
-float4 radius = 5;
-float borderSoft = 0.01;
+float4 radius = 0.2;
+float borderSoft = 0.02;
 bool colorOverwritten = true;
 
 SamplerState tSampler
@@ -18,74 +19,62 @@ SamplerState tSampler
 };
 
 float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
-	float4 result = textureLoad?tex2D(tSampler,tex)*color:color;
-	float2 dd = float2(length(ddx(tex)),length(ddy(tex)));
+	float4 result = textureLoad?tex2D(tSampler,textureRotated?tex.yx:tex)*color:color;
+	float alp = 1;
+	float2 dx = ddx(tex);
+	float2 dy = ddy(tex);
+	float2 dd = float2(length(float2(dx.x,dy.x)),length(float2(dx.y,dy.y)));
 	float a = dd.x/dd.y;
-	float2 nTex = tex;
 	float2 center = float2(0.5/(a<=1?a:1),0.5*(a<=1?1:a));
 	float4 nRadius;
 	float aA = borderSoft*100;
 	if(a<=1){
-		nTex.x /= a;
+		tex.x /= a;
 		aA *= dd.y;
 		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.y,isRelative.y==1?radius.y/2:radius.y*dd.y,isRelative.z==1?radius.z/2:radius.z*dd.y,isRelative.w==1?radius.w/2:radius.w*dd.y);
 	}
 	else{
-		nTex.y *= a;
-		a = 1/a;
+		tex.y *= a;
 		aA *= dd.x;
 		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.x,isRelative.y==1?radius.y/2:radius.y*dd.x,isRelative.z==1?radius.z/2:radius.z*dd.x,isRelative.w==1?radius.w/2:radius.w*dd.x);
 	}
-	float2 fixedPos = nTex-center;
+	float2 fixedPos = tex-center;
 	float2 corner[] = {center-nRadius.x,center-nRadius.y,center-nRadius.z,center-nRadius.w};
 	//LTCorner
 	if(-fixedPos.x >= corner[0].x && -fixedPos.y >= corner[0].y)
 	{
 		float dis = distance(-fixedPos,corner[0]);
-		if(dis > nRadius.x-aA)
-			result.a *= 1-(dis-nRadius.x+aA)/aA;
+		alp = 1-(dis-nRadius.x+aA)/aA;
 	}
 	//RTCorner
     if(fixedPos.x >= corner[1].x && -fixedPos.y >= corner[1].y)
     {
-        float dis = distance(float2(fixedPos.x,-fixedPos.y),corner[1]);
-        if(dis > nRadius.y-aA)
-            result.a *= 1-(dis-nRadius.y+aA)/aA;
+		float dis = distance(float2(fixedPos.x,-fixedPos.y),corner[1]);
+		alp = 1-(dis-nRadius.y+aA)/aA;
     }
     //RBCorner
     if(fixedPos.x >= corner[2].x && fixedPos.y >= corner[2].y)
     {
-        float dis = distance(float2(fixedPos.x,fixedPos.y),corner[2]);
-        if(dis > nRadius.z-aA)
-            result.a *= 1-(dis-nRadius.z+aA)/aA;
+		float dis = distance(float2(fixedPos.x,fixedPos.y),corner[2]);
+		alp = 1-(dis-nRadius.z+aA)/aA;
     }
     //LBCorner
     if(-fixedPos.x >= corner[3].x && fixedPos.y >= corner[3].y)
     {
-        float dis = distance(float2(-fixedPos.x,fixedPos.y),corner[3]);
-        if(dis > nRadius.w-aA)
-            result.a *= 1-(dis-nRadius.w+aA)/aA;
+		float dis = distance(float2(-fixedPos.x,fixedPos.y),corner[3]);
+		alp = 1-(dis-nRadius.w+aA)/aA;
     }
 	if (fixedPos.y <= 0 && -fixedPos.x <= corner[0].x && fixedPos.x <= corner[1].x && (nRadius[0] || nRadius[1])){
-		result.a *= clamp((fixedPos.y+center.y)/aA,0,1);
+		alp = (fixedPos.y+center.y)/aA;
+	}else if (fixedPos.y >= 0 && -fixedPos.x <= corner[3].x && fixedPos.x <= corner[2].x && (nRadius[2] || nRadius[3])){
+		alp = (-fixedPos.y+center.y)/aA;
+	}else if (fixedPos.x <= 0 && -fixedPos.y <= corner[0].y && fixedPos.y <= corner[3].y && (nRadius[0] || nRadius[3])){
+		alp = (fixedPos.x+center.x)/aA;
+	}else if (fixedPos.x >= 0 && -fixedPos.y <= corner[1].y && fixedPos.y <= corner[2].y && (nRadius[1] || nRadius[2])){
+		alp = (-fixedPos.x+center.x)/aA;
 	}
-	
-	if (fixedPos.y >= 0 && -fixedPos.x <= corner[3].x && fixedPos.x <= corner[2].x && (nRadius[2] || nRadius[3])){
-		result.a *= clamp((-fixedPos.y+center.y)/aA,0,1);
-	}
-	
-	if (fixedPos.x <= 0 && -fixedPos.y <= corner[0].y && fixedPos.y <= corner[3].y && (nRadius[0] || nRadius[3])){
-		result.a *= clamp((fixedPos.x+center.x)/aA,0,1);
-	}
-	
-	if (fixedPos.x >= 0 && -fixedPos.y <= corner[1].y && fixedPos.y <= corner[2].y && (nRadius[1] || nRadius[2])){
-		result.a *= clamp((-fixedPos.x+center.x)/aA,0,1);
-	}
-
-	result = clamp(result,0,1);
-	if(!colorOverwritten)
-		result.rgb = _color.rgb;
-	result.a *= _color.a;
+	result.rgb = colorOverwritten?result.rgb:_color.rgb;
+	result.a *= _color.a*clamp(alp,0,1);
 	return result;
 }
 technique rndRectTech

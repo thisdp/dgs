@@ -479,8 +479,11 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 	elseif dgsBasicType == "dgs-dxcustomrenderer" then
 		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	else
-		if dgsGetPluginType(image) == "dgs-dxcanvas" then
+		local pluginType = dgsGetPluginType(image)
+		if pluginType == "dgs-dxcanvas" then
 			dgsCanvasRender(image)
+		elseif pluginType == "dgs-dxblurbox" then
+			return _dxDrawImageSection(posX,posY,width,height,posX*blurboxFactor,posY*blurboxFactor,width*blurboxFactor,height*blurboxFactor,image,rotation,rotationX,rotationY,color,false)
 		end
 		return _dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	end

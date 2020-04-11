@@ -19,27 +19,19 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	local imageNormalOn = dgsCreateTextureFromStyle(imageOn[1])
 	local imageHoverOn = dgsCreateTextureFromStyle(imageOn[2])
 	local imageClickOn = dgsCreateTextureFromStyle(imageOn[3])
-	
-	--[[local imageNormalOn = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
-	local imageHoverOn = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
-	local imageClickOn = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)]]
 	dgsSetData(switchbutton,"imageOn",{imageNormalOn,imageHoverOn,imageClickOn})
 	
 	local imageOff = styleSettings.switchbutton.imageOff
 	local imageNormalOff = dgsCreateTextureFromStyle(imageOff[1])
 	local imageHoverOff = dgsCreateTextureFromStyle(imageOff[2])
 	local imageClickOff = dgsCreateTextureFromStyle(imageOff[3])
-	
-	--[[local imageNormalOff = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
-	local imageHoverOff = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)
-	local imageClickOff = dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage)]]
 	dgsSetData(switchbutton,"imageOff",{imageNormalOff,imageHoverOff,imageClickOff})
 	
 	local cursorImage = styleSettings.switchbutton.cursorImage
-	local norimg_c = dgsCreateTextureFromStyle(cursorImage[1])
-	local hovimg_c = dgsCreateTextureFromStyle(cursorImage[2])
-	local cliimg_c = dgsCreateTextureFromStyle(cursorImage[3])
-	dgsSetData(switchbutton,"cursorImage",{norimg_c,selimg_c,cliimg_c})
+	local cursorNormal = dgsCreateTextureFromStyle(cursorImage[1])
+	local cursorHover = dgsCreateTextureFromStyle(cursorImage[2])
+	local cursorClick = dgsCreateTextureFromStyle(cursorImage[3])
+	dgsSetData(switchbutton,"cursorImage",{cursorNormal,cursorHover,cursorClick})
 	
 	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or getThisResource()])
 	if type(textOn) == "table" then

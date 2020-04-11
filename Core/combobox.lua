@@ -163,6 +163,7 @@ function dgsComboBoxSetEditEnabled(combobox,enabled)
 			local edit = dgsCreateEdit(0,0,buttonLen,h,dgsElementData[combobox].caption,false,combobox)
 			dgsSetData(edit,"bgColor",0)
 			dgsSetData(combobox,"captionEdit",edit)
+			dgsSetData(edit,"padding",dgsElementData[combobox].comboTextSide)
 			if not dgsElementData[combobox].textBox then
 				dgsSetVisible(edit,false)
 			end

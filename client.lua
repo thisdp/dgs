@@ -132,6 +132,9 @@ function dgsCoreRender()
 		end
 		MouseData.arrowListEnter = false
 	end
+	if BlurBoxGlobalScreenSource then
+		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	end
 	local normalMx,normalMy = mx,my
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize ~= 0 then
 		local dgsData = dgsElementData
@@ -1555,7 +1558,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
-						dxSetBlendMode(rndtgt and "modulate_add" or "add")
+						dxSetBlendMode("blend")
 						if bgImage then
 							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 						else
@@ -1640,7 +1643,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
-						dxSetBlendMode(rndtgt and "modulate_add" or "add")
+						dxSetBlendMode(rndtgt and "add" or "blend")
 						if bgImage then
 							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
 						else
@@ -1765,7 +1768,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						bgColor = applyColorAlpha(bgColor,galpha)
 						dxDrawRectangle(x,y,relSizX,relSizY,bgColor,rendSet)
 					end
-					dxSetBlendMode("add")
+					dxSetBlendMode("blend")
 					local filter = eleData.filter
 					local drawTarget = newRndTgt
 					if filter then
@@ -1836,6 +1839,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local arrowImage = eleData.arrowImage or image[1]
 				local cursorImage = eleData.cursorImage or image[2]
 				local troughImage = eleData.troughImage or image[3]
+				if type(troughImage) ~= "table" then
+					troughImage = {troughImage,troughImage}
+				end
 				local pos = eleData.position
 				local length,lrlt = eleData.length[1],eleData.length[2]
 				local cursorColor = eleData.cursorColor
@@ -1958,13 +1964,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local troughPart1 = {x+arrowWidth,cursorCenter}
 					local troughPart2 = {x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter}
 					local imgRotVert = imgRot[2]
-					if troughImage then
-						dxDrawImage(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,troughImage,imgRotVert[3],0,0,tempTroughColor[1],rendSet)
-						dxDrawImage(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,troughImage,imgRotVert[3],0,0,tempTroughColor[2],rendSet)
-					else
-						dxDrawRectangle(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,tempTroughColor[1],rendSet)
-						dxDrawRectangle(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,tempTroughColor[2],rendSet)
-					end
+					local __ = troughImage[1] and dxDrawImage(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,troughImage[1],imgRotVert[3],0,0,tempTroughColor[1],rendSet) or dxDrawRectangle(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,tempTroughColor[1],rendSet)
+					local __ = troughImage[2] and dxDrawImage(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,troughImage[2],imgRotVert[3],0,0,tempTroughColor[2],rendSet) or dxDrawRectangle(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,tempTroughColor[2],rendSet)
 					if scrollArrow then
 						if tempArrowBgColor then
 							dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
@@ -1983,13 +1984,8 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local troughPart1 = {y+arrowWidth,cursorCenter}
 					local troughPart2 = {y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter}
 					local imgRotHorz = imgRot[1]
-					if troughImage then
-						dxDrawImage(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],troughImage,imgRotHorz[3],0,0,tempTroughColor[1],rendSet)
-						dxDrawImage(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],troughImage,imgRotHorz[3],0,0,tempTroughColor[2],rendSet)
-					else
-						dxDrawRectangle(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],tempTroughColor[1],rendSet)
-						dxDrawRectangle(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],tempTroughColor[2],rendSet)
-					end
+					local __ = troughImage[1] and dxDrawImage(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],troughImage[1],imgRotHorz[3],0,0,tempTroughColor[1],rendSet) or dxDrawRectangle(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],tempTroughColor[1],rendSet)
+					local __ = troughImage[2] and dxDrawImage(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],troughImage[2],imgRotHorz[3],0,0,tempTroughColor[2],rendSet) or dxDrawRectangle(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],tempTroughColor[2],rendSet)
 					if scrollArrow then
 						if tempArrowBgColor then
 							dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],rendSet)
@@ -2980,7 +2976,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local rendt = eleData.renderTarget
 					if isElement(rendt) then
 						dxSetRenderTarget(rendt,true)
-						dxSetBlendMode("modulate_add")
+						dxSetBlendMode("blend")
 						local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
 						local tabsize = -eleData.showPos*(dgsTabPanelGetWidth(v)-w)
 						local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
@@ -4252,6 +4248,14 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(image) then
 				if dgsElementData[image] and dgsElementData[image].parent == image then
 					destroyElement(image)
+				end
+			end
+		elseif dgsType == "shader" then
+			if dgsElementData[source].asPlugin == "dgs-dxblurbox" then
+				blurboxShaders = blurboxShaders-1
+				if blurboxShaders == 0 and isElement(BlurBoxGlobalScreenSource) then
+					destroyElement(BlurBoxGlobalScreenSource)
+					BlurBoxGlobalScreenSource = nil
 				end
 			end
 		end

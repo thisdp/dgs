@@ -342,7 +342,8 @@
 	---Image
 		arrowImage = {"Images/scrollbar/scrollbar_arrow.png"},		--Arrow image
 		cursorImage = nil,											--Cursor image
-		troughImage = nil,											--Trough image
+		troughImage = nil,											--Trough image for vertical and horizontal
+		troughImageHorizontal = nil,								--Trough image for horizontal only
 		arrowBgColor = {
 			tocolor(30,30,30,255),	--Normal
 			tocolor(30,30,30,255),	--Hover
@@ -350,9 +351,13 @@
 		},
 	---Values
 		scrollArrow = true,
-		cursorWidth={1,true},
-		troughWidth=false,	--False for using cursorWidth
-		arrowWidth=false,	--False for using cursorWidth
+		cursorWidth = {1,true},
+		troughWidth = false,	--False for using cursorWidth
+		arrowWidth = false,	--False for using cursorWidth
+		imageRotation = {
+			{0,270,270},--{Horizontal}, (arrows,cursor,trough)
+			{270,0,0},--{Vertical}, (arrows,cursor,trough)
+		}
 	},
 
 -----------------------------------------------------------------------------------DGS Scroll Pane

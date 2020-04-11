@@ -6,6 +6,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	assert(type(y) == "number","Bad argument @dgsCreateScrollBar at argument 2, expect number got "..type(y))
 	assert(type(sx) == "number","Bad argument @dgsCreateScrollBar at argument 3, expect number got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy))
+	local isHorizontal = isHorizontal or false
 	local scrollbar = createElement("dgs-dxscrollbar")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true,true) or table.insert(CenterFatherTable,scrollbar)
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
@@ -13,8 +14,15 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	local deprecatedImage = styleSettings.scrollbar.image or {}
 	local arrowImage = arrowImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage) or dgsCreateTextureFromStyle(deprecatedImage[1])
 	local cursorImage = cursorImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.cursorImage) or dgsCreateTextureFromStyle(deprecatedImage[2])
-	local troughImage = troughImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.troughImage) or dgsCreateTextureFromStyle(deprecatedImage[3])
-	dgsSetData(scrollbar,"imageRotation",{{0,270,270},{270,0,0}})	--{Horizontal},{Vertical} (arrows,cursor,trough)
+	if not troughImage then
+		troughImage = isHorizontal and styleSettings.scrollbar.troughImageHorizontal or styleSettings.scrollbar.troughImage
+		if type(troughImage[1]) == "table" then
+			troughImage = {dgsCreateTextureFromStyle(troughImage[1]),dgsCreateTextureFromStyle(troughImage[2])}
+		else
+			troughImage = dgsCreateTextureFromStyle(troughImage)
+		end
+	end
+	dgsSetData(scrollbar,"imageRotation",styleSettings.scrollbar.imageRotation)
 	dgsSetData(scrollbar,"arrowColor",{arrowColorNormal or styleSettings.scrollbar.arrowColor[1],arrowColorHover or styleSettings.scrollbar.arrowColor[2],arrowColorClick or styleSettings.scrollbar.arrowColor[3]})
 	dgsSetData(scrollbar,"cursorColor",{cursorColorNormal or styleSettings.scrollbar.cursorColor[1],cursorColorHover or styleSettings.scrollbar.cursorColor[2],cursorColorClick or styleSettings.scrollbar.cursorColor[3]})
 	dgsSetData(scrollbar,"troughColor",troughColor or styleSettings.scrollbar.troughColor)
@@ -22,7 +30,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	dgsSetData(scrollbar,"cursorImage",cursorImage)
 	dgsSetData(scrollbar,"troughImage",troughImage)
 	dgsSetData(scrollbar,"arrowBgColor",styleSettings.scrollbar.arrowBgColor or false)
-	dgsSetData(scrollbar,"isHorizontal",isHorizontal or false) --vertical or horizontal
+	dgsSetData(scrollbar,"isHorizontal",isHorizontal) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
 	dgsSetData(scrollbar,"length",{30,false},true)
 	dgsSetData(scrollbar,"multiplier",{1,false})
