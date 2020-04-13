@@ -16,7 +16,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	local cursorImage = cursorImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.cursorImage) or dgsCreateTextureFromStyle(deprecatedImage[2])
 	if not troughImage then
 		troughImage = isHorizontal and styleSettings.scrollbar.troughImageHorizontal or styleSettings.scrollbar.troughImage
-		if troughImage type(troughImage) == "table" then
+		if troughImage and type(troughImage) == "table" then
 			if type(troughImage[1]) == "table" then
 				troughImage = {dgsCreateTextureFromStyle(troughImage[1]),dgsCreateTextureFromStyle(troughImage[2])}
 			else
