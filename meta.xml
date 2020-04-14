@@ -1,7 +1,6 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
 	<file src="media.html" />
-	<file src="meta.xml" />
 	<file src="styleManager/styleMapper.lua"/>
 	<file src="shaders/textureRelight.fx" />
 	<file src="shaders/mta-helper.fx" />

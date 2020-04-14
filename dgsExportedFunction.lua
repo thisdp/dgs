@@ -1,21 +1,10 @@
 dgsExportedFunctionName = {}
 dgsResName = getResourceName(getThisResource())
-local metafile = xmlLoadFile("meta.xml")
-local nodes = xmlNodeGetChildren(metafile)
 
 addEventHandler("onClientResourceStart",resourceRoot,function()
 	triggerEvent("onDgsStart",resourceRoot,dgsResName)
 end)
 
-for k,v in ipairs(nodes) do
-	if xmlNodeGetName(v) == "export" then
-		local func = xmlNodeGetAttribute(v,"function")
-		local typ = xmlNodeGetAttribute(v,"type")
-		if typ == "client" or typ == "shared" then
-			dgsExportedFunctionName[func] = func
-		end
-	end
-end
 -------------------------------TDX Lib Support
 
 --[[
@@ -132,14 +121,6 @@ function dgsConfigureTDX()
 	]]
 end
 
-function dgsGetExportedFunctionName(name)
-	if name then
-		return dgsExportedFunctionName[name]
-	else
-		return dgsExportedFunctionName
-	end
-end
-
 function dgsImportFunction(name,nameAs)
 	if not name then
 		local allCode = [[
@@ -187,8 +168,8 @@ function dgsImportFunction(name,nameAs)
 			end
 		end
 		]]
-		for k,v in pairs(dgsExportedFunctionName) do
-			allCode = allCode.."\n "..k.." = DGS."..k..";"
+		for i,name in ipairs(getResourceExportedFunctions()) do
+			allCode = allCode.."\n "..name.." = DGS."..name..";"
 		end
 		return allCode
 	else
