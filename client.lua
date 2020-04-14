@@ -498,7 +498,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local img = eleData.image
 				local color = eleData.color
 				color = applyColorAlpha(color,galpha)
-				local titimg,titleColor,titsize = eleData.titleImage,eleData.isFocused and eleData.titleColor or eleData.titleColorBlur,eleData.titleHeight
+				local titimg,titleColor,titsize = eleData.titleImage,eleData.isFocused and eleData.titleColor or (eleData.titleColorBlur or eleData.titleColor),eleData.titleHeight
 				titleColor = applyColorAlpha(titleColor,galpha)
 				------------------------------------
 				if eleData.functionRunBefore then
