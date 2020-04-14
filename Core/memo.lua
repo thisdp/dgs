@@ -1029,7 +1029,7 @@ function configMemo(source)
 	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
 	local widLen = 1-(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/dgsElementData[source].rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	print(widLen)
+	--print(widLen)
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
@@ -1112,12 +1112,12 @@ function syncScrollBars(memo,which)
 		if isWordWrap then
 			local line = #dgsElementData[memo].wordWrapMapText
 			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].wordWrapShowLine[3]-1)*100/(line-canHold)
-			print(new)
+			--print(new)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		else
 			local line = #dgsElementData[memo].text
 			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(line-canHold)
-			print(new)
+			--print(new)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		end
 	end
