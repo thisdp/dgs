@@ -28,7 +28,7 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 	end,false)
 	addEventHandler("onDgsMouseWheel",browser,function(upOrDown)
 		injectBrowserMouseWheel(source,upOrDown*40,0)
-	end)
+	end,false)
 	addEventHandler("onDgsMouseClick",browser,function(button,state)
 		focusBrowser(source)
 		if state == "down" then
@@ -36,7 +36,7 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 		else
 			injectBrowserMouseUp(source, button)
 		end
-	end)
+	end,false)
 	return browser
 end
 
