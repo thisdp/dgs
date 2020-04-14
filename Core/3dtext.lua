@@ -15,6 +15,7 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	dgsSetData(text3d,"fadeDistance",maxDistance or 80)
 	dgsSetData(text3d,"dimension",-1)
 	dgsSetData(text3d,"interior",-1)
+	dgsSetData(text3d,"canBeBlocked",false)
 	dgsAttachToTranslation(text3d,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[text3d]._translationText = text

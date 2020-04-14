@@ -30,6 +30,11 @@ function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,re
 	dgsSetData(nineSlice,"gridY",{gridYTop,gridYBottom})
 	dgsSetData(nineSlice,"renderShader",shader)
 	dgsCustomRendererSetFunction(nineSlice,nineSliceRender)
+	addEventHandler("onClientElementDestroy",nineSlice,,function()
+		if isElement(dgsElementData[nineSlice].renderShader) then
+			destroyElement(dgsElementData[nineSlice].renderShader)
+		end
+	end,false)
 	triggerEvent("onDgsPluginCreate",nineSlice,sourceResource)
 	return nineSlice
 end
