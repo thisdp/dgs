@@ -84,9 +84,9 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or getThisResource()])
 	if type(caption) == "table" then
 		dgsElementData[combobox]._translationText = caption
-		dgsSetData(combobox,"caption",text)
+		dgsSetData(combobox,"caption",caption)
 	else
-		dgsSetData(combobox,"caption",tostring(text))
+		dgsSetData(combobox,"caption",tostring(caption))
 	end
 	dgsSetData(combobox,"captionEdit",false)
 	dgsSetData(combobox,"arrow",dgsCreateTextureFromStyle(styleSettings.combobox.arrow))
