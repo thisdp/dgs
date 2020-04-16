@@ -194,7 +194,7 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 			radius[i][1] = tonumber(radius[i][1] or 0)
 			radius[i][2] = radius[i][2] ~= false
 		end
-		color,texture,colorOverwritten = relative,color,texture
+		color,texture,colorOverwritten,borderOnly,borderThicknessHorizontal,borderThicknessVertical = relative,color,texture,colorOverwritten,borderOnly,borderThicknessHorizontal
 		dgsRoundRectSetRadius(shader,radius)
 	end
 	if not shader then return false end
