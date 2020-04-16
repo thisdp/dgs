@@ -282,8 +282,8 @@ function dgsRoundRectSetBorderThickness(rectShader,horizontal,vertical)
 	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetBorderThickness at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
 	assert(dgsGetType(horizontal) == "number","Bad argument @dgsRoundRectSetBorderThickness at argument 2, expect number got "..dgsGetType(horizontal))
 	if dgsElementData[rectShader].borderOnly then
-		dgsSetData(rectShader,"borderSize",{horizontal,vertical})
-		dxSetShaderValue(rectShader,"borderSize",{horizontal,vertical})
+		dgsSetData(rectShader,"borderThickness",{horizontal,vertical})
+		dxSetShaderValue(rectShader,"borderThickness",{horizontal,vertical})
 		return true
 	end
 	return false
@@ -292,7 +292,7 @@ end
 function dgsRoundRectGetBorderThickness(rectShader)
 	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetBorderThickness at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
 	if dgsElementData[rectShader].borderOnly then
-		return dgsElementData[rectShader].borderSize[1],dgsElementData[rectShader].borderSize[2]
+		return dgsElementData[rectShader].borderThickness[1],dgsElementData[rectShader].borderThickness[2]
 	end
 	return false
 end
