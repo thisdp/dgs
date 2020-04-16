@@ -11,7 +11,7 @@ function requestRoundRectangleShader(withoutFilled)
 	bool colorOverwritten = true;
 	]]..(woF or [[
 	float2 borderThickness = float2(0.2,0.2);
-	float coronerMultipler = 0.95;
+	float radiusMultipler = 0.95;
 	]])..[[
 
 	SamplerState tSampler
@@ -100,7 +100,7 @@ function requestRoundRectangleShader(withoutFilled)
 			nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.x,isRelative.y==1?radius.y/2:radius.y*dd.x,isRelative.z==1?radius.z/2:radius.z*dd.x,isRelative.w==1?radius.w/2:radius.w*dd.x);
 		}
 		fixedPos = (tex_bk-center*(newborderThickness+1));
-		float4 nRadiusHalf = nRadius*coronerMultipler;
+		float4 nRadiusHalf = nRadius*radiusMultipler;
 		corner[0] = center-nRadiusHalf.x;
 		corner[1] = center-nRadiusHalf.y;
 		corner[2] = center-nRadiusHalf.z;
