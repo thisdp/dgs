@@ -10,7 +10,7 @@ function requestRoundRectangleShader(withoutFilled)
 	float borderSoft = 0.02;
 	bool colorOverwritten = true;
 	]]..(woF or [[
-	float2 borderScale = float2(0.2,0.2);
+	float2 borderThickness = float2(0.2,0.2);
 	float coronerMultipler = 0.95;
 	]])..[[
 
@@ -81,8 +81,8 @@ function requestRoundRectangleShader(withoutFilled)
 		}
 		alp = clamp(alp,0,1);
 		]]..(woF or [[
-		float2 newBorderScale = borderScale*dd*100;
-		tex_bk = tex_bk+tex_bk*newBorderScale;
+		float2 newborderThickness = borderThickness*dd*100;
+		tex_bk = tex_bk+tex_bk*newborderThickness;
 		dx = ddx(tex_bk);
 		dy = ddy(tex_bk);
 		dd = float2(length(float2(dx.x,dy.x)),length(float2(dx.y,dy.y)));
@@ -99,7 +99,7 @@ function requestRoundRectangleShader(withoutFilled)
 			aA *= dd.x;
 			nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.x,isRelative.y==1?radius.y/2:radius.y*dd.x,isRelative.z==1?radius.z/2:radius.z*dd.x,isRelative.w==1?radius.w/2:radius.w*dd.x);
 		}
-		fixedPos = (tex_bk-center*(newBorderScale+1));
+		fixedPos = (tex_bk-center*(newborderThickness+1));
 		float4 nRadiusHalf = nRadius*coronerMultipler;
 		corner[0] = center-nRadiusHalf.x;
 		corner[1] = center-nRadiusHalf.y;
@@ -172,7 +172,7 @@ function Old_dgsCreateRoundRect(radius,color,texture,relative)
 	return shader
 end
 
-function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borderOnly)
+function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borderOnly,borderThicknessHorizontal,borderThicknessVertical)
 	local radType = dgsGetType(radius)
 	assert(radType == "number" or radType == "table","Bad argument @dgsCreateRoundRect at argument 1, expect number/table got "..dgsGetType(radius))
 	if not getElementData(localPlayer,"DGS-DEBUG-C") then
@@ -181,36 +181,33 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 			return Old_dgsCreateRoundRect(radius,relative,color,texture)
 		end
 	end
+	local shader = dxCreateShader(requestRoundRectangleShader(borderOnly))
+	dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
 	if type(radius) ~= "table" then
-		assert(dgsGetType(relative) == "boolean","Bad argument @dgsCreateRoundRect at argument 2, expect boolean got "..dgsGetType(relative))
-		local shader = dxCreateShader(requestRoundRectangleShader(borderOnly))
-		local color = color or tocolor(255,255,255,255)
-		dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
-		dgsSetData(shader,"color",color)
-		dgsRoundRectSetColorOverwritten(shader,colorOverwritten ~= false)
+		local rlt = dgsGetType(relative) == "boolean"
+		if not rlt then destroyElement(shader) end
+		assert(rlt,"Bad argument @dgsCreateRoundRect at argument 2, expect boolean got "..dgsGetType(relative))
 		dgsRoundRectSetRadius(shader,radius,relative)
-		dgsRoundRectSetTexture(shader,texture)
-		dgsRoundRectSetColor(shader,color)
-		triggerEvent("onDgsPluginCreate",shader,sourceResource)
-		return shader
 	else
 		for i=1,4 do
 			radius[i] = radius[i] or {0,true}
 			radius[i][1] = tonumber(radius[i][1] or 0)
 			radius[i][2] = radius[i][2] ~= false
 		end
-		local color,texture,colorOverwritten = relative,color,texture
-		local shader = dxCreateShader(requestRoundRectangleShader(borderOnly))
-		local color = color or tocolor(255,255,255,255)
-		dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
-		dgsSetData(shader,"color",color)
-		dgsRoundRectSetColorOverwritten(shader,colorOverwritten ~= false)
+		color,texture,colorOverwritten = relative,color,texture
 		dgsRoundRectSetRadius(shader,radius)
-		dgsRoundRectSetTexture(shader,texture)
-		dgsRoundRectSetColor(shader,color)
-		triggerEvent("onDgsPluginCreate",shader,sourceResource)
-		return shader
 	end
+	if not shader then return false end
+	color = color or tocolor(255,255,255,255)
+	dgsSetData(shader,"borderOnly",borderOnly)
+	if borderOnly then
+		dgsRoundRectSetBorderThickness(shader,borderThicknessHorizontal or 0.2,borderThicknessVertical or 0.2)
+	end
+	dgsRoundRectSetColorOverwritten(shader,colorOverwritten ~= false)
+	dgsRoundRectSetTexture(shader,texture)
+	dgsRoundRectSetColor(shader,color)
+	triggerEvent("onDgsPluginCreate",shader,sourceResource)
+	return shader
 end
 
 function dgsRoundRectSetTexture(rectShader,texture)
@@ -278,4 +275,29 @@ function dgsRoundRectSetColorOverwritten(rectShader,colorOverwritten)
 	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetColorOverwritten at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
 	dgsSetData(rectShader,"colorOverwritten",colorOverwritten)
 	dxSetShaderValue(rectShader,"colorOverwritten",colorOverwritten)
+end
+
+function dgsRoundRectSetBorderThickness(rectShader,horizontal,vertical)
+	vertical = vertical or horizontal
+	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetBorderThickness at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	assert(dgsGetType(horizontal) == "number","Bad argument @dgsRoundRectSetBorderThickness at argument 2, expect number got "..dgsGetType(horizontal))
+	if dgsElementData[rectShader].borderOnly then
+		dgsSetData(rectShader,"borderSize",{horizontal,vertical})
+		dxSetShaderValue(rectShader,"borderSize",{horizontal,vertical})
+		return true
+	end
+	return false
+end
+
+function dgsRoundRectGetBorderThickness(rectShader)
+	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetBorderThickness at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if dgsElementData[rectShader].borderOnly then
+		return dgsElementData[rectShader].borderSize[1],dgsElementData[rectShader].borderSize[2]
+	end
+	return false
+end
+
+function dgsRoundRectGetBorderOnly(rectShader)
+	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetBorderOnly at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	return dgsElementData[rectShader].borderOnly
 end

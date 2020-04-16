@@ -554,6 +554,9 @@
 	<export function="dgsRoundRectGetColor" type="client" />
 	<export function="dgsRoundRectSetColorOverwritten" type="client" />
 	<export function="dgsRoundRectGetColorOverwritten" type="client" />
+	<export function="dgsRoundRectSetBorderThickness" type="client" />
+	<export function="dgsRoundRectGetBorderThickness" type="client" />
+	<export function="dgsRoundRectGetBorderOnly" type="client" />
 
 	<export function="dgsCreateColorPicker" type="client" />
 	<export function="dgsColorPickerCreateComponentSelector" type="client" />
