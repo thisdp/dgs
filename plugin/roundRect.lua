@@ -7,7 +7,7 @@ function requestRoundRectangleShader(withoutFilled)
 	bool textureRotated = false;
 	float4 isRelative = 1;
 	float4 radius = 0.2;
-	float borderSoft = 0.02;
+	float borderSoft = 0.01;
 	bool colorOverwritten = true;
 	]]..(woF or [[
 	float2 borderThickness = float2(0.2,0.2);
