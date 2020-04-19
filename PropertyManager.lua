@@ -61,8 +61,9 @@ function dgsSetData(element,key,value,nocheck)
 						configScrollPane(element)
 					end
 				elseif dgsType == "dgs-dxswitchbutton" then
-					local oldState = dgsElementData[element].state
-					triggerEvent("onDgsSwitchButtonStateChange",element,value,oldState)
+					if key == "state" then
+						triggerEvent("onDgsSwitchButtonStateChange",element,value,oldValue)
+					end
 				elseif dgsType == "dgs-dxcombobox" then
 					if key == "scrollBarThick" then
 						assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
