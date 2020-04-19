@@ -985,3 +985,21 @@ function dgsApplyLanguageChange(name,translation,attach)
 		end
 	end
 end
+
+function dgsCenterElement(element,remainX,remainY)
+    local screenW,screenH=dgsGetScreenSize()
+    local windowW,windowH=dgsGetSize(element, false)
+    local elementX,elementY = (screenW-windowW)/2,(screenH-windowH)/2
+    local remainElementX, remainElementY = dgsGetPosition(element)
+    if remainX == true then
+        elementX = remainElementX
+        elementY = elementY
+    elseif remainY == true then
+        elementX = elementX
+        elementY = remainElementY
+    end
+    if remainX == true and remainY == true then
+        elementX, elementY = (screenW-windowW)/2,(screenH-windowH)/2
+    end
+    return dgsSetPosition(element,elementX,elementY)
+end
