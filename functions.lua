@@ -985,19 +985,3 @@ function dgsApplyLanguageChange(name,translation,attach)
 		end
 	end
 end
-
---------------	Element center
-
-function dgsCenterElement(center_element)
-    local screenW,screenH=dgsGetScreenSize()
-    local windowW,windowH=dgsGetSize(center_element,false)
-    local x,y = (screenW-windowW)/2,(screenH-windowH)/2
-    dgsSetPosition(center_element,x,y,false)
-end
-
-function dgsCenterElementY(center_elementY)
-    local screenW,screenH=dgsGetScreenSize()
-    local windowW,windowH=dgsGetSize(center_elementY,false)
-    local x,y = dgsGetPosition(center_elementY),(screenH-windowH)/2
-    dgsSetPosition(center_elementY,x,y,false)
-end
