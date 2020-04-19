@@ -999,7 +999,9 @@ function dgsCenterElement(element,remainX,remainY)
         elementY = remainElementY
     end
     if remainX == true and remainY == true then
-        elementX, elementY = (screenW-windowW)/2,(screenH-windowH)/2
+        elementX, elementY = dgsGetPosition(element)
+    elseif remainX == false and remainY == false then
+        elementX,elementY = (screenW-windowW)/2,(screenH-windowH)/2
     end
     return dgsSetPosition(element,elementX,elementY)
 end
