@@ -4179,7 +4179,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				destroyElement(child[1])
 			end
 		end
-		local autoDestroyList = dgsElementData[source].autoDestroyList
+		local autoDestroyList = dgsElementData[source].autoDestroyList or {}
 		for i=1,#autoDestroyList do
 			local ele = autoDestroyList[i]
 			if isElement(ele) then

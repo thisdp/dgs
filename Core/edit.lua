@@ -6,6 +6,7 @@ local utf8Gsub = utf8.gsub
 local strRep = string.rep
 local tableInsert = table.insert
 local tableRemove = table.remove
+local strChar = string.char
 local _dxGetTextWidth = dxGetTextWidth
 local mathMin = math.min
 local mathMax = math.max
@@ -809,6 +810,13 @@ function dgsEditDoOpposite(edit,isUndo)
 		end
 	end
 	return false
+end
+
+local CodeType = {}
+for i=32,47 do
+	CodeType[strChar(i)] = 1 --
+end
+function dgsEditFindBlock()
 end
 
 addEventHandler("onClientGUIChanged",resourceRoot,function()
