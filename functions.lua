@@ -390,10 +390,23 @@ function dgsSetAlpha(dgsEle,alpha,absolute)
 	return dgsSetData(dgsEle,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 end
 
-function dgsGetAlpha(dgsEle,absolute)
+function dgsGetAlpha(dgsEle,absolute,includeParent)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetAlpha at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	local alp = dgsElementData[dgsEle].alpha
-	return absolute and alp*255 or alp
+	if includeParent then
+		local alp = 1
+		local p = dgsEle
+		for i=1,5000 do
+			if p then
+				alp = alp*(dgsElementData[p].alpha or 1)
+			else
+				return absolute and alp*255 or alp
+			end
+			p = FatherTable[p]
+		end
+	else
+		local alp = dgsElementData[dgsEle].alpha
+		return absolute and alp*255 or alp
+	end
 end
 
 function dgsSetEnabled(dgsEle,enabled)
