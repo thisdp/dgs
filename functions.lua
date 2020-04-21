@@ -256,7 +256,21 @@ end
 
 function dgsGetVisible(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	return dgsElementData[dgsEle].visible
+	if dgsElementData[dgsEle].visible then
+		local p = FatherTable[dgsEle]
+		for i=1,5000 do
+			if p then
+				if not dgsElementData[p].visible then
+					return false
+				end
+			else
+				break
+			end
+			p = FatherTable[p]
+		end
+		return true
+	end
+	return false
 end
 
 function dgsSetSide(dgsEle,side,topleft)
@@ -295,8 +309,7 @@ function configPosSize(dgsElement,pos,size)
 end
 
 function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notrigger)
-	local eleData = dgsElementData[dgsElement]
-	eleData = eleData or {}
+	local eleData = dgsElementData[dgsElement] or {}
 	local parent = dgsGetParent(dgsElement)
 	local psx,psy = sW,sH
 	local relt = eleData.relative or {relativep,relatives}
@@ -305,7 +318,7 @@ function calculateGuiPositionSize(dgsElement,x,y,relativep,sx,sy,relatives,notri
 	local titleOffset = 0
 	if haveParent then
 		local parentData = dgsElementData[parent]
-		if dgsGetType(parent) == "dgs-dxtab" then
+		if dgsElementType[parent] == "dgs-dxtab" then
 			local tabpanel = parentData.parent
 			local size = dgsElementData[tabpanel].absSize
 			psx,psy = size[1],size[2]
@@ -391,7 +404,21 @@ end
 
 function dgsGetEnabled(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	return dgsElementData[dgsEle].enabled
+	if dgsElementData[dgsEle].enabled then
+		local p = FatherTable[dgsEle]
+		for i=1,5000 do
+			if p then
+				if not dgsElementData[p].enabled then
+					return false
+				end
+			else
+				break
+			end
+			p = FatherTable[p]
+		end
+		return true
+	end
+	return false
 end
 
 function dgsCreateFont(path,size,bold,quality)
