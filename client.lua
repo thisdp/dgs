@@ -4179,6 +4179,13 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				destroyElement(child[1])
 			end
 		end
+		local autoDestroyList = dgsElementData[source].autoDestroyList
+		for i=1,#autoDestroyList do
+			local ele = autoDestroyList[i]
+			if isElement(ele) then
+				destroyElement(ele)
+			end
+		end
 		local dgsType = dgsGetType(source)
 		if dgsType == "dgs-dxedit" then
 			local rentarg = dgsElementData[source].renderTarget

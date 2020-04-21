@@ -222,12 +222,6 @@ function dgsDetachElements(dgsElement)
 	return dgsSetData(dgsElement,"attachedTo",false)
 end
 
-function dgsApplyVisible(parent,visible)
-	for k,v in ipairs(ChildrenTable[parent] or {}) do
-		dgsApplyVisible(v,visible)
-	end
-end
-
 function dgsSetVisible(dgsEle,visible)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	if type(dgsEle) == "table" then
@@ -239,7 +233,6 @@ function dgsSetVisible(dgsEle,visible)
 			if visible == originalVisible then
 				return true
 			end
-			dgsApplyVisible(dEle,visible)
 			result = result and dgsSetData(dEle,"visible",visible)
 		end
 		return result
@@ -249,7 +242,6 @@ function dgsSetVisible(dgsEle,visible)
 		if visible == originalVisible then
 			return true
 		end
-		dgsApplyVisible(dgsEle,visible)
 		return dgsSetData(dgsEle,"visible",visible)
 	end
 end
@@ -712,7 +704,7 @@ function dgsAddSizeHandler(dgsElement,left,right,top,bottom,leftRel,rightRel,top
 end
 
 function dgsRemoveSizeHandler(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveSizeHandler at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsRemoveSizeHandler at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	local sizeData = dgsElementData[dgsElement].sizeHandlerData
 	if sizeData then
 		dgsSetData(dgsElement,"sizeHandlerData",nil)
@@ -720,11 +712,30 @@ function dgsRemoveSizeHandler(dgsElement)
 end
 
 function dgsIsSizeHandled(dgsElement)
-	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsSizeHandled at argument 1, expect a dgs-dxgui got "..dgsGetType(dgsElement))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsIsSizeHandled at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	return dgsElementData[dgsElement].sizeHandlerData and true or false
 end
 
+function dgsAddDragDropHandler(dgsElement)
+--todoi
+end
+------------Auto Destroy
+function dgsAttachToAutoDestroy(element,dgsElement)
+	assert(isElement(element),"Bad Argument @dgsAttachToAutoDestroy at argument 1, expect element got "..dgsGetType(element))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAttachToAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	table.insert(dgsElementData[dgsElement].autoDestroyList,element)
+	return true
+end
 
+function dgsDetachFromAutoDestroy(element,dgsElement)
+	assert(isElement(element),"Bad Argument @dgsDetachFromAutoDestroy at argument 1, expect element got "..dgsGetType(element))
+	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsDetachFromAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	local id = tableFind(dgsElementData[dgsElement].autoDestroyList,element)
+	if id then
+		table.remove(dgsElementData[dgsElement].autoDestroyList,id)
+	end
+	return true
+end
 ------------Round Up Functions
 defaultRoundUpPoints = 3
 function dgsRoundUp(num,points)
@@ -770,6 +781,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"ignoreParentTitle",false,true)
 	dgsSetData(source,"textRelative",false)
 	dgsSetData(source,"alpha",1)
+	dgsSetData(source,"autoDestroyList",{})
 	dgsSetData(source,"hitoutofparent",false)
 	dgsSetData(source,"PixelInt",true)
 	dgsSetData(source,"functionRunBefore",true) --true : after render; false : before render

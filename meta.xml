@@ -191,6 +191,8 @@
 	<export function="dgsSetDoubleClickInterval" type="client" />
 	<export function="dgsGetDoubleClickInterval" type="client" />
 	<export function="dgsGetBrowser" type="client" />
+	<export function="dgsAttachToAutoDestroy" type="client" />
+	<export function="dgsDetachFromAutoDestroy" type="client" />
 
 	<export function="dgsTranslationTableExists" type="client" />
 	<export function="dgsSetTranslationTable" type="client" />
