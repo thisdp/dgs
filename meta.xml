@@ -615,6 +615,8 @@
 
 	<export function="dgsCreateCanvas" type="client" />
 
+	<export function="dgsCenterElement" type="client" />
+
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
 	<export function="dgsImportOOPClass" type="client" />
