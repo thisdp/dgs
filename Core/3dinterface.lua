@@ -156,7 +156,7 @@ function dgs3DInterfaceSetBlendMode(interface,blend)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetBlendMode at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(type(blend) == "string","Bad argument @dgs3DInterfaceSetBlendMode at argument 2, expect a string got "..dgsGetType(blend))
 	assert(blendMode[blend],"Bad argument @dgs3DInterfaceSetBlendMode at argument 2, couldn't find such blend mode "..blend)
-	return dgsSetData(interface,"blendMode",blendMode)
+	return dgsSetData(interface,"blendMode",blend)
 end
 
 function dgs3DInterfaceGetBlendMode(interface)
