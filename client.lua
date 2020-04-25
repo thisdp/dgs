@@ -378,6 +378,7 @@ function interfaceRender()
 			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 			eleData.hit = false
 			if x and y and z and w and h then
+				self = v
 				------------------------------------
 				if eleData.functionRunBefore then
 					local fnc = eleData.functions
