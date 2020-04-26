@@ -133,7 +133,7 @@ function dgsCoreRender()
 		end
 		MouseData.arrowListEnter = false
 	end
-	if BlurBoxGlobalScreenSource then
+	if isElement(BlurBoxGlobalScreenSource) then
 		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 	end
 	local normalMx,normalMy = mx,my
@@ -4274,7 +4274,6 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				blurboxShaders = blurboxShaders-1
 				if blurboxShaders == 0 and isElement(BlurBoxGlobalScreenSource) then
 					destroyElement(BlurBoxGlobalScreenSource)
-					BlurBoxGlobalScreenSource = nil
 				end
 			end
 		end
