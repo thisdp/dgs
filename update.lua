@@ -120,7 +120,7 @@ function getGitHubTree(path,nextPath)
 			folderGetting[theTable.sha] = nil
 			for k,v in pairs(theTable.tree) do
 				if (v.path ~= "styleMapper.lua" and fileExists("styleManager/styleMapper.lua")) and v.path ~= "meta.xml" then
-				local thePath = nextPath..(v.path)
+					local thePath = nextPath..(v.path)
 					if v.mode == "040000" then
 						folderGetting[v.sha] = true
 						getGitHubTree(v.url,thePath.."/")
