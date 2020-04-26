@@ -28,7 +28,11 @@ ProgressBarStyle = {
 		local circle = styleData.elements.circleShader
 		local startPoint,endPoint = 0,percent
 		dxSetShaderValue(circle,"progress",{styleData.isReverse and endPoint or startPoint,not styleData.isReverse and endPoint or startPoint})
-		dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
+		if startPoint == endPoint then
+			dxSetShaderValue(circle,"indicatorColor",{0,0,0,0})
+		else
+			dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
+		end
 		dxSetShaderValue(circle,"thickness",styleData.thickness)
 		dxSetShaderValue(circle,"radius",styleData.radius)
 		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
