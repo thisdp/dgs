@@ -292,6 +292,9 @@ function dgsImportOOPClass(state)
 				setPostGUI = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsGetPostGUI",self.dgsElement,...) #SyntaxSugar#
 				end,
+				center = function(self,...)
+					return call(dgsOOP.dgsRes,"dgsCenterElement",self.dgsElement,...) #SyntaxSugar#
+				end,
 				destroy = function(self,...)
 					return destroyElement(self.dgsElement)
 				end,
