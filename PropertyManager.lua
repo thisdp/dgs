@@ -250,6 +250,12 @@ compatibility = {
 		image_f = "imageOff",
 		textColor_t = "textColorOn",
 		textColor_f = "textColorOff",
+	},
+	["dgs-dxcheckbox"] = {
+		textImageSpace = "textPadding",
+	},
+	["dgs-dxradiobutton"] = {
+		textImageSpace = "textPadding",
 	}
 }
 

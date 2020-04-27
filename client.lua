@@ -998,12 +998,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local clip = eleData.clip
 				local wordbreak = eleData.wordbreak
-				local _textImageSpace = eleData.textImageSpace
+				local _textPadding = eleData.textPadding
 				local text = eleData.text
-				local textImageSpace = _textImageSpace[2] and _textImageSpace[1]*w or _textImageSpace[1]
+				local textPadding = _textPadding[2] and _textPadding[1]*w or _textPadding[1]
 				local colorcoded = eleData.colorcoded
 				local alignment = eleData.alignment
-				local px = x+buttonSizeX+textImageSpace
+				local px = x+buttonSizeX+textPadding
 				if eleData.PixelInt then
 					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
 				end			
@@ -1136,12 +1136,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 				local clip = eleData.clip
 				local wordbreak = eleData.wordbreak
-				local _textImageSpace = eleData.textImageSpace
-				local textImageSpace = _textImageSpace[2] and _textImageSpace[1]*w or _textImageSpace[1]
+				local _textPadding = eleData.textPadding
+				local textPadding = _textPadding[2] and _textPadding[1]*w or _textPadding[1]
 				local text = eleData.text
 				local colorcoded = eleData.colorcoded
 				local alignment = eleData.alignment
-				local px = x+buttonSizeX+textImageSpace
+				local px = x+buttonSizeX+textPadding
 				if eleData.PixelInt then
 					px,y,w,h = px-px%1,y-y%1,w-w%1,h-h%1
 				end
