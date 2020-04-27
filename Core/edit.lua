@@ -74,6 +74,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"enableTabSwitch",true)
 	dgsSetData(edit,"clearSwitchPos",false)
 	dgsSetData(edit,"lastSwitchPosition",-1)
+	dgsSetData(edit,"underlineOffset",0)
 	dgsSetData(edit,"lockView",false)
 	dgsSetData(edit,"allowCopy",true)
 	dgsSetData(edit,"autoCompleteShow",false)
