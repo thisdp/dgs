@@ -1039,26 +1039,17 @@ end
 
 function dgsCenterElement(element,remainX,remainY)
 	assert(dgsIsDxElement(element),"Bad argument @dgsCenterElement at argument 1, expecteed dgs-element got "..dgsGetType(element))
-	if remainX then
-		assert(type(remainX) == "boolean","Bad argument @dgsCenterElement at argument 2, expecteed dgs-element got "..dgsGetType(remainX))
-	end
-	if remainY then
-		assert(type(remainY) == "boolean","Bad argument @dgsCenterElement at argument 3, expecteed dgs-element got "..dgsGetType(remainY))
-	end
-    local windowSize = dgsElementData[element].absSize
-    local elementX,elementY = (sW-windowSize[1])/2,(sH-windowSize[2])/2
-    local remainElement = dgsElementData[element].absPos
-    if remainX then
-        elementX = remainElement[1]
-        elementY = elementY
-    elseif remainY then
-        elementX = elementX
-        elementY = remainElement[2]
-    end
-    if remainX and remainY then
-        elementX, elementY = remainElement[1],remainElement[2]
-    elseif remainX == false and remainY == false then
-        elementX,elementY = (sW-windowSize[1])/2,(sH-windowSize[2])/2
-    end
-    return dgsSetPosition(element,elementX,elementY)
+	local rlt = dgsElementData[element].relative[1]
+	if rlt then
+		local remainPos = dgsElementData[element].rltPos
+		local size = dgsElementData[element].rltSize
+		return dgsSetPosition(element,remainX and remainPos[1] or 0.5-size[1]/2,remainY and remainPos[2] or 0.5-size[2]/2,true)
+	else
+		local parent = dgsGetParent(element)
+		local windowSize = parent and dgsElementData[parent].absSize or {sW,sH}
+		local remainPos = dgsElementData[element].absPos
+		local size = dgsElementData[element].absSize
+		print(remainX and remainPos[1] or windowSize[1]/2,remainY and remainPos[2] or windowSize[2]/2)
+		return dgsSetPosition(element,remainX and remainPos[1] or windowSize[1]/2-size[1]/2,remainY and remainPos[2] or windowSize[2]/2-size[2]/2,false)
+   end
 end
