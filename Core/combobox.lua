@@ -177,7 +177,7 @@ function dgsComboBoxSetEditEnabled(combobox,enabled)
 end
 
 
-function dgsComboBoxGetEditEnabled(combobox,enabled)
+function dgsComboBoxGetEditEnabled(combobox)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetEditEnabled at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	return isElement(dgsElementData[combobox].captionEdit) and true or false
 end
