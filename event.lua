@@ -58,6 +58,7 @@ addEvent("onDgsMouseDrag")
 addEvent("onDgsStart")
 -------Plugin events
 addEvent("onDgsRemoteImageLoad")
+addEvent("onDgsQRCodeLoad")
 -------internal events
 addEvent("DGSI_ReceiveIP",true)
 addEvent("DGSI_SendAboutData",true)
