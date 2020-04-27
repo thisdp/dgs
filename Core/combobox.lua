@@ -179,7 +179,7 @@ end
 
 function dgsComboBoxGetEditEnabled(combobox,enabled)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetEditEnabled at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	return dgsElementData[combobox].captionEdit
+	return isElement(dgsElementData[combobox].captionEdit) and true or false
 end
 
 function dgsComboBoxSetBoxHeight(combobox,height,relative)
