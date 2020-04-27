@@ -177,11 +177,12 @@ function dgsSetSize(dgsElement,x,y,bool)
 	return true
 end
 
-function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize)
+function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,offsetW,offsetH,relativePos,relativeSize)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsAttachElements at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	assert(dgsIsDxElement(attachTo),"Bad argument @dgsAttachElements at argument 2, expect dgs-dxgui got "..dgsGetType(attachTo))
 	assert(not dgsGetParent(dgsElement),"Bad argument @dgsAttachElements at argument 1, source dgs element shouldn't have a parent")
 	dgsDetachElements(dgsElement)
+	relativeSize = relativeSize == nil and relativePos or relativeSize
 	if not offsetW or not offsetH then
 		local size = dgsElementData[dgsElement].absSize
 		offsetW,offsetH = size[1],size[2]
@@ -196,11 +197,9 @@ function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,relativePos,offse
 	local attachedTable = dgsElementData[dgsElement].attachedTo
 	local absx,absy = dgsGetPosition(attachTo,false,true)
 	local absw,absh = dgsElementData[attachTo].absSize[1],dgsElementData[attachTo].absSize[2]
-	offsetX,offsetY = relativePos and absw*offsetX or offsetX, relativePos and absh*offsetY or offsetY
-	offsetW,offsetH = relativeSize and absw*offsetW or offsetW, relativeSize and absh*offsetH or offsetH
-	offsetW,offsetH = relativeSize and offsetW/sW or offsetW,relativeSize and offsetH/sH or offsetH
-	local resX,resY = (absx+offsetX)/sW,(absy+offsetY)/sH
-	calculateGuiPositionSize(dgsElement,resX,resY,relativePos,offsetW,offsetH,relativeSize)
+	offsetX,offsetY = relativePos and (absx+absw*offsetX)/sW or offsetX+absx, relativePos and (absy+absh*offsetY)/sH or offsetY+absy
+	offsetW,offsetH = relativeSize and absw*offsetW/sW or offsetW, relativeSize and absh*offsetH/sH or offsetH
+	calculateGuiPositionSize(dgsElement,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize)
 	return true
 end
 

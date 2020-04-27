@@ -4817,10 +4817,9 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 		local attachSource = attachedBy[i]
 		local attachedTable = dgsElementData[attachSource].attachedTo
 		local relativePos = attachedTable[4]
-		local offsetX,offsetY = attachedTable[2],attachedTable[3]
-		offsetX,offsetY = relativePos and absw*offsetX or offsetX, relativePos and absh*offsetY or offsetY
-		local resX,resY = (absx+offsetX)/sW,(absy+offsetY)/sH
-		calculateGuiPositionSize(attachSource,resX,resY,relativePos)
+		local offsetX,offsetY = relativePos and (absx+absw*attachedTable[2])/sW or attachedTable[2]+absx, relativePos and (absy+absh*attachedTable[3])/sH or attachedTable[3]+absy
+		print(offsetX)
+		calculateGuiPositionSize(attachSource,offsetX,offsetY,relativePos)
 	end
 end)
 
