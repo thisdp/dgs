@@ -117,7 +117,7 @@
 		font = nil,	--Using systemFont
 		textSize = {1,1},	--Text size
 		textPadding = {
-			10,		--Space
+			2,		--Space
 			false,	--Relative
 		},
 		buttonSize = {
@@ -202,7 +202,7 @@
 		font = nil,	--Using systemFont
 		textSize = {1,1},	--Text size
 		textPadding = {
-			10,		--Space
+			2,		--Space
 			false,	--Relative
 		},
 		buttonSize = {
