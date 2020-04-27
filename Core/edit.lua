@@ -78,6 +78,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"lockView",false)
 	dgsSetData(edit,"allowCopy",true)
 	dgsSetData(edit,"autoCompleteShow",false)
+	dgsSetData(edit,"autoCompleteTextColor",nil)
 	dgsSetData(edit,"autoCompleteSkip",false)
 	dgsSetData(edit,"autoComplete",{})
 	dgsSetData(edit,"selectColor",styleSettings.edit.selectColor)
