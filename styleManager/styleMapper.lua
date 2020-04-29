@@ -2,4 +2,4 @@
 --Name = "Path",
 --For Example:
 --Default="Default",
-use="Default",
+use="Default", --This determines which style to use on DGS startup.
