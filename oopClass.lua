@@ -1,6 +1,6 @@
 dgsResName = getResourceName(getThisResource())
-function dgsImportOOPClass(state)
-	local syntaxSugar = state and " and self or false" or ""
+function dgsImportOOPClass(polluteGlobal)
+	local syntaxSugar = " and self or false"
 	local str = [[
 	--Check Error Message Above
 	if not dgsOOP then
@@ -1225,9 +1225,15 @@ function dgsImportOOPClass(state)
 		}
 		for k,v in pairs(dgsOOP.NoParent) do
 			DGSClass[k] = v
+		]]..(polluteGlobal and [[
+			_G[k] = function(...) return DGSClass[k](DGSClass,...) end
+		]] or "")..[[
 		end
 		for k,v in pairs(dgsOOP.HaveParent) do
 			DGSClass[k] = v
+		]]..(polluteGlobal and [[
+			_G[k] = function(...) return DGSClass[k](DGSClass,...) end
+		]] or "")..[[
 		end
 	end
 	]]

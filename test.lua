@@ -577,10 +577,12 @@ end
 
 -----------------------------OOP Test
 function oopTest()
-	loadstring(dgsImportOOPClass())()-- load OOP class
-	window1 = DGSClass:createWindow(0,0,0.5,0.1,"test",true) --create a window with oop
-	window2 = DGSClass:createWindow(0.2,0,0.5,0.1,"test",true) --create a window with oop
-	label = window1:createLabel(0,0,1,1,"label",true) --create a label inside the window
+	loadstring(dgsImportOOPClass(true))()-- load OOP class
+	window1 = Window(0,0,0.5,0.1,"test",true) --create a window with oop
+	window2 = Window(0.2,0,0.5,0.1,"test",true) --create a window with oop
+	label = window1
+		:Label(0,0,1,1,"label",true) --create a label inside the window
+			:setParent(window1)
 	label.parent = window2
 end
 
@@ -664,3 +666,27 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
+
+local function init()
+	--Test window
+	loadstring(dgsImportOOPClass(true))()
+	local window = DGSClass:Window(300, 300, 300, 300, "Color Picker")
+	window.ignoreTitle = true
+	local input = window
+		:Edit(0, 50, 200, 35, "Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
+		:center(_,true)
+	local button = window:Button(75, 100, 150, 35, "Button")
+	local radiobutton = window
+		:RadioButton(75, 150, 100, 35, "Option 1")
+		:center(_,true)
+	local colorpicker = dgsCreateColorPicker("HLDisk", 400, 190, 100, 100, false, window.dgsElement)
+	dgsCenterElement(colorpicker,_,true)
+end
+--[[
+setTimer(function()
+local tick = getTickCount()
+for i=1,20 do
+	init()
+end
+print(getTickCount()-tick)
+end,50,1)]]
