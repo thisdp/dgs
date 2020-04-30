@@ -4,7 +4,7 @@ function dgsImportOOPClass(polluteGlobal)
 	local str = [[
 	--Check Error Message Above
 	if not dgsOOP then
-		local getResourceRootElement,call,getResourceFromName = getResourceRootElement,call,getResourceFromName
+		local call = call
 		dgsOOP = {}
 		dgsOOP.dgsName = "]]..dgsResName..[["
 		dgsOOP.dgsRes = getResourceFromName(dgsOOP.dgsName)
