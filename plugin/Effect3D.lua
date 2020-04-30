@@ -81,13 +81,13 @@ end
 
 ----------------Shader
 effect3DShader = [[
-texture gTexture;
+texture sourceTexture;
 
 technique effect3D
 {
 	pass p0
 	{
-		Texture[0] = gTexture;
+		Texture[0] = sourceTexture;
 	}
 }
 ]]

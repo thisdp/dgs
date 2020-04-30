@@ -1774,11 +1774,23 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local filter = eleData.filter
 					local drawTarget = newRndTgt
 					if filter then
-						if isElement(filter[1]) then
-							dxSetShaderValue(filter[1],"gTexture",newRndTgt)
+						if type(filter) == "table" and isElement(filter[1]) then
+							if eleData.sourceTexture ~= newRndTgt then
+								dxSetShaderValue(filter[1],"sourceTexture",newRndTgt)
+								eleData.sourceTexture = newRndTgt
+							end
 							dxSetShaderTransform(filter[1],filter[2],filter[3],filter[4],filter[5],filter[6],filter[7],filter[8],filter[9],filter[10],filter[11])
 							drawTarget = filter[1]
+						elseif isElement(filter) then
+							if eleData.sourceTexture ~= newRndTgt then
+								dxSetShaderValue(filter,"sourceTexture",newRndTgt)
+								dxSetShaderValue(filter,"textureLoad",true)
+								eleData.sourceTexture = newRndTgt
+							end
+							drawTarget = filter
 						end
+					else
+						eleData.sourceTexture = false
 					end
 					dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 				end

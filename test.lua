@@ -582,8 +582,8 @@ function oopTest()
 	window2 = Window(0.2,0,0.5,0.1,"test",true) --create a window with oop
 	label = window1
 		:Label(0,0,1,1,"label",true) --create a label inside the window
-			:setParent(window1)
-	label.parent = window2
+		:setParent(window2)
+	label.parent = window1
 end
 
 function testColorPicker()
@@ -690,3 +690,4 @@ for i=1,20 do
 end
 print(getTickCount()-tick)
 end,50,1)]]
+

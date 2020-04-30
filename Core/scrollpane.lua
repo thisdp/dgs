@@ -28,6 +28,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"scrollBarLength",{},true)
 	dgsSetData(scrollpane,"bgColor",false)
 	dgsSetData(scrollpane,"bgImage",false)
+	dgsSetData(scrollpane,"sourceTexture",false)
 	local titleOffset = 0
 	if isElement(parent) then
 		if not dgsElementData[scrollpane].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
