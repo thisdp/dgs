@@ -23,7 +23,7 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	dgsSetData(label,"clip",false)
 	dgsSetData(label,"wordbreak",false)
 	dgsSetData(label,"colorcoded",false)
-	dgsSetData(label,"subPixelPositioning",true)
+	dgsSetData(label,"subPixelPositioning",false)
 	dgsSetData(label,"shadow",{shadowoffsetx,shadowoffsety,shadowcolor})
 	dgsSetData(label,"alignment",{right or "left",bottom or "top"})
 	dgsSetData(label,"font",styleSettings.label.font or systemFont)
