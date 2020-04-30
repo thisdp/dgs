@@ -20,6 +20,129 @@ function dgsImportOOPClass(polluteGlobal)
 				return "on"..head..eventName:sub(2)
 			end
 		end
+		dgsOOP.tableCopy = function(t)
+			local nt = {}
+			for k,v in pairs(t) do
+				nt[k] = v
+			end
+			return nt
+		end
+
+		dgsOOP.dgsClassGen = {}
+		setmetatable(dgsOOP.dgsClassGen,{
+			__call=function(self,dgsElement,meta)
+				local t = {"DGS OOP: Bad usage"}
+				local newmeta = dgsOOP.tableCopy(meta)
+				newmeta.dgsElement = dgsElement
+				setmetatable(t,newmeta)
+				t()
+				return t
+			end,
+		})
+		
+		dgsOOP.PositionTable = {
+			__isAvailable = true,
+			__index=function(self,key)
+				local meta = getmetatable(self)
+				if not meta.__isAvailable or not isElement(meta.dgsElement) then
+					meta.__isAvailable = false
+					return false
+				end
+				if key == "relative" then
+					return dgsGetProperty(meta.dgsElement,"relative")[1]
+				elseif key == "x" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")[1]
+					local pos = rlt and dgsGetProperty(meta.dgsElement,"rltPos") or dgsGetProperty(meta.dgsElement,"absPos")
+					return pos[1]
+				elseif key == "y" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")[1]
+					local pos = rlt and dgsGetProperty(meta.dgsElement,"rltPos") or dgsGetProperty(meta.dgsElement,"absPos")
+					return pos[2]
+				elseif key == "vector" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")[1]
+					local pos = rlt and dgsGetProperty(meta.dgsElement,"rltPos") or dgsGetProperty(meta.dgsElement,"absPos")
+					return Vector2(pos)
+				end
+			end,
+			__newindex=function(self,key,value)
+				local meta = getmetatable(self)
+				if not meta.__isAvailable or not isElement(meta.dgsElement) then
+					meta.__isAvailable = false
+					return false
+				end
+				if key == "relative" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")
+					rlt[1] = value
+					return dgsSetProperty(meta.dgsElement,"relative",rlt)
+				elseif key == "x" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")
+					return dgsSetPosition(meta.dgsElement,value,_,rlt[1])
+				elseif key == "y" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")
+					return dgsSetPosition(meta.dgsElement,_,value,rlt[1])
+				end
+			end,
+			__call=function(self,key)
+				local meta = getmetatable(self)
+				setmetatable(self,nil)
+				local rlt = dgsGetProperty(meta.dgsElement,"relative")
+				self[1],self[2] = dgsGetPosition(meta.dgsElement,rlt[1])
+				setmetatable(self,meta)
+				return self
+			end,
+		}
+		
+		dgsOOP.SizeTable = {
+			__isAvailable = true,
+			__index=function(self,key)
+				local meta = getmetatable(self)
+				if not meta.__isAvailable or not isElement(meta.dgsElement) then
+					meta.__isAvailable = false
+					return false
+				end
+				if key == "relative" then
+					return dgsGetProperty(meta.dgsElement,"relative")[2]
+				elseif key == "w" or key == "width" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")[2]
+					local size = rlt and dgsGetProperty(meta.dgsElement,"rltSize") or dgsGetProperty(meta.dgsElement,"absSize")
+					return size[1]
+				elseif key == "h" or key == "height" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")[2]
+					local size = rlt and dgsGetProperty(meta.dgsElement,"rltSize") or dgsGetProperty(meta.dgsElement,"absSize")
+					return size[2]
+				elseif key == "vector" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")[2]
+					local size = rlt and dgsGetProperty(meta.dgsElement,"rltSize") or dgsGetProperty(meta.dgsElement,"absSize")
+					return Vector2(size)
+				end
+			end,
+			__newindex=function(self,key,value)
+				local meta = getmetatable(self)
+				if not meta.__isAvailable or not isElement(meta.dgsElement) then
+					meta.__isAvailable = false
+					return false
+				end
+				if key == "relative" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")
+					rlt[2] = value
+					return dgsSetProperty(meta.dgsElement,"relative",rlt)
+				elseif key == "x" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")
+					return dgsSetSize(meta.dgsElement,value,_,rlt[2])
+				elseif key == "y" then
+					local rlt = dgsGetProperty(meta.dgsElement,"relative")
+					return dgsSetSize(meta.dgsElement,_,value,rlt[2])
+				end
+			end,
+			__call=function(self,key)
+				local meta = getmetatable(self)
+				setmetatable(self,nil)
+				local rlt = dgsGetProperty(meta.dgsElement,"relative")
+				self[1],self[2] = dgsGetSize(meta.dgsElement,rlt[2])
+				setmetatable(self,meta)
+				return self
+			end,
+		}
 		
 		dgsOOP.AccessTable = {
 			__index=function(self,key)
@@ -28,6 +151,10 @@ function dgsImportOOPClass(polluteGlobal)
 					return parent and dgsGetClass(parent) or false
 				elseif key == "children" then
 					return self:getChildren()
+				elseif key == "size" then
+					return dgsOOP.dgsClassGen(self.dgsElement,dgsOOP.SizeTable)
+				elseif key == "position" then
+					return dgsOOP.dgsClassGen(self.dgsElement,dgsOOP.PositionTable)
 				end
 				return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
 			end,
@@ -38,6 +165,10 @@ function dgsImportOOPClass(polluteGlobal)
 						targetEle = value.dgsElement
 					end
 					return call(dgsOOP.dgsRes,"dgsSetParent",self.dgsElement,targetEle)
+				elseif key == "size" then
+					return dgsOOP.dgsClassGen(self.dgsElement,dgsOOP.SizeTable)
+				elseif key == "position" then
+					return dgsOOP.dgsClassGen(self.dgsElement,dgsOOP.PositionTable)
 				end
 				return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,key,value) #SyntaxSugar#
 			end,
@@ -45,86 +176,86 @@ function dgsImportOOPClass(polluteGlobal)
 		}
 
 		dgsOOP.NoParent = {
-			Window = function(self,...)
+			dgsWindow = function(self,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateWindow",...)
 				return dgsGetClass(dxgui)
 			end,
-			Interface3D = function(self,...)
+			dgs3DInterface = function(self,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)
 				return dgsGetClass(dxgui)
 			end,
-			Text3D = function(self,...)
+			dgs3DText = function(self,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreate3DText",...)
 				return dgsGetClass(dxgui)
 			end,
 		}
 
 		dgsOOP.HaveParent = {
-			Browser = function(self,x,y,w,h,relative,...)
+			dgsBrowser = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateBrowser",x,y,w,h,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			Button = function(self,x,y,w,h,text,relative,...)
+			dgsButton = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateButton",x,y,w,h,text,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			CheckBox = function(self,x,y,w,h,text,state,relative,...)
+			dgsCheckBox = function(self,x,y,w,h,text,state,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateCheckBox",x,y,w,h,text,state,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			ComboBox = function(self,x,y,w,h,text,relative,...)
+			dgsComboBox = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateComboBox",x,y,w,h,text,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			CustomRenderer = function(self,customFnc)
+			dgsCustomRenderer = function(self,customFnc)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateCustomRenderer",customFnc)
 				return dgsGetClass(dxgui)
 			end,
-			DetectArea = function(self,x,y,w,h,relative,...)
+			dgsDetectArea = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateDetectArea",x,y,w,h,text,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			Edit = function(self,x,y,w,h,text,relative,...)
+			dgsEdit = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateEdit",x,y,w,h,text,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			GridList = function(self,x,y,w,h,relative,...)
+			dgsGridList = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateGridList",x,y,w,h,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			Image = function(self,x,y,w,h,image,relative,...)
+			dgsImage = function(self,x,y,w,h,image,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateImage",x,y,w,h,image,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			Label = function(self,x,y,w,h,text,relative,...)
+			dgsLabel = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateLabel",x,y,w,h,text,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			Memo = function(self,x,y,w,h,text,relative,...)
+			dgsMemo = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateMemo",x,y,w,h,text,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			ProgressBar = function(self,x,y,w,h,relative,...)
+			dgsProgressBar = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateProgressBar",x,y,w,h,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			RadioButton = function(self,x,y,w,h,text,relative,...)
+			dgsRadioButton = function(self,x,y,w,h,text,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateRadioButton",x,y,w,h,text,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			ScrollBar = function(self,x,y,w,h,voh,relative,...)
+			dgsScrollBar = function(self,x,y,w,h,voh,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateScrollBar",x,y,w,h,voh,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			ScrollPane = function(self,x,y,w,h,relative,...)
+			dgsScrollPane = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateScrollPane",x,y,w,h,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			SwitchButton = function(self,x,y,w,h,textOn,textOff,state,relative,...)
+			dgsSwitchButton = function(self,x,y,w,h,textOn,textOff,state,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateSwitchButton",x,y,w,h,textOn,textOff,state,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
-			TabPanel = function(self,x,y,w,h,relative,...)
+			dgsTabPanel = function(self,x,y,w,h,relative,...)
 				local dxgui = call(dgsOOP.dgsRes,"dgsCreateTabPanel",x,y,w,h,relative,self.dgsElement,...)
 				return dgsGetClass(dxgui)
 			end,
@@ -1114,7 +1245,7 @@ function dgsImportOOPClass(polluteGlobal)
 				nTab.getTabID = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsTabPanelGetTabID",self.dgsElement,...)
 				end
-				nTab.Tab = function(self,text,...)
+				nTab.dgsTab = function(self,text,...)
 					local dxgui = call(dgsOOP.dgsRes,"dgsCreateTab",text,self.dgsElement,...)
 					return dgsGetClass(dxgui)
 				end

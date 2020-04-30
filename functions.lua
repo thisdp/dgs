@@ -156,6 +156,8 @@ end
 function dgsSetPosition(dgsElement,x,y,bool,isCenterPosition)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	local bool = bool and true or false
+	local pos = bool and dgsElementData[dgsElement].rltPos or dgsElementData[dgsElement].absPos
+	local x,y = x or pos[1],y or pos[2]
 	if isCenterPosition then
 		local size = dgsElementData[dgsElement][bool and "rltSize" or "absSize"]
 		calculateGuiPositionSize(dgsElement,x-size[1]/2,y-size[2],bool)
@@ -173,6 +175,9 @@ end
 
 function dgsSetSize(dgsElement,x,y,bool)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	local bool = bool and true or false
+	local size = bool and dgsElementData[dgsElement].rltSize or dgsElementData[dgsElement].absSize
+	local x,y = x or size[1],y or size[2]
 	calculateGuiPositionSize(dgsElement,_,_,_,x,y,bool or false)
 	return true
 end
@@ -1049,7 +1054,6 @@ function dgsCenterElement(element,remainX,remainY)
 		local windowSize = parent and dgsElementData[parent].absSize or {sW,sH}
 		local remainPos = dgsElementData[element].absPos
 		local size = dgsElementData[element].absSize
-		print(remainX and remainPos[1] or windowSize[1]/2,remainY and remainPos[2] or windowSize[2]/2)
 		return dgsSetPosition(element,remainX and remainPos[1] or windowSize[1]/2-size[1]/2,remainY and remainPos[2] or windowSize[2]/2-size[2]/2,false)
    end
 end

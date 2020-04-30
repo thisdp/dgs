@@ -18,43 +18,43 @@ end
 ------------Full demo
 function createFullDemo()
 	loadstring(dgsImportOOPClass(true))()
-	local window = DGSClass:Window(0,0,600,600,"DGS Full Demo",false)
-	local button = window:Button(10,210,80,50,"Test Button",false)
-	local switchButton1 = window:SwitchButton(100,210,60,20,"","",false)
-	local switchButton2 = window:SwitchButton(100,240,60,20,"","",true)
-	local gridlist = window:GridList(0,0,290,200,false)
+	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
+	local button = window:dgsButton(10,210,80,50,"Test Button",false)
+	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"","",false)
+	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"","",true)
+	local gridlist = window:dgsGridList(0,0,290,200,false)
 	gridlist:setMultiSelectionEnabled(true)
 	gridlist:addColumn("Column 1",0.5,true)
 	gridlist:addColumn("Column 2",0.5,true)
 	for i=1,100 do
 		gridlist:addRow(i,i,math.random(1,500))
 	end
-	local combobox = window:ComboBox(10,270,150,30,"test",false)
+	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
 	combobox:setEditEnabled(true)
 	for i=1,100 do
 		combobox:addItem(i)
 	end
 	
-	local tabPanel = window:TabPanel(290,210,280,220,false)
-	local tab1 = tabPanel:Tab("Tab1")
-	local memo = tab1:Memo(10,10,260,100,"This is a memo for demo",false)
-	local tab2 = tabPanel:Tab("Tab2")
-	local edit1 = tab1:Edit(10,120,260,30,"",false)
+	local tabPanel = window:dgsTabPanel(290,210,280,220,false)
+	local tab1 = tabPanel:dgsTab("Tab1")
+	local memo = tab1:dgsMemo(10,10,260,100,"This is a memo for demo",false)
+	local tab2 = tabPanel:dgsTab("Tab2")
+	local edit1 = tab1:dgsEdit(10,120,260,30,"",false)
 	edit1:setPlaceHolder("I am the place holder, and this edit is for demo")
-	local edit2 = tab1:Edit(10,160,260,30,"This is a edit for demo",false)
-	local progressBar = window:ProgressBar(10,440,580,25,false)
+	local edit2 = tab1:dgsEdit(10,160,260,30,"This is a edit for demo",false)
+	local progressBar = window:dgsProgressBar(10,440,580,25,false)
 	progressBar:setProperty("functions",[[
 		local progress = dgsGetProperty(self,"progress")
 		dgsSetProperty(self,"progress",(progress+0.5)%100)
 		return true
 	]])
-	local RadioButton1 = window:RadioButton(10,380,180,30,"This is a radio button for demo",false)
-	local RadioButton2 = window:RadioButton(10,410,180,30,"This is a radio button for demo",false)
-	local CheckBox1 = window:CheckBox(10,320,180,30,"This is a check box for demo",true,false)
-	local CheckBox2 = window:CheckBox(10,350,180,30,"This is a check box for demo",false,false)
+	local RadioButton1 = window:dgsRadioButton(10,380,180,30,"This is a radio button for demo",false)
+	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
+	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
+	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 	
 	local scb = window
-		:ScrollBar(320,50,260,20,true,false)
+		:dgsScrollBar(320,50,260,20,true,false)
 		:setAlpha(0.5)
 		:setScrollPosition(50)
 		:setGrades(10)
@@ -578,8 +578,8 @@ end
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass(true))()-- load OOP class
-	window1 = Window(0,0,0.5,0.1,"test",true) --create a window with oop
-	window2 = Window(0.2,0,0.5,0.1,"test",true) --create a window with oop
+	window1 = dgsWindow(0,0,0.5,0.1,"test",true) --create a window with oop
+	window2 = dgsWindow(0.2,0,0.5,0.1,"test",true) --create a window with oop
 	label = window1
 		:Label(0,0,1,1,"label",true) --create a label inside the window
 		:setParent(window2)
@@ -667,17 +667,19 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
 
+
 local function init()
 	--Test window
 	loadstring(dgsImportOOPClass(true))()
-	local window = DGSClass:Window(300, 300, 300, 300, "Color Picker")
+	local window = dgsWindow(300, 300, 300, 300, "Color Picker")
+	window.size.width = 100
 	window.ignoreTitle = true
 	local input = window
-		:Edit(0, 50, 200, 35, "Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
+		:dgsEdit(0, 50, 200, 35, "Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
 		:center(_,true)
-	local button = window:Button(75, 100, 150, 35, "Button")
+	local button = window:dgsButton(75, 100, 150, 35, "Button")
 	local radiobutton = window
-		:RadioButton(75, 150, 100, 35, "Option 1")
+		:dgsRadioButton(75, 150, 100, 35, "Option 1")
 		:center(_,true)
 	local colorpicker = dgsCreateColorPicker("HLDisk", 400, 190, 100, 100, false, window.dgsElement)
 	dgsCenterElement(colorpicker,_,true)
@@ -691,3 +693,23 @@ end
 print(getTickCount()-tick)
 end,50,1)]]
 
+--[[
+local dgsClass = {}
+local pos = {
+	__a = 1,
+	__call=function(self)
+		print(getmetatable(self).__a)
+	end,
+}
+
+local meta = {
+	__call=function(self,m)
+		local t = {}
+		setmetatable(t,m)
+		return t
+	end,
+}
+setmetatable(dgsClass,meta)
+
+iprint(dgsClass(pos)())
+]]
