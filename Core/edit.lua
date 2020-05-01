@@ -457,7 +457,6 @@ function searchEditMousePosition(dxedit,posx)
 		local stoSfrom_Half = (sto+sfrom)*0.5
 		local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
 		local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
-	--print(strlen)
 		local len1 = strlen+templen
 		if pos < len1 then
 			sto = stoSfrom_Half
