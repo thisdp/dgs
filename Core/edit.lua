@@ -248,6 +248,9 @@ function dgsEditSetWhiteList(edit,str)
 	local text = utf8Gsub(dgsElementData[edit].text,whiteList,"")
 	local textLen = utf8Len(text)
 	dgsElementData[edit].text = text
+	if dgsElementData[edit].masked then
+		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
+	end
 	dgsElementData[edit].textFontLen = _dxGetTextWidth(text,textSize[1],font)
 	if index >= textLen then
 		dgsEditSetCaretPosition(edit,textLen)
@@ -284,12 +287,16 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 	assert(dgsGetType(toIndex) == "number","Bad argument @dgsEditDeleteText at argument 3, expect number, got "..dgsGetType(toIndex))
 	local text = dgsElementData[edit].text
 	local textLen = utf8Len(text)
+	local isMask = dgsElementData[edit].masked
 	local fromIndex = (fromIndex < 0 and 0) or (fromIndex > textLen and textLen) or fromIndex
 	local toIndex = (toIndex < 0 and 0) or (toIndex > textLen and textLen) or toIndex
 	if fromIndex > toIndex then
 		fromIndex,toIndex = toIndex,fromIndex
 	end
-	local deletedText = utf8Sub(text,fromIndex+1,toIndex)
+	local _deletedText = utf8Sub(text,fromIndex+1,toIndex)
+	if isMask then
+		deletedText = strRep(dgsElementData[edit].maskText,utf8Len(_deletedText))
+	end
 	local deleted = _dxGetTextWidth(deletedText,dgsElementData[edit].textSize[1],dgsElementData[edit].font)
 	local text = utf8Sub(text,1,fromIndex)..utf8Sub(text,toIndex+1)
 	dgsElementData[edit].text = text
@@ -301,7 +308,7 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 	if dgsElementData[edit].enableRedoUndoRecord then
 		historyRecState = historyRecState or 1
 		if historyRecState ~= 0 and toIndex-fromIndex ~= 0 then
-			dgsEditSaveHistory(edit,historyRecState,1,toIndex-fromIndex == 1 and 1 or 2,fromIndex,deletedText)
+			dgsEditSaveHistory(edit,historyRecState,1,toIndex-fromIndex == 1 and 1 or 2,fromIndex,_deletedText)
 		end
 	end
 	local showPos = dgsElementData[edit].showPos
@@ -317,7 +324,10 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 		end
 	end
 	dgsElementData[edit].showPos = showPos-showPos%1
-	dgsElementData[edit].textFontLen = _dxGetTextWidth(dgsElementData[edit].text,dgsElementData[edit].textSize[1],dgsElementData[edit].font)
+	if dgsElementData[edit].masked then
+		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
+	end
+	dgsElementData[edit].textFontLen = _dxGetTextWidth(text,dgsElementData[edit].textSize[1],dgsElementData[edit].font)
 	triggerEvent("onDgsTextChange",edit)
 	return deletedText
 end
@@ -415,11 +425,12 @@ addEventHandler("onClientCursorMove",root,resetEdit)
 
 function searchEditMousePosition(dxedit,posx)
 	local text
-	if dgsElementData[dxedit].isRTL then
+	--[[if dgsElementData[dxedit].isRTL then
 		text = dgsElementData[dxedit].text:reverse()
 	else
 		text = dgsElementData[dxedit].text
-	end
+	end]]
+	text = dgsElementData[dxedit].text
 	local sfrom,sto = 0,utf8Len(text)
 	if dgsElementData[dxedit].masked then
 		text = strRep(dgsElementData[dxedit].maskText,sto)
@@ -547,6 +558,10 @@ function dgsEditAlignmentShowPosition(edit,text)
 	local showPos = dgsElementData[edit].showPos
 	local padding = dgsElementData[edit].padding
 	local pos = dgsElementData[edit].caretPos
+	local isMask = dgsElementData[edit].masked
+	if isMask then
+		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
+	end
 	if alignment[1] == "left" then
 		local nowLen = _dxGetTextWidth(utf8Sub(text,0,pos),dgsElementData[edit].textSize[1],font)
 		if nowLen+showPos > sx-padding[1]*2 then
@@ -594,7 +609,10 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 	local newTextData = utf8Gsub(textData_add,whiteList,"")
 	local textLen = utf8Len(newTextData)-textDataLen
 	dgsElementData[edit].text = newTextData
-	dgsElementData[edit].textFontLen = _dxGetTextWidth(dgsElementData[edit].text,dgsElementData[edit].textSize[1],dgsElementData[edit].font)
+	if dgsElementData[edit].masked then
+		newTextData = strRep(dgsElementData[edit].maskText,utf8Len(newTextData))
+	end
+	dgsElementData[edit].textFontLen = _dxGetTextWidth(newTextData,dgsElementData[edit].textSize[1],dgsElementData[edit].font)
 	if not noAffectCaret then
 		if index <= _index then
 			dgsEditSetCaretPosition(edit,index+textLen)
