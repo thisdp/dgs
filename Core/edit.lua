@@ -294,6 +294,7 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 		fromIndex,toIndex = toIndex,fromIndex
 	end
 	local _deletedText = utf8Sub(text,fromIndex+1,toIndex)
+	local deletedText = _deletedText
 	if isMask then
 		deletedText = strRep(dgsElementData[edit].maskText,utf8Len(_deletedText))
 	end
