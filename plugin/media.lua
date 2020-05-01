@@ -12,7 +12,7 @@ javaScript.setTime = "mediaSetCurrentTime(REP1)"
 addEvent("onDgsMediaPlay",true)
 addEvent("onDgsMediaPause",true)
 addEvent("onDgsMediaStop",true)
-addEvent("onDgsMediaDurationGet",true)
+addEvent("onDgsMediaLoaded",true)
 addEvent("onDgsMediaTimeUpdate",true)
 
 addEvent("onDgsMediaBrowserReturn",true)
@@ -94,7 +94,7 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 				element.height = ]]..size[2]..[[;
 				document.body.appendChild(element);
 				createListener(element);
-				mta.triggerEvent("onDgsMediaDurationGet",element.duration)
+				mta.triggerEvent("onDgsMediaLoaded")
 			]]
 		else
 			str = [[
@@ -107,7 +107,7 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 				var source = document.createElement("source");
 				source.src = "http://mta/]] ..path:sub(2).. [[";
 				element.appendChild(source);
-				mta.triggerEvent("onDgsMediaDurationGet",element.duration)
+				mta.triggerEvent("onDgsMediaLoaded")
 			]]
 		end
 		local executed = executeBrowserJavascript(media,str)
@@ -118,7 +118,7 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 	end
 end
 
-addEventHandler("onDgsMediaDurationGet",resourceRoot,function(duration)
+addEventHandler("onDgsMediaLoaded",resourceRoot,function(duration)
 	if dgsElementType[source] == "dgs-dxmedia" and duration then
 		dgsElementData[source].duration = duration
 	end
