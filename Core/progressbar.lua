@@ -70,6 +70,7 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 	dgsSetData(progressbar,"styleData",{})
 	dgsSetData(progressbar,"style","normal")
 	dgsSetData(progressbar,"progress",0)
+	dgsSetData(progressbar,"map",{0,100})
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(indicatorImage) then
@@ -134,13 +135,21 @@ function dgsProgressBarSetStyleProperty(progressbar,propertyName,value)
 	return true
 end
 
-function dgsProgressBarGetProgress(progressbar,easing)
+function dgsProgressBarGetProgress(progressbar,isAbsolute)
 	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetProgress at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
-	return dgsElementData[progressbar].progress
+	local progress = dgsElementData[progressbar].progress
+	if not isAbsolute then
+		progress = (progress-scaler[1])/(scaler[2]-scaler[1])*100
+	end
+	return progress
 end
 
-function dgsProgressBarSetProgress(progressbar,progress)
+function dgsProgressBarSetProgress(progressbar,progress,isAbsolute)
 	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetProgress at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	local scaler = dgsElementData[progressbar].map
+	if not isAbsolute then
+		progress = progress/100*(scaler[2]-scaler[1])+scaler[1]
+	end
 	if progress < 0 then progress = 0 end
 	if progress > 100 then progress = 100 end
 	if dgsElementData[progressbar].progress ~= progress then

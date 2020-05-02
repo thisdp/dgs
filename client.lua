@@ -1290,6 +1290,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					else
 						dxDrawRectangle(0,0,w,h,finalcolor)
 					end
+					dxSetBlendMode("modulate_add")
 					if alignment[1] == "left" then
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
 						textX_Left,textX_Right = showPos,w-sidelength
@@ -1488,6 +1489,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						else
 							dxDrawRectangle(0,0,w,h,finalcolor,rendSet)
 						end
+						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						local caretRltHeight = fontHeight*caretHeight
 						local caretDrawPos

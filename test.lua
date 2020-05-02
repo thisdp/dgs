@@ -19,6 +19,13 @@ end
 function createFullDemo()
 	loadstring(dgsImportOOPClass(true))()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
+	local scb = window
+		:dgsScrollBar(320,50,260,20,true,false)
+		:setAlpha(0.5)
+		:setScrollPosition(50)
+		:setGrades(10)
+		:setProperty("length",{0.8,true})
+	window.position.x = 400
 	local button = window:dgsButton(10,210,80,50,"Test Button",false)
 	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"","",false)
 	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"","",true)
@@ -65,13 +72,6 @@ function createFullDemo()
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 	
-	local scb = window
-		:dgsScrollBar(320,50,260,20,true,false)
-		:setAlpha(0.5)
-		:setScrollPosition(50)
-		:setGrades(10)
-		:setProperty("length",{0.8,true})
-			
 end
 
 ------------

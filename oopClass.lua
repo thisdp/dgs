@@ -262,6 +262,13 @@ function dgsImportOOPClass(polluteGlobal)
 		}
 
 		function dgsGetClass(dgsElement)
+			if type(dgsElement) == "table" then 
+				local t = {}
+				for i=1,#dgsElement do
+					t[i] = dgsGetClass(dgsElement[i])
+				end
+				return t
+			end
 			if not isElement(dgsElement) then return false end
 			local originalClass = dgsOOP.dgsClass[dgsElement]
 			if originalClass then
@@ -668,7 +675,7 @@ function dgsImportOOPClass(polluteGlobal)
 					return call(dgsOOP.dgsRes,"dgsComboBoxSetBoxHeight",self.dgsElement,...) #SyntaxSugar#
 				end
 				nTab.getScrollBar = function(self,...)
-					return call(dgsOOP.dgsRes,"dgsComboBoxGetScrollBar",self.dgsElement,...)
+					return dgsGetClass(call(dgsOOP.dgsRes,"dgsComboBoxGetScrollBar",self.dgsElement,...))
 				end
 				nTab.setScrollPosition = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsComboBoxSetScrollPosition",self.dgsElement,...) #SyntaxSugar#
@@ -800,7 +807,7 @@ function dgsImportOOPClass(polluteGlobal)
 				end
 			elseif dgsType == "dgs-dxgridlist" then
 				nTab.getScrollBar = function(self,...)
-					return call(dgsOOP.dgsRes,"dgsGridListGetScrollBar",self.dgsElement,...)
+					return dgsGetClass(call(dgsOOP.dgsRes,"dgsGridListGetScrollBar",self.dgsElement,...))
 				end
 				nTab.setScrollPosition = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsGridListSetScrollPosition",self.dgsElement,...) #SyntaxSugar#
@@ -1024,7 +1031,7 @@ function dgsImportOOPClass(polluteGlobal)
 					return call(dgsOOP.dgsRes,"dgsMemoSeekPosition",self.dgsElement,...)
 				end
 				nTab.getScrollBar = function(self,...)
-					return call(dgsOOP.dgsRes,"dgsMemoGetScrollBar",self.dgsElement,...)
+					return dgsGetClass(call(dgsOOP.dgsRes,"dgsMemoGetScrollBar",self.dgsElement,...))
 				end
 				nTab.setScrollPosition = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsMemoSetScrollPosition",self.dgsElement,...) #SyntaxSugar#
@@ -1190,7 +1197,7 @@ function dgsImportOOPClass(polluteGlobal)
 				end
 			elseif dgsType == "dgs-dxscrollpane" then
 				nTab.getScrollBar = function(self,...)
-					return call(dgsOOP.dgsRes,"dgsScrollPaneGetScrollBar",self.dgsElement,...)
+					return dgsGetClass(call(dgsOOP.dgsRes,"dgsScrollPaneGetScrollBar",self.dgsElement,...))
 				end
 				nTab.setScrollPosition = function(self,...)
 					return call(dgsOOP.dgsRes,"dgsScrollPaneSetScrollPosition",self.dgsElement,...) #SyntaxSugar#
