@@ -276,6 +276,18 @@ function dgsCoreRender()
 			dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,rendSet)
 			dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
 			dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
+			local parent = MouseData.hit
+			local parentIndex = 0
+			dxDrawText("Parent List:", sW*0.5+91,11,sW,sH,black)
+			dxDrawText("Parent List:", sW*0.5+90,10)
+			while(parent) do
+				dxDrawText("↓"..dgsGetPluginType(parent).."("..tostring(parent)..")", sW*0.5+101,26+parentIndex*15,sW,sH,black)
+				dxDrawText("↓"..dgsGetPluginType(parent).."("..tostring(parent)..")", sW*0.5+100,25+parentIndex*15)
+				parent = dgsGetParent(parent)
+				parentIndex = parentIndex+1
+			end
+			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+100,26+parentIndex*15,sW,sH,black)
+			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+99,25+parentIndex*15)
 		end
 		local version = getElementData(resourceRoot,"Version") or "?"
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-129,sW,sH,black)
@@ -292,10 +304,10 @@ function dgsCoreRender()
 			tickColor = red
 		end
 		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-100,_,_,tickColor)
-		local Focused = MouseData.nowShow and dgsGetType(MouseData.nowShow).."("..getElementID(MouseData.nowShow)..")" or "None"
-		local enterStr = MouseData.hit and dgsGetType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
-		local leftStr = MouseData.clickl and dgsGetType(MouseData.clickl).." ("..getElementID(MouseData.clickl)..")" or "None"
-		local rightStr = MouseData.clickr and dgsGetType(MouseData.clickr).." ("..getElementID(MouseData.clickr)..")" or "None"
+		local Focused = MouseData.nowShow and dgsGetPluginType(MouseData.nowShow).."("..getElementID(MouseData.nowShow)..")" or "None"
+		local enterStr = MouseData.hit and dgsGetPluginType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
+		local leftStr = MouseData.clickl and dgsGetPluginType(MouseData.clickl).." ("..getElementID(MouseData.clickl)..")" or "None"
+		local rightStr = MouseData.clickr and dgsGetPluginType(MouseData.clickr).." ("..getElementID(MouseData.clickr)..")" or "None"
 		dxDrawText("Focused: "..Focused,6,sH*0.4-84,sW,sH,black)
 		dxDrawText("Focused: "..Focused,5,sH*0.4-85)
 		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
@@ -1258,7 +1270,26 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
 					local placeHolderOffset = eleData.placeHolderOffset
 					dxSetRenderTarget(renderTarget,true)
-					dxSetBlendMode("modulate_add")
+					dxSetBlendMode("add")
+					local finalcolor
+					if not enabled[1] and not enabled[2] then
+						if type(eleData.disabledColor) == "number" then
+							finalcolor = eleData.disabledColor
+						elseif eleData.disabledColor == true then
+							local r,g,b,a = fromcolor(bgColor,true)
+							local average = (r+g+b)/3*eleData.disabledColorPercent
+							finalcolor = tocolor(average,average,average,a)
+						else
+							finalcolor = bgColor
+						end
+					else
+						finalcolor = bgColor
+					end
+					if bgImage then
+						dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor)
+					else
+						dxDrawRectangle(0,0,w,h,finalcolor)
+					end
 					if alignment[1] == "left" then
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
 						textX_Left,textX_Right = showPos,w-sidelength
@@ -1307,25 +1338,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 					dxSetRenderTarget(rndtgt)
 					dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-					local finalcolor
-					if not enabled[1] and not enabled[2] then
-						if type(eleData.disabledColor) == "number" then
-							finalcolor = eleData.disabledColor
-						elseif eleData.disabledColor == true then
-							local r,g,b,a = fromcolor(bgColor,true)
-							local average = (r+g+b)/3*eleData.disabledColorPercent
-							finalcolor = tocolor(average,average,average,a)
-						else
-							finalcolor = bgColor
-						end
-					else
-						finalcolor = bgColor
-					end
-					if bgImage then
-						dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
-					else
-						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
-					end
 					local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					if placeHolderIgnoreRndTgt then
@@ -1470,7 +1482,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local canHoldLines = floor((h-4)/fontHeight)
 						canHoldLines = canHoldLines > allLines and allLines or canHoldLines
 						dxSetRenderTarget(renderTarget,true)
-						dxSetBlendMode("modulate_add")
+						dxSetBlendMode("add")
+						if bgImage then
+							dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor,rendSet)
+						else
+							dxDrawRectangle(0,0,w,h,finalcolor,rendSet)
+						end
 						local showPos = eleData.showPos
 						local caretRltHeight = fontHeight*caretHeight
 						local caretDrawPos
@@ -1560,16 +1577,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
-						dxSetBlendMode("blend")
-						if bgImage then
-							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
-						else
-							dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
-						end
 						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
-						dxSetBlendMode("add")
-						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						if MouseData.nowShow == v and MouseData.editMemoCursor then
 							local CaretShow = true
 							if eleData.readOnly then
@@ -1601,7 +1611,12 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						canHoldLines = canHoldLines > allLine and allLine or canHoldLines
 						local selPosStart,selPosEnd,selStart,selEnd
 						dxSetRenderTarget(renderTarget,true)
-						dxSetBlendMode("modulate_add")
+						dxSetBlendMode("add")
+						if bgImage then
+							dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor,rendSet)
+						else
+							dxDrawRectangle(0,0,w,h,finalcolor,rendSet)
+						end
 						local showPos = eleData.showPos
 						if allLine > 0 then
 							local toShowLine = showLine+canHoldLines
@@ -1645,16 +1660,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 						dxSetRenderTarget(rndtgt)
-						dxSetBlendMode(rndtgt and "add" or "blend")
-						if bgImage then
-							dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
-						else
-							dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
-						end
 						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
-						dxSetBlendMode("add")
-						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						if MouseData.nowShow == v and MouseData.editMemoCursor then
 							local CaretShow = true
 							if eleData.readOnly then
@@ -1770,7 +1778,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						bgColor = applyColorAlpha(bgColor,galpha)
 						dxDrawRectangle(x,y,relSizX,relSizY,bgColor,rendSet)
 					end
-					dxSetBlendMode("blend")
+					dxSetBlendMode("add")
 					local filter = eleData.filter
 					local drawTarget = newRndTgt
 					if filter then

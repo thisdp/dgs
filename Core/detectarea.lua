@@ -1,3 +1,4 @@
+detectAreaBuiltIn = {}
 function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	assert(tonumber(x),"Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
@@ -10,8 +11,8 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	local _x = dgsIsDxElement(parent) and dgsSetParent(detectarea,parent,true,true) or table.insert(CenterFatherTable,detectarea)
 	dgsSetType(detectarea,"dgs-dxdetectarea")
 	dgsSetData(detectarea,"renderBuffer",{})
-	dgsSetData(detectarea,"checkFunction",dgsDetectAreaDefaultFunction)
 	dgsSetData(detectarea,"debugMode",false)
+	dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 	calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",detectarea,sourceResource)
 	return detectarea
@@ -22,6 +23,14 @@ detectAreaPreDefine = [[
 	local mxRlt,myRlt,mxAbs,myAbs = args[1],args[2],args[3],args[4]
 ]]
 
+detectAreaBuiltIn.default = [[
+	return true
+]]
+
+detectAreaBuiltIn.circle = [[
+	return sqrt((mxRlt-0.5)^2+(myRlt-0.5)^2)<0.5
+]]
+
 function dgsDetectAreaDefaultFunction(mxRlt,myRlt,mxAbs,myAbs)
 	return true
 end
@@ -30,6 +39,7 @@ function dgsDetectAreaSetFunction(detectarea,fncStr)
 	assert(dgsGetType(detectarea) == "dgs-dxdetectarea","Bad argument @dgsDetectAreaSetFunction at argument 1, except dgs-dxdetectarea got "..dgsGetType(detectarea))
 	assert(type(fncStr) == "string" or (isElement(fncStr) and getElementType(fncStr) == "texture"),"Bad argument @dgsDetectAreaSetFunction at argument 2, expect string/texture got "..dgsGetType(fncStr))
 	if type(fncStr) == "string" then
+		fncStr = detectAreaBuiltIn[fncStr] or fncStr
 		local fnc = loadstring(detectAreaPreDefine..fncStr)
 		assert(type(fnc) == "function","Bad argument @dgsDetectAreaSetFunction at argument 2, failed to load function")
 		dgsSetData(detectarea,"checkFunction",fnc)

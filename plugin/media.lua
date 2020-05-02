@@ -42,7 +42,7 @@ end
 
 addEventHandler("onClientBrowserCreated",resourceRoot,function()
 	if dgsGetType(source) == "dgs-dxmedia" then
-		loadBrowserURL(source,"http://mta/"..getResourceName(getThisResource()).."/media.html")
+		loadBrowserURL(source,"http://mta/"..getResourceName(getThisResource()).."/html/media.html")
 	end
 end)
 

@@ -35,13 +35,25 @@ function createFullDemo()
 		combobox:addItem(i)
 	end
 	
-	local tabPanel = window:dgsTabPanel(290,210,280,220,false)
+	local tabPanel = window
+		:dgsTabPanel(290,210,280,220,false)
 	local tab1 = tabPanel:dgsTab("Tab1")
-	local memo = tab1:dgsMemo(10,10,260,100,"This is a memo for demo",false)
+	local memo = tab1
+		:dgsMemo(10,10,260,100,"This is a memo for demo",false)
+	local edit1 = tab1
+		:dgsEdit(10,120,260,30,"",false)
+		:setPlaceHolder("I am the place holder, and this edit is for demo")
+	local edit2 = tab1
+		:dgsEdit(10,160,260,30,"This is a edit for demo",false)
 	local tab2 = tabPanel:dgsTab("Tab2")
-	local edit1 = tab1:dgsEdit(10,120,260,30,"",false)
-	edit1:setPlaceHolder("I am the place holder, and this edit is for demo")
-	local edit2 = tab1:dgsEdit(10,160,260,30,"This is a edit for demo",false)
+	local scp = tab2:dgsScrollPane(0,0,1,1,true)
+	local memo2 = scp
+		:dgsMemo(10,10,260,100,"This is a memo for demo",false)
+	local edit3 = scp
+		:dgsEdit(10,120,260,30,"",false)
+		:setPlaceHolder("I am the place holder, and this edit is for demo")
+	memo2.bgImage = roundRect
+	edit3.bgImage = roundRect
 	local progressBar = window:dgsProgressBar(10,440,580,25,false)
 	progressBar:setProperty("functions",[[
 		local progress = dgsGetProperty(self,"progress")
@@ -634,7 +646,30 @@ end
 -----------------------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect
 function testButtonEffect()
-	local bEffect = dxCreateShader("shaders/ButtonEffect.fx")				--Create our shader
+	local bEffect = dxCreateShader([[
+		float antiAliased = 0.02;
+		float radius = 0;
+		float2 circlePos = float2(0.5,0.5);
+		float4 baseColor = float4(0.5,0.5,0.5,1);
+		float4 focusColor = float4(0,0.4,0.8,1);
+		float2 UVPos = float2(0,0);
+		float2 UVSize = float2(1,1);
+		float ratio = 2;
+
+		float4 myShader(float2 tex:TEXCOORD0):COLOR0{
+			float2 UVScaler = UVPos+float2(tex.x*UVSize.x,tex.y*UVSize.y);
+			float4 color = focusColor;
+			float2 texPosScaler = float2((tex.x-circlePos.x)*ratio,(tex.y-circlePos.y));
+			float dis = texPosScaler.x*texPosScaler.x+texPosScaler.y*texPosScaler.y;
+			color = focusColor+(baseColor-focusColor)*clamp((dis-radius+antiAliased)/antiAliased/radius,0,1);
+			return color;
+		}
+		technique DrawCircle{
+			pass P0{
+				PixelShader = compile ps_2_0 myShader();
+			}
+		}
+	]])				--Create our shader
 	local button = dgsCreateButton(300,300,200,100,"Button",false)			--Create our dgs button
 	dgsSetProperty(button,"image",{bEffect,bEffect,bEffect})				--Set all image of dgs button as shader
 	dgsAddEasingFunction("ButtonEffect_1",[[								--Define our custom easing function that can be only used in dgs

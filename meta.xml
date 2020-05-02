@@ -1,12 +1,7 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
-	<file src="media.html" />
+	<file src="html/media.html" />
 	<file src="styleManager/styleMapper.lua"/>
-	<file src="shaders/textureRelight.fx" />
-	<file src="shaders/mta-helper.fx" />
-	<file src="shaders/ButtonEffect.fx" />
-	<file src="shaders/pixelWithoutBlur.fx" />
-	<file src="shaders/ring-round.fx"/>
 	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
@@ -23,7 +18,6 @@
 	<script src="Core/checkbox.lua" type="client" />
 	<script src="Core/combobox.lua" type="client" />
 	<script src="Core/customRenderer.lua" type="client" />
-	<script src="Core/eda.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
 	<script src="Core/detectarea.lua" type="client" />
 	<script src="Core/gridlist.lua" type="client" />
@@ -86,7 +80,6 @@
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
 	<!--(Default Style) Don't touch this style with your bear hand-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
-	<file src="styleManager/Default/Images/eda/ellipse.fx" />
 	<file src="styleManager/Default/Images/checkbox/cb_t.png" />
 	<file src="styleManager/Default/Images/checkbox/cb_f.png" />
 	<file src="styleManager/Default/Images/checkbox/cb_i.png" />
@@ -520,10 +513,6 @@
 	<export function="dgsGridListGetNavigationEnabled" type="client" />
 
 	<export function="dgsCreateBrowser" type="client" />
-
-	<export function="dgsCreateEDA" type="client" />
-	<export function="dgsEDASetDebugModeEnabled" type="client" />
-	<export function="dgsEDAGetDebugModeEnabled" type="client" />
 
 	<export function="dgsCreateDetectArea" type="client" />
 	<export function="dgsDetectAreaSetFunction" type="client" />

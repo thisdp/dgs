@@ -1,3 +1,4 @@
+ProgressBarShaders = {}
 ProgressBarStyle = {
 	["normal"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 		local eleData = dgsElementData[source]
@@ -98,7 +99,7 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			dgsSetData(progressbar,"styleData",{})
 			local styleData = dgsElementData[progressbar].styleData
 			styleData.elements = {}
-			styleData.elements.circleShader = dxCreateShader("shaders/ring-round.fx")
+			styleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-round"])
 			styleData.isReverse = false
 			styleData.rotation = 0
 			styleData.antiAliased = 0.005
@@ -157,3 +158,67 @@ function dgsProgressBarGetMode(progressbar)
 	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
 	return dgsElementData[progressbar].indicatorMode
 end
+
+
+----------------Shader
+ProgressBarShaders["ring-round"] = [[float borderSoft = 0.02;
+float radius = 0.2;
+float thickness = 0.02;
+float2 progress = float2(0,0.1);
+float4 indicatorColor = float4(0,1,1,1);
+float PI2 = 6.283185;
+
+float4 blend(float4 c1, float4 c2){
+	float alp = c1.a+c2.a-c1.a*c2.a;
+	float3 color = (c1.rgb*c1.a*(1.0-c2.a)+c2.rgb*c2.a)/alp;
+	return float4(color,alp);
+}
+
+float4 myShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
+	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
+	float nBS = borderSoft*sqrt(dxy.x*dxy.y)*100;
+	float4 bgColor = color;
+	float4 inColor = 0;
+	float2 texFixed = tex-0.5;
+	float delta = clamp(1-(abs(length(texFixed)-radius)-thickness+nBS)/nBS,0,1);
+	bgColor.a *= delta;
+	float2 progFixed = progress*PI2;
+	float angle = atan2(tex.y-0.5,0.5-tex.x)+0.5*PI2;
+	bool tmp1 = angle>progFixed.x;
+	bool tmp2 = angle<progFixed.y;
+	float dis_ = distance(float2(cos(progFixed.x),-sin(progFixed.x))*radius,texFixed);
+	float4 Color1,Color2;
+	if(dis_<=thickness){
+		float tmpDelta = clamp(1-(dis_-thickness+nBS)/nBS,0,1);
+		Color1 = indicatorColor;
+		inColor = indicatorColor;
+		Color1.a *= tmpDelta;
+	}
+	dis_ = distance(float2(cos(progFixed.y),-sin(progFixed.y))*radius,texFixed);
+	if(dis_<=thickness){
+		float tmpDelta = clamp(1-(dis_-thickness+nBS)/nBS,0,1);
+		Color2 = indicatorColor;
+		inColor = indicatorColor;
+		Color2.a *= tmpDelta;
+	}
+	inColor.a = max(Color1.a,Color2.a);
+	if(progress.x>=progress.y){
+		if(tmp1+tmp2){
+			inColor = indicatorColor;
+			inColor.a *= delta;
+		}
+	}else{
+		if(tmp1*tmp2){
+			inColor = indicatorColor;
+			inColor.a *= delta;
+		}
+	}
+	return blend(bgColor,inColor);
+}
+
+technique DrawCircle{
+	pass P0	{
+		PixelShader = compile ps_2_a myShader();
+	}
+}
+]]

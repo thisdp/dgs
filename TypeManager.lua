@@ -6,7 +6,6 @@ dgsType = {
 	"dgs-dxedit",
 	"dgs-dxexternal",
 	"dgs-dxmemo",
-	"dgs-dxeda",
 	"dgs-dxdetectarea",
 	"dgs-dxgridlist",
 	"dgs-dximage",
