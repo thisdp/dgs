@@ -1615,10 +1615,11 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxSetRenderTarget(renderTarget,true)
 						dxSetBlendMode("add")
 						if bgImage then
-							dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor,rendSet)
+							dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor)
 						else
-							dxDrawRectangle(0,0,w,h,finalcolor,rendSet)
+							dxDrawRectangle(0,0,w,h,finalcolor)
 						end
+						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						if allLine > 0 then
 							local toShowLine = showLine+canHoldLines

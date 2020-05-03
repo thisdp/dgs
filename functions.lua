@@ -969,7 +969,7 @@ function dgsTranslate(dgsEle,textTable,sourceResource)
 		local count = 2
 		while true do
 			if not textTable[count] then break end
-			local _value = value:gsub("%%rep%%",textTable[count])
+			local _value = value:gsub("%%rep%%",textTable[count],1)
 			if _value == value then break end
 			count = count+1
 			value = _value
