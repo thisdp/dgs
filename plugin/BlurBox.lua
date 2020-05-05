@@ -3,7 +3,12 @@ blurboxShaders = 0
 blurboxFactor = 1/2
 local blurBoxShader 
 
-function dgsCreateBlurBox()
+function _dgsCreateBlurBox()
+	if not getElementData(localPlayer,"DGS-DEBUG-C") then
+		outputDebugString("Deprecated usage of function @dgsCreateBlurBox, please check wiki, and run it again with command /debugdgs c",2)
+	else
+		assert(false,"Deprecated usage of function @dgsCreateBlurBox")
+	end
 	if not isElement(BlurBoxGlobalScreenSource) then
 		BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
 	end
@@ -55,3 +60,154 @@ technique fxBlur
     }
 }
 ]]
+
+function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
+	dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	local rt = dgsElementData[self].rt
+	local shader = dgsElementData[self].shaders
+	local box = BlurBoxGlobalScreenSource
+	local resolution = dgsElementData[self].resolution
+	dxSetRenderTarget(rt)
+	dxSetShaderValue(shader[1],"screenSource",BlurBoxGlobalScreenSource)
+	dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
+	dxSetRenderTarget()
+	dxSetShaderValue(shader[2],"screenSource",rt)
+	dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF,postGUI or false)
+end
+
+function dgsCreateBlurBox(w,h)
+	if not w and not h then
+		return _dgsCreateBlurBox()
+	end
+	if not isElement(BlurBoxGlobalScreenSource) then
+		BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
+	end
+	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
+	local rt = dxCreateRenderTarget(w,h,true)
+	local horz,vert = getBlurBoxShader(5)
+	local shaderH = dxCreateShader(horz)
+	local shaderV = dxCreateShader(vert)
+	dgsSetData(bb,"asPlugin","dgs-dxblurbox")
+	dgsSetData(bb,"shaders",{shaderH,shaderV})
+	dgsSetData(bb,"rt",rt)
+	dgsSetData(bb,"intensity",1)
+	dgsSetData(bb,"resolution",{w,h})
+	dgsSetData(bb,"level",5)
+	blurboxShaders = blurboxShaders+1
+	triggerEvent("onDgsPluginCreate",bb,sourceResource)
+	return bb
+end
+
+function dgsBlurBoxSetResolution(bb,w,h)
+	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetResolution at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	assert(type(w) == "number","Bad argument @dgsBlurBoxSetResolution at argument 2, expect number got "..dgsGetPluginType(w))
+	assert(type(h) == "number","Bad argument @dgsBlurBoxSetResolution at argument 3, expect number got "..dgsGetPluginType(h))
+	local shaders = dgsElementData[bb].shaders
+	local rt = dgsElementData[bb].rt
+	if isElement(rt) then destroyElement(rt) end
+	local rt = dxCreateRenderTarget(w,h,true)
+	dgsSetData(bb,"resolution",{w,h})
+	dgsSetData(bb,"rt",rt)
+	return true
+end
+
+function dgsBlurBoxSetIntensity(bb,intensity)
+	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetIntensity at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	assert(type(intensity) == "number","Bad argument @dgsBlurBoxSetIntensity at argument 2, expect number got "..dgsGetPluginType(intensity))
+	local shaders = dgsElementData[bb].shaders
+	dgsSetData(bb,"intensity",intensity)
+	dxSetShaderValue(shaders[1],"intensity",intensity)
+	dxSetShaderValue(shaders[2],"intensity",intensity)
+	return true
+end
+
+function dgsBlurBoxSetLevel(bb,level)
+	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetLevel at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	assert(type(level) == "number","Bad argument @dgsBlurBoxSetLevel at argument 2, expect number got "..dgsGetPluginType(intensity))
+	assert(level>=0 and level <=15,"Bad argument @dgsBlurBoxSetLevel at argument 2, expect number in 0~15, got "..level.." (out of range)")
+	local level = level-level%1
+	local shaders = dgsElementData[bb].shaders
+	destroyElement(shaders[1])
+	destroyElement(shaders[2])
+	local horz,vert = getBlurBoxShader(level)
+	local shaderH = dxCreateShader(horz)
+	local shaderV = dxCreateShader(vert)
+	dxSetShaderValue(shaderH,"intensity",dgsElementData[bb].intensity)
+	dxSetShaderValue(shaderV,"intensity",dgsElementData[bb].intensity)
+	dgsSetData(bb,"shaders",{shaderH,shaderV})
+	dgsSetData(bb,"level",level)
+	return true
+end
+
+function dgsBlurBoxGetResolution(bb)
+	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetResolution at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	return dgsElementData[bb].resolution[1],dgsElementData[bb].resolution[2]
+end
+
+function dgsBlurBoxGetIntensity(bb,level)
+	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxGetIntensity at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	return dgsElementData[bb].intensity
+end
+
+function dgsBlurBoxGetLevel(bb,level)
+	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxGetLevel at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	return dgsElementData[bb].level
+end
+
+----------------Shader
+function getBlurBoxShader(level)
+	local blurBoxShaderHorizontal = [[
+	texture screenSource;
+	float intensity = 1;
+	#define Level ]]..level..[[
+	
+	#define Brightness 1.0/(Level*2+1)
+	sampler2D Sampler0 = sampler_state{
+		Texture         = screenSource;
+		AddressU        = Mirror;
+		AddressV        = Mirror;
+	};
+
+	float4 HorizontalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
+		float4 Color = 0;
+		for(int i = -Level; i <= Level; i++)
+			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y));
+		float4 c = Color*diffuse*Brightness;
+		c.a = 1;
+		return c;
+	}
+
+	technique fxBlur{
+		pass P0{
+			PixelShader = compile ps_2_a HorizontalBlur();
+		}
+	}
+	]]
+
+	local blurBoxShaderVertical = [[
+	texture screenSource;
+	float intensity = 1;
+	#define Level ]]..level..[[
+	
+	#define Brightness 1.0/(Level*2+1)
+	sampler2D Sampler0 = sampler_state{
+		Texture         = screenSource;
+		AddressU        = Mirror;
+		AddressV        = Mirror;
+	};
+
+	float4 VerticalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
+		float4 Color = 0;
+		for(int i = -Level; i <= Level; i++)
+			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)));
+		return Color*diffuse*Brightness;
+	}
+
+	technique fxBlur{
+		pass P0{
+			PixelShader = compile ps_2_a VerticalBlur();
+		}
+	}
+	]]
+	return blurBoxShaderHorizontal,blurBoxShaderVertical
+end

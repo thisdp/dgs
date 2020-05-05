@@ -535,7 +535,12 @@
 	<export function="dgsColorPickerSetColor" type="client" />
 
 	<export function="dgsCreateBlurBox" type="client" />
-	<export function="dgsBlurBoxRender" type="client" />
+	<export function="dgsBlurBoxSetResolution" type="client" />
+	<export function="dgsBlurBoxGetResolution" type="client" />
+	<export function="dgsBlurBoxSetIntensity" type="client" />
+	<export function="dgsBlurBoxGetIntensity" type="client" />
+	<export function="dgsBlurBoxSetLevel" type="client" />
+	<export function="dgsBlurBoxGetLevel" type="client" />
 
 	<export function="dgsCreateEffect3D" type="client" />
 	<export function="dgsEffect3DApplyToScrollPane" type="client" />

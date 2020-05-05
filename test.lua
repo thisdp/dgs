@@ -718,8 +718,8 @@ local function init()
 		:center(_,true)
 	local colorpicker = dgsCreateColorPicker("HLDisk", 400, 190, 100, 100, false, window.dgsElement)
 	dgsCenterElement(colorpicker,_,true)
-
 end
+
 --[[
 setTimer(function()
 local tick = getTickCount()
@@ -749,3 +749,4 @@ setmetatable(dgsClass,meta)
 
 iprint(dgsClass(pos)())
 ]]
+--

@@ -3475,6 +3475,61 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 			end
+		elseif dxType == "dgs-dxselector" then
+			if x and y then
+				if eleData.PixelInt then
+					x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1
+				end
+				------------------------------------
+				if eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				
+				------------------------------------OutLine
+				local outlineData = eleData.outline
+				if outlineData then
+					local sideColor = outlineData[3]
+					local sideSize = outlineData[2]
+					local hSideSize = sideSize*0.5
+					sideColor = applyColorAlpha(sideColor,galpha)
+					local side = outlineData[1]
+					if side == "in" then
+						dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize,rendSet)
+						dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize,rendSet)
+					elseif side == "center" then
+						dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize,rendSet)
+						dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize,rendSet)
+						dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
+					elseif side == "out" then
+						dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,rendSet)
+						dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
+						dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
+					end
+				end
+				------------------------------------
+				if not eleData.functionRunBefore then
+					local fnc = eleData.functions
+					if type(fnc) == "table" then
+						fnc[1](unpack(fnc[2]))
+					end
+				end
+				------------------------------------
+				if enabled[1] and mx then
+					if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+						MouseData.hit = v
+					end
+				end
+			else
+				visible = false
+			end
 		elseif dxType == "dgs-dxswitchbutton" then
 			if x and y then
 				if eleData.PixelInt then
