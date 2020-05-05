@@ -88,3 +88,33 @@ function dgs3DTextGetAttachedOffsets(text,offX,offY,offZ)
 	end
 	return false
 end
+
+function dgs3DTextSetPosition(text,x,y,z)
+	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetPosition at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	assert(tonumber(x),"Bad argument @dgs3DTextSetPosition at argument 2, expect a number got "..type(x))
+	assert(tonumber(y),"Bad argument @dgs3DTextSetPosition at argument 3, expect a number got "..type(y))
+	assert(tonumber(z),"Bad argument @dgs3DTextSetPosition at argument 4, expect a number got "..type(z))
+	return dgsSetData(text,"position",{x,y,z})
+end
+
+function dgs3DTextGetPosition(text)
+	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextGetPosition at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	local pos = dgsElementData[text].position
+	return pos[1],pos[2],pos[3]
+end
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dx3dtext"] = [[
+	getDimension = dgsOOP.genOOPFnc("dgs3DTextGetDimension"),
+	setDimension = dgsOOP.genOOPFnc("dgs3DTextSetDimension",true),
+	getInterior = dgsOOP.genOOPFnc("dgs3DTextGetInterior"),
+	setInterior = dgsOOP.genOOPFnc("dgs3DTextSetInterior",true),
+	attachToElement = dgsOOP.genOOPFnc("dgs3DTextAttachToElement",true),
+	detachFromElement = dgsOOP.genOOPFnc("dgs3DTextDetachFromElement",true),
+	isAttached = dgsOOP.genOOPFnc("dgs3DTextIsAttached"),
+	setAttachedOffsets = dgsOOP.genOOPFnc("dgs3DTextSetAttachedOffsets",true),
+	getAttachedOffsets = dgsOOP.genOOPFnc("dgs3DTextGetAttachedOffsets"),
+	setPosition = dgsOOP.genOOPFnc("dgs3DTextSetPosition",true),
+	getPosition = dgsOOP.genOOPFnc("dgs3DTextGetPosition"),
+]]

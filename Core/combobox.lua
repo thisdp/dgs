@@ -455,3 +455,31 @@ function dgsComboBoxGetScrollPosition(combobox)
 	local scb = dgsElementData[combobox].scrollbar
 	return dgsScrollBarGetScrollPosition(scb)
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxcombobox"] = [[
+	addItem = dgsOOP.genOOPFnc("dgsComboBoxAddItem"),
+	removeItem = dgsOOP.genOOPFnc("dgsComboBoxRemoveItem",true),
+	setItemText = dgsOOP.genOOPFnc("dgsComboBoxSetItemText",true),
+	getItemText = dgsOOP.genOOPFnc("dgsComboBoxGetItemText"),
+	clear = dgsOOP.genOOPFnc("dgsComboBoxClear",true),
+	setSelectedItem = dgsOOP.genOOPFnc("dgsComboBoxSetSelectedItem",true),
+	getSelectedItem = dgsOOP.genOOPFnc("dgsComboBoxGetSelectedItem"),
+	setItemColor = dgsOOP.genOOPFnc("dgsComboBoxSetItemColor",true),
+	getItemColor = dgsOOP.genOOPFnc("dgsComboBoxGetItemColor"),
+	getState = dgsOOP.genOOPFnc("dgsComboBoxGetState"),
+	setState = dgsOOP.genOOPFnc("dgsComboBoxSetState",true),
+	getItemCount = dgsOOP.genOOPFnc("dgsComboBoxGetItemCount"),
+	getBoxHeight = dgsOOP.genOOPFnc("dgsComboBoxGetBoxHeight"),
+	setBoxHeight = dgsOOP.genOOPFnc("dgsComboBoxSetBoxHeight",true),
+	getScrollBar = dgsOOP.genOOPFnc("dgsComboBoxGetScrollBar"),
+	setScrollPosition = dgsOOP.genOOPFnc("dgsComboBoxSetScrollPosition",true),
+	getScrollPosition = dgsOOP.genOOPFnc("dgsComboBoxGetScrollPosition"),
+	setCaptionText = dgsOOP.genOOPFnc("dgsComboBoxSetCaptionText",true),
+	getCaptionText = dgsOOP.genOOPFnc("dgsComboBoxGetCaptionText"),
+	setEditEnabled = dgsOOP.genOOPFnc("dgsComboBoxSetEditEnabled",true),
+	getEditEnabled = dgsOOP.genOOPFnc("dgsComboBoxGetEditEnabled"),
+	getText = dgsOOP.genOOPFnc("dgsComboBoxGetText"),
+]]

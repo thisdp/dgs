@@ -212,3 +212,21 @@ function dgsSetSelectedTab(tabpanel,id)
 	end
 	return false
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxtabpanel"] = [[
+	getSelectedTab = dgsOOP.genOOPFnc("dgsGetSelectedTab"),
+	setSelectedTab = dgsOOP.genOOPFnc("dgsSetSelectedTab",true),
+	getTabFromID = dgsOOP.genOOPFnc("dgsTabPanelGetTabFromID"),
+	moveTab = dgsOOP.genOOPFnc("dgsTabPanelMoveTab",true),
+	getTabID = dgsOOP.genOOPFnc("dgsTabPanelGetTabID"),
+	dgsTab = function(self,text,...)
+		return dgsGetClass(call(dgsOOP.dgsRes,"dgsCreateTab",text,self.dgsElement,...))
+	end,
+]]
+
+dgsOOP["dgs-dxtab"] = [[
+	delete = dgsOOP.genOOPFnc("dgsDeleteTab"),
+]]

@@ -101,3 +101,13 @@ function dgsSwitchButtonGetText(switchbutton)
 	assert(dgsGetType(switchbutton) == "dgs-dxswitchbutton","Bad argument @dgsSwitchButtonGetText at argument at 1, expect dgs-dxswitchbutton got "..dgsGetType(switchbutton))
 	return dgsElementData[switchbutton].textOn,dgsElementData[switchbutton].textOff
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxswitchbutton"] = [[
+	setState = dgsOOP.genOOPFnc("dgsSwitchButtonSetState",true),
+	getState = dgsOOP.genOOPFnc("dgsSwitchButtonGetState"),
+	setText = dgsOOP.genOOPFnc("dgsSwitchButtonSetText",true),
+	getText = dgsOOP.genOOPFnc("dgsSwitchButtonGetText"),
+]]

@@ -114,3 +114,15 @@ function dgsImageGetNativeSize(gui)
 	end
 	return false
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dximage"] = [[
+	setImage = dgsOOP.genOOPFnc("dgsImageSetImage",true),
+	getImage = dgsOOP.genOOPFnc("dgsImageGetImage"),
+	setUVSize = dgsOOP.genOOPFnc("dgsImageSetUVSize",true),
+	getUVSize = dgsOOP.genOOPFnc("dgsImageGetUVSize"),
+	setUVPosition = dgsOOP.genOOPFnc("dgsImageSetUVPosition",true),
+	getUVPosition = dgsOOP.genOOPFnc("dgsImageGetUVPosition"),
+]]

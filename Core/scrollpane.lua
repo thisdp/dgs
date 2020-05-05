@@ -363,3 +363,18 @@ function checkSPScrollBar(scb,new,old)
 		end
 	end
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxscrollpane"] = [[
+	getScrollBar = dgsOOP.genOOPFnc("dgsScrollPaneGetScrollBar"),
+	setScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneSetScrollPosition",true),
+	getScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneGetScrollPosition"),
+	setHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneSetHorizontalScrollPosition",true),
+	getHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneGetHorizontalScrollPosition"),
+	setVerticalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneSetVerticalScrollPosition",true),
+	getVerticalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneGetVerticalScrollPosition"),
+	setScrollBarState = dgsOOP.genOOPFnc("dgsScrollPaneSetScrollBarState",true),
+	getScrollBarState = dgsOOP.genOOPFnc("dgsScrollPaneGetScrollBarState"),
+]]

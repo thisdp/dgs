@@ -231,3 +231,22 @@ technique DrawCircle{
 	}
 }
 ]]
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxprogressbar"] = [[
+	getProgress = dgsOOP.genOOPFnc("dgsProgressBarGetProgress"),
+	setProgress = dgsOOP.genOOPFnc("dgsProgressBarSetProgress",true),
+	getMode = dgsOOP.genOOPFnc("dgsProgressBarGetMode"),
+	setMode = dgsOOP.genOOPFnc("dgsProgressBarSetMode",true),
+	getVerticalSide = dgsOOP.genOOPFnc("dgsProgressBarGetVerticalSide"),
+	setVerticalSide = dgsOOP.genOOPFnc("dgsProgressBarSetVerticalSide",true),
+	getHorizontalSide = dgsOOP.genOOPFnc("dgsProgressBarGetHorizontalSide"),
+	setHorizontalSide = dgsOOP.genOOPFnc("dgsProgressBarSetHorizontalSide",true),
+	getStyle = dgsOOP.genOOPFnc("dgsProgressBarGetStyle"),
+	setStyle = dgsOOP.genOOPFnc("dgsProgressBarSetStyle",true),
+	getStyleProperties = dgsOOP.genOOPFnc("dgsProgressBarGetStyleProperties"),
+	setStyleProperty = dgsOOP.genOOPFnc("dgsProgressBarSetStyleProperty",true),
+	getStyleProperty = dgsOOP.genOOPFnc("dgsProgressBarGetStyleProperty"),
+]]

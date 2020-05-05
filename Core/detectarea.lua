@@ -12,9 +12,9 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	dgsSetType(detectarea,"dgs-dxdetectarea")
 	dgsSetData(detectarea,"renderBuffer",{})
 	dgsSetData(detectarea,"debugMode",false)
-	dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 	calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",detectarea,sourceResource)
+	dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 	return detectarea
 end
 
@@ -95,3 +95,12 @@ function dgsDetectAreaUpdateDebugView(detectarea)
 	end
 	return true
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxdetectarea"] = [[
+	setFunction = dgsOOP.genOOPFnc("dgsDetectAreaSetFunction",true),
+	setDebugModeEnabled = dgsOOP.genOOPFnc("dgsDetectAreaSetDebugModeEnabled",true),
+	getDebugModeEnabled = dgsOOP.genOOPFnc("dgsDetectAreaGetDebugModeEnabled"),
+]]

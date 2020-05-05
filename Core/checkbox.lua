@@ -118,3 +118,14 @@ addEventHandler("onDgsCheckBoxChange",resourceRoot,function(state)
 		dgsSetData(source,"state",state)
 	end
 end)
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxcheckbox"] = [[
+	getSelected = dgsOOP.genOOPFnc("dgsCheckBoxGetSelected"),
+	setSelected = dgsOOP.genOOPFnc("dgsCheckBoxSetSelected",true),
+	getHorizontalAlign = dgsOOP.genOOPFnc("dgsCheckBoxGetHorizontalAlign"),
+	setHorizontalAlign = dgsOOP.genOOPFnc("dgsCheckBoxSetHorizontalAlign",true),
+	getVerticalAlign = dgsOOP.genOOPFnc("dgsCheckBoxGetVerticalAlign"),
+	setVerticalAlign = dgsOOP.genOOPFnc("dgsCheckBoxSetVerticalAlign",true),
+]]

@@ -110,3 +110,15 @@ function dgsRadioButtonGetVerticalAlign(radiobutton)
 	local alignment = dgsElementData[radiobutton].alignment
 	return alignment[2]
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxradiobutton"] = [[
+	getSelected = dgsOOP.genOOPFnc("dgsRadioButtonGetSelected"),
+	setSelected = dgsOOP.genOOPFnc("dgsRadioButtonSetSelected",true),
+	getHorizontalAlign = dgsOOP.genOOPFnc("dgsRadioButtonGetHorizontalAlign"),
+	setHorizontalAlign = dgsOOP.genOOPFnc("dgsRadioButtonSetHorizontalAlign",true),
+	getVerticalAlign = dgsOOP.genOOPFnc("dgsRadioButtonGetVerticalAlign"),
+	setVerticalAlign = dgsOOP.genOOPFnc("dgsRadioButtonSetVerticalAlign",true),
+]]

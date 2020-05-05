@@ -151,21 +151,17 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 	local multiplier = eleData.multiplier[2] and eleData.multiplier[1]*slotRange or eleData.multiplier[1]
 	return relative and multiplier/slotRange or multiplier
 end
---[[
-function dgsScrollBarSyncWith(scrollbar1,scrollbar2)
-	assert(dgsGetType(scrollbar1) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSyncWith at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar1))
-	assert(dgsGetType(scrollbar2) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSyncWith at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(scrollbar2))
-	local function sync()
-		if dgsElementData[me].position ~= dgsElementData[he].position then
-			dgsSetData(he,
-		end
-	end
-	dgsElementData[scrollbar1].he = scrollbar2
-	dgsElementData[scrollbar2].he = scrollbar1
-	addEventHandler("onDgsScrollBarScroll",scrollbar1,sync,false)
-	addEventHandler("onDgsScrollBarScroll",scrollbar2,sync,false)
-end
 
-function dgsScrollBarDesyncFrom(scrollbar1,scrollbar2)
-	assert(dgsGetType(scrollbar1) == "dgs-dxscrollbar","Bad argument @dgsScrollBarDesyncFrom at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar1))
-end]]
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxscrollbar"] = [[
+	setScrollPosition = dgsOOP.genOOPFnc("dgsScrollBarSetScrollPosition",true),
+	getScrollPosition = dgsOOP.genOOPFnc("dgsScrollBarGetScrollPosition"),
+	setCursorLength = dgsOOP.genOOPFnc("dgsScrollBarSetCursorLength",true),
+	getCursorLength = dgsOOP.genOOPFnc("dgsScrollBarGetCursorLength"),
+	setLocked = dgsOOP.genOOPFnc("dgsScrollBarSetLocked",true),
+	getLocked = dgsOOP.genOOPFnc("dgsScrollBarGetLocked"),
+	setGrades = dgsOOP.genOOPFnc("dgsScrollBarSetGrades",true),
+	getGrades = dgsOOP.genOOPFnc("dgsScrollBarGetGrades"),
+]]

@@ -1256,3 +1256,36 @@ end
 function dgsMemoGetWordWarpState(...)
 	assert(false,"Deprecated @dgsMemoGetWordWarpState, use dgsMemoGetWordWrapState")
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxmemo"] = [[
+	moveCaret = dgsOOP.genOOPFnc("dgsMemoMoveCaret",true),
+	seekPosition = dgsOOP.genOOPFnc("dgsMemoSeekPosition"),
+	getScrollBar = dgsOOP.genOOPFnc("dgsMemoGetScrollBar"),
+	setScrollPosition = dgsOOP.genOOPFnc("dgsMemoSetScrollPosition",true),
+	getScrollPosition = dgsOOP.genOOPFnc("dgsMemoGetScrollPosition"),
+	setHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsMemoSetHorizontalScrollPosition",true),
+	getHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsMemoGetHorizontalScrollPosition"),
+	setVerticalScrollPosition = dgsOOP.genOOPFnc("dgsMemoSetVerticalScrollPosition",true),
+	getVerticalScrollPosition = dgsOOP.genOOPFnc("dgsMemoGetVerticalScrollPosition"),
+	setCaretPosition = dgsOOP.genOOPFnc("dgsMemoSetCaretPosition",true),
+	getCaretPosition = dgsOOP.genOOPFnc("dgsMemoGetCaretPosition"),
+	setCaretStyle = dgsOOP.genOOPFnc("dgsMemoSetCaretStyle",true),
+	getCaretStyle = dgsOOP.genOOPFnc("dgsMemoGetCaretStyle"),
+	setReadOnly = dgsOOP.genOOPFnc("dgsMemoSetReadOnly",true),
+	getReadOnly = dgsOOP.genOOPFnc("dgsMemoGetReadOnly"),
+	getPartOfText = dgsOOP.genOOPFnc("dgsMemoGetPartOfText"),
+	deleteText = dgsOOP.genOOPFnc("dgsMemoDeleteText",true),
+	insertText = dgsOOP.genOOPFnc("dgsMemoInsertText",true),
+	appendText = dgsOOP.genOOPFnc("dgsMemoAppendText",true),
+	clearText = dgsOOP.genOOPFnc("dgsMemoClearText",true),
+	getTypingSound = dgsOOP.genOOPFnc("dgsMemoGetTypingSound"),
+	setTypingSound = dgsOOP.genOOPFnc("dgsMemoSetTypingSound",true),
+	getLineCount = dgsOOP.genOOPFnc("dgsMemoGetLineCount"),
+	setWordWrapState = dgsOOP.genOOPFnc("dgsMemoSetWordWrapState",true),
+	getWordWrapState = dgsOOP.genOOPFnc("dgsMemoGetWordWrapState"),
+	setScrollBarState = dgsOOP.genOOPFnc("dgsMemoSetScrollBarState",true),
+	getScrollBarState = dgsOOP.genOOPFnc("dgsMemoGetScrollBarState"),
+]]

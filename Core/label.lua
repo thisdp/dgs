@@ -88,3 +88,17 @@ function dgsLabelGetFontHeight(label)
 	local textSizeY = dgsElementData[label].textSize[2]
 	return dxGetFontHeight(textSizeY,font)
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxlabel"] = [[
+	setColor = dgsOOP.genOOPFnc("dgsLabelSetColor",true),
+	getColor = dgsOOP.genOOPFnc("dgsLabelGetColor"),
+	setHorizontalAlign = dgsOOP.genOOPFnc("dgsLabelSetHorizontalAlign",true),
+	getHorizontalAlign = dgsOOP.genOOPFnc("dgsLabelGetHorizontalAlign"),
+	setVerticalAlign = dgsOOP.genOOPFnc("dgsLabelSetVerticalAlign",true),
+	getVerticalAlign = dgsOOP.genOOPFnc("dgsLabelGetVerticalAlign"),
+	getTextExtent = dgsOOP.genOOPFnc("dgsLabelGetTextExtent"),
+	getFontHeight = dgsOOP.genOOPFnc("dgsLabelGetFontHeight"),
+]]

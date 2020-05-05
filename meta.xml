@@ -1,18 +1,16 @@
 ﻿<meta>
-	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="0" /> 
+	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="3.5" /> 
 	<file src="html/media.html" />
 	<file src="styleManager/styleMapper.lua"/>
-	
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
 	<script src="TypeManager.lua" type="client" />
-	
 	<script src="PropertyManager.lua" type="client" />
 	<script src="ParentManager.lua" type="client" />
 	<script src="client.lua" type="client" />
+	<script src="oopClass.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
-	<script src="Core/arrowlist.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/checkbox.lua" type="client" />
@@ -33,12 +31,10 @@
 	<script src="Core/switchbutton.lua" type="client" />
 	<script src="Core/window.lua" type="client" />
 	<script src="Core/external.lua" type="client" />
-	
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="functions.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
-	
 	<script src="plugin/pluginManager.lua" type="client" />
 	<script src="plugin/objPrevSupport.lua" type="client" />
 	<script src="plugin/cmd.lua" type="client" />
@@ -64,13 +60,8 @@
 	<file src="plugin/mask/maskTexture.fx" type="client" />
 	<file src="plugin/mask/mask-Circle.fx" type="client" />
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
-	
 	<script src="styleManager/styleManager.lua" type="client" />
-	
 	<script src="dxCmdEvent.lua" type="client" />
-	<script src="oopClass.lua" type="client" />
-	
-	
 	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
 	<script src="G2DManager_s.lua" type="server" />
@@ -519,21 +510,6 @@
 	<export function="dgsDetectAreaSetDebugModeEnabled" type="client" />
 	<export function="dgsDetectAreaGetDebugModeEnabled" type="client" />
 
-	<export function="dgsCreateArrowList" type="client" />
-	<export function="dgsArrowListAddItem" type="client" />
-	<export function="dgsArrowListRemoveItem" type="client" />
-	<export function="dgsArrowListClear" type="client" />
-	<export function="dgsArrowListSetItemText" type="client" />
-	<export function="dgsArrowListGetItemText" type="client" />
-	<export function="dgsArrowListSetItemValue" type="client" />
-	<export function="dgsArrowListGetItemValue" type="client" />
-	<export function="dgsArrowListSetItemRange" type="client" />
-	<export function="dgsArrowListGetItemRange" type="client" />
-	<export function="dgsArrowListSetItemTranslationTable" type="client" />
-	<export function="dgsArrowListGetItemTranslationTable" type="client" />
-	<export function="dgsArrowListSetItemStep" type="client" />
-	<export function="dgsArrowListGetItemStep" type="client" />
-	<export function="dgsArrowListGetItemTranslatedValue" type="client" />
 	<!-- Plugins -->
 	<export function="dgsGetPluginType" type="client" />
 

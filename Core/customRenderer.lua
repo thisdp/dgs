@@ -27,3 +27,10 @@ function dgsCustomRendererSetFunction(cr,fncStr)
 		return dgsSetData(cr,"customRenderer",fnc)
 	end
 end
+
+----------------------------------------------------------------
+-------------------------OOP Class------------------------------
+----------------------------------------------------------------
+dgsOOP["dgs-dxcustomrenderer"] = [[
+	setFunction = dgsOOP.genOOPFnc("dgsCustomRendererSetFunction",true),
+]]
