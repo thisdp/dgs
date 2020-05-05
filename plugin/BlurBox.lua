@@ -62,7 +62,10 @@ technique fxBlur
 ]]
 
 function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
-	dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	local isUpdateScrSource = dgsElementData[self].updateScreenSource
+	if isUpdateScrSource then
+		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	end
 	local rt = dgsElementData[self].rt
 	local shader = dgsElementData[self].shaders
 	local box = BlurBoxGlobalScreenSource
@@ -136,6 +139,7 @@ function dgsBlurBoxSetLevel(bb,level)
 	dxSetShaderValue(shaderV,"intensity",dgsElementData[bb].intensity)
 	dgsSetData(bb,"shaders",{shaderH,shaderV})
 	dgsSetData(bb,"level",level)
+	dgsSetData(bb,"updateScreenSource",false)
 	return true
 end
 
