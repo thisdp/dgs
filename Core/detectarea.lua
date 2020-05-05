@@ -28,7 +28,7 @@ detectAreaBuiltIn.default = [[
 ]]
 
 detectAreaBuiltIn.circle = [[
-	return sqrt((mxRlt-0.5)^2+(myRlt-0.5)^2)<0.5
+	return math.sqrt((mxRlt-0.5)^2+(myRlt-0.5)^2)<0.5
 ]]
 
 function dgsDetectAreaDefaultFunction(mxRlt,myRlt,mxAbs,myAbs)
