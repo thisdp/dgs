@@ -831,7 +831,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				local debugTexture = eleData.debugTexture
-				if isElement(debugTexture) then
+				if eleData.debugMode and isElement(debugTexture) then
 					dxDrawImage(x,y,w,h,debugTexture,0,0,0,color,rendSet)
 				end
 				------------------------------------OutLine

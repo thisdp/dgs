@@ -67,6 +67,7 @@ function dgsDetectAreaGetDebugModeEnabled(detectarea)
 end
 
 function dgsDetectAreaUpdateDebugView(detectarea)
+	if not dgsElementData[detectarea].debugMode then return end
 	local checkFunction = dgsElementData[detectarea].checkFunction
 	local absSize = dgsElementData[detectarea].absSize
 	if isElement(dgsElementData[detectarea].debugTexture) then
