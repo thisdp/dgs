@@ -3,9 +3,7 @@ float4 currentColor = float4(1,0,0,1);
 bool vertical = false;
 bool isReversed = false;
 
-float4 alpChannel(float2 otex : TEXCOORD0, float4 color : COLOR0 ) : COLOR0
-{
-	
+float4 alpChannel(float2 otex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float dxdy = ddx(otex.x)/ddy(otex.y);
 	float2 ddxddy = float2(dxdy,1/dxdy);
 	float _x = otex[vertical];
@@ -20,10 +18,8 @@ float4 alpChannel(float2 otex : TEXCOORD0, float4 color : COLOR0 ) : COLOR0
 	return color;
 }
 
-technique RepTexture
-{
-	pass P0
-	{
+technique RepTexture{
+	pass P0{
 		PixelShader = compile ps_2_a alpChannel();
 	}
 }
