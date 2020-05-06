@@ -23,12 +23,12 @@ float4 HSVComponent(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	kValue = isReversed?(1-kValue):kValue;
 	float3 nHSV = HSV*StaticMode+defHSV*(1-StaticMode);
 	float3 hsv = HSV_Chg*kValue+nHSV*(1-HSV_Chg);
-	color.rgb = HSV2RGB(float3(hsv.x,hsv.y,hsv.z));
+	color.rgb = HSV2RGB(hsv);
 	return color;
 }
 
 technique DGSHSV{
-	pass P0	{
+	pass P0{
 		PixelShader = compile ps_2_0 HSVComponent();
 	}
 }
