@@ -64,7 +64,6 @@ addEvent("DGSI_ReceiveIP",true)
 addEvent("DGSI_SendAboutData",true)
 addEvent("DGSI_ReceiveQRCode",true)
 addEvent("DGSI_ReceiveRemoteImage",true)
-
 -------
 fontDxHave = {
 	["default"]=true,
@@ -197,7 +196,7 @@ function table.complement(theall,...)
 	local newtable = {}
 	for k,v in pairs(theall) do
 		if not table.find(remove) then
-			table.insert(newtable,v)
+			insert(newtable,v)
 		end
 	end
 	return newtable
@@ -241,7 +240,6 @@ function string.split(s,delim)
 	t[index] = sub(s,start)
 	return t
 end
-
 --------------------------------Math Utility
 function findRotation(x1,y1,x2,y2,offsetFix) 
 	local t = -deg(atan2(x2-x1,y2-y1))+offsetFix
@@ -502,7 +500,19 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 	end
 end
 
-
+_dxCreateRenderTarget = dxCreateRenderTarget
+function dxCreateRenderTarget(w,h,isTransparent,dgsElement)
+	local rt = _dxCreateRenderTarget(w,h,isTransparent)
+	if not isElement(rt) and w*h ~= 0 then
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		local reqSize,reqUnit = getProperUnit(0.0000076*w*h,"MB")
+		local freeSize,freeUnit = getProperUnit(videoMemory,"MB")
+		local forWhat = dgsElement and (" for "..dgsGetPluginType(dgsElement)) or ""
+		outputDebugString("Failed to create render target"..forWhat.." [Expected:"..reqSize..reqUnit.."/Free:"..freeSize..freeUnit.."]",2)
+		return false
+	end
+	return rt
+end
 --------------------------------Other Utility
 function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)
@@ -518,8 +528,34 @@ function urlDecode(s)
     return s
 end
 
---------------------------------Other Utility
+unitList = {
+	{"B",8,1024},	--Go down ratio, Go up ratio
+	{"KB",1024,1024},
+	{"MB",1024,1024},
+	{"GB",1024,1024},
+}
 
+function getProperUnit(value,unit)
+	local cUID = table.find(unitList,unit,1)
+	if not cUID then return value,unit end
+	local currentUnit = unitList[cUID]
+	while(true) do
+		if value < 1 then
+			if cUID <= 1 then return value,currentUnit[1] end
+			value = value * currentUnit[2]
+			cUID = cUID-1
+			currentUnit = unitList[cUID]
+		elseif value > currentUnit[3] then
+			if cUID >= #unitList then return value,currentUnit[1] end
+			value = value /currentUnit[3]
+			cUID = cUID+1
+			currentUnit = unitList[cUID]
+		else
+			return value,currentUnit[1]
+		end
+	end
+end
+--------------------------------Other Utility
 function dgsRunString(func,...)
 	local fnc = loadstring(func)
 	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")

@@ -105,12 +105,10 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	addEventHandler("onDgsElementScroll",scrollbar1,checkMMScrollBar,false)
 	addEventHandler("onDgsElementScroll",scrollbar2,checkMMScrollBar,false)
-	local renderTarget = dxCreateRenderTarget(abx-4,aby,true)
-	if not isElement(renderTarget) and (abx-4)*aby ~= 0 then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*(abx-4)*aby).."MB/Free:"..videoMemory.."MB]",2)
+	local rt_new = dxCreateRenderTarget(abx-4,aby,true,memo)
+	if rt_new then
+		dgsSetData(source,"renderTarget",rt_new)
 	end
-	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
 	triggerEvent("onDgsCreate",memo,sourceResource)
@@ -1029,7 +1027,6 @@ function configMemo(source)
 	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
 	local widLen = 1-(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)/dgsElementData[source].rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	--print(widLen)
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+4)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
@@ -1038,16 +1035,12 @@ function configMemo(source)
 		dgsSetData(source,"rebuildMapTableNextFrame",true)
 	end
 	local px,py = size[1]-size[1]%1-scbTakes1, size[2]-size[2]%1-scbTakes2
-	local rnd = dgsElementData[source].renderTarget
-	if isElement(rnd) then
-		destroyElement(rnd)
+	local rt_new = dxCreateRenderTarget(px,py,true,source)
+	if rt_new then
+		local rt_old = dgsElementData[source].renderTarget
+		if isElement(rt_old) then destroyElement(rt_old) end
+		dgsSetData(source,"renderTarget",rt_new)
 	end
-	local renderTarget = dxCreateRenderTarget(px,py,true)
-	if not isElement(renderTarget) and px*py ~= 0 then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxmemo [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
-	end
-	dgsSetData(source,"renderTarget",renderTarget)
 	dgsSetData(source,"configNextFrame",false)
 end
 
@@ -1112,12 +1105,10 @@ function syncScrollBars(memo,which)
 		if isWordWrap then
 			local line = #dgsElementData[memo].wordWrapMapText
 			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].wordWrapShowLine[3]-1)*100/(line-canHold)
-			--print(new)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		else
 			local line = #dgsElementData[memo].text
 			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(line-canHold)
-			--print(new)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		end
 	end
@@ -1248,13 +1239,6 @@ function dgsMemoRebuildTextTable(memo)
 		end
 	end
 	configMemo(memo)
-end
-
-function dgsMemoSetWordWarpState(...)
-	assert(false,"Deprecated @dgsMemoSetWordWarpState, use dgsMemoSetWordWrapState")
-end
-function dgsMemoGetWordWarpState(...)
-	assert(false,"Deprecated @dgsMemoGetWordWarpState, use dgsMemoGetWordWrapState")
 end
 
 ----------------------------------------------------------------

@@ -1,32 +1,7 @@
 --Speed Up
-local abs = math.abs
-local find = string.find
-local rep = string.rep
-local gsub = string.gsub
-local floor = math.floor
-local min = math.min
-local max = math.max
-local tocolor = tocolor
-local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImage
-local dxDrawImageSection = dxDrawImageSection
-local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
-local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
-local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
-local dgsDrawMaterialLine3D = dgsDrawMaterialLine3D
-local utf8Sub = utf8.sub
-local utf8Len = utf8.len
 local tableInsert = table.insert
 local tableRemove = table.remove
-local tableCount = table.count
 local tableFind = table.find
-local triggerEvent = triggerEvent
-local unpack = unpack
 local isElement = isElement
 local assert = assert
 
@@ -35,10 +10,8 @@ CenterFatherTable = {}		--Store Center Father Element (Default)
 TopFatherTable = {}			--Store Top Father Element
 dx3DInterfaceTable = {}
 dx3DTextTable = {}
-
 FatherTable = {}			--Store Father Element
 ChildrenTable = {}			--Store Children Element
-
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
 
 function dgsSetLayer(dgsEle,layer,forceDetatch)

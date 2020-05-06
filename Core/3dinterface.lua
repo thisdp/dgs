@@ -47,11 +47,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	dgsSetData(interface,"dimension",-1)
 	dgsSetData(interface,"interior",-1)
 	dgsSetData(interface,"rotation",rot or 0)
-	local renderTarget = dxCreateRenderTarget(resolX,resolY,true)
-	if not isElement(renderTarget) then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dx3dinterface [Expected:"..(0.0000076*resolX*resolY).."MB/Free:"..videoMemory.."MB]",2)
-	end
+	local renderTarget = dxCreateRenderTarget(resolX,resolY,true,interface)
 	dgsSetData(interface,"renderTarget_parent",renderTarget)
 	triggerEvent("onDgsCreate",interface,sourceResource)
 	if not isElement(renderTarget) then
@@ -217,7 +213,7 @@ function dgs3DInterfaceSetResolution(interface,w,h)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
 	assert(tonumber(h),"Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
-	local renderTarget = dxCreateRenderTarget(w,h,true)
+	local renderTarget = dxCreateRenderTarget(w,h,true,interface)
 	assert(renderTarget,"Bad argument @dgs3DInterfaceSetResolution, Failed to create render target for dgs 3d interface")
 	dgsSetData(interface,"renderTarget_parent",renderTarget)
 	return dgsSetData(interface,"resolution",{w,h})

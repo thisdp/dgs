@@ -97,11 +97,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local padding = dgsElementData[edit].padding
 	local sizex,sizey = sx-padding[1]*2,sy-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local renderTarget = dxCreateRenderTarget(sizex,sizey,true)
-	if not isElement(renderTarget) then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxedit [Expected:"..(0.0000076*sizex*sizey).."MB/Free:"..videoMemory.."MB]",2)
-	end
+	local renderTarget = dxCreateRenderTarget(sizex,sizey,true,edit)
 	dgsSetData(edit,"renderTarget",renderTarget)
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
@@ -403,11 +399,7 @@ function configEdit(source)
 	local padding = dgsElementData[source].padding
 	local px,py = x-padding[1]*2,y-padding[2]*2
 	px,py = px-px%1,py-py%1
-	local renderTarget = dxCreateRenderTarget(px,py,true)
-	if not isElement(renderTarget) then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxedit [Expected:"..(0.0000076*px*py).."MB/Free:"..videoMemory.."MB]",2)
-	end
+	local renderTarget = dxCreateRenderTarget(px,py,true,source)
 	dgsSetData(source,"renderTarget",renderTarget)
 	local oldPos = dgsEditGetCaretPosition(source)
 	dgsEditSetCaretPosition(source,0)

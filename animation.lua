@@ -1,3 +1,8 @@
+---------------Speed Up
+local assert = assert
+local type = type
+local triggerEvent = triggerEvent
+
 animGUIList = {}
 moveGUIList = {}
 sizeGUIList = {}

@@ -86,12 +86,12 @@ function dgsCreateBlurBox(w,h)
 		BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
 	end
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
-	local rt = dxCreateRenderTarget(w,h,true)
 	local horz,vert = getBlurBoxShader(5)
 	local shaderH = dxCreateShader(horz)
 	local shaderV = dxCreateShader(vert)
 	dgsSetData(bb,"asPlugin","dgs-dxblurbox")
 	dgsSetData(bb,"shaders",{shaderH,shaderV})
+	local rt = dxCreateRenderTarget(w,h,true,bb)
 	dgsSetData(bb,"rt",rt)
 	dgsSetData(bb,"intensity",1)
 	dgsSetData(bb,"resolution",{w,h})
@@ -108,7 +108,7 @@ function dgsBlurBoxSetResolution(bb,w,h)
 	local shaders = dgsElementData[bb].shaders
 	local rt = dgsElementData[bb].rt
 	if isElement(rt) then destroyElement(rt) end
-	local rt = dxCreateRenderTarget(w,h,true)
+	local rt = dxCreateRenderTarget(w,h,true,bb)
 	dgsSetData(bb,"resolution",{w,h})
 	dgsSetData(bb,"rt",rt)
 	return true
@@ -172,11 +172,15 @@ function getBlurBoxShader(level)
 		AddressV        = Mirror;
 	};
 
+	float blur(float i){
+		return (1-abs(i/Level))/Level;
+	}
+	
 	float4 HorizontalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
 		for(int i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y));
-		float4 c = Color*diffuse*Brightness;
+			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y))*blur(i);
+		float4 c = Color*diffuse;
 		c.a = 1;
 		return c;
 	}
@@ -199,12 +203,16 @@ function getBlurBoxShader(level)
 		AddressU        = Mirror;
 		AddressV        = Mirror;
 	};
+	
+	float blur(float i){
+		return (1-abs(i/Level))/Level;
+	}
 
 	float4 VerticalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
 		for(int i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)));
-		return Color*diffuse*Brightness;
+			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)))*blur(i);
+		return Color*diffuse;
 	}
 
 	technique fxBlur{

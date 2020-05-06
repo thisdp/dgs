@@ -1,10 +1,12 @@
 ---------------Speed Up
 local tableInsert = table.insert
 local tableRemove = table.remove
+local tableFind = table.find
+local triggerEvent = triggerEvent
+local type = type
 local assert = assert
 local isElement = isElement
 local destroyElement = destroyElement
-local tableFind = table.find
 local guiBlur = function()
 	destroyElement(guiCreateLabel(0,0,0,0,"",false))
 end
@@ -50,7 +52,7 @@ end
 function insertResource(res,dgsElement)
 	if res and isElement(dgsElement) then
 		boundResource[res] = boundResource[res] or {}
-		table.insert(boundResource[res],dgsElement)
+		tableInsert(boundResource[res],dgsElement)
 		setElementData(dgsElement,"resource",res)
 	end
 end
@@ -197,7 +199,7 @@ function dgsAttachElements(dgsElement,attachTo,offsetX,offsetY,offsetW,offsetH,r
 	offsetX,offsetY = offsetX or 0,offsetY or 0
 	local attachedTable = {attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize}
 	local attachedBy = dgsElementData[attachTo].attachedBy
-	table.insert(attachedBy,dgsElement)
+	tableInsert(attachedBy,dgsElement)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
 	dgsSetData(dgsElement,"attachedTo",attachedTable)
 	local attachedTable = dgsElementData[dgsElement].attachedTo
@@ -221,7 +223,7 @@ function dgsDetachElements(dgsElement)
 		local attachedBy = dgsElementData[attachedTable[1]].attachedBy
 		local id = tableFind(attachedBy or {},dgsElement)
 		if id then
-			table.remove(attachedBy,dgsElement)
+			tableRemove(attachedBy,dgsElement)
 		end
 	end
 	return dgsSetData(dgsElement,"attachedTo",false)
@@ -728,7 +730,7 @@ end
 function dgsAttachToAutoDestroy(element,dgsElement)
 	assert(isElement(element),"Bad Argument @dgsAttachToAutoDestroy at argument 1, expect element got "..dgsGetType(element))
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAttachToAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
-	table.insert(dgsElementData[dgsElement].autoDestroyList,element)
+	tableInsert(dgsElementData[dgsElement].autoDestroyList,element)
 	return true
 end
 
@@ -737,7 +739,7 @@ function dgsDetachFromAutoDestroy(element,dgsElement)
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsDetachFromAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	local id = tableFind(dgsElementData[dgsElement].autoDestroyList,element)
 	if id then
-		table.remove(dgsElementData[dgsElement].autoDestroyList,id)
+		tableRemove(dgsElementData[dgsElement].autoDestroyList,id)
 	end
 	return true
 end
@@ -910,13 +912,13 @@ function dgsAttachToTranslation(dgsEle,name)
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
 		local id = tableFind(LanguageTranslationAttach[name])
 		if id then
-			table.remove(LanguageTranslationAttach[name])
+			tableRemove(LanguageTranslationAttach[name])
 		end
 	end
 	dgsSetData(dgsEle,"_translang",name)
 	if LanguageTranslation[name] then
 		LanguageTranslationAttach[name] = LanguageTranslationAttach[name] or {}
-		table.insert(LanguageTranslationAttach[name],dgsEle)
+		tableInsert(LanguageTranslationAttach[name],dgsEle)
 	end
 end
 
@@ -926,7 +928,7 @@ function dgsDetachFromTranslation(dgsEle)
 	if lastTrans and LanguageTranslationAttach[lastTrans] then
 		local id = tableFind(LanguageTranslationAttach[name])
 		if id then
-			table.remove(LanguageTranslationAttach[name])
+			tableRemove(LanguageTranslationAttach[name])
 		end
 	end
 	dgsSetData(dgsEle,"_translang",nil)

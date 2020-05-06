@@ -89,18 +89,10 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	local abx,aby = aSize[1],aSize[2]
 	local columnRender,rowRender
 	if abx*columnHeight ~= 0 then
-		columnRender = dxCreateRenderTarget(abx,columnHeight,true)
-		if not isElement(columnRender)  then
-			local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-			outputDebugString("Failed to create render target for column of dgs-dxgridlist [Expected:"..(0.0000076*abx*columnHeight).."MB/Free:"..videoMemory.."MB]",2)
-		end
+		columnRender = dxCreateRenderTarget(abx,columnHeight,true,gridlist)
 	end
 	if abx*(aby-columnHeight-scbThick) ~= 0 then
-		rowRender = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true)
-		if not isElement(rowRender) then
-			local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-			outputDebugString("Failed to create render target for row of dgs-dxgridlist [Expected:"..(0.0000076*abx*(aby-columnHeight-scbThick)).."MB/Free:"..videoMemory.."MB]",2)
-		end
+		rowRender = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist)
 	end
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
 	local scrollbar1 = dgsCreateScrollBar(abx-scbThick,0,scbThick,aby-scbThick,false,false,gridlist)
@@ -1386,27 +1378,15 @@ function configGridList(source)
 
 	local rentarg = dgsElementData[source].renderTarget
 	if rentarg then
-		if isElement(rentarg[1]) then
-			destroyElement(rentarg[1])
-		end
-		if isElement(rentarg[2]) then
-			destroyElement(rentarg[2])
-		end
+		if isElement(rentarg[1]) then destroyElement(rentarg[1]) end
+		if isElement(rentarg[2]) then destroyElement(rentarg[2]) end
 		if not dgsElementData[source].mode then
 			local columnRender,rowRender
 			if relSizX*columnHeight ~= 0 then
-				columnRender = dxCreateRenderTarget(relSizX,columnHeight,true)
-				if not isElement(columnRender) then
-					local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-					outputDebugString("Failed to create render target for column of dgs-dxgridlist [Expected:"..(0.0000076*relSizX*columnHeight).."MB/Free:"..videoMemory.."MB]",2)
-				end
+				columnRender = dxCreateRenderTarget(relSizX,columnHeight,true,source)
 			end
 			if relSizX*rowShowRange ~= 0 then
-				rowRender = dxCreateRenderTarget(relSizX,rowShowRange,true)
-				if not isElement(rowRender)  then
-					local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-					outputDebugString("Failed to create render target for row of dgs-dxgridlist [Expected:"..(0.0000076*relSizX*rowShowRange).."MB/Free:"..videoMemory.."MB]",2)
-				end
+				rowRender = dxCreateRenderTarget(relSizX,rowShowRange,true,source)
 			end
 			dgsSetData(source,"renderTarget",{columnRender,rowRender})
 		end

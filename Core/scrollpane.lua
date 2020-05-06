@@ -15,11 +15,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
-	local renderTarget = dxCreateRenderTarget(sx,sy,true)
-	if not isElement(renderTarget) then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxscrollpane [Expected:"..(0.0000076*sx*sy).."MB/Free:"..videoMemory.."MB]",2)
-	end
+	local renderTarget = dxCreateRenderTarget(sx,sy,true,scrollpane)
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
@@ -208,11 +204,7 @@ function configScrollPane(source)
 		destroyElement(renderTarget)
 		dgsElementData[source].renderTarget = nil
 	end
-	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true)
-	if not isElement(renderTarget) then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxscrollpane [Expected:"..(0.0000076*relSizX*relSizY).."MB/Free:"..videoMemory.."MB]",2)
-	end
+	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true,source)
 	dgsSetData(source,"renderTarget_parent",renderTarget)
 	dgsSetData(source,"configNextFrame",false)
 end
