@@ -246,36 +246,40 @@ function dgsCoreRender()
 			if dgsElementType[MouseData.hit] == "dgs-dxtab" then
 				highlight = dgsElementData[highlight].parent
 			end
-			local scAbsX,scAbsY = dgsGetPosition(highlight,false,true,false,true)
-			local absX,absY = dgsGetPosition(highlight,false)
-			local rltX,rltY = dgsGetPosition(highlight,true)
-			local absW,absH = dgsGetSize(highlight,false)
-			local rltW,rltH = dgsGetSize(highlight,true)
-			dxDrawText("ABS X: "..absX , sW*0.5-99,11,sW,sH,black)
-			dxDrawText("ABS Y: "..absY , sW*0.5-99,26,sW,sH,black)
-			dxDrawText("RLT X: "..rltX , sW*0.5-99,41,sW,sH,black)
-			dxDrawText("RLT Y: "..rltY , sW*0.5-99,56,sW,sH,black)
-			dxDrawText("ABS W: "..absW , sW*0.5-99,71,sW,sH,black)
-			dxDrawText("ABS H: "..absH , sW*0.5-99,86,sW,sH,black)
-			dxDrawText("RLT W: "..rltW , sW*0.5-99,101,sW,sH,black)
-			dxDrawText("RLT H: "..rltH , sW*0.5-99,116,sW,sH,black)
-			dxDrawText("ABS X: "..absX , sW*0.5-100,10)
-			dxDrawText("ABS Y: "..absY , sW*0.5-100,25)
-			dxDrawText("RLT X: "..rltX , sW*0.5-100,40)
-			dxDrawText("RLT Y: "..rltY , sW*0.5-100,55)
-			dxDrawText("ABS W: "..absW , sW*0.5-100,70)
-			dxDrawText("ABS H: "..absH , sW*0.5-100,85)
-			dxDrawText("RLT W: "..rltW , sW*0.5-100,100)
-			dxDrawText("RLT H: "..rltH , sW*0.5-100,115)
+			if dgsGetType(highlight) ~= "dgs-dx3dinterface" and dgsGetType(highlight) ~= "dgs-dx3dtext" then
+				local scAbsX,scAbsY = dgsGetPosition(highlight,false,true,false,true)
+				local absX,absY = dgsGetPosition(highlight,false)
+				local rltX,rltY = dgsGetPosition(highlight,true)
+				local absW,absH = dgsGetSize(highlight,false)
+				local rltW,rltH = dgsGetSize(highlight,true)
+				dxDrawText("ABS X: "..absX , sW*0.5-99,11,sW,sH,black)
+				dxDrawText("ABS Y: "..absY , sW*0.5-99,26,sW,sH,black)
+				dxDrawText("RLT X: "..rltX , sW*0.5-99,41,sW,sH,black)
+				dxDrawText("RLT Y: "..rltY , sW*0.5-99,56,sW,sH,black)
+				dxDrawText("ABS W: "..absW , sW*0.5-99,71,sW,sH,black)
+				dxDrawText("ABS H: "..absH , sW*0.5-99,86,sW,sH,black)
+				dxDrawText("RLT W: "..rltW , sW*0.5-99,101,sW,sH,black)
+				dxDrawText("RLT H: "..rltH , sW*0.5-99,116,sW,sH,black)
+				dxDrawText("ABS X: "..absX , sW*0.5-100,10)
+				dxDrawText("ABS Y: "..absY , sW*0.5-100,25)
+				dxDrawText("RLT X: "..rltX , sW*0.5-100,40)
+				dxDrawText("RLT Y: "..rltY , sW*0.5-100,55)
+				dxDrawText("ABS W: "..absW , sW*0.5-100,70)
+				dxDrawText("ABS H: "..absH , sW*0.5-100,85)
+				dxDrawText("RLT W: "..rltW , sW*0.5-100,100)
+				dxDrawText("RLT H: "..rltH , sW*0.5-100,115)
+
+				local sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/10,100,50))
+				local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
+				local hSideSize = sideSize*0.5
+				local x,y,w,h = scAbsX,scAbsY,absW,absH
+				dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,rendSet)
+				dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,rendSet)
+				dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
+				dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
+			else
 			
-			local sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/10,100,50))
-			local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
-			local hSideSize = sideSize*0.5
-			local x,y,w,h = scAbsX,scAbsY,absW,absH
-			dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,rendSet)
-			dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,rendSet)
-			dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,rendSet)
-			dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,rendSet)
+			end
 			local parent = MouseData.hit
 			local parentIndex = 0
 			dxDrawText("Parent List:", sW*0.5+91,11,sW,sH,black)
@@ -3177,6 +3181,9 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 				local camX,camY,camZ = getCameraMatrix()
 				if not fx or not fy or not fz then
 					fx,fy,fz = camX-x,camY-y,camZ-z
+				end
+				if eleData.faceRelativeTo == "world" then
+					fx,fy,fz = fx-x,fy-y,fz-z
 				end
 				if wX and wY and wZ then
 					lnVec = {wX-camX,wY-camY,wZ-camZ}

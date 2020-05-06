@@ -138,7 +138,8 @@ end
 function dgsGetPosition(dgsElement,bool,includeParent,rndSuspend,includeSide)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	if includeParent then
-		guielex,guieley = getParentLocation(dgsElement,rndSuspend,dgsElementData[dgsElement].absPos[1],dgsElementData[dgsElement].absPos[2],includeSide)
+		local absPos = dgsElementData[dgsElement].absPos or {0,0}
+		guielex,guieley = getParentLocation(dgsElement,rndSuspend,absPos[1],absPos[2],includeSide)
 		if relative then
 			return guielex/sW,guieley/sH
 		else
@@ -169,7 +170,7 @@ end
 
 function dgsGetSize(dgsElement,bool)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
-	local size = dgsElementData[dgsElement][bool and "rltSize" or "absSize"]
+	local size = dgsElementData[dgsElement][bool and "rltSize" or "absSize"] or {0,0}
 	return size[1],size[2]
 end
 
