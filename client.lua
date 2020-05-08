@@ -2408,7 +2408,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 							end
 						end
 					dxSetRenderTarget(rndtgt)
-					dxSetBlendMode("add")
+					dxSetBlendMode("modulate_add")
 					if isDraw2 then
 						dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,renderTarget[2],0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					end

@@ -36,6 +36,7 @@ function createFullDemo()
 	for i=1,100 do
 		gridlist:addRow(i,i,math.random(1,500))
 	end
+	gridlist.alpha = 1
 	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
 	combobox:setEditEnabled(true)
 	for i=1,100 do
