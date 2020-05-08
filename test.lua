@@ -468,8 +468,8 @@ end
 -----Blur Box
 function blurboxTest()
 	local blurbox = dgsCreateBlurBox(sW,sH)
-	dgsCreateImage(0,0,1,1,blurbox,true)
-	dgsBlurBoxSetIntensity(blurbox,6)
+	dgsCreateImage(0,0,800,800,blurbox,false)
+	dgsBlurBoxSetIntensity(blurbox,5)
 	dgsBlurBoxSetLevel(blurbox,15)
 end
 
