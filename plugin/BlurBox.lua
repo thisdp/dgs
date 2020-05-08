@@ -176,7 +176,7 @@ function getBlurBoxShader(level)
 	float4 HorizontalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
 		for(int i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddy(tex.y),tex.y))*blur(i);
+			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y))*blur(i);
 		return Color*diffuse;
 	}
 
@@ -206,7 +206,7 @@ function getBlurBoxShader(level)
 	float4 VerticalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
 		for(int i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddx(tex.x)))*blur(i);
+			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)))*blur(i);
 		return Color*diffuse;
 	}
 

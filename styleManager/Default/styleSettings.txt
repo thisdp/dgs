@@ -308,6 +308,7 @@
 		scrollBarThick = 15,
 		selectVisible = true,
 		typingSound = nil,
+		padding = {2,2},
 	},
 
 -----------------------------------------------------------------------------------DGS Progress Bar

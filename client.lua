@@ -1274,26 +1274,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
 					local placeHolderOffset = eleData.placeHolderOffset
 					dxSetRenderTarget(renderTarget,true)
-					dxSetBlendMode("add")
-					local finalcolor
-					if not enabled[1] and not enabled[2] then
-						if type(eleData.disabledColor) == "number" then
-							finalcolor = eleData.disabledColor
-						elseif eleData.disabledColor == true then
-							local r,g,b,a = fromcolor(bgColor,true)
-							local average = (r+g+b)/3*eleData.disabledColorPercent
-							finalcolor = tocolor(average,average,average,a)
-						else
-							finalcolor = bgColor
-						end
-					else
-						finalcolor = bgColor
-					end
-					if bgImage then
-						dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor)
-					else
-						dxDrawRectangle(0,0,w,h,finalcolor)
-					end
 					dxSetBlendMode("modulate_add")
 					if alignment[1] == "left" then
 						width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
@@ -1344,6 +1324,25 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					dxSetRenderTarget(rndtgt)
 					dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 					local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
+					local finalcolor
+					if not enabled[1] and not enabled[2] then
+						if type(eleData.disabledColor) == "number" then
+							finalcolor = eleData.disabledColor
+						elseif eleData.disabledColor == true then
+							local r,g,b,a = fromcolor(bgColor,true)
+							local average = (r+g+b)/3*eleData.disabledColorPercent
+							finalcolor = tocolor(average,average,average,a)
+						else
+							finalcolor = bgColor
+						end
+					else
+						finalcolor = bgColor
+					end
+					if bgImage then
+						dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
+					else
+						dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
+					end
 					dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 					if placeHolderIgnoreRndTgt then
 						if text == "" and MouseData.nowShow ~= v then
@@ -1474,6 +1473,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 					end
 				end
 				------------------------------------
+				local padding = eleData.padding
+				local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
+				local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
+				if bgImage then
+					dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,rendSet)
+				else
+					dxDrawRectangle(x,y,w,h,finalcolor,rendSet)
+				end
 				if isElement(renderTarget) then
 					if wordwrap then
 						if eleData.rebuildMapTableNextFrame then
@@ -1487,12 +1494,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						local canHoldLines = floor((h-4)/fontHeight)
 						canHoldLines = canHoldLines > allLines and allLines or canHoldLines
 						dxSetRenderTarget(renderTarget,true)
-						dxSetBlendMode("add")
-						if bgImage then
-							dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor)
-						else
-							dxDrawRectangle(0,0,w,h,finalcolor)
-						end
 						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						local caretRltHeight = fontHeight*caretHeight
@@ -1565,7 +1566,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 										if caretPos[2] == a then
 											if caretPos[1] >= weakLinePos and caretPos[1] <= weakLinePos+weakLineLen then
 												local indexInWeakLine = caretPos[1]-weakLinePos
-												caretDrawPos = {x-showPos,y+ypos,utf8Sub(renderingText,1,indexInWeakLine),utf8Sub(renderingText,indexInWeakLine+1,indexInWeakLine+1)}
+												caretDrawPos = {px-showPos-2,py+ypos,utf8Sub(renderingText,1,indexInWeakLine),utf8Sub(renderingText,indexInWeakLine+1,indexInWeakLine+1)}
 											end
 										end
 										dxDrawText(renderingText,-showPos,ypos,-showPos,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
@@ -1585,7 +1586,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxSetRenderTarget(rndtgt)
 						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+						dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						if MouseData.nowShow == v and MouseData.editMemoCursor then
 							local CaretShow = true
 							if eleData.readOnly then
@@ -1617,12 +1618,6 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						canHoldLines = canHoldLines > allLine and allLine or canHoldLines
 						local selPosStart,selPosEnd,selStart,selEnd
 						dxSetRenderTarget(renderTarget,true)
-						dxSetBlendMode("add")
-						if bgImage then
-							dxDrawImage(0,0,w,h,bgImage,0,0,0,finalcolor)
-						else
-							dxDrawRectangle(0,0,w,h,finalcolor)
-						end
 						dxSetBlendMode("modulate_add")
 						local showPos = eleData.showPos
 						if allLine > 0 then
@@ -1669,7 +1664,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						dxSetRenderTarget(rndtgt)
 						local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-						dxDrawImageSection(x+2,y,w-scbTakes1,h-scbTakes2,0,0,w-scbTakes1,h-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
+						dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*galpha),rendSet)
 						if MouseData.nowShow == v and MouseData.editMemoCursor then
 							local CaretShow = true
 							if eleData.readOnly then
@@ -1684,14 +1679,14 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 									local cursorPX = caretPos[1]
 									local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
 									if eleData.caretStyle == 0 then
-										local selStartY = y+lineStart+fontHeight*(1-caretHeight)
-										local selEndY = y+lineStart+fontHeight*caretHeight
-										dxDrawLine(x+width-showPos+1,selStartY,x+width-showPos+1,selEndY,caretColor,eleData.caretThick,noRenderTarget)
+										local selStartY = py+lineStart+fontHeight*(1-caretHeight)
+										local selEndY = py+lineStart+fontHeight*caretHeight
+										dxDrawLine(px+width-showPos-1,selStartY,px+width-showPos-1,selEndY,caretColor,eleData.caretThick,noRenderTarget)
 									elseif eleData.caretStyle == 1 then
 										local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 										cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
 										local offset = eleData.caretOffset
-										dxDrawLine(x+width-showPos+1,y+h-4+offset,x+width-showPos+cursorWidth+2,y+h-4+offset,caretColor,eleData.caretThick,noRenderTarget)
+										dxDrawLine(px+width-showPos,py+ph-4+offset,px+width-showPos+cursorWidth+2,py+ph-4+offset,caretColor,eleData.caretThick,noRenderTarget)
 									end
 								end
 							end
