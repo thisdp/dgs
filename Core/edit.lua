@@ -871,7 +871,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 		end
 	end
 	local text = eleData.text
-	if eleData.masked then text = rep(eleData.maskText,utf8Len(text)) end
+	if eleData.masked then text = strRep(eleData.maskText,utf8Len(text)) end
 	local caretPos = eleData.caretPos
 	local selectFro = eleData.selectFrom
 	local selectColor = MouseData.nowShow == source and eleData.selectColor or eleData.selectColorBlur
