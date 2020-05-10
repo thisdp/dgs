@@ -55,3 +55,11 @@ end
 function dgsIsDxElement(element)
 	return isElement(element) and ((dgsElementType[element] or (dgsElementData[element] and dgsElementData[element].asPlugin) or ""):sub(1,6) == "dgs-dx")
 end
+
+function dgsIsMaterialElement(ele)
+	if isElement(ele) then
+		local eleType = getElementType(ele)
+		return eleType == "shader" or eleType == "texture"
+	end
+	return type(ele)
+end

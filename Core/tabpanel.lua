@@ -6,6 +6,10 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	assert(tonumber(y),"Bad argument @dgsCreateTabPanel at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateTabPanel at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateTabPanel at argument 4, expect number got "..type(sy))
+	if bgImage then
+		local eleType = dgsIsMaterialElement(bgImage)
+		assert(eleType == true,"Bad argument @dgsCreateTabPanel at argument 8, expect material got "..eleType)
+	end
 	local tabpanel = createElement("dgs-dxtabpanel")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(tabpanel,parent,true,true) or table.insert(CenterFatherTable,tabpanel)
 	dgsSetType(tabpanel,"dgs-dxtabpanel")

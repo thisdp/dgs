@@ -3059,6 +3059,7 @@ function renderGUI(v,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,galpha,visibl
 						eleData.preSelect = -1
 						dxSetRenderTarget(rndtgt)
 						dxSetBlendMode("add")
+						
 						dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,galpha),rendSet)
 						dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 						local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,galpha)
