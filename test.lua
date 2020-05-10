@@ -636,4 +636,3 @@ iprint(dgsClass(pos)())
 ]]
 --
 
-                UI.Label[1]=dgsCreateLabel(10,10,200,20,"123123",false,UI.Tab[1])
