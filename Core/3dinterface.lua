@@ -268,6 +268,114 @@ function dgs3DInterfaceGetAttachedOffsets(interface)
 end
 
 ----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local pos = eleData.position
+	local size = eleData.size
+	local faceTo = eleData.faceTo
+	local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
+	rndtgt = eleData.renderTarget_parent
+	if x and y and z and w and h and enabled[1] and mx then
+		local lnVec,lnPnt
+		local camX,camY,camZ = getCameraMatrix()
+		if not fx or not fy or not fz then
+			fx,fy,fz = camX-x,camY-y,camZ-z
+		end
+		if eleData.faceRelativeTo == "world" then
+			fx,fy,fz = fx-x,fy-y,fz-z
+		end
+		if wX and wY and wZ then
+			lnVec = {wX-camX,wY-camY,wZ-camZ}
+			lnPnt = {camX,camY,camZ}
+		end
+		if eleData.cameraDistance or 0 <= eleData.maxDistance then
+			eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVec,lnPnt,rot)}
+		else
+			eleData.hit = {}
+		end
+		local hitData = eleData.hit or {}
+		if #hitData > 0 then
+			local hit,hitX,hitY,hx,hy,hz = hitData[1],hitData[2],hitData[3],hitData[4],hitData[5],hitData[6]
+			local distance = ((camX-hx)^2+(camY-hy)^2+(camZ-hz)^2)^0.5
+			local oldPos = MouseData.interfaceHit
+			if isElement(MouseData.lock3DInterface) then
+				if MouseData.lock3DInterface == source then
+					MouseData.hit = source
+					mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
+					MouseX,MouseY = mx,my
+					MouseData.interfaceHit = {hx,hy,hz,distance,source}
+				end
+			elseif (not oldPos[4] or distance <= oldPos[4]) and hit then
+				MouseData.hit = source
+				mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
+				MouseX,MouseY = mx,my
+				MouseData.interfaceHit = {hx,hy,hz,distance,source}
+			end
+		end
+		dxSetRenderTarget(rndtgt,true)
+		dxSetRenderTarget()
+		return rndtgt,false,mx,my
+	end
+	return rndtgt,true
+end
+
+function interfaceRender()
+	for i=1,#dx3DInterfaceTable do
+		local v = dx3DInterfaceTable[i]
+		local eleData = dgsElementData[v]
+		local dimension = eleData.dimension
+		if eleData.visible then
+			local attachTable = eleData.attachTo
+			if attachTable then
+				local element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ = attachTable[1],attachTable[2],attachTable[3],attachTable[4],attachTable[5],attachTable[6],attachTable[7]
+				if not isElement(element) then
+					eleData.attachTo = false
+				else
+					local ex,ey,ez = getElementPosition(element)
+					local tmpX,tmpY,tmpZ = getPositionFromElementOffset(element,offFaceX,offFaceY,offFaceZ)
+					eleData.position = {getPositionFromElementOffset(element,offX,offY,offZ)}
+					eleData.faceTo = {tmpX-ex,tmpY-ey,tmpZ-ez}
+				end
+			end
+			local pos = eleData.position
+			local size = eleData.size
+			local faceTo = eleData.faceTo or {}
+			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
+			eleData.hit = false
+			if x and y and z and w and h then
+				self = v
+				local camX,camY,camZ = getCameraMatrix()
+				local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
+				eleData.cameraDistance = cameraDistance
+				if cameraDistance <= eleData.maxDistance then
+					local renderThing = eleData.renderTarget_parent
+					local addalp = 1
+					if cameraDistance >= eleData.fadeDistance then
+						addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)
+					end
+					local colors = applyColorAlpha(eleData.color,eleData.alpha*addalp)
+					if not fx or not fy or not fz then
+						fx,fy,fz = camX-x,camY-y,camZ-z
+					end
+					if eleData.faceRelativeTo == "world" then
+						fx,fy,fz = fx-x,fy-y,fz-z
+					end
+					local filter = eleData.filterShader
+					if isElement(filter) then
+						dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing,fromcolor(colors))
+						renderThing = filter
+						colors = white
+					end
+					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
+				end
+			end
+		end
+	end
+end
+addEventHandler("onClientPreRender",root,interfaceRender)
+
+----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
 dgsOOP["dgs-dx3dinterface"] = [[

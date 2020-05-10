@@ -90,6 +90,49 @@ function dgsLabelGetFontHeight(label)
 end
 
 ----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local alignment = eleData.alignment
+	local colors,imgs = eleData.textColor,eleData.image
+	colors = applyColorAlpha(colors,parentAlpha)
+	local colorimgid = 1
+	if MouseData.enter == source then
+		colorimgid = 2
+		if MouseData.clickl == source then
+			colorimgid = 3
+		end
+	end
+	local font = eleData.font or systemFont
+	local clip = eleData.clip
+	local wordbreak = eleData.wordbreak
+	local text = eleData.text
+	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
+	local colorcoded = eleData.colorcoded
+	local shadow = eleData.shadow
+	if shadow then
+		local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
+		local textX,textY = x,y
+		if shadowoffx and shadowoffy and shadowc then
+			local shadowc = applyColorAlpha(shadowc,parentAlpha)
+			local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+			if shadowIsOutline then
+				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+			end
+		end
+	end
+	dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded,eleData.subPixelPositioning and true or false)
+	if enabled[1] and mx then
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+			MouseData.hit = source
+		end
+	end
+	return rndtgt
+end
+----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
 dgsOOP["dgs-dxlabel"] = [[

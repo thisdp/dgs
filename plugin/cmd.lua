@@ -43,6 +43,19 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent)
 	dgsSetData(edit,"cursorStyle",1)
 	dgsSetData(edit,"cursorThick",1.2)
 	dgsSetData(edit,"mycmd",cmdMemo)
+	addEventHandler("onDgsTextChange",edit,function()
+		local text = dgsElementData[source].text
+		local parent = dgsElementData[source].mycmd
+		if isElement(parent) then
+			if dgsGetPluginType(parent) == "dgs-dxcmd" then
+				local hisid = dgsElementData[parent].cmdCurrentHistory
+				local history = dgsElementData[parent].cmdHistory
+				if history[hisid] ~= text then
+					dgsSetData(parent,"cmdCurrentHistory",0)
+				end
+			end
+		end
+	end,false)
 	triggerEvent("onDgsPluginCreate",cmdMemo,sourceResource)
 	return cmdMemo
 end

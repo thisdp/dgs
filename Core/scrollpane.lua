@@ -357,6 +357,92 @@ function checkSPScrollBar(scb,new,old)
 end
 
 ----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	if eleData.configNextFrame then
+		configScrollPane(source)
+	end
+	local scrollbar = eleData.scrollbars
+	local scbThick = eleData.scrollBarThick
+	local scbstate = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
+	local xthick = scbstate[1] and scbThick or 0
+	local ythick = scbstate[2] and scbThick or 0
+	local maxSize = eleData.maxChildSize
+	local relSizX,relSizY = w-xthick,h-ythick
+	local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
+	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
+	OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
+	OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
+	if OffsetX > 0 then
+		OffsetX = 0
+	end
+	if OffsetY > 0 then
+		OffsetY = 0
+	end
+	------------------------------------
+	if eleData.functionRunBefore then
+		local fnc = eleData.functions
+		if type(fnc) == "table" then
+			fnc[1](unpack(fnc[2]))
+		end
+	end
+	------------------------------------
+	local newRndTgt = eleData.renderTarget_parent
+	if newRndTgt then
+		dxSetRenderTarget(rndtgt)
+		local bgColor = eleData.bgColor
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		if eleData.bgImage then
+			bgColor = bgColor or 0xFFFFFFFF
+			dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			bgColor = applyColorAlpha(bgColor,parentAlpha)
+		elseif eleData.bgColor then
+			bgColor = applyColorAlpha(bgColor,parentAlpha)
+			dxDrawRectangle(x,y,relSizX,relSizY,bgColor,isPostGUI)
+		end
+		dxSetBlendMode("add")
+		local filter = eleData.filter
+		local drawTarget = newRndTgt
+		if filter then
+			if type(filter) == "table" and isElement(filter[1]) then
+				if eleData.sourceTexture ~= newRndTgt then
+					dxSetShaderValue(filter[1],"sourceTexture",newRndTgt)
+					eleData.sourceTexture = newRndTgt
+				end
+				dxSetShaderTransform(filter[1],filter[2],filter[3],filter[4],filter[5],filter[6],filter[7],filter[8],filter[9],filter[10],filter[11])
+				drawTarget = filter[1]
+			elseif isElement(filter) then
+				if eleData.sourceTexture ~= newRndTgt then
+					dxSetShaderValue(filter,"sourceTexture",newRndTgt)
+					dxSetShaderValue(filter,"textureLoad",true)
+					eleData.sourceTexture = newRndTgt
+				end
+				drawTarget = filter
+			end
+		else
+			eleData.sourceTexture = false
+		end
+		dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+	end
+	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+	dxSetRenderTarget(newRndTgt,true)
+	rndtgt = newRndTgt
+	dxSetRenderTarget(rndtgt)
+	if enabled[1] and mx then
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+			MouseData.scrollPane = source
+			MouseData.hit = source
+			if mx >= cx+relSizX and my >= cy+relSizY and scbstate[1] and scbstate[2] then
+				enabled[1] = false
+			end
+		else
+			MouseData.scrollPane = false
+			enabled[1] = false
+		end
+	end
+end
+----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
 dgsOOP["dgs-dxscrollpane"] = [[

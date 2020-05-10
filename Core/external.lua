@@ -10,3 +10,14 @@ function dgsCreateExternal(externalType,externalRef,renderEvent)
 	triggerEvent("onDgsCreate",external,sourceResource)
 	return external
 end
+
+----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxexternal"] = function(x,y,w,h,eleData,parentAlpha,isPostGUI,rndtgt)
+	local renderEvent = eleData.externalRenderer
+	if renderEvent then
+		triggerEvent(renderEvent,v)
+	end
+	return rndtgt
+end

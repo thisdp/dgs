@@ -71,7 +71,6 @@ function createFullDemo()
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
-	
 end
 ------------
 function createTest2()
@@ -102,7 +101,6 @@ function createTest4()
 		dgsComboBoxAddItem(rb1,i)
 	end
 end
-
 function createTest5()
 	local cb1 = dgsCreateCheckBox(500,500,200,30,"test_indeterminate",false)
 	local cb2 = dgsCreateCheckBox(500,520,200,30,"test_checked",false)
@@ -316,9 +314,9 @@ end
 function test3DInterface()
 	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
-	material2 = dgsCreate3DInterface(0,0,5,4,4,400,400,tocolor(255,255,255,255),1,0,0)
+	--material2 = dgsCreate3DInterface(0,0,5,4,4,400,400,tocolor(255,255,255,255),1,0,0)
 	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)
-	edit2 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material2)
+	--edit2 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material2)
 end
 
 function test3DInterfaceAttach()
@@ -335,7 +333,7 @@ function exampleDetectArea()
 	local image = dgsCreateImage(200,200,100,100,_,false,_,tocolor(255,255,255,128))
 	local da = dgsCreateDetectArea(0,0,100,100,false,image)
 	dgsDetectAreaSetFunction(da,[[
-		if mxRlt^2+myRlt^2 < 0.5 then
+		if (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25 then
 			return true
 		end
 	]])
@@ -634,5 +632,3 @@ setmetatable(dgsClass,meta)
 
 iprint(dgsClass(pos)())
 ]]
---
-

@@ -233,6 +233,25 @@ technique DrawCircle{
 ]]
 
 ----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local bgImage = eleData.bgImage
+	local bgColor = applyColorAlpha(eleData.bgColor,parentAlpha)
+	local indicatorImage = eleData.indicatorImage
+	local indicatorColor = applyColorAlpha(eleData.indicatorColor,parentAlpha)
+	local indicatorMode = eleData.indicatorMode
+	local padding = eleData.padding
+	local percent = eleData.progress*0.01
+	ProgressBarStyle[eleData.style](source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,isPostGUI)
+	if enabled[1] and mx then
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+			MouseData.hit = source
+		end
+	end
+	return rndtgt
+end
+----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
 dgsOOP["dgs-dxprogressbar"] = [[

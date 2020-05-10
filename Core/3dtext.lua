@@ -102,6 +102,103 @@ function dgs3DTextGetPosition(text)
 	local pos = dgsElementData[text].position
 	return pos[1],pos[2],pos[3]
 end
+
+----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local attachTable = eleData.attachTo
+	local posTable = eleData.position
+	local wx,wy,wz = posTable[1],posTable[2],posTable[3]
+	local isRender = true
+	if attachTable then
+		if isElement(attachTable[1]) then
+			if isElementStreamedIn(attachTable[1]) then
+				wx,wy,wz = getPositionFromElementOffset(attachTable[1],attachTable[2],attachTable[3],attachTable[4])
+				eleData.position = {wx,wy,wz}
+			else
+				isRender = false
+			end
+		else
+			eleData.attachTo = false
+		end
+	end
+	if isRender then
+		local camX,camY,camZ = getCameraMatrix()
+		local maxDistance = eleData.maxDistance
+		local distance = ((wx-camX)^2+(wy-camY)^2+(wz-camZ)^2)^0.5
+		if distance <= maxDistance and distance > 0 then
+			local canBeBlocked = eleData.canBeBlocked
+			local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
+			local colorcoded = eleData.colorcoded
+			local fadeDistance = eleData.fadeDistance
+			local text = eleData.text
+			local font = eleData.font or systemFont
+			if (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, cam))) then
+				local fadeMulti = 1
+				if maxDistance > fadeDistance and distance >= fadeDistance then
+					fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
+				end
+				local x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
+				if x and y then
+					local x,y = x-x%1,y-y%1
+					if eleData.fixTextSize then
+						distance = 50
+					end
+					local antiDistance = 1/distance
+					local sizeX = textSizeX*textSizeX/distance*50
+					local sizeY = textSizeY*textSizeY/distance*50
+					local color = applyColorAlpha(eleData.color,parentAlpha*fadeMulti)
+					local shadow = eleData.shadow
+					if shadow then
+						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
+						if shadowoffx and shadowoffy and shadowc then
+							local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+							local shadowc = applyColorAlpha(shadowc,parentAlpha*fadeMulti)
+							local shadowoffx,shadowoffy = shadowoffx*antiDistance*25,shadowoffy*antiDistance*25
+							dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+							if shadowIsOutline then
+								dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+								dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+								dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+							end
+						end
+					end
+					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,"center","center",false,false,false,colorcoded,true)
+					------------------------------------OutLine
+					local outlineData = eleData.outline
+					if outlineData then
+						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+						local w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
+						local x,y=x-w*0.5,y-h*0.5
+						local sideColor = outlineData[3]
+						local sideSize = outlineData[2]*antiDistance*25
+						local hSideSize = sideSize*0.5
+						sideColor = applyColorAlpha(sideColor,parentAlpha*fadeMulti)
+						local side = outlineData[1]
+						if side == "in" then
+							dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize)
+							dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize)
+							dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize)
+							dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
+						elseif side == "center" then
+							dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize)
+							dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize)
+							dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
+							dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize)
+						elseif side == "out" then
+							dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize)
+							dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize)
+							dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize)
+							dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize)
+						end
+					end
+				end
+			end
+		end
+	end
+	return rndtgt,true
+end
 ----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------

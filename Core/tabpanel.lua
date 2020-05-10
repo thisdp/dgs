@@ -1,3 +1,5 @@
+local mathFloor = math.floor
+
 function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateTabPanel at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
@@ -209,6 +211,103 @@ function dgsSetSelectedTab(tabpanel,id)
 	return false
 end
 
+
+----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
+	local tabHeight,relat = eleData["tabHeight"][1],eleData["tabHeight"][2]
+	local tabHeight = relat and tabHeight*y or tabHeight
+	eleData.rndPreSelect = -1
+	local selected = eleData["selected"]
+	local tabs = eleData["tabs"]
+	local height = eleData["tabHeight"][2] and eleData["tabHeight"][1]*h or eleData["tabHeight"][1]
+	local bgColor = eleData.bgColor
+	local font = eleData.font or systemFont
+	if enabled[1] and mx then
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+			MouseData.hit = source
+		end
+	end
+	if selected == -1 then
+		dxDrawRectangle(x,y+height,w,h-height,eleData.bgColor,isPostGUI)
+	else
+		local rendt = eleData.renderTarget
+		if isElement(rendt) then
+			dxSetRenderTarget(rendt,true)
+			dxSetBlendMode("blend")
+			local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
+			local tabsize = -eleData.showPos*(dgsTabPanelGetWidth(source)-w)
+			local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
+			if eleData.PixelInt then height = height-height%1 end
+			for d=1,#tabs do
+				local t = tabs[d]
+				if dgsElementData[t].visible then
+					local width = dgsElementData[t].width+tabPadding*2
+					local _width = 0
+					if tabs[d+1] then
+						_width = dgsElementData[tabs[d+1]].width+tabPadding*2
+					end
+					if tabsize+width >= 0 and tabsize <= w then
+						local tabImage = dgsElementData[t].tabImage
+						local tabColor = dgsElementData[t].tabColor
+						local selectstate = 1
+						if selected == d then
+							selectstate = 3
+						elseif eleData.preSelect == d then
+							selectstate = 2
+						end
+						local finalcolor
+						if not enabled[2] then
+							if type(eleData.disabledColor) == "number" then
+								finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
+							elseif eleData.disabledColor == true then
+								local r,g,b,a = fromcolor(tabColor[1],true)
+								local average = (r+g+b)/3*eleData.disabledColorPercent
+								finalcolor = tocolor(average,average,average,a*parentAlpha)
+							else
+								finalcolor = tabColor[selectstate]
+							end
+						else
+							finalcolor = applyColorAlpha(tabColor[selectstate],parentAlpha)
+						end
+						if tabImage[selectstate] then
+							dxDrawImage(tabsize,0,width,height,tabImage[selectstate],0,0,0,finalcolor)
+						else
+							dxDrawRectangle(tabsize,0,width,height,finalcolor)
+						end
+						local textSize = dgsElementData[t].textSize
+						if eleData.PixelInt then
+							_tabsize,_width = tabsize-tabsize%1,mathFloor(width+tabsize)
+						end
+						dxDrawText(dgsElementData[t].text,_tabsize,0,_width,height,dgsElementData[t].textColor,textSize[1],textSize[2],dgsElementData[t].font or font,"center","center",false,false,false,colorcoded,true)
+						if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and dgsElementData[t].enabled and enabled[2] then
+							eleData.rndPreSelect = d
+							MouseData.hit = t
+						end
+					end
+					tabsize = tabsize+width+gap
+				end
+			end
+			eleData.preSelect = -1
+			dxSetRenderTarget(rndtgt)
+			dxSetBlendMode("add")
+			dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
+			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+			local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,parentAlpha)
+			if dgsElementData[tabs[selected]].bgImage then
+				dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgImage,0,0,0,colors,isPostGUI)
+			else
+				dxDrawRectangle(x,y+height,w,h-height,colors,isPostGUI)
+			end
+			local children = ChildrenTable[tabs[selected]]
+			for i=1,#children do
+				renderGUI(children[i],mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAlpha,visible)
+			end
+		end
+	end
+	return rndtgt
+end
 ----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------

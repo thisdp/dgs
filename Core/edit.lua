@@ -858,6 +858,165 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 end)
 
 ----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local bgImage = eleData.isFocused and eleData.bgImage or (eleData.bgImageBlur or eleData.bgImage)
+	local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
+	bgColor = applyColorAlpha(bgColor,parentAlpha)
+	local caretColor = applyColorAlpha(eleData.caretColor,parentAlpha)
+	if MouseData.nowShow == source then
+		if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
+			MouseData.nowShow = false
+		end
+	end
+	local text = eleData.text
+	if eleData.masked then text = rep(eleData.maskText,utf8Len(text)) end
+	local caretPos = eleData.caretPos
+	local selectFro = eleData.selectFrom
+	local selectColor = MouseData.nowShow == source and eleData.selectColor or eleData.selectColorBlur
+	local font = eleData.font or systemFont
+	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
+	local renderTarget = eleData.renderTarget
+	local alignment = eleData.alignment
+	if isElement(renderTarget) then
+		local textColor = eleData.textColor
+		local selx = 0
+		if selectFro-caretPos > 0 then
+			selx = dxGetTextWidth(utf8Sub(text,caretPos+1,selectFro),txtSizX,font)
+		elseif selectFro-caretPos < 0 then
+			selx = -dxGetTextWidth(utf8Sub(text,selectFro+1,caretPos),txtSizX,font)
+		end
+		local showPos = eleData.showPos
+		local padding = eleData.padding
+		local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
+		local caretHeight = eleData.caretHeight
+		local textX_Left,textX_Right
+		local insideH = h-sideheight*2
+		local selStartY = insideH/2-insideH/2*caretHeight
+		local selEndY = (insideH/2-selStartY)*2
+		local width,selectX,selectW
+		local posFix = 0
+		local placeHolder = eleData.placeHolder
+		local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
+		local placeHolderOffset = eleData.placeHolderOffset
+		dxSetRenderTarget(renderTarget,true)
+		dxSetBlendMode("modulate_add")
+		if alignment[1] == "left" then
+			width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
+			textX_Left,textX_Right = showPos,w-sidelength
+			selectX,selectW = width+showPos,selx
+			if selx ~= 0 then
+				dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
+			end
+		elseif alignment[1] == "center" then
+			local __width = eleData.textFontLen
+			width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
+			textX_Left,textX_Right = showPos,w-sidelength
+			selectX,selectW = width+showPos*0.5+w*0.5-__width*0.5-sidelength+1,selx
+			if selx ~= 0 then
+				dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
+			end
+			posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
+		elseif alignment[1] == "right" then
+			width = dxGetTextWidth(utf8Sub(text,caretPos+1),txtSizX,font)
+			textX_Left,textX_Right = x,w-sidelength*2-showPos
+			selectX,selectW = textX_Right-width,selx
+			if selx ~= 0 then
+				dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
+			end
+			posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
+		end
+		textX_Left = textX_Left-textX_Left%1
+		textX_Right = textX_Right-textX_Right%1
+		if not placeHolderIgnoreRndTgt then
+			if text == "" and MouseData.nowShow ~= source then
+				local pColor = eleData.placeHolderColor
+				local pFont = eleData.placeHolderFont
+				local pColorcoded = eleData.placeHolderColorcoded
+				dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,false,pColorcoded)
+			end
+		end
+		if eleData.autoCompleteShow then
+			dxDrawText(eleData.autoCompleteShow[2],textX_Left,0,textX_Right-posFix,h-sidelength,eleData.autoCompleteTextColor or applyColorAlpha(textColor,0.7),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+		end
+		dxDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+		if eleData.underline then
+			local textHeight = dxGetFontHeight(txtSizY,font)
+			local lineOffset = eleData.underlineOffset+h*0.5+textHeight*0.5
+			local lineWidth = eleData.underlineWidth
+			local textFontLen = eleData.textFontLen
+			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
+		end
+		dxSetRenderTarget(rndtgt)
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
+		local finalcolor
+		if not enabled[1] and not enabled[2] then
+			if type(eleData.disabledColor) == "number" then
+				finalcolor = eleData.disabledColor
+			elseif eleData.disabledColor == true then
+				local r,g,b,a = fromcolor(bgColor,true)
+				local average = (r+g+b)/3*eleData.disabledColorPercent
+				finalcolor = tocolor(average,average,average,a)
+			else
+				finalcolor = bgColor
+			end
+		else
+			finalcolor = bgColor
+		end
+		if bgImage then
+			dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI)
+		else
+			dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
+		end
+		dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		if placeHolderIgnoreRndTgt then
+			if text == "" and MouseData.nowShow ~= source then
+				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
+				local pFont = eleData.placeHolderFont
+				local pColorcoded = eleData.placeHolderColorcoded
+				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+				dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,isPostGUI,pColorcoded)
+			end
+		end
+		if MouseData.nowShow == source and MouseData.editMemoCursor then
+			local CaretShow = true
+			if eleData.readOnly then
+				CaretShow = eleData.readOnlyCaretShow
+			end
+			if CaretShow then
+				local caretStyle = eleData.caretStyle
+				local selStartX = selectX+x+sidelength
+				selStartX = selStartX-selStartX%1
+				if caretStyle == 0 then
+					if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
+						local selStartY = h/2-h/2*caretHeight+sideheight
+						local selEndY = (h/2-selStartY)*2
+						dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,noRenderTarget)
+					end
+				elseif caretStyle == 1 then
+					local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
+					if cursorWidth == 0 then
+						cursorWidth = txtSizX*8
+					end
+					if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
+						local offset = eleData.caretOffset
+						local selStartY = y+h/2-h/2*caretHeight+sideheight
+						dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,caretColor,eleData.caretThick,noRenderTarget)
+					end
+				end
+			end
+		end
+	end
+	if enabled[1] and mx then
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+			MouseData.hit = source
+		end
+	end
+	return rndtgt
+end
+----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
 dgsOOP["dgs-dxedit"] = [[

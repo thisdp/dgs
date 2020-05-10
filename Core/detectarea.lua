@@ -98,6 +98,43 @@ function dgsDetectAreaUpdateDebugView(detectarea)
 end
 
 ----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local color = 0xFFFFFFFF
+	if enabled[1] and mx then
+		local checkPixel = eleData.checkFunction
+		if checkPixel then
+			local _mx,_my = (mx-x)/w,(my-y)/h
+			if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+				if type(checkPixel) == "function" then
+					local checkFnc = eleData.checkFunction
+					if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
+						MouseData.hit = source
+						color = 0xFFFF0000
+					end
+				else
+					local px,py = dxGetPixelsSize(checkPixel)
+					local pixX,pixY = _mx*px,_my*py
+					local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
+					if r then
+						local gray = (r+g+b)/3
+						if gray >= 128 then
+							MouseData.hit = source
+							color = 0xFFFF0000
+						end
+					end
+				end
+			end
+		end
+	end
+	local debugTexture = eleData.debugTexture
+	if eleData.debugMode and isElement(debugTexture) then
+		dxDrawImage(x,y,w,h,debugTexture,0,0,0,color,isPostGUI)
+	end
+	return rndtgt
+end
+----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
 dgsOOP["dgs-dxdetectarea"] = [[

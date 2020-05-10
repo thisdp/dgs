@@ -116,6 +116,32 @@ function dgsImageGetNativeSize(gui)
 end
 
 ----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local colors,imgs = eleData.color,eleData.image
+	colors = applyColorAlpha(colors,parentAlpha)
+	if imgs then
+		local uvPos,uvSize = eleData.renderBuffer.UVPos or {},eleData.renderBuffer.UVSize or {}
+		local sx,sy,px,py = uvSize[1],uvSize[2],uvPos[1],uvPos[2]
+		local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
+		local rot = eleData.rotation or 0
+		if not sx or not sy or not px or not py then
+			dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,isPostGUI)
+		else
+			dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,rot,rotOffy,rotOffy,colors,isPostGUI)
+		end
+	else
+		dxDrawRectangle(x,y,w,h,colors,isPostGUI)
+	end
+	if enabled[1] and mx then
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+			MouseData.hit = source
+		end
+	end
+	return rndtgt
+end
+----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
 dgsOOP["dgs-dximage"] = [[

@@ -1,3 +1,8 @@
+local mathFloor = math.floor
+local mathMin = math.min
+local mathMax = math.max
+local tableInsert = table.insert
+local tableRemove = table.remove
 --[[
 Item List Struct:
 table = {
@@ -23,7 +28,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateComboBox at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local combobox = createElement("dgs-dxcombobox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or table.insert(CenterFatherTable,combobox)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or tableInsert(CenterFatherTable,combobox)
 	dgsSetType(combobox,"dgs-dxcombobox")
 	dgsSetData(combobox,"renderBuffer",{})
 	
@@ -222,7 +227,7 @@ function dgsComboBoxAddItem(combobox,text)
 	tab[-1] = dgsElementData[combobox].itemImage
 	tab[0] = dgsElementData[combobox].itemColor
 	tab[1] = tostring(text)
-	table.insert(data,id,tab)
+	tableInsert(data,id,tab)
 	if id*itemHeight > size[2] then
 		local scrollBar = dgsElementData[combobox].scrollbar
 		dgsSetVisible(scrollBar,true)
@@ -235,7 +240,7 @@ function dgsComboBoxSetItemText(combobox,item,text)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemText at argument 2, expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
-	item = math.floor(item)
+	item = mathFloor(item)
 	if item >= 1 and item <= #data then
 		if type(text) == "table" then
 			data[item]._translationText = text
@@ -254,7 +259,7 @@ function dgsComboBoxGetItemText(combobox,item)
 	assert(tonumber(item),"Bad argument @dgsComboBoxGetItemText at argument 2, expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
 	local item = tonumber(item)
-	local item = math.floor(item)
+	local item = mathFloor(item)
 	if item >= 1 and item <= #data then
 		return data[item][1]
 	end
@@ -271,7 +276,7 @@ function dgsComboBoxSetItemColor(combobox,item,color)
 	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemColor at argument 2, expect number got "..type(item))
 	assert(type(color) == "number" or type(color) == "number","Bad argument @dgsComboBoxSetItemColor at argument 3, expect number/string got "..type(color))
 	local data = dgsElementData[combobox].itemData
-	item = math.floor(item)
+	item = mathFloor(item)
 	if item >= 1 and item <= #data then
 		data[item][-2] = color
 		return true
@@ -293,7 +298,7 @@ function dgsComboBoxGetItemColor(combobox,item)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemColor at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","@dgsComboBoxGetItemColor argument 2,expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
-	item = math.floor(item)
+	item = mathFloor(item)
 	if item >= 1 and item <= #data then
 		return data[item][-2]
 	end
@@ -305,9 +310,9 @@ function dgsComboBoxRemoveItem(combobox,item)
 	assert(tonumber(item),"Bad argument @dgsComboBoxRemoveItem at argument 2, expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
 	local item = tonumber(item)
-	local item = math.floor(item)
+	local item = mathFloor(item)
 	if item >= 1 and item <= #data then
-		table.remove(data,item)
+		tableRemove(data,item)
 		local itemHeight = dgsElementData[combobox].itemHeight
 		local box = dgsElementData[combobox].myBox
 		local size = dgsElementData[box].absSize
@@ -323,7 +328,7 @@ end
 function dgsComboBoxClear(combobox)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxClear at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	local data = dgsElementData[combobox].itemData
-	table.remove(data)
+	tableRemove(data)
 	dgsElementData[combobox].itemData = {}
 	local scb = dgsElementData[combobox].scrollbar
 	dgsSetVisible(scb,false)
@@ -337,7 +342,7 @@ function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
 	assert(tonumber(sy),"Bad argument @dgsComboBoxCreateBox at argument 4, expect number got "..type(sy))
 	assert(dgsGetType(parent) == "dgs-dxcombobox","Bad argument @dgsComboBoxCreateBox at argument 6, expect dgs-dxcombobox got "..dgsGetType(parent))
 	local box = createElement("dgs-dxcombobox-Box")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true,true) or table.insert(CenterFatherTable,box)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true,true) or tableInsert(CenterFatherTable,box)
 	dgsSetType(box,"dgs-dxcombobox-Box")	
 	insertResource(sourceResource,box)
 	calculateGuiPositionSize(box,x,y,relative or false,sx,sy,relative or false,true)
@@ -419,7 +424,7 @@ function checkCBScrollBar(scb,new,old)
 		if source == scrollBar then
 			local itemLength = #dgsElementData[combobox].itemData*dgsElementData[combobox].itemHeight
 			local temp = -new*(itemLength-sy)/100
-			local temp = dgsElementData[combobox].scrollFloor and math.floor(temp) or temp 
+			local temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp 
 			dgsSetData(combobox,"itemMoveOffset",temp)
 			triggerEvent("onDgsElementScroll",combobox,source,new,old)
 		end
@@ -454,6 +459,190 @@ function dgsComboBoxGetScrollPosition(combobox)
 	return dgsScrollBarGetScrollPosition(scb)
 end
 
+
+----------------------------------------------------------------
+--------------------------Renderer------------------------------
+----------------------------------------------------------------
+dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	if eleData.configNextFrame then
+		configComboBox(source)
+	end
+	local captionEdit = eleData.captionEdit
+	local colors,imgs = eleData.color,eleData.image
+	local colorimgid = 1
+	local textBox = eleData.textBox
+	local buttonLen_t = eleData.buttonLen
+	local buttonLen
+	if textBox then
+		buttonLen = buttonLen_t[2] and buttonLen_t[1]*h or buttonLen_t[1]
+	else
+		buttonLen = w
+	end
+	if MouseData.enter == source then
+		colorimgid = 2
+		if eleData.clickType == 1 then
+			if MouseData.clickl == source then
+				colorimgid = 3
+			end
+		elseif eleData.clickType == 2 then
+			if MouseData.clickr == source then
+				colorimgid = 3
+			end
+		else
+			if MouseData.clickl == source or MouseData.clickr == source then
+				colorimgid = 3
+			end
+		end
+	end
+	local finalcolor
+	if not enabled[1] and not enabled[2] then
+		if type(eleData.disabledColor) == "number" then
+			finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
+		elseif eleData.disabledColor == true then
+			local r,g,b,a = fromcolor(colors[1],true)
+			local average = (r+g+b)/3*eleData.disabledColorPercent
+			finalcolor = tocolor(average,average,average,a*parentAlpha)
+		else
+			finalcolor = colors[colorimgid]
+		end
+	else
+		finalcolor = applyColorAlpha(colors[colorimgid],parentAlpha)
+	end
+	local bgColor = eleData.bgColor or finalcolor
+	local bgImage = eleData.bgImage
+	if imgs[colorimgid] then
+		dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[colorimgid],0,0,0,finalcolor,isPostGUI)
+	else
+		dxDrawRectangle(x+w-buttonLen,y,buttonLen,h,finalcolor,isPostGUI)
+	end
+	local arrowColor = eleData.arrowColor
+	local arrowOutSideColor = eleData.arrowOutSideColor
+	local textBoxLen = w-buttonLen
+	if bgImage then
+		dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,applyColorAlpha(bgColor,parentAlpha),isPostGUI)
+	else
+		dxDrawRectangle(x,y,textBoxLen,h,applyColorAlpha(bgColor,parentAlpha),isPostGUI)
+	end
+	local shader = eleData.arrow
+	local listState = eleData.listState
+	if eleData.listStateAnim ~= listState then
+		local stat = eleData.listStateAnim+eleData.listState*0.08
+		eleData.listStateAnim = listState == -1 and mathMax(stat,listState) or mathMin(stat,listState)
+	end
+	if eleData.arrowSettings then
+		dxSetShaderValue(shader,"width",eleData.arrowSettings[1])
+		dxSetShaderValue(shader,"height",eleData.arrowSettings[2]*eleData.listStateAnim)
+		dxSetShaderValue(shader,"linewidth",eleData.arrowSettings[3])
+	end
+	local r,g,b,a = fromcolor(arrowColor,true)
+	dxSetShaderValue(shader,"_color",{r/255,g/255,b/255,a/255*parentAlpha})
+	local r,g,b,a = fromcolor(arrowOutSideColor,true)
+	dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*parentAlpha})
+	dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,isPostGUI)
+	if textBox and not captionEdit then
+		local textSide = eleData.comboTextSide
+		local font = eleData.font or systemFont
+		local textColor = eleData.textColor
+		local rb = eleData.alignment
+		local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
+		local colorcoded = eleData.colorcoded
+		local shadow = eleData.shadow
+		local wordbreak = eleData.wordbreak
+		local selection = eleData.select
+		local itemData = eleData.itemData
+		local sele = itemData[selection]
+		local text = sele and sele[1] or eleData.caption
+		local nx,ny,nw,nh = x+textSide[1],y,x+textBoxLen-textSide[2],y+h
+		if shadow then
+			dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI)
+		end
+		dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI,colorcoded)
+	end
+	if enabled[1] and mx then
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+			MouseData.hit = source
+		end
+	end
+	return rndtgt
+end
+
+dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	local combo = eleData.myCombo
+	local DataTab = dgsElementData[combo]
+	local itemData = DataTab.itemData
+	local itemDataCount = #itemData
+	local scbThick = dgsElementData[combo].scrollBarThick
+	local itemHeight = DataTab.itemHeight
+	local itemMoveOffset = DataTab.itemMoveOffset
+	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1
+	local whichRowToEnd = whichRowToStart+mathFloor(h/itemHeight)+1
+	DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}
+	local renderTarget = dgsElementData[combo].renderTarget
+	if isElement(renderTarget) then
+		dxSetRenderTarget(renderTarget,true)
+		dxSetBlendMode("modulate_add")
+		local rb_l = dgsElementData[combo].alignmentList
+		local scrollbar = dgsElementData[combo].scrollbar
+		local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
+		if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h and MouseData.enter == source then
+			local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
+			sid = mathFloor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
+			if sid <= itemDataCount then
+				DataTab.preSelect = sid
+				MouseData.enterData = true
+			else
+				DataTab.preSelect = -1
+			end
+		else
+			DataTab.preSelect = -1
+		end
+		local preSelect = DataTab.preSelect
+		local Select = DataTab.select
+		local font = DataTab.font
+		local shadow = dgsElementData[combo].shadow
+		local colorcoded = eleData.colorcoded
+		local wordbreak = eleData.wordbreak
+		local clip = eleData.clip
+		local textSide = dgsElementData[combo].itemTextSide
+		for i=DataTab.FromTo[1],DataTab.FromTo[2] do
+			local lc_rowData = itemData[i]
+			local textSize = lc_rowData[-3]
+			local textColor = lc_rowData[-2]
+			local image = lc_rowData[-1]
+			local color = lc_rowData[0]
+			local itemState = 1
+			itemState = i == preSelect and 2 or itemState
+			itemState = i == Select and 3 or itemState
+			local rowpos = i*itemHeight
+			local rowpos_1 = (i-1)*itemHeight
+			if image[itemState] then
+				dxDrawImage(0,rowpos_1+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,color[itemState])
+			else
+				dxDrawRectangle(0,rowpos_1+itemMoveOffset,w,itemHeight,color[itemState])
+			end
+			local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW-textSide[2],rowpos+itemMoveOffset
+			local text = itemData[i][1]
+			if shadow then
+				dxDrawText(text:gsub("#%x%x%x%x%x%x",""),textSide[1]-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak)
+			end
+			dxDrawText(text,textSide[1],_y,_sx,_sy,textColor,textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
+		end
+		dxSetRenderTarget(rndtgt)
+		dxSetBlendMode("add")
+		dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+	end
+	if enabled[1] and mx then
+		local height = itemDataCount*itemHeight
+		if height > h then
+			height = h
+		end
+		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+height then
+			MouseData.hit = source
+		end
+	end
+	return rndtgt
+end
 ----------------------------------------------------------------
 -------------------------OOP Class------------------------------
 ----------------------------------------------------------------
