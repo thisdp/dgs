@@ -993,7 +993,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 					if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
 						local selStartY = h/2-h/2*caretHeight+sideheight
 						local selEndY = (h/2-selStartY)*2
-						dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,noRenderTarget)
+						dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,isPostGUI)
 					end
 				elseif caretStyle == 1 then
 					local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
@@ -1003,7 +1003,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 					if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 						local offset = eleData.caretOffset
 						local selStartY = y+h/2-h/2*caretHeight+sideheight
-						dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,caretColor,eleData.caretThick,noRenderTarget)
+						dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,caretColor,eleData.caretThick,isPostGUI)
 					end
 				end
 			end
