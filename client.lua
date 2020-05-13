@@ -527,7 +527,6 @@ addEventHandler("onClientKey",root,function(button,state)
 		local scroll = button == "mouse_wheel_down" and 1 or -1
 		local scrollbar = MouseData.enter
 		local dgsType = dgsGetType(MouseData.enter)
-		print(dgsType,getTickCount())
 		if dgsGetType(scrollbar) == "dgs-dxscrollbar" then
 			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 		elseif dgsType == "dgs-dxgridlist" then
@@ -585,7 +584,6 @@ addEventHandler("onClientKey",root,function(button,state)
 				end
 			end
 		elseif dgsType == "dgs-dxcombobox-Box" then
-			print(dgsType,123,getTickCount())
 			local combo = dgsElementData[MouseData.enter].myCombo
 			local scrollbar = dgsElementData[combo].scrollbar
 			if dgsGetVisible(scrollbar) then
@@ -1613,7 +1611,6 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 		local attachedTable = dgsElementData[attachSource].attachedTo
 		local relativePos = attachedTable[4]
 		local offsetX,offsetY = relativePos and (absx+absw*attachedTable[2])/sW or attachedTable[2]+absx, relativePos and (absy+absh*attachedTable[3])/sH or attachedTable[3]+absy
-		print(offsetX)
 		calculateGuiPositionSize(attachSource,offsetX,offsetY,relativePos)
 	end
 end)
