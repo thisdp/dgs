@@ -179,7 +179,9 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			posY = posY+(h-iconHeight)/2
 		end
 		posX,posY = posX+x,posY+y
-		dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[colorimgid],0,0,0,iconColor[colorimgid],isPostGUI)
+		if iconImage[colorimgid] then
+			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[colorimgid],0,0,0,iconColor[colorimgid],isPostGUI)
+		end
 	end
 	if enabled[1] and mx then
 		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
