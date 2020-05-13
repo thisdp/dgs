@@ -1569,7 +1569,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 				local ntempx,ntempy
 				local children = ChildrenTable[parent] or {}
 				local childrenCnt = #children
-				if maxSize[1] <= sx then
+				if maxSize[1] <= sx+x then
 					ntempx = 0
 					for k=1,#children do
 						local child = children[k]
@@ -1578,7 +1578,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 						ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
 					end
 				end
-				if maxSize[2] <= sy then
+				if maxSize[2] <= sy+y then
 					ntempy = 0
 					for k=1,#children do
 						local child = children[k]
