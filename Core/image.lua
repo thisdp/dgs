@@ -1,3 +1,18 @@
+--Dx Functions
+local dxDrawLine = dxDrawLine
+local dxDrawImage = dxDrawImageExt
+local dxDrawImageSection = dxDrawImageSectionExt
+local dxDrawText = dxDrawText
+local dxGetFontHeight = dxGetFontHeight
+local dxDrawRectangle = dxDrawRectangle
+local dxSetShaderValue = dxSetShaderValue
+local dxGetPixelsSize = dxGetPixelsSize
+local dxGetPixelColor = dxGetPixelColor
+local dxSetRenderTarget = dxSetRenderTarget
+local dxGetTextWidth = dxGetTextWidth
+local dxSetBlendMode = dxSetBlendMode
+--
+
 function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
 	assert(tonumber(x),"Bad argument @dgsCreateImage at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateImage at argument 2, expect number got "..type(y))

@@ -13,6 +13,7 @@ local floor = math.floor
 local min = math.min
 local max = math.max
 local tocolor = tocolor
+--Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
 local dxDrawImageSection = dxDrawImageSectionExt
@@ -25,6 +26,7 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+--
 local utf8Sub = utf8.sub
 local utf8Len = utf8.len
 local tableInsert = table.insert

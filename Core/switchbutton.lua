@@ -1,3 +1,17 @@
+--Dx Functions
+local dxDrawLine = dxDrawLine
+local dxDrawImage = dxDrawImageExt
+local dxDrawImageSection = dxDrawImageSectionExt
+local dxDrawText = dxDrawText
+local dxGetFontHeight = dxGetFontHeight
+local dxDrawRectangle = dxDrawRectangle
+local dxSetShaderValue = dxSetShaderValue
+local dxGetPixelsSize = dxGetPixelsSize
+local dxGetPixelColor = dxGetPixelColor
+local dxSetRenderTarget = dxSetRenderTarget
+local dxGetTextWidth = dxGetTextWidth
+local dxSetBlendMode = dxSetBlendMode
+--
 function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
 	assert(tonumber(x),"Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y))

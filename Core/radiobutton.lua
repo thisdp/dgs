@@ -1,3 +1,17 @@
+--Dx Functions
+local dxDrawLine = dxDrawLine
+local dxDrawImage = dxDrawImageExt
+local dxDrawImageSection = dxDrawImageSectionExt
+local dxDrawText = dxDrawText
+local dxGetFontHeight = dxGetFontHeight
+local dxDrawRectangle = dxDrawRectangle
+local dxSetShaderValue = dxSetShaderValue
+local dxGetPixelsSize = dxGetPixelsSize
+local dxGetPixelColor = dxGetPixelColor
+local dxSetRenderTarget = dxSetRenderTarget
+local dxGetTextWidth = dxGetTextWidth
+local dxSetBlendMode = dxSetBlendMode
+--
 function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t)
 	assert(tonumber(x),"Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y))

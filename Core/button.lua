@@ -1,3 +1,18 @@
+--Dx Functions
+local dxDrawLine = dxDrawLine
+local dxDrawImage = dxDrawImageExt
+local dxDrawImageSection = dxDrawImageSectionExt
+local dxDrawText = dxDrawText
+local dxGetFontHeight = dxGetFontHeight
+local dxDrawRectangle = dxDrawRectangle
+local dxSetShaderValue = dxSetShaderValue
+local dxGetPixelsSize = dxGetPixelsSize
+local dxGetPixelColor = dxGetPixelColor
+local dxSetRenderTarget = dxSetRenderTarget
+local dxGetTextWidth = dxGetTextWidth
+local dxSetBlendMode = dxSetBlendMode
+--
+
 function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg,selimg,cliimg,norcolor,hovcolor,clicolor)
 	assert(tonumber(x),"Bad argument @dgsCreateButton at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateButton at argument 2, expect number got "..type(y))
