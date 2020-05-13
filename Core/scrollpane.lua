@@ -32,6 +32,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	local renderTarget = dxCreateRenderTarget(sx,sy,true,scrollpane)
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
+	--dgsSetData(scrollpane,"childSizeRef",{{},{}}) --Horizontal,Vertical //to optimize
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
 	dgsSetData(scrollpane,"configNextFrame",false)
 	dgsSetData(scrollpane,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
@@ -79,29 +80,7 @@ addEventHandler("onDgsCreate",root,function()
 			sx,sy = dgsElementData[source].rltSize[1],dgsElementData[source].rltSize[2]
 		end
 		calculateGuiPositionSize(source,x,y,relativePos or _,sx,sy,relativeSize or _)
-		local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-		local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
-		local maxSize = dgsElementData[parent].maxChildSize
-		local tempx,tempy = x+sx,y+sy
-		local ntempx,ntempy
-		if maxSize[1] <= tempx then
-			ntempx = 0
-			for k,v in ipairs(dgsGetChildren(parent)) do
-				local pos = dgsElementData[source].absPos
-				local size = dgsElementData[source].absSize
-				ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
-			end
-		end
-		if maxSize[2] <= tempy then
-			ntempy = 0
-			for k,v in ipairs(dgsGetChildren(parent)) do
-				local pos = dgsElementData[source].absPos
-				local size = dgsElementData[source].absSize
-				ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]	
-			end
-		end
-		dgsSetData(parent,"maxChildSize",{ntempx or maxSize[1],ntempy or maxSize[2]})
-		dgsSetData(parent,"configNextFrame",true)
+		resizeScrollPane(parent,source)
 	end
 end)
 
@@ -223,42 +202,25 @@ function configScrollPane(source)
 	dgsSetData(source,"configNextFrame",false)
 end
 
-function sortScrollPane(source,parent)
-	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
-	local maxSize = dgsElementData[parent].maxChildSize
-	local tempx,tempy = x+sx,y+sy
-	local ntempx,ntempy
-	if maxSize[1] <= tempx then
-		ntempx = tempx
-	else
-		ntempx = 0
-		local children = ChildrenTable[parent]
+function resizeScrollPane(scrollpane,source) --Need optimize
+	local abspos = dgsElementData[source].absPos
+	local abssize = dgsElementData[source].absSize
+	if abspos and abssize then
+		local x,y,sx,sy = abspos[1],abspos[2],abssize[1],abssize[2]
+		local maxSize = dgsElementData[scrollpane].maxChildSize
+		local ntempx,ntempy = 0,0
+		local children = ChildrenTable[scrollpane] or {}
 		local childrenCnt = #children
-		for i=1,childrenCnt do
-			local child = children[i]
+		for k=1,#children do
+			local child = children[k]
 			local pos = dgsElementData[child].absPos
 			local size = dgsElementData[child].absSize
 			ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
+			ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]	
 		end
+		dgsSetData(scrollpane,"maxChildSize",{ntempx or maxSize[1],ntempy or maxSize[2]})
 	end
-	if maxSize[2] <= tempy then
-		ntempy = tempy
-	else
-		ntempy = 0
-		local children = ChildrenTable[parent]
-		local childrenCnt = #children
-		for i=1,childrenCnt do
-			local child = children[i]
-			local pos = dgsElementData[child].absPos
-			local size = dgsElementData[child].absSize
-			ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]
-		end
-	end
-	maxSize[1] = ntempx or maxSize[1]
-	maxSize[2] = ntempy or maxSize[2]
-	dgsSetData(parent,"maxChildSize",maxSize)
-	dgsSetData(parent,"configNextFrame",true)
+	dgsSetData(scrollpane,"configNextFrame",true)
 end
 
 function dgsScrollPaneGetScrollBar(scrollpane)

@@ -1561,34 +1561,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	local parent = dgsGetParent(source)
 	if isElement(parent) then
 		if dgsGetType(parent) == "dgs-dxscrollpane" then
-			local abspos = dgsElementData[source].absPos
-			local abssize = dgsElementData[source].absSize
-			if abspos and abssize then
-				local x,y,sx,sy = abspos[1],abspos[2],abssize[1],abssize[2]
-				local maxSize = dgsElementData[parent].maxChildSize
-				local ntempx,ntempy
-				local children = ChildrenTable[parent] or {}
-				local childrenCnt = #children
-				if maxSize[1] <= sx+x then
-					ntempx = 0
-					for k=1,#children do
-						local child = children[k]
-						local pos = dgsElementData[child].absPos
-						local size = dgsElementData[child].absSize
-						ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
-					end
-				end
-				if maxSize[2] <= sy+y then
-					ntempy = 0
-					for k=1,#children do
-						local child = children[k]
-						local pos = dgsElementData[child].absPos
-						local size = dgsElementData[child].absSize
-						ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]	
-					end
-				end
-				dgsSetData(parent,"maxChildSize",{ntempx or maxSize[1],ntempy or maxSize[2]})
-			end
+			resizeScrollPane(parent,source)
 		end
 	end
 	local children = ChildrenTable[source] or {}

@@ -47,6 +47,11 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	dgsSetData(button,"font",styleSettings.button.font or systemFont)
 	dgsSetData(button,"clickoffset",{0,0})
 	dgsSetData(button,"textOffset",{0,0,false})
+	dgsSetData(button,"iconImage",_)
+	dgsSetData(button,"iconColor",tocolor(255,255,255))
+	dgsSetData(button,"iconDirection","left")
+	dgsSetData(button,"iconSize",{1,1,true}) -- Text's font height
+	dgsSetData(button,"iconOffset",5)
 	dgsSetData(button,"clip",false)
 	dgsSetData(button,"clickType",1)	--1:LMB;2:Wheel;3:RMB
 	dgsSetData(button,"wordbreak",false)
@@ -106,16 +111,16 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
 	end
 	local text = eleData.text
+	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
+	local font = eleData.font or systemFont
+	local colorcoded = eleData.colorcoded
+	local textOffset = eleData.textOffset
+	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
+	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
+	local alignment = eleData.alignment
 	if #text ~= 0 then
-		local font = eleData.font or systemFont
-		local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 		local clip = eleData.clip
 		local wordbreak = eleData.wordbreak
-		local colorcoded = eleData.colorcoded
-		local alignment = eleData.alignment
-		local textOffset = eleData.textOffset
-		local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
-		local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
 		if colorimgid == 3 then
 			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickoffset[1],txtoffsetsY+eleData.clickoffset[2]
 		end
@@ -135,6 +140,46 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			end
 		end
 		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
+	end
+	local iconImage = eleData.iconImage
+	if iconImage then
+		local iconColor = eleData.iconColor
+		iconImage = type(iconImage) == "table" and iconImage or {iconImage,iconImage,iconImage}
+		iconColor = type(iconColor) == "table" and iconColor or {iconColor,iconColor,iconColor}
+		local iconSize = eleData.iconSize
+		local fontHeight = dxGetFontHeight(txtSizY,font)
+		local fontWidth = dxGetTextWidth(text,txtSizX,font,colorcoded)
+		local iconHeight = iconSize[3] and fontHeight*iconSize[2] or iconSize[2]
+		local posY = txtoffsetsY
+		local iconWidth = iconSize[3] and fontHeight*iconSize[1] or iconSize[1]
+		local posX = txtoffsetsX
+		local iconOffset = eleData.iconOffset
+		if eleData.iconDirection == "left" then
+			if alignment[1] == "left" then
+				posX = posX-iconWidth-iconOffset
+			elseif alignment[1] == "right" then
+				posX = posX+w-fontWidth-iconWidth-iconOffset
+			else
+				posX = posX+w/2-fontWidth/2-iconWidth-iconOffset
+			end
+		elseif eleData.iconDirection == "right" then
+			if alignment[1] == "left" then
+				posX = posX+fontWidth+iconOffset
+			elseif alignment[1] == "right" then
+				posX = posX+w+iconOffset
+			else
+				posX = posX+w/2+fontWidth/2+iconOffset
+			end
+		end
+		if alignment[2] == "top" then
+			posY = posY
+		elseif alignment[2] == "bottom" then
+			posY = posY+h-fontHeight
+		else
+			posY = posY+(h-iconHeight)/2
+		end
+		posX,posY = posX+x,posY+y
+		dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[colorimgid],0,0,0,iconColor[colorimgid],isPostGUI)
 	end
 	if enabled[1] and mx then
 		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
