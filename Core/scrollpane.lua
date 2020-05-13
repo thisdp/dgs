@@ -372,8 +372,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 	local relSizX,relSizY = w-xthick,h-ythick
 	local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-	OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
-	OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
+	local OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
+	local OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
 	if OffsetX > 0 then
 		OffsetX = 0
 	end
@@ -441,6 +441,7 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 			enabled[1] = false
 		end
 	end
+	return rndtgt,_,_,_,OffsetX,OffsetY
 end
 ----------------------------------------------------------------
 -------------------------OOP Class------------------------------
