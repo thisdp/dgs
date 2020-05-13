@@ -39,6 +39,8 @@ end)
 		end]]
 
 function dgsConfigureTDX()
+	local tdx = getResourceName(sourceResource)
+	
 	return [[
 		---
 		addEvent("onDgsRenderTDX",true)
@@ -95,6 +97,7 @@ function dgsConfigureTDX()
 			local result = _new(...)
 			TDXDGSRef[result] = exports[DGSResName]:dgsCreateExternal(_,_,"onDgsRenderTDX")
 			DGSTDXRef[ TDXDGSRef[result] ] = result
+			result.dgsElement = TDXDGSRef[result]
 			return result
 		end
 		delete = function(self,...)

@@ -139,6 +139,9 @@ end
 
 function dgsGetPosition(dgsElement,bool,includeParent,rndSuspend,includeSide)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	if (dgsElementData[dgsElement].externalFunction or {}).dgsGetPosition then
+		return dgsElementData[dgsElement].externalFunction.dgsGetPosition(dgsElementData[dgsElement].externalRef,bool)
+	end
 	if includeParent then
 		local absPos = dgsElementData[dgsElement].absPos or {0,0}
 		guielex,guieley = getParentLocation(dgsElement,rndSuspend,absPos[1],absPos[2],includeSide)
@@ -158,6 +161,9 @@ end
 
 function dgsSetPosition(dgsElement,x,y,bool,isCenterPosition)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetPosition at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	if (dgsElementData[dgsElement].externalFunction or {}).dgsSetPosition then
+		return dgsElementData[dgsElement].externalFunction.dgsSetPosition(dgsElementData[dgsElement].externalRef,x,y,bool)
+	end
 	local bool = bool and true or false
 	local pos = bool and dgsElementData[dgsElement].rltPos or dgsElementData[dgsElement].absPos
 	local x,y = x or pos[1],y or pos[2]
@@ -172,12 +178,18 @@ end
 
 function dgsGetSize(dgsElement,bool)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	if (dgsElementData[dgsElement].externalFunction or {}).dgsGetSize then
+		return dgsElementData[dgsElement].externalFunction.dgsGetSize(dgsElementData[dgsElement].externalRef,bool)
+	end
 	local size = dgsElementData[dgsElement][bool and "rltSize" or "absSize"] or {0,0}
 	return size[1],size[2]
 end
 
 function dgsSetSize(dgsElement,x,y,bool)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsSetSize at argument 1, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	if (dgsElementData[dgsElement].externalFunction or {}).dgsSetSize then
+		return dgsElementData[dgsElement].externalFunction.dgsSetSize(dgsElementData[dgsElement].externalRef,x,y,bool)
+	end
 	local bool = bool and true or false
 	local size = bool and dgsElementData[dgsElement].rltSize or dgsElementData[dgsElement].absSize
 	local x,y = x or size[1],y or size[2]

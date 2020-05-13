@@ -359,27 +359,39 @@ function dgsCoreRender()
 end
 
 function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAlpha,visible,checkElement)
-	local rndtgt = isElement(rndtgt) and rndtgt or false
-	local globalBlendMode = rndtgt and "modulate_add" or "blend"
-	dxSetBlendMode(globalBlendMode)
 	local isElementInside = false
 	local eleData = dgsElementData[source]
 	local enabled = {enabled[1] and eleData.enabled,eleData.enabled}
 	if eleData.visible and visible and isElement(source) then
-		if debugMode then
-			DGSShow = DGSShow+1
-		end
 		visible = eleData.visible
 		local eleType = dgsElementType[source]
 		if eleType == "dgs-dxscrollbar" then
 			local pnt = eleData.attachedToParent
-			if pnt and not dgsElementData[pnt].visible then return end
+			if pnt then
+				if not dgsElementData[pnt].visible then return end
+				parentAlpha = parentAlpha*dgsElementData[pnt].alpha
+			end
+		end
+		local rndtgt = isElement(rndtgt) and rndtgt or false
+		local globalBlendMode = rndtgt and "modulate_add" or "blend"
+		dxSetBlendMode(globalBlendMode)
+		if debugMode then
+			DGSShow = DGSShow+1
 		end
 		local parent,children,parentAlpha = FatherTable[source] or false,ChildrenTable[source] or {},(eleData.alpha or 1)*parentAlpha
 		local eleTypeP,eleDataP = dgsElementType[parent],dgsElementData[parent]
 		dxSetRenderTarget(rndtgt)
 		local absPos = eleData.absPos
 		local absSize = eleData.absSize
+		
+		if eleData.externalFunction then
+			if eleData.externalFunction.dgsGetPosition then
+				absPos = eleData.externalFunction.dgsGetPosition(eleData.externalRef,false)
+			end
+			if eleData.externalFunction.dgsGetSize then
+				absSize = eleData.externalFunction.dgsGetPosition(eleData.externalRef,false)
+			end
+		end
 		
 		--Side Processing
 		local PosX,PosY,w,h = 0,0,0,0
@@ -501,8 +513,8 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 				end
 			end
 		end
+		dxSetBlendMode("blend")
 	end
-	dxSetBlendMode("blend")
 	return isElementInside or source == checkElement
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
