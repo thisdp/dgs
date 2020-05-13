@@ -138,6 +138,7 @@ end
 function dgsProgressBarGetProgress(progressbar,isAbsolute)
 	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetProgress at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
 	local progress = dgsElementData[progressbar].progress
+	local scaler = dgsElementData[progressbar].map
 	if not isAbsolute then
 		progress = (progress-scaler[1])/(scaler[2]-scaler[1])*100
 	end
