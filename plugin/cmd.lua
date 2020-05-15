@@ -36,7 +36,9 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent)
 			end
 		end
 	end,false)
-	
+	for k,v in pairs(eventHandlers) do
+		dgsEditAddAutoComplete(edit,k,false)
+	end
 	dgsSetSide(edit,"bottom","tob")
 	dgsSetData(cmdMemo,"cmdEdit",edit)
 	dgsSetData(cmdMemo,"hitoutofparent",true)

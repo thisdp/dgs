@@ -95,6 +95,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(edit,"autoCompleteTextColor",nil)
 	dgsSetData(edit,"autoCompleteSkip",false)
 	dgsSetData(edit,"autoComplete",{})
+	dgsSetData(edit,"autoCompleteConfirmKey","tab")
 	dgsSetData(edit,"selectColor",styleSettings.edit.selectColor)
 	dgsSetData(edit,"selectColorBlur",styleSettings.edit.selectColorBlur)
 	dgsSetData(edit,"historyMaxRecords",100)
@@ -515,13 +516,7 @@ addEventHandler("onDgsMouseClick",root,checkEditMousePosition)
 addEventHandler("onClientGUIAccepted",resourceRoot,function()
 	local dxEdit = dgsElementData[source].linkedDxEdit
 	if dgsGetType(dxEdit) == "dgs-dxedit" then
-		local autoCompleteShow = dgsElementData[dxEdit].autoCompleteShow
-		triggerEvent("onDgsEditAccepted",dxEdit,autoCompleteShow)
-		if not wasEventCancelled() then
-			if autoCompleteShow then
-				dgsSetText(dxEdit,autoCompleteShow[1])
-			end
-		end
+		triggerEvent("onDgsEditAccepted",dxEdit)
 	end
 end)
 

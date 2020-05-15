@@ -680,7 +680,12 @@ function onClientKeyTriggered(button)
 			dgsEditDoOpposite(dgsEdit,false)
 		elseif button == "tab" then
 			makeEventCancelled = true
-			triggerEvent("onDgsEditPreSwitch",dgsEdit)
+			local autoCompleteShow = dgsElementData[dgsEdit].autoCompleteShow
+			if autoCompleteShow then
+				dgsSetText(dgsEdit,autoCompleteShow[1])
+			else
+				triggerEvent("onDgsEditPreSwitch",dgsEdit)
+			end
 		elseif button == "a" and ctrl then
 			dgsSetData(dgsEdit,"caretPos",0)
 			local text = dgsElementData[dgsEdit].text

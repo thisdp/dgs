@@ -264,7 +264,7 @@ end
 
 function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListAddColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(len) == "number","Bad argument @dgsGridListAddColumn at argument 2, expect number got "..dgsGetType(len))
+	assert(type(len) == "number","Bad argument @dgsGridListAddColumn at argument 3, expect number got "..dgsGetType(len))
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
 	local columnDataCount = #columnData
