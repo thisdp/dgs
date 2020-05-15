@@ -12,6 +12,9 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local min = math.min
+local max = math.max
+--
 function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
 	assert(tonumber(x),"Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y))
