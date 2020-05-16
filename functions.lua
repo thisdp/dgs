@@ -742,6 +742,7 @@ end
 function dgsAttachToAutoDestroy(element,dgsElement)
 	assert(isElement(element),"Bad Argument @dgsAttachToAutoDestroy at argument 1, expect element got "..dgsGetType(element))
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAttachToAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
+	dgsElementData[dgsElement].autoDestroyList = dgsElementData[dgsElement].autoDestroyList or {}
 	tableInsert(dgsElementData[dgsElement].autoDestroyList,element)
 	return true
 end
@@ -749,7 +750,7 @@ end
 function dgsDetachFromAutoDestroy(element,dgsElement)
 	assert(isElement(element),"Bad Argument @dgsDetachFromAutoDestroy at argument 1, expect element got "..dgsGetType(element))
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsDetachFromAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
-	local id = tableFind(dgsElementData[dgsElement].autoDestroyList,element)
+	local id = tableFind(dgsElementData[dgsElement].autoDestroyList or {},element)
 	if id then
 		tableRemove(dgsElementData[dgsElement].autoDestroyList,id)
 	end
@@ -800,7 +801,6 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"ignoreParentTitle",false,true)
 	dgsSetData(source,"textRelative",false)
 	dgsSetData(source,"alpha",1)
-	dgsSetData(source,"autoDestroyList",{})
 	dgsSetData(source,"hitoutofparent",false)
 	dgsSetData(source,"PixelInt",true)
 	dgsSetData(source,"functionRunBefore",true) --true : after render; false : before render
