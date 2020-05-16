@@ -311,6 +311,25 @@ function testBrowser()
 	end)
 end
 
+function testPasteHandler()
+	local browser = dgsCreateBrowser(100,100,1400,700,false,_,true,true)
+	addEventHandler("onClientBrowserCreated",browser,function()
+		loadBrowserURL(source,"http://mta/local/html/pasteHandler.html")
+		setDevelopmentMode(true,true)
+		toggleBrowserDevTools(source,true)
+	end,false)
+	material = dgsCreate3DInterface(4,0,6,16,9,1600,900,tocolor(128,128,128,255),1,2,0,_,0)
+	addEvent("onDgsPaste",true)
+	addEventHandler("onDgsPaste",browser,function(data)
+		data = split(data,",")[2]
+		local file = fileCreate("temp")
+		fileWrite(file,base64Decode(data))
+		fileClose(file)
+		local texture = dxCreateTexture("temp")
+		dgsCreateImage(0,0,1,1,texture,true,material)
+	end)
+end
+
 function test3DInterface()
 	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})

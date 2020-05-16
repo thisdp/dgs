@@ -73,6 +73,7 @@ function dgsImageCreateTextureExternal(gui,res,img)
 	texture = dxCreateTexture(img)
 	if isElement(texture) then
 		dgsElementData[texture] = {parent=image}
+		dgsAttachToAutoDestroy(texture,gui)
 		return texture,true
 	end
 	return false

@@ -1,0 +1,35 @@
+<html>
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="imagetoolbar" content="no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<head>
+		<meta charset="utf-8" />
+		<script type="text/javascript">
+		document.addEventListener("paste", function (e){
+			if ( !(e.clipboardData && e.clipboardData.items) ) {
+				return ;
+			}
+
+			for (var i = 0, len = e.clipboardData.items.length; i < len; i++) {
+				var item = e.clipboardData.items[i];
+				if (item.kind === "string") {
+					item.getAsString(function (str) {
+						console.log(str)
+					})
+				} else if (item.kind === "file") {
+					var pasteFile = item.getAsFile()
+					var reader = new FileReader(); 
+					reader.readAsDataURL(pasteFile); 
+					reader.onload = function(){ 
+						mta.triggerEvent("onDgsPaste",reader.result)
+					} 
+				}
+			}
+		});
+		</script>
+	</head>
+	 <body>
+    </body>
+</html>

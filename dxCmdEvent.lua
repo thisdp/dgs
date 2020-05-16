@@ -529,12 +529,19 @@ addEventHandler("onAnimationWindowCreate",root,function()
 				dgsGridListAddColumn(performanceBrowser[k],name,0.3)
 			end
 			addEventHandler("onDgsElementRender",performanceBrowser[k],function()
-				local columns,rows = getPerformanceStats(dgsGetProperty(source,"myType"))
+				--[[local tick = getTickCount()
+				if dgsElementData[source].myType == "Lua timing" then
+					if tick - dgsElementData[source].startTick <= 5000 then
+						return
+					end
+				end]]
+				dgsElementData[source].startTick = tick
+				local columns,rows = getPerformanceStats(dgsGetProperty(source,"myType"),"d")
 				local rowData = dgsGetProperty(source,"rowData")
 				local count = 0
 				if #rows < #rowData then
 					for i=1,#rowData-#rows do
-						dgsGridListRemoveRow(source,i)
+						dgsGridListRemoveRow(source,#rowData)
 					end
 				elseif #rows > #rowData then
 					for i=1,#rows-#rowData do
@@ -542,14 +549,16 @@ addEventHandler("onAnimationWindowCreate",root,function()
 					end
 				end
 				for row,value in ipairs(rows) do
-					for i=1,#value do
-						rowData[row][i] = {value[i],white}
+					for k,v in pairs(value) do
+						rowData[row][k] = {v,white}
 					end
 				end
 				dgsSetProperty(source,"rowData",rowData)
 			end,false)
 			dgsSetProperty(performanceBrowser[k],"renderEventCall",true)
 			dgsSetProperty(performanceBrowser[k],"myType",v)
+			dgsSetProperty(performanceBrowser[k],"myIndex",k)
+			dgsSetProperty(performanceBrowser[k],"startTick",getTickCount()-5000)
 			dgsSetVisible(performanceBrowser[k],false)
 		end
 		addEventHandler("onDgsGridListSelect",performanceBrowser["dxList"],function(new,_,old)

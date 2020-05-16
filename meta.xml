@@ -1,6 +1,7 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="3.5" /> 
 	<file src="html/media.html" />
+	<file src="html/pasteHandler.html" />
 	<file src="styleManager/styleMapper.lua"/>
 	<script src="configLoad.lua" type="server" />
 	<script src="event.lua" type="client" />
