@@ -739,11 +739,15 @@ function dgsAddDragDropHandler(dgsElement)
 --todoi
 end
 ------------Auto Destroy
-function dgsAttachToAutoDestroy(element,dgsElement)
+function dgsAttachToAutoDestroy(element,dgsElement,index)
 	assert(isElement(element),"Bad Argument @dgsAttachToAutoDestroy at argument 1, expect element got "..dgsGetType(element))
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAttachToAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	dgsElementData[dgsElement].autoDestroyList = dgsElementData[dgsElement].autoDestroyList or {}
-	tableInsert(dgsElementData[dgsElement].autoDestroyList,element)
+	if not index then
+		tableInsert(dgsElementData[dgsElement].autoDestroyList,element)
+	else
+		dgsElementData[dgsElement].autoDestroyList[index] = element
+	end
 	return true
 end
 

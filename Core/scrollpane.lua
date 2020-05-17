@@ -30,6 +30,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local renderTarget = dxCreateRenderTarget(sx,sy,true,scrollpane)
+	dgsAttachToAutoDestroy(renderTarget,scrollpane,1)
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	--dgsSetData(scrollpane,"childSizeRef",{{},{}}) --Horizontal,Vertical //to optimize
@@ -48,6 +49,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	end
 	local scrollbar1 = dgsCreateScrollBar(x+sx-scbThick,y-titleOffset,scbThick,sy-scbThick,false,false,parent)
 	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scbThick-titleOffset,sx-scbThick,scbThick,true,false,parent)
+	dgsAttachToAutoDestroy(scrollbar1,scrollpane,2)
+	dgsAttachToAutoDestroy(scrollbar2,scrollpane,3)
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollpane,"scrollSize",60)	--60 pixels
@@ -198,6 +201,7 @@ function configScrollPane(source)
 		dgsElementData[source].renderTarget = nil
 	end
 	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true,source)
+	dgsAttachToAutoDestroy(renderTarget,scrollpane,1)
 	dgsSetData(source,"renderTarget_parent",renderTarget)
 	dgsSetData(source,"configNextFrame",false)
 end

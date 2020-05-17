@@ -1036,16 +1036,6 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			if isElement(rentarg[2]) then
 				destroyElement(rentarg[2])
 			end
-		elseif dgsType == "dgs-dxscrollpane" then
-			local rentarg = dgsElementData[source].renderTarget_parent
-			destroyElement(rentarg)
-			local scrollbar = dgsElementData[source].scrollbars or {}
-			if isElement(scrollbar[1]) then
-				destroyElement(scrollbar[1])
-			end
-			if isElement(scrollbar[2]) then
-				destroyElement(scrollbar[2])
-			end
 		elseif dgsType == "dgs-dxtabpanel" then
 			local rentarg = dgsElementData[source].renderTarget
 			local tabs = dgsElementData[source].tabs or {}
@@ -1077,11 +1067,6 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			end
 		elseif dgsType == "dgs-dxcombobox" then
 			local rentarg = dgsElementData[source].renderTarget
-			if isElement(rentarg) then
-				destroyElement(rentarg)
-			end
-		elseif dgsType == "dgs-dx3dinterface" then
-			local rentarg = dgsElementData[source].renderTarget_parent
 			if isElement(rentarg) then
 				destroyElement(rentarg)
 			end

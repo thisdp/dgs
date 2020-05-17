@@ -225,6 +225,23 @@ function table.shallowCopy(obj)
 	end
 	return InTable
 end
+--[[
+function table.create2WayIndex()
+	local primaryTable = {}
+	local secondaryTable = {}
+	local metatable = {
+		Primary = primaryTable,
+		Secondary = secondaryTable,
+		indexOf = function(self,item)
+			return self.Secondary[item]
+		end,
+		append = function(self,item)
+			local index = #self.primaryTable+1
+			self.primaryTable[index] = item
+			self.secondaryTable[item] = index
+		end,
+	}
+end]]
 --------------------------------String Utility
 function string.split(s,delim)
 	local delimLen = len(delim)
