@@ -11,6 +11,7 @@ function dgsImportOOPClass(polluteGlobal)
 	return [[
 	--Check Error Message Above
 	if globalDGSOOP then return end
+	loadstring(exports["]]..dgsResName..[["]:dgsImportFunction())()
 	local call = call
 	local dgsOOP = {}
 	globalDGSOOP = dgsOOP

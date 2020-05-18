@@ -72,7 +72,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	dgsSetData(cb,"textColor",textColor or styleSettings.checkbox.textColor)
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.checkbox.textSize[1], tonumber(scaley) or styleSettings.checkbox.textSize[2]
 	dgsSetData(cb,"textSize",{textSizeX,textSizeY})
-	dgsSetData(cb,"textPadding",styleSettings.checkbox.textPadding)
+	dgsSetData(cb,"textPadding",styleSettings.checkbox.textPadding or {2,false})
 	dgsSetData(cb,"buttonSize",styleSettings.checkbox.buttonSize)
 	dgsSetData(cb,"shadow",{_,_,_})
 	dgsSetData(cb,"font",styleSettings.checkbox.font or systemFont)
