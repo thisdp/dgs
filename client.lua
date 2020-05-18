@@ -347,7 +347,7 @@ function dgsCoreRender()
 		ResCount = 0
 		for ka,va in pairs(boundResource) do
 			if type(ka) == "userdata" and va then
-				local resDGSCnt = #va
+				local resDGSCnt = tableCount(va)
 				if resDGSCnt ~= 0 then
 					ResCount = ResCount +1
 					dxDrawText(getResourceName(ka).." : "..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
@@ -1087,12 +1087,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 		tableRemove(ChildrenTable[source] or {})
 		local tresource = getElementData(source,"resource")
-		if tresource then
-			local id = tableFind(boundResource[tresource] or {},source)
-			if id then
-				tableRemove(boundResource[tresource],id)
-			end
-		end
+		boundResource[tresource][source] = nil
 		dgsStopAniming(source)
 		dgsStopMoving(source)
 		dgsStopSizing(source)

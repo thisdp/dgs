@@ -52,22 +52,14 @@ end
 function insertResource(res,dgsElement)
 	if res and isElement(dgsElement) then
 		boundResource[res] = boundResource[res] or {}
-		tableInsert(boundResource[res],dgsElement)
+		boundResource[res][dgsElement] = true
 		setElementData(dgsElement,"resource",res)
 	end
 end
 
 addEventHandler("onClientResourceStop",root,function(res)
-	local guiTable = boundResource[res]
-	if guiTable then
-		for k,v in pairs(guiTable) do
-			local ele = v
-			guiTable[k] = ""
-			if isElement(ele) then
-				destroyElement(ele)
-			end
-		end
-		boundResource[res] = nil
+	if boundResource[res] then
+		dgsClear(_,res)
 		resourceTranslation[res] = nil
 	end
 end)
@@ -833,32 +825,21 @@ function dgsClear(theType,res)
 	if res == true then
 		if not theType then
 			for theRes,guiTable in pairs(boundResource) do
-				for k,v in pairs(guiTable) do
-					local ele = v
-					guiTable[k] = ""
-					if isElement(ele) then
-						destroyElement(ele)
-					end
+				for dgsElement in pairs(guiTable) do
+					if isElement(dgsElement) then destroyElement(dgsElement) end
 				end
 				boundResource[theRes] = nil
 			end
 			return true
 		else
 			for theRes,guiTable in pairs(boundResource) do
-				local rubbishRecycle = {}
-				local cnt = 1
-				for k,v in pairs(guiTable) do
-					local ele = v
-					if dgsElementType[v] == theType then
-						rubbishRecycle[cnt] = v
-						cnt = cnt+1
-						if isElement(ele) then
-							destroyElement(ele)
+				for dgsElement in pairs(guiTable) do
+					if dgsElementType[dgsElement] == theType then
+						if isElement(dgsElement) then
+							boundResource[theRes][dgsElement] = nil
+							destroyElement(dgsElement)
 						end
 					end
-				end
-				for k,v in ipairs(rubbishRecycle) do
-					boundResource[theRes][v] = nil
 				end
 			end
 			return true
@@ -866,30 +847,19 @@ function dgsClear(theType,res)
 	else
 		local res = res or sourceResource
 		if not theType then
-			for k,v in pairs(boundResource[res]) do
-				local ele = v
-				boundResource[res][k] = ""
-				if isElement(ele) then
-					destroyElement(ele)
-				end
+			for dgsElement in pairs(boundResource[res]) do
+				if isElement(dgsElement) then destroyElement(dgsElement) end
 			end
 			boundResource[res] = nil
 			return true
 		else
-			local rubbishRecycle = {}
-			local cnt = 1
-			for k,v in pairs(boundResource[res]) do
-				local ele = v
-				if dgsElementType[v] == theType then
-					rubbishRecycle[cnt] = v
-					cnt = cnt+1
-					if isElement(ele) then
-						destroyElement(ele)
+			for dgsElement in pairs(boundResource[res]) do
+				if dgsElementType[dgsElement] == theType then
+					if isElement(dgsElement) then
+						boundResource[res][dgsElement] = nil
+						destroyElement(dgsElement)
 					end
 				end
-			end
-			for k,v in ipairs(rubbishRecycle) do
-				boundResource[res][v] = nil
 			end
 			return true
 		end

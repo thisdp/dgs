@@ -86,7 +86,13 @@ end
 function dgsGetDxGUIFromResource(res)
 	local res = res or sourceResource
 	if res then
-		return boundResource[res] or {}
+		local serialized = {}
+		local cnt = 0
+		for k,v in pairs(boundResource[res] or {}) do
+			cnt = cnt+1
+			serialized[cnt] = k
+		end
+		return serialized
 	end
 end
 
