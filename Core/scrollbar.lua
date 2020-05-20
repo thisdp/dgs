@@ -49,6 +49,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	dgsSetData(scrollbar,"cursorImage",cursorImage)
 	dgsSetData(scrollbar,"troughImage",troughImage)
 	dgsSetData(scrollbar,"troughClickAction","none")
+	dgsSetData(scrollbar,"wheelReversed",false)
 	dgsSetData(scrollbar,"arrowBgColor",styleSettings.scrollbar.arrowBgColor or false)
 	dgsSetData(scrollbar,"isHorizontal",isHorizontal) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
@@ -130,8 +131,9 @@ function scrollScrollBar(scrollbar,button,speed)
 		slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1]) or 0)*2
 	end
 	local pos = dgsElementData[scrollbar].position
+	local wheelReversed = dgsElementData[scrollbar].wheelReversed and -1 or 1
 	local offsetPos = (rltPos and multiplier*slotRange or multiplier)/slotRange*100*(speed or 1)
-	local gpos = button and pos+offsetPos or pos-offsetPos
+	local gpos = button and pos+offsetPos*wheelReversed or pos-offsetPos*wheelReversed
 	dgsSetData(scrollbar,"position",mathClamp(gpos,0,100))
 end
 
