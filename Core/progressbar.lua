@@ -117,7 +117,6 @@ ProgressBarStyle = {
 				end
 			end
 		elseif type(indicatorColor) == "table" then
-			print("tt")
 			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor[1],rendSet)
 			dxDrawRectangle(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorColor[2],rendSet)
 		else
@@ -189,7 +188,7 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 		end
 		return true
 	end
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetStyle at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetStyle at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	if ProgressBarStyle[style] then
 		dgsSetData(progressbar,"style",style)
 		for k,v in pairs(dgsElementData[progressbar].styleData.elements or {}) do
@@ -217,40 +216,42 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 end
 
 function dgsProgressBarGetStyle(progressbar)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyle at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyle at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	return dgsElementData[progressbar].style
 end
 function dgsProgressBarGetStyleProperty(progressbar,propertyName)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyleProperty at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyleProperty at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	return dgsElementData[progressbar].styleData[propertyName]
 end
 
 function dgsProgressBarGetStyleProperties(progressbar)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyleProperties at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyleProperties at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	return dgsElementData[progressbar].styleData
 end
 
 function dgsProgressBarSetStyleProperty(progressbar,propertyName,value)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetStyleProperty at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetStyleProperty at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	dgsElementData[progressbar].styleData[propertyName] = value
 	return true
 end
 
 function dgsProgressBarGetProgress(progressbar,isAbsolute)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetProgress at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetProgress at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	local progress = dgsElementData[progressbar].progress
 	local scaler = dgsElementData[progressbar].map
 	if not isAbsolute then
-		progress = (progress-scaler[1])/(scaler[2]-scaler[1])*100
+		progress = progress/100*(scaler[2]-scaler[1])+scaler[1]
 	end
 	return progress
 end
 
 function dgsProgressBarSetProgress(progressbar,progress,isAbsolute)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetProgress at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetProgress at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	local scaler = dgsElementData[progressbar].map
+	if progress < 0 then progress = 0 end
+	if progress > 100 then progress = 100 end
 	if not isAbsolute then
-		progress = progress/100*(scaler[2]-scaler[1])+scaler[1]
+		progress = (progress-scaler[1])/(scaler[2]-scaler[1])*100
 	end
 	if progress < 0 then progress = 0 end
 	if progress > 100 then progress = 100 end
@@ -261,15 +262,14 @@ function dgsProgressBarSetProgress(progressbar,progress,isAbsolute)
 end
 
 function dgsProgressBarSetMode(progressbar,mode)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	return dgsSetData(progressbar,"indicatorMode",mode and true or false)
 end
 
 function dgsProgressBarGetMode(progressbar)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..(dgsGetType(progressbar) or type(progressbar)))
+	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
 	return dgsElementData[progressbar].indicatorMode
 end
-
 
 ----------------Shader
 ProgressBarShaders["ring-round"] = [[float borderSoft = 0.02;

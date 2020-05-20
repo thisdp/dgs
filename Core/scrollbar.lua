@@ -48,6 +48,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	dgsSetData(scrollbar,"arrowImage",arrowImage)
 	dgsSetData(scrollbar,"cursorImage",cursorImage)
 	dgsSetData(scrollbar,"troughImage",troughImage)
+	dgsSetData(scrollbar,"troughClickAction","none")
 	dgsSetData(scrollbar,"arrowBgColor",styleSettings.scrollbar.arrowBgColor or false)
 	dgsSetData(scrollbar,"isHorizontal",isHorizontal) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
@@ -115,28 +116,21 @@ function dgsScrollBarGetGrades(scrollbar)
 	return dgsElementData[scrollbar].grades
 end
 
-function scrollScrollBar(scrollbar,button)
+function scrollScrollBar(scrollbar,button,speed)
 	local eleData = dgsElementData[scrollbar]
 	local multiplier,rltPos = eleData.multiplier[1],eleData.multiplier[2]
 	local slotRange
-	local scrollArrow = eleData.scrollArrow
-	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local isHorizontal = eleData.isHorizontal
 	local arrowWid = eleData.arrowWidth
+	local scrollArrow = eleData.scrollArrow
 	if isHorizontal then
-		if scrollArrow then
-			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
-		end
-			slotRange = w-arrowPos*2
+		slotRange = w-(scrollArrow and (arrowWid[2] and h*arrowWid[1] or arrowWid[1]) or 0)*2
 	else
-		if scrollArrow then
-			arrowPos = arrowWid[2] and w*arrowWid[1] or arrowWid[1]
-		end
-		slotRange = h-arrowPos*2
+		slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1]) or 0)*2
 	end
 	local pos = dgsElementData[scrollbar].position
-	local offsetPos = (rltPos and multiplier*slotRange or multiplier)/(slotRange)*100
+	local offsetPos = (rltPos and multiplier*slotRange or multiplier)/slotRange*100*(speed or 1)
 	local gpos = button and pos+offsetPos or pos-offsetPos
 	dgsSetData(scrollbar,"position",mathClamp(gpos,0,100))
 end
@@ -156,15 +150,9 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local arrowWid = eleData.arrowWidth
 	if isHorizontal then
-		if scrollArrow then
-			arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
-		end
-		slotRange = w-arrowPos*2
+		slotRange = w-(scrollArrow and (arrowWid[2] and h*arrowWid[1] or arrowWid[1]) or 0)*2
 	else
-		if scrollArrow then
-			arrowPos = arrowWid[2] and w*arrowWid[1] or arrowWid[1]
-		end
-		slotRange = h-arrowPos*2
+		slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1]) or 0)*2
 	end
 	local multiplier = eleData.multiplier[2] and eleData.multiplier[1]*slotRange or eleData.multiplier[1]
 	return relative and multiplier/slotRange or multiplier
@@ -192,7 +180,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 	local tempArrowColor = {applyColorAlpha(arrowColor[1],parentAlpha),applyColorAlpha(arrowColor[2],parentAlpha),applyColorAlpha(arrowColor[3],parentAlpha)}
 	local tempArrowBgColor = {applyColorAlpha(arrowBgColor[1],parentAlpha),applyColorAlpha(arrowBgColor[2],parentAlpha),applyColorAlpha(arrowBgColor[3],parentAlpha)}
 	local tempTroughColor = {applyColorAlpha(troughColor[1],parentAlpha),applyColorAlpha(troughColor[2],parentAlpha)}
-	local colorImageIndex = {1,1,1,1}
+	local colorImageIndex = {1,1,1,1,1}
 	local slotRange
 	local scrollArrow =  eleData.scrollArrow
 	local cursorWidth = eleData.cursorWidth
@@ -230,48 +218,49 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 	local cursorRange = lrlt and length*slotRange or (length <= slotRange and length or 0)
 	local csRange = slotRange-cursorRange
 	if MouseData.enter == source then
-		if not MouseData.clickData then
-			MouseData.enterData = false
-			if isHorizontal then
-				if my >= cy and my <= cy+h then
-					if mx >= cx and mx <= cx+arrowWidth then					------left
-						if mathAbs(cy+h/2-my) <= arrowWidth then
-							MouseData.enterData = 1
-						end
-					elseif mx >= cx+w-arrowWidth and mx <= cx+w then			------right
-						if mathAbs(cy+h/2-my) <= arrowWidth then
-							MouseData.enterData = 4
-						end
-					elseif mx >= cx+arrowWidth+pos*0.01*csRange and mx <= cx+arrowWidth+pos*0.01*csRange+cursorRange then
-						if mathAbs(cy+h/2-my) <= cursorWidth then
-							MouseData.enterData = 2
-						end
-					end
+		local preEnterData = false
+		local preEnterPos = false
+		if isHorizontal then
+			if my >= cy and my <= cy+h then
+				if mx >= cx and mx <= cx+arrowWidth then				--Left Arrow
+					if mathAbs(cy+h/2-my) <= arrowWidth then preEnterData = 1 end
+				elseif mx < cx+arrowWidth+pos*0.01*csRange then			--Left Trough
+					if mathAbs(cy+h/2-my) <= troughWidth then preEnterData = 2 end
+				elseif mx >= cx+arrowWidth+pos*0.01*csRange and mx <= cx+arrowWidth+pos*0.01*csRange+cursorRange then
+					if mathAbs(cy+h/2-my) <= cursorWidth then preEnterData = 3 end
+				elseif mx < cx+w-arrowWidth then						--Right Trough
+					if mathAbs(cy+h/2-my) <= troughWidth then preEnterData = 4 end
+				elseif mx >= cx+w-arrowWidth and mx <= cx+w then		--Right Arrow
+					if mathAbs(cy+h/2-my) <= arrowWidth then preEnterData = 5 end
 				end
-			else
-				if mx >= cx and mx <= cx+w then
-					if my >= cy and my <= cy+arrowWidth then					------up
-						if mathAbs(cx+w/2-mx) <= arrowWidth then
-							MouseData.enterData = 1
-						end
-					elseif my >= cy+h-arrowWidth and my <= cy+h then			------down
-						if mathAbs(cx+w/2-mx) <= arrowWidth then
-							MouseData.enterData = 4
-						end
-					elseif my >= cy+arrowWidth+pos*0.01*csRange and my <= cy+arrowWidth+pos*0.01*csRange+cursorRange then
-						if mathAbs(cx+w/2-mx) <= cursorWidth then
-							MouseData.enterData = 2
-						end
-					end
-				end
+				preEnterPos = (mx-cx-arrowWidth)/(w-arrowWidth*2)
 			end
-			if MouseData.enterData then
-				colorImageIndex[MouseData.enterData] = 2
+		else
+			if mx >= cx and mx <= cx+w then
+				if my >= cy and my <= cy+arrowWidth then				--Up Arrow
+					if mathAbs(cx+w/2-mx) <= arrowWidth then preEnterData = 1 end
+				elseif my < cy+arrowWidth+pos*0.01*csRange then			--Up Trough
+					if mathAbs(cx+w/2-mx) <= troughWidth then preEnterData = 2 end
+				elseif my >= cy+arrowWidth+pos*0.01*csRange and my <= cy+arrowWidth+pos*0.01*csRange+cursorRange then
+					if mathAbs(cx+w/2-mx) <= cursorWidth then preEnterData = 3 end
+				elseif my < cy+h-arrowWidth then						--Down Trough
+					if mathAbs(cx+w/2-mx) <= troughWidth then preEnterData = 4 end
+				elseif my >= cy+h-arrowWidth and my <= cy+h then		--Down Arrow
+					if mathAbs(cx+w/2-mx) <= arrowWidth then preEnterData = 5 end
+				end
+				preEnterPos = (my-cy-arrowWidth-cursorRange/2)/csRange
+			end
+		end
+		if not MouseData.scbClickData then
+			MouseData.scbEnterData = preEnterData
+			scbEnterRltPos = preEnterPos
+			if MouseData.scbEnterData then
+				colorImageIndex[MouseData.scbEnterData] = 2
 			end
 		else
 			if MouseData.clickl == source then
-				colorImageIndex[MouseData.clickData] = 3
-				if MouseData.clickData == 2 then
+				colorImageIndex[MouseData.scbClickData] = 3
+				if MouseData.scbClickData == 3 then
 					local position = 0
 					local mvx,mvy = MouseData.MoveScroll[1],MouseData.MoveScroll[2]
 					local ax,ay = dgsGetPosition(source,false)
@@ -287,7 +276,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 					dgsSetData(source,"position",position*100)
 				end
 			else
-				colorImageIndex[MouseData.clickData] = 2
+				colorImageIndex[MouseData.scbClickData] = 2
 			end
 		end
 	end
@@ -301,15 +290,15 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
-				dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],isPostGUI)
+				dxDrawRectangle(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[5]],isPostGUI)
 			end
 			dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,arrowImage,imgRotVert[1],0,0,tempArrowColor[colorImageIndex[1]],isPostGUI)
-			dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,arrowImage,imgRotVert[1]+180,0,0,tempArrowColor[colorImageIndex[4]],isPostGUI)
+			dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,arrowImage,imgRotVert[1]+180,0,0,tempArrowColor[colorImageIndex[5]],isPostGUI)
 		end
 		if cursorImage then
-			dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,cursorImage,imgRotVert[2],0,0,tempCursorColor[colorImageIndex[2]],isPostGUI)
+			dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,cursorImage,imgRotVert[2],0,0,tempCursorColor[colorImageIndex[3]],isPostGUI)
 		else
-			dxDrawRectangle(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,tempCursorColor[colorImageIndex[2]],isPostGUI)
+			dxDrawRectangle(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,tempCursorColor[colorImageIndex[3]],isPostGUI)
 		end
 	else
 		local cursorCenter = pos*0.01*csRange+cursorRange/2
@@ -321,15 +310,15 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
-				dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[4]],isPostGUI)
+				dxDrawRectangle(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[5]],isPostGUI)
 			end
 			dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,arrowImage,imgRotHorz[1],0,0,tempArrowColor[colorImageIndex[1]],isPostGUI)
-			dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,arrowImage,imgRotHorz[1]+180,0,0,tempArrowColor[colorImageIndex[4]],isPostGUI)
+			dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,arrowImage,imgRotHorz[1]+180,0,0,tempArrowColor[colorImageIndex[5]],isPostGUI)
 		end
 		if cursorImage then
-			dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,cursorImage,imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[2]],isPostGUI)
+			dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,cursorImage,imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[3]],isPostGUI)
 		else
-			dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[2]],isPostGUI)
+			dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[3]],isPostGUI)
 		end
 	end
 	if enabled[1] and mx then

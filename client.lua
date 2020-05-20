@@ -81,7 +81,8 @@ end
 MouseData = {}
 MouseData.enter = false
 MouseData.lastEnter = false
-MouseData.enterData = false
+MouseData.scbEnterData = false
+MouseData.scbEnterRltPos = false
 MouseData.scrollPane = false
 MouseData.hit = false
 MouseData.nowShow = false
@@ -120,7 +121,7 @@ function dgsCoreRender()
 	else
 		MouseData.Move = false
 		MouseData.MoveScroll = false
-		MouseData.clickData = false
+		MouseData.scbClickData = false
 		MouseData.clickl = false
 		MouseData.clickr = false
 		MouseData.clickm = false
@@ -195,7 +196,7 @@ function dgsCoreRender()
 			MouseData.hit = false
 			MouseData.Move = false
 			MouseData.MoveScroll = false
-			MouseData.clickData = false
+			MouseData.scbClickData = false
 			MouseData.clickl = false
 			MouseData.clickr = false
 			MouseData.clickm = false
@@ -842,7 +843,7 @@ end
 addEventHandler("onClientKey",root,onClientKeyCheck)
 
 function dgsCheckHit(hits,mx,my)
-	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.clickData == 2) then
+	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
 		if MouseData.enter ~= hits then
 			if isElement(MouseData.enter) then
 				triggerEvent("onDgsMouseLeave",MouseData.enter,mx,my,hits)
@@ -960,7 +961,7 @@ function dgsCheckHit(hits,mx,my)
 		end
 		if not getKeyState("mouse1") then
 			MouseData.clickl = false
-			MouseData.clickData = false
+			MouseData.scbClickData = false
 			MouseData.Move = false
 			MouseData.Scale = false
 			MouseData.lock3DInterface = false
@@ -976,13 +977,20 @@ end
 
 function onClientMouseTriggered()
 	if MouseHolder.element == MouseData.enter and dgsGetType(MouseHolder.element) == "dgs-dxscrollbar" then
-		if MouseData.enterData then
-			MouseData.clickData = MouseData.enterData
+		if MouseData.scbEnterData then
+			MouseData.scbClickData = MouseData.scbEnterData
 		end
 		local scrollbar = MouseHolder.element
-		if MouseData.enterData == 1 or MouseData.enterData == 4 then
+		if MouseData.scbEnterData == 1 or MouseData.scbEnterData == 5 then
 			if dgsElementData[scrollbar].scrollArrow then
-				scrollScrollBar(scrollbar,MouseData.clickData == 4)
+				scrollScrollBar(scrollbar,MouseData.scbClickData == 5)
+			end
+		elseif MouseData.scbEnterData == 2 or MouseData.scbEnterData == 4 then
+			local troughClickAction = dgsElementData[scrollbar].troughClickAction
+			if troughClickAction == "step" then
+				scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
+			elseif troughClickAction == "jump" then
+				dgsSetProperty(scrollbar,"position",math.restrict(scbEnterRltPos,0,1)*100)
 			end
 		end
 	end
@@ -1561,7 +1569,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		MouseData.Move = false
 		MouseData.MoveScroll = false
 		MouseData.Scale = false
-		MouseData.clickData = nil
+		MouseData.scbClickData = nil
 	end
 end)
 
