@@ -72,7 +72,7 @@ function createFullDemo()
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
-createFullDemo()
+
 ------------
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
@@ -622,6 +622,7 @@ local function init()
 	local colorpicker = dgsCreateColorPicker("HSVRing", 400, 190, 100, 100, false, window.dgsElement)
 	dgsCenterElement(colorpicker,_,true)
 end
+--[[
 setTimer(function()
 local tick = getTickCount()
 for i=1,20 do
@@ -629,7 +630,7 @@ for i=1,20 do
 end
 print(getTickCount()-tick)
 end,50,1)
-
+]]
 --[[
 local dgsClass = {}
 local pos = {
