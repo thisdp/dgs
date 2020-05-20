@@ -468,6 +468,14 @@
 	<export function="dgsGridListGetSelectedCount" type="client" />
 	<export function="dgsGridListSetItemColor" type="client" />
 	<export function="dgsGridListGetItemColor" type="client" />
+	<export function="dgsGridListGetRowSelectable" type="client" />
+	<export function="dgsGridListSetRowSelectable" type="client" />
+	<export function="dgsGridListGetRowClickable" type="client" />
+	<export function="dgsGridListSetRowClickable" type="client" />
+	<export function="dgsGridListGetItemSelectable" type="client" />
+	<export function="dgsGridListSetItemSelectable" type="client" />
+	<export function="dgsGridListGetItemClickable" type="client" />
+	<export function="dgsGridListSetItemClickable" type="client" />
 	<export function="dgsGridListGetRowBackGroundImage" type="client" />
 	<export function="dgsGridListSetRowBackGroundImage" type="client" />
 	<export function="dgsGridListSetRowBackGroundColor" type="client" />

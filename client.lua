@@ -767,15 +767,36 @@ function onClientKeyTriggered(button)
 			if button == "arrow_u" then
 				if dgsElementData[gridlist].selectionMode ~= 2 then
 					local lastSelected = dgsElementData[gridlist].lastSelectedItem
-					local nextSelected = lastSelected[1]-1
-					dgsGridListSetSelectedItem(gridlist,nextSelected <= 1 and 1 or nextSelected,lastSelected[2],true)
+					local nextSelected = lastSelected[1]-1 <= 1 and 1 or lastSelected[1]-1
+					while(true) do
+						if dgsGridListGetRowSelectable(gridlist,nextSelected) then
+							dgsGridListSetSelectedItem(gridlist,nextSelected,lastSelected[2],true)
+							break
+						else
+							nextSelected = nextSelected-1
+							if nextSelected-1 < 1 then
+								break
+							end
+						end
+					end
 				end
 			elseif button == "arrow_d" then
 				if dgsElementData[gridlist].selectionMode ~= 2 then
 					local lastSelected = dgsElementData[gridlist].lastSelectedItem
-					local nextSelected = lastSelected[1]+1
 					local rowCount = #dgsElementData[gridlist].rowData
-					dgsGridListSetSelectedItem(gridlist,nextSelected >= rowCount and rowCount or nextSelected,lastSelected[2],true)
+					local nextSelected = lastSelected[1]+1 >= rowCount and rowCount or lastSelected[1]+1
+					while(true) do
+						if dgsGridListGetRowSelectable(gridlist,nextSelected) then
+							dgsGridListSetSelectedItem(gridlist,nextSelected,lastSelected[2],true)
+							break
+						else
+							nextSelected = nextSelected+1
+							if nextSelected+1 > rowCount then
+								break
+							end
+						end
+					end
+					dgsGridListSetSelectedItem(gridlist,nextSelected,lastSelected[2],true)
 				end
 			elseif button == "arrow_l" then
 				if dgsElementData[gridlist].selectionMode ~= 1 then
@@ -1087,7 +1108,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 		tableRemove(ChildrenTable[source] or {})
 		local tresource = getElementData(source,"resource")
-		boundResource[tresource][source] = nil
+		if tresource and boundResource[tresource] then
+			boundResource[tresource][source] = nil
+		end
 		dgsStopAniming(source)
 		dgsStopMoving(source)
 		dgsStopSizing(source)

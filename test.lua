@@ -35,6 +35,9 @@ function createFullDemo()
 	gridlist:addColumn("Column 2",0.8,true)
 	for i=1,100 do
 		gridlist:addRow(i,i,math.random(1,500))
+		if i%5 == 0 then
+			gridlist:setRowAsSection(i,true)
+		end
 	end
 	gridlist.alpha = 1
 	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
@@ -59,9 +62,8 @@ function createFullDemo()
 	local edit3 = scp
 		:dgsEdit(10,120,2600,30,"",false)
 		:setPlaceHolder("I am the place holder, and this edit is for demo")
-	memo2.bgImage = roundRect
-	edit3.bgImage = roundRect
-	local progressBar = window:dgsProgressBar(10,440,580,25,false)
+	local progressBar = window:dgsProgressBar(10,440,580,50,false)
+	progressBar:setStyle("normal-vertical")
 	progressBar:setProperty("functions",[[
 		local progress = dgsGetProperty(self,"progress")
 		dgsSetProperty(self,"progress",(progress+0.5)%100)
@@ -72,7 +74,6 @@ function createFullDemo()
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
-
 ------------
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)

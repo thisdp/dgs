@@ -669,6 +669,56 @@ function dgsGridListInsertRowAfter(gridlist,row,...)
 	return dgsGridListAddRow(gridlist,row+1,...)
 end
 
+function dgsGridListGetRowClickable(gridlist,row)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetRowClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListGetRowClickable at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListGetRowClickable at argument 2, expect number >= 1 got "..row)
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		return rowData[row][-1]
+	end
+	return false
+end
+
+function dgsGridListSetRowClickable(gridlist,row,state)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListSetRowClickable at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListSetRowClickable at argument 2, expect number >= 1 got "..row)
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		rowData[row][-1] = state and true or false
+		return true
+	end
+	return false
+end
+
+function dgsGridListGetRowSelectable(gridlist,row)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetRowSelectable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListGetRowSelectable at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListGetRowClickable at argument 2, expect number >= 1 got "..row)
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		return rowData[row][-2]
+	end
+	return false
+end
+
+function dgsGridListSetRowSelectable(gridlist,row,state)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowSelectable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListSetRowSelectable at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListSetRowSelectable at argument 2, expect number >= 1 got "..row)
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		rowData[row][-2] = state and true or false
+		return true
+	end
+	return false
+end
+
 function dgsGridListSetItemClickable(gridlist,row,column,state)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetItemClickable at argument 2, expect number got "..dgsGetType(row))

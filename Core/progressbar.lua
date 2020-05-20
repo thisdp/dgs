@@ -14,28 +14,115 @@ local dxSetBlendMode = dxSetBlendMode
 --
 ProgressBarShaders = {}
 ProgressBarStyle = {
-	["normal"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
+	["normal-horizontal"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 		local eleData = dgsElementData[source]
-		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],(w-padding[1]*2)*percent,h-padding[2]*2
+		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2
+		local iSizXPercent = iSizX*percent
 		if bgImage then
 			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet)
 		else
 			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
 		end
-		if isElement(indicatorImage) then
-			local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-			if indicatorMode then
-				if not sx or not sy then
-					sx,sy = dxGetMaterialSize(indicatorImage)
-				end
-				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet)
-			else
-				dxDrawImage(iPosX,iPosY,iSizX,iSizY,indicatorImage,0,0,0,indicatorColor,rendSet)
+		if type(indicatorImage) == "table" then
+			if type(indicatorColor) ~= "table" then
+				indicatorColor = {indicatorColor,indicatorColor}
 			end
+			if indicatorMode then
+				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+				if not sx or not sy then
+					sx1,sy1 = dxGetMaterialSize(indicatorImage[1])
+					sx2,sy2 = dxGetMaterialSize(indicatorImage[2])
+				else
+					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
+				end
+				dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
+				dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[1],0,0,0,indicatorColor[2],rendSet)
+			else
+				dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
+				dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet)
+			end
+		elseif isElement(indicatorImage) then
+			if type(indicatorColor) == "table" then
+				if indicatorMode then
+					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
+					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor[1],rendSet)
+					dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx*percent,0,sx*(1-percent),sy,indicatorImage,0,0,0,indicatorColor[2],rendSet)
+				else
+					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[1],rendSet)
+					dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[2],rendSet)
+				end
+			else
+				if indicatorMode then
+					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
+					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet)
+				else
+					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor,rendSet)
+				end
+			end
+		elseif type(indicatorColor) == "table" then
+			dxDrawRectangle(iPosX,iPosY,iSizXPercent,iSizY,indicatorColor[1],rendSet)
+			dxDrawRectangle(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorColor[2],rendSet)
 		else
-			dxDrawRectangle(iPosX,iPosY,iSizX,iSizY,indicatorColor,rendSet)
+			dxDrawRectangle(iPosX,iPosY,iSizXPercent,iSizY,indicatorColor,rendSet)
 		end
-		
+	end,
+	["normal-vertical"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
+		local eleData = dgsElementData[source]
+		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2
+		local iSizYPercent = iSizY*percent
+		local iSizYPercentRev = iSizY*(1-percent)
+		if bgImage then
+			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet)
+		else
+			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
+		end
+		if type(indicatorImage) == "table" then
+			if type(indicatorColor) ~= "table" then
+				indicatorColor = {indicatorColor,indicatorColor}
+			end
+			if indicatorMode then
+				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+				if not sx or not sy then
+					sx1,sy1 = dxGetMaterialSize(indicatorImage[1])
+					sx2,sy2 = dxGetMaterialSize(indicatorImage[2])
+				else
+					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
+				end
+				dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
+				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy2,sx2,sy2*(1-percent),indicatorImage[1],0,0,0,indicatorColor[2],rendSet)
+			else
+				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
+				dxDrawImage(iPosX,iSizYPercent+iPosY,iSizX,iSizY-iSizYPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet)
+			end
+		elseif isElement(indicatorImage) then
+			if type(indicatorColor) == "table" then
+				if indicatorMode then
+					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
+					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor[1],rendSet)
+					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy,sx,sy*(1-percent),indicatorImage,0,0,0,indicatorColor[2],rendSet)
+				else
+					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor[1],rendSet)
+					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage,0,0,0,indicatorColor[2],rendSet)
+				end
+			else
+				if indicatorMode then
+					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
+					dxDrawImageSection(iPosX,iPosY,iSizX,iSizYPercent,0,0,sx,sy*percent,indicatorImage,0,0,0,indicatorColor,rendSet)
+				else
+					dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor,rendSet)
+				end
+			end
+		elseif type(indicatorColor) == "table" then
+			print("tt")
+			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor[1],rendSet)
+			dxDrawRectangle(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorColor[2],rendSet)
+		else
+			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor,rendSet)
+		end
 	end,
 	["ring-round"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent)
 		local eleData = dgsElementData[source]
@@ -82,7 +169,7 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 	dgsSetData(progressbar,"indicatorMode",indicatorMode and true or false)
 	dgsSetData(progressbar,"padding",styleSettings.progressbar.padding)
 	dgsSetData(progressbar,"styleData",{})
-	dgsSetData(progressbar,"style","normal")
+	dgsSetData(progressbar,"style","normal-horizontal")
 	dgsSetData(progressbar,"progress",0)
 	dgsSetData(progressbar,"map",{0,100})
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
@@ -108,7 +195,7 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 		for k,v in pairs(dgsElementData[progressbar].styleData.elements or {}) do
 			destroyElement(v)
 		end
-		if style == "normal" then
+		if style == "normal-horizontal" or style == "normal-vertical" then
 			dgsSetData(progressbar,"styleData",{})
 		elseif style == "ring-round" then
 			dgsSetData(progressbar,"styleData",{})
@@ -253,8 +340,12 @@ technique DrawCircle{
 dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
 	local bgImage = eleData.bgImage
 	local bgColor = applyColorAlpha(eleData.bgColor,parentAlpha)
-	local indicatorImage = eleData.indicatorImage
-	local indicatorColor = applyColorAlpha(eleData.indicatorColor,parentAlpha)
+	local indicatorImage,indicatorColor = eleData.indicatorImage,eleData.indicatorColor
+	if type(indicatorColor) == "table" then
+		indicatorColor = {applyColorAlpha(indicatorColor[1],parentAlpha),applyColorAlpha(indicatorColor[2],parentAlpha)}
+	else
+		indicatorColor = applyColorAlpha(indicatorColor,parentAlpha)
+	end
 	local indicatorMode = eleData.indicatorMode
 	local padding = eleData.padding
 	local percent = eleData.progress*0.01
