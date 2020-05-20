@@ -12,6 +12,9 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local assert = assert
+local lerp = math.lerp
+--
 function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	assert(tonumber(x),"Bad argument @dgsCreateScrollPane at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y))
@@ -33,6 +36,9 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsAttachToAutoDestroy(renderTarget,scrollpane,1)
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
+	dgsSetData(scrollpane,"horizontalMoveOffsetTemp",0)
+	dgsSetData(scrollpane,"verticalMoveOffsetTemp",0)
+	dgsSetData(scrollpane,"moveHardness",0.1)
 	--dgsSetData(scrollpane,"childSizeRef",{{},{}}) --Horizontal,Vertical //to optimize
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
 	dgsSetData(scrollpane,"configNextFrame",false)
@@ -65,6 +71,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
+	dgsSetData(scrollbar1,"minLength",10)
+	dgsSetData(scrollbar2,"minLength",10)
 	addEventHandler("onDgsElementScroll",scrollbar1,checkSPScrollBar,false)
 	addEventHandler("onDgsElementScroll",scrollbar2,checkSPScrollBar,false)
 	triggerEvent("onDgsCreate",scrollpane,sourceResource)
@@ -161,7 +169,6 @@ function configScrollPane(source)
 	if scbStateV and scbStateV ~= oriScbStateV then
 		dgsSetData(scrollbar[1],"position",0)
 	end
-	local scrollBarOffset = dgsElementData[source].scrollBarOffset
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	dgsElementData[scrollbar[1]].ignoreParentTitle = dgsElementData[source].ignoreParentTitle
@@ -201,7 +208,7 @@ function configScrollPane(source)
 		dgsElementData[source].renderTarget = nil
 	end
 	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true,source)
-	dgsAttachToAutoDestroy(renderTarget,scrollpane,1)
+	dgsAttachToAutoDestroy(renderTarget,source,1)
 	dgsSetData(source,"renderTarget_parent",renderTarget)
 	dgsSetData(source,"configNextFrame",false)
 end
@@ -352,8 +359,12 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 	local relSizX,relSizY = w-xthick,h-ythick
 	local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-	local OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
-	local OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
+	local _OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
+	local _OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
+	local OffsetX = lerp(eleData.moveHardness,eleData.horizontalMoveOffsetTemp,_OffsetX)
+	local OffsetY = lerp(eleData.moveHardness,eleData.verticalMoveOffsetTemp,_OffsetY)
+	eleData.horizontalMoveOffsetTemp = OffsetX
+	eleData.verticalMoveOffsetTemp = OffsetY
 	if OffsetX > 0 then
 		OffsetX = 0
 	end

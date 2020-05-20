@@ -118,6 +118,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
+	dgsSetData(scrollbar1,"minLength",10)
+	dgsSetData(scrollbar2,"minLength",10)
 	addEventHandler("onDgsElementScroll",scrollbar1,checkMMScrollBar,false)
 	addEventHandler("onDgsElementScroll",scrollbar2,checkMMScrollBar,false)
 	local padding = dgsElementData[memo].padding

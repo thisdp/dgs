@@ -167,7 +167,7 @@ end
 
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
-	local parent = FatherTable[dgsEle]	--Get Parent\
+	local parent = FatherTable[dgsEle]	--Get Parent
 	local lastFront = MouseData.nowShow
 	if not dontChangeData then
 		MouseData.nowShow = dgsEle

@@ -280,6 +280,10 @@ function math.inRange(n_min,n_max,value)
 	return false
 end
 
+function math.lerp(s,a,b)
+	return a + s * (b - a)
+end
+
 function math.seekEmpty(list)
 	local cnt = 1
 	while(list[cnt]) do

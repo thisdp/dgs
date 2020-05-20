@@ -31,8 +31,8 @@ function createFullDemo()
 	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"","",true)
 	local gridlist = window:dgsGridList(0,0,290,200,false)
 	gridlist:setMultiSelectionEnabled(true)
-	gridlist:addColumn("Column 1",0.5,true)
-	gridlist:addColumn("Column 2",0.5,true)
+	gridlist:addColumn("Column 1",0.8,true)
+	gridlist:addColumn("Column 2",0.8,true)
 	for i=1,100 do
 		gridlist:addRow(i,i,math.random(1,500))
 	end
@@ -55,9 +55,9 @@ function createFullDemo()
 	local tab2 = tabPanel:dgsTab("Tab2")
 	local scp = tab2:dgsScrollPane(0,0,1,1,true)
 	local memo2 = scp
-		:dgsMemo(10,10,260,100,"This is a memo for demo",false)
+		:dgsMemo(10,10,260,1000,"This is a memo for demo",false)
 	local edit3 = scp
-		:dgsEdit(10,120,260,30,"",false)
+		:dgsEdit(10,120,2600,30,"",false)
 		:setPlaceHolder("I am the place holder, and this edit is for demo")
 	memo2.bgImage = roundRect
 	edit3.bgImage = roundRect
@@ -72,6 +72,7 @@ function createFullDemo()
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+createFullDemo()
 ------------
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
@@ -618,18 +619,16 @@ local function init()
 	local radiobutton = window
 		:dgsRadioButton(75, 150, 100, 35, "Option 1")
 		:center(_,true)
-	local colorpicker = dgsCreateColorPicker("HLDisk", 400, 190, 100, 100, false, window.dgsElement)
+	local colorpicker = dgsCreateColorPicker("HSVRing", 400, 190, 100, 100, false, window.dgsElement)
 	dgsCenterElement(colorpicker,_,true)
 end
-
---[[
 setTimer(function()
 local tick = getTickCount()
 for i=1,20 do
 	init()
 end
 print(getTickCount()-tick)
-end,50,1)]]
+end,50,1)
 
 --[[
 local dgsClass = {}

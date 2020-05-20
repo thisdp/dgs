@@ -51,6 +51,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	dgsSetData(scrollbar,"arrowBgColor",styleSettings.scrollbar.arrowBgColor or false)
 	dgsSetData(scrollbar,"isHorizontal",isHorizontal) --vertical or horizontal
 	dgsSetData(scrollbar,"position",0)
+	dgsSetData(scrollbar,"minLength",5)
 	dgsSetData(scrollbar,"length",{30,false},true)
 	dgsSetData(scrollbar,"multiplier",{1,false})
 	dgsSetData(scrollbar,"scrollArrow",styleSettings.scrollbar.scrollArrow)

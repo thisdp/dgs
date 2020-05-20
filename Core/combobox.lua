@@ -12,6 +12,7 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local lerp = math.lerp
 local mathFloor = math.floor
 local mathMin = math.min
 local mathMax = math.max
@@ -96,7 +97,9 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"alignment",{"left","center"})
 	dgsSetData(combobox,"alignmentList",{"left","center"})
 	dgsSetData(combobox,"FromTo",{0,0})
+	dgsSetData(combobox,"moveHardness",0.1)
 	dgsSetData(combobox,"itemMoveOffset",0)
+	dgsSetData(combobox,"itemMoveOffsetTemp",0)
 	dgsSetData(combobox,"scrollSize",20)	--60px pixels
 	dgsSetData(combobox,"scrollFloor",true)
 	dgsSetData(combobox,"configNextFrame",false)
@@ -120,6 +123,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(scrollbar,"length",{0,true})
 	dgsSetData(scrollbar,"multiplier",{1,true})
 	dgsSetData(scrollbar,"myCombo",combobox)
+	dgsSetData(scrollbar,"minLength",10)
 	dgsSetVisible(scrollbar,false)
 	dgsSetVisible(box,false)
 	addEventHandler("onDgsElementScroll",scrollbar,checkCBScrollBar,false)
@@ -587,7 +591,11 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	local itemDataCount = #itemData
 	local scbThick = dgsElementData[combo].scrollBarThick
 	local itemHeight = DataTab.itemHeight
-	local itemMoveOffset = DataTab.itemMoveOffset
+	--Smooth Item
+	local _itemMoveOffset = DataTab.itemMoveOffset
+	DataTab.itemMoveOffsetTemp = lerp(DataTab.moveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
+	local itemMoveOffset = DataTab.itemMoveOffsetTemp-DataTab.itemMoveOffsetTemp%1
+	
 	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1
 	local whichRowToEnd = whichRowToStart+mathFloor(h/itemHeight)+1
 	DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}

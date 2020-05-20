@@ -12,6 +12,7 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local lerp = math.lerp
 self = false
 mouseButtonOrder = {
 	left=1,
@@ -45,6 +46,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"columnOffset",styleSettings.gridlist.columnOffset)
 	dgsSetData(gridlist,"columnData",{})
 	dgsSetData(gridlist,"columnMoveOffset",0)
+	dgsSetData(gridlist,"columnMoveOffsetTemp",0)
 	dgsSetData(gridlist,"columnRelative",true)
 	dgsSetData(gridlist,"columnShadow",false)
 	dgsSetData(gridlist,"guiCompat",false)
@@ -66,6 +68,8 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(gridlist,"columnTextPosOffset",{0,0})
 	dgsSetData(gridlist,"rowShadow",false)
 	dgsSetData(gridlist,"rowMoveOffset",0,true)
+	dgsSetData(gridlist,"rowMoveOffsetTemp",0)
+	dgsSetData(gridlist,"moveHardness",0.1,true)
 	dgsSetData(gridlist,"rowHeight",styleSettings.gridlist.rowHeight)
 	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
 	dgsElementData[gridlist].nextRenderSort = false
@@ -119,6 +123,8 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,false})
 	dgsSetData(scrollbar2,"multiplier",{1,false})
+	dgsSetData(scrollbar1,"minLength",10)
+	dgsSetData(scrollbar2,"minLength",10)
 	addEventHandler("onDgsElementScroll",scrollbar1,checkGLScrollBar,false)
 	addEventHandler("onDgsElementScroll",scrollbar2,checkGLScrollBar,false)
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
@@ -938,7 +944,7 @@ end
 
 function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local eleData = dgsElementData[gridlist]
-	local rowMoveOffset = rowMoveOffset or eleData.rowMoveOffset
+	local rowMoveOffset = rowMoveOffset or eleData.rowMoveOffsetTemp
 	local rowHeight = eleData.rowHeight
 	local leading = eleData.leading
 	local rowHeightLeadingTemp = rowHeight + leading
@@ -1504,7 +1510,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	else
 		dxDrawRectangle(x,y,w,columnHeight,columnColor,isPostGUI)
 	end
-	local columnData = eleData.columnData
+	local columnData,rowData = eleData.columnData,eleData.rowData
+	local columnCount,rowCount = #columnData,#rowData
 	local sortColumn = eleData.sortColumn
 	if sortColumn and columnData[sortColumn] then
 		if eleData.nextRenderSort then
@@ -1514,7 +1521,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	local columnTextColor = eleData.columnTextColor
 	local columnRelt = eleData.columnRelative
-	local rowData = eleData.rowData
 	local rowHeight = eleData.rowHeight
 	local rowTextPosOffset = eleData.rowTextPosOffset
 	local columnTextPosOffset = eleData.columnTextPosOffset
@@ -1524,13 +1530,20 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local scbThickV,scbThickH = dgsElementData[ scrollbars[1] ].visible and scbThick or 0,dgsElementData[ scrollbars[2] ].visible and scbThick or 0
 	local colorcoded = eleData.colorcoded
 	local shadow = eleData.rowShadow
-	local columnCount = #columnData
-	local rowCount = #rowData
 	local rowHeightLeadingTemp = rowHeight+leading
-	local rowMoveOffset = eleData.rowMoveOffset
+	--Smooth Row
+	local _rowMoveOffset = eleData.rowMoveOffset
+	eleData.rowMoveOffsetTemp = lerp(eleData.moveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
+	local rowMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
+	if (rowMoveOffset~=_rowMoveOffset) then
+		dgsGridListUpdateRowMoveOffset(source)
+	end
+	--Smooth Column
+	local _columnMoveOffset = eleData.columnMoveOffset
+	eleData.columnMoveOffsetTemp = lerp(eleData.moveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
+	local columnMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
+	--
 	local columnOffset = eleData.columnOffset
-	local columnMoveOffset = eleData.PixelInt and eleData.columnMoveOffset-eleData.columnMoveOffset%1
-	local fnc = eleData.functions
 	local rowTextSx,rowTextSy = eleData.rowTextSize[1],eleData.rowTextSize[2] or eleData.rowTextSize[1]
 	local columnTextSx,columnTextSy = eleData.columnTextSize[1],eleData.columnTextSize[2] or eleData.columnTextSize[1]
 	local selectionMode = eleData.selectionMode
