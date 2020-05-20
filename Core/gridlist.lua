@@ -605,12 +605,12 @@ end
 --[[
 	rowData Struct:
 		-4					-3							-2				-1				0								1																													2																													...
-		columnOffset		bgImage						selectable		clickable		bgColor							column1																												column2																												...
+		columnOffset		bgImage						hoverable		selectable		bgColor							column1																												column2																												...
 {
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unselectable,unclickable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
 	{	the same as preview table																																													},
 }
 
@@ -669,39 +669,14 @@ function dgsGridListInsertRowAfter(gridlist,row,...)
 	return dgsGridListAddRow(gridlist,row+1,...)
 end
 
-function dgsGridListGetRowClickable(gridlist,row)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetRowClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","Bad argument @dgsGridListGetRowClickable at argument 2, expect number got "..dgsGetType(row))
-	row = row-row%1
-	assert(row >= 1,"Bad argument @dgsGridListGetRowClickable at argument 2, expect number >= 1 got "..row)
-	local rowData = dgsElementData[gridlist].rowData
-	if rowData[row] then
-		return rowData[row][-1]
-	end
-	return false
-end
-
-function dgsGridListSetRowClickable(gridlist,row,state)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","Bad argument @dgsGridListSetRowClickable at argument 2, expect number got "..dgsGetType(row))
-	row = row-row%1
-	assert(row >= 1,"Bad argument @dgsGridListSetRowClickable at argument 2, expect number >= 1 got "..row)
-	local rowData = dgsElementData[gridlist].rowData
-	if rowData[row] then
-		rowData[row][-1] = state and true or false
-		return true
-	end
-	return false
-end
-
 function dgsGridListGetRowSelectable(gridlist,row)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetRowSelectable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListGetRowSelectable at argument 2, expect number got "..dgsGetType(row))
 	row = row-row%1
-	assert(row >= 1,"Bad argument @dgsGridListGetRowClickable at argument 2, expect number >= 1 got "..row)
+	assert(row >= 1,"Bad argument @dgsGridListGetRowSelectable at argument 2, expect number >= 1 got "..row)
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
-		return rowData[row][-2]
+		return rowData[row][-1]
 	end
 	return false
 end
@@ -713,22 +688,32 @@ function dgsGridListSetRowSelectable(gridlist,row,state)
 	assert(row >= 1,"Bad argument @dgsGridListSetRowSelectable at argument 2, expect number >= 1 got "..row)
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
-		rowData[row][-2] = state and true or false
+		rowData[row][-1] = state and true or false
 		return true
 	end
 	return false
 end
 
-function dgsGridListSetItemClickable(gridlist,row,column,state)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","Bad argument @dgsGridListSetItemClickable at argument 2, expect number got "..dgsGetType(row))
-	assert(type(column) == "number","Bad argument @dgsGridListSetItemClickable at argument 3, expect number got "..dgsGetType(column))
-	row,column = row-row%1,column-column%1
-	assert(row >= 1,"Bad argument @dgsGridListSetItemClickable at argument 2, expect number >= 1 got "..row)
-	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListSetItemClickable at argument 3, expect a number >= 1 got "..column)
+function dgsGridListGetRowHoverable(gridlist,row)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetRowHoverable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListGetRowHoverable at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListGetRowSelectable at argument 2, expect number >= 1 got "..row)
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
-		rowData[row][column][9] = not state or nil
+		return rowData[row][-2]
+	end
+	return false
+end
+
+function dgsGridListSetRowHoverable(gridlist,row,state)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowHoverable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListSetRowHoverable at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListSetRowHoverable at argument 2, expect number >= 1 got "..row)
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		rowData[row][-2] = state and true or false
 		return true
 	end
 	return false
@@ -743,22 +728,23 @@ function dgsGridListSetItemSelectable(gridlist,row,column,state)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListSetItemSelectable at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
-		rowData[row][column][8] = not state or nil
+		rowData[row][column][9] = not state or nil
 		return true
 	end
 	return false
 end
 
-function dgsGridListGetItemClickable(gridlist,row,column,state)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemClickable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","Bad argument @dgsGridListGetItemClickable at argument 2, expect number got "..dgsGetType(row))
-	assert(type(column) == "number","Bad argument @dgsGridListGetItemClickable at argument 3, expect number got "..dgsGetType(column))
+function dgsGridListSetItemHoverable(gridlist,row,column,state)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemHoverable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListSetItemHoverable at argument 2, expect number got "..dgsGetType(row))
+	assert(type(column) == "number","Bad argument @dgsGridListSetItemHoverable at argument 3, expect number got "..dgsGetType(column))
 	row,column = row-row%1,column-column%1
-	assert(row >= 1,"Bad argument @dgsGridListGetItemClickable at argument 2, expect number >= 1 got "..row)
-	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListGetItemClickable at argument 3, expect a number >= 1 got "..column)
+	assert(row >= 1,"Bad argument @dgsGridListSetItemHoverable at argument 2, expect number >= 1 got "..row)
+	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListSetItemHoverable at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
-		return not (rowData[row][column][9] and true or false)
+		rowData[row][column][8] = not state or nil
+		return true
 	end
 	return false
 end
@@ -770,6 +756,20 @@ function dgsGridListGetItemSelectable(gridlist,row,column,state)
 	row,column = row-row%1,column-column%1
 	assert(row >= 1,"Bad argument @dgsGridListGetItemSelectable at argument 2, expect number >= 1 got "..row)
 	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListGetItemSelectable at argument 3, expect a number >= 1 got "..column)
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		return not (rowData[row][column][9] and true or false)
+	end
+	return false
+end
+
+function dgsGridListGetItemHoverable(gridlist,row,column,state)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemHoverable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListGetItemHoverable at argument 2, expect number got "..dgsGetType(row))
+	assert(type(column) == "number","Bad argument @dgsGridListGetItemHoverable at argument 3, expect number got "..dgsGetType(column))
+	row,column = row-row%1,column-column%1
+	assert(row >= 1,"Bad argument @dgsGridListGetItemHoverable at argument 2, expect number >= 1 got "..row)
+	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListGetItemHoverable at argument 3, expect a number >= 1 got "..column)
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
 		return not (rowData[row][column][8] and true or false)
