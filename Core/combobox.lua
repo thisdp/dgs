@@ -86,8 +86,8 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"listState",-1,true)
 	dgsSetData(combobox,"listStateAnim",-1)
 	dgsSetData(combobox,"autoHideAfterSelected",styleSettings.combobox.autoHideAfterSelected)
-	dgsSetData(combobox,"itemTextSide",styleSettings.combobox.itemTextSide)
-	dgsSetData(combobox,"comboTextSide",styleSettings.combobox.comboTextSide)
+	dgsSetData(combobox,"itemTextPadding",styleSettings.combobox.itemTextPadding)
+	dgsSetData(combobox,"textPadding",styleSettings.combobox.textPadding)
 	dgsSetData(combobox,"arrowColor",styleSettings.combobox.arrowColor)
 	dgsSetData(combobox,"arrowSettings",styleSettings.combobox.arrowSettings or {0.3,0.15,0.04})
 	dgsSetData(combobox,"arrowOutSideColor",styleSettings.combobox.arrowOutSideColor)
@@ -95,7 +95,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"scrollBarThick",scbThick,true)
 	dgsSetData(combobox,"itemData",{})
 	dgsSetData(combobox,"alignment",{"left","center"})
-	dgsSetData(combobox,"alignmentList",{"left","center"})
+	dgsSetData(combobox,"itemAlignment",{"left","center"})
 	dgsSetData(combobox,"FromTo",{0,0})
 	dgsSetData(combobox,"moveHardness",0.1)
 	dgsSetData(combobox,"itemMoveOffset",0)
@@ -186,7 +186,7 @@ function dgsComboBoxSetEditEnabled(combobox,enabled)
 			local edit = dgsCreateEdit(0,0,buttonLen,h,dgsElementData[combobox].caption,false,combobox)
 			dgsSetData(edit,"bgColor",0)
 			dgsSetData(combobox,"captionEdit",edit)
-			dgsSetData(edit,"padding",dgsElementData[combobox].comboTextSide)
+			dgsSetData(edit,"padding",dgsElementData[combobox].textPadding)
 			if not dgsElementData[combobox].textBox then
 				dgsSetVisible(edit,false)
 			end
@@ -558,7 +558,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*parentAlpha})
 	dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,isPostGUI)
 	if textBox and not captionEdit then
-		local textSide = eleData.comboTextSide
+		local itemTextPadding = eleData.textPadding
 		local font = eleData.font or systemFont
 		local textColor = eleData.textColor
 		local rb = eleData.alignment
@@ -570,7 +570,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		local itemData = eleData.itemData
 		local sele = itemData[selection]
 		local text = sele and sele[1] or eleData.caption
-		local nx,ny,nw,nh = x+textSide[1],y,x+textBoxLen-textSide[2],y+h
+		local nx,ny,nw,nh = x+itemTextPadding[1],y,x+textBoxLen-itemTextPadding[2],y+h
 		if shadow then
 			dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI)
 		end
@@ -603,7 +603,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	if isElement(renderTarget) then
 		dxSetRenderTarget(renderTarget,true)
 		dxSetBlendMode("modulate_add")
-		local rb_l = dgsElementData[combo].alignmentList
+		local rb_l = dgsElementData[combo].itemAlignment
 		local scrollbar = dgsElementData[combo].scrollbar
 		local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
 		if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h and MouseData.enter == source then
@@ -625,7 +625,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 		local colorcoded = eleData.colorcoded
 		local wordbreak = eleData.wordbreak
 		local clip = eleData.clip
-		local textSide = dgsElementData[combo].itemTextSide
+		local itemTextPadding = dgsElementData[combo].itemTextPadding
 		for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 			local lc_rowData = itemData[i]
 			local textSize = lc_rowData[-3]
@@ -642,12 +642,12 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 			else
 				dxDrawRectangle(0,rowpos_1+itemMoveOffset,w,itemHeight,color[itemState])
 			end
-			local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW-textSide[2],rowpos+itemMoveOffset
+			local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW-itemTextPadding[2],rowpos+itemMoveOffset
 			local text = itemData[i][1]
 			if shadow then
-				dxDrawText(text:gsub("#%x%x%x%x%x%x",""),textSide[1]-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak)
+				dxDrawText(text:gsub("#%x%x%x%x%x%x",""),itemTextPadding[1]-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak)
 			end
-			dxDrawText(text,textSide[1],_y,_sx,_sy,textColor,textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
+			dxDrawText(text,itemTextPadding[1],_y,_sx,_sy,textColor,textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
 		end
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode("add")
