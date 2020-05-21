@@ -1456,7 +1456,7 @@ function configGridList(source)
 			local columnRender,rowRender
 			if relSizX*columnHeight ~= 0 then
 				columnRender = dxCreateRenderTarget(relSizX,columnHeight,true,source)
-				dgsAttachToAutoDestroy(rowRender,source,1)
+				dgsAttachToAutoDestroy(columnRender,source,1)
 			end
 			if relSizX*rowShowRange ~= 0 then
 				rowRender = dxCreateRenderTarget(relSizX,rowShowRange,true,source)
