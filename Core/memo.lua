@@ -125,8 +125,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local padding = dgsElementData[memo].padding
 	local sizex,sizey = abx-padding[1]*2,abx-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local rt_new = dxCreateRenderTarget(sizex,sizey,true,memo)
-	dgsSetData(memo,"renderTarget",rt_new)
+	local renderTarget = dxCreateRenderTarget(sizex,sizey,true,memo)
+	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsAttachToAutoDestroy(renderTarget,memo,1)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
@@ -1061,11 +1061,11 @@ function configMemo(source)
 	local padding = dgsElementData[source].padding
 	local sizex,sizey = size[1]-padding[1]*2,size[2]-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local rt_new = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,source)
-	if rt_new then
+	local renderTarget = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,source)
+	if renderTarget then
 		local rt_old = dgsElementData[source].renderTarget
 		if isElement(rt_old) then destroyElement(rt_old) end
-		dgsSetData(source,"renderTarget",rt_new)
+		dgsSetData(source,"renderTarget",renderTarget)
 		dgsAttachToAutoDestroy(renderTarget,source,1)
 	end
 	dgsSetData(source,"configNextFrame",false)
