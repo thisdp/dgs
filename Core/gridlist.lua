@@ -108,9 +108,11 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	local columnRender,rowRender
 	if abx*columnHeight ~= 0 then
 		columnRender = dxCreateRenderTarget(abx,columnHeight,true,gridlist)
+		dgsAttachToAutoDestroy(columnRender,gridlist,1)
 	end
 	if abx*(aby-columnHeight-scbThick) ~= 0 then
 		rowRender = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist)
+		dgsAttachToAutoDestroy(rowRender,gridlist,2)
 	end
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
 	local scrollbar1 = dgsCreateScrollBar(abx-scbThick,0,scbThick,aby-scbThick,false,false,gridlist)
@@ -1454,9 +1456,11 @@ function configGridList(source)
 			local columnRender,rowRender
 			if relSizX*columnHeight ~= 0 then
 				columnRender = dxCreateRenderTarget(relSizX,columnHeight,true,source)
+				dgsAttachToAutoDestroy(rowRender,source,1)
 			end
 			if relSizX*rowShowRange ~= 0 then
 				rowRender = dxCreateRenderTarget(relSizX,rowShowRange,true,source)
+				dgsAttachToAutoDestroy(rowRender,source,2)
 			end
 			dgsSetData(source,"renderTarget",{columnRender,rowRender})
 		end

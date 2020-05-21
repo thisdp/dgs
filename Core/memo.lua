@@ -126,9 +126,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local sizex,sizey = abx-padding[1]*2,abx-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
 	local rt_new = dxCreateRenderTarget(sizex,sizey,true,memo)
-	if rt_new then
-		dgsSetData(source,"renderTarget",rt_new)
-	end
+	dgsSetData(memo,"renderTarget",rt_new)
+	dgsAttachToAutoDestroy(renderTarget,memo,1)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
 	triggerEvent("onDgsCreate",memo,sourceResource)
@@ -1067,6 +1066,7 @@ function configMemo(source)
 		local rt_old = dgsElementData[source].renderTarget
 		if isElement(rt_old) then destroyElement(rt_old) end
 		dgsSetData(source,"renderTarget",rt_new)
+		dgsAttachToAutoDestroy(renderTarget,source,1)
 	end
 	dgsSetData(source,"configNextFrame",false)
 end

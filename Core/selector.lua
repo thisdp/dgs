@@ -34,6 +34,9 @@ function dgsCreateSelector(x,y,sx,sy,relative,parent,textColor,scalex,scaley,sha
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.selector.textSize[1], tonumber(scaley) or styleSettings.selector.textSize[2]
 	dgsSetData(selector,"textSize",{textSizeX,textSizeY})
 	dgsSetData(selector,"clip",false)
+	dgsSetData(selector,"selectorText",{"<",">"})
+	dgsSetData(selector,"selectorImage",{_,_,_})
+	dgsSetData(selector,"selectorColor",{tocolor()})
 	dgsSetData(selector,"colorcoded",false)
 	dgsSetData(selector,"subPixelPositioning",false)
 	dgsSetData(selector,"shadow",{shadowoffsetx,shadowoffsety,shadowcolor})
@@ -63,7 +66,7 @@ dgsRenderer["dgs-dxselector"] = function(x,y,w,h,eleData,parentAlpha,isPostGUI)
 			end
 		end
 		------------------------------------
-		
+		dxDrawText()
 		------------------------------------OutLine
 		local outlineData = eleData.outline
 		if outlineData then

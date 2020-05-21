@@ -113,6 +113,7 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local sizex,sizey = sx-padding[1]*2,sy-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
 	local renderTarget = dxCreateRenderTarget(sizex,sizey,true,edit)
+	dgsAttachToAutoDestroy(renderTarget,edit,1)
 	dgsSetData(edit,"renderTarget",renderTarget)
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
@@ -415,6 +416,7 @@ function configEdit(source)
 	local px,py = x-padding[1]*2,y-padding[2]*2
 	px,py = px-px%1,py-py%1
 	local renderTarget = dxCreateRenderTarget(px,py,true,source)
+	dgsAttachToAutoDestroy(renderTarget,source,1)
 	dgsSetData(source,"renderTarget",renderTarget)
 	local oldPos = dgsEditGetCaretPosition(source)
 	dgsEditSetCaretPosition(source,0)

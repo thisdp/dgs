@@ -1046,25 +1046,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 		local dgsType = dgsGetType(source)
 		if dgsType == "dgs-dxedit" then
-			local rentarg = dgsElementData[source].renderTarget
-			if isElement(rentarg) then
-				destroyElement(rentarg)
-			end
 			blurEditMemo()
 		elseif dgsType == "dgs-dxmemo" then
-			local rentarg = dgsElementData[source].renderTarget
-			if isElement(rentarg) then
-				destroyElement(rentarg)
-			end
 			blurEditMemo()
-		elseif dgsType == "dgs-dxgridlist" then
-			local rentarg = dgsElementData[source].renderTarget
-			if isElement(rentarg[1]) then
-				destroyElement(rentarg[1])
-			end
-			if isElement(rentarg[2]) then
-				destroyElement(rentarg[2])
-			end
 		elseif dgsType == "dgs-dxtabpanel" then
 			local rentarg = dgsElementData[source].renderTarget
 			local tabs = dgsElementData[source].tabs or {}
@@ -1093,11 +1077,6 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 					end
 					tableRemove(tabs,id)
 				end
-			end
-		elseif dgsType == "dgs-dxcombobox" then
-			local rentarg = dgsElementData[source].renderTarget
-			if isElement(rentarg) then
-				destroyElement(rentarg)
 			end
 		elseif dgsType == "dgs-dximage" then
 			local image = dgsElementData[source].image

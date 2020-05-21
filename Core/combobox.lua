@@ -118,6 +118,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(box,"myCombo",combobox)
 	local boxsiz = dgsElementData[box].absSize
 	local rendertarget = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox)
+	dgsAttachToAutoDestroy(rendertarget,combobox,1)
 	dgsSetData(combobox,"renderTarget",rendertarget)
 	local scrollbar = dgsCreateScrollBar(boxsiz[1]-scbThick,0,scbThick,boxsiz[2],false,false,box)
 	dgsSetData(scrollbar,"length",{0,true})
@@ -404,6 +405,7 @@ function configComboBox(combobox,remainBox)
 		if isElement(rendertarget) then destroyElement(rendertarget) end
 		local sbt = dgsElementData[combobox].scrollBarThick
 		local rendertarget = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox)
+		dgsAttachToAutoDestroy(rendertarget,combobox,1)
 		dgsSetData(combobox,"renderTarget",rendertarget)
 		local scrollbar = dgsElementData[combobox].scrollbar
 		dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
