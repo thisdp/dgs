@@ -418,7 +418,6 @@ function dgsG2DLoadHooker()
 			return dgsGridListSetItemText(gl,row,...)
 		end
 		guiGridListGetSelectedCount = dgsGridListGetSelectedCount
-		end
 		guiGridListGetSelectedItem = function(gl)
 			if isGUIGridList[gl] then
 				local selected = dgsGridListGetSelectedItem(gl)
