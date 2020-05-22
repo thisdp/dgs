@@ -59,6 +59,7 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	dgsSetData(scrollbar,"scrollArrow",styleSettings.scrollbar.scrollArrow)
 	dgsSetData(scrollbar,"locked",false)
 	dgsSetData(scrollbar,"grades",false)
+	dgsSetData(scrollbar,"map",{0,100})
 	dgsSetData(scrollbar,"currentGrade",0)
 	dgsSetData(scrollbar,"cursorWidth",styleSettings.scrollbar.cursorWidth or {1,true})
 	dgsSetData(scrollbar,"troughWidth",styleSettings.scrollbar.troughWidth or styleSettings.scrollbar.cursorWidth or {1,true})
@@ -68,28 +69,37 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	return scrollbar
 end
 
-function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade)
+function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetScrollPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	assert(type(pos) == "number","Bad argument @dgsScrollBarSetScrollPosition at argument at 2, expect number got "..type(pos))
 	if isGrade then
 		local grades = dgsElementData[scrollbar].grades
-		local newPos = pos/grades*100
-		return dgsSetData(scrollbar,"position",newPos)
-	else
-		return dgsSetData(scrollbar,"position",pos)
+		pos = pos/grades*100
 	end
+	local scaler = dgsElementData[scrollbar].map
+	if pos < 0 then pos = 0 end
+	if pos > 100 then pos = 100 end
+	if not isAbsolute then
+		pos = (pos-scaler[1])/(scaler[2]-scaler[1])*100
+	end
+	if pos < 0 then pos = 0 end
+	if pos > 100 then pos = 100 end
+	return dgsSetData(scrollbar,"position",pos)
 end
 
-function dgsScrollBarGetScrollPosition(scrollbar,isGrade)
+function dgsScrollBarGetScrollPosition(scrollbar,isGrade,isAbsolute)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetScrollPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	local pos = dgsElementData[scrollbar].position
+	local scaler = dgsElementData[scrollbar].map
+	if not isAbsolute then
+		pos = pos/100*(scaler[2]-scaler[1])+scaler[1]
+	end
 	if isGrade then
-		local pos = dgsElementData[scrollbar].position
 		local grades = dgsElementData[scrollbar].grades
 		if not grades then return pos end
-		return math.floor(pos/100*grades+0.5)
-	else
-		return dgsElementData[scrollbar].position
+		pos = math.floor(pos/100*grades+0.5)
 	end
+	return pos
 end
 
 function dgsScrollBarSetLocked(scrollbar,state)
