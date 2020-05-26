@@ -751,7 +751,7 @@ function dgsGridListSetItemHoverable(gridlist,row,column,state)
 	return false
 end
 
-function dgsGridListGetItemSelectable(gridlist,row,column,state)
+function dgsGridListGetItemSelectable(gridlist,row,column)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemSelectable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListGetItemSelectable at argument 2, expect number got "..dgsGetType(row))
 	assert(type(column) == "number","Bad argument @dgsGridListGetItemSelectable at argument 3, expect number got "..dgsGetType(column))
@@ -765,7 +765,7 @@ function dgsGridListGetItemSelectable(gridlist,row,column,state)
 	return false
 end
 
-function dgsGridListGetItemHoverable(gridlist,row,column,state)
+function dgsGridListGetItemHoverable(gridlist,row,column)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemHoverable at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListGetItemHoverable at argument 2, expect number got "..dgsGetType(row))
 	assert(type(column) == "number","Bad argument @dgsGridListGetItemHoverable at argument 3, expect number got "..dgsGetType(column))
