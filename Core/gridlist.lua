@@ -933,7 +933,7 @@ function dgsGridListSetItemText(gridlist,row,column,text,isSection)
 	if not (type(column) == "number") then assert(false,"Bad argument @dgsGridListSetItemText at argument 3, expect number got "..type(column)) end
 	row,column = row-row%1,column-column%1
 	if not (row >= 1) then assert(false,"Bad argument @dgsGridListSetItemText at argument 2, expect number >= 1 got "..row) end
-	if not (column >= 1) then assert(false,"Bad argument @dgsGridListSetItemText at argument 3, expect a number >= 1 got "..column) end
+	if not (column >= 1) and not (column <=-5) then assert(false,"Bad argument @dgsGridListSetItemText at argument 3, expect a number >= 1 got "..column) end
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
 		if column <= -5 then
