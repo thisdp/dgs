@@ -165,11 +165,14 @@ function table.find(tab,ke,num)
 end
 
 function table.removeItemFromArray(tab,item)
+	local id
 	for i=1,#tab do
 		if tab[i] == item then
-			return tableRemove(tab,i)
+			id = i
+			break
 		end
 	end
+	return id and table.remove(tab,id) or false
 end
 
 function table.count(tabl)

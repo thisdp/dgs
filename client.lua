@@ -1118,7 +1118,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		else
 			local parent = dgsGetParent(source)
 			if not isElement(parent) then
-				local layer = dgsElementData[source].alwaysOn
+				local layer = dgsElementData[source].alwaysOn or "center"
 				if layer == "bottom" then
 					tableRemoveItemFromArray(BottomFatherTable,source)
 				elseif layer == "center" then
