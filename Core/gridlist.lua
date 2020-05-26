@@ -13,6 +13,10 @@ local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
 local lerp = math.lerp
+local tostring = tostring
+local assert = assert
+local type = type
+local tableInsert = table.insert
 self = false
 mouseButtonOrder = {
 	left=1,
@@ -34,7 +38,7 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateGridList at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end
 	local gridlist = createElement("dgs-dxgridlist")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or table.insert(CenterFatherTable,gridlist)
+	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or tableInsert(CenterFatherTable,gridlist)
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsSetData(gridlist,"renderBuffer",{})
 	dgsSetData(gridlist,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.gridlist.bgImage))
@@ -271,15 +275,14 @@ end
 ]]
 
 function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListAddColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(len) == "number","Bad argument @dgsGridListAddColumn at argument 3, expect number got "..dgsGetType(len))
+	if not (dgsGetType(gridlist) == "dgs-dxgridlist") then assert(false,"Bad argument @dgsGridListAddColumn at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist)) end
+	if not (type(len) == "number") then assert(false,"Bad argument @dgsGridListAddColumn at argument 3, expect number got "..dgsGetType(len)) end
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
 	local columnDataCount = #columnData
+	local _name
 	pos = tonumber(pos) or columnDataCount+1
-	if pos > columnDataCount+1 then
-		pos = columnDataCount+1
-	end
+	pos = pos > columnDataCount+1 and columnDataCount+1 or pos
 	local aSize = eleData.absSize
 	local sx,sy = aSize[1],aSize[2]
 	local scrollBarThick = eleData.scrollBarThick
@@ -288,21 +291,33 @@ function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 	if columnDataCount > 0 then
 		oldLen = columnData[columnDataCount][3]+columnData[columnDataCount][2]
 	end
-	local columnTable = {}
 	if type(name) == "table" then
-		columnTable._translationText = name
+		_name = name
 		name = dgsTranslate(gridlist,name,sourceResource)
 	end
-	columnTable[1] = tostring(name)
-	columnTable[2] = len
-	columnTable[3] = oldLen
-	columnTable[4] = alignment or "left"
-	table.insert(columnData,pos,columnTable)
+	local columnTable = {
+		tostring(name),
+		len,
+		oldLen,
+		alignment or "left",
+		_translationText = _name,
+	}
+	tableInsert(columnData,pos,columnTable)
 	local columnTextSize = eleData.columnTextSize
 	local columnTextColor = eleData.columnTextColor
 	local colorcoded = eleData.colorcoded
 	for i=pos+1,columnDataCount+1 do
-		columnData[i] = {columnData[i][1],columnData[i][2],dgsGridListGetColumnAllWidth(gridlist,i-1),columnData[i][4],columnTextColor,colorcoded,columnTextSize[1],columnTextSize[2],eleData.font}
+		columnData[i] = {
+			columnData[i][1],
+			columnData[i][2],
+			dgsGridListGetColumnAllWidth(gridlist,i-1),
+			columnData[i][4],
+			columnTextColor,
+			colorcoded,
+			columnTextSize[1],
+			columnTextSize[2],
+			eleData.font,
+		}
 	end
 	dgsSetData(gridlist,"columnData",columnData)
 	local rowData = dgsElementData[gridlist].rowData
@@ -311,7 +326,14 @@ function dgsGridListAddColumn(gridlist,name,len,pos,alignment)
 	local scale = eleData.rowTextSize
 	local font = eleData.font
 	for i=1,#rowData do
-		rowData[i][pos]= {"",rowTxtColor,colorcoded,scale[1],scale[2],font}
+		rowData[i][pos]= {
+			"",
+			rowTxtColor,
+			colorcoded,
+			scale[1],
+			scale[2],
+			font,
+		}
 	end
 	dgsSetData(gridlist,"configNextFrame",true)
 	return pos
@@ -439,11 +461,7 @@ function dgsGridListRemoveColumn(gridlist,pos)
 	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[gridlist].absSize[2]
 	local scrollbars = dgsElementData[gridlist].scrollbars
 	local scrollBarThick = dgsElementData[gridlist].scrollBarThick
-	if lastColumnLen > (sx-scrollBarThick) then
-		dgsSetVisible(scrollbars[2],true)
-	else
-		dgsSetVisible(scrollbars[2],false)
-	end
+	dgsSetVisible(scrollbars[2],lastColumnLen > (sx-scrollBarThick))
 	dgsSetData(scrollbars[2],"length",{(sx-scrollBarThick)/lastColumnLen,true})
 	dgsSetData(scrollbars[2],"position",dgsElementData[scrollbars[2]].position)
 	return true
@@ -606,59 +624,55 @@ end
 -----------------------------Row
 --[[
 	rowData Struct:
-		-4					-3							-2				-1				0								1																													2																													...
-		columnOffset		bgImage						hoverable		selectable		bgColor							column1																												column2																												...
+		-4					-3							-2				-1				0								1																																2																																	...
+		columnOffset		bgImage						hoverable		selectable		bgColor							column1																															column2																																...
 {
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable},		...		},
-	{	the same as preview table																																													},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement	},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement	},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement	},		...		},
+	{	the same as preview table																																																																																						},
 }
 
 	table[i](i<=0) isn't counted in #table
 ]]
 
-
 function dgsGridListAddRow(gridlist,row,...)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListAddRow at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	if not (dgsGetType(gridlist) == "dgs-dxgridlist") then assert(false,"Bad argument @dgsGridListAddRow at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist)) end
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
-	assert(#columnData > 0 ,"Bad argument @dgsGridListAddRow, no columns in the grid list")
+	if not (#columnData > 0) then assert(false,"Bad argument @dgsGridListAddRow, no columns in the grid list") end
+	local args = {...}
 	local rowData = eleData.rowData
 	local rowLength = 0
 	row = tonumber(row) or #rowData+1
-	local rowTable = {}
-	local args = {...}
-	rowTable[-4] = eleData.defaultColumnOffset
-	rowTable[-3] = eleData.rowImage
-	rowTable[-2] = true
-	rowTable[-1] = true
-	rowTable[0] = eleData.rowColor
+	local rowTable = {
+		[-4] = eleData.defaultColumnOffset,
+		[-3] = eleData.rowImage,
+		[-2] = true,
+		[-1] = true,
+		[0] = eleData.rowColor,
+	}
 	local rowTxtColor = eleData.rowTextColor
 	local colorcoded = eleData.colorcoded
 	local scale = eleData.rowTextSize
 	local font = eleData.font
 	for i=1,#eleData.columnData do
-		local text = args[i]
-		rowTable[i] = {}
+		local text,_text = args[i]
 		if type(text) == "table" then
-			rowTable[i]._translationText = text
+			_text = text
 			text = dgsTranslate(gridlist,text,sourceResource)
 		end
-		rowTable[i][1] = tostring(text or "")
-		rowTable[i][2] = rowTxtColor
-		rowTable[i][3] = colorcoded
-		rowTable[i][4] = scale[1]
-		rowTable[i][5] = scale[2]
-		rowTable[i][6] = font
+		rowTable[i] = {
+			tostring(text or ""),
+			rowTxtColor,
+			colorcoded,
+			scale[1],
+			scale[2],
+			font,
+			_translationText=_text,
+		}
 	end
-	table.insert(rowData,row,rowTable)
- 	local scrollbars = dgsElementData[gridlist].scrollbars
-	local aSize = dgsElementData[gridlist].absSize
-	local sx,sy = aSize[1],aSize[2]
-	local scbThick = dgsElementData[gridlist].scrollBarThick
-	local columnHeight = dgsElementData[gridlist].columnHeight
+	tableInsert(rowData,row,rowTable)
 	dgsSetData(gridlist,"configNextFrame",true)
 	return row
 end
@@ -877,17 +891,12 @@ function dgsGridListSetItemImage(gridlist,row,column,image,color,offx,offy,w,h)
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] and rowData[row][column] then
 		local imageData = rowData[row][column][7] or {}
-		local image = image or imageData[1] or _
-		local color = color or imageData[2] or white
-		local offx = offx or imageData[3] or 0
-		local offy = offy or imageData[4] or 0
-		local w,h = w or imageData[5] or dgsGridListGetColumnWidth(gridlist,column,false),h or imageData[6] or dgsElementData[gridlist].rowHeight
-		imageData[1] = image
-		imageData[2] = color
-		imageData[3] = offx
-		imageData[4] = offy
-		imageData[5] = w
-		imageData[6] = h
+		imageData[1] = image or imageData[1] or nil
+		imageData[2] = color or imageData[2] or white
+		imageData[3] = offx or imageData[3] or 0
+		imageData[4] = offy or imageData[4] or 0
+		imageData[5] = w or imageData[5] or dgsGridListGetColumnWidth(gridlist,column,false)
+		imageData[6] = h or imageData[6] or dgsElementData[gridlist].rowHeight
 		rowData[row][column][7] = imageData
 		return true
 	end
@@ -919,12 +928,12 @@ function dgsGridListGetItemImage(gridlist,row,column)
 end
 
 function dgsGridListSetItemText(gridlist,row,column,text,isSection)
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemText at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","Bad argument @dgsGridListSetItemText at argument 2, expect number got "..type(row))
-	assert(type(column) == "number","Bad argument @dgsGridListSetItemText at argument 3, expect number got "..type(column))
+	if not (dgsGetType(gridlist) == "dgs-dxgridlist") then assert(false,"Bad argument @dgsGridListSetItemText at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist)) end
+	if not (type(row) == "number") then assert(false,"Bad argument @dgsGridListSetItemText at argument 2, expect number got "..type(row)) end
+	if not (type(column) == "number") then assert(false,"Bad argument @dgsGridListSetItemText at argument 3, expect number got "..type(column)) end
 	row,column = row-row%1,column-column%1
-	assert(row >= 1,"Bad argument @dgsGridListSetItemText at argument 2, expect number >= 1 got "..row)
-	assert(column >= 1 or column <= -5,"Bad argument @dgsGridListSetItemText at argument 3, expect a number >= 1 got "..column)
+	if not (row >= 1) then assert(false,"Bad argument @dgsGridListSetItemText at argument 2, expect number >= 1 got "..row) end
+	if not (column >= 1) then assert(false,"Bad argument @dgsGridListSetItemText at argument 3, expect a number >= 1 got "..column) end
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] then
 		if column <= -5 then
@@ -1038,7 +1047,7 @@ function dgsGridListScrollTo(gridlist,row,column)
 			local scbThickH = dgsElementData[scrollBars[2]].visible and scbThick or 0
 			local gridListRange = sy-scbThickH-columnHeight
 			if row <= fromTo[1] then
-				local scrollPos = ((row-2)*rowHeightLeadingTemp+rowHeight+leading)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
+				local scrollPos = ((row-1)*rowHeightLeadingTemp)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
 				dgsGridListSetScrollPosition(gridlist,scrollPos)
 			elseif row > fromTo[2] then
 				local scrollPos = ((row-1)*rowHeightLeadingTemp+rowHeight-gridListRange)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
@@ -1528,7 +1537,14 @@ function dgsGridListSetVerticalScrollPosition(gridlist,vertical)
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end
 
-
+function dgsAttachToGridList(element,gridlist,row,column,x,y,w,h,relativePos,relativeSize)
+	assert(dgsIsDxElement(element),"Bad argument @dgsAttachToGridList at argument 1, expect dgs-dxgui got "..dgsGetType(element))
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsAttachToGridList at at argument 2, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(not dgsGetParent(element),"Bad argument @dgsAttachToGridList at argument 1, source dgs element shouldn't have a parent")
+	dgsDetachElements(element)
+	dgsSetData(gridlist,"attachedBy",attachedBy)
+	dgsSetData(element,"attachedTo",attachedTable)
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
