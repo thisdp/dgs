@@ -279,6 +279,8 @@ function dgsImportOOPClass(polluteGlobal)
 			stopAlphaing = dgsOOP.genOOPFnc("dgsStopAlphaing",true),
 			getPostGUI = dgsOOP.genOOPFnc("dgsGetPostGUI"),
 			setPostGUI = dgsOOP.genOOPFnc("dgsGetPostGUI",true),
+			detachFromGridList = dgsOOP.genOOPFnc("dgsDetachFromGridList",true),
+			attachToGridList = dgsOOP.genOOPFnc("dgsAttachToGridList",true),
 			center = dgsOOP.genOOPFnc("dgsCenterElement",true),
 			destroy = function(self,...) return destroyElement(self.dgsElement) end,
 			isElement = function(self) return isElement(self.dgsElement) end,

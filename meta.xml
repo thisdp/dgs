@@ -509,6 +509,8 @@
 	<export function="dgsGridListGetVerticalScrollPosition" type="client" />
 	<export function="dgsGridListSetNavigationEnabled" type="client" />
 	<export function="dgsGridListGetNavigationEnabled" type="client" />
+	<export function="dgsAttachToGridList" type="client" />
+	<export function="dgsDetachFromGridList" type="client" />
 
 	<export function="dgsCreateBrowser" type="client" />
 

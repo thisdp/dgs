@@ -27,12 +27,11 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
-local utf8Sub = utf8.sub
 local utf8Len = utf8.len
 local tableInsert = table.insert
 local tableRemove = table.remove
 local tableCount = table.count
-local tableFind = table.find
+local tableRemoveItemFromArray = table.removeItemFromArray
 local applyColorAlpha = applyColorAlpha
 local getCursorPosition = getCursorPosition
 local triggerEvent = triggerEvent
@@ -43,7 +42,6 @@ local type = type
 local isElement = isElement
 local _getElementID = getElementID
 local getElementID = function(ele) return isElement(ele) and _getElementID(ele) or tostring(ele) end
-local getScreenFromWorldPosition = getScreenFromWorldPosition
 ----
 sW,sH = guiGetScreenSize()
 white = 0xFFFFFFFF
@@ -270,8 +268,6 @@ function dgsCoreRender()
 					dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,isPostGUI)
 					dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,isPostGUI)
 				end
-			else
-			
 			end
 			local parent = MouseData.hit
 			local parentIndex = 0
@@ -1021,9 +1017,10 @@ function onDGSMouseCheck(button,state)
 		if MouseKeySupports[dgsGetType(source)] then
 			if not MouseHolder.lastKey then
 				if isTimer(MouseHolder.Timer) then killTimer(MouseHolder.Timer) end
-				MouseHolder = {}
-				MouseHolder.element = source
-				MouseHolder.lastKey = button
+				MouseHolder = {
+					element = source,
+					lastKey = button,
+				}
 				MouseHolder.Timer = setTimer(function()
 					if not getKeyState(MouseHolder.lastKey) or not isElement(MouseHolder.element) then
 						MouseHolder = {}
@@ -1065,22 +1062,18 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			blurEditMemo()
 		elseif dgsType == "dgs-dxmemo" then
 			blurEditMemo()
-		elseif dgsType == "dgs-dxtabpanel" then
-			local rentarg = dgsElementData[source].renderTarget
+		elseif dgsType == "dgs-dxtabpanel" then	
 			local tabs = dgsElementData[source].tabs or {}
 			for i=1,#tabs do
 				destroyElement(tabs[i])
-			end
-			if isElement(rentarg) then
-				destroyElement(rentarg)
 			end
 		elseif dgsType == "dgs-dxtab" then
 			local isRemove = dgsElementData[source].isRemove
 			if not isRemove then
 				local tabpanel = dgsElementData[source].parent
 				if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
-					local w = dgsElementData[tabpanel].absSize[1]
 					local wid = dgsElementData[source].width
+					local w = dgsElementData[tabpanel].absSize[1]
 					local tabs = dgsElementData[tabpanel].tabs
 					local tabPadding = dgsElementData[tabpanel].tabPadding
 					local sidesize = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
@@ -1119,46 +1112,26 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		dgsStopSizing(source)
 		dgsStopAlphaing(source)
 		if dgsType == "dgs-dx3dinterface" then
-			local id = tableFind(dx3DInterfaceTable,source)
-			if id then
-				tableRemove(dx3DInterfaceTable,id)
-			end
+			tableRemoveItemFromArray(dx3DInterfaceTable,source)
 		elseif dgsType == "dgs-dx3dtext" then
-			local id = tableFind(dx3DTextTable,source)
-			if id then
-				tableRemove(dx3DTextTable,id)
-				return
-			end
+			tableRemoveItemFromArray(dx3DTextTable,source)
 		else
 			local parent = dgsGetParent(source)
 			if not isElement(parent) then
-				local id = tableFind(CenterFatherTable,source)
-				if id then
-					tableRemove(CenterFatherTable,id)
-				else
-					local id = tableFind(BottomFatherTable,source)
-					if id then
-						tableRemove(BottomFatherTable,id)
-					else
-						local id = tableFind(TopFatherTable,source)
-						if id then
-							tableRemove(TopFatherTable,id)
-						end
-					end
+				local layer = dgsElementData[source].alwaysOn
+				if layer == "bottom" then
+					tableRemoveItemFromArray(BottomFatherTable,source)
+				elseif layer == "center" then
+					tableRemoveItemFromArray(CenterFatherTable,source)
+				elseif layer == "top" then
+					tableRemoveItemFromArray(TopFatherTable,source)
 				end
 			else
-				local id = tableFind(ChildrenTable[parent] or {},source)
-				if id then
-					tableRemove(ChildrenTable[parent],id)
-				end
+				tableRemoveItemFromArray(ChildrenTable[parent] or {},source)
 			end
 		end
-		local lang = (dgsElementData[source] or {})._translationText
-		if lang then
-			local id = tableFind(LanguageTranslationAttach,source)
-			if id then
-				tableRemove(LanguageTranslationAttach,id)
-			end
+		if (dgsElementData[source] or {})._translationText then
+			tableRemoveItemFromArray(LanguageTranslationAttach,source)
 		end
 	end
 	dgsElementData[source] = nil
@@ -1266,6 +1239,7 @@ function checkScale(source)
 	end
 	return false
 end
+
 DoubleClick = {}
 DoubleClick.Interval = 500
 DoubleClick.down = false

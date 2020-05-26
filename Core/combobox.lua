@@ -192,11 +192,9 @@ function dgsComboBoxSetEditEnabled(combobox,enabled)
 				dgsSetVisible(edit,false)
 			end
 		end
-	else
-		if isElement(captionEdit) then
-			destroyElement(captionEdit)
-			dgsSetData(combobox,"captionEdit",false)
-		end
+	elseif isElement(captionEdit) then
+		destroyElement(captionEdit)
+		dgsSetData(combobox,"captionEdit",false)
 	end
 end
 
@@ -236,16 +234,20 @@ function dgsComboBoxAddItem(combobox,text)
 	local box = dgsElementData[combobox].myBox
 	local size = dgsElementData[box].absSize
 	local id = #data+1
-	local tab = {}
+	local _text
 	if type(text) == "table" then
-		tab._translationText = text
+		_text = text
 		text = dgsTranslate(combobox,text,sourceResource)
 	end
-	tab[-3] = dgsElementData[combobox].itemTextSize
-	tab[-2] = dgsElementData[combobox].itemTextColor
-	tab[-1] = dgsElementData[combobox].itemImage
-	tab[0] = dgsElementData[combobox].itemColor
-	tab[1] = tostring(text)
+	local tab = {
+		[-3] = dgsElementData[combobox].itemTextSize,
+		[-2] = dgsElementData[combobox].itemTextColor,
+		[-1] = dgsElementData[combobox].itemImage,
+		[0] = dgsElementData[combobox].itemColor,
+		tostring(text),
+		_translationText = _text
+	}
+	
 	tableInsert(data,id,tab)
 	if id*itemHeight > size[2] then
 		local scrollBar = dgsElementData[combobox].scrollbar
@@ -478,7 +480,6 @@ function dgsComboBoxGetScrollPosition(combobox)
 	local scb = dgsElementData[combobox].scrollbar
 	return dgsScrollBarGetScrollPosition(scb)
 end
-
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------

@@ -1,3 +1,19 @@
+--Dx Functions
+local dxDrawLine = dxDrawLine
+local dxDrawImage = dxDrawImageExt
+local dxDrawImageSection = dxDrawImageSectionExt
+local dxDrawText = dxDrawText
+local dxGetFontHeight = dxGetFontHeight
+local dxDrawRectangle = dxDrawRectangle
+local dxSetShaderValue = dxSetShaderValue
+local dxGetPixelsSize = dxGetPixelsSize
+local dxGetPixelColor = dxGetPixelColor
+local dxSetRenderTarget = dxSetRenderTarget
+local dxGetTextWidth = dxGetTextWidth
+local dxSetBlendMode = dxSetBlendMode
+
+local getScreenFromWorldPosition = getScreenFromWorldPosition
+
 function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode)
 	assert(tonumber(x),"Bad argument @dgsCreate3DText at argument 1, expect a number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y))

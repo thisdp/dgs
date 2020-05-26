@@ -1565,6 +1565,22 @@ function dgsAttachToGridList(element,gridlist,row,column)
 	end
 	return dgsSetData(element,"attachedToGridList",{gridlist,row,column})
 end
+
+function dgsDetachFromGridList(element)
+	assert(dgsIsDxElement(element),"Bad argument @dgsAttachToGridList at argument 1, expect dgs-dxgui got "..dgsGetType(element))
+	local attachData = dgsElementData[element].attachedToGridList
+	local gridlist = attachData[1]
+	local row = attachData[2]
+	local column = attachData[3]
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		if rowData[row][column] then
+			rowData[row][column][10] = rowData[row][column][10] or {}
+			table.removeItemFromArray(rowData[row][column][10],element)
+		end
+	end
+	return dgsSetData(element,"attachedToGridList",nil)
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -1699,7 +1715,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 				if mouseInsideRow then
 					local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
 					local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp
-					sid = (tempID-tempID%1)+eleData.FromTo[1]+1
+					local sid = (tempID-tempID%1)+eleData.FromTo[1]+1
 					if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
 						eleData.oPreSelect = sid
 						if rowData[sid][-2] ~= false then

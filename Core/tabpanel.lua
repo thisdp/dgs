@@ -29,7 +29,6 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	local tabpanel = createElement("dgs-dxtabpanel")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(tabpanel,parent,true,true) or table.insert(CenterFatherTable,tabpanel)
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
-	dgsSetData(tabpanel,"renderBuffer",{})
 	local tabHeight = tabHeight or styleSettings.tabpanel.tabHeight
 	dgsSetData(tabpanel,"tabHeight",{tabHeight,false})
 	dgsSetData(tabpanel,"tabMaxWidth",{10000,false})
@@ -48,6 +47,7 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx = dgsElementData[tabpanel].absSize[1]
 	local rendertarget = dxCreateRenderTarget(abx,tabHeight,true,tabpanel)
+	dgsAttachToAutoDestroy(renderTarget,tabpanel,1)
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
@@ -195,10 +195,9 @@ function configTabPanel(source)
 	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 	local tabHeight = dgsElementData[source].tabHeight
 	local rentarg = dgsElementData[source].renderTarget
-	if isElement(rentarg) then
-		destroyElement(rentarg)
-	end
+	if isElement(rentarg) then destroyElement(rentarg) end
 	local tabRender = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
+	dgsAttachToAutoDestroy(renderTarget,source,1)
 	dgsSetData(source,"renderTarget",tabRender)
 end
 

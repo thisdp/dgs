@@ -1,7 +1,8 @@
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.find,string.format,byte
 local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
-local insert = table.insert
+local tableInsert = table.insert
+local tableRemove = table.remove
 local _dxDrawImageSection = dxDrawImageSection
 local _dxDrawImage = dxDrawImage
 ClientInfo = {
@@ -163,6 +164,14 @@ function table.find(tab,ke,num)
 	return false
 end
 
+function table.removeItemFromArray(tab,item)
+	for i=1,#tab do
+		if tab[i] == item then
+			return tableRemove(tab,i)
+		end
+	end
+end
+
 function table.count(tabl)
 	local cnt = 0
 	for k,v in pairs(tabl) do
@@ -196,7 +205,7 @@ function table.complement(theall,...)
 	local newtable = {}
 	for k,v in pairs(theall) do
 		if not table.find(remove) then
-			insert(newtable,v)
+			tableInsert(newtable,v)
 		end
 	end
 	return newtable
@@ -225,23 +234,7 @@ function table.shallowCopy(obj)
 	end
 	return InTable
 end
---[[
-function table.create2WayIndex()
-	local primaryTable = {}
-	local secondaryTable = {}
-	local metatable = {
-		Primary = primaryTable,
-		Secondary = secondaryTable,
-		indexOf = function(self,item)
-			return self.Secondary[item]
-		end,
-		append = function(self,item)
-			local index = #self.primaryTable+1
-			self.primaryTable[index] = item
-			self.secondaryTable[item] = index
-		end,
-	}
-end]]
+
 --------------------------------String Utility
 function string.split(s,delim)
 	local delimLen = len(delim)
@@ -605,9 +598,6 @@ addEventHandler("onClientKey",root,function(but,state)
 		keyStateMap[but] = state
 	end
 end)
-
---------------------------------OOP Utility
-
 --------------------------------Dx Utility
 PixelShaderCode = [[
 	float4 main(float2 Tex : TEXCOORD0):COLOR0
