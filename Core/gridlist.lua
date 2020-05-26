@@ -1546,18 +1546,29 @@ function dgsGridListSetVerticalScrollPosition(gridlist,vertical)
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end
 
-function dgsAttachToGridList(element,gridlist,row,column,x,y,w,h,relativePos,relativeSize)
+function dgsAttachToGridList(element,gridlist,row,column)
 	assert(dgsIsDxElement(element),"Bad argument @dgsAttachToGridList at argument 1, expect dgs-dxgui got "..dgsGetType(element))
-	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsAttachToGridList at at argument 2, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(not dgsGetParent(element),"Bad argument @dgsAttachToGridList at argument 1, source dgs element shouldn't have a parent")
+	if not (dgsGetType(gridlist) == "dgs-dxgridlist") then assert(false,"Bad argument @dgsAttachToGridList at argument 2, expect dgs-dxgridlist got "..dgsGetType(gridlist)) end
+	if not (type(row) == "number") then assert(false,"Bad argument @dgsAttachToGridList at argument 3, expect number got "..type(row)) end
+	if not (type(column) == "number") then assert(false,"Bad argument @dgsAttachToGridList at argument 4, expect number got "..type(column)) end
+	row,column = row-row%1,column-column%1
+	if not (row >= 1) then assert(false,"Bad argument @dgsAttachToGridList at argument 3, expect number >= 1 got "..row) end
+	if not (column >= 1) then assert(false,"Bad argument @dgsAttachToGridList at argument 4, expect a number >= 1 got "..column) end
 	dgsDetachElements(element)
-	dgsSetData(gridlist,"attachedBy",attachedBy)
-	dgsSetData(element,"attachedTo",attachedTable)
+	dgsSetParent(element,gridlist)
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] then
+		if rowData[row][column] then
+			rowData[row][column][10] = rowData[row][column][10] or {}
+			table.insert(rowData[row][column][10],element)
+		end
+	end
+	return dgsSetData(element,"attachedToGridList",{gridlist,row,column})
 end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
 	if eleData.configNextFrame then
 		configGridList(source)
 	end
@@ -1628,6 +1639,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local sortIcon = eleData.sortFunction == sortFunctions_lower and "▼" or (eleData.sortFunction == sortFunctions_upper and "▲") or nil
 	local sortColumn = eleData.sortColumn
 	local backgroundOffset = eleData.backgroundOffset
+	local beforeHit = MouseData.hit
 	if not eleData.mode then
 		local renderTarget = eleData.renderTarget
 		local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
@@ -1712,7 +1724,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 			end
 			local Select = eleData.rowSelect
 			local sectionFont = eleData.sectionFont or font
+			local dgsElementBuffer = {}
 			for i=eleData.FromTo[1],eleData.FromTo[2] do
+				dgsElementBuffer[i] = {}
 				local lc_rowData = rowData[i]
 				local image,columnOffset,isSection,color = lc_rowData[-3] or eleData.rowImage,lc_rowData[-4] or eleData.columnOffset,lc_rowData[-5],lc_rowData[0] or eleData.rowColor
 				if isDraw2 then
@@ -1773,6 +1787,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 						else
 							dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,color[rowState])
 						end
+						dgsElementBuffer[i][id] = {currentRowData[10],_x,_y}
 						if text then
 							local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
 							if currentRowData[7] then
@@ -1787,8 +1802,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 							textBufferCnt = textBufferCnt + 1
 						end
 					end
-					for i=1,#textBuffer do
-						local line = textBuffer[i]
+					local textBuffers = #textBuffer
+					for a=1,textBuffers do
+						local line = textBuffer[a]
 						local colorcoded = line[9]
 						local text = line[1]
 						if shadow then
@@ -1798,6 +1814,15 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 							dxDrawText(text,line[2]+shadow[1]+rowTextPosOffset[1],_y+shadow[2]+rowTextPosOffset[2],line[3]+shadow[1]+rowTextPosOffset[1],_sy+shadow[2]+rowTextPosOffset[2],shadow[3],line[5],line[6],line[7],line[10],"center",line[8],false,false,false,true)
 						end
 						dxDrawText(line[1],line[2]+rowTextPosOffset[1],_y+rowTextPosOffset[2],line[3]+rowTextPosOffset[1],_sy+rowTextPosOffset[2],line[4],line[5],line[6],line[7],line[10],"center",line[8],false,false,colorcoded,true)
+					end
+				end
+			end
+			for rowIndex,row in pairs(dgsElementBuffer) do
+				for columnIndex,items in pairs(row) do
+					local offx = items[2]
+					local offy = items[3]
+					for a=1,#(items[1] or {}) do
+						renderGUI(items[1][a],mx,my,enabled,renderTarget[2],{0,0,position[3],position[4]+columnHeight},offx,offy,parentAlpha,visible,checkElement)
 					end
 				end
 			end
@@ -1990,8 +2015,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	if enabled then
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-			MouseData.hit = source
+		if beforeHit == MouseData.hit then
+			if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
+				MouseData.hit = source
+			end
 		end
 	end
 	return rndtgt

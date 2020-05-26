@@ -12,31 +12,36 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local tonumber = tonumber
+local assert = assert
+local tableInsert = table.insert
 
-function dgsCreateImage(x,y,sx,sy,img,relative,parent,color)
-	assert(tonumber(x),"Bad argument @dgsCreateImage at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateImage at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateImage at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateImage at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateImage at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
+function dgsCreateImage(x,y,w,h,img,relative,parent,color)
+	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
+	if not __x then assert(false,"Bad argument @dgsCreateImage at argument 1, expect number got "..type(x)) end
+	if not __y then assert(false,"Bad argument @dgsCreateImage at argument 2, expect number got "..type(y)) end
+	if not __w then assert(false,"Bad argument @dgsCreateImage at argument 3, expect number got "..type(w)) end
+	if not __h then assert(false,"Bad argument @dgsCreateImage at argument 4, expect number got "..type(h)) end
+	if parent then
+		if not dgsIsDxElement(parent) then assert(false,"Bad argument @dgsCreateImage at argument 7, expect dgs-dxgui got "..dgsGetType(parent)) end
 	end
 	local image = createElement("dgs-dximage")
-	dgsSetData(image,"renderBuffer",{})
-	dgsElementData[image].renderBuffer.UVSize = {}
-	dgsElementData[image].renderBuffer.UVPos = {}
+	dgsSetData(image,"renderBuffer",{
+		UVSize = {},
+		UVPos = {},
+	})
 	dgsSetType(image,"dgs-dximage")
 	local texture = img
-	if type(img) == "string" then
+	if img and type(img) == "string" then
 		texture,textureExists = dgsImageCreateTextureExternal(image,sourceResource,texture)
 		if not isElement(texture) then return false end
 	end
 	dgsSetData(image,"image",texture)
-	dgsSetData(image,"color",color or tocolor(255,255,255,255))
+	dgsSetData(image,"color",color or 0xFFFFFFFF)
 	dgsSetData(image,"rotationCenter",{0,0}) --0~1
 	dgsSetData(image,"rotation",0) --0~360
-	local _x = dgsIsDxElement(parent) and dgsSetParent(image,parent,true,true) or table.insert(CenterFatherTable,image)
-	calculateGuiPositionSize(image,x,y,relative or false,sx,sy,relative or false,true)
+	local _ = parent and dgsSetParent(image,parent,true,true) or tableInsert(CenterFatherTable,image)
+	calculateGuiPositionSize(image,__x,__y,relative or false,__w,__h,relative or false,true)
 	triggerEvent("onDgsCreate",image,sourceResource)
 	return image
 end

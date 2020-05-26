@@ -238,7 +238,6 @@ function dgsCoreRender()
 				highlight = dgsElementData[highlight].parent
 			end
 			if dgsGetType(highlight) ~= "dgs-dx3dinterface" and dgsGetType(highlight) ~= "dgs-dx3dtext" then
-				local scAbsX,scAbsY = dgsGetPosition(highlight,false,true,false,true)
 				local absX,absY = dgsGetPosition(highlight,false)
 				local rltX,rltY = dgsGetPosition(highlight,true)
 				local absW,absH = dgsGetSize(highlight,false)
@@ -263,11 +262,14 @@ function dgsCoreRender()
 				local sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/10,100,50))
 				local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
 				local hSideSize = sideSize*0.5
-				local x,y,w,h = scAbsX,scAbsY,absW,absH
-				dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,isPostGUI)
-				dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,isPostGUI)
-				dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,isPostGUI)
-				dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,isPostGUI)
+				local debugData = dgsElementData[highlight].debugData
+				if debugData then
+					local x,y,w,h = debugData[5],debugData[6],absW,absH
+					dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,isPostGUI)
+					dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,isPostGUI)
+					dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,isPostGUI)
+					dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,isPostGUI)
+				end
 			else
 			
 			end
@@ -445,6 +447,9 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 			local _mx,_my,rt,noRender
 			if dgsRenderer[eleType] then
 				rt,noRender,_mx,_my,offx,offy = dgsRenderer[eleType](source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
+				if debugMode then
+					dgsElementData[source].debugData = {x,y,w,h,cx,cy}
+				end
 				rndtgt = rt or rndtgt
 				OffsetX,OffsetY = offx or OffsetX,offy or OffsetY
 			end
@@ -505,13 +510,24 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 				enabled[1] = false
 			end
 		end
-		if eleType ~= "dgs-dxtabpanel" then
-			for i=1,#children do
-				isElementInside = renderGUI(children[i],mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
-			end
-		else
-			for i=1,#children do
-				if dgsElementType[ children[i] ] ~= "dgs-dxtab" then
+		local childrenCnt = #children
+		if childrenCnt ~= 0 then
+			if eleType == "dgs-dxtabpanel" then
+				for i=1,childrenCnt do
+					local child = children[i]
+					if dgsElementType[child] ~= "dgs-dxtab" then
+						isElementInside = renderGUI(child,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
+					end
+				end
+			elseif eleType == "dgs-dxgridlist" then
+				for i=1,childrenCnt do
+					local child = children[i]
+					if not dgsElementData[child].attachedToGridList then
+						isElementInside = renderGUI(child,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
+					end
+				end
+			else
+				for i=1,childrenCnt do
 					isElementInside = renderGUI(children[i],mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
 				end
 			end
