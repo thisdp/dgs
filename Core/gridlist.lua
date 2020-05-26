@@ -1335,15 +1335,9 @@ end
 function dgsGridListSetRowBackGroundImage(gridlist,row,norimage,selimage,cliimage)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowBackGroundImage at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetRowBackGroundImage at argument 2, expect number got "..type(row))
-	if norimage then
-		assert(type(norimage) == "string" or isElement(norimage) and getElementType(norimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 3, expect string/texture got "..tostring(isElement(norimage) or type(norimage)))
-	end
-	if selimage then
-		assert(type(selimage) == "string" or isElement(selimage) and getElementType(selimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 4, expect string/texture got "..tostring(isElement(selimage) or type(selimage)))
-	end
-	if cliimage then
-		assert(type(cliimage) == "string" or isElement(cliimage) and getElementType(cliimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 5, expect string/texture got "..tostring(isElement(cliimage) or type(cliimage)))
-	end
+	assert((not norimage) or dgsGetType(norimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 3, expect string/texture got "..dgsGetType(norimage))
+	assert((not selimage) or dgsGetType(selimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 4, expect string/texture got "..dgsGetType(selimage))
+	assert((not cliimage) or dgsGetType(cliimage) == "texture","Bad argument @dgsGridListSetRowBackGroundImage at argument 5, expect string/texture got "..dgsGetType(cliimage))
 	local rowData = dgsElementData[gridlist].rowData
 	rowData[row][-3] = {norimage,selimage,cliimage}
 	return dgsSetData(gridlist,"rowData",rowData)
@@ -1360,7 +1354,7 @@ function checkGLScrollBar(scb,new,old)
 			local rowLength = #dgsElementData[parent].rowData*(dgsElementData[parent].rowHeight+dgsElementData[parent].leading)
 			local temp = -new*(rowLength-sy+scbThickH+dgsElementData[parent].columnHeight)/100
 			if temp <= 0 then
-				local temp = dgsElementData[parent].scrollFloor[1] and math.floor(temp) or temp 
+				local temp = dgsElementData[parent].scrollFloor[1] and temp-temp%1 or temp 
 				dgsSetData(parent,"rowMoveOffset",temp)
 			end
 			triggerEvent("onDgsElementScroll",parent,source,new,old)
@@ -1371,7 +1365,7 @@ function checkGLScrollBar(scb,new,old)
 			local columnOffset = dgsElementData[parent].columnOffset
 			local temp = -new*(columnWidth-sx+scbThickV+columnOffset)/100
 			if temp <= 0 then
-				local temp = dgsElementData[parent].scrollFloor[2] and math.floor(temp) or temp
+				local temp = dgsElementData[parent].scrollFloor[2] and temp-temp%1 or temp
 				dgsSetData(parent,"columnMoveOffset",temp)
 			end
 			triggerEvent("onDgsElementScroll",parent,source,new,old)
