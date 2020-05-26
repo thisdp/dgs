@@ -1343,18 +1343,18 @@ end
 
 function dgsGridListSetRowBackGroundImage(gridlist,row,norimage,selimage,cliimage)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetRowBackGroundImage at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(row) == "number","Bad argument @dgsGridListSetRowBackGroundImage at argument 2, expect number got "..type(row))
+	if not (type(row) == "number") then assert(false,"Bad argument @dgsGridListSetRowBackGroundImage at argument 2, expect number got "..type(row)) end
 	if norimage ~= nil then
 		local imgType = dgsGetType(norimage)
-		if imgType == "texture" or imgType == "shader" then assert(false,"Bad argument @dgsGridListSetRowBackGroundImage at argument 3, expect material got "..dgsGetType(norimage)) end
+		if not (imgType == "texture" or imgType == "shader") then assert(false,"Bad argument @dgsGridListSetRowBackGroundImage at argument 3, expect material got "..dgsGetType(norimage)) end
 	end
 	if selimage ~= nil then
 		local imgType = dgsGetType(selimage)
-		if imgType == "texture" or imgType == "shader" then assert(false,"Bad argument @dgsGridListSetRowBackGroundImage at argument 4, expect material got "..dgsGetType(selimage)) end
+		if not (imgType == "texture" or imgType == "shader") then assert(false,"Bad argument @dgsGridListSetRowBackGroundImage at argument 4, expect material got "..dgsGetType(selimage)) end
 	end
 	if cliimage ~= nil then
 		local imgType = dgsGetType(cliimage)
-		if imgType == "texture" or imgType == "shader" then assert(false,"Bad argument @dgsGridListSetRowBackGroundImage at argument 5, expect material got "..dgsGetType(norimage)) end
+		if not (imgType == "texture" or imgType == "shader") then assert(false,"Bad argument @dgsGridListSetRowBackGroundImage at argument 5, expect material got "..dgsGetType(norimage)) end
 	end
 	local rowData = dgsElementData[gridlist].rowData
 	rowData[row][-3] = {norimage,selimage,cliimage}
