@@ -1566,9 +1566,18 @@ function dgsAttachToGridList(element,gridlist,row,column)
 	return dgsSetData(element,"attachedToGridList",{gridlist,row,column})
 end
 
+function dgsGetAttachedGridList(element)
+	local attachData = dgsElementData[element].attachedToGridList
+	if attachData then
+		return attachData[1],attachData[2],attachData[3]
+	end
+	return false
+end
+
 function dgsDetachFromGridList(element)
 	assert(dgsIsDxElement(element),"Bad argument @dgsAttachToGridList at argument 1, expect dgs-dxgui got "..dgsGetType(element))
 	local attachData = dgsElementData[element].attachedToGridList
+	if not attachData then return false end
 	local gridlist = attachData[1]
 	local row = attachData[2]
 	local column = attachData[3]

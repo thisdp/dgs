@@ -1044,6 +1044,8 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 	local parent = dgsGetParent(source) or root
 	if dgsIsDxElement(source) then
 		triggerEvent("onDgsDestroy",source)
+		local isAttachedToGridList = dgsElementData[source].attachedToGridList
+		if isAttachedToGridList then dgsDetachFromGridList(source) end
 		local child = ChildrenTable[source] or {}
 		for i=1,#child do
 			if isElement(child[1]) then
