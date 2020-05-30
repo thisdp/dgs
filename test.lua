@@ -454,9 +454,9 @@ function dgsRoundRectWithWindowText()
 end
 
 function test9SliceScale()
-	local img = dxCreateTexture("yourTexture.png")
-	local nSli = dgsCreateNineSlice(img,0.2,0.8,0.4,0.6)
-	local image = dgsCreateImage(400,400,400,400,nSli,false)
+	local img = dxCreateTexture("palette.png")
+	local nSli = dgsCreateNineSlice(img,0.2,0.8,0.4,0.6,true)
+	--local image = dgsCreateImage(400,400,400,400,nSli,false)
 end
 -----------------------------Plugin Test
 function scrollPane3DEffectTest()

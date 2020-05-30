@@ -75,14 +75,18 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF,postGUI or false)
 end
 
-function dgsCreateBlurBox(w,h)
+function dgsCreateBlurBox(w,h,blursource)
 	if not w and not h then
 		return _dgsCreateBlurBox()
 	end
-	if not isElement(BlurBoxGlobalScreenSource) then
-		BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
-	end
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
+	if isElement(blursource) then
+		dgsSetData(bb,"blurSource",blursource)
+	else
+		if not isElement(BlurBoxGlobalScreenSource) then
+			BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
+		end
+	end
 	local horz,vert = getBlurBoxShader(5)
 	local shaderH = dxCreateShader(horz)
 	local shaderV = dxCreateShader(vert)
