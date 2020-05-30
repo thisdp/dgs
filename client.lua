@@ -1101,6 +1101,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				blurboxShaders = blurboxShaders-1
 				if blurboxShaders == 0 and isElement(BlurBoxGlobalScreenSource) then
 					destroyElement(BlurBoxGlobalScreenSource)
+					BlurBoxGlobalScreenSource = nil
 				end
 			end
 		end
