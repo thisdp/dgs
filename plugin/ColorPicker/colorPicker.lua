@@ -499,7 +499,9 @@ function dgsUnbindFromColorPicker(show)
 	if bound then
 		local tempColorChange = dgsElementData[show].bindColorPicker_Fnc1
 		local tempTextChange = dgsElementData[show].bindColorPicker_Fnc2
-		removeEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange)
+		if isElement(bound) then
+			removeEventHandler("onDgsColorPickerChange",bound,tempColorChange)
+		end
 		removeEventHandler("onDgsTextChange",show,tempTextChange)
 		dgsElementData[show].bindColorPicker = nil
 		dgsElementData[show].bindColorPicker_Fnc1 = nil
