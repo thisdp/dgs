@@ -1053,9 +1053,9 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			end
 		end
 		local autoDestroyList = dgsElementData[source].autoDestroyList or {}
-		for i=1,#autoDestroyList do
+		for i=-10,#autoDestroyList do	--From -10, to reserve dynamic space
 			local ele = autoDestroyList[i]
-			if isElement(ele) then
+			if ele and isElement(ele) then
 				destroyElement(ele)
 			end
 		end

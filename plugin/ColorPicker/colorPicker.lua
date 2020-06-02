@@ -289,6 +289,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			if not setCool then
 				local cp = _DGSColorPicker
 				local show = _DGSShowElement
+				if not isElement(cp) then return dgsUnbindFromColorPicker(show) end
 				local colorType = _colorType
 				local colorAttribute = _colorAttribute
 				if colorAttribute == "A" then
@@ -317,6 +318,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			if setCool then return end
 			local cp = _DGSColorPicker
 			local show = _DGSShowElement
+			if not isElement(cp) then return dgsUnbindFromColorPicker(show) end
 			local colorType = _colorType
 			local colorAttribute = _colorAttribute
 			local value = dgsColorPickerGetComponentSelectorValue(show)/100
