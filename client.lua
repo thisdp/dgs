@@ -442,6 +442,7 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 			------------------------------------Main Renderer
 			local _mx,_my,rt,noRender
 			if dgsRenderer[eleType] then
+				--local usingBlurBox =
 				rt,noRender,_mx,_my,offx,offy = dgsRenderer[eleType](source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
 				if debugMode then
 					dgsElementData[source].debugData = {x,y,w,h,cx,cy}

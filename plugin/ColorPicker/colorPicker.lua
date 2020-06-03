@@ -230,6 +230,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 	local targetType = dgsGetType(show)
 	local targetPlugin = dgsGetPluginType(show)
 	dgsSetData(show,"bindColorPicker",colorPicker)
+	dgsSetData(show,"isReversed",isReversed)
 	if targetPlugin == "dgs-dxcomponentselector" then
 		local shader = dgsElementData[show].shader
 		if isElement(shader) then destroyElement(shader) return end
@@ -489,7 +490,6 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 	else	
 		assert(false,"Bad argument at argument 1, unsupported type "..targetType)
 	end
-	dgsSetData(show,"isReversed",isReversed)
 	return true
 end
 

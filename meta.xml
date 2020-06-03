@@ -58,6 +58,7 @@
 	<script src="plugin/canvas.lua" type="client" />
 	<script src="plugin/nineSlice.lua" type="client" />
 	<script src="plugin/BlurBox.lua" type="client" />
+	<script src="plugin/circle.lua" type="client" />
 	<file src="plugin/mask/maskTexture.fx" type="client" />
 	<file src="plugin/mask/mask-Circle.fx" type="client" />
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
