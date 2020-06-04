@@ -171,13 +171,8 @@ function dgsSetCurrentStyle(styleName)
 	end
 end
 
-function dgsGetCurrentStyle()
-	return styleManager.styleHistory[1] or "Default"
-end
-
-function dgsGetLoadedStyleList()
-	return styleManager.styles
-end
+function dgsGetCurrentStyle() return styleManager.styleHistory[1] or "Default" end
+function dgsGetLoadedStyleList() return styleManager.styles end
 
 function dgsIsStyleAvailable(styleName)
 	assert(type(styleName) == "string","Bad argument @dgsSetCurrentStyle at argument 1, expect a string got "..type(styleName))

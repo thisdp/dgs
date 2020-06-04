@@ -438,16 +438,16 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 	end
 end
 
-function dgsGetProperties(dxgui,properties)
-	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
+function dgsGetProperties(dgsElement,properties)
+	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsElement))
 	assert(not properties or type(properties) == "table","Bad argument @dgsGetProperties at argument 2, expect none or table got "..type(properties))
-	if not dgsElementData[dxgui] then return false end
+	if not dgsElementData[dgsElement] then return false end
 	if not properties then
-		return dgsElementData[dxgui]
+		return dgsElementData[dgsElement]
 	else
 		local data = {}
 		for k,key in ipairs(properties) do
-			data[key] = dgsElementData[dxgui][key]
+			data[key] = dgsElementData[dgsElement][key]
 		end
 		return data
 	end

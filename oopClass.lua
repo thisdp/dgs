@@ -246,7 +246,7 @@ function dgsImportOOPClass(polluteGlobal)
 			getCurrentLayerIndex = dgsOOP.genOOPFnc("dgsGetCurrentLayerIndex"),
 			getProperty = dgsOOP.genOOPFnc("dgsGetProperty"),
 			setProperty = dgsOOP.genOOPFnc("dgsSetProperty",true),
-			getProperties = dgsOOP.genOOPFnc("dgsGetProperties"),
+			getProperties = function(self,...) return call(dgsOOP.dgsRes,"dgsGetProperties",self.dgsElement,...) end,
 			setProperties = dgsOOP.genOOPFnc("dgsSetProperties",true),
 			getVisible = dgsOOP.genOOPFnc("dgsGetVisible"),
 			setVisible = dgsOOP.genOOPFnc("dgsSetVisible",true),

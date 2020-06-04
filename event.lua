@@ -11,61 +11,66 @@ ClientInfo = {
 dgs = exports[getResourceName(getThisResource())]
 
 ------Event for developers
-addEvent("onDgsMouseLeave")
-addEvent("onDgsMouseEnter")
-addEvent("onDgsMouseClick")
-addEvent("onDgsMouseWheel")
-addEvent("onDgsMouseClickUp")
-addEvent("onDgsMouseClickDown")
-addEvent("onDgsMouseDoubleClick")
-addEvent("onDgsWindowClose")
-addEvent("onDgsPositionChange")
-addEvent("onDgsSizeChange")
-addEvent("onDgsTextChange")
-addEvent("onDgsElementScroll")
-addEvent("onDgsDestroy")
-addEvent("onDgsSwitchButtonStateChange")
-addEvent("onDgsGridListSelect")
-addEvent("onDgsGridListHover")
-addEvent("onDgsGridListItemDoubleClick")
-addEvent("onDgsProgressBarChange")
-addEvent("onDgsCreate")
-addEvent("onDgsPluginCreate")
-addEvent("onDgsPreRender")
-addEvent("onDgsRender")
-addEvent("onDgsElementRender")
-addEvent("onDgsElementLeave")
-addEvent("onDgsElementEnter")
-addEvent("onDgsElementMove")
-addEvent("onDgsElementSize")
-addEvent("onDgsFocus")
-addEvent("onDgsBlur")
-addEvent("onDgsMouseMove")
-addEvent("onDgsTabSelect")
-addEvent("onDgsTabPanelTabSelect")
-addEvent("onDgsRadioButtonChange")
-addEvent("onDgsCheckBoxChange")
-addEvent("onDgsComboBoxSelect")
-addEvent("onDgsComboBoxStateChange")
-addEvent("onDgsEditPreSwitch")
-addEvent("onDgsEditSwitched")
-addEvent("onDgsEditAccepted")
-addEvent("onDgsStopMoving")
-addEvent("onDgsStopSizing")
-addEvent("onDgsStopAlphaing")
-addEvent("onDgsStopAniming")
-addEvent("onDgsArrowListValueChange")
-addEvent("onDgsMouseDrag")
-addEvent("onDgsStart")
--------Plugin events
-addEvent("onDgsRemoteImageLoad")
-addEvent("onDgsQRCodeLoad")
--------internal events
-addEvent("DGSI_ReceiveIP",true)
-addEvent("DGSI_SendAboutData",true)
-addEvent("DGSI_ReceiveQRCode",true)
-addEvent("DGSI_ReceiveRemoteImage",true)
--------
+events = {
+	"onDgsMouseLeave",
+	"onDgsMouseEnter",
+	"onDgsMouseClick",
+	"onDgsMouseWheel",
+	"onDgsMouseClickUp",
+	"onDgsMouseClickDown",
+	"onDgsMouseDoubleClick",
+	"onDgsWindowClose",
+	"onDgsPositionChange",
+	"onDgsSizeChange",
+	"onDgsTextChange",
+	"onDgsElementScroll",
+	"onDgsDestroy",
+	"onDgsSwitchButtonStateChange",
+	"onDgsGridListSelect",
+	"onDgsGridListHover",
+	"onDgsGridListItemDoubleClick",
+	"onDgsProgressBarChange",
+	"onDgsCreate",
+	"onDgsPluginCreate",
+	"onDgsPreRender",
+	"onDgsRender",
+	"onDgsElementRender",
+	"onDgsElementLeave",
+	"onDgsElementEnter",
+	"onDgsElementMove",
+	"onDgsElementSize",
+	"onDgsFocus",
+	"onDgsBlur",
+	"onDgsMouseMove",
+	"onDgsTabSelect",
+	"onDgsTabPanelTabSelect",
+	"onDgsRadioButtonChange",
+	"onDgsCheckBoxChange",
+	"onDgsComboBoxSelect",
+	"onDgsComboBoxStateChange",
+	"onDgsEditPreSwitch",
+	"onDgsEditSwitched",
+	"onDgsEditAccepted",
+	"onDgsStopMoving",
+	"onDgsStopSizing",
+	"onDgsStopAlphaing",
+	"onDgsStopAniming",
+	"onDgsMouseDrag",
+	"onDgsStart",
+	-------Plugin events
+	"onDgsRemoteImageLoad",
+	"onDgsQRCodeLoad",
+	-------internal events
+	"DGSI_ReceiveIP",
+	"DGSI_SendAboutData",
+	"DGSI_ReceiveQRCode",
+	"DGSI_ReceiveRemoteImage",
+	-------
+}
+for i=1,#events do
+	addEvent(events[i],true)
+end
+
 fontDxHave = {
 	["default"]=true,
 	["default-bold"]=true,
@@ -78,6 +83,7 @@ fontDxHave = {
 	["beckett"]=true,
 }
 
+function dgsGetSystemFont() return systemFont end
 function dgsSetSystemFont(font,size,bold,quality)
 	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
 	if isElement(systemFont) then
@@ -96,10 +102,6 @@ function dgsSetSystemFont(font,size,bold,quality)
 		end
 	end
 	return false
-end
-
-function dgsGetSystemFont()
-	return systemFont
 end
 
 builtins = {
@@ -172,7 +174,7 @@ function table.removeItemFromArray(tab,item)
 			break
 		end
 	end
-	return id and table.remove(tab,id) or false
+	return id and tableRemove(tab,id) or false
 end
 
 function table.count(tabl)
@@ -270,10 +272,7 @@ function math.restrict(value,n_min,n_max)
 end
 
 function math.inRange(n_min,n_max,value)
-	if value >= n_min and value <= n_max then
-		return true
-	end
-	return false
+	return value >= n_min and value <= n_max
 end
 
 function math.lerp(s,a,b)
@@ -587,6 +586,7 @@ keyStateMap = {
 	lalt=getKeyState("lalt"),
 	ralt=getKeyState("ralt"),
 }
+
 _getKeyState = getKeyState
 function getKeyState(key)
 	if keyStateMap[key] ~= nil then
@@ -603,18 +603,14 @@ addEventHandler("onClientKey",root,function(but,state)
 end)
 --------------------------------Dx Utility
 PixelShaderCode = [[
-	float4 main(float2 Tex : TEXCOORD0):COLOR0
-	{
-		return 0;
+float4 main(float2 Tex : TEXCOORD0):COLOR0 {
+	return 0;
+}
+technique RepTexture {
+	pass P0 {
+		PixelShader = compile ps_&rep main();
 	}
-	
-	technique RepTexture
-	{
-		pass P0
-		{
-			PixelShader = compile ps_&rep main();
-		}
-	}
+}
 ]]
 PixShaderVersion = {"2_0","2_a","2_b","3_0"}
 function checkPixelShaderVersion()

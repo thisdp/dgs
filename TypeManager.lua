@@ -26,34 +26,22 @@ dgsType = {
 	"dgs-dxbrowser",
 }
 
-function dgsGetType(dgsGUI)
-	if isElement(dgsGUI) then
-		return tostring(dgsElementType[dgsGUI] or getElementType(dgsGUI))
-	else
-		local theType = type(dgsGUI)
-		if theType == "userdata" then
-			if dgsElementType[dgsGUI] then
-				return "garbage (destroyed)"
-			end
-		end
-		return theType
-	end
+function dgsGetType(dgsEle)
+	if isElement(dgsEle) then return tostring(dgsElementType[dgsEle] or getElementType(dgsEle)) end
+	local theType = type(dgsEle)
+	if theType == "userdata" and dgsElementType[dgsEle] then return "garbage (destroyed)" end
+	return theType
 end
 
-function dgsGetPluginType(dgsGUI)
-	return dgsGUI and (dgsElementData[dgsGUI] and dgsElementData[dgsGUI].asPlugin or false) or dgsGetType(dgsGUI)
-end
+function dgsIsDxElement(dgsEle) return isElement(dgsEle) and ((dgsElementType[dgsEle] or (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin) or ""):sub(1,6) == "dgs-dx") end
+function dgsGetPluginType(dgsEle) return dgsEle and (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin or false) or dgsGetType(dgsEle) end
 
-function dgsSetType(dgsGUI,myType)
-	if isElement(dgsGUI) and type(myType) == "string" then
-		dgsElementType[dgsGUI] = myType
+function dgsSetType(dgsEle,myType)
+	if isElement(dgsEle) and type(myType) == "string" then
+		dgsElementType[dgsEle] = myType
 		return true
 	end
 	return false
-end
-
-function dgsIsDxElement(element)
-	return isElement(element) and ((dgsElementType[element] or (dgsElementData[element] and dgsElementData[element].asPlugin) or ""):sub(1,6) == "dgs-dx")
 end
 
 function dgsIsMaterialElement(ele)
@@ -61,5 +49,5 @@ function dgsIsMaterialElement(ele)
 		local eleType = getElementType(ele)
 		return eleType == "shader" or eleType == "texture"
 	end
-	return type(ele)
+	return false
 end

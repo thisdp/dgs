@@ -83,10 +83,8 @@ end
 effect3DShader = [[
 texture sourceTexture;
 
-technique effect3D
-{
-	pass p0
-	{
+technique effect3D {
+	pass p0 {
 		Texture[0] = sourceTexture;
 	}
 }

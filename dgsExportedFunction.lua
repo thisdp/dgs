@@ -5,39 +5,6 @@ addEventHandler("onClientResourceStart",resourceRoot,function()
 	triggerEvent("onDgsStart",resourceRoot,dgsResName)
 end)
 
--------------------------------TDX Lib Support
-
---[[
-
-		local _dxDrawCircle = dxDrawCircle
-		dxDrawCircle = function(posX,posY,radius,startAngle,stopAngle,theColor,theCenterColor,segments,ratio,postGUI)
-			_dxDrawCircle(posX,posY,radius,startAngle,stopAngle,theColor,theCenterColor,segments,ratio,postGUI,true)
-		end
-		local _dxDrawImage = dxDrawImage
-		dxDrawImage = function(posX,posY,width,height,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
-			_dxDrawImage(posX,posY,width,height,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,true)
-		end
-		local _dxDrawImageSection = dxDrawImageSection
-		dxDrawImageSection = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
-			_dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,true)
-		end
-		local _dxDrawLine = dxDrawLine
-		dxDrawLine = function(startX,startY,endX,endY,color,width,postGUI) 
-			_dxDrawLine(startX,startY,endX,endY,color,width,true)
-		end
-		local _dxDrawLine3D = dxDrawLine3D
-		dxDrawLine3D = function(startX,startY,startZ,endX,endY,endZ,color,width,postGUI) 
-			_dxDrawLine3D(startX,startY,startZ,endX,endY,endZ,color,width,true)
-		end
-		local _dxDrawRectangle = dxDrawRectangle
-		dxDrawRectangle = function(startX,startY,width,height,color,postGUI,subPixelPositioning)
-			_dxDrawRectangle(startX,startY,width,height,color,true,subPixelPositioning)
-		end
-		local _dxDrawText = dxDrawText
-		dxDrawText = function(text,leftX,topY,rightX,bottomY,color,scaleXY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRotation,fRotationCenterX,fRotationCenterY)
-			_dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleXY,font,alignX,alignY,clip,wordBreak,true,colorCoded,subPixelPositioning,fRotation,fRotationCenterX,fRotationCenterY)
-		end]]
-
 function dgsConfigureTDX()
 	local tdx = getResourceName(sourceResource)
 	
