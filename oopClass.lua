@@ -85,10 +85,10 @@ function dgsImportOOPClass(polluteGlobal)
 				local rlt = dgsGetProperty(meta.dgsElement,"relative")
 				rlt[1] = value
 				return dgsSetProperty(meta.dgsElement,"relative",rlt)
-			elseif key == "w" then
+			elseif key == "x" then
 				local rlt = dgsGetProperty(meta.dgsElement,"relative")
 				return dgsSetPosition(meta.dgsElement,value,_,rlt[1])
-			elseif key == "h" then
+			elseif key == "y" then
 				local rlt = dgsGetProperty(meta.dgsElement,"relative")
 				return dgsSetPosition(meta.dgsElement,_,value,rlt[1])
 			end
@@ -134,10 +134,10 @@ function dgsImportOOPClass(polluteGlobal)
 				local rlt = dgsGetProperty(meta.dgsElement,"relative")
 				rlt[2] = value
 				return dgsSetProperty(meta.dgsElement,"relative",rlt)
-			elseif key == "x" then
+			elseif key == "w" then
 				local rlt = dgsGetProperty(meta.dgsElement,"relative")
 				return dgsSetSize(meta.dgsElement,value,_,rlt[2])
-			elseif key == "y" then
+			elseif key == "h" then
 				local rlt = dgsGetProperty(meta.dgsElement,"relative")
 				return dgsSetSize(meta.dgsElement,_,value,rlt[2])
 			end
