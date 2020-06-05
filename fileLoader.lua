@@ -46,17 +46,10 @@ addEventHandler("onResourceStart",resourceRoot,function ()
 
 	if restartRequired == true then 
 		local final = getTickCount() - tick
-		outputDebugString("Required Restarting "..getResourceName(getThisResource()).." | Restarting In 5 Seconds | Adedd Totally "..count.." File(s) In "..final.." Mili-Second(s)")
-		setTimer(restartResource,5000,1)
+		outputDebugString("Required Restarting "..getResourceName(getThisResource()).." | Adedd Totally "..count.." File(s) In "..final.." Mili-Second(s)")
 	end
 end)
 
-local _restartResource = restartResource
-
-function restartResource ()
-	assert(hasObjectPermissionTo(getThisResource(),"function.restartResource"),"Missing ACL permission : function.restartResource")
-	_restartResource(getThisResource())
-end
 
 addEventHandler("onResourceStop",resourceRoot,function ()
 	meta:saveFile()
