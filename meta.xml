@@ -1,5 +1,7 @@
 ﻿<meta>
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="3.5" /> 
+	<oop>true</oop>
+	<script src="fileLoader.lua" type="server" />
 	<file src="html/media.html" />
 	<file src="html/pasteHandler.html" />
 	<file src="styleManager/styleMapper.lua"/>
@@ -606,6 +608,7 @@
 	<aclrequest>
 		<right name="function.fetchRemote" access="true" />
 		<right name="function.getClientIP" access="true" />
+		<right name="function.restartResource" access="true" />
 		<right name="general.ModifyOtherObjects" access="true" />
 	</aclrequest>
 	<download_priority_group>999</download_priority_group>
