@@ -124,7 +124,7 @@ function loadStyleFont(newFont,path)
 		fontQuality = newFont[4] or fontQuality
 		newFont = newFont[1]
 	end
-	if not fontDxHave[newFont] then
+	if not fontBuiltIn[newFont] then
 		newFont = path..newFont
 	end
 	dgsSetSystemFont(newFont,fontSize,fontBold,fontQuality)

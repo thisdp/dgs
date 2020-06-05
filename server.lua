@@ -1,4 +1,47 @@
-﻿addEvent("DGSI_RequestQRCode",true)
+﻿-----------Config Loader
+dgsConfig = {}
+dgsConfig.updateCheck				= true		-- Enable:true;Disable:false
+dgsConfig.updateCheckInterval		= 120		-- Minutes
+dgsConfig.updateCheckNoticeInterval	= 120		-- Minutes
+dgsConfig.updateSystemDisabled		= false		-- Minutes
+dgsConfig.backupMeta				= true		-- Backup meta.xml
+dgsConfig.backupStyleMeta			= true		-- Backup style files meta index from meta.xml
+dgsConfig.g2d						= true		-- GUI To DGS command line
+
+function loadConfig()
+	if fileExists("config.txt") then
+		local file = fileOpen("config.txt")
+		if file then
+			local str = fileRead(file,fileGetSize(file))
+			fileClose(file)
+			local fnc = loadstring(str)
+			if fnc then
+				fnc()
+				outputDebugString("[DGS]Config File Loaded!")
+			else
+				outputDebugString("[DGS]Invaild Config File!",2)
+			end
+		else
+			outputDebugString("[DGS]Invaild Config File!",2)
+		end
+	end
+	if dgsConfig.g2d then
+		outputDebugString("[DGS]G2D is enabled!")
+	end
+	--Regenerate config file
+	local file = fileCreate("config.txt")
+	local str = ""
+	for k,v in pairs(dgsConfig) do
+		local value = type(v) == "string" and '"'..v..'"' or tostring(v)
+		str = str.."\r\ndgsConfig."..k.." = "..value
+	end
+	fileWrite(file,str:sub(3))
+	fileClose(file)
+end
+loadConfig()
+
+-----------Remote Stuff
+addEvent("DGSI_RequestQRCode",true)
 addEvent("DGSI_RequestIP",true)
 addEvent("DGSI_RequestRemoteImage",true)
 addEvent("DGSI_RequestAboutData",true)

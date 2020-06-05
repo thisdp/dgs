@@ -26,7 +26,7 @@ local propertyTable = dgsElementData[self];
 function dgsAddEasingFunction(name,str)
 	assert(type(name) == "string","Bad at argument @dgsAddEasingFunction at argument 1, expected a string got "..type(name))
 	assert(type(str) == "string","Bad at argument @dgsAddEasingFunction at argument 2, expected a string got "..type(str))
-	assert(not builtins[name],"Bad at argument @dgsAddEasingFunction at argument 1, duplicated name with builtins ("..name..")")
+	assert(not easingBuiltIn[name],"Bad at argument @dgsAddEasingFunction at argument 1, duplicated name with built-in easing function ("..name..")")
 	assert(not SelfEasing[name],"Bad at argument @dgsAddEasingFunction at argument 1, this name has been used ("..name..")")
 	local str = SEInterface..str
 	local fnc = loadstring(str)
@@ -46,7 +46,7 @@ end
 
 function dgsEasingFunctionExists(name)
 	assert(type(name) == "string","Bad at argument @dgsEasingFunctionExists at argument 1, expected a string got "..type(name))
-	return builtins[name] or (SelfEasing[name] and true)
+	return easingBuiltIn[name] or (SelfEasing[name] and true)
 end	
 
 function insertResource(res,dgsElement)
@@ -160,6 +160,22 @@ function dgsSetPosition(dgsElement,x,y,bool,isCenterPosition)
 		calculateGuiPositionSize(dgsElement,x,y,bool)
 	end
 	return true
+end
+
+function dgsCenterElement(element,remainX,remainY)
+	assert(dgsIsDxElement(element),"Bad argument @dgsCenterElement at argument 1, expecteed dgs-element got "..dgsGetType(element))
+	local rlt = dgsElementData[element].relative[1]
+	if rlt then
+		local remainPos = dgsElementData[element].rltPos
+		local size = dgsElementData[element].rltSize
+		return dgsSetPosition(element,remainX and remainPos[1] or 0.5-size[1]/2,remainY and remainPos[2] or 0.5-size[2]/2,true)
+	else
+		local parent = dgsGetParent(element)
+		local windowSize = parent and dgsElementData[parent].absSize or {sW,sH}
+		local remainPos = dgsElementData[element].absPos
+		local size = dgsElementData[element].absSize
+		return dgsSetPosition(element,remainX and remainPos[1] or windowSize[1]/2-size[1]/2,remainY and remainPos[2] or windowSize[2]/2-size[2]/2,false)
+   end
 end
 
 function dgsGetSize(dgsElement,bool)
@@ -410,14 +426,40 @@ end
 
 function dgsSetFont(dgsEle,font)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	if font then
-		dgsSetData(dgsEle,"font",font)	
+	local fontType = dgsGetType(font)
+	if fontType == "string" then
+		assert(fontBuiltIn[font],"Bad argument @dgsSetFont at argument 2, font "..font.." doesn't exist")
+	elseif fontType ~= "dx-font" then
+		assert(fontBuiltIn[font],"Bad argument @dgsSetFont at argument 2, expected a string/dx-font got "..fontType)
 	end
+	dgsSetData(dgsEle,"font",font)	
 end
 
 function dgsGetFont(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetFont at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle].font
+end
+
+function dgsGetSystemFont() return systemFont end
+
+function dgsSetSystemFont(font,size,bold,quality)
+	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
+	if isElement(systemFont) then
+		destroyElement(systemFont)
+	end
+	sourceResource = sourceResource or getThisResource()
+	if fontBuiltIn[font] then
+		systemFont = font
+		return true
+	elseif sourceResource then
+		local path = font:find(":") and font or ":"..getResourceName(sourceResource).."/"..font
+		assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
+		local font = dxCreateFont(path,size,bold,quality)
+		if isElement(font) then
+			systemFont = font
+		end
+	end
+	return false
 end
 
 function dgsSetText(dgsEle,text)
@@ -673,43 +715,8 @@ function dgsDetachFromAutoDestroy(element,dgsElement)
 	end
 	return true
 end
-------------Round Up Functions
-defaultRoundUpPoints = 3
-function dgsRoundUp(num,points)
-	if points then
-		assert(type(points) == "number","Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..dgsGetType(points))
-		assert(points%1 == 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got float")
-		assert(points > 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..points)
-	end
-	local points = points or defaultRoundUpPoints
-	local s_num = tostring(num)
-	local from,to = utf8.find(s_num,"%.")
-	if from then
-		local single = s_num:sub(from+points,from+points)
-		local single = tonumber(single) or 0
-		local a = s_num:sub(0,from+points-1)
-		if single >= 5 then
-			a = a+10^(-points+1)
-		end
-		return tonumber(a)
-	end
-	return num
-end
-
-function dgsGetRoundUpPoints()
-	return defaultRoundUpPoints
-end
-
-function dgsSetRoundUpPoints(points)
-	assert(type(points) == "number","Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got "..dgsGetType(points))
-	assert(points%1 == 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got float")
-	assert(points > 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got 0")
-	defaultRoundUpPoints = points
-	return true
-end
 
 -------------------------
-
 addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"lor","left")
 	dgsSetData(source,"tob","top")
@@ -858,7 +865,7 @@ function dgsGetTranslationValue(name,key)
 	end
 	return false
 end
---------------Translation Interior
+--------------Translation Internal
 LanguageTranslationSupport = {
 	"dgs-dx3dtext",
 	"dgs-dxbutton",
@@ -938,20 +945,4 @@ function dgsApplyLanguageChange(name,translation,attach)
 			end
 		end
 	end
-end
-
-function dgsCenterElement(element,remainX,remainY)
-	assert(dgsIsDxElement(element),"Bad argument @dgsCenterElement at argument 1, expecteed dgs-element got "..dgsGetType(element))
-	local rlt = dgsElementData[element].relative[1]
-	if rlt then
-		local remainPos = dgsElementData[element].rltPos
-		local size = dgsElementData[element].rltSize
-		return dgsSetPosition(element,remainX and remainPos[1] or 0.5-size[1]/2,remainY and remainPos[2] or 0.5-size[2]/2,true)
-	else
-		local parent = dgsGetParent(element)
-		local windowSize = parent and dgsElementData[parent].absSize or {sW,sH}
-		local remainPos = dgsElementData[element].absPos
-		local size = dgsElementData[element].absSize
-		return dgsSetPosition(element,remainX and remainPos[1] or windowSize[1]/2-size[1]/2,remainY and remainPos[2] or windowSize[2]/2-size[2]/2,false)
-   end
 end

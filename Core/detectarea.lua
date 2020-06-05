@@ -1,5 +1,4 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
 local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText

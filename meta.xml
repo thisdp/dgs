@@ -3,11 +3,9 @@
 	<file src="html/media.html" />
 	<file src="html/pasteHandler.html" />
 	<file src="styleManager/styleMapper.lua"/>
-	<script src="configLoad.lua" type="server" />
-	<script src="event.lua" type="client" />
-	<script src="TypeManager.lua" type="client" />
-	<script src="PropertyManager.lua" type="client" />
-	<script src="ParentManager.lua" type="client" />
+	<script src="server.lua" type="server" />
+	<script src="utility.lua" type="client" />
+	<script src="manager.lua" type="client" />
 	<script src="client.lua" type="client" />
 	<script src="oopClass.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
@@ -64,7 +62,6 @@
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
 	<script src="styleManager/styleManager.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
-	<script src="server.lua" type="server" />
 	<script src="update.lua" type="server" />
 	<script src="G2DManager_s.lua" type="server" />
 	<script src="test.lua" type="client" />

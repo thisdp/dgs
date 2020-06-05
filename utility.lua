@@ -10,68 +10,8 @@ ClientInfo = {
 }
 dgs = exports[getResourceName(getThisResource())]
 
-------Event for developers
-events = {
-	"onDgsMouseLeave",
-	"onDgsMouseEnter",
-	"onDgsMouseClick",
-	"onDgsMouseWheel",
-	"onDgsMouseClickUp",
-	"onDgsMouseClickDown",
-	"onDgsMouseDoubleClick",
-	"onDgsWindowClose",
-	"onDgsPositionChange",
-	"onDgsSizeChange",
-	"onDgsTextChange",
-	"onDgsElementScroll",
-	"onDgsDestroy",
-	"onDgsSwitchButtonStateChange",
-	"onDgsGridListSelect",
-	"onDgsGridListHover",
-	"onDgsGridListItemDoubleClick",
-	"onDgsProgressBarChange",
-	"onDgsCreate",
-	"onDgsPluginCreate",
-	"onDgsPreRender",
-	"onDgsRender",
-	"onDgsElementRender",
-	"onDgsElementLeave",
-	"onDgsElementEnter",
-	"onDgsElementMove",
-	"onDgsElementSize",
-	"onDgsFocus",
-	"onDgsBlur",
-	"onDgsMouseMove",
-	"onDgsTabSelect",
-	"onDgsTabPanelTabSelect",
-	"onDgsRadioButtonChange",
-	"onDgsCheckBoxChange",
-	"onDgsComboBoxSelect",
-	"onDgsComboBoxStateChange",
-	"onDgsEditPreSwitch",
-	"onDgsEditSwitched",
-	"onDgsEditAccepted",
-	"onDgsStopMoving",
-	"onDgsStopSizing",
-	"onDgsStopAlphaing",
-	"onDgsStopAniming",
-	"onDgsMouseDrag",
-	"onDgsStart",
-	-------Plugin events
-	"onDgsRemoteImageLoad",
-	"onDgsQRCodeLoad",
-	-------internal events
-	"DGSI_ReceiveIP",
-	"DGSI_SendAboutData",
-	"DGSI_ReceiveQRCode",
-	"DGSI_ReceiveRemoteImage",
-	-------
-}
-for i=1,#events do
-	addEvent(events[i],true)
-end
-
-fontDxHave = {
+-------Built-in DX Fonts
+fontBuiltIn = {
 	["default"]=true,
 	["default-bold"]=true,
 	["clear"]=true,
@@ -83,28 +23,8 @@ fontDxHave = {
 	["beckett"]=true,
 }
 
-function dgsGetSystemFont() return systemFont end
-function dgsSetSystemFont(font,size,bold,quality)
-	assert(type(font) == "string","Bad argument @dgsSetSystemFont at argument 1, expect a string got "..dgsGetType(font))
-	if isElement(systemFont) then
-		destroyElement(systemFont)
-	end
-	sourceResource = sourceResource or getThisResource()
-	if fontDxHave[font] then
-		systemFont = font
-		return true
-	elseif sourceResource then
-		local path = font:find(":") and font or ":"..getResourceName(sourceResource).."/"..font
-		assert(fileExists(path),"Bad argument @dgsSetSystemFont at argument 1,couldn't find such file '"..path.."'")
-		local font = dxCreateFont(path,size,bold,quality)
-		if isElement(font) then
-			systemFont = font
-		end
-	end
-	return false
-end
-
-builtins = {
+-------Built-in Easing Functions
+easingBuiltIn = {
 	Linear = true,
 	InQuad = true,
 	OutQuad = true,
@@ -125,6 +45,7 @@ builtins = {
 	SineCurve = true,
 	CosineCurve = true,
 }
+
 -------DGS Built-in Texture
 DGSBuiltInTex = {
 	transParent_1x1 = dxCreateTexture(1,1,"dxt5"),
@@ -301,6 +222,41 @@ function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
 	local posX,posY = posX+absSize[1]/2,posY+absSize[2]/2
 	local rot = findRotation(posX,posY,x,y,offsetFix)
 	return rot,(x-posX)/absSize[1],(y-posY)/absSize[2]
+end
+
+------------Round Up Functions
+defaultRoundUpPoints = 3
+function dgsRoundUp(num,points)
+	if points then
+		assert(type(points) == "number","Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..dgsGetType(points))
+		assert(points%1 == 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got float")
+		assert(points > 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..points)
+	end
+	local points = points or defaultRoundUpPoints
+	local s_num = tostring(num)
+	local from,to = utf8.find(s_num,"%.")
+	if from then
+		local single = s_num:sub(from+points,from+points)
+		local single = tonumber(single) or 0
+		local a = s_num:sub(0,from+points-1)
+		if single >= 5 then
+			a = a+10^(-points+1)
+		end
+		return tonumber(a)
+	end
+	return num
+end
+
+function dgsGetRoundUpPoints()
+	return defaultRoundUpPoints
+end
+
+function dgsSetRoundUpPoints(points)
+	assert(type(points) == "number","Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got "..dgsGetType(points))
+	assert(points%1 == 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got float")
+	assert(points > 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got 0")
+	defaultRoundUpPoints = points
+	return true
 end
 --------------------------------Built-in Utility
 HorizontalAlign = {
@@ -601,6 +557,7 @@ addEventHandler("onClientKey",root,function(but,state)
 		keyStateMap[but] = state
 	end
 end)
+
 --------------------------------Dx Utility
 PixelShaderCode = [[
 float4 main(float2 Tex : TEXCOORD0):COLOR0 {
@@ -626,3 +583,64 @@ function checkPixelShaderVersion()
 	end
 end
 checkPixelShaderVersion()
+
+--------------------------------Events
+events = {
+	"onDgsMouseLeave",
+	"onDgsMouseEnter",
+	"onDgsMouseClick",
+	"onDgsMouseWheel",
+	"onDgsMouseClickUp",
+	"onDgsMouseClickDown",
+	"onDgsMouseDoubleClick",
+	"onDgsWindowClose",
+	"onDgsPositionChange",
+	"onDgsSizeChange",
+	"onDgsTextChange",
+	"onDgsElementScroll",
+	"onDgsDestroy",
+	"onDgsSwitchButtonStateChange",
+	"onDgsGridListSelect",
+	"onDgsGridListHover",
+	"onDgsGridListItemDoubleClick",
+	"onDgsProgressBarChange",
+	"onDgsCreate",
+	"onDgsPluginCreate",
+	"onDgsPreRender",
+	"onDgsRender",
+	"onDgsElementRender",
+	"onDgsElementLeave",
+	"onDgsElementEnter",
+	"onDgsElementMove",
+	"onDgsElementSize",
+	"onDgsFocus",
+	"onDgsBlur",
+	"onDgsMouseMove",
+	"onDgsTabSelect",
+	"onDgsTabPanelTabSelect",
+	"onDgsRadioButtonChange",
+	"onDgsCheckBoxChange",
+	"onDgsComboBoxSelect",
+	"onDgsComboBoxStateChange",
+	"onDgsEditPreSwitch",
+	"onDgsEditSwitched",
+	"onDgsEditAccepted",
+	"onDgsStopMoving",
+	"onDgsStopSizing",
+	"onDgsStopAlphaing",
+	"onDgsStopAniming",
+	"onDgsMouseDrag",
+	"onDgsStart",
+	-------Plugin events
+	"onDgsRemoteImageLoad",
+	"onDgsQRCodeLoad",
+	-------internal events
+	"DGSI_ReceiveIP",
+	"DGSI_SendAboutData",
+	"DGSI_ReceiveQRCode",
+	"DGSI_ReceiveRemoteImage",
+	-------
+}
+for i=1,#events do
+	addEvent(events[i],true)
+end

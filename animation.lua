@@ -31,7 +31,7 @@ function dgsAnimTo(gui,property,value,easing,thetime,callback,reverseProgress)
 	assert(thetime,"Bad argument @dgsAnimTo at argument 6, expect number got "..type(thetime))
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAnimTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
-	assert(not(type(value) ~= "number" and builtins[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
+	assert(not(type(value) ~= "number" and easingBuiltIn[easing]),"Bad argument @dgsAnimTo, only number can be passed with mta built-in easing type")
 	if not dgsElementData[gui].anim then
 		dgsElementData[gui].anim = {}
 	end
@@ -225,7 +225,7 @@ addEventHandler("onClientRender",root,function()
 				local ctPercent = changeTime/thetime
 				local linearProgress = ctPercent >= 1 and 1 or ctPercent
 				linearProgress = isReversed and 1-linearProgress or linearProgress
-				if builtins[easing] then
+				if easingBuiltIn[easing] then
 					local percent = oldValue+getEasingValue(linearProgress,easing)*(targetValue-oldValue)
 					dgsSetProperty(v,propertyName,percent)
 				else
@@ -259,7 +259,7 @@ addEventHandler("onClientRender",root,function()
 				local finishX,finishY = false,false
 				if disx ~= 0 then
 					local progress = (nx-ox)/disx
-					if builtins[easing] then
+					if easingBuiltIn[easing] then
 						percentx = getEasingValue(progress,easing)
 					else
 						percentx = getEasingValue2(progress,easing,settings,v)
@@ -276,7 +276,7 @@ addEventHandler("onClientRender",root,function()
 				end
 				if disy ~= 0 then
 					local progress = (ny-oy)/disy
-					if builtins[easing] then
+					if easingBuiltIn[easing] then
 						percenty = getEasingValue(progress,easing)
 					else
 						percenty = getEasingValue2(progress,easing,settings,v)
@@ -295,7 +295,7 @@ addEventHandler("onClientRender",root,function()
 			else
 				local changeTime = tickCount-data[0]
 				local temp = changeTime/torvx
-				if builtins[easing] then
+				if easingBuiltIn[easing] then
 					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 				else
 					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
@@ -329,7 +329,7 @@ addEventHandler("onClientRender",root,function()
 				local finishX,finishY = false,false
 				if disx ~= 0 then
 					local progress = (nx-ox)/disx
-					if builtins[easing] then
+					if easingBuiltIn[easing] then
 						percentx = getEasingValue(progress,easing)
 					else
 						percentx = getEasingValue2(progress,easing,settings,v)
@@ -346,7 +346,7 @@ addEventHandler("onClientRender",root,function()
 				end
 				if disy ~= 0 then
 					local progress = (ny-oy)/disy
-					if builtins[easing] then
+					if easingBuiltIn[easing] then
 						percenty = getEasingValue(progress,easing)
 					else
 						percenty = getEasingValue2(progress,easing,settings,v)
@@ -365,7 +365,7 @@ addEventHandler("onClientRender",root,function()
 			else
 				local changeTime = tickCount-data[0]
 				local temp = changeTime/torvx
-				if builtins[easing] then
+				if easingBuiltIn[easing] then
 					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 				else
 					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
@@ -399,7 +399,7 @@ addEventHandler("onClientRender",root,function()
 				local speed = torv*diff*symbolAlpha*0.001
 				if disAlpha ~= 0 then
 					local progress = (alp-oldAlpha)/disAlpha
-					if builtins[easing] then
+					if easingBuiltIn[easing] then
 						percentx = getEasingValue(progress,easing)
 					else
 						percentx = getEasingValue2(progress,easing,settings,v)
@@ -417,7 +417,7 @@ addEventHandler("onClientRender",root,function()
 			else
 				local changeTime = tickCount-data[0]
 				local temp = changeTime/torv
-				if builtins[easing] then
+				if easingBuiltIn[easing] then
 					percentalp = interpolateBetween(oldAlpha,0,0,endalpha,0,0,temp,easing or "Linear")
 				else
 					percentalp = interpolateBetween2(oldAlpha,0,0,endalpha,0,0,temp,easing,settings,v)
