@@ -111,12 +111,20 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	local abx,aby = aSize[1],aSize[2]
 	local columnRender,rowRender
 	if abx*columnHeight ~= 0 then
-		columnRender = dxCreateRenderTarget(abx,columnHeight,true,gridlist)
-		dgsAttachToAutoDestroy(columnRender,gridlist,1)
+		columnRender,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist)
+		if columnRender ~= false then
+			dgsAttachToAutoDestroy(columnRender,gridlist,-1)
+		else
+			outputDebugString(err)
+		end
 	end
 	if abx*(aby-columnHeight-scbThick) ~= 0 then
-		rowRender = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist)
-		dgsAttachToAutoDestroy(rowRender,gridlist,2)
+		rowRender,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist)
+		if rowRender ~= false then
+			dgsAttachToAutoDestroy(rowRender,gridlist,-2)
+		else
+			outputDebugString(err)
+		end
 	end
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
 	local scrollbar1 = dgsCreateScrollBar(abx-scbThick,0,scbThick,aby-scbThick,false,false,gridlist)
@@ -1391,15 +1399,15 @@ function checkGLScrollBar(scb,new,old)
 	end
 end
 
-function configGridList(source)
-	local scrollbar = dgsElementData[source].scrollbars
-	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-	local columnHeight = dgsElementData[source].columnHeight
-	local rowHeight = dgsElementData[source].rowHeight
-	local scbThick = dgsElementData[source].scrollBarThick
-	local columnCount =  dgsGridListGetColumnCount(source)
-	local columnWidth = dgsGridListGetColumnAllWidth(source,columnCount,false,true)
-	local rowLength = #dgsElementData[source].rowData*(rowHeight+dgsElementData[source].leading)
+function configGridList(gridlist)
+	local scrollbar = dgsElementData[gridlist].scrollbars
+	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[gridlist].absSize[2]
+	local columnHeight = dgsElementData[gridlist].columnHeight
+	local rowHeight = dgsElementData[gridlist].rowHeight
+	local scbThick = dgsElementData[gridlist].scrollBarThick
+	local columnCount =  dgsGridListGetColumnCount(gridlist)
+	local columnWidth = dgsGridListGetColumnAllWidth(gridlist,columnCount,false,true)
+	local rowLength = #dgsElementData[gridlist].rowData*(rowHeight+dgsElementData[gridlist].leading)
 	local scbX,scbY = sx-scbThick,sy-scbThick
 	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
@@ -1419,7 +1427,7 @@ function configGridList(source)
 	if scbStateV == nil then
 		scbStateV = scbStateH
 	end
-	local forceState = dgsElementData[source].scrollBarState
+	local forceState = dgsElementData[gridlist].scrollBarState
 	if forceState[1] ~= nil then
 		scbStateV = forceState[1]
 	end
@@ -1444,41 +1452,49 @@ function configGridList(source)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].position
 	local scroll2 = dgsElementData[scrollbar[2]].position
-	dgsSetData(source,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
+	dgsSetData(gridlist,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
 	
-	local scbLengthVrt = dgsElementData[source].scrollBarLength[1]
+	local scbLengthVrt = dgsElementData[gridlist].scrollBarLength[1]
 	local higLen = 1-(rowLength-rowShowRange)/rowLength
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
-	local verticalScrollSize = dgsElementData[source].scrollSize/(rowLength-rowShowRange)
+	local verticalScrollSize = dgsElementData[gridlist].scrollSize/(rowLength-rowShowRange)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
-	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
+	local scbLengthHoz = dgsElementData[gridlist].scrollBarLength[2]
 	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
-	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(columnWidth-columnShowRange)
+	local horizontalScrollSize = dgsElementData[gridlist].scrollSize*5/(columnWidth-columnShowRange)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 
-	local rentarg = dgsElementData[source].renderTarget
+	local rentarg = dgsElementData[gridlist].renderTarget
 	if rentarg then
 		if isElement(rentarg[1]) then destroyElement(rentarg[1]) end
 		if isElement(rentarg[2]) then destroyElement(rentarg[2]) end
-		if not dgsElementData[source].mode then
+		if not dgsElementData[gridlist].mode then
 			local columnRender,rowRender
 			if relSizX*columnHeight ~= 0 then
-				columnRender = dxCreateRenderTarget(relSizX,columnHeight,true,source)
-				dgsAttachToAutoDestroy(columnRender,source,1)
+				columnRender,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist)
+				if columnRender ~= false then
+					dgsAttachToAutoDestroy(columnRender,gridlist,-1)
+				else
+					outputDebugString(err)
+				end
 			end
 			if relSizX*rowShowRange ~= 0 then
-				rowRender = dxCreateRenderTarget(relSizX,rowShowRange,true,source)
-				dgsAttachToAutoDestroy(rowRender,source,2)
+				rowRender,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist)
+				if rowRender ~= false then
+					dgsAttachToAutoDestroy(rowRender,gridlist,-2)
+				else
+					outputDebugString(err)
+				end
 			end
-			dgsSetData(source,"renderTarget",{columnRender,rowRender})
+			dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
 		end
 	end
-	dgsGridListUpdateRowMoveOffset(source)
-	dgsSetData(source,"configNextFrame",false)
+	dgsGridListUpdateRowMoveOffset(gridlist)
+	dgsSetData(gridlist,"configNextFrame",false)
 end
 
 function dgsGridListResetScrollBarPosition(gridlist,vertical,horizontal)

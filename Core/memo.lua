@@ -125,9 +125,13 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local padding = dgsElementData[memo].padding
 	local sizex,sizey = abx-padding[1]*2,abx-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local renderTarget = dxCreateRenderTarget(sizex,sizey,true,memo)
+	local renderTarget,err = dxCreateRenderTarget(sizex,sizey,true,memo)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,memo,-1)
+	else
+		outputDebugString(err)
+	end
 	dgsSetData(memo,"renderTarget",renderTarget)
-	dgsAttachToAutoDestroy(renderTarget,memo,1)
 	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
 	handleDxMemoText(memo,text,false,true)
 	triggerEvent("onDgsCreate",memo,sourceResource)
@@ -999,33 +1003,33 @@ function seekMaxLengthLine(memo)
 	return line,lineLen
 end
 	
-function configMemo(source)
-	local size = dgsElementData[source].absSize
-	local padding = dgsElementData[source].padding
-	local scrollbar = dgsElementData[source].scrollbars
+function configMemo(memo)
+	local size = dgsElementData[memo].absSize
+	local padding = dgsElementData[memo].padding
+	local scrollbar = dgsElementData[memo].scrollbars
 	local scrollBarBefore = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
 	local textCnt
-	if dgsElementData[source].wordWrap then
-		textCnt = #dgsElementData[source].wordWrapMapText	--Weak Line for word Wrap
+	if dgsElementData[memo].wordWrap then
+		textCnt = #dgsElementData[memo].wordWrapMapText	--Weak Line for word Wrap
 	else
-		textCnt = #dgsElementData[source].text			--Strong Line for no word Wrap
+		textCnt = #dgsElementData[memo].text			--Strong Line for no word Wrap
 	end
-	local font = dgsElementData[source].font
-	local textSize = dgsElementData[source].textSize
-	local fontHeight = dxGetFontHeight(dgsElementData[source].textSize[2],font)
-	local scbThick = dgsElementData[source].scrollBarThick
+	local font = dgsElementData[memo].font
+	local textSize = dgsElementData[memo].textSize
+	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
+	local scbThick = dgsElementData[memo].scrollBarThick
 	local scbStateV,scbStateH = false,false
-	if not dgsElementData[source].wordWrap then
-		scbStateH = dgsElementData[source].rightLength[1] > size[1]-padding[1]*2
+	if not dgsElementData[memo].wordWrap then
+		scbStateH = dgsElementData[memo].rightLength[1] > size[1]-padding[1]*2
 	end
 	local scbTakes2 = scbStateH and scbThick or 0
 	local canHold = mathFloor((size[2]-padding[2]*2-scbTakes2)/fontHeight)
 	scbStateV = textCnt > canHold
 	local scbTakes1 = scbStateV and scbThick or 0
-	if not dgsElementData[source].wordWrap then
-		scbStateH = dgsElementData[source].rightLength[1] > size[1]-padding[1]*2-scbTakes1
+	if not dgsElementData[memo].wordWrap then
+		scbStateH = dgsElementData[memo].rightLength[1] > size[1]-padding[1]*2-scbTakes1
 	end
-	local forceState = dgsElementData[source].scrollBarState
+	local forceState = dgsElementData[memo].scrollBarState
 	if forceState[1] ~= nil then
 		scbStateV = forceState[1]
 	end
@@ -1041,34 +1045,36 @@ function configMemo(source)
 	dgsSetSize(scrollbar[1],scbThick,size[2]-padding[2]*2-scbTakes2,false)
 	dgsSetSize(scrollbar[2],size[1]-padding[1]*2-scbTakes1,scbThick,false)
 
-	local scbLengthVrt = dgsElementData[source].scrollBarLength[1]
+	local scbLengthVrt = dgsElementData[memo].scrollBarLength[1]
 	local higLen = 1-(textCnt-canHold)/textCnt
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
-	local verticalScrollSize = dgsElementData[source].scrollSize/(textCnt-canHold)
+	local verticalScrollSize = dgsElementData[memo].scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
-	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
-	local widLen = 1-(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+padding[1]*2)/dgsElementData[source].rightLength[1]
+	local scbLengthHoz = dgsElementData[memo].scrollBarLength[2]
+	local widLen = 1-(dgsElementData[memo].rightLength[1]-size[1]+scbTakes1+padding[1]*2)/dgsElementData[memo].rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
-	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(dgsElementData[source].rightLength[1]-size[1]+scbTakes1+padding[1]*2)
+	local horizontalScrollSize = dgsElementData[memo].scrollSize*5/(dgsElementData[memo].rightLength[1]-size[1]+scbTakes1+padding[1]*2)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	local scrollBarAfter = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
 	if scrollBarAfter[1] ~= scrollBarBefore[1] or scrollBarAfter[2] ~= scrollBarBefore[2] then
-		dgsSetData(source,"rebuildMapTableNextFrame",true)
+		dgsSetData(memo,"rebuildMapTableNextFrame",true)
 	end
-	local padding = dgsElementData[source].padding
+	local padding = dgsElementData[memo].padding
 	local sizex,sizey = size[1]-padding[1]*2,size[2]-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local renderTarget = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,source)
-	if renderTarget then
-		local rt_old = dgsElementData[source].renderTarget
-		if isElement(rt_old) then destroyElement(rt_old) end
-		dgsSetData(source,"renderTarget",renderTarget)
-		dgsAttachToAutoDestroy(renderTarget,source,1)
+	local rt_old = dgsElementData[memo].renderTarget
+	if isElement(rt_old) then destroyElement(rt_old) end
+	local renderTarget,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,memo,-1)
+	else
+		outputDebugString(err)
 	end
-	dgsSetData(source,"configNextFrame",false)
+	dgsSetData(memo,"renderTarget",renderTarget)
+	dgsSetData(memo,"configNextFrame",false)
 end
 
 function checkMMScrollBar(source,new,old)

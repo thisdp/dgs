@@ -25,6 +25,7 @@ function createFullDemo()
 		:setScrollPosition(50)
 		:setGrades(10)
 		:setProperty("length",{0.8,true})
+	window.position.relative = false
 	window.position.x = 400
 	local button = window:dgsButton(10,210,80,50,"Test Button",false)
 	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"","",false)
@@ -74,6 +75,7 @@ function createFullDemo()
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+
 ------------
 function createTest2()
 	tabp = dgsCreateTabPanel(400,200,400,400,false)
@@ -492,6 +494,14 @@ function blurboxTest()
 	dgsBlurBoxSetLevel(blurbox,15)
 end
 
+-----Blur Box For Label
+function blurboxLabelTest()
+	local blurbox = dgsCreateBlurBox(sW,sH)
+	dgsCreateImage(0,0,800,800,blurbox,false)
+	dgsBlurBoxSetIntensity(blurbox,5)
+	dgsBlurBoxSetLevel(blurbox,15)
+end
+
 -----------------------------OOP Test
 function oopTest()
 	loadstring(dgsImportOOPClass(true))()-- load OOP class
@@ -504,7 +514,7 @@ function oopTest()
 end
 
 function testColorPicker()
-	--material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
+	material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
 	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material1)
 	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
 	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
@@ -534,7 +544,7 @@ function testColorPicker()
 	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material1)
 	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
 	
-	A = dgsColorPickerCreateComponentSelector(500,260,700,10,true,false,material1)
+	A = dgsColorPickerCreateComponentSelector(500,260,10,500,false,false,material1)
 	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
 end
 
@@ -623,6 +633,7 @@ local function init()
 	local colorpicker = dgsCreateColorPicker("HSVRing", 400, 190, 100, 100, false, window.dgsElement)
 	dgsCenterElement(colorpicker,_,true)
 end
+
 --[[
 setTimer(function()
 local tick = getTickCount()
@@ -652,3 +663,45 @@ setmetatable(dgsClass,meta)
 
 iprint(dgsClass(pos)())
 ]]
+
+rndRect1 = dgsCreateRoundRect(1,true,tocolor(255,255,255,255))
+local shader = dxCreateShader([[
+float borderSoft = 0.002;
+float radius = 0.1;
+
+float getDistance(float w,float h,float2 p){
+	return distance(p,float2(clamp(p.x,-w*0.5,w*0.5),clamp(p.y,-h*0.5,h*0.5)));
+}
+
+float4 ep(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
+	tex-=0.5;
+	color.a *= 1-(getDistance(0.5,0.5,tex)-borderSoft-radius)/borderSoft;
+	return color;
+}
+
+technique t{
+	pass p0{
+		PixelShader = compile ps_2_0 ep();
+	}
+}
+]])
+
+
+local ss = dxCreateShader([[
+
+
+float4 ep(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
+	tex-=0.5;
+	color.a *= (pow(abs(tex.x/9),5)+pow(abs(tex.y/9),5)-0.00000001)/0.001*1000000;
+	return color;
+}
+
+technique t{
+	pass p0{
+		PixelShader = compile ps_2_0 ep();
+	}
+}
+]])
+
+--local image = dgsCreateImage(200,200,400,400,ss,false)
+--local image = dgsCreateImage(200,200,400,400,dgsCreateCircle(),false)

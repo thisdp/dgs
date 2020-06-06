@@ -54,9 +54,7 @@ dgsRenderSetting = {
 }
 dgsRenderer = {}
 
-function dgsGetRenderSetting(name)
-	return dgsRenderSetting[name]
-end
+function dgsGetRenderSetting(name) return dgsRenderSetting[name] end
 
 function dgsSetRenderSetting(name,value)
 	if name == "renderPriority" then

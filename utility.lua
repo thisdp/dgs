@@ -475,13 +475,13 @@ end
 _dxCreateRenderTarget = dxCreateRenderTarget
 function dxCreateRenderTarget(w,h,isTransparent,dgsElement)
 	local rt = _dxCreateRenderTarget(w,h,isTransparent)
-	if not isElement(rt) and w*h ~= 0 then
+	if not isElement(rt) then
+		if w*h == 0 then return nil end	--Pass
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
 		local reqSize,reqUnit = getProperUnit(0.0000076*w*h,"MB")
 		local freeSize,freeUnit = getProperUnit(videoMemory,"MB")
 		local forWhat = dgsElement and (" for "..dgsGetPluginType(dgsElement)) or ""
-		outputDebugString("Failed to create render target"..forWhat.." [Expected:"..reqSize..reqUnit.."/Free:"..freeSize..freeUnit.."]",2)
-		return false
+		return false,"Failed to create render target"..forWhat.." [Expected:"..reqSize..reqUnit.."/Free:"..freeSize..freeUnit.."]"
 	end
 	return rt
 end

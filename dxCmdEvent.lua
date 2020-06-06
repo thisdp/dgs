@@ -599,7 +599,9 @@ function createAboutDGS()
 			dgsAlphaTo(source,0,false,"InQuad",500)
 			showCursor(false)
 			setTimer(function(source)
-				destroyElement(source)
+				if isElement(source) then
+					destroyElement(source)
+				end
 			end,500,1,source)
 		end)
 	else

@@ -695,7 +695,7 @@ function dgsAddDragDropHandler(dgsElement)
 end
 ------------Auto Destroy
 function dgsAttachToAutoDestroy(element,dgsElement,index)
-	assert(isElement(element),"Bad Argument @dgsAttachToAutoDestroy at argument 1, expect element got "..dgsGetType(element))
+	if not isElement(element) then return true end
 	assert(dgsIsDxElement(dgsElement),"Bad Argument @dgsAttachToAutoDestroy at argument 2, expect dgs-dxgui got "..dgsGetType(dgsElement))
 	dgsElementData[dgsElement].autoDestroyList = dgsElementData[dgsElement].autoDestroyList or {}
 	if not index then

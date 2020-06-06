@@ -46,8 +46,12 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	dgsSetData(tabpanel,"tabLengthAll",0)
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx = dgsElementData[tabpanel].absSize[1]
-	local rendertarget = dxCreateRenderTarget(abx,tabHeight,true,tabpanel)
-	dgsAttachToAutoDestroy(rendertarget,tabpanel,1)
+	local renderTarget,err = dxCreateRenderTarget(abx,tabHeight,true,tabpanel)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,tabpanel,-1)
+	else
+		outputDebugString(err)
+	end
 	dgsSetData(tabpanel,"renderTarget",rendertarget)
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
@@ -196,9 +200,13 @@ function configTabPanel(source)
 	local tabHeight = dgsElementData[source].tabHeight
 	local rentarg = dgsElementData[source].renderTarget
 	if isElement(rentarg) then destroyElement(rentarg) end
-	local tabRender = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
-	dgsAttachToAutoDestroy(tabRender,source,1)
-	dgsSetData(source,"renderTarget",tabRender)
+	local renderTarget,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,tabpanel,-1)
+	else
+		outputDebugString(err)
+	end
+	dgsSetData(source,"renderTarget",renderTarget)
 end
 
 function dgsGetSelectedTab(tabpanel,useNumber)
