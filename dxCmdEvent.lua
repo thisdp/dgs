@@ -1,6 +1,6 @@
 ﻿dgs_MyIP = "Unknown"
-triggerServerEvent("DGSI_RequestIP",localPlayer)
-addEventHandler("DGSI_ReceiveIP",root,function(ip)
+triggerServerEvent("DGSI_RequestIP",resourceRoot)
+addEventHandler("DGSI_ReceiveIP",resourceRoot,function(ip)
 	dgs_MyIP = ip
 end)
 
@@ -581,8 +581,7 @@ AboutDGS.coolDown = 0
 function createAboutDGS()
 	if not isElement(AboutDGS.window) then
 		if getTickCount()-AboutDGS.coolDown < 5000 then return outputChatBox("[DGS]Operation is too frequent, try later",255,0,0) end
-		triggerServerEvent("DGSI_RequestAboutData",localPlayer,localPlayer)
-		AboutDGS.coolDown = getTickCount()
+		triggerServerEvent("DGSI_RequestAboutData",resourceRoot)
 		AboutDGS.window = dgsCreateWindow(sW/2-350, sH/2-200, 700, 400, "About DGS", false)
 		dgsWindowSetSizable(AboutDGS.window, false)
 		showCursor(true)
@@ -611,7 +610,7 @@ function createAboutDGS()
 end
 addCommandHandler ("aboutdgs", createAboutDGS )
 
-addEventHandler("DGSI_SendAboutData",root,function(Data)
+addEventHandler("DGSI_SendAboutData",resourceRoot,function(Data)
 	if isElement(AboutDGS.content) then
 		dgsSetText(AboutDGS.content,Data)
 	end
