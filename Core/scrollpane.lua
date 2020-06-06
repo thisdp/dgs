@@ -32,8 +32,12 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
-	local renderTarget = dxCreateRenderTarget(sx,sy,true,scrollpane)
-	dgsAttachToAutoDestroy(renderTarget,scrollpane,1)
+	local renderTarget,err = dxCreateRenderTarget(sx,sy,true,scrollpane)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
+	else
+		outputDebugString(err)
+	end
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	dgsSetData(scrollpane,"horizontalMoveOffsetTemp",0)
@@ -130,12 +134,12 @@ addEventHandler("onDgsDestroy",root,function()
 	end
 end)
 
-function configScrollPane(source)
-	local scrollbar = dgsElementData[source].scrollbars
-	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
-	local scbThick = dgsElementData[source].scrollBarThick
-	local childBounding = dgsElementData[source].maxChildSize
+function configScrollPane(scrollpane)
+	local scrollbar = dgsElementData[scrollpane].scrollbars
+	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
+	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
+	local scbThick = dgsElementData[scrollpane].scrollBarThick
+	local childBounding = dgsElementData[scrollpane].maxChildSize
 	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
 	if childBounding[1] > sx then
@@ -154,7 +158,7 @@ function configScrollPane(source)
 	if scbStateV == nil then
 		scbStateV = scbStateH
 	end
-	local forceState = dgsElementData[source].scrollBarState
+	local forceState = dgsElementData[scrollpane].scrollBarState
 	if forceState[1] ~= nil then
 		scbStateV = forceState[1]
 	end
@@ -171,8 +175,8 @@ function configScrollPane(source)
 	end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
-	dgsElementData[scrollbar[1]].ignoreParentTitle = dgsElementData[source].ignoreParentTitle
-	dgsElementData[scrollbar[2]].ignoreParentTitle = dgsElementData[source].ignoreParentTitle
+	dgsElementData[scrollbar[1]].ignoreParentTitle = dgsElementData[scrollpane].ignoreParentTitle
+	dgsElementData[scrollbar[2]].ignoreParentTitle = dgsElementData[scrollpane].ignoreParentTitle
 	dgsSetPosition(scrollbar[1],x+sx-scbThick,y,false)
 	dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
 	dgsSetSize(scrollbar[1],scbThick,relSizY,false)
@@ -186,31 +190,35 @@ function configScrollPane(source)
 	dgsSetEnabled(scrollbar[1],lengthVertical ~= 1 and true or false)
 	dgsSetEnabled(scrollbar[2],lengthHorizontal  ~= 1 and true or false)
 
-	local scbLengthVrt = dgsElementData[source].scrollBarLength[1]
+	local scbLengthVrt = dgsElementData[scrollpane].scrollBarLength[1]
 	local higLen = 1-(childBounding[2]-relSizY)/childBounding[2]
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	length = scbLengthVrt or {higLen,true}
 	dgsSetData(scrollbar[1],"length",length)
-	local verticalScrollSize = dgsElementData[source].scrollSize/(childBounding[2]-relSizY)
+	local verticalScrollSize = dgsElementData[scrollpane].scrollSize/(childBounding[2]-relSizY)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	
-	local scbLengthHoz = dgsElementData[source].scrollBarLength[2]
+	local scbLengthHoz = dgsElementData[scrollpane].scrollBarLength[2]
 	local widLen = 1-(childBounding[1]-relSizX)/childBounding[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	local length = scbLengthHoz or {widLen,true}
 	dgsSetData(scrollbar[2],"length",length)
-	local horizontalScrollSize = dgsElementData[source].scrollSize*5/(childBounding[1]-relSizX)
+	local horizontalScrollSize = dgsElementData[scrollpane].scrollSize*5/(childBounding[1]-relSizX)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	
-	local renderTarget = dgsElementData[source].renderTarget_parent
+	local renderTarget = dgsElementData[scrollpane].renderTarget_parent
 	if isElement(renderTarget) then
 		destroyElement(renderTarget)
-		dgsElementData[source].renderTarget = nil
+		dgsElementData[scrollpane].renderTarget = nil
 	end
-	local renderTarget = dxCreateRenderTarget(relSizX,relSizY,true,source)
-	dgsAttachToAutoDestroy(renderTarget,source,1)
-	dgsSetData(source,"renderTarget_parent",renderTarget)
-	dgsSetData(source,"configNextFrame",false)
+	local renderTarget,err = dxCreateRenderTarget(relSizX,relSizY,true,scrollpane)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
+	else
+		outputDebugString(err)
+	end
+	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
+	dgsSetData(scrollpane,"configNextFrame",false)
 end
 
 function resizeScrollPane(scrollpane,source) --Need optimize

@@ -112,8 +112,12 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	local padding = dgsElementData[edit].padding
 	local sizex,sizey = sx-padding[1]*2,sy-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local renderTarget = dxCreateRenderTarget(sizex,sizey,true,edit)
-	dgsAttachToAutoDestroy(renderTarget,edit,1)
+	local renderTarget,err = dxCreateRenderTarget(sizex,sizey,true,edit)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,edit,-1)
+	else
+		outputDebugString(err)
+	end
 	dgsSetData(edit,"renderTarget",renderTarget)
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
@@ -410,17 +414,22 @@ function dgsEditGetUnderlined(edit,state)
 end
 
 -----------------Internal Functions
-function configEdit(source)
-	local x,y = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-	local padding = dgsElementData[source].padding
+function configEdit(edit)
+	local x,y = dgsElementData[edit].absSize[1],dgsElementData[edit].absSize[2]
+	local padding = dgsElementData[edit].padding
 	local px,py = x-padding[1]*2,y-padding[2]*2
 	px,py = px-px%1,py-py%1
-	local renderTarget = dxCreateRenderTarget(px,py,true,source)
-	dgsAttachToAutoDestroy(renderTarget,source,1)
-	dgsSetData(source,"renderTarget",renderTarget)
-	local oldPos = dgsEditGetCaretPosition(source)
-	dgsEditSetCaretPosition(source,0)
-	dgsEditSetCaretPosition(source,oldPos)
+	local renderTarget,err = dxCreateRenderTarget(px,py,true,edit)
+	if renderTarget ~= false then
+		dgsAttachToAutoDestroy(renderTarget,edit,-1)
+	else
+		outputDebugString(err)
+	end
+	dgsAttachToAutoDestroy(renderTarget,edit,1)
+	dgsSetData(edit,"renderTarget",renderTarget)
+	local oldPos = dgsEditGetCaretPosition(edit)
+	dgsEditSetCaretPosition(edit,0)
+	dgsEditSetCaretPosition(edit,oldPos)
 end
 
 function resetEdit(x,y)
