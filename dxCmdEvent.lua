@@ -582,6 +582,7 @@ function createAboutDGS()
 	if not isElement(AboutDGS.window) then
 		if getTickCount()-AboutDGS.coolDown < 5000 then return outputChatBox("[DGS]Operation is too frequent, try later",255,0,0) end
 		triggerServerEvent("DGSI_RequestAboutData",localPlayer,localPlayer)
+		AboutDGS.coolDown = getTickCount()
 		AboutDGS.window = dgsCreateWindow(sW/2-350, sH/2-200, 700, 400, "About DGS", false)
 		dgsWindowSetSizable(AboutDGS.window, false)
 		showCursor(true)
@@ -599,7 +600,9 @@ function createAboutDGS()
 			dgsAlphaTo(source,0,false,"InQuad",500)
 			showCursor(false)
 			setTimer(function(source)
-				destroyElement(source)
+				if isElement(source) then
+					destroyElement(source)
+				end
 			end,500,1,source)
 		end)
 	else
