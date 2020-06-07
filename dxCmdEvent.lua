@@ -191,7 +191,7 @@ dgsCmdAddCommandHandler("performancebrowser",function(cmd)
 		dgsWindowSetSizable(performanceBrowser["window"],false)
 		dgsBringToFront(performanceBrowser["window"])
 		outputCmdMessage(cmd,"Performance Browser Status Monitor: ON")
-		dgsShowCursor(true,"dx")
+		dgsShowCursor(true,"performance")
 	else
 		outputCmdMessage(cmd,"Performance Browser Monitor: OFF")
 		dgsCloseWindow(performanceBrowser["window"])
@@ -345,13 +345,15 @@ function netUpdate()
 	end
 end
 
-addEventHandler("onDgsDestroy",root,function()
+addEventHandler("onDgsDestroy",resourceRoot,function()
 	if source == cmdSystem["window"] then
 		dgsShowCursor(false,"cmd")
 	elseif source == netSystem["window"] then
 		dgsShowCursor(false,"net")
 	elseif source == dxStatus["window"] then
 		dgsShowCursor(false,"dx")
+	elseif source == performanceBrowser["window"] then 
+		dgsShowCursor(false,"performance")
 	end
 end)
 
