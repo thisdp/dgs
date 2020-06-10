@@ -3,6 +3,7 @@
 	<file src="html/media.html" />
 	<file src="html/pasteHandler.html" />
 	<file src="styleManager/styleMapper.lua"/>
+	
 	<script src="server.lua" type="server" />
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
@@ -592,7 +593,6 @@
 	<export function="dgsGetQRCodeLoaded" type="client" />
 
 	<export function="dgsCreateCanvas" type="client" />
-	<export function="dgsCenterElement" type="client" />
 
 	<export function="dgsCenterElement" type="client" />
 

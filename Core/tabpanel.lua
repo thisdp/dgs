@@ -52,7 +52,7 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	else
 		outputDebugString(err)
 	end
-	dgsSetData(tabpanel,"renderTarget",rendertarget)
+	dgsSetData(tabpanel,"renderTarget",renderTarget)
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
 end
