@@ -8,7 +8,6 @@
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
 	<script src="client.lua" type="client" />
-	<script src="oopClass.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
@@ -28,6 +27,7 @@
 	<script src="Core/tabpanel.lua" type="client" />
 	<script src="Core/scrollbar.lua" type="client" />
 	<script src="Core/scrollpane.lua" type="client" />
+	<script src="Core/selector.lua" type="client" />
 	<script src="Core/switchbutton.lua" type="client" />
 	<script src="Core/window.lua" type="client" />
 	<script src="Core/external.lua" type="client" />
@@ -66,6 +66,7 @@
 	<script src="update.lua" type="server" />
 	<script src="G2DManager_s.lua" type="server" />
 	<script src="test.lua" type="client" />
+	<file src="classlib.lua" type="client" />
 	
 	<!--$Add Your Styles Here-->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
@@ -88,7 +89,6 @@
 	<!--(Custom Style 2) -->
 
 	<!--&Add Your Styles Here-->
-	<export function="applyColorAlpha" type="client" />
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
 	<export function="dgsRemoveEasingFunction" type="client" />
@@ -144,6 +144,7 @@
 	<export function="dgsCreateFont" type="client" />
 	<export function="dgsBringToFront" type="client" />
 	<export function="dgsMoveToBack" type="client" />
+	<export function="dgsIsMouseWithinGUI" type="client" />
 	<export function="dgsGetMouseEnterGUI" type="client" />
 	<export function="dgsGetMouseLeaveGUI" type="client" />
 	<export function="dgsGetDxGUIFromResource" type="client" />
@@ -426,6 +427,16 @@
 	<export function="dgsScrollBarGetLocked" type="client" />
 	<export function="dgsScrollBarSetGrades" type="client" />
 	<export function="dgsScrollBarGetGrades" type="client" />
+	
+	<export function="dgsCreateSelector" type="client" />
+	<export function="dgsSelectorAddItem" type="client" />
+	<export function="dgsSelectorRemoveItem" type="client" />
+	<export function="dgsSelectorSetSelectedItem" type="client" />
+	<export function="dgsSelectorGetSelectedItem" type="client" />
+	<export function="dgsSelectorGetItemText" type="client" />
+	<export function="dgsSelectorSetItemText" type="client" />
+	<export function="dgsSelectorSetItemData" type="client" />
+	<export function="dgsSelectorGetItemData" type="client" />
 
 	<export function="dgsCreateSwitchButton" type="client" />
 	<export function="dgsSwitchButtonGetState" type="client" />
@@ -451,6 +462,8 @@
 	<export function="dgsGridListSetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnFont" type="client" />
 	<export function="dgsGridListGetColumnFont" type="client" />
+	<export function="dgsGridListGetColumnTextSize" type="client" />
+	<export function="dgsGridListSetColumnTextSize" type="client" />
 	<export function="dgsGridListInsertRowAfter" type="client" />
 	<export function="dgsGridListAddRow" type="client" />
 	<export function="dgsGridListRemoveRow" type="client" />
@@ -475,6 +488,10 @@
 	<export function="dgsGridListSetItemHoverable" type="client" />
 	<export function="dgsGridListGetItemSelectable" type="client" />
 	<export function="dgsGridListSetItemSelectable" type="client" />
+	<export function="dgsGridListSetItemFont" type="client" />
+	<export function="dgsGridListGetItemFont" type="client" />
+	<export function="dgsGridListSetItemTextSize" type="client" />
+	<export function="dgsGridListGetItemTextSize" type="client" />
 	<export function="dgsGridListGetRowBackGroundImage" type="client" />
 	<export function="dgsGridListSetRowBackGroundImage" type="client" />
 	<export function="dgsGridListSetRowBackGroundColor" type="client" />

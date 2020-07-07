@@ -20,9 +20,6 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	assert(tonumber(y),"Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateScrollPane at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateScrollPane at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollPane at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true,true) or table.insert(CenterFatherTable,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
@@ -59,8 +56,8 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	end
 	local scrollbar1 = dgsCreateScrollBar(x+sx-scbThick,y-titleOffset,scbThick,sy-scbThick,false,false,parent)
 	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scbThick-titleOffset,sx-scbThick,scbThick,true,false,parent)
-	dgsAttachToAutoDestroy(scrollbar1,scrollpane,2)
-	dgsAttachToAutoDestroy(scrollbar2,scrollpane,3)
+	dgsAttachToAutoDestroy(scrollbar1,scrollpane,-2)
+	dgsAttachToAutoDestroy(scrollbar2,scrollpane,-3)
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
 	dgsSetData(scrollpane,"scrollSize",60)	--60 pixels
@@ -442,17 +439,3 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 	end
 	return rndtgt,_,_,_,OffsetX,OffsetY
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxscrollpane"] = [[
-	getScrollBar = dgsOOP.genOOPFnc("dgsScrollPaneGetScrollBar"),
-	setScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneSetScrollPosition",true),
-	getScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneGetScrollPosition"),
-	setHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneSetHorizontalScrollPosition",true),
-	getHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneGetHorizontalScrollPosition"),
-	setVerticalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneSetVerticalScrollPosition",true),
-	getVerticalScrollPosition = dgsOOP.genOOPFnc("dgsScrollPaneGetVerticalScrollPosition"),
-	setScrollBarState = dgsOOP.genOOPFnc("dgsScrollPaneSetScrollBarState",true),
-	getScrollBarState = dgsOOP.genOOPFnc("dgsScrollPaneGetScrollBarState"),
-]]

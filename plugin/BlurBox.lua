@@ -59,20 +59,45 @@ technique fxBlur{
 ]]
 
 function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
-	local isUpdateScrSource = dgsElementData[self].updateScreenSource
-	if isUpdateScrSource then
-		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
-	end
 	local rt = dgsElementData[self].rt
 	local shader = dgsElementData[self].shaders
-	local box = BlurBoxGlobalScreenSource
 	local resolution = dgsElementData[self].resolution
-	dxSetRenderTarget(rt)
-	dxSetShaderValue(shader[1],"screenSource",BlurBoxGlobalScreenSource)
-	dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
-	dxSetRenderTarget()
-	dxSetShaderValue(shader[2],"screenSource",rt)
-	dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF,postGUI or false)
+	if not dgsElementData[self].blursource then
+		local isUpdateScrSource = dgsElementData[self].updateScreenSource
+		if isUpdateScrSource then
+			dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+		end
+		dxSetRenderTarget(rt)
+		dxSetShaderValue(shader[1],"screenSource",BlurBoxGlobalScreenSource)
+		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
+		dxSetRenderTarget()
+		dxSetShaderValue(shader[2],"screenSource",rt)
+		dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
+	else
+		local firstRT = dgsElementData[self].rt0
+		if not isElement(firstRT) then
+			firstRT = dxCreateRenderTarget(resolution[1],resolution[2],true,self)
+			dgsAttachToAutoDestroy(firstRT,self,0)
+			dgsElementData[self].rt0 = firstRT
+		else
+			local fRTW,fRTH = dxGetMaterialSize(firstRT)
+			if resolution[1] ~= fRTW or resolution[2] ~= fRTH then
+				destroyElement(firstRT)
+				firstRT = dxCreateRenderTarget(resolution[1],resolution[2],true,self)
+				dgsAttachToAutoDestroy(firstRT,self,0)
+				dgsElementData[self].rt0 = firstRT
+			end
+		end
+		dxSetRenderTarget(rt)
+		dxSetShaderValue(shader[1],"screenSource",firstRT)
+		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
+		dxSetRenderTarget()
+		dxSetShaderValue(shader[2],"screenSource",rt)
+		dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
+		if dgsElementData[self].drawSource ~= false then
+			dxDrawImage(x,y,w,h,firstRT,0,0,0,0xFFFFFFFF,postGUI or false)
+		end
+	end
 end
 
 function dgsCreateBlurBox(w,h,blursource)
@@ -82,6 +107,7 @@ function dgsCreateBlurBox(w,h,blursource)
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
 	if isElement(blursource) then
 		dgsSetData(bb,"blurSource",blursource)
+		dgsSetData(blurSource,"blurBox",bb)
 	else
 		if not isElement(BlurBoxGlobalScreenSource) then
 			BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
@@ -100,6 +126,7 @@ function dgsCreateBlurBox(w,h,blursource)
 	dgsSetData(bb,"intensity",1)
 	dgsSetData(bb,"resolution",{w,h})
 	dgsSetData(bb,"level",5)
+	dgsSetData(bb,"color",0xFFFFFFFF)
 	blurboxShaders = blurboxShaders+1
 	triggerEvent("onDgsPluginCreate",bb,sourceResource)
 	return bb

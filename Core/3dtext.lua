@@ -215,19 +215,3 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 	end
 	return rndtgt,true
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dx3dtext"] = [[
-	getDimension = dgsOOP.genOOPFnc("dgs3DTextGetDimension"),
-	setDimension = dgsOOP.genOOPFnc("dgs3DTextSetDimension",true),
-	getInterior = dgsOOP.genOOPFnc("dgs3DTextGetInterior"),
-	setInterior = dgsOOP.genOOPFnc("dgs3DTextSetInterior",true),
-	attachToElement = dgsOOP.genOOPFnc("dgs3DTextAttachToElement",true),
-	detachFromElement = dgsOOP.genOOPFnc("dgs3DTextDetachFromElement",true),
-	isAttached = dgsOOP.genOOPFnc("dgs3DTextIsAttached"),
-	setAttachedOffsets = dgsOOP.genOOPFnc("dgs3DTextSetAttachedOffsets",true),
-	getAttachedOffsets = dgsOOP.genOOPFnc("dgs3DTextGetAttachedOffsets"),
-	setPosition = dgsOOP.genOOPFnc("dgs3DTextSetPosition",true),
-	getPosition = dgsOOP.genOOPFnc("dgs3DTextGetPosition"),
-]]

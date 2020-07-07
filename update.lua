@@ -207,9 +207,9 @@ function DownloadFinish()
 		fileDelete("meta.xml")
 	end
 	recoverStyleMapper()
-	outputDebugString("[DGS]Update Complete (Updated "..#preUpdate.." Files)")
+	outputDebugString("[DGS]Update Complete ( "..#preUpdate.." File"..(#preUpdate==1 and "" or "s")" Changed )")
 	outputDebugString("[DGS]Please Restart DGS")
-	outputChatBox("[DGS]Update Complete (Updated "..#preUpdate.." Files)",root,0,255,0)
+	outputChatBox("[DGS]Update Complete ( "..#preUpdate.." File"..(#preUpdate==1 and "" or "s")" Changed )",root,0,255,0)
 	preUpdate = {}
 	preUpdateCount = 0
 	UpdateCount = 0

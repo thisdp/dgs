@@ -66,12 +66,12 @@ function dgsStopAniming(gui,property)
 				if callback then callback(gui) end
 			end
 		else
+			animGUIList[gui] = nil
 			for k,v in pairs(animList) do
 				local callback = v["callback"]
 				triggerEvent("onDgsStopAniming",gui,k)
 				if callback then callback() end
 			end
-			animGUIList[gui] = nil
 			dgsSetData(gui,"anim",{})
 		end
 		return true
@@ -118,8 +118,8 @@ function dgsStopMoving(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if moveGUIList[gui] then
 		dgsSetData(gui,"move",false)
-		triggerEvent("onDgsStopMoving",gui)
 		moveGUIList[gui] = nil
+		triggerEvent("onDgsStopMoving",gui)
 		return true
 	end
 	return false
@@ -164,8 +164,8 @@ function dgsStopSizing(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if sizeGUIList[gui] then
 		dgsSetData(gui,"size",false)
-		triggerEvent("onDgsStopSizing",gui)
 		sizeGUIList[gui] = nil
+		triggerEvent("onDgsStopSizing",gui)
 		return true
 	end
 	return false
@@ -203,8 +203,8 @@ function dgsStopAlphaing(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if alphaGUIList[gui] then
 		dgsSetData(gui,"calpha",false)
-		triggerEvent("onDgsStopAlphaing",gui)
 		alphaGUIList[gui] = nil
+		triggerEvent("onDgsStopAlphaing",gui)
 		return true
 	end
 	return false

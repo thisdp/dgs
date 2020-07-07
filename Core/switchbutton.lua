@@ -20,9 +20,6 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	assert(tonumber(y),"Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateSwitchButton at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateSwitchButton at argument 9, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(switchbutton,parent,true,true) or table.insert(CenterFatherTable,switchbutton)
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
@@ -256,12 +253,3 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxswitchbutton"] = [[
-	setState = dgsOOP.genOOPFnc("dgsSwitchButtonSetState",true),
-	getState = dgsOOP.genOOPFnc("dgsSwitchButtonGetState"),
-	setText = dgsOOP.genOOPFnc("dgsSwitchButtonSetText",true),
-	getText = dgsOOP.genOOPFnc("dgsSwitchButtonGetText"),
-]]

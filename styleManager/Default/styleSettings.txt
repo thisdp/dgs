@@ -23,39 +23,6 @@
 	},
 
 ---------------------------------------------------------------------------------------------------Unique
------------------------------------------------------------------------------------DGS Arrow List
-	arrowlist = {
-	---Color
-		bgColor = tocolor(30,32,35,225),
-		selectorTextColor = tocolor(255,255,255,255), --Selector text color ( text between < and > )
-		selectorColor = {	--Selector color ( < and > )
-			tocolor(255,255,255,255),	--Normal
-			tocolor(90,160,230,255),	--Hover
-			tocolor(60,110,180,255),	--Click
-		},
-		itemColor = {	--Arrow list background color
-			tocolor(30,32,35,255),			--Normal
-			tocolor(54,57,64,255),			--Hover
-		},
-		itemTextColor = tocolor(255,255,255,255),	--Item text color
-	---Image
-		bgImage = {},
-		itemImage = {
-			{},	--Normal
-			{},	--Hover
-		},
-	---Values
-		font = nil,	--Using systemFont
-		leading = 0,
-		itemHeight = 20,
-		itemTextSize = {1,1},
-		itemTextOffset = 5,
-		scrollBarThick = 15,
-		selectorDistance = 5,
-		selectorOffset = 5,
-		selectorSize = {1,1},
-	},
-
 -----------------------------------------------------------------------------------DGS Button
 	button = {
 	---Color
@@ -371,6 +338,42 @@
 		scrollBarThick = 15,
 	},
 	
+-----------------------------------------------------------------------------------DGS Selector
+	selector = {
+	---Color
+		itemTextColor = tocolor(255,255,255,255),	--Item Text Color
+		selectorText = {"<",">"},
+		selectorTextColor = {
+			tocolor(255,255,255,255),		--Normal
+			tocolor(90,160,230,220),		--Hover
+			tocolor(60,110,180,220),		--Click
+		},
+		selectorImageLeft = {
+			nil,		--Normal
+			nil,		--Hover
+			nil,		--Click
+		},
+		selectorImageColorLeft = {
+			nil,		--Normal
+			nil,		--Hover
+			nil,		--Click
+		},
+		selectorImageRight = {
+			nil,		--Normal
+			nil,		--Hover
+			nil,		--Click
+		},
+		selectorImageColorRight = {
+			nil,		--Normal
+			nil,		--Hover
+			nil,		--Click
+		},
+	---Values
+		font = nil,	--Using systemFont
+		selectorTextSize = {1,1},
+		itemTextSize = {1,1},
+		
+	},
 -----------------------------------------------------------------------------------DGS Switch Buttoon
 	switchbutton = {
 	---Color

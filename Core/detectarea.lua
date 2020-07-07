@@ -17,9 +17,6 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	assert(tonumber(y),"Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateDetectArea at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local detectarea = createElement("dgs-dxdetectarea")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(detectarea,parent,true,true) or table.insert(CenterFatherTable,detectarea)
 	dgsSetType(detectarea,"dgs-dxdetectarea")
@@ -147,11 +144,3 @@ dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxdetectarea"] = [[
-	setFunction = dgsOOP.genOOPFnc("dgsDetectAreaSetFunction",true),
-	setDebugModeEnabled = dgsOOP.genOOPFnc("dgsDetectAreaSetDebugModeEnabled",true),
-	getDebugModeEnabled = dgsOOP.genOOPFnc("dgsDetectAreaGetDebugModeEnabled"),
-]]

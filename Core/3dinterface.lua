@@ -385,28 +385,3 @@ function interfaceRender()
 	end
 end
 addEventHandler("onClientPreRender",root,interfaceRender)
-
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dx3dinterface"] = [[
-	getBlendMode = dgsOOP.genOOPFnc("dgs3DInterfaceGetBlendMode"),
-	setBlendMode = dgsOOP.genOOPFnc("dgs3DInterfaceSetBlendMode",true),
-	getPosition = dgsOOP.genOOPFnc("dgs3DInterfaceGetPosition"),
-	setPosition = dgsOOP.genOOPFnc("dgs3DInterfaceSetPosition",true),
-	getSize = dgsOOP.genOOPFnc("dgs3DInterfaceGetSize"),
-	setSize = dgsOOP.genOOPFnc("dgs3DInterfaceSetSize",true),
-	getResolution = dgsOOP.genOOPFnc("dgs3DInterfaceGetResolution"),
-	setResolution = dgsOOP.genOOPFnc("dgs3DInterfaceSetResolution",true),
-	attachToElement = dgsOOP.genOOPFnc("dgs3DInterfaceAttachToElement",true),
-	isAttached = dgsOOP.genOOPFnc("dgs3DInterfaceIsAttached",true),
-	getResolution = dgsOOP.genOOPFnc("dgs3DInterfaceGetResolution"),
-	setResolution = dgsOOP.genOOPFnc("dgs3DInterfaceSetResolution",true),
-	detachFromElement = dgsOOP.genOOPFnc("dgs3DInterfaceDetachFromElement",true),
-	setAttachedOffsets = dgsOOP.genOOPFnc("dgs3DInterfaceSetAttachedOffsets",true),
-	getAttachedOffsets = dgsOOP.genOOPFnc("dgs3DInterfaceGetAttachedOffsets"),
-	setRotation = dgsOOP.genOOPFnc("dgs3DInterfaceSetRotation",true),
-	getRotation = dgsOOP.genOOPFnc("dgs3DInterfaceGetRotation"),
-	setFaceTo = dgsOOP.genOOPFnc("dgs3DInterfaceSetFaceTo",true),
-	getFaceTo = dgsOOP.genOOPFnc("dgs3DInterfaceGetFaceTo"),
-]]

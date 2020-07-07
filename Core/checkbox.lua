@@ -12,9 +12,6 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	assert(tonumber(sy),"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
 	assert(tonumber(sy),"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
 	assert(not state or state == true,"@dgsCreateCheckBox at argument 6, expect boolean/nil got "..type(state))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateCheckBox at argument 8,expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local cb = createElement("dgs-dxcheckbox")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true,true) or table.insert(CenterFatherTable,cb)
 	dgsSetType(cb,"dgs-dxcheckbox")
@@ -218,14 +215,3 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxcheckbox"] = [[
-	getSelected = dgsOOP.genOOPFnc("dgsCheckBoxGetSelected"),
-	setSelected = dgsOOP.genOOPFnc("dgsCheckBoxSetSelected",true),
-	getHorizontalAlign = dgsOOP.genOOPFnc("dgsCheckBoxGetHorizontalAlign"),
-	setHorizontalAlign = dgsOOP.genOOPFnc("dgsCheckBoxSetHorizontalAlign",true),
-	getVerticalAlign = dgsOOP.genOOPFnc("dgsCheckBoxGetVerticalAlign"),
-	setVerticalAlign = dgsOOP.genOOPFnc("dgsCheckBoxSetVerticalAlign",true),
-]]

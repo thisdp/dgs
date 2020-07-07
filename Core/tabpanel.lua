@@ -15,9 +15,6 @@ local dxSetBlendMode = dxSetBlendMode
 local mathFloor = math.floor
 
 function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateTabPanel at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	assert(tonumber(x),"Bad argument @dgsCreateTabPanel at argument 1, expect number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreateTabPanel at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateTabPanel at argument 3, expect number got "..type(sx))
@@ -202,7 +199,7 @@ function configTabPanel(source)
 	if isElement(rentarg) then destroyElement(rentarg) end
 	local renderTarget,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
 	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,tabpanel,-1)
+		dgsAttachToAutoDestroy(renderTarget,source,-1)
 	else
 		outputDebugString(err)
 	end
@@ -329,20 +326,3 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxtabpanel"] = [[
-	getSelectedTab = dgsOOP.genOOPFnc("dgsGetSelectedTab"),
-	setSelectedTab = dgsOOP.genOOPFnc("dgsSetSelectedTab",true),
-	getTabFromID = dgsOOP.genOOPFnc("dgsTabPanelGetTabFromID"),
-	moveTab = dgsOOP.genOOPFnc("dgsTabPanelMoveTab",true),
-	getTabID = dgsOOP.genOOPFnc("dgsTabPanelGetTabID"),
-	dgsTab = function(self,text,...)
-		return dgsGetClass(call(dgsOOP.dgsRes,"dgsCreateTab",text,self.dgsElement,...))
-	end,
-]]
-
-dgsOOP["dgs-dxtab"] = [[
-	delete = dgsOOP.genOOPFnc("dgsDeleteTab"),
-]]

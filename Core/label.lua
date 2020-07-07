@@ -18,9 +18,6 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	assert(tonumber(y),"Bad argument @dgsCreateLabel at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateLabel at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateLabel at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateLabel at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local label = createElement("dgs-dxlabel")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(label,parent,true,true) or table.insert(CenterFatherTable,label)
 	dgsSetType(label,"dgs-dxlabel")
@@ -147,16 +144,3 @@ dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxlabel"] = [[
-	setColor = dgsOOP.genOOPFnc("dgsLabelSetColor",true),
-	getColor = dgsOOP.genOOPFnc("dgsLabelGetColor"),
-	setHorizontalAlign = dgsOOP.genOOPFnc("dgsLabelSetHorizontalAlign",true),
-	getHorizontalAlign = dgsOOP.genOOPFnc("dgsLabelGetHorizontalAlign"),
-	setVerticalAlign = dgsOOP.genOOPFnc("dgsLabelSetVerticalAlign",true),
-	getVerticalAlign = dgsOOP.genOOPFnc("dgsLabelGetVerticalAlign"),
-	getTextExtent = dgsOOP.genOOPFnc("dgsLabelGetTextExtent"),
-	getFontHeight = dgsOOP.genOOPFnc("dgsLabelGetFontHeight"),
-]]

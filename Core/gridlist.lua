@@ -34,9 +34,6 @@ function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,column
 	assert(tonumber(y),"Bad argument @dgsCreateGridList at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateGridList at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateGridList at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateGridList at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local gridlist = createElement("dgs-dxgridlist")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or tableInsert(CenterFatherTable,gridlist)
 	dgsSetType(gridlist,"dgs-dxgridlist")
@@ -365,34 +362,37 @@ function dgsGridListSetColumnFont(gridlist,pos,font,affectRow)
 	return true
 end
 
-function dgsGridListGetColumnFont(gridlist,pos)
+function dgsGridListGetColumnFont(gridlist,column)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetColumnFont at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	assert(type(pos) == "number","Bad argument @dgsGridListGetColumnFont at argument 2, expect number got "..dgsGetType(pos))
+	assert(type(column) == "number","Bad argument @dgsGridListGetColumnFont at argument 2, expect number got "..dgsGetType(column))
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
 	if #columnData == 0 then return end
-	assert(pos >= 1 and pos <= #columnData, "Bad argument @dgsGridListSetColumnFont at argument 2, Out Of Range [1,"..#columnData.."]")
-	return columnData[pos][9]
+	assert(column >= 1 and column <= #columnData, "Bad argument @dgsGridListSetColumnFont at argument 2, Out Of Range [1,"..#columnData.."]")
+	return columnData[column][9]
 end
 
-function dgsGridListGetColumnTextSize()
-	--todo
+function dgsGridListGetColumnTextSize(gridlist,column)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetColumnTextSize at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(column) == "number","Bad argument @dgsGridListGetColumnTextSize at argument 2, expect number got "..dgsGetType(column))
+	local eleData = dgsElementData[gridlist]
+	local columnData = eleData.columnData
+	if #columnData == 0 then return end
+	assert(column >= 1 and column <= #columnData, "Bad argument @dgsGridListGetColumnTextSize at argument 2, Out Of Range [1,"..#columnData.."]")
+	return columnData[column][7],columnData[column][8]
 end
 
-function dgsGridListSetColumnTextSize()
-	--todo
-end
-
-function dgsGridListSetItemFont()
-
-end
-
-function dgsGridListSetItemTextSize()
-	--todo
-end
-
-function dgsGridListGetItemTextSize()
-	--todo
+function dgsGridListSetColumnTextSize(gridlist,column,sizeX,sizeY)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetColumnTextSize at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(column) == "number","Bad argument @dgsGridListSetColumnTextSize at argument 2, expect number got "..dgsGetType(column))
+	assert(type(sizeX) == "number","Bad argument @dgsGridListSetColumnTextSize at argument 3, expect number got "..dgsGetType(sizeX))
+	local eleData = dgsElementData[gridlist]
+	local columnData = eleData.columnData
+	if #columnData == 0 then return end
+	assert(column >= 1 and column <= #columnData, "Bad argument @dgsGridListSetColumnTextSize at argument 2, Out Of Range [1,"..#columnData.."]")
+	columnData[column][7] = sizeX
+	columnData[column][8] = sizeY or sizeX
+	return true
 end
 
 function dgsGridListSetColumnRelative(gridlist,relative,transformColumn)
@@ -691,6 +691,63 @@ function dgsGridListInsertRowAfter(gridlist,row,...)
 	local columnData = eleData.columnData
 	assert(#columnData > 0 ,"Bad argument @dgsGridListInsertRowAfter, no columns in the grid list")
 	return dgsGridListAddRow(gridlist,row+1,...)
+end
+
+function dgsGridListSetItemFont(gridlist,row,column,font)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemFont at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListSetItemFont at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListSetItemFont at argument 2, expect number >= 1 got "..row)
+	assert(type(column) == "number","Bad argument @dgsGridListSetItemFont at argument 3, expect number got "..dgsGetType(column))
+	assert(fontDxHave[font] or dgsGetType(font) == "dx-font","Bad argument @dgsGridListSetItemFont at argument 4, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] and rowData[row][column] then
+		rowData[row][column][6] = font
+		return true
+	end
+	return false
+end
+
+function dgsGridListGetItemFont(gridlist,row,column)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemFont at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListGetItemFont at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListGetItemFont at argument 2, expect number >= 1 got "..row)
+	assert(type(column) == "number","Bad argument @dgsGridListGetItemFont at argument 3, expect number got "..dgsGetType(column))
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] and rowData[row][column] then
+		return rowData[row][column][6]
+	end
+	return false
+end
+
+function dgsGridListSetItemTextSize(gridlist,row,column,sizeX,sizeY)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemTextSize at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListSetItemTextSize at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListSetItemTextSize at argument 2, expect number >= 1 got "..row)
+	assert(type(column) == "number","Bad argument @dgsGridListSetItemTextSize at argument 3, expect number got "..dgsGetType(column))
+	assert(type(sizeX) == "number","Bad argument @dgsGridListSetItemTextSize at argument 4, expect number got "..dgsGetType(sizeX))
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] and rowData[row][column] then
+		rowData[row][column][4] = sizeX
+		rowData[row][column][5] = sizeY or sizeX
+		return true
+	end
+	return false
+end
+
+function dgsGridListGetItemTextSize(gridlist,row,column)
+	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemTextSize at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
+	assert(type(row) == "number","Bad argument @dgsGridListGetItemTextSize at argument 2, expect number got "..dgsGetType(row))
+	row = row-row%1
+	assert(row >= 1,"Bad argument @dgsGridListGetItemTextSize at argument 2, expect number >= 1 got "..row)
+	assert(type(column) == "number","Bad argument @dgsGridListGetItemTextSize at argument 3, expect number got "..dgsGetType(column))
+	local rowData = dgsElementData[gridlist].rowData
+	if rowData[row] and rowData[row][column] then
+		return rowData[row][column][4],rowData[row][column][5]
+	end
+	return false
 end
 
 function dgsGridListGetRowSelectable(gridlist,row)
@@ -2064,75 +2121,3 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	return rndtgt
 end
-
-----------------------------------------------------------------
---------------------------OOP Class-----------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxgridlist"] = [[
-	getScrollBar = dgsOOP.genOOPFnc("dgsGridListGetScrollBar"),
-	setScrollPosition = dgsOOP.genOOPFnc("dgsGridListSetScrollPosition",true),
-	getScrollPosition = dgsOOP.genOOPFnc("dgsGridListGetScrollPosition"),
-	setHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsGridListSetHorizontalScrollPosition",true),
-	getHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsGridListGetHorizontalScrollPosition"),
-	setVerticalScrollPosition = dgsOOP.genOOPFnc("dgsGridListSetVerticalScrollPosition",true),
-	getVerticalScrollPosition = dgsOOP.genOOPFnc("dgsGridListGetVerticalScrollPosition"),
-	resetScrollBarPosition = dgsOOP.genOOPFnc("dgsGridListResetScrollBarPosition",true),
-	setColumnRelative = dgsOOP.genOOPFnc("dgsGridListSetColumnRelative",true),
-	getColumnRelative = dgsOOP.genOOPFnc("dgsGridListGetColumnRelative"),
-	addColumn = dgsOOP.genOOPFnc("dgsGridListAddColumn"),
-	getColumnCount = dgsOOP.genOOPFnc("dgsGridListGetColumnCount"),
-	removeColumn = dgsOOP.genOOPFnc("dgsGridListRemoveColumn",true),
-	getColumnAllWidth = dgsOOP.genOOPFnc("dgsGridListGetColumnAllWidth"),
-	getColumnHeight = dgsOOP.genOOPFnc("dgsGridListGetColumnHeight"),
-	setColumnHeight = dgsOOP.genOOPFnc("dgsGridListSetColumnHeight",true),
-	getColumnWidth = dgsOOP.genOOPFnc("dgsGridListGetColumnWidth"),
-	setColumnWidth = dgsOOP.genOOPFnc("dgsGridListSetColumnWidth",true),
-	autoSizeColumn = dgsOOP.genOOPFnc("dgsGridListAutoSizeColumn",true),
-	getColumnTitle = dgsOOP.genOOPFnc("dgsGridListGetColumnTitle"),
-	setColumnTitle = dgsOOP.genOOPFnc("dgsGridListSetColumnTitle",true),
-	getColumnFont = dgsOOP.genOOPFnc("dgsGridListGetColumnFont"),
-	setColumnFont = dgsOOP.genOOPFnc("dgsGridListSetColumnFont",true),
-	addRow = dgsOOP.genOOPFnc("dgsGridListAddRow"),
-	insertRowAfter = dgsOOP.genOOPFnc("dgsGridListInsertRowAfter"),
-	removeRow = dgsOOP.genOOPFnc("dgsGridListRemoveRow",true),
-	clearRow = dgsOOP.genOOPFnc("dgsGridListClearRow",true),
-	clearColumn = dgsOOP.genOOPFnc("dgsGridListClearColumn",true),
-	clear = dgsOOP.genOOPFnc("dgsGridListClear",true),
-	getRowCount = dgsOOP.genOOPFnc("dgsGridListGetRowCount"),
-	setItemText = dgsOOP.genOOPFnc("dgsGridListSetItemText",true),
-	getItemText = dgsOOP.genOOPFnc("dgsGridListGetItemText"),
-	getSelectedItem = dgsOOP.genOOPFnc("dgsGridListGetSelectedItem"),
-	setSelectedItem = dgsOOP.genOOPFnc("dgsGridListSetSelectedItem",true),
-	setItemColor = dgsOOP.genOOPFnc("dgsGridListSetItemColor",true),
-	getItemColor = dgsOOP.genOOPFnc("dgsGridListGetItemColor"),
-	setItemData = dgsOOP.genOOPFnc("dgsGridListSetItemData",true),
-	getItemData = dgsOOP.genOOPFnc("dgsGridListGetItemData"),
-	setItemImage = dgsOOP.genOOPFnc("dgsGridListSetItemImage",true),
-	getItemImage = dgsOOP.genOOPFnc("dgsGridListGetItemImage"),
-	removeItemImage = dgsOOP.genOOPFnc("dgsGridListRemoveItemImage",true),
-	getRowBackGroundImage = dgsOOP.genOOPFnc("dgsGridListGetRowBackGroundImage"),
-	setRowBackGroundImage = dgsOOP.genOOPFnc("dgsGridListSetRowBackGroundImage",true),
-	getRowBackGroundColor = dgsOOP.genOOPFnc("dgsGridListGetRowBackGroundColor"),
-	setRowBackGroundColor = dgsOOP.genOOPFnc("dgsGridListSetRowBackGroundColor",true),
-	setRowAsSection = dgsOOP.genOOPFnc("dgsGridListSetRowAsSection",true),
-	selectItem = dgsOOP.genOOPFnc("dgsGridListSelectItem",true),
-	itemIsSelected = dgsOOP.genOOPFnc("dgsGridListItemIsSelected"),
-	setMultiSelectionEnabled = dgsOOP.genOOPFnc("dgsGridListSetMultiSelectionEnabled",true),
-	getMultiSelectionEnabled = dgsOOP.genOOPFnc("dgsGridListGetMultiSelectionEnabled"),
-	setSelectionMode = dgsOOP.genOOPFnc("dgsGridListSetSelectionMode",true),
-	getSelectionMode = dgsOOP.genOOPFnc("dgsGridListGetSelectionMode"),
-	setSelectedItems = dgsOOP.genOOPFnc("dgsGridListSetSelectedItems",true),
-	getSelectedItems = dgsOOP.genOOPFnc("dgsGridListGetSelectedItems"),
-	getSelectedCount = dgsOOP.genOOPFnc("dgsGridListGetSelectedCount"),
-	setSortFunction = dgsOOP.genOOPFnc("dgsGridListSetSortFunction",true),
-	setAutoSortEnabled = dgsOOP.genOOPFnc("dgsGridListSetAutoSortEnabled",true),
-	getAutoSortEnabled = dgsOOP.genOOPFnc("dgsGridListGetAutoSortEnabled"),
-	setSortEnabled = dgsOOP.genOOPFnc("dgsGridListSetSortEnabled",true),
-	getSortEnabled = dgsOOP.genOOPFnc("dgsGridListGetSortEnabled"),
-	setSortColumn = dgsOOP.genOOPFnc("dgsGridListSetSortColumn",true),
-	getSortColumn = dgsOOP.genOOPFnc("dgsGridListGetSortColumn"),
-	getEnterColumn = dgsOOP.genOOPFnc("dgsGridListGetEnterColumn"),
-	sort = dgsOOP.genOOPFnc("dgsGridListSort",true),
-	setNavigationEnabled = dgsOOP.genOOPFnc("dgsGridListSetNavigationEnabled",true),
-	getNavigationEnabled = dgsOOP.genOOPFnc("dgsGridListGetNavigationEnabled"),
-]]

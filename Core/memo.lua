@@ -60,9 +60,6 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	assert(type(sx) == "number","Bad argument @dgsCreateMemo at argument 3, expect number got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateMemo at argument 4, expect number got "..type(sy))
 	text = tostring(text)
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateMemo at argument 7, expect dgs-memo got "..dgsGetType(parent))
-	end
 	local memo = createElement("dgs-dxmemo")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or tableInsert(CenterFatherTable,memo)
 	dgsSetType(memo,"dgs-dxmemo")
@@ -1545,35 +1542,3 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxmemo"] = [[
-	moveCaret = dgsOOP.genOOPFnc("dgsMemoMoveCaret",true),
-	seekPosition = dgsOOP.genOOPFnc("dgsMemoSeekPosition"),
-	getScrollBar = dgsOOP.genOOPFnc("dgsMemoGetScrollBar"),
-	setScrollPosition = dgsOOP.genOOPFnc("dgsMemoSetScrollPosition",true),
-	getScrollPosition = dgsOOP.genOOPFnc("dgsMemoGetScrollPosition"),
-	setHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsMemoSetHorizontalScrollPosition",true),
-	getHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsMemoGetHorizontalScrollPosition"),
-	setVerticalScrollPosition = dgsOOP.genOOPFnc("dgsMemoSetVerticalScrollPosition",true),
-	getVerticalScrollPosition = dgsOOP.genOOPFnc("dgsMemoGetVerticalScrollPosition"),
-	setCaretPosition = dgsOOP.genOOPFnc("dgsMemoSetCaretPosition",true),
-	getCaretPosition = dgsOOP.genOOPFnc("dgsMemoGetCaretPosition"),
-	setCaretStyle = dgsOOP.genOOPFnc("dgsMemoSetCaretStyle",true),
-	getCaretStyle = dgsOOP.genOOPFnc("dgsMemoGetCaretStyle"),
-	setReadOnly = dgsOOP.genOOPFnc("dgsMemoSetReadOnly",true),
-	getReadOnly = dgsOOP.genOOPFnc("dgsMemoGetReadOnly"),
-	getPartOfText = dgsOOP.genOOPFnc("dgsMemoGetPartOfText"),
-	deleteText = dgsOOP.genOOPFnc("dgsMemoDeleteText",true),
-	insertText = dgsOOP.genOOPFnc("dgsMemoInsertText",true),
-	appendText = dgsOOP.genOOPFnc("dgsMemoAppendText",true),
-	clearText = dgsOOP.genOOPFnc("dgsMemoClearText",true),
-	getTypingSound = dgsOOP.genOOPFnc("dgsMemoGetTypingSound"),
-	setTypingSound = dgsOOP.genOOPFnc("dgsMemoSetTypingSound",true),
-	getLineCount = dgsOOP.genOOPFnc("dgsMemoGetLineCount"),
-	setWordWrapState = dgsOOP.genOOPFnc("dgsMemoSetWordWrapState",true),
-	getWordWrapState = dgsOOP.genOOPFnc("dgsMemoGetWordWrapState"),
-	setScrollBarState = dgsOOP.genOOPFnc("dgsMemoSetScrollBarState",true),
-	getScrollBarState = dgsOOP.genOOPFnc("dgsMemoGetScrollBarState"),
-]]

@@ -12,9 +12,6 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	assert(tonumber(y),"Bad argument @dgsCreateButton at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateButton at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateButton at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local button = createElement("dgs-dxbutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true,true) or table.insert(CenterFatherTable,button)
 	dgsSetType(button,"dgs-dxbutton")
@@ -42,7 +39,7 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	dgsSetData(button,"clickoffset",{0,0})
 	dgsSetData(button,"textOffset",{0,0,false})
 	dgsSetData(button,"iconImage",_)
-	dgsSetData(button,"iconColor",tocolor(255,255,255))
+	dgsSetData(button,"iconColor",tocolor(255,255,255,255))
 	dgsSetData(button,"iconDirection","left")
 	dgsSetData(button,"iconSize",{1,1,true}) -- Text's font height
 	dgsSetData(button,"iconOffset",5)

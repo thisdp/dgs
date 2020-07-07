@@ -48,9 +48,6 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	assert(type(sx) == "number","Bad argument @dgsCreateEdit at argument 3, expect number, got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateEdit at argument 4, expect number, got "..type(sy))
 	text = tostring(text)
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"@dgsCreateEdit argument 7,expect dgs-dxgui, got "..dgsGetType(parent))
-	end
 	local edit = createElement("dgs-dxedit")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(edit,parent,true,true) or tableInsert(CenterFatherTable,edit)
 	dgsSetType(edit,"dgs-dxedit")
@@ -1036,41 +1033,3 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxedit"] = [[
-	moveCaret = dgsOOP.genOOPFnc("dgsEditMoveCaret",true),
-	setCaretPosition = dgsOOP.genOOPFnc("dgsEditSetCaretPosition",true),
-	getCaretPosition = dgsOOP.genOOPFnc("dgsEditGetCaretPosition"),
-	setCaretStyle = dgsOOP.genOOPFnc("dgsEditSetCaretStyle",true),
-	getCaretStyle = dgsOOP.genOOPFnc("dgsEditGetCaretStyle"),
-	setWhiteList = dgsOOP.genOOPFnc("dgsEditSetWhiteList",true),
-	setMaxLength = dgsOOP.genOOPFnc("dgsEditSetMaxLength",true),
-	getMaxLength = dgsOOP.genOOPFnc("dgsEditGetMaxLength"),
-	setReadOnly = dgsOOP.genOOPFnc("dgsEditSetReadOnly",true),
-	getReadOnly = dgsOOP.genOOPFnc("dgsEditGetReadOnly"),
-	setMasked = dgsOOP.genOOPFnc("dgsEditSetMasked",true),
-	getMasked = dgsOOP.genOOPFnc("dgsEditGetMasked"),
-	setUnderlined = dgsOOP.genOOPFnc("dgsEditSetUnderlined",true),
-	getUnderlined = dgsOOP.genOOPFnc("dgsEditGetUnderlined"),
-	setHorizontalAlign = dgsOOP.genOOPFnc("dgsEditSetHorizontalAlign",true),
-	getHorizontalAlign = dgsOOP.genOOPFnc("dgsEditGetHorizontalAlign"),
-	setVerticalAlign = dgsOOP.genOOPFnc("dgsEditSetVerticalAlign",true),
-	getVerticalAlign = dgsOOP.genOOPFnc("dgsEditGetVerticalAlign"),
-	setAlignment = dgsOOP.genOOPFnc("dgsEditSetAlignment ",true),
-	getAlignment = dgsOOP.genOOPFnc("dgsEditGetAlignment "),
-	insertText = dgsOOP.genOOPFnc("dgsEditInsertText",true),
-	deleteText = dgsOOP.genOOPFnc("dgsEditDeleteText",true),
-	getPartOfText = dgsOOP.genOOPFnc("dgsEditGetPartOfText"),
-	clearText = dgsOOP.genOOPFnc("dgsEditClearText",true),
-	replaceText = dgsOOP.genOOPFnc("dgsEditReplaceText",true),
-	setTypingSound = dgsOOP.genOOPFnc("dgsEditSetTypingSound",true),
-	getTypingSound = dgsOOP.genOOPFnc("dgsEditGetTypingSound"),
-	setPlaceHolder = dgsOOP.genOOPFnc("dgsEditSetPlaceHolder",true),
-	getPlaceHolder = dgsOOP.genOOPFnc("dgsEditGetPlaceHolder"),
-	setAutoComplete = dgsOOP.genOOPFnc("dgsEditSetAutoComplete",true),
-	getAutoComplete = dgsOOP.genOOPFnc("dgsEditGetAutoComplete"),
-	addAutoComplete = dgsOOP.genOOPFnc("dgsEditAddAutoComplete",true),
-	removeAutoComplete = dgsOOP.genOOPFnc("dgsEditRemoveAutoComplete",true),
-]]

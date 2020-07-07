@@ -7,7 +7,6 @@ end)
 
 function dgsConfigureTDX()
 	local tdx = getResourceName(sourceResource)
-	
 	return [[
 		---
 		addEvent("onDgsRenderTDX",true)
@@ -523,4 +522,15 @@ function dgsG2DLoadHooker()
 			_addEventHandler(eventReplace[even] or even,...)
 		end
 	]]
+end
+
+-------Inside DGS
+setElementData(root,"__DGSRes",getThisResource(),false)
+addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)
+
+function dgsImportOOPClass()
+	local OOPFile = fileOpen("classlib.lua")
+	local str = fileRead(OOPFile,fileGetSize(OOPFile))
+	fileClose(OOPFile)
+	return str
 end

@@ -146,9 +146,6 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 	assert(tonumber(y),"Bad argument @dgsCreateProgressBar at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateProgressBar at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateProgressBar at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateProgressBar at argument 6, expect dgs-dxprogressbar got "..dgsGetType(parent))
-	end
 	if isElement(bgImage) then
 		local imgtyp = getElementType(bgImage)
 		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 7, expect texture got "..getElementType(bgImage))
@@ -357,21 +354,3 @@ dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,e
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxprogressbar"] = [[
-	getProgress = dgsOOP.genOOPFnc("dgsProgressBarGetProgress"),
-	setProgress = dgsOOP.genOOPFnc("dgsProgressBarSetProgress",true),
-	getMode = dgsOOP.genOOPFnc("dgsProgressBarGetMode"),
-	setMode = dgsOOP.genOOPFnc("dgsProgressBarSetMode",true),
-	getVerticalSide = dgsOOP.genOOPFnc("dgsProgressBarGetVerticalSide"),
-	setVerticalSide = dgsOOP.genOOPFnc("dgsProgressBarSetVerticalSide",true),
-	getHorizontalSide = dgsOOP.genOOPFnc("dgsProgressBarGetHorizontalSide"),
-	setHorizontalSide = dgsOOP.genOOPFnc("dgsProgressBarSetHorizontalSide",true),
-	getStyle = dgsOOP.genOOPFnc("dgsProgressBarGetStyle"),
-	setStyle = dgsOOP.genOOPFnc("dgsProgressBarSetStyle",true),
-	getStyleProperties = dgsOOP.genOOPFnc("dgsProgressBarGetStyleProperties"),
-	setStyleProperty = dgsOOP.genOOPFnc("dgsProgressBarSetStyleProperty",true),
-	getStyleProperty = dgsOOP.genOOPFnc("dgsProgressBarGetStyleProperty"),
-]]

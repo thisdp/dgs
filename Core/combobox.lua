@@ -38,9 +38,6 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	assert(tonumber(y),"Bad argument @dgsCreateComboBox at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateComboBox at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateComboBox at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateComboBox at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local combobox = createElement("dgs-dxcombobox")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or tableInsert(CenterFatherTable,combobox)
 	dgsSetType(combobox,"dgs-dxcombobox")
@@ -675,30 +672,3 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxcombobox"] = [[
-	addItem = dgsOOP.genOOPFnc("dgsComboBoxAddItem"),
-	removeItem = dgsOOP.genOOPFnc("dgsComboBoxRemoveItem",true),
-	setItemText = dgsOOP.genOOPFnc("dgsComboBoxSetItemText",true),
-	getItemText = dgsOOP.genOOPFnc("dgsComboBoxGetItemText"),
-	clear = dgsOOP.genOOPFnc("dgsComboBoxClear",true),
-	setSelectedItem = dgsOOP.genOOPFnc("dgsComboBoxSetSelectedItem",true),
-	getSelectedItem = dgsOOP.genOOPFnc("dgsComboBoxGetSelectedItem"),
-	setItemColor = dgsOOP.genOOPFnc("dgsComboBoxSetItemColor",true),
-	getItemColor = dgsOOP.genOOPFnc("dgsComboBoxGetItemColor"),
-	getState = dgsOOP.genOOPFnc("dgsComboBoxGetState"),
-	setState = dgsOOP.genOOPFnc("dgsComboBoxSetState",true),
-	getItemCount = dgsOOP.genOOPFnc("dgsComboBoxGetItemCount"),
-	getBoxHeight = dgsOOP.genOOPFnc("dgsComboBoxGetBoxHeight"),
-	setBoxHeight = dgsOOP.genOOPFnc("dgsComboBoxSetBoxHeight",true),
-	getScrollBar = dgsOOP.genOOPFnc("dgsComboBoxGetScrollBar"),
-	setScrollPosition = dgsOOP.genOOPFnc("dgsComboBoxSetScrollPosition",true),
-	getScrollPosition = dgsOOP.genOOPFnc("dgsComboBoxGetScrollPosition"),
-	setCaptionText = dgsOOP.genOOPFnc("dgsComboBoxSetCaptionText",true),
-	getCaptionText = dgsOOP.genOOPFnc("dgsComboBoxGetCaptionText"),
-	setEditEnabled = dgsOOP.genOOPFnc("dgsComboBoxSetEditEnabled",true),
-	getEditEnabled = dgsOOP.genOOPFnc("dgsComboBoxGetEditEnabled"),
-	getText = dgsOOP.genOOPFnc("dgsComboBoxGetText"),
-]]

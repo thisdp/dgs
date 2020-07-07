@@ -3,9 +3,6 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 	assert(tonumber(y),"Bad argument @dgsCreateBrowser at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateBrowser at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateBrowser at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateBrowser at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local browser = createBrowser(1,1,isLocal and true or false,transparent and true or false)
 	assert(isElement(browser),"Bad argument @dgsCreateBrowser, can't create browser with 'createBrowser' !")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(browser,parent,true,true) or table.insert(CenterFatherTable,browser)

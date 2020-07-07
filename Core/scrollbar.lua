@@ -16,9 +16,6 @@ local mathAbs = math.abs
 local mathClamp = math.restrict
 
 function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateScrollBar at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	assert(type(x) == "number","Bad argument @dgsCreateScrollBar at argument 1, expect number got "..type(x))
 	assert(type(y) == "number","Bad argument @dgsCreateScrollBar at argument 2, expect number got "..type(y))
 	assert(type(sx) == "number","Bad argument @dgsCreateScrollBar at argument 3, expect number got "..type(sx))
@@ -340,16 +337,3 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxscrollbar"] = [[
-	setScrollPosition = dgsOOP.genOOPFnc("dgsScrollBarSetScrollPosition",true),
-	getScrollPosition = dgsOOP.genOOPFnc("dgsScrollBarGetScrollPosition"),
-	setCursorLength = dgsOOP.genOOPFnc("dgsScrollBarSetCursorLength",true),
-	getCursorLength = dgsOOP.genOOPFnc("dgsScrollBarGetCursorLength"),
-	setLocked = dgsOOP.genOOPFnc("dgsScrollBarSetLocked",true),
-	getLocked = dgsOOP.genOOPFnc("dgsScrollBarGetLocked"),
-	setGrades = dgsOOP.genOOPFnc("dgsScrollBarSetGrades",true),
-	getGrades = dgsOOP.genOOPFnc("dgsScrollBarGetGrades"),
-]]

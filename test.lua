@@ -1,23 +1,8 @@
-------------Stress Test
-function scrollBarTest()
-	for i=1,1000 do
-		dgsCreateScrollBar(50+1*i,200,20,500,false)
-	end
-end
-function memoTest()
-	for i=1,1000 do
-		dgsCreateMemo(50+1*i,200,500,500,"",false)
-	end
-end
-function editTest()
-	for i=1,1000 do
-		dgsCreateEdit(50,100+10*i,500,40,"",false)
-	end
-end
-
 ------------Full demo
 function createFullDemo()
-	loadstring(dgsImportOOPClass(true))()
+	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
+	--print("Load String",DGSOOPFnc,err)
+	DGSOOPFnc()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
 	local scb = window
 		:dgsScrollBar(320,50,260,20,true,false)
@@ -42,6 +27,9 @@ function createFullDemo()
 	end
 	gridlist.alpha = 1
 	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
+	for k,v in pairs(getmetatable(combobox)) do
+		iprint(k,v)
+	end
 	combobox:setEditEnabled(true)
 	for i=1,100 do
 		combobox:addItem(i)
@@ -74,42 +62,6 @@ function createFullDemo()
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
-end
-
-------------
-function createTest2()
-	tabp = dgsCreateTabPanel(400,200,400,400,false)
-	tab1 = dgsCreateTab("DGS",tabp)
-	tab2 = dgsCreateTab("Tab123123123123",tabp)
-	for i=1,10 do
-		dgsCreateTab(i.."Panel",tabp)
-	end
-	dgsSetText(tab2,"12")
-	gdlt2 = dgsCreateButton(0,0,100,120,"test",false,tab1,tocolor(255,255,255,255))
-	dgsSetProperty(gdlt2,"shadow",{1,1,tocolor(0,0,0,255),true})
-	dgsSetProperty(tabp,"tabPadding",{20,false})
-end
-
-function createTest3()
-	local rb1= dgsCreateRadioButton(500,500,200,30,"aaaa",false)
-	local rb2 = dgsCreateRadioButton(500,520,200,30,"bbbb",false)
-	local rb3 = dgsCreateRadioButton(500,540,200,30,"bbbb",false)
-end
-
-function createTest4()
-	local window = dgsCreateWindow(100,100,400,400,"test",false)
-	tabp = dgsCreateTabPanel(0,0,0.8,0.8,true,window)
-	tab1 = dgsCreateTab("DGS",tabp)
-	rb1 = dgsCreateComboBox(0,0,200,30,"test",false,tab1)
-	for i=1,20 do
-		dgsComboBoxAddItem(rb1,i)
-	end
-end
-function createTest5()
-	local cb1 = dgsCreateCheckBox(500,500,200,30,"test_indeterminate",false)
-	local cb2 = dgsCreateCheckBox(500,520,200,30,"test_checked",false)
-	local cb2 = dgsCreateCheckBox(500,540,200,30,"test_unchecked",false)
-	dgsCheckBoxSetSelected(cb1,nil)
 end
 
 function testButtonDisable()
@@ -264,7 +216,6 @@ function dgsAnimTest()
 	dgsAnimTo(label,"shadow",{100,100,tocolor(0,0,0,255)},"shadowOffset",10000)
 end
 
-
 function GridListSortingTest()
 	for x=1,10 do
 		local sortfnc = [[
@@ -334,6 +285,25 @@ function testPasteHandler()
 	end)
 end
 
+function gridlistTest()
+    gridlist = dgsCreateGridList(500,50,600,600,false)
+    dgsSetProperty(gridlist,"clip",false)
+    --dgsSetProperty(gridlist,"leading",10)
+    --dgsSetProperty(gridlist,"mode",true)
+    dgsGridListAddColumn(gridlist,"test1",0.2)
+    dgsGridListAddColumn(gridlist,"test2",0.1)
+    local tick = getTickCount()
+    bg = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
+    dgsSetProperty(gridlist,"rowHeight",200)
+    for i=1,10 do
+        local row = dgsGridListAddRow(gridlist)
+        local window = dgsCreateMemo(0,1,400,198,"",false)
+        dgsAttachToGridList(window,gridlist,row,2)
+        dgsGridListSetItemText(gridlist,row,1,i)
+        dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
+    end
+end
+
 function test3DInterface()
 	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
@@ -391,6 +361,16 @@ function testScrollBar()
 	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
 	dgsSetProperty(scrollbar,"scrollArrow",false)
 	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
+end
+
+function dgsSelector()
+	selector = dgsCreateSelector(400,500,100,20,false)
+	dgsSetProperty(selector,"selectorImageColorLeft",{0x9900FF00,0x9900FF00,0x9900FF00})
+	dgsSetProperty(selector,"selectorImageColorRight",{0x99FF0000,0x99FF0000,0x99FF0000})
+	dgsSetProperty(selector,"selectorText",{"-","+"})
+	for i=1,5000 do
+		dgsSelectorAddItem(selector,i)
+	end
 end
 
 function languageTest_GridList()
@@ -508,7 +488,7 @@ function oopTest()
 	window1 = dgsWindow(0,0,0.5,0.1,"test",true) --create a window with oop
 	window2 = dgsWindow(0.2,0,0.5,0.1,"test",true) --create a window with oop
 	label = window1
-		:Label(0,0,1,1,"label",true) --create a label inside the window
+		:dgsLabel(0,0,1,1,"label",true) --create a label inside the window
 		:setParent(window2)
 	label.parent = window1
 end
@@ -616,10 +596,10 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
-
+--[[
+loadstring(dgsImportOOPClass())()
 local function init()
 	--Test window
-	loadstring(dgsImportOOPClass(true))()
 	local window = dgsWindow(300, 300, 300, 300, "Color Picker")
 	window.size.width = 100
 	window.ignoreTitle = true
@@ -634,38 +614,17 @@ local function init()
 	dgsCenterElement(colorpicker,_,true)
 end
 
---[[
 setTimer(function()
 local tick = getTickCount()
-for i=1,20 do
+for i=1,500 do
 	init()
 end
 print(getTickCount()-tick)
 end,50,1)
 ]]
+
 --[[
-local dgsClass = {}
-local pos = {
-	__a = 1,
-	__call=function(self)
-		print(getmetatable(self).__a)
-	end,
-}
-
-local meta = {
-	__call=function(self,m)
-		local t = {}
-		setmetatable(t,m)
-		return t
-	end,
-}
-setmetatable(dgsClass,meta)
-
-iprint(dgsClass(pos)())
-]]
-
-rndRect1 = dgsCreateRoundRect(1,true,tocolor(255,255,255,255))
-local shader = dxCreateShader([[
+local shader = dxCreateShader([ [
 float borderSoft = 0.002;
 float radius = 0.1;
 
@@ -684,24 +643,24 @@ technique t{
 		PixelShader = compile ps_2_0 ep();
 	}
 }
-]])
+] ])
+]]
+--[[
+function wtf()
+    if rbSWindow then return end
+    rbSWindow = guiCreateWindow ( 0, 0, 300, 400, "Tvorba záterasů", false)
+    rbSList = guiCreateGridList(0.05, 0.05, 0.9, 0.8, true, rbSWindow)
 
-
-local ss = dxCreateShader([[
-
-
-float4 ep(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
-	tex-=0.5;
-	color.a *= (pow(abs(tex.x/9),5)+pow(abs(tex.y/9),5)-0.00000001)/0.001*1000000;
-	return color;
-}
-
-technique t{
-	pass p0{
-		PixelShader = compile ps_2_0 ep();
-	}
-}
-]])
-
---local image = dgsCreateImage(200,200,400,400,ss,false)
---local image = dgsCreateImage(200,200,400,400,dgsCreateCircle(),false)
+    local column = guiGridListAddColumn(rbSList, "ID", 0.2)
+    local column2 = guiGridListAddColumn(rbSList, "Typ", 0.5)
+    local column3 = guiGridListAddColumn(rbSList, "Rot", 0.1)
+    local column4 = guiGridListAddColumn(rbSList, "Z", 0.1)
+    for i = 1, 4 do
+        local newRow = guiGridListAddRow(rbSList)
+        guiGridListSetItemText(rbSList, newRow, column, "value[2]", true, false)
+        guiGridListSetItemText(rbSList, newRow, column2, "value[1]", false, false)
+        guiGridListSetItemText(rbSList, newRow, column3, "value[3]", false, false)
+        guiGridListSetItemText(rbSList, newRow, column4, "value[4]", false, false)
+    end
+end
+addEventHandler("onClientResourceStart", root, wtf)]]

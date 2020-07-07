@@ -22,9 +22,6 @@ function dgsCreateImage(x,y,w,h,img,relative,parent,color)
 	if not __y then assert(false,"Bad argument @dgsCreateImage at argument 2, expect number got "..type(y)) end
 	if not __w then assert(false,"Bad argument @dgsCreateImage at argument 3, expect number got "..type(w)) end
 	if not __h then assert(false,"Bad argument @dgsCreateImage at argument 4, expect number got "..type(h)) end
-	if parent then
-		if not dgsIsDxElement(parent) then assert(false,"Bad argument @dgsCreateImage at argument 7, expect dgs-dxgui got "..dgsGetType(parent)) end
-	end
 	local image = createElement("dgs-dximage")
 	dgsSetData(image,"renderBuffer",{
 		UVSize = {},
@@ -40,7 +37,7 @@ function dgsCreateImage(x,y,w,h,img,relative,parent,color)
 	dgsSetData(image,"color",color or 0xFFFFFFFF)
 	dgsSetData(image,"rotationCenter",{0,0}) --0~1
 	dgsSetData(image,"rotation",0) --0~360
-	local _ = parent and dgsSetParent(image,parent,true,true) or tableInsert(CenterFatherTable,image)
+	local _ = dgsIsDxElement(parent) and dgsSetParent(image,parent,true,true) or tableInsert(CenterFatherTable,image)
 	calculateGuiPositionSize(image,__x,__y,relative or false,__w,__h,relative or false,true)
 	triggerEvent("onDgsCreate",image,sourceResource)
 	return image
@@ -162,14 +159,3 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dximage"] = [[
-	setImage = dgsOOP.genOOPFnc("dgsImageSetImage",true),
-	getImage = dgsOOP.genOOPFnc("dgsImageGetImage"),
-	setUVSize = dgsOOP.genOOPFnc("dgsImageSetUVSize",true),
-	getUVSize = dgsOOP.genOOPFnc("dgsImageGetUVSize"),
-	setUVPosition = dgsOOP.genOOPFnc("dgsImageSetUVPosition",true),
-	getUVPosition = dgsOOP.genOOPFnc("dgsImageGetUVPosition"),
-]]

@@ -210,18 +210,3 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxwindow"] = [[
-	setSizable = dgsOOP.genOOPFnc("dgsWindowSetSizable",true),
-	setMovable = dgsOOP.genOOPFnc("dgsWindowSetMovable",true),
-	getSizable = dgsOOP.genOOPFnc("dgsWindowGetSizable"),
-	getMovable = dgsOOP.genOOPFnc("dgsWindowGetMovable"),
-	close = dgsOOP.genOOPFnc("dgsCloseWindow"),
-	setCloseButtonEnabled = dgsOOP.genOOPFnc("dgsWindowSetCloseButtonEnabled",true),
-	getCloseButtonEnabled = dgsOOP.genOOPFnc("dgsWindowGetCloseButtonEnabled"),
-	setCloseButtonSize = dgsOOP.genOOPFnc("dgsWindowSetCloseButtonSize",true),
-	getCloseButtonSize = dgsOOP.genOOPFnc("dgsWindowGetCloseButtonSize"),
-	getCloseButton = dgsOOP.genOOPFnc("dgsWindowGetCloseButton"),
-]]

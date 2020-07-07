@@ -524,6 +524,7 @@ function dgsGetMouseClickGUI(button)
 	end
 end
 
+function dgsIsMouseWithinGUI(ele) return MouseData.WithinElements[ele] and true or false end
 function dgsGetMouseEnterGUI() return MouseData.enter end
 function dgsGetMouseLeaveGUI() return MouseData.lastEnter end
 function dgsGetFocusedGUI() return MouseData.nowShow end

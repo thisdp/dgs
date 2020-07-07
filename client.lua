@@ -114,6 +114,7 @@ function dgsCoreRender()
 		MouseData.Move = false
 		MouseData.MoveScroll = false
 		MouseData.scbClickData = false
+		MouseData.selectorClickData = false
 		MouseData.clickl = false
 		MouseData.clickr = false
 		MouseData.clickm = false
@@ -145,9 +146,10 @@ function dgsCoreRender()
 			end
 		end
 		dxSetBlendMode("blend")
+		dxSetRenderTarget()
+		MouseData.WithinElements = {}
 		local intfaceMx,intfaceMy = MouseX,MouseY
 		MouseData.intfaceHitElement = MouseData.hit
-		dxSetRenderTarget()
 		local mx,my = normalMx,normalMy
 		for i=1,dx3DTextTableSize do
 			local v = dx3DTextTable[i]
@@ -189,6 +191,7 @@ function dgsCoreRender()
 			MouseData.Move = false
 			MouseData.MoveScroll = false
 			MouseData.scbClickData = false
+			MouseData.selectorClickData = false
 			MouseData.clickl = false
 			MouseData.clickr = false
 			MouseData.clickm = false
@@ -362,7 +365,7 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 		local eleType = dgsElementType[source]
 		if eleType == "dgs-dxscrollbar" then
 			local pnt = eleData.attachedToParent
-			if pnt then
+			if isElement(pnt) and dgsElementData[pnt] then
 				if not dgsElementData[pnt].visible then return end
 				parentAlpha = parentAlpha*dgsElementData[pnt].alpha
 			end
@@ -422,7 +425,7 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 		end
 		local x,y,cx,cy = position[1],position[2],position[3],position[4]
 		self = source
-		renderArguments = {x,y,w,h}
+		renderArguments = {x,y,w,h,cx,cy}
 		if x and y then
 			------------------------------------
 			if eleData.functionRunBefore then
@@ -438,6 +441,9 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 			if dgsRenderer[eleType] then
 				--local usingBlurBox =
 				rt,noRender,_mx,_my,offx,offy = dgsRenderer[eleType](source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
+				if MouseData.hit then
+					MouseData.WithinElements[MouseData.hit] = true
+				end
 				if debugMode then
 					dgsElementData[source].debugData = {x,y,w,h,cx,cy}
 				end
@@ -598,6 +604,13 @@ addEventHandler("onClientKey",root,function(button,state)
 			local scrollbar = dgsElementData[combo].scrollbar
 			if dgsGetVisible(scrollbar) then
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+			end
+		elseif dgsType == "dgs-dxselector" then
+			if dgsElementData[MouseData.enter].enableScroll and MouseData.nowShow == MouseData.enter then
+				local itemData = dgsElementData[MouseData.enter].itemData
+				local itemCount = #itemData
+				local currentItem = dgsElementData[MouseData.enter].selectedItem
+				dgsSelectorSetSelectedItem(MouseData.enter,math.floor(math.restrict(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
 			end
 		end
 	elseif state then
@@ -967,6 +980,7 @@ function dgsCheckHit(hits,mx,my)
 		if not getKeyState("mouse1") then
 			MouseData.clickl = false
 			MouseData.scbClickData = false
+			MouseData.selectorClickData = false
 			MouseData.Move = false
 			MouseData.Scale = false
 			MouseData.lock3DInterface = false
@@ -981,29 +995,68 @@ function dgsCheckHit(hits,mx,my)
 end
 
 function onClientMouseTriggered()
-	if MouseHolder.element == MouseData.enter and dgsGetType(MouseHolder.element) == "dgs-dxscrollbar" then
-		if MouseData.scbEnterData then
-			MouseData.scbClickData = MouseData.scbEnterData
-		end
-		local scrollbar = MouseHolder.element
-		if MouseData.scbEnterData == 1 or MouseData.scbEnterData == 5 then
-			if dgsElementData[scrollbar].scrollArrow then
-				scrollScrollBar(scrollbar,MouseData.scbClickData == 5)
+	if MouseHolder.element == MouseData.enter then
+		local dgsType = dgsGetType(MouseHolder.element)
+		if dgsType == "dgs-dxscrollbar" then
+			if MouseData.scbEnterData then
+				MouseData.scbClickData = MouseData.scbEnterData
 			end
-		elseif MouseData.scbEnterData == 2 or MouseData.scbEnterData == 4 then
-			local troughClickAction = dgsElementData[scrollbar].troughClickAction
-			if troughClickAction == "step" then
-				scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
-			elseif troughClickAction == "jump" then
-				dgsSetProperty(scrollbar,"position",math.restrict(scbEnterRltPos,0,1)*100)
+			local scrollbar = MouseHolder.element
+			if MouseData.scbEnterData == 1 or MouseData.scbEnterData == 5 then
+				if dgsElementData[scrollbar].scrollArrow then
+					scrollScrollBar(scrollbar,MouseData.scbClickData == 5)
+				end
+			elseif MouseData.scbEnterData == 2 or MouseData.scbEnterData == 4 then
+				local troughClickAction = dgsElementData[scrollbar].troughClickAction
+				if troughClickAction == "step" then
+					scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
+				elseif troughClickAction == "jump" then
+					dgsSetProperty(scrollbar,"position",math.restrict(scbEnterRltPos,0,1)*100)
+				end
+			end
+		elseif dgsType == "dgs-dxselector" then
+			local selector = MouseHolder.element
+			if MouseData.selectorEnterData then
+				MouseData.selectorClickData = MouseData.selectorEnterData
+			end
+			local scrollbar = MouseHolder.element
+			if MouseData.selectorEnterData == 1 then
+				local itemData = dgsElementData[selector].itemData
+				local itemCount = #itemData
+				local currentItem = dgsElementData[selector].selectedItem
+				if currentItem ~= -1 then
+					local offsetItem = 1
+					if MouseHolder.notIsFirst then
+						dgsElementData[selector].quickLeapState = math.lerp(0.01,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						offsetItem = dgsElementData[selector].quickLeapState*itemCount
+					else
+						dgsElementData[selector].quickLeapState = 0
+					end
+					dgsSelectorSetSelectedItem(selector,math.floor(math.restrict(currentItem-offsetItem,1,itemCount)))
+				end
+			elseif MouseData.selectorEnterData == 3 then
+				local itemData = dgsElementData[selector].itemData
+				local itemCount = #itemData
+				local currentItem = dgsElementData[selector].selectedItem
+				if currentItem ~= -1 then
+					local offsetItem = 1
+					if MouseHolder.notIsFirst then
+						dgsElementData[selector].quickLeapState = math.lerp(0.01,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						offsetItem = dgsElementData[selector].quickLeapState*itemCount
+					else
+						dgsElementData[selector].quickLeapState = 0
+					end
+					dgsSelectorSetSelectedItem(selector,math.floor(math.restrict(currentItem+offsetItem,1,itemCount)))
+				end
 			end
 		end
 	end
+	MouseHolder.notIsFirst = true
 end
 
 MouseHolder = {}
 MouseKeyConverter = {left="mouse1",right="mouse2",middle="mouse3"}
-MouseKeySupports = {["dgs-dxscrollbar"] = true}
+MouseKeySupports = {["dgs-dxscrollbar"] = true,["dgs-dxselector"] = true}
 function onDGSMouseCheck(button,state)
 	local button = MouseKeyConverter[button]
 	if state == "down" then
@@ -1103,10 +1156,10 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		if tresource and boundResource[tresource] then
 			boundResource[tresource][source] = nil
 		end
-		dgsStopAniming(source)
-		dgsStopMoving(source)
-		dgsStopSizing(source)
-		dgsStopAlphaing(source)
+		if animGUIList[source] then dgsStopAniming(source) end
+		if moveGUIList[source] then dgsStopMoving(source) end
+		if sizeGUIList[source] then dgsStopSizing(source) end
+		if alphaGUIList[source] then dgsStopAlphaing(source) end
 		if dgsType == "dgs-dx3dinterface" then
 			tableRemoveItemFromArray(dx3DInterfaceTable,source)
 		elseif dgsType == "dgs-dx3dtext" then
@@ -1252,14 +1305,13 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		elseif state == "up" then
 			triggerEvent("onDgsMouseUp",guiele,button,MouseX or x,MouseY or y)
 		end
-		local gtype = dgsGetType(guiele)
-		if gtype == "dgs-dxbrowser" then
+		local guitype = dgsGetType(guiele)
+		if guitype == "dgs-dxbrowser" then
 			focusBrowser(guiele)
 		else
 			focusBrowser()
 		end
 		local parent = dgsGetParent(guiele)
-		local guitype = dgsGetType(guiele)
 		if guitype == "dgs-dxswitchbutton" then
 			if dgsElementData[guiele].clickState == state and dgsElementData[guiele].clickButton == button then
 				dgsSetData(guiele,"state", not dgsElementData[guiele].state)
@@ -1308,11 +1360,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 							dgsSetData(parent,"mouseWheelScrollBar",true)
 						end
 					end
-				elseif gtype == "dgs-dxradiobutton" then
+				elseif guitype == "dgs-dxradiobutton" then
 					dgsRadioButtonSetSelected(guiele,true)
-				elseif gtype == "dgs-dxcheckbox" then
-					local state = dgsElementData[guiele].state
-					dgsCheckBoxSetSelected(guiele,not state)
+				elseif guitype == "dgs-dxcheckbox" then
+					dgsCheckBoxSetSelected(guiele,not dgsElementData[guiele].state)
 				elseif guitype == "dgs-dxcombobox-Box" then
 					local combobox = dgsElementData[guiele].myCombo
 					local preSelect = dgsElementData[combobox].preSelect
@@ -1324,10 +1375,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						local itemData = dgsElementData[combobox].itemData
 						dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
 					end
-					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 					if dgsElementData[combobox].autoHideAfterSelected then
 						dgsSetData(combobox,"listState",-1)
 					end
+					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 				elseif guitype == "dgs-dxtab" then
 					local tabpanel = dgsElementData[guiele].parent
 					dgsBringToFront(tabpanel)
@@ -1336,6 +1387,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 				elseif guitype == "dgs-dxcombobox" then
 					dgsSetData(guiele,"listState",dgsElementData[guiele].listState == 1 and -1 or 1)
+				elseif guitype == "dgs-dxselector" then
+					
 				end
 			end
 			if guitype == "dgs-dxgridlist" then
@@ -1535,6 +1588,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		MouseData.MoveScroll = false
 		MouseData.Scale = false
 		MouseData.scbClickData = nil
+		MouseData.selectorClickData = nil
 	end
 end)
 

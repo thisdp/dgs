@@ -17,9 +17,6 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	assert(tonumber(y),"Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y))
 	assert(tonumber(sx),"Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx))
 	assert(tonumber(sy),"Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateRadioButton at argument 7, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local rb = createElement("dgs-dxradiobutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true,true) or table.insert(CenterFatherTable,rb)
 	dgsSetType(rb,"dgs-dxradiobutton")
@@ -217,14 +214,3 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,e
 	end
 	return rndtgt
 end
-----------------------------------------------------------------
--------------------------OOP Class------------------------------
-----------------------------------------------------------------
-dgsOOP["dgs-dxradiobutton"] = [[
-	getSelected = dgsOOP.genOOPFnc("dgsRadioButtonGetSelected"),
-	setSelected = dgsOOP.genOOPFnc("dgsRadioButtonSetSelected",true),
-	getHorizontalAlign = dgsOOP.genOOPFnc("dgsRadioButtonGetHorizontalAlign"),
-	setHorizontalAlign = dgsOOP.genOOPFnc("dgsRadioButtonSetHorizontalAlign",true),
-	getVerticalAlign = dgsOOP.genOOPFnc("dgsRadioButtonGetVerticalAlign"),
-	setVerticalAlign = dgsOOP.genOOPFnc("dgsRadioButtonSetVerticalAlign",true),
-]]
