@@ -5,6 +5,7 @@ if dgsOOP and dgsOOP.dgsRes and isElement(getResourceRootElement(dgsOOP.dgsRes))
 dgsOOP = {
 	dgsClasses = {},
 	dgsInstances = {},
+	eventHandler = {},
 	dgsRes = getElementData(root,"__DGSRes"),
 	dgsRoot = getResourceRootElement(getElementData(root,"__DGSRes")),
 	transfromEventName = function(eventName,isReverse)
