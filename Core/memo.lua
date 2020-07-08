@@ -398,8 +398,7 @@ function searchMemoMousePosition(dxmemo,posx,posy)
 	local x,y = dgsGetPosition(dxmemo,false,true)
 	local originalText = dgsElementData[dxmemo].text
 	local allText = isWordWrap and dgsElementData[dxmemo].wordWrapMapText or originalText
-	local selLine = mathFloor((posy-y-padding[1])/fontHeight)+showLine
-	selLine = selLine > #allText and #allText or selLine 
+	local selLine = math.restrict(mathFloor((posy-y-padding[1])/fontHeight)+showLine,1,#allText)
 	local text = (allText[selLine] or {[0]=""})[0]
 	local pos = posx-x-padding[1]+showPos
 	local sfrom,sto,templen = 0,utf8Len(text),0
