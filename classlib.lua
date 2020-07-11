@@ -308,13 +308,17 @@ class {
 				end
 				return t
 			end
-			if not isElement(dgsElement) then return false end
+			if not isElement(dgsElement) then return dgsElement end
 			local originalClass = dgsOOP.dgsInstances[dgsElement]
 			if originalClass and originalClass.dgsElement == dgsElement then
 				return originalClass
 			else
 				local eleType = dgsGetPluginType(dgsElement)
-				return dgsOOP[eleType][dgsElement]
+				if dgsOOP[eleType] then
+					return dgsOOP[eleType][dgsElement]
+				else
+					return dgsElement
+				end
 			end
 		end
 	};
