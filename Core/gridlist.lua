@@ -347,7 +347,7 @@ end
 function dgsGridListSetColumnFont(gridlist,pos,font,affectRow)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetColumnFont at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(pos) == "number","Bad argument @dgsGridListSetColumnFont at argument 2, expect number got "..dgsGetType(pos))
-	assert(fontDxHave[font] or dgsGetType(font) == "dx-font","Bad argument @dgsGridListSetColumnFont at argument 3, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
+	assert(fontBuiltIn[font] or dgsGetType(font) == "dx-font","Bad argument @dgsGridListSetColumnFont at argument 3, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
 	if #columnData == 0 then return end
@@ -699,7 +699,7 @@ function dgsGridListSetItemFont(gridlist,row,column,font)
 	row = row-row%1
 	assert(row >= 1,"Bad argument @dgsGridListSetItemFont at argument 2, expect number >= 1 got "..row)
 	assert(type(column) == "number","Bad argument @dgsGridListSetItemFont at argument 3, expect number got "..dgsGetType(column))
-	assert(fontDxHave[font] or dgsGetType(font) == "dx-font","Bad argument @dgsGridListSetItemFont at argument 4, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
+	assert(fontBuiltIn[font] or dgsGetType(font) == "dx-font","Bad argument @dgsGridListSetItemFont at argument 4, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
 	local rowData = dgsElementData[gridlist].rowData
 	if rowData[row] and rowData[row][column] then
 		rowData[row][column][6] = font
