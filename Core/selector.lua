@@ -36,7 +36,7 @@ function dgsCreateSelector(x,y,sx,sy,relative,parent,textColor,scalex,scaley,sha
 	dgsSetData(selector,"selectorText",{textSizeX or styleSettings.selector.selectorText[1],textSizeY or styleSettings.selector.selectorText[2]})
 	dgsSetData(selector,"selectorTextSize",styleSettings.selector.selectorTextSize)
 	dgsSetData(selector,"selectorTextColor",styleSettings.selector.selectorTextColor)
-	dgsSetData(selector,"selectorSize",{_,1,true})
+	dgsSetData(selector,"selectorSize",{nil,1,true})
 	dgsSetData(selector,"selectorImageColorLeft",styleSettings.selector.selectorImageColorLeft)
 	dgsSetData(selector,"selectorImageLeft",styleSettings.selector.selectorImageLeft)
 	dgsSetData(selector,"selectorImageColorRight",styleSettings.selector.selectorImageColorRight)
