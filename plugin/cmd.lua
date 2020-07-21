@@ -231,7 +231,7 @@ function executeCmdCommand(cmd,str,...)
 			triggerEvent(dgsGetData(cmd,"preName")..str,cmd,...)
 		end
 		if not ifound then
-			outputCmdMessage(cmd,"Access Dined When Calling Event:"..str)
+			outputCmdMessage(cmd,"Access Denied When Calling Event:"..str)
 		end
 	end
 end
