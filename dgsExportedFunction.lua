@@ -364,23 +364,33 @@ function dgsG2DLoadHooker()
 			end
 		end
 		guiGridListGetItemColor = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListGetItemColor(gl,row,...)
 		end
 		guiGridListGetItemData = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListGetItemData(gl,row,...)
 		end
 		guiGridListSetItemData = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListSetItemData(gl,row,...)
 		end
 		guiGridListGetItemText = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListGetItemText(gl,row,...)
 		end
 		guiGridListSetItemText = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListSetItemText(gl,row,...)
 		end
 		guiGridListGetSelectedCount = dgsGridListGetSelectedCount
@@ -405,15 +415,21 @@ function dgsG2DLoadHooker()
 			return newItems
 		end
 		guiGridListRemoveRow = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListRemoveRow(gl,row,...)
 		end
 		guiGridListSetItemColor = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListSetItemColor(gl,row,...)
 		end
 		guiGridListSetSelectedItem = function(gl,row,...)
-			row = isGUIGridList[gl] and row+1 or row
+			if row then
+				row = isGUIGridList[gl] and row+1 or row
+			end
 			return dgsGridListSetSelectedItem(gl,row,...)
 		end
 		guiGridListAutoSizeColumn = dgsGridListAutoSizeColumn
