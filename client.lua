@@ -1290,7 +1290,7 @@ function checkScale(source)
 end
 
 DoubleClick = {}
-DoubleClick.Interval = 500
+DoubleClick.Interval = 250
 DoubleClick.down = false
 DoubleClick.up = false
 GirdListDoubleClick = {}
