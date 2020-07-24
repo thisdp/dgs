@@ -14,7 +14,7 @@ local dxSetBlendMode = dxSetBlendMode
 
 local getScreenFromWorldPosition = getScreenFromWorldPosition
 
-function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode)
+function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded)
 	assert(tonumber(x),"Bad argument @dgsCreate3DText at argument 1, expect a number got "..type(x))
 	assert(tonumber(y),"Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y))
 	assert(tonumber(y),"Bad argument @dgsCreate3DText at argument 3, expect a number got "..type(z))
@@ -32,6 +32,7 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	dgsSetData(text3d,"dimension",-1)
 	dgsSetData(text3d,"interior",-1)
 	dgsSetData(text3d,"canBeBlocked",false)
+	dgsSetData(text3d,"subPixelPositioning",true)
 	dgsAttachToTranslation(text3d,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[text3d]._translationText = text
@@ -39,7 +40,7 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	else
 		dgsSetData(text3d,"text",tostring(text))
 	end
-	dgsSetData(text3d,"colorcode",colorcode or false)
+	dgsSetData(text3d,"colorcoded",colorcoded or false)
 	triggerEvent("onDgsCreate",text3d,sourceResource)
 	return text3d
 end
@@ -150,6 +151,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			local fadeDistance = eleData.fadeDistance
 			local text = eleData.text
 			local font = eleData.font or systemFont
+			local subPixelPositioning = eleData.subPixelPositioning
 			if (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, cam))) then
 				local fadeMulti = 1
 				if maxDistance > fadeDistance and distance >= fadeDistance then
@@ -169,18 +171,21 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 					if shadow then
 						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 						if shadowoffx and shadowoffy and shadowc then
-							local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+							local shadowText = text
+							if colorcoded then
+								shadowText = text:gsub('#%x%x%x%x%x%x','').."\n"
+							end
 							local shadowc = applyColorAlpha(shadowc,parentAlpha*fadeMulti)
-							local shadowoffx,shadowoffy = shadowoffx*antiDistance*25,shadowoffy*antiDistance*25
-							dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+							local shadowoffx,shadowoffy = shadowoffx*antiDistance*50,shadowoffy*antiDistance*50
+							dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
 							if shadowIsOutline then
-								dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
-								dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
-								dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,true)
+								dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
+								dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
+								dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
 							end
 						end
 					end
-					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,"center","center",false,false,false,colorcoded,true)
+					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,"center","center",false,false,false,colorcoded,subPixelPositioning)
 					------------------------------------OutLine
 					local outlineData = eleData.outline
 					if outlineData then
