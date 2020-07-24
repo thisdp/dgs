@@ -367,6 +367,17 @@ function dgsMemoGetCaretStyle(memo,style)
 	return dgsElementData[memo].cursorStyle
 end
 
+function dgsMemoSetMaxLength(memo,maxLength)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetMaxLength at argument 1, expect dgs-dxmemo, got "..dgsGetType(edit))
+	assert(type(maxLength) == "number","Bad argument @dgsMemoSetMaxLength at argument 2, expect number, got "..type(maxLength))
+	return dgsSetData(memo,"maxLength",maxLength)
+end
+
+function dgsMemoGetMaxLength(memo)
+	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetMaxLength at argument 1, expect dgs-dxmemo, got "..dgsGetType(edit))
+	return dgsElementData[memo].maxLength
+end
+
 function dgsMemoSetReadOnly(memo,state)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	return dgsSetData(memo,"readOnly",state and true or false)
@@ -650,6 +661,7 @@ local splitChar = "\r\n"
 local splitChar2 = "\n"
 function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	local textTable = dgsElementData[memo].text or {}
+	local maxLength = dgsElementData[memo].maxLength
 	if not noclear then
 		dgsElementData[memo].text = {{[-1]=0,[0]="",[1]={}}}
 		textTable = dgsElementData[memo].text
@@ -667,6 +679,11 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	local tab = string.split(fixed,splitChar2)
 	tab[1] = utf8Sub(tab[1],2)
 	tab[#tab] = utf8Sub(tab[#tab],1,utf8Len(tab[#tab])-1)
+	local text = dgsGetText(memo)
+	local textLen = string.len(text)
+	if (textLen >= maxLength) then
+	return false
+	end
 	local isWordWrap = dgsElementData[memo].wordWrap
 	local mapTable = dgsElementData[memo].wordWrapMapText or {}
 	local size = dgsElementData[memo].absSize
