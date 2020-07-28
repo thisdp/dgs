@@ -206,7 +206,7 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	else
 		dgsSetPosition(images[2],-offset,value*absSize[2]/100-thickness/2,false)
 	end
-	
+
 	triggerEvent("onDgsColorPickerComponentSelectorChange",cs,value,oldV)
 end
 
@@ -487,7 +487,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
 		dgsElementData[show].bindColorPicker_Fnc2 = tempTextChange
 		tempColorChange()
-	else	
+	else
 		assert(false,"Bad argument at argument 1, unsupported type "..targetType)
 	end
 	return true

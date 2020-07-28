@@ -41,7 +41,7 @@
 	---Values
 		font = nil,	--Using systemFont
 		textSize = {1,1},
-		
+
 	},
 
 -----------------------------------------------------------------------------------DGS Check Box
@@ -78,7 +78,7 @@
 			{"Images/checkbox/cb_t.png"},	--Normal
 			{"Images/checkbox/cb_t_s.png"},	--Hover
 			{"Images/checkbox/cb_t.png"},	--Click
-			
+
 		},
 	---Values
 		font = nil,	--Using systemFont
@@ -139,7 +139,7 @@
 		scrollBarThick = 15,
 		autoHideAfterSelected=true,
 	},
-	
+
 -----------------------------------------------------------------------------------DGS Radio Button
 	radiobutton = {
 	---Color
@@ -177,7 +177,7 @@
 			false,	--Relative
 		},
 	},
-	
+
 -----------------------------------------------------------------------------------DGS Edit
 	edit = {
 	---Color
@@ -227,7 +227,7 @@
 			{},
 			{},
 		},
-		
+
 	---Values
 		font = nil,	--Using systemFont
 		columnTextSize = {1,1},
@@ -246,7 +246,7 @@
 	---Color
 		textColor = tocolor(255,255,255,255),	--Label text color
 	---Image
-	
+
 	---Values
 		font = nil,	--Using systemFont
 		textSize = {1,1},
@@ -333,11 +333,11 @@
 	---Color
 
 	---Image
-	
+
 	---Values
 		scrollBarThick = 15,
 	},
-	
+
 -----------------------------------------------------------------------------------DGS Selector
 	selector = {
 	---Color
@@ -372,7 +372,7 @@
 		font = nil,	--Using systemFont
 		selectorTextSize = {1,1},
 		itemTextSize = {1,1},
-		
+
 	},
 -----------------------------------------------------------------------------------DGS Switch Buttoon
 	switchbutton = {

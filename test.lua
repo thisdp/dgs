@@ -94,21 +94,21 @@ end
 function createTestMemo()
 	local sW,sH = dgsGetScreenSize()
 	local memo = dgsCreateMemo(500,200,200,300,[[This is a dgs-dxmemo
-	
+
 	Thisdp's
 	DirectX
 	Graphical User Interface
 	System
-	
+
 	MTA DxLib
 	Version 2.88
 	Test UTF8: 你好
 	Test Selection
-	
+
 	DGS Memo Updates
 	1.Added Scroll Bars
 	2.Fix backspace and delete doesn't works well
-	
+
 	Very looooooooooong
 	Test Scroll Bars
 	1
@@ -158,7 +158,7 @@ end
 
 function isArabicCharacters(character)
 	local code = utf8.byte(character)
-	local isArabic = code >= arabicUnicode[1][1] and code <= arabicUnicode[1][2] 
+	local isArabic = code >= arabicUnicode[1][1] and code <= arabicUnicode[1][2]
 	isArabic = isArabic or (code >= arabicUnicode[2][1] and code <= arabicUnicode[2][2])
 	isArabic = isArabic or (code >= arabicUnicode[3][1] and code <= arabicUnicode[3][2])
 	isArabic = isArabic or (code >= arabicUnicode[4][1] and code <= arabicUnicode[4][2])
@@ -233,7 +233,7 @@ function GridListSortingTest()
 			local texta,textb = a[column][1],b[column][1]
 			return texta < textb
 		]]
-		
+
 		gridlist = dgsCreateGridList(200,50,600,600,false)
 		dgsGridListAddColumn(gridlist,"test1",0.2)
 		--dgsGridListAddColumn(gridlist,"test2",0.1)
@@ -448,7 +448,7 @@ function scrollPane3DEffectTest()
 	local img = dgsCreateImage(0,0,1,1,_,true,material,tocolor(0,0,0,180))
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Interface Edit 1",false,img)
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Interface Edit 2",false,img)
-	
+
 	local effect3d = dgsCreateEffect3D(20)
 	local sp = dgsCreateScrollPane(300,300,500,500,false)
 	local img = dgsCreateImage(0,0,1,1,_,true,sp,tocolor(0,0,0,180))
@@ -509,21 +509,21 @@ function testColorPicker()
 	dgsBindToColorPicker(g,colorPicker_HSVRing,"RGB","G",true,true)
 	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false,material1)
 	dgsBindToColorPicker(b,colorPicker_HSVRing,"RGB","B",true,true)
-	
+
 	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false,material1)
 	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSL","H",true,true)
 	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false,material1)
 	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSL","S",true,true)
 	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false,material1)
 	dgsBindToColorPicker(L,colorPicker_HSVRing,"HSL","L",true,true)
-	
+
 	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false,material1)
 	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSV","H",true,true)
 	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false,material1)
 	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSV","S",true,true)
 	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material1)
 	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
-	
+
 	A = dgsColorPickerCreateComponentSelector(500,260,10,500,false,false,material1)
 	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
 end
@@ -576,7 +576,7 @@ function testButtonEffect()
 		end
 		return circleRadius													--Return the property value
 	]])
-	
+
 	function dgsButtonEffectHandler(mx,my)
 		if dgsIsAniming(source) then dgsStopAniming(source) end				--If it is animating, then suspend it
 		local wid,hei = dgsGetSize(source,false)							--Get the size of the dgs button to calculate the ratio and the mouse relative position

@@ -81,7 +81,7 @@ function table.find(tab,ke,num)
 		for k,v in pairs(tab) do
 			if v == ke then
 				return k
-			end	
+			end
 		end
 	end
 	return false
@@ -137,16 +137,16 @@ function table.complement(theall,...)
 	return newtable
 end
 
-function table.deepcopy(obj)      
+function table.deepcopy(obj)
     local InTable = {}
-    local function Func(obj)  
+    local function Func(obj)
         if type(obj) ~= "table" then
             return obj
         end
         local NewTable = {}
         InTable[obj] = NewTable
         for k,v in pairs(obj) do
-            NewTable[Func(k)] = Func(v)  
+            NewTable[Func(k)] = Func(v)
         end
         return setmetatable(NewTable,getmetatable(obj))
     end
@@ -177,7 +177,7 @@ function string.split(s,delim)
 	return t
 end
 --------------------------------Math Utility
-function findRotation(x1,y1,x2,y2,offsetFix) 
+function findRotation(x1,y1,x2,y2,offsetFix)
 	local t = -deg(atan2(x2-x1,y2-y1))+offsetFix
 	return t<0 and t+360 or t
 end
@@ -335,7 +335,7 @@ function HSL2RGB(H,S,L)
 			var_2 = L+S-S*L
 		end
 		var_1 = 2*L-var_2
-		R = HUE2RGB(var_1,var_2,H+(1/3)) 
+		R = HUE2RGB(var_1,var_2,H+(1/3))
 		G = HUE2RGB(var_1,var_2,H)
 		B = HUE2RGB(var_1,var_2,H-(1/3))
 	end
@@ -489,14 +489,14 @@ end
 function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)
 		return string.format("%%%02X",c:byte())
-	end)    
+	end)
     return gsub(s," ","+")
-end 
+end
 
-function urlDecode(s)    
-    s = gsub(s,'%%(%x%x)',function(h) 
+function urlDecode(s)
+    s = gsub(s,'%%(%x%x)',function(h)
 		return char(tonumber(h,16))
-	end)    
+	end)
     return s
 end
 

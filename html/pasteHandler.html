@@ -20,11 +20,11 @@
 					})
 				} else if (item.kind === "file") {
 					var pasteFile = item.getAsFile()
-					var reader = new FileReader(); 
-					reader.readAsDataURL(pasteFile); 
-					reader.onload = function(){ 
+					var reader = new FileReader();
+					reader.readAsDataURL(pasteFile);
+					reader.onload = function(){
 						mta.triggerEvent("onDgsPaste",reader.result)
-					} 
+					}
 				}
 			}
 		});

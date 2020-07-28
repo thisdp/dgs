@@ -36,7 +36,7 @@ function dgsEffect3DApplyToScrollPane(effect3d,scrollpane)
 	local newEnv = {source=scrollpane,mouseMoveCheck=mouseMoveCheck}
 	setmetatable(newEnv,{__index=_G})
 	setfenv(mouseMoveCheck,newEnv)
-	
+
 	function mouseEnterLeave()
 		if eventName == "onDgsElementEnter" then
 			addEventHandler("onClientRender",root,mouseMoveCheck)

@@ -21,16 +21,16 @@ dgsOOP = {
 		end
 		return false
 	end,
-	deepCopy = function(obj)      
+	deepCopy = function(obj)
 		local InTable = {}
-		local function Func(obj)  
+		local function Func(obj)
 			if type(obj) ~= "table" then
 				return obj
 			end
 			local NewTable = {}
 			InTable[obj] = NewTable
 			for k,v in pairs(obj) do
-				NewTable[Func(k)] = Func(v)  
+				NewTable[Func(k)] = Func(v)
 			end
 			return setmetatable(NewTable,getmetatable(obj))
 		end
@@ -301,7 +301,7 @@ class {
 		dgsGetInstance = function(dgsElement,...)
 			local typ = type(dgsElement)
 			if typ ~= "table" and typ ~= "userdata" then return dgsElement end
-			if typ == "table" then 
+			if typ == "table" then
 				local t = {}
 				for i=1,#dgsElement do
 					t[i] = dgsRootInstance.dgsGetInstance(dgsElement[i])
@@ -355,7 +355,7 @@ class {
 		end,
 		dgs3DInterface = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)) end,
 		dgs3DText = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DText",...)) end,
-		
+
 	};
 }
 
@@ -496,7 +496,7 @@ class {
 		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(...) end,
 	};
 	default = {
-	
+
 	};
 }
 

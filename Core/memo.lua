@@ -37,19 +37,19 @@ dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 		}
 --------------In Word Wrap Mode----------------
 	Text Table Structure:
-			Text Width(Int),	Text(Str),	Map Tables For Weak Line(Table),	
+			Text Width(Int),	Text(Str),	Map Tables For Weak Line(Table),
 		{
 			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 1
 			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 2
 			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 3
 			...
 		}
-		
+
 	Map Table Structure:
 			Text Of Weak Line(Str),	Row In Text Table(Table),	Weak Line Index In Text Table(Int),	Length Of Text(Int),
-		{		
-			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},			
-			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},		
+		{
+			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
+			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
 			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
 			...
 		}
@@ -179,7 +179,7 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 			dgsSetData(memo,"wordWrapShowLine",{newLine,mapTable[newWeakLine][2],newWeakLine})
 			syncScrollBars(memo,1)
 		end
-		dgsSetData(memo,"caretPos",{newIndex,newLine})	
+		dgsSetData(memo,"caretPos",{newIndex,newLine})
 		local isReadOnlyShow = true
 		if dgsElementData[memo].readOnly then
 			isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
@@ -209,7 +209,7 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 			dgsSetData(memo,"showLine",line)
 			syncScrollBars(memo,1)
 		end
-		dgsSetData(memo,"caretPos",{pos,line})	
+		dgsSetData(memo,"caretPos",{pos,line})
 		local isReadOnlyShow = true
 		if dgsElementData[memo].readOnly then
 			isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
@@ -488,7 +488,7 @@ function searchTextFromPosition(text,font,textSizeX,pos)
 			start = len1
 			sfrom = stoSfrom_Half-1
 			sto = sfrom
-			templen = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)	
+			templen = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
 		end
 		if sto-sfrom <= 10 then
 			break
@@ -692,7 +692,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	local scrollbars = dgsElementData[memo].scrollbars
 	local scbTakes1 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4
 	local canHold = mathFloor(size[1]-padding[1]*2-scbTakes1)
-	
+
 	local offset = 0
 	if tab ~= 0 then
 		local insertLine,lineCnt
@@ -1015,7 +1015,7 @@ function seekMaxLengthLine(memo)
 	end
 	return line,lineLen
 end
-	
+
 function configMemo(memo)
 	local size = dgsElementData[memo].absSize
 	local padding = dgsElementData[memo].padding
@@ -1064,7 +1064,7 @@ function configMemo(memo)
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = dgsElementData[memo].scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
-	
+
 	local scbLengthHoz = dgsElementData[memo].scrollBarLength[2]
 	local widLen = 1-(dgsElementData[memo].rightLength[1]-size[1]+scbTakes1+padding[1]*2)/dgsElementData[memo].rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen

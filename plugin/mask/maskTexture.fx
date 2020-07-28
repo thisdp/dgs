@@ -13,7 +13,7 @@ SamplerState maskSampler
 
 float4 texMask(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0
 {
-	float4 sourceColor = tex2D(sourceSampler,tex); 
+	float4 sourceColor = tex2D(sourceSampler,tex);
     float4 maskColor = tex2D(maskSampler,tex);
 	sourceColor.a = (maskColor.r+maskColor.g+maskColor.b)/3.0f;
 	return sourceColor*color;

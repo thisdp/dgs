@@ -21,7 +21,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true,true) or table.insert(CenterFatherTable,rb)
 	dgsSetType(rb,"dgs-dxradiobutton")
 	dgsSetData(rb,"renderBuffer",{})
-	
+
 	local imageUnchecked = styleSettings.radiobutton.image_f
 	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
 	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
@@ -32,7 +32,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	hovcolor_f = hovcolor_f or colorUnchecked[2]
 	clicolor_f = clicolor_f or colorUnchecked[3]
 	dgsSetData(rb,"color_f",{norcolor_f,hovcolor_f,clicolor_f})
-	
+
 	local imageChecked = styleSettings.radiobutton.image_t
 	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
 	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
@@ -43,7 +43,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	hovcolor_t = hovcolor_t or colorChecked[2]
 	clicolor_t = clicolor_t or colorChecked[3]
 	dgsSetData(rb,"color_t",{norcolor_t,hovcolor_t,clicolor_t})
-	
+
 	dgsSetData(rb,"rbParent",dgsIsDxElement(parent) and parent or resourceRoot)
 	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
