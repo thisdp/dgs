@@ -461,7 +461,7 @@ class {
 		getAttachedGridList = dgsOOP.genOOPFnc("dgsGetAttachedGridList",true),
 		attachToGridList = dgsOOP.genOOPFnc("dgsAttachToGridList",true),
 		center = dgsOOP.genOOPFnc("dgsCenterElement",true),
-		destroy = dgsOOP.genOOPFnc("destroyElement",true);
+		destroy = function(self) return destroyElement(self.dgsElement) end;
 		isElement = dgsOOP.genOOPFnc("isElement",true);
 		getElement = function(self) return self.dgsElement end,
 		addMoveHandler = dgsOOP.genOOPFnc("dgsAddMoveHandler",true),
