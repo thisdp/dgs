@@ -1437,7 +1437,7 @@ function checkGLScrollBar(scb,new,old)
 			local rowLength = #dgsElementData[parent].rowData*(dgsElementData[parent].rowHeight+dgsElementData[parent].leading)
 			local temp = -new*(rowLength-sy+scbThickH+dgsElementData[parent].columnHeight)/100
 			if temp <= 0 then
-				local temp = dgsElementData[parent].scrollFloor[1] and temp-temp%1 or temp 
+				local temp = dgsElementData[parent].scrollFloor[1] and temp-temp%1 or temp
 				dgsSetData(parent,"rowMoveOffset",temp)
 			end
 			triggerEvent("onDgsElementScroll",parent,source,new,old)
@@ -1510,14 +1510,14 @@ function configGridList(gridlist)
 	local scroll1 = dgsElementData[scrollbar[1]].position
 	local scroll2 = dgsElementData[scrollbar[2]].position
 	dgsSetData(gridlist,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
-	
+
 	local scbLengthVrt = dgsElementData[gridlist].scrollBarLength[1]
 	local higLen = 1-(rowLength-rowShowRange)/rowLength
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = dgsElementData[gridlist].scrollSize/(rowLength-rowShowRange)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
-	
+
 	local scbLengthHoz = dgsElementData[gridlist].scrollBarLength[2]
 	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
 	widLen = widLen >= 0.95 and 0.95 or widLen
@@ -1836,7 +1836,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 					end
 					local textBuffer = {}
 					local textBufferCnt = 1
-					
+
 					if not cPosStart or not cPosEnd then break end
 					dxSetBlendMode("modulate_add")
 					for id = cPosStart,cPosEnd do

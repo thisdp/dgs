@@ -28,25 +28,25 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	dgsSetData(switchbutton,"colorOn",styleSettings.switchbutton.colorOn)
 	dgsSetData(switchbutton,"colorOff",styleSettings.switchbutton.colorOff)
 	dgsSetData(switchbutton,"cursorColor",styleSettings.switchbutton.cursorColor)
-	
+
 	local imageOn = styleSettings.switchbutton.imageOn
 	local imageNormalOn = dgsCreateTextureFromStyle(imageOn[1])
 	local imageHoverOn = dgsCreateTextureFromStyle(imageOn[2])
 	local imageClickOn = dgsCreateTextureFromStyle(imageOn[3])
 	dgsSetData(switchbutton,"imageOn",{imageNormalOn,imageHoverOn,imageClickOn})
-	
+
 	local imageOff = styleSettings.switchbutton.imageOff
 	local imageNormalOff = dgsCreateTextureFromStyle(imageOff[1])
 	local imageHoverOff = dgsCreateTextureFromStyle(imageOff[2])
 	local imageClickOff = dgsCreateTextureFromStyle(imageOff[3])
 	dgsSetData(switchbutton,"imageOff",{imageNormalOff,imageHoverOff,imageClickOff})
-	
+
 	local cursorImage = styleSettings.switchbutton.cursorImage
 	local cursorNormal = dgsCreateTextureFromStyle(cursorImage[1])
 	local cursorHover = dgsCreateTextureFromStyle(cursorImage[2])
 	local cursorClick = dgsCreateTextureFromStyle(cursorImage[3])
 	dgsSetData(switchbutton,"cursorImage",{cursorNormal,cursorHover,cursorClick})
-	
+
 	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or getThisResource()])
 	if type(textOn) == "table" then
 		dgsElementData[switchbutton]._translationtextOn = textOn
@@ -60,7 +60,7 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	dgsSetData(switchbutton,"textOff",tostring(textOff))
 	dgsSetData(switchbutton,"textColorOn",tonumber(textColorOn) or styleSettings.switchbutton.textColorOn)
 	dgsSetData(switchbutton,"textColorOff",tonumber(textColorOff) or styleSettings.switchbutton.textColorOff)
-	
+
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.switchbutton.textSize[1], tonumber(scaley) or styleSettings.switchbutton.textSize[2]
 	dgsSetData(switchbutton,"textSize",{textSizeX,textSizeY})
 	dgsSetData(switchbutton,"shadow",{_,_,_})
@@ -126,7 +126,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
 	if eleData.state then
 		textColor,text,xAdd = eleData.textColorOn,eleData.textOn,-xAdd
-	else 
+	else
 		textColor,text = eleData.textColorOff,eleData.textOff
 	end
 	local style = eleData.style
@@ -239,7 +239,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	else
 		dxDrawRectangle(cursorX,y,cursorWidth,h,cursorColor,isPostGUI)
 	end
-	
+
 	local state = eleData.state and 1 or -1
 	if eleData.stateAnim ~= state then
 		local stat = eleData.stateAnim+state*eleData.cursorMoveSpeed

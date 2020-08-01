@@ -96,7 +96,7 @@ sampler2D Sampler = sampler_state
     MagFilter	= None;
     MipFilter	= None;
     AddressU	= Wrap;
-    AddressV	= Wrap; 
+    AddressV	= Wrap;
 };
 
 float map(float v,float a,float b,float c,float d) {

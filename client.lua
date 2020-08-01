@@ -134,7 +134,7 @@ function dgsCoreRender()
 		local dxInterfaceHitElement = false
 		local intfaceClickElementl = false
 		local dimension = getElementDimension(localPlayer)
-		local interior = getCameraInterior()	
+		local interior = getCameraInterior()
 		for i=1,dx3DInterfaceTableSize do
 			local v = dx3DInterfaceTable[i]
 			local eleData = dgsData[v]
@@ -322,7 +322,7 @@ function dgsCoreRender()
 		end
 		dxDrawText("Rendering: "..DGSShow,11,sH*0.4-9,sW,sH,black)
 		dxDrawText("Rendering: "..DGSShow,10,sH*0.4-10,sW,sH,green)
-		dxDrawText("Created: "..DGSCount,11,sH*0.4+6,sW,sH,black)	
+		dxDrawText("Created: "..DGSCount,11,sH*0.4+6,sW,sH,black)
 		dxDrawText("Created: "..DGSCount,10,sH*0.4+5,sW,sH,yellow)
 		local anim = tableCount(animGUIList)
 		local move = tableCount(moveGUIList)
@@ -331,7 +331,7 @@ function dgsCoreRender()
 		local all = anim+move+size+alp
 		dxDrawText("Running Animation("..all.."):",301,sH*0.4-114,sW,sH,black)
 		dxDrawText("Running Animation("..all.."):",300,sH*0.4-115)
-		
+
 		dxDrawText("Anim:"..anim,301,sH*0.4-99,sW,sH,black)
 		dxDrawText("Anim:"..anim,300,sH*0.4-100)
 		dxDrawText("Move:"..move,301,sH*0.4-84,sW,sH,black)
@@ -381,7 +381,7 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 		dxSetRenderTarget(rndtgt)
 		local absPos = eleData.absPos
 		local absSize = eleData.absSize
-		
+
 		if eleData.externalFunction then
 			if eleData.externalFunction.dgsGetPosition then
 				absPos = eleData.externalFunction.dgsGetPosition(eleData.externalRef,false)
@@ -390,7 +390,7 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 				absSize = eleData.externalFunction.dgsGetPosition(eleData.externalRef,false)
 			end
 		end
-	
+
 		--Side Processing
 		local PosX,PosY,w,h = 0,0,0,0
 		if eleTypeP == "dgs-dxwindow" then
@@ -773,7 +773,7 @@ function onClientKeyTriggered(button)
 			if dgsElementData[memo].allowCopy then
 				local cpos = dgsElementData[memo].caretPos
 				local spos = dgsElementData[memo].selectFrom
-				if not(cpos[1] == spos[1] and cpos[2] == spos[2]) then 
+				if not(cpos[1] == spos[1] and cpos[2] == spos[2]) then
 					local deleteText = button == "x" and not dgsElementData[memo].readOnly
 					local theText = dgsMemoGetPartOfText(memo,cpos[1],cpos[2],spos[1],spos[2],deleteText)
 					setClipboard(theText)
@@ -1110,7 +1110,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			blurEditMemo()
 		elseif dgsType == "dgs-dxmemo" then
 			blurEditMemo()
-		elseif dgsType == "dgs-dxtabpanel" then	
+		elseif dgsType == "dgs-dxtabpanel" then
 			local tabs = dgsElementData[source].tabs or {}
 			for i=1,#tabs do
 				destroyElement(tabs[i])
@@ -1256,7 +1256,7 @@ function checkScale(source)
 			MouseData.Scale = false
 			return false
 		end
-		MouseData.Scale = offsets	
+		MouseData.Scale = offsets
 		triggerEvent("onDgsElementSize",source,offsets[1],offsets[2])
 		return true
 	elseif dgsGetType(source) == "dgs-dxwindow" then
@@ -1388,7 +1388,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				elseif guitype == "dgs-dxcombobox" then
 					dgsSetData(guiele,"listState",dgsElementData[guiele].listState == 1 and -1 or 1)
 				elseif guitype == "dgs-dxselector" then
-					
+
 				end
 			end
 			if guitype == "dgs-dxgridlist" then
@@ -1408,7 +1408,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						end
 					end
 					--------
-					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] ~= false then 
+					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] ~= false then
 						local old1,old2
 						local selectionMode = dgsElementData[guiele].selectionMode
 						local multiSelection = dgsElementData[guiele].multiSelection

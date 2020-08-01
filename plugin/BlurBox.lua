@@ -1,7 +1,7 @@
 BlurBoxGlobalScreenSource = false
 blurboxShaders = 0
 blurboxFactor = 1/2
-local blurBoxShader 
+local blurBoxShader
 
 function _dgsCreateBlurBox()
 	if not getElementData(localPlayer,"DGS-DEBUG-C") then
@@ -198,14 +198,14 @@ function getBlurBoxShader(level)
 	texture screenSource;
 	float intensity = 1;
 	#define Level ]]..level..[[
-	
+
 	#define Brightness 1.0/(Level*2+1)
 	sampler2D Sampler0 = sampler_state{
 		Texture         = screenSource;
 		AddressU        = Mirror;
 		AddressV        = Mirror;
 	};
-	
+
 	float blur(float i){
 		return (1-abs(i/Level))/Level;
 	}
@@ -228,14 +228,14 @@ function getBlurBoxShader(level)
 	texture screenSource;
 	float intensity = 1;
 	#define Level ]]..level..[[
-	
+
 	#define Brightness 1.0/(Level*2+1)
 	sampler2D Sampler0 = sampler_state{
 		Texture         = screenSource;
 		AddressU        = Mirror;
 		AddressV        = Mirror;
 	};
-	
+
 	float blur(float i){
 		return (1-abs(i/Level))/Level;
 	}

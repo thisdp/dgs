@@ -253,7 +253,7 @@ function dgsEditSetWhiteList(edit,str)
 	else
 		dgsSetData(edit,"whiteList",nil)
 	end
-	
+
 	local font = dgsElementData[edit].font or systemFont
 	local textSize = dgsElementData[edit].textSize
 	local index = dgsEditGetCaretPosition(edit,true)
@@ -456,7 +456,7 @@ function searchEditMousePosition(dxedit,posx)
 	local size = dgsElementData[dxedit].absSize
 	local offset = dgsElementData[dxedit].showPos
 	local x = dgsGetPosition(dxedit,false,true)
-	local alignment = dgsElementData[dxedit].alignment 
+	local alignment = dgsElementData[dxedit].alignment
 	local padding = dgsElementData[dxedit].padding
 	local pos
 	local alllen = dgsElementData[dxedit].textFontLen
@@ -737,7 +737,7 @@ end
 		1 = delete
 		2 = add
 		3 = replace
-	
+
 	Delete Mode(Arg2):
 		1 = Single Char Deletion
 		2 = Multi Chars Deletion
@@ -746,7 +746,7 @@ end
 		2 = Multi Chars Addition
 	Replace Mode(Arg2):
 		1 = Default
-		
+
 	lastHistory Struct:
 		Delete:
 			{1,DeleteMode,Index,text}

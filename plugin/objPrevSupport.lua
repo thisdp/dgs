@@ -115,7 +115,7 @@ function dgsConfigureObjectPreview()
 	return [[objectPreview._drawRenderTarget = objectPreview.drawRenderTarget
 		function objectPreview.drawRenderTarget(self)
 			local resName = "]]..getResourceName(getThisResource())..[["
-			local dgsRes = getResourceFromName(resName) 
+			local dgsRes = getResourceFromName(resName)
 			if dgsRes then
 				if getResourceState(dgsRes) == "running" then
 					local objPrevEle = exports[resName]:dgsObjectPreviewGetHandleByID(self.renID)

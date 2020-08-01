@@ -82,12 +82,12 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	dgsSetData(tab,"textSize",{textSizeX,textSizeY})
 	dgsSetData(tab,"bgColor",tonumber(bgColor) or styleSettings.tab.bgColor or dgsElementData[tabpanel].bgColor)
 	dgsSetData(tab,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.tab.bgImage) or dgsElementData[tabpanel].bgImage)
-	
+
 	local tabnorimg = tabnorimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[1])
 	local tabhovimg = tabhovimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[2])
 	local tabcliimg = tabcliimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[3])
 	dgsSetData(tab,"tabImage",{tabnorimg,tabhovimg,tabcliimg})
-	
+
 	local tabnorcolor = tabnorcolor or styleSettings.tab.tabColor[1]
 	local tabhovcolor = tabhovcolor or styleSettings.tab.tabColor[2]
 	local tabclicolor = tabclicolor or styleSettings.tab.tabColor[3]

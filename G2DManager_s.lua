@@ -643,7 +643,7 @@ setmetatable(AnalyzerState,{
 							newtab[i] = "--"..self.lexResult[i][1]
 						elseif self.lexResult[i][2] == "long comment" then
 							newtab[i] = "--[["..self.lexResult[i][1].."]]"
-						elseif self.lexResult[i][2] == "short string" then 
+						elseif self.lexResult[i][2] == "short string" then
 							newtab[i] = "\""..self.lexResult[i][1].."\""
 						elseif self.lexResult[i][2] == "long string" then
 							newtab[i] = "[["..self.lexResult[i][1].."]]"

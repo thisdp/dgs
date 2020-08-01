@@ -125,7 +125,7 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 				tableRemove(parentTable,id)
 			end
 			FatherTable[id] = nil
-			tableInsert(CenterFatherTable,child) 
+			tableInsert(CenterFatherTable,child)
 		end
 		setElementParent(child,parent)
 		---Update Position and Size
@@ -447,7 +447,7 @@ function dgsSetData(element,key,value,nocheck)
 						local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 						dgsElementData[element].text = tostring(value)
 						dgsSetData(element,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[element].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
-						
+
 						return triggerEvent("onDgsTextChange",element)
 					elseif key == "width" then
 						local tabpanel = dgsElementData[element].parent
@@ -754,7 +754,7 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 					dgsSetData(dxgui,"width",wid)
 				elseif dgsType == "dgs-dxmemo" then
 					success = success and handleDxMemoText(dxgui,value)
-					skip = true	
+					skip = true
 				elseif dgsType == "dgs-dxedit" then
 					success = success and handleDxEditText(dxgui,value)
 					skip = true

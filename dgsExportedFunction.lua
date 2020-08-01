@@ -33,7 +33,7 @@ function dgsConfigureTDX()
 			eventN = eventRep[eventN] or eventN
 			return __addEventHandler(eventN,sourceEle,fnc,...)
 		end
-		
+
 		function removeEventHandler(eventN,sourceEle,fnc,...)
 			if eventRep[eventN] then
 				DGSTDXQueue[eventN][fnc] = nil
@@ -41,7 +41,7 @@ function dgsConfigureTDX()
 			eventN = eventRep[eventN] or eventN
 			return __addEventHandler(eventN,sourceEle,fnc,...)
 		end
-		
+
 		local _new = new
 		local _delete = delete
 		local _getPrivateMethod = getPrivateMethod
@@ -75,7 +75,7 @@ function dgsConfigureTDX()
 			end
 			return _delete(self,...)
 		end
-		
+
 		addEventHandler("onDgsRenderTDX",root,function()
 			local self = DGSTDXRef[source]
 			local renderFnc = getPrivateMethod(self, "render")
@@ -131,9 +131,9 @@ function dgsImportFunction(name,nameAs)
 				return self[k]
 			end
 			DGS = setmetatable({}, DGSCallMT)
-			
+
 			function unloadDGSFunction()
-				
+
 			end
 		end
 		]]
@@ -498,7 +498,7 @@ function dgsG2DLoadHooker()
 		guiScrollPaneSetHorizontalScrollPosition = dgsScrollPaneSetHorizontalScrollPosition
 		guiScrollPaneSetVerticalScrollPosition = dgsScrollPaneSetVerticalScrollPosition
 		guiGetBrowser = dgsGetBrowser
-		
+
 		addEvent("onDgsEditAccepted-C",true)
 		addEvent("onDgsTextChange-C",true)
 		addEvent("onDgsComboBoxSelect-C",true)
@@ -533,7 +533,7 @@ function dgsG2DLoadHooker()
 			onClientMouseWheel="onDgsMouseWheel",
 		}
 		_addEventHandler = addEventHandler
-		
+
 		addEventHandler = function(even,...)
 			_addEventHandler(eventReplace[even] or even,...)
 		end

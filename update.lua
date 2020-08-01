@@ -62,7 +62,7 @@ if dgsConfig.updateCheckAuto then
 	checkUpdate()
 	updatePeriodTimer = setTimer(checkUpdate,dgsConfig.updateCheckInterval*3600000,0)
 end
-	
+
 addCommandHandler("updatedgs",function(player)
 	local account = getPlayerAccount(player)
 	local accName = getAccountName(account)

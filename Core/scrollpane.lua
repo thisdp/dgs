@@ -123,7 +123,7 @@ addEventHandler("onDgsDestroy",root,function()
 						local size = dgsElementData[v].absSize
 						ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]
 					end
-				end	
+				end
 			end
 			dgsSetData(parent,"maxChildSize",{ntempx or maxSize[1],ntempy or maxSize[2]})
 			dgsSetData(parent,"configNextFrame",true)
@@ -194,7 +194,7 @@ function configScrollPane(scrollpane)
 	dgsSetData(scrollbar[1],"length",length)
 	local verticalScrollSize = dgsElementData[scrollpane].scrollSize/(childBounding[2]-relSizY)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
-	
+
 	local scbLengthHoz = dgsElementData[scrollpane].scrollBarLength[2]
 	local widLen = 1-(childBounding[1]-relSizX)/childBounding[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
@@ -202,7 +202,7 @@ function configScrollPane(scrollpane)
 	dgsSetData(scrollbar[2],"length",length)
 	local horizontalScrollSize = dgsElementData[scrollpane].scrollSize*5/(childBounding[1]-relSizX)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
-	
+
 	local renderTarget = dgsElementData[scrollpane].renderTarget_parent
 	if isElement(renderTarget) then
 		destroyElement(renderTarget)
@@ -232,7 +232,7 @@ function resizeScrollPane(scrollpane,source) --Need optimize
 			local pos = dgsElementData[child].absPos
 			local size = dgsElementData[child].absSize
 			ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
-			ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]	
+			ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]
 		end
 		dgsSetData(scrollpane,"maxChildSize",{ntempx or maxSize[1],ntempy or maxSize[2]})
 	end

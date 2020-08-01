@@ -25,12 +25,12 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 		}
 	return _color;
 }
-	
+
 technique circleTechnique{
 	pass p0{
 		PixelShader = compile ps_2_0 circleShader();
 	}
-}	
+}
 ]]
 
 function dgsCreateCircle()

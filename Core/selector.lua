@@ -42,12 +42,12 @@ function dgsCreateSelector(x,y,sx,sy,relative,parent,textColor,scalex,scaley,sha
 	dgsSetData(selector,"selectorImageColorRight",styleSettings.selector.selectorImageColorRight)
 	dgsSetData(selector,"selectorImageRight",styleSettings.selector.selectorImageRight)
 	dgsSetData(selector,"colorcoded",false)
-	
+
 	dgsSetData(selector,"quickLeap",0.02)
 	dgsSetData(selector,"quickLeapState",0)
 	dgsSetData(selector,"quickLeapTick",0)
 	dgsSetData(selector,"scrollChangeCount",1)
-	
+
 	dgsSetData(selector,"enableScroll",true)
 	dgsSetData(selector,"defaultText","-")
 	dgsSetData(selector,"alignment",{"center","center"})
@@ -70,7 +70,7 @@ function dgsSelectorAddItem(selector,text,pos)
 	local font = dgsElementData[selector].font
 	local itemData = dgsElementData[selector].itemData
 	local pos = tonumber(pos) or #itemData+1
-	
+
 	if type(text) == "table" then
 		_text = text
 		text = dgsTranslate(selector,text,sourceResource)
@@ -167,7 +167,7 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
 	if x and y then
-		local itemData = eleData.itemData 
+		local itemData = eleData.itemData
 		local itemCount = #itemData
 		local selector = eleData.selectorText
 		local alignment = eleData.alignment
@@ -189,7 +189,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		selectorSizeX,selectorSizeY = selectorSizeX or selectorSizeY,selectorSizeY or selectorSizeX
 		local selectorStartY = y+(h-selectorSizeY)/2
 		local selectorEndY = selectorStartY+selectorSizeY
-		
+
 		local preEnterData = false
 		local selectorTextColors = {1,1,1}
 		if MouseData.enter == source then
@@ -217,12 +217,12 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		end
 		local selectorTextColorLeft = selectorTextColor[selectorTextColors[1]]
 		local selectorTextColorRight = selectorTextColor[selectorTextColors[3]]
-		
+
 		local selectorImageLeft = eleData.selectorImageLeft[selectorTextColors[1]]
 		local selectorImageRight = eleData.selectorImageRight[selectorTextColors[3]]
 		local selectorImageColorLeft = eleData.selectorImageColorLeft[selectorTextColors[1]]
 		local selectorImageColorRight = eleData.selectorImageColorRight[selectorTextColors[3]]
-		
+
 		if selectorImageColorLeft then
 			if selectorImageLeft then
 				dxDrawImage(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageLeft,0,0,0,selectorImageColorLeft,isPostGUI)

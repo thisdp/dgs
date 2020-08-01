@@ -260,7 +260,7 @@ addEventHandler("mode",resourceRoot,function(cmdtype)
 		elseif cmdtype == "event" then
 			dgsSetData(source,"cmdType","event")
 			outputCmdMessage(source,"[Mode Switch]Event CMD")
-			return	
+			return
 		end
 		triggerEvent("onCmdModeChange",source,cmdtype)
 		outputCmdMessage(source,"[Mode Switch]Usage: mode <argument>")
@@ -352,7 +352,7 @@ addEventHandler("onDgsDestroy",resourceRoot,function()
 		dgsShowCursor(false,"net")
 	elseif source == dxStatus["window"] then
 		dgsShowCursor(false,"dx")
-	elseif source == performanceBrowser["window"] then 
+	elseif source == performanceBrowser["window"] then
 		dgsShowCursor(false,"performance")
 	end
 end)
@@ -431,7 +431,7 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		netSystem["packetlossLastSecond"] = dgsCreateLabel(10,270,200,20,"Package Loss:",false,netSystem["window"],_,1.2,1.2)
 		netSystem["PacketLossTotal"] = dgsCreateLabel(10,300,200,20,"Average Loss:",false,netSystem["window"],_,1.2,1.2)
 		netSystem["IP"] = dgsCreateLabel(10,340,200,20,"My IP:"..dgs_MyIP,false,netSystem["window"],_,1.2,1.2)
-		
+
 		netSystem["picture_sen"] = dgsCreateImage(290,10,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
 		dgsSetProperty(netSystem.picture_sen,"functionRunBefore",false)
 		dgsSetProperty(netSystem.picture_sen,"functions","triggerEvent('onDGSObjectRender',self)")
@@ -440,7 +440,7 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		dgsSetProperty(netSystem["picture_sen"],"sideSize",1)
 		dgsSetProperty(netSystem["picture_sen"],"sideState","out")
 		dgsSetProperty(netSystem["picture_sen"],"sideColor",tocolor(100,150,240,255))
-		
+
 		netSystem["picture_rec"] = dgsCreateImage(290,120,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
 		dgsSetProperty(netSystem.picture_rec,"functionRunBefore",false)
 		dgsSetProperty(netSystem.picture_rec,"functions","triggerEvent('onDGSObjectRender',self)")
@@ -449,7 +449,7 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		dgsSetProperty(netSystem["picture_rec"],"sideSize",1)
 		dgsSetProperty(netSystem["picture_rec"],"sideState","out")
 		dgsSetProperty(netSystem["picture_rec"],"sideColor",tocolor(100,150,240,255))
-		
+
 		netSystem["picture_pkl"] = dgsCreateImage(290,230,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
 		dgsSetProperty(netSystem.picture_pkl,"functionRunBefore",false)
 		dgsSetProperty(netSystem.picture_pkl,"functions","triggerEvent('onDGSObjectRender',self)")
@@ -458,7 +458,7 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		dgsSetProperty(netSystem["picture_pkl"],"sideSize",1)
 		dgsSetProperty(netSystem["picture_pkl"],"sideState","out")
 		dgsSetProperty(netSystem["picture_pkl"],"sideColor",tocolor(100,150,240,255))
-		
+
 		addEventHandler("onClientPreRender",root,netUpdate)
 		addEventHandler("onDGSObjectRender",netSystem["picture_sen"],function()
 			local x,y = dgsGetPosition(source,false,true)
@@ -467,12 +467,12 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 			local LineBlue = tocolor(80,180,255,255)
 			local isPostGUI = dgsGetPostGUI(source)
 			for i=1,#speedSend-1 do
-				local nextone = speedSend[i+1] or 0 
+				local nextone = speedSend[i+1] or 0
 				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedSend[i]/maxPos)-1,LineBlue,1,isPostGUI)
 			end
 			dgsSetText(netSystem["picture_sen_max"],maxPos.."Byte/s")
 		end)
-		
+
 		addEventHandler("onDGSObjectRender",netSystem["picture_rec"],function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
@@ -480,23 +480,23 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 			local LineBlue = tocolor(80,180,255,255)
 			local isPostGUI = dgsGetPostGUI(source)
 			for i=1,#speedRecv-1 do
-				local nextone = speedRecv[i+1] or 0 
+				local nextone = speedRecv[i+1] or 0
 				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedRecv[i]/maxPos)-1,LineBlue,1,isPostGUI)
 			end
 			dgsSetText(netSystem["picture_rec_max"],maxPos.."Byte/s")
 		end)
-		
+
 		addEventHandler("onDGSObjectRender",netSystem["picture_pkl"],function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
 			local LineBlue = tocolor(80,180,255,255)
 			local isPostGUI = dgsGetPostGUI(source)
 			for i=1,#percentLoss-1 do
-				local nextone = percentLoss[i+1] or 0 
+				local nextone = percentLoss[i+1] or 0
 				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/100)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(percentLoss[i]/100)-1,LineBlue,1,isPostGUI)
 			end
 		end)
-		
+
 	elseif source == dxStatus["window"] then
 		dxStatus["dxList"] = dgsCreateGridList(10,10,680,460,false,dxStatus["window"],_,tocolor(0,0,0,100),white,tocolor(0,0,0,100),tocolor(0,0,0,0),tocolor(100,100,100,100),tocolor(200,200,200,150))
 		dgsGridListSetSortEnabled(dxStatus["dxList"],false)

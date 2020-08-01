@@ -47,7 +47,7 @@ end
 function dgsEasingFunctionExists(name)
 	assert(type(name) == "string","Bad at argument @dgsEasingFunctionExists at argument 1, expected a string got "..type(name))
 	return easingBuiltIn[name] or (SelfEasing[name] and true)
-end	
+end
 
 function insertResource(res,dgsElement)
 	if res and isElement(dgsElement) then
@@ -394,8 +394,8 @@ function dgsGetAlpha(dgsEle,absolute,includeParent)
 end
 
 function dgsSetEnabled(dgsEle,enabled)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))	
-	assert(type(enabled) == "boolean","Bad argument @dgsSetEnabled at argument 2, expect a boolean element got "..type(enabled))	
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
+	assert(type(enabled) == "boolean","Bad argument @dgsSetEnabled at argument 2, expect a boolean element got "..type(enabled))
 	return dgsSetData(dgsEle,"enabled",enabled)
 end
 
@@ -432,7 +432,7 @@ function dgsSetFont(dgsEle,font)
 	elseif fontType ~= "dx-font" then
 		assert(fontBuiltIn[font],"Bad argument @dgsSetFont at argument 2, expected a string/dx-font got "..fontType)
 	end
-	dgsSetData(dgsEle,"font",font)	
+	dgsSetData(dgsEle,"font",font)
 end
 
 function dgsGetFont(dgsEle)

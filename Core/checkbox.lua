@@ -16,7 +16,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true,true) or table.insert(CenterFatherTable,cb)
 	dgsSetType(cb,"dgs-dxcheckbox")
 	dgsSetData(cb,"renderBuffer",{})
-	
+
 	local imageUnchecked = styleSettings.checkbox.image_f
 	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
 	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
@@ -27,7 +27,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	hovcolor_f = hovcolor_f or colorUnchecked[2]
 	clicolor_f = clicolor_f or colorUnchecked[3]
 	dgsSetData(cb,"color_f",{norcolor_f,hovcolor_f,clicolor_f})
-	
+
 	local imageChecked = styleSettings.checkbox.image_t
 	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
 	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
@@ -38,7 +38,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	hovcolor_t = hovcolor_t or colorChecked[2]
 	clicolor_t = clicolor_t or colorChecked[3]
 	dgsSetData(cb,"color_t",{norcolor_t,hovcolor_t,clicolor_t})
-	
+
 	local imageIndeterminate = styleSettings.checkbox.image_i
 	norimg_i = norimg_i or dgsCreateTextureFromStyle(imageIndeterminate[1])
 	hovimg_i = hovimg_i or dgsCreateTextureFromStyle(imageIndeterminate[2])
@@ -49,7 +49,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	hovcolor_i = hovcolor_i or colorIndeterminate[2]
 	clicolor_i = clicolor_i or colorIndeterminate[3]
 	dgsSetData(cb,"color_i",{norcolor_i,hovcolor_i,clicolor_i})
-	
+
 	dgsSetData(cb,"cbParent",dgsIsDxElement(parent) and parent or resourceRoot)
 	dgsAttachToTranslation(cb,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
@@ -140,7 +140,7 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	if eleData.state == true then
 		image,color = image_t,color_t
-	elseif eleData.state == false then 
+	elseif eleData.state == false then
 		image,color = image_f,color_f
 	else
 		image,color = image_i,color_i

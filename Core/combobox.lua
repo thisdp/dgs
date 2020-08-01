@@ -21,7 +21,7 @@ local tableRemove = table.remove
 Item List Struct:
 table = {
 index:	-2			-1					0					1
-		textColor	BackGround Image	BackGround Color	Text	
+		textColor	BackGround Image	BackGround Color	Text
 	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
 	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
 	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
@@ -42,27 +42,27 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	local _x = dgsIsDxElement(parent) and dgsSetParent(combobox,parent,true,true) or tableInsert(CenterFatherTable,combobox)
 	dgsSetType(combobox,"dgs-dxcombobox")
 	dgsSetData(combobox,"renderBuffer",{})
-	
+
 	local defcolor = defcolor or styleSettings.combobox.color[1]
 	local hovcolor = hovcolor or styleSettings.combobox.color[2]
 	local clicolor = clicolor or styleSettings.combobox.color[3]
 	dgsSetData(combobox,"color",{defcolor,hovcolor,clicolor})
-	
+
 	local defimg = defimg or dgsCreateTextureFromStyle(styleSettings.combobox.image[1])
 	local hovimg = hovimg or dgsCreateTextureFromStyle(styleSettings.combobox.image[2])
 	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.combobox.image[3])
 	dgsSetData(combobox,"image",{defimg,hovimg,cliimg})
-	
+
 	local idefcolor = styleSettings.combobox.itemColor[1]
 	local ihovcolor = styleSettings.combobox.itemColor[2]
 	local iclicolor = styleSettings.combobox.itemColor[3]
 	dgsSetData(combobox,"itemColor",{idefcolor,ihovcolor,iclicolor})
-	
+
 	local idefimg = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[1])
 	local ihovimg = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[2])
 	local icliimage = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[3])
 	dgsSetData(combobox,"itemImage",{idefimg,ihovimg,icliimage})
-	
+
 	dgsSetData(combobox,"textColor",textColor or styleSettings.combobox.textColor)
 	dgsSetData(combobox,"itemTextColor",textColor or styleSettings.combobox.itemTextColor)
 	local textScaleX,textScaleY = tonumber(scalex),tonumber(scaley)
@@ -247,7 +247,7 @@ function dgsComboBoxAddItem(combobox,text)
 		tostring(text),
 		_translationText = _text
 	}
-	
+
 	tableInsert(data,id,tab)
 	if id*itemHeight > size[2] then
 		local scrollBar = dgsElementData[combobox].scrollbar
@@ -364,7 +364,7 @@ function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
 	assert(dgsGetType(parent) == "dgs-dxcombobox","Bad argument @dgsComboBoxCreateBox at argument 6, expect dgs-dxcombobox got "..dgsGetType(parent))
 	local box = createElement("dgs-dxcombobox-Box")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(box,parent,true,true) or tableInsert(CenterFatherTable,box)
-	dgsSetType(box,"dgs-dxcombobox-Box")	
+	dgsSetType(box,"dgs-dxcombobox-Box")
 	insertResource(sourceResource,box)
 	calculateGuiPositionSize(box,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",box)
@@ -450,7 +450,7 @@ function checkCBScrollBar(scb,new,old)
 		if source == scrollBar then
 			local itemLength = #dgsElementData[combobox].itemData*dgsElementData[combobox].itemHeight
 			local temp = -new*(itemLength-sy)/100
-			local temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp 
+			local temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp
 			dgsSetData(combobox,"itemMoveOffset",temp)
 			triggerEvent("onDgsElementScroll",combobox,source,new,old)
 		end
@@ -602,7 +602,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	local _itemMoveOffset = DataTab.itemMoveOffset
 	DataTab.itemMoveOffsetTemp = lerp(DataTab.moveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
 	local itemMoveOffset = DataTab.itemMoveOffsetTemp-DataTab.itemMoveOffsetTemp%1
-	
+
 	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1
 	local whichRowToEnd = whichRowToStart+mathFloor(h/itemHeight)+1
 	DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}

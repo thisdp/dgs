@@ -145,8 +145,8 @@ function requestRoundRectangleShader(withoutFilled)
 		result.a *= _color.a*alp;
 		return result;
 	}
-	
-	
+
+
 	technique rndRectTech
 	{
 		pass P0
