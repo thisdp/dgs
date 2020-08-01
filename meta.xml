@@ -1,9 +1,9 @@
 ﻿<meta>
-	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="3.5" /> 
+	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp" version="3.5" />
 	<file src="html/media.html" />
 	<file src="html/pasteHandler.html" />
 	<file src="styleManager/styleMapper.lua"/>
-	
+
 	<script src="server.lua" type="server" />
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
@@ -67,7 +67,7 @@
 	<script src="G2DManager_s.lua" type="server" />
 	<script src="test.lua" type="client" />
 	<file src="classlib.lua" type="client" />
-	
+
 	<!--$Add Your Styles Here-->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
 	<!--(Default Style) Don't touch this style with your bear hand-->
@@ -233,6 +233,8 @@
 	<export function="dgs3DTextGetAttachedOffsets" type="client" />
 	<export function="dgs3DTextSetDimension" type="client" />
 	<export function="dgs3DTextGetDimension" type="client" />
+	<export function="dgs3DTextSetInterior" type="client" />
+	<export function="dgs3DTextGetInterior" type="client" />
 
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
@@ -288,7 +290,7 @@
 	<export function="dgsComboBoxGetItemCount" type="client" />
 
 	<export function="dgsCreateButton" type="client" />
-	
+
 	<export function="dgsCreateExternal" type="client" />
 
 	<export function="dgsCreateEdit" type="client" />
@@ -417,7 +419,7 @@
 	<export function="dgsGetSelectedTab" type="client" />
 	<export function="dgsSetSelectedTab" type="client" />
 	<export function="dgsDeleteTab" type="client" />
-	
+
 	<export function="dgsCreateScrollBar" type="client" />
 	<export function="dgsScrollBarSetScrollPosition" type="client" />
 	<export function="dgsScrollBarGetScrollPosition" type="client" />
@@ -427,7 +429,7 @@
 	<export function="dgsScrollBarGetLocked" type="client" />
 	<export function="dgsScrollBarSetGrades" type="client" />
 	<export function="dgsScrollBarGetGrades" type="client" />
-	
+
 	<export function="dgsCreateSelector" type="client" />
 	<export function="dgsSelectorAddItem" type="client" />
 	<export function="dgsSelectorRemoveItem" type="client" />
@@ -584,7 +586,7 @@
 	<export function="dgsNineSliceGetGrid" type="client" />
 	<export function="dgsNineSliceSetTexture" type="client" />
 	<export function="dgsNineSliceGetTexture" type="client" />
-	
+
 	<export function="dgsLocateObjectPreviewResource" type="client" />
 	<export function="dgsCreateObjectPreviewHandle" type="client" />
 	<export function="dgsAttachObjectPreviewToImage" type="client" />

@@ -45,16 +45,16 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	return text3d
 end
 
-function dgs3DTextGetDimension(text3d)
-	assert(dgsGetType(text3d) == "dgs-dx3dtext","Bad argument @dgs3DTextGetDimension at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text3d))
-	return dgsElementData[text3d].dimension or -1
+function dgs3DTextGetDimension(text)
+	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextGetDimension at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	return dgsElementData[text].dimension or -1
 end
 
-function dgs3DTextSetDimension(text3d,dimension)
-	assert(dgsGetType(text3d) == "dgs-dx3dtext","Bad argument @dgs3DTextSetDimension at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text3d))
+function dgs3DTextSetDimension(text,dimension)
+	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetDimension at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
 	assert(tonumber(dimension),"Bad argument @dgs3DTextSetDimension at argument 2, expect a number got "..type(dimension))
 	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DTextSetDimension at argument 2, out of range [0~65535] got "..dimension)
-	return dimension-dimension%1
+	return dgsSetData(text,"dimension",dimension-dimension%1)
 end
 
 function dgs3DTextGetInterior(text)
@@ -66,7 +66,7 @@ function dgs3DTextSetInterior(text,interior)
 	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetInterior at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
 	assert(tonumber(interior),"Bad argument @dgs3DTextSetInterior at argument 2, expect a number got "..type(interior))
 	assert(interior >= -1,"Bad argument @dgs3DTextSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
-	return interior-interior%1
+	return dgsSetData(text,"interior",interior-interior%1)
 end
 
 function dgs3DTextAttachToElement(text,element,offX,offY,offZ)
