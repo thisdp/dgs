@@ -600,6 +600,7 @@ events = {
 	"onDgsElementScroll",
 	"onDgsDestroy",
 	"onDgsSwitchButtonStateChange",
+	"onDgsSelectorSelect",
 	"onDgsGridListSelect",
 	"onDgsGridListHover",
 	"onDgsGridListItemDoubleClick",

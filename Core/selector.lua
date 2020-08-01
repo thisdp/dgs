@@ -106,7 +106,10 @@ end
 function dgsSelectorSetSelectedItem(selector,item)
 	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorSetSelectedItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
 	assert(type(item) == "number","Bad argument @dgsSelectorSetSelectedItem at argument 2, expect number got "..type(item))
+	local prev = dgsElementData[selector].selectedItem
 	dgsSetData(selector,"selectedItem",item)
+	triggerEvent("onDgsSelectorSelect",selector,item,prev)
+	return true
 end
 
 function dgsSelectorGetSelectedItem(selector)
