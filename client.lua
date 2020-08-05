@@ -1662,7 +1662,7 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 		local parent = dgsGetParent(source)
 		if isElement(parent) then
 			if dgsGetType(parent) == "dgs-dxscrollpane" then
-				sortScrollPane(source,parent)
+				resizeScrollPane(source,parent)
 			end
 		end
 	end
