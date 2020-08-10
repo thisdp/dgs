@@ -27,9 +27,6 @@ function createFullDemo()
 	end
 	gridlist.alpha = 1
 	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
-	for k,v in pairs(getmetatable(combobox)) do
-		iprint(k,v)
-	end
 	combobox:setEditEnabled(true)
 	for i=1,100 do
 		combobox:addItem(i)
@@ -144,7 +141,7 @@ function editTest() --Test Tab Switch for edit.
 	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
 	dgsSetProperty(edit,"bgColorBlur",tocolor(255,255,255,100))
 end
---edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"",true)
+
 --[[
 local arabicUnicode = {{0x0600,0x06FF},{0x08A0,0x08FF},{0x0750,0x077F},{0xFB50,0xFDFF},{0xFE70,0xFEFF},{0x1EE00,0x1EEFF}}
 local arabicPattern = ""
@@ -494,15 +491,11 @@ function oopTest()
 end
 
 function testColorPicker()
-	material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
+	--material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
 	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material1)
 	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
 	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
 	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material1)
-	addEventHandler("onDgsColorPickerChange",colorPicker_HLDisk,syncColorPicker)
-	addEventHandler("onDgsColorPickerChange",colorPicker_HSDisk,syncColorPicker)
-	addEventHandler("onDgsColorPickerChange",colorPicker_HSLSquare,syncColorPicker)
-	addEventHandler("onDgsColorPickerChange",colorPicker_HSVRing,syncColorPicker)
 	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false,material1)
 	dgsBindToColorPicker(r,colorPicker_HSVRing,"RGB","R",true,true)
 	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false,material1)
@@ -645,22 +638,3 @@ technique t{
 }
 ] ])
 ]]
---[[
-function wtf()
-    if rbSWindow then return end
-    rbSWindow = guiCreateWindow ( 0, 0, 300, 400, "Tvorba záterasů", false)
-    rbSList = guiCreateGridList(0.05, 0.05, 0.9, 0.8, true, rbSWindow)
-
-    local column = guiGridListAddColumn(rbSList, "ID", 0.2)
-    local column2 = guiGridListAddColumn(rbSList, "Typ", 0.5)
-    local column3 = guiGridListAddColumn(rbSList, "Rot", 0.1)
-    local column4 = guiGridListAddColumn(rbSList, "Z", 0.1)
-    for i = 1, 4 do
-        local newRow = guiGridListAddRow(rbSList)
-        guiGridListSetItemText(rbSList, newRow, column, "value[2]", true, false)
-        guiGridListSetItemText(rbSList, newRow, column2, "value[1]", false, false)
-        guiGridListSetItemText(rbSList, newRow, column3, "value[3]", false, false)
-        guiGridListSetItemText(rbSList, newRow, column4, "value[4]", false, false)
-    end
-end
-addEventHandler("onClientResourceStart", root, wtf)]]

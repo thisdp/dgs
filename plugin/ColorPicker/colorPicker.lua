@@ -529,17 +529,17 @@ function dgsColorPickerUpdate(cp)
 		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[2],x,y,true)
 	elseif style == "HSDisk" then
-		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSV[1]/360)
+		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSL[1]/360)
 		local pAbsSize = dgsElementData[ images[1] ].absSize
 		local absSize = dgsElementData[ images[2] ].absSize
 		local x,y = HSToRR(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[2])
 		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[2],x,y,true)
 	elseif style == "HLDisk" then
-		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSV[1]/360)
+		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSL[1]/360)
 		local pAbsSize = dgsElementData[ images[1] ].absSize
 		local absSize = dgsElementData[ images[2] ].absSize
-		local x,y = HLToRR(dgsElementData[cp].HSV[1],dgsElementData[cp].HSV[2])
+		local x,y = HLToRR(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[3])
 		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[2],x,y,true)
 	end
@@ -689,14 +689,14 @@ end
 function HLDiskChange()
 	local cx,cy = dgsGetCursorPosition()
 	local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
-	local clickRadius = (CenDisX^2+CenDisY^2)^0.5
+	local clickRadius = (CenDisX^2+CenDisY^2)^0.5*2
 	clickRadius = clickRadius<=1 and clickRadius or 1
 	dgsColorPickerSetColor(source,rot,_,(1-clickRadius)*100,_,"HSL")
 end
 
 function HLToRR(H,L)
 	local H = math.rad(H)
-	local L = L/100/2
+	local L = 0.5-L/100/2
 	local x,y = math.cos(H)*L,math.sin(H)*L
 	return x+0.5,y+0.5
 end
