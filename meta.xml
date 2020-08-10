@@ -69,6 +69,7 @@
 	<file src="classlib.lua" type="client" />
 
 	<!--$Add Your Styles Here-->
+	<!--You can also add your custom plugins here -->
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
 	<!--(Default Style) Don't touch this style with your bear hand-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
