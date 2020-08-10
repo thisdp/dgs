@@ -91,6 +91,7 @@ function dgsConfigureTDX()
 end
 
 function dgsImportFunction(name,nameAs)
+	if not sourceResource or sourceResource == getThisResource() then return "return true" end
 	if not name then
 		local allCode = [[
 		--Check Error Message Above
@@ -101,7 +102,7 @@ function dgsImportFunction(name,nameAs)
 			local tostring = tostring
 			local outputDebugString = outputDebugString
 			local DGSCallMT = {}
-			local dgsImportHead = {}
+			dgsImportHead = {}
 			dgsImportHead.dgsName = "]]..dgsResName..[["
 			dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
 			dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)

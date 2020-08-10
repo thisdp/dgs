@@ -269,16 +269,11 @@ end
 
 function dgsGetVisible(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	if dgsElementData[dgsEle].visible then
-		local p = FatherTable[dgsEle]
-		for i=1,5000 do
-			if not p then break end
-			if not dgsElementData[p].visible then return false end
-			p = FatherTable[p]
-		end
-		return true
+	for i=1,5000 do --Limited to 5000 to make sure there won't be able to make an infinity loop
+		if not dgsElementData[dgsEle].visible then return false end	--check and return false if dgsEle is invisible
+		dgsEle = FatherTable[dgsEle]--if it is visible, check whether its parent hides it
+		if not dgsEle then return true end--if it doesn't have parent, return true as visible
 	end
-	return false
 end
 
 function dgsSetSide(dgsEle,side,topleft)
@@ -401,16 +396,11 @@ end
 
 function dgsGetEnabled(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetEnabled at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	if dgsElementData[dgsEle].enabled then
-		local p = FatherTable[dgsEle]
-		for i=1,5000 do
-			if not p then break end
-			if not dgsElementData[p].enabled then return false end
-			p = FatherTable[p]
-		end
-		return true
+	for i=1,5000 do --Limited to 5000 to make sure there won't be able to make an infinity loop
+		if not dgsElementData[dgsEle].enabled then return false end	--check and return false if dgsEle is disabled
+		dgsEle = FatherTable[dgsEle]--if it is enabled, check whether its parent hides it
+		if not dgsEle then return true end--if it doesn't have parent, return true as enabled
 	end
-	return false
 end
 
 function dgsCreateFont(path,size,bold,quality)
