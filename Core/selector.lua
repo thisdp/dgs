@@ -148,8 +148,8 @@ function dgsSelectorSetItemData(selector,item,key,data)
 	assert(type(item) == "number","Bad argument @dgsSelectorSetItemData at argument 2, expect number got "..type(item))
 	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
-		itemData[item[9]] = itemData[item[9]] or {}
-		itemData[item[9]][key] = data
+		itemData[item][9] = itemData[item][9] or {}
+		itemData[item][9][key] = data
 		return true
 	end
 	return false
@@ -159,8 +159,8 @@ function dgsSelectorGetItemData(selector,item,key)
 	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorGetItemData at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
 	assert(type(item) == "number","Bad argument @dgsSelectorGetItemData at argument 2, expect number got "..type(item))
 	if itemData[item] then
-		itemData[item[9]] = itemData[item[9]] or {}
-		return itemData[item[9]][key]
+		itemData[item][9] = itemData[item][9] or {}
+		return itemData[item][9][key]
 	end
 	return false
 end
