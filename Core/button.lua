@@ -57,20 +57,20 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
 	local colors,imgs = eleData.color,eleData.image
-	local colorimgid = 1
+	local buttonState = 1
 	if MouseData.enter == source then
-		colorimgid = 2
+		buttonState = 2
 		if eleData.clickType == 1 then
 			if MouseData.clickl == source then
-				colorimgid = 3
+				buttonState = 3
 			end
 		elseif eleData.clickType == 2 then
 			if MouseData.clickr == source then
-				colorimgid = 3
+				buttonState = 3
 			end
 		else
 			if MouseData.clickl == source or MouseData.clickr == source then
-				colorimgid = 3
+				buttonState = 3
 			end
 		end
 	end
@@ -83,10 +83,10 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			local average = (r+g+b)/3*eleData.disabledColorPercent
 			finalcolor = tocolor(average,average,average,a*parentAlpha)
 		else
-			finalcolor = colors[colorimgid]
+			finalcolor = colors[buttonState]
 		end
 	else
-		finalcolor = applyColorAlpha(colors[colorimgid],parentAlpha)
+		finalcolor = applyColorAlpha(colors[buttonState],parentAlpha)
 	end
 	------------------------------------
 	if eleData.functionRunBefore then
@@ -96,8 +96,8 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 		end
 	end
 	------------------------------------
-	if imgs[colorimgid] then
-		dxDrawImage(x,y,w,h,imgs[colorimgid],0,0,0,finalcolor,isPostGUI)
+	if imgs[buttonState] then
+		dxDrawImage(x,y,w,h,imgs[buttonState],0,0,0,finalcolor,isPostGUI)
 	else
 		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
 	end
@@ -112,7 +112,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 	if #text ~= 0 then
 		local clip = eleData.clip
 		local wordbreak = eleData.wordbreak
-		if colorimgid == 3 then
+		if buttonState == 3 then
 			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickoffset[1],txtoffsetsY+eleData.clickoffset[2]
 		end
 		local textX,textY = x+txtoffsetsX,y+txtoffsetsY
@@ -130,7 +130,11 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 				end
 			end
 		end
-		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
+		local textColor = eleData.textColor
+		if type(textColor) == "table" then
+			textColor = textColor[buttonState] or textColor[1]
+		end
+		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
 	end
 	local iconImage = eleData.iconImage
 	if iconImage then
@@ -170,8 +174,8 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			posY = posY+(h-iconHeight)/2
 		end
 		posX,posY = posX+x,posY+y
-		if iconImage[colorimgid] then
-			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[colorimgid],0,0,0,iconColor[colorimgid],isPostGUI)
+		if iconImage[buttonState] then
+			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,iconColor[buttonState],isPostGUI)
 		end
 	end
 	if enabled[1] and mx then

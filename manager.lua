@@ -626,9 +626,7 @@ function dgsSetProperty(dxgui,key,value,...)
 		end
 		for k,v in ipairs(dxgui) do
 			assert(checkCompatibility(v,key),"DGS Compatibility Check")
-			if key == "textColor" then
-				assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
-			elseif key == "text" then
+			if key == "text" then
 				if dgsElementType[v] == "dgs-dxmemo" then
 					return handleDxMemoText(v,value)
 				elseif dgsElementType[v] == "dgs-dxedit" then
@@ -659,8 +657,6 @@ function dgsSetProperty(dxgui,key,value,...)
 				assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
 				value = {fnc,{...}}
 			end
-		elseif key == "textColor" then
-			assert(tonumber(value),"Bad argument @dgsSetProperty at argument 3, expect a number got "..type(value))
 		elseif key == "text" then
 			if dgsElementType[dxgui] == "dgs-dxmemo" then
 				return handleDxMemoText(dxgui,value)
@@ -699,10 +695,6 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 				local skip = false
 				if key == "functions" and type(value) == "string" then
 					value = {loadstring(value),additionArg.functions or {}}
-				elseif key == "textColor" then
-					if not tonumber(value) then
-						assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textColor', expect a number got "..type(value))
-					end
 				elseif key == "text" then
 					if dgsType == "dgs-dxtab" then
 						local tabpanel = dgsElementData[v].parent
@@ -740,10 +732,6 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 			local skip = false
 			if key == "functions" then
 				value = {loadstring(value),additionArg.functions or {}}
-			elseif key == "textColor" then
-				if not tonumber(value) then
-					assert(false,"Bad argument @dgsSetProperties at argument 2 with property 'textColor', expect a number got "..type(value))
-				end
 			elseif key == "text" then
 				if dgsType == "dgs-dxtab" then
 					local tabpanel = dgsElementData[dxgui].parent
@@ -800,8 +788,6 @@ function dgsSetPropertyInherit(dxgui,key,value,...)
 				local fnc = loadstring(value)
 				assert(fnc,"Bad argument @dgsSetPropertyInherit at argument 2, failed to load function")
 				value = {fnc,{...}}
-			elseif key == "textColor" then
-				assert(tonumber(value),"Bad argument @dgsSetPropertyInherit at argument 3, expect a number got "..type(value))
 			elseif key == "text" then
 				if dgsElementType[v] == "dgs-dxmemo" then
 					return handleDxMemoText(v,value)
@@ -828,8 +814,6 @@ function dgsSetPropertyInherit(dxgui,key,value,...)
 			local fnc = loadstring(value)
 			assert(fnc,"Bad argument @dgsSetPropertyInherit at argument 2, failed to load function")
 			value = {fnc,{...}}
-		elseif key == "textColor" then
-			assert(tonumber(value),"Bad argument @dgsSetPropertyInherit at argument 3, expect a number got "..type(value))
 		elseif key == "text" then
 			if dgsElementType[dxgui] == "dgs-dxmemo" then
 				return handleDxMemoText(dxgui,value)

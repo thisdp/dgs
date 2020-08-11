@@ -13,6 +13,7 @@ function createFullDemo()
 	window.position.relative = false
 	window.position.x = 400
 	local button = window:dgsButton(10,210,80,50,"Test Button",false)
+	button.textColor = {tocolor(255,0,0,255),tocolor(255,255,0,255),tocolor(255,0,255,255)}
 	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"","",false)
 	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"","",true)
 	local gridlist = window:dgsGridList(0,0,290,200,false)
