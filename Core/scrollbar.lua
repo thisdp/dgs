@@ -114,7 +114,7 @@ function dgsScrollBarSetGrades(scrollbar,grades,remainMultipler)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetGrades at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	assert(not grades or type(grades) == "number","Bad argument @dgsScrollBarSetGrades at argument at 2, expect false or a number got "..dgsGetType(grades))
 	if not remainMultipler then
-		return dgsSetData(scrollbar,"multiplier",{1/grades,true})
+		dgsSetData(scrollbar,"multiplier",{1/grades,true})
 	end
 	return dgsSetData(scrollbar,"grades",grades)
 end
