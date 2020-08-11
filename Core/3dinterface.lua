@@ -199,7 +199,7 @@ function dgs3DInterfaceSetDimension(interface,dimension)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetDimension at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(tonumber(dimension),"Bad argument @dgs3DInterfaceSetDimension at argument 2, expect a number got "..type(dimension))
 	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DInterfaceSetDimension at argument 2, out of range [ -1 ~ 65535 ] got "..dimension)
-	return dimension-dimension%1
+	return dgsSetData(interface,"dimension",dimension-dimension%1)
 end
 
 function dgs3DInterfaceGetInterior(interface)
@@ -211,7 +211,7 @@ function dgs3DInterfaceSetInterior(interface,interior)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetInterior at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	assert(tonumber(interior),"Bad argument @dgs3DInterfaceSetInterior at argument 2, expect a number got "..type(interior))
 	assert(interior >= -1,"Bad argument @dgs3DInterfaceSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
-	return interior-interior%1
+	return dgsSetData(interface,"interior",interior-interior%1)
 end
 
 function dgs3DInterfaceSetResolution(interface,w,h)
