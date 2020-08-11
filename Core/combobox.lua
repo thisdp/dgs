@@ -485,6 +485,12 @@ function dgsComboBoxGetScrollPosition(combobox)
 	return dgsScrollBarGetScrollPosition(scb)
 end
 
+function dgsComboBoxAdjustBoxHeight(combobox,count)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxAdjustBoxHeight at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	local count = tonumber (count) or dgsComboBoxGetItemCount(combobox)
+	return dgsComboBoxSetBoxHeight (combobox,math.max(count,1) * dgsGetData(combobox,"itemHeight"))
+end
+
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

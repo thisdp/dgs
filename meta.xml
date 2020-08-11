@@ -289,6 +289,7 @@
 	<export function="dgsComboBoxGetEditEnabled" type="client" />
 	<export function="dgsComboBoxGetText" type="client" />
 	<export function="dgsComboBoxGetItemCount" type="client" />
+	<export function="dgsComboBoxAdjustBoxHeight" type="client" />
 
 	<export function="dgsCreateButton" type="client" />
 
