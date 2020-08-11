@@ -13,10 +13,10 @@ local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
 function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t)
-	assert(tonumber(x),"Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy))
 	local rb = createElement("dgs-dxradiobutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true,true) or table.insert(CenterFatherTable,rb)
 	dgsSetType(rb,"dgs-dxradiobutton")

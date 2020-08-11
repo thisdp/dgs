@@ -8,10 +8,10 @@ local dxGetTextWidth = dxGetTextWidth
 --
 
 function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg,selimg,cliimg,norcolor,hovcolor,clicolor)
-	assert(tonumber(x),"Bad argument @dgsCreateButton at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateButton at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateButton at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateButton at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateButton at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateButton at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateButton at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateButton at argument 4, expect number got "..type(sy))
 	local button = createElement("dgs-dxbutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true,true) or table.insert(CenterFatherTable,button)
 	dgsSetType(button,"dgs-dxbutton")

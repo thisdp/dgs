@@ -30,10 +30,10 @@ Selection Mode
 3-> Cell Selection
 ]]
 function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,rownorc,rowhovc,rowselc,bgImage,columnImage,rownori,rowhovi,rowseli)
-	assert(tonumber(x),"Bad argument @dgsCreateGridList at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateGridList at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateGridList at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateGridList at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateGridList at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateGridList at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateGridList at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateGridList at argument 4, expect number got "..type(sy))
 	local gridlist = createElement("dgs-dxgridlist")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(gridlist,parent,true,true) or tableInsert(CenterFatherTable,gridlist)
 	dgsSetType(gridlist,"dgs-dxgridlist")

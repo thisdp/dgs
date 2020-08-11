@@ -2,10 +2,10 @@
 eventHandlers = {}
 
 function dgsCreateCmd(x,y,sx,sy,relative,parent)
-	assert(tonumber(x),"Bad argument @dgsCreateCmd at argument 1, expect number [ got "..type(x).." ]")
-	assert(tonumber(y),"Bad argument @dgsCreateCmd at argument 2, expect number [ got "..type(y).." ]")
-	assert(tonumber(sx),"Bad argument @dgsCreateCmd at argument 3, expect number [ got "..type(sx).." ]")
-	assert(tonumber(sy),"Bad argument @dgsCreateCmd at argument 4, expect number [ got "..type(sy).." ]")
+	assert(type(x) == "number","Bad argument @dgsCreateCmd at argument 1, expect number [ got "..type(x).." ]")
+	assert(type(y) == "number","Bad argument @dgsCreateCmd at argument 2, expect number [ got "..type(y).." ]")
+	assert(type(sx) == "number","Bad argument @dgsCreateCmd at argument 3, expect number [ got "..type(sx).." ]")
+	assert(type(sy) == "number","Bad argument @dgsCreateCmd at argument 4, expect number [ got "..type(sy).." ]")
 	local cmdMemo = dgsCreateMemo(x,y,sx,sy,"",relative,parent)
 	dgsMemoSetReadOnly(cmdMemo,true)
 	dgsSetData(cmdMemo,"asPlugin","dgs-dxcmd")

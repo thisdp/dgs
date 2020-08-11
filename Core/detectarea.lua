@@ -13,10 +13,10 @@ local dxSetBlendMode = dxSetBlendMode
 --
 detectAreaBuiltIn = {}
 function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
-	assert(tonumber(x),"Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy))
 	local detectarea = createElement("dgs-dxdetectarea")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(detectarea,parent,true,true) or table.insert(CenterFatherTable,detectarea)
 	dgsSetType(detectarea,"dgs-dxdetectarea")

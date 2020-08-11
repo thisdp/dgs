@@ -14,10 +14,10 @@ local dxSetBlendMode = dxSetBlendMode
 --
 
 function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor,right,bottom)
-	assert(tonumber(x),"Bad argument @dgsCreateLabel at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateLabel at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateLabel at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateLabel at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateLabel at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateLabel at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateLabel at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateLabel at argument 4, expect number got "..type(sy))
 	local label = createElement("dgs-dxlabel")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(label,parent,true,true) or table.insert(CenterFatherTable,label)
 	dgsSetType(label,"dgs-dxlabel")

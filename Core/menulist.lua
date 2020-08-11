@@ -13,10 +13,10 @@ local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
 function dgsCreateMenuList(x,y,sx,sy,data,relative,parent)
-	assert(tonumber(x),"Bad argument @dgsCreateMenuList at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateMenuList at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateMenuList at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateMenuList at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateMenuList at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateMenuList at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateMenuList at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateMenuList at argument 4, expect number got "..type(sy))
 	if isElement(parent) then
 		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateMenuList at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
 	end

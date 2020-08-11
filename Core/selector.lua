@@ -22,10 +22,10 @@ Selector Data Structure:
 }
 ]]
 function dgsCreateSelector(x,y,sx,sy,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor)
-	assert(tonumber(x),"Bad argument @dgsCreateSelector at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateSelector at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateSelector at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateSelector at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateSelector at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateSelector at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateSelector at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateSelector at argument 4, expect number got "..type(sy))
 	local selector = createElement("dgs-dxselector")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(selector,parent,true,true) or table.insert(CenterFatherTable,selector)
 	dgsSetType(selector,"dgs-dxselector")

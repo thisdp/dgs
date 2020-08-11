@@ -6,11 +6,11 @@ local dxDrawRectangle = dxDrawRectangle
 --
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
 function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
-	assert(tonumber(x),"Bad argument @dgsCreateCheckBox at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateCheckBox at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateCheckBox at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
-	assert(tonumber(sy),"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateCheckBox at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateCheckBox at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateCheckBox at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
+	assert(type(sy) == "number","Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
 	assert(not state or state == true,"@dgsCreateCheckBox at argument 6, expect boolean/nil got "..type(state))
 	local cb = createElement("dgs-dxcheckbox")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true,true) or table.insert(CenterFatherTable,cb)
