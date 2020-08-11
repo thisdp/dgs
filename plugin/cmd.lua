@@ -162,6 +162,7 @@ function outputCmdMessage(cmd,str)
 	dgsMemoAppendText(cmd,str.."\n",true)
 	local textTable = dgsElementData[cmd].text
 	dgsMemoSetCaretPosition(cmd,textTable[#textTable][-1])
+	dgsMemoSetVerticalScrollPosition(cmd,100)
 end
 
 function receiveCmdEditInput(cmd,str)
