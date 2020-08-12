@@ -361,6 +361,8 @@
 	<export function="dgsMemoGetScrollBarState" type="client" />
 	<export function="dgsMemoGetLineLength" type="client" />
 	<export function="dgsMemoGetLineCount" type="client" />
+	<export function="dgsMemoGetMaxLength" type="client" />
+	<export function="dgsMemoSetMaxLength" type="client" />
 
 	<export function="dgsCreateMediaBrowser" type="client" />
 	<export function="dgsMediaLoadMedia" type="client" />
