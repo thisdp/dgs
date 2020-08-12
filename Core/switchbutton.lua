@@ -16,10 +16,10 @@ local min = math.min
 local max = math.max
 --
 function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
-	assert(tonumber(x),"Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateSwitchButton at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateSwitchButton at argument 4, expect number got "..type(sy))
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	local _x = dgsIsDxElement(parent) and dgsSetParent(switchbutton,parent,true,true) or table.insert(CenterFatherTable,switchbutton)
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")

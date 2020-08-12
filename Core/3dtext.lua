@@ -15,9 +15,9 @@ local dxSetBlendMode = dxSetBlendMode
 local getScreenFromWorldPosition = getScreenFromWorldPosition
 
 function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded)
-	assert(tonumber(x),"Bad argument @dgsCreate3DText at argument 1, expect a number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y))
-	assert(tonumber(y),"Bad argument @dgsCreate3DText at argument 3, expect a number got "..type(z))
+	assert(type(x) == "number","Bad argument @dgsCreate3DText at argument 1, expect a number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y))
+	assert(type(y) == "number","Bad argument @dgsCreate3DText at argument 3, expect a number got "..type(z))
 	local text3d = createElement("dgs-dx3dtext")
 	table.insert(dx3DTextTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
@@ -52,7 +52,7 @@ end
 
 function dgs3DTextSetDimension(text,dimension)
 	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetDimension at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
-	assert(tonumber(dimension),"Bad argument @dgs3DTextSetDimension at argument 2, expect a number got "..type(dimension))
+	assert(type(dimension) == "number","Bad argument @dgs3DTextSetDimension at argument 2, expect a number got "..type(dimension))
 	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DTextSetDimension at argument 2, out of range [0~65535] got "..dimension)
 	return dgsSetData(text,"dimension",dimension-dimension%1)
 end
@@ -64,7 +64,7 @@ end
 
 function dgs3DTextSetInterior(text,interior)
 	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetInterior at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
-	assert(tonumber(interior),"Bad argument @dgs3DTextSetInterior at argument 2, expect a number got "..type(interior))
+	assert(type(interior) == "number","Bad argument @dgs3DTextSetInterior at argument 2, expect a number got "..type(interior))
 	assert(interior >= -1,"Bad argument @dgs3DTextSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
 	return dgsSetData(text,"interior",interior-interior%1)
 end
@@ -108,9 +108,9 @@ end
 
 function dgs3DTextSetPosition(text,x,y,z)
 	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetPosition at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
-	assert(tonumber(x),"Bad argument @dgs3DTextSetPosition at argument 2, expect a number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgs3DTextSetPosition at argument 3, expect a number got "..type(y))
-	assert(tonumber(z),"Bad argument @dgs3DTextSetPosition at argument 4, expect a number got "..type(z))
+	assert(type(x) == "number","Bad argument @dgs3DTextSetPosition at argument 2, expect a number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgs3DTextSetPosition at argument 3, expect a number got "..type(y))
+	assert(type(z) == "number","Bad argument @dgs3DTextSetPosition at argument 4, expect a number got "..type(z))
 	return dgsSetData(text,"position",{x,y,z})
 end
 

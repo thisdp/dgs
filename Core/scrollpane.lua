@@ -16,10 +16,10 @@ local assert = assert
 local lerp = math.lerp
 --
 function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
-	assert(tonumber(x),"Bad argument @dgsCreateScrollPane at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateScrollPane at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateScrollPane at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateScrollPane at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateScrollPane at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateScrollPane at argument 4, expect number got "..type(sy))
 	local scrollpane = createElement("dgs-dxscrollpane")
 	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollpane,parent,true,true) or table.insert(CenterFatherTable,scrollpane)
 	dgsSetType(scrollpane,"dgs-dxscrollpane")

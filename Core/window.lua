@@ -13,10 +13,10 @@ local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
 function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton)
-	assert(tonumber(x),"Bad argument @dgsCreateWindow at argument 1, expect number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreateWindow at argument 2, expect number got "..type(y))
-	assert(tonumber(sx),"Bad argument @dgsCreateWindow at argument 3, expect number got "..type(sx))
-	assert(tonumber(sy),"Bad argument @dgsCreateWindow at argument 4, expect number got "..type(sy))
+	assert(type(x) == "number","Bad argument @dgsCreateWindow at argument 1, expect number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreateWindow at argument 2, expect number got "..type(y))
+	assert(type(sx) == "number","Bad argument @dgsCreateWindow at argument 3, expect number got "..type(sx))
+	assert(type(sy) == "number","Bad argument @dgsCreateWindow at argument 4, expect number got "..type(sy))
 	local window = createElement("dgs-dxwindow")
 	table.insert(CenterFatherTable,window)
 	dgsSetType(window,"dgs-dxwindow")
@@ -134,8 +134,8 @@ end
 
 function dgsWindowSetCloseButtonSize(window,w,h,relative)
 	assert(dgsGetType(window) == "dgs-dxwindow","Bad argument @dgsWindowSetCloseButtonSize at at argument 1, expect dgs-dxwindow got "..dgsGetType(window))
-	assert(tonumber(w),"Bad argument @dgsWindowSetCloseButtonSize at argument 2, expect number got "..type(w))
-	assert(tonumber(h),"Bad argument @dgsWindowSetCloseButtonSize at argument 3, expect number got "..type(h))
+	assert(type(w) == "number","Bad argument @dgsWindowSetCloseButtonSize at argument 2, expect number got "..type(w))
+	assert(type(h) == "number","Bad argument @dgsWindowSetCloseButtonSize at argument 3, expect number got "..type(h))
 	local closeButton = dgsElementData[window].closeButton
 	if isElement(closeButton) then
 		dgsSetData(window,"closeButtonSize",{w,h,relative and true or false})

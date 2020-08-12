@@ -22,13 +22,13 @@ function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
 end
 
 function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot)
-	assert(tonumber(x),"Bad argument @dgsCreate3DInterface at argument 1, expect a number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgsCreate3DInterface at argument 2, expect a number got "..type(y))
-	assert(tonumber(y),"Bad argument @dgsCreate3DInterface at argument 3, expect a number got "..type(z))
-	assert(tonumber(w),"Bad argument @dgsCreate3DInterface at argument 4, expect a number got "..type(w))
-	assert(tonumber(h),"Bad argument @dgsCreate3DInterface at argument 5, expect a number got "..type(h))
-	assert(tonumber(resolX),"Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(resolX))
-	assert(tonumber(resolY),"Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(resolX))
+	assert(type(x) == "number","Bad argument @dgsCreate3DInterface at argument 1, expect a number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgsCreate3DInterface at argument 2, expect a number got "..type(y))
+	assert(type(y) == "number","Bad argument @dgsCreate3DInterface at argument 3, expect a number got "..type(z))
+	assert(type(w) == "number","Bad argument @dgsCreate3DInterface at argument 4, expect a number got "..type(w))
+	assert(type(h) == "number","Bad argument @dgsCreate3DInterface at argument 5, expect a number got "..type(h))
+	assert(type(resolX) == "number","Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(resolX))
+	assert(type(resolY) == "number","Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(resolX))
 	local interface = createElement("dgs-dx3dinterface")
 	table.insert(dx3DInterfaceTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
@@ -165,9 +165,9 @@ end
 
 function dgs3DInterfaceSetPosition(interface,x,y,z)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetBlendMode at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(tonumber(x),"Bad argument @dgs3DInterfaceSetPosition at argument 2, expect a number got "..type(x))
-	assert(tonumber(y),"Bad argument @dgs3DInterfaceSetPosition at argument 3, expect a number got "..type(y))
-	assert(tonumber(z),"Bad argument @dgs3DInterfaceSetPosition at argument 4, expect a number got "..type(z))
+	assert(type(x) == "number","Bad argument @dgs3DInterfaceSetPosition at argument 2, expect a number got "..type(x))
+	assert(type(y) == "number","Bad argument @dgs3DInterfaceSetPosition at argument 3, expect a number got "..type(y))
+	assert(type(z) == "number","Bad argument @dgs3DInterfaceSetPosition at argument 4, expect a number got "..type(z))
 	return dgsSetData(interface,"position",{x,y,z})
 end
 
@@ -179,8 +179,8 @@ end
 
 function dgs3DInterfaceSetSize(interface,w,h)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetSize at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetSize at argument 2, expect a number got "..type(w))
-	assert(tonumber(h),"Bad argument @dgs3DInterfaceSetSize at argument 3, expect a number got "..type(h))
+	assert(type(w) == "number","Bad argument @dgs3DInterfaceSetSize at argument 2, expect a number got "..type(w))
+	assert(type(h) == "number","Bad argument @dgs3DInterfaceSetSize at argument 3, expect a number got "..type(h))
 	return dgsSetData(interface,"size",{w,h})
 end
 
@@ -197,7 +197,7 @@ end
 
 function dgs3DInterfaceSetDimension(interface,dimension)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetDimension at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(tonumber(dimension),"Bad argument @dgs3DInterfaceSetDimension at argument 2, expect a number got "..type(dimension))
+	assert(type(dimension) == "number","Bad argument @dgs3DInterfaceSetDimension at argument 2, expect a number got "..type(dimension))
 	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DInterfaceSetDimension at argument 2, out of range [ -1 ~ 65535 ] got "..dimension)
 	return dgsSetData(interface,"dimension",dimension-dimension%1)
 end
@@ -209,15 +209,15 @@ end
 
 function dgs3DInterfaceSetInterior(interface,interior)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetInterior at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(tonumber(interior),"Bad argument @dgs3DInterfaceSetInterior at argument 2, expect a number got "..type(interior))
+	assert(type(interior) == "number","Bad argument @dgs3DInterfaceSetInterior at argument 2, expect a number got "..type(interior))
 	assert(interior >= -1,"Bad argument @dgs3DInterfaceSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
 	return dgsSetData(interface,"interior",interior-interior%1)
 end
 
 function dgs3DInterfaceSetResolution(interface,w,h)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
-	assert(tonumber(h),"Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
+	assert(type(w) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
+	assert(type(h) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
 	local oldRT = dgsElementData[interface].renderTarget_parent
 	if isElement(oldRT) then destroyElement(oldRT) end
 	local renderTarget,err = dxCreateRenderTarget(w,h,true,interface)
@@ -232,8 +232,8 @@ end
 
 function dgs3DInterfaceGetResolution(interface)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(tonumber(w),"Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
-	assert(tonumber(h),"Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
+	assert(type(w) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
+	assert(type(h) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
 	local size = dgsElementData[interface].resolution
 	return size[1],size[2]
 end
