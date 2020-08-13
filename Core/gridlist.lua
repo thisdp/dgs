@@ -531,11 +531,12 @@ function dgsGridListAutoSizeColumn(gridlist,pos,additionalLength,relative)
 	assert(type(pos) == "number","Bad argument @dgsGridListSetColumnWidth at argument 2, expect number got "..dgsGetType(pos))
 	local columnData = dgsElementData[gridlist].columnData
 	assert(columnData[pos],"Bad argument @dgsGridListSetColumnWidth at argument 2, column index is out of range [min 1, max "..#columnData..", got "..pos.."]")
+	assert(type(additionalLength) == "number" or (not additionalLength and not relative),"Bad argument @dgsGridListSetColumnWidth at argument 3, expect number got "..dgsGetType(additionalLength))
 	local text = dgsGridListGetColumnTitle(gridlist,pos)
 	local textSizeX = columnData[pos][7]
 	local font = columnData[pos][9] or dgsElementData[gridlist].font
 	local wid = dxGetTextWidth(text,textSizeX,font)
-	local wid = wid+(relative and additionalLength*wid or additionalLength)
+	local wid = wid+(relative and additionalLength*wid or (additionalLength or 0)+wid)
 	dgsGridListSetColumnWidth(gridlist,pos,wid,false)
 	return true
 end
