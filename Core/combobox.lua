@@ -78,6 +78,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"clip",false)
 	dgsSetData(combobox,"wordbreak",false)
 	dgsSetData(combobox,"itemHeight",itemheight or styleSettings.combobox.itemHeight)
+	dgsSetData(combobox,"viewCount",false,true)
 	dgsSetData(combobox,"colorcoded",false)
 	dgsSetData(combobox,"listState",-1,true)
 	dgsSetData(combobox,"listStateAnim",-1)
@@ -485,10 +486,19 @@ function dgsComboBoxGetScrollPosition(combobox)
 	return dgsScrollBarGetScrollPosition(scb)
 end
 
-function dgsComboBoxAdjustBoxHeight(combobox,count)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxAdjustBoxHeight at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	local count = tonumber (count) or dgsComboBoxGetItemCount(combobox)
-	return dgsComboBoxSetBoxHeight (combobox,math.max(count,1) * dgsGetData(combobox,"itemHeight"))
+function dgsComboBoxSetViewCount(combobox,count)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetViewCount at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if type(count) == "number" then
+		dgsSetData(combobox,"viewCount",count,true)
+		return dgsComboBoxSetBoxHeight (combobox,count * dgsGetData(combobox,"itemHeight"))
+	else
+		return dgsSetData (combobox,"viewCount",false,true)
+	end
+end
+
+function dgsComboBoxGetViewCount(combobox,count)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetViewCount at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	return dgsElementData[combobox].viewCount
 end
 
 ----------------------------------------------------------------
