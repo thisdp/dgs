@@ -409,6 +409,10 @@ function dgsSetData(element,key,value,nocheck)
 						configComboBox(element)
 					elseif key == "listState" then
 						triggerEvent("onDgsComboBoxStateChange",element,value == 1 and true or false)
+					elseif key == "viewCount" then
+						dgsComboBoxSetViewCount(element,value)
+					elseif key == "itemHeight" and dgsElementData[element].viewCount then
+						dgsComboBoxSetViewCount(element,dgsElementData[element].viewCount)
 					end
 				elseif dgsType == "dgs-dxtabpanel" then
 					if key == "selected" then
