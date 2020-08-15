@@ -39,9 +39,9 @@ dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 	Text Table Structure:
 			Text Width(Int),	Text(Str),	Map Tables For Weak Line(Table),
 		{
-			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 1
-			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 2
-			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--String Line 3
+			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 1
+			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 2
+			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 3
 			...
 		}
 
