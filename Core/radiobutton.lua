@@ -18,8 +18,8 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 	assert(type(sx) == "number","Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy))
 	local rb = createElement("dgs-dxradiobutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(rb,parent,true,true) or table.insert(CenterFatherTable,rb)
 	dgsSetType(rb,"dgs-dxradiobutton")
+	dgsSetParent(rb,parent,true,true)
 	dgsSetData(rb,"renderBuffer",{})
 
 	local imageUnchecked = styleSettings.radiobutton.image_f

@@ -13,8 +13,8 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	assert(type(sx) == "number","Bad argument @dgsCreateButton at argument 3, expect number got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateButton at argument 4, expect number got "..type(sy))
 	local button = createElement("dgs-dxbutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(button,parent,true,true) or table.insert(CenterFatherTable,button)
 	dgsSetType(button,"dgs-dxbutton")
+	dgsSetParent(button,parent,true,true)
 	dgsSetData(button,"renderBuffer",{})
 	local norcolor = norcolor or styleSettings.button.color[1]
 	local hovcolor = hovcolor or styleSettings.button.color[2]

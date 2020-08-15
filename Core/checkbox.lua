@@ -13,8 +13,8 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	assert(type(sy) == "number","Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
 	assert(not state or state == true,"@dgsCreateCheckBox at argument 6, expect boolean/nil got "..type(state))
 	local cb = createElement("dgs-dxcheckbox")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(cb,parent,true,true) or table.insert(CenterFatherTable,cb)
 	dgsSetType(cb,"dgs-dxcheckbox")
+	dgsSetParent(cb,parent,true,true)
 	dgsSetData(cb,"renderBuffer",{})
 
 	local imageUnchecked = styleSettings.checkbox.image_f

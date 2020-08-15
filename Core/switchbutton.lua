@@ -21,8 +21,8 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	assert(type(sx) == "number","Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateSwitchButton at argument 4, expect number got "..type(sy))
 	local switchbutton = createElement("dgs-dxswitchbutton")
-	local _x = dgsIsDxElement(parent) and dgsSetParent(switchbutton,parent,true,true) or table.insert(CenterFatherTable,switchbutton)
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
+	dgsSetParent(switchbutton,parent,true,true)
 	dgsSetData(switchbutton,"renderBuffer",{})
 
 	dgsSetData(switchbutton,"colorOn",styleSettings.switchbutton.colorOn)

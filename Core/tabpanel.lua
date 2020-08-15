@@ -24,8 +24,8 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 		assert(eleType == true,"Bad argument @dgsCreateTabPanel at argument 8, expect material got "..eleType)
 	end
 	local tabpanel = createElement("dgs-dxtabpanel")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(tabpanel,parent,true,true) or table.insert(CenterFatherTable,tabpanel)
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
+	dgsSetParent(tabpanel,parent,true,true)
 	local tabHeight = tabHeight or styleSettings.tabpanel.tabHeight
 	dgsSetData(tabpanel,"tabHeight",{tabHeight,false})
 	dgsSetData(tabpanel,"tabMaxWidth",{10000,false})

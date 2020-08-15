@@ -61,8 +61,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	assert(type(sy) == "number","Bad argument @dgsCreateMemo at argument 4, expect number got "..type(sy))
 	text = tostring(text)
 	local memo = createElement("dgs-dxmemo")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(memo,parent,true,true) or tableInsert(CenterFatherTable,memo)
 	dgsSetType(memo,"dgs-dxmemo")
+	dgsSetParent(memo,parent,true,true)
 	dgsSetData(memo,"renderBuffer",{})
 	dgsSetData(memo,"bgColor",bgColor or styleSettings.memo.bgColor)
 	dgsSetData(memo,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.memo.bgImage))
@@ -680,7 +680,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	tab[1] = utf8Sub(tab[1],2)
 	tab[#tab] = utf8Sub(tab[#tab],1,utf8Len(tab[#tab])-1)
 	local text = dgsGetText(memo)
-	local textLen = string.len(text)
+	local textLen = utf8Len(text)
 	if (textLen >= maxLength) then
 	return false
 	end
@@ -1107,7 +1107,8 @@ function checkMMScrollBar(source,new,old)
 			local canHold = mathFloor((size[2]-padding[2]*2-scbTakes2)/fontHeight)
 			if isWordWrap then
 				local mapTable = dgsElementData[memo].wordWrapMapText
-				local temp = mathFloor((#mapTable-canHold)*new*0.01)+1
+				local temp = math.max(mathFloor((#mapTable-canHold)*new*0.01)+1,1)
+				print(temp,getTickCount())
 				local wordWrapShowLine = dgsElementData[memo].wordWrapShowLine
 				wordWrapShowLine[3] = temp
 				local startStrongLine

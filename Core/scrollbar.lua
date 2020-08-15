@@ -22,8 +22,8 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 	assert(type(sy) == "number","Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy))
 	local isHorizontal = isHorizontal or false
 	local scrollbar = createElement("dgs-dxscrollbar")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(scrollbar,parent,true,true) or table.insert(CenterFatherTable,scrollbar)
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
+	dgsSetParent(scrollbar,parent,true,true)
 	dgsSetData(scrollbar,"renderBuffer",{})
 	local deprecatedImage = styleSettings.scrollbar.image or {}
 	local arrowImage = arrowImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage) or dgsCreateTextureFromStyle(deprecatedImage[1])

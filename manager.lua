@@ -18,7 +18,7 @@ ChildrenTable = {}			--Store Children Element
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
 
 function dgsSetLayer(dgsEle,layer,forceDetatch)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetLayer at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetLayer at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
 	if dgsElementType[dgsEle] == "dgs-dxtab" then return false end
 	assert(layer == "center" or layer == "top" or layer == "bottom","Bad argument @dgsSetLayer at argument 2, expect a string(top/center/bottom) got "..dgsGetType(layer))
 	local hasParent = isElement(FatherTable[dgsEle])
@@ -42,12 +42,12 @@ function dgsSetLayer(dgsEle,layer,forceDetatch)
 end
 
 function dgsGetLayer(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetLayer at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetLayer at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
 	return dgsElementData[dgsEle].alwaysOn or "center"
 end
 
 function dgsSetCurrentLayerIndex(dgsEle,index)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetCurrentLayerIndex at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetCurrentLayerIndex at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
 	assert(type(index) == "number" ,"Bad argument @dgsSetCurrentLayerIndex at argument 2, expect a number got "..dgsGetType(index))
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
 	local hasParent = isElement(FatherTable[dgsEle])
@@ -62,7 +62,7 @@ function dgsSetCurrentLayerIndex(dgsEle,index)
 end
 
 function dgsGetCurrentLayerIndex(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetCurrentLayerIndex at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetCurrentLayerIndex at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
 	local hasParent = isElement(FatherTable[dgsEle])
 	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
@@ -74,23 +74,15 @@ function dgsGetLayerElements(layer)
 	return #LayerCastTable[layer] or false
 end
 
-function dgsGetChild(parent,id)
-	return ChildrenTable[parent][id] or false
-end
-
-function dgsGetChildren(parent)
-	return ChildrenTable[parent] or {}
-end
-
-function dgsGetParent(child)
-	return FatherTable[child] or false
-end
+function dgsGetChild(parent,id) return ChildrenTable[parent][id] or false end
+function dgsGetChildren(parent) return ChildrenTable[parent] or {} end
+function dgsGetParent(child) return FatherTable[child] or false end
+function dgsGetDxGUINoParent(alwaysBottom) return alwaysBottom and BottomFatherTable or CenterFatherTable end
 
 function dgsGetDxGUIFromResource(res)
 	local res = res or sourceResource
 	if res then
-		local serialized = {}
-		local cnt = 0
+		local serialized,cnt = {},0
 		for k,v in pairs(boundResource[res] or {}) do
 			cnt = cnt+1
 			serialized[cnt] = k
@@ -99,64 +91,48 @@ function dgsGetDxGUIFromResource(res)
 	end
 end
 
-function dgsGetDxGUINoParent(alwaysBottom)
-	return alwaysBottom and BottomFatherTable or CenterFatherTable
-end
-
 function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
-	assert(not dgsElementData[child] or not dgsElementData[child].attachTo, "Bad argument @dgsSetParent at argument 1, attached dgs element shouldn't have a parent")
-	if isElement(child) then
-		local _parent = FatherTable[child]
-		local parentTable = isElement(_parent) and ChildrenTable[_parent] or CenterFatherTable
-		if isElement(parent) then
-			if not dgsIsDxElement(parent) then return end
-			if not nocheckfather then
-				local id = tableFind(parentTable,child)
-				if id then
-					tableRemove(parentTable,id)
-				end
-			end
-			FatherTable[child] = parent
-			ChildrenTable[parent] = ChildrenTable[parent] or {}
-			tableInsert(ChildrenTable[parent],child)
-		else
+	assert(dgsIsDxElement(child),"Bad argument @dgsSetParent at argument 1, expect a dgs-element element got "..dgsGetType(child))
+	assert(not dgsElementData[child] or not dgsElementData[child].attachTo, "Bad argument @dgsSetParent at argument 1, attached dgs element can not have a parent")
+	local _parent = FatherTable[child]
+	local parentTable = isElement(_parent) and ChildrenTable[_parent] or CenterFatherTable
+	if isElement(parent) then
+		if not dgsIsDxElement(parent) then return end
+		if not nocheckfather then
 			local id = tableFind(parentTable,child)
 			if id then
 				tableRemove(parentTable,id)
 			end
-			FatherTable[id] = nil
-			tableInsert(CenterFatherTable,child)
 		end
+		FatherTable[child] = parent
+		ChildrenTable[parent] = ChildrenTable[parent] or {}
+		tableInsert(ChildrenTable[parent],child)
 		setElementParent(child,parent)
-		---Update Position and Size
-		if not noUpdatePosSize then
-			local rlt = dgsElementData[child].relative
-			if rlt[1] then
-				local pos = dgsElementData[child].rltPos
-				calculateGuiPositionSize(child,pos[1],pos[2],true)
-			else
-				local pos = dgsElementData[child].absPos
-				calculateGuiPositionSize(child,pos[1],pos[2],false)
-			end
-			if rlt[2] then
-				local size = dgsElementData[child].rltSize
-				calculateGuiPositionSize(child,_,_,_,size[1],size[2],true)
-			else
-				local size = dgsElementData[child].absSize
-				calculateGuiPositionSize(child,_,_,_,size[1],size[2],false)
-			end
+	else
+		local id = tableFind(parentTable,child)
+		if id then
+			tableRemove(parentTable,id)
 		end
-		if dgsElementType[child] == "dgs-dxscrollpane" then
-			local scrollbars = (dgsElementData[child] or {}).scrollbars
-			if scrollbars then
-				dgsSetParent(scrollbars[1],parent)
-				dgsSetParent(scrollbars[2],parent)
-				configScrollPane(child)
-			end
-		end
-		return true
+		FatherTable[id] = nil
+		tableInsert(CenterFatherTable,child)
+		setElementParent(child,resourceRoot)
 	end
-	return false
+	---Update Position and Size
+	if not noUpdatePosSize then
+		local rlt = dgsElementData[child].relative
+		local pos = rlt[1] and dgsElementData[child].rltPos or dgsElementData[child].absPos
+		local size = rlt[2] and dgsElementData[child].rltSize or dgsElementData[child].absSize
+		calculateGuiPositionSize(child,pos[1],pos[2],rlt[1] and true or false,size[1],size[2],rlt[2] and true or false)
+	end
+	if dgsElementType[child] == "dgs-dxscrollpane" then
+		local scrollbars = (dgsElementData[child] or {}).scrollbars
+		if scrollbars then
+			dgsSetParent(scrollbars[1],parent)
+			dgsSetParent(scrollbars[2],parent)
+			configScrollPane(child)
+		end
+	end
+	return true
 end
 
 function blurEditMemo()
@@ -169,7 +145,7 @@ function blurEditMemo()
 end
 
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsBringToFront at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsBringToFront at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
 	local parent = FatherTable[dgsEle]	--Get Parent
 	local lastFront = MouseData.nowShow
 	if not dontChangeData then
@@ -256,7 +232,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 end
 
 function dgsMoveToBack(dgsEle)
-	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsMoveToBack at argument 1, expect a dgs-dgsEle element got "..dgsGetType(dgsEle))
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsMoveToBack at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
 	if dgsElementData[dgsEle].changeOrder then
 		local parent = FatherTable[dgsEle]	--Get Parent
 		if isElement(parent) then
@@ -364,9 +340,10 @@ function dgsSetData(element,key,value,nocheck)
 							if oldValue and oldValue ~= value then
 								local grades = dgsElementData[element].grades
 								local scaler = dgsElementData[element].map
-								local nValue,oValue = value/100*(scaler[2]-scaler[1])+scaler[1],oValue/100*(scaler[2]-scaler[1])+scaler[1]
+								local nValue,oValue = value/100*(scaler[2]-scaler[1])+scaler[1],oldValue/100*(scaler[2]-scaler[1])+scaler[1]
 								if grades then
-									nValue,oValue = math.floor(nValue/100*grades+0.5),math.floor(oValue/100*grades+0.5)
+									nValue,oValue = nValue/100*grades+0.5,oValue/100*grades+0.5
+									nValue,oValue = nValue-nValue%1,oValue-oValue%1
 									dgsSetData(element,"currentGrade",nValue)
 									nValue = currentGrade/grades*100
 									dgsElementData[element][key] = nValue/grades*100
@@ -380,9 +357,8 @@ function dgsSetData(element,key,value,nocheck)
 						end
 					elseif key == "grades" then
 						if value then
-							local pos = dgsElementData[element].position
-							local currentGrade = math.floor(pos/100*value+0.5)
-							dgsSetData(element,"currentGrade",currentGrade)
+							local currentGrade = dgsElementData[element].position/100*value+0.5
+							dgsSetData(element,"currentGrade",currentGrade-currentGrade%1)
 						else
 							dgsSetData(element,"currentGrade",false)
 						end
@@ -454,7 +430,6 @@ function dgsSetData(element,key,value,nocheck)
 						local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 						dgsElementData[element].text = tostring(value)
 						dgsSetData(element,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[element].textSize[1],dgsElementData[element].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
-
 						return triggerEvent("onDgsTextChange",element)
 					elseif key == "width" then
 						local tabpanel = dgsElementData[element].parent
@@ -535,8 +510,7 @@ function dgsSetData(element,key,value,nocheck)
 							local x,y,relative = UVPos[1],UVPos[2],UVPos[3]
 							local sx,sy,relative = UVSize[1],UVSize[2],UVSize[3]
 							local mx,my = dxGetMaterialSize(value)
-							local x,y = tonumber(x),tonumber(y)
-							local sx,sy = tonumber(sx),tonumber(sy)
+							local x,y,sx,sy = tonumber(x),tonumber(y),tonumber(sx),tonumber(sy)
 							local x,y = relative and (x or 0)*mx or (x or mx),relative and (y or 0)*my or (y or my)
 							local sx,sy = relative and (sx or 1)*mx or (sx or mx),relative and (sy or 1)*my or (sy or my)
 							dgsElementData[element].renderBuffer.UVPos = {x,y}
@@ -584,25 +558,7 @@ function dgsSetData(element,key,value,nocheck)
 	return false
 end
 
-compatibility = {
-	["dgs-dxscrollbar"] = {
-		image = "arrowImage/cursorImage/troughImage",
-	},
-	["dgs-dxswitchbutton"] = {
-		textColor_t = "textColorOn",
-		textColor_f = "textColorOff",
-		image_t = "imageOn",
-		image_f = "imageOff",
-		textColor_t = "textColorOn",
-		textColor_f = "textColorOff",
-	},
-	["dgs-dxcheckbox"] = {
-		textImageSpace = "textPadding",
-	},
-	["dgs-dxradiobutton"] = {
-		textImageSpace = "textPadding",
-	}
-}
+compatibility = {}
 
 function checkCompatibility(dxgui,key)
 	local eleTyp = dgsGetType(dxgui)
@@ -632,23 +588,7 @@ function dgsSetProperty(dxgui,key,value,...)
 			value = {fnc,{...}}
 		end
 		for k,v in ipairs(dxgui) do
-			assert(checkCompatibility(v,key),"DGS Compatibility Check")
-			if key == "text" then
-				if dgsElementType[v] == "dgs-dxmemo" then
-					return handleDxMemoText(v,value)
-				elseif dgsElementType[v] == "dgs-dxedit" then
-					return handleDxEditText(v,value)
-				end
-			elseif key == "absPos" then
-				dgsSetPosition(v,value[1],value[2],false)
-			elseif key == "rltPos" then
-				dgsSetPosition(v,value[1],value[2],true)
-			elseif key == "absSize" then
-				dgsSetSize(v,value[1],value[2],false)
-			elseif key == "rltSize" then
-				dgsSetSize(v,value[1],value[2],true)
-			end
-			dgsSetData(v,tostring(key),value)
+			dgsSetProperty(v,key,value,...)
 		end
 		return true
 	else
@@ -685,8 +625,7 @@ end
 
 function dgsGetProperty(dxgui,key)
 	assert(dgsIsDxElement(dxgui),"Bad argument @dgsGetProperty at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
-	if not dgsElementData[dxgui] then return false end
-	return dgsElementData[dxgui][key]
+	return (dgsElementData[dxgui] or {})[key] or false
 end
 
 function dgsSetProperties(dxgui,theTable,additionArg)
@@ -694,151 +633,38 @@ function dgsSetProperties(dxgui,theTable,additionArg)
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dxgui))
 	assert(type(theTable)=="table","Bad argument @dgsSetProperties at argument 2, expect a table got "..type(theTable))
 	assert((additionArg and type(additionArg)=="table") or additionArg == nil,"Bad argument @dgsSetProperties at argument 3, expect a table or nil/none got "..type(additionArg))
-	if isTable then
-		local success = true
-		for k,v in ipairs(dxgui) do
-			local dgsType = dgsElementType[v]
-			for key,value in pairs(theTable) do
-				local skip = false
-				if key == "functions" and type(value) == "string" then
-					value = {loadstring(value),additionArg.functions or {}}
-				elseif key == "text" then
-					if dgsType == "dgs-dxtab" then
-						local tabpanel = dgsElementData[v].parent
-						local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
-						local wid = math.restrict(dxGetTextWidth(value,dgsElementData[v].textSize[1],dgsElementData[v].font or dgsElementData[tabpanel].font),minW,maxW)
-						local owid = dgsElementData[tab].width
-						dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-owid+wid)
-						dgsSetData(v,"width",wid)
-					elseif dgsType == "dgs-dxmemo" then
-						success = success and handleDxMemoText(v,value)
-						skip = true
-					elseif dgsType == "dgs-dxedit" then
-						success = success and handleDxEditText(v,value)
-						skip = true
-					end
-				elseif key == "absPos" then
-					dgsSetPosition(v,value[1],value[2],false)
-				elseif key == "rltPos" then
-					dgsSetPosition(v,value[1],value[2],true)
-				elseif key == "absSize" then
-					dgsSetSize(v,value[1],value[2],false)
-				elseif key == "rltSize" then
-					dgsSetSize(v,value[1],value[2],true)
-				end
-				if not skip then
-					success = success and dgsSetData(v,tostring(key),value)
-				end
-			end
-		end
-		return success
-	else
-		local success = true
-		local dgsType = dgsElementType[dxgui]
+	local dxElements = isTable and dxgui or {dxgui}
+	for i=1,#dxElements do
+		local dgsEle = dxElements[i]
 		for key,value in pairs(theTable) do
-			local skip = false
-			if key == "functions" then
-				value = {loadstring(value),additionArg.functions or {}}
-			elseif key == "text" then
-				if dgsType == "dgs-dxtab" then
-					local tabpanel = dgsElementData[dxgui].parent
-					local minW,maxW = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
-					local wid = math.restrict(dxGetTextWidth(value,dgsElementData[dxgui].textSize[1],dgsElementData[dxgui].font or dgsElementData[tabpanel].font),minW,maxW)
-					local owid = dgsElementData[tab].width
-					dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-owid+wid)
-					dgsSetData(dxgui,"width",wid)
-				elseif dgsType == "dgs-dxmemo" then
-					success = success and handleDxMemoText(dxgui,value)
-					skip = true
-				elseif dgsType == "dgs-dxedit" then
-					success = success and handleDxEditText(dxgui,value)
-					skip = true
-				end
-			elseif key == "absPos" then
-				dgsSetPosition(dxgui,value[1],value[2],false)
-			elseif key == "rltPos" then
-				dgsSetPosition(dxgui,value[1],value[2],true)
-			elseif key == "absSize" then
-				dgsSetSize(dxgui,value[1],value[2],false)
-			elseif key == "rltSize" then
-				dgsSetSize(dxgui,value[1],value[2],true)
-			end
-			if not skip then
-				success = success and dgsSetData(dxgui,tostring(key),value)
-			end
+			dgsSetProperty(dgsEle,key,value)
 		end
-		return success
 	end
+	return success
 end
 
 function dgsGetProperties(dgsElement,properties)
 	assert(dgsIsDxElement(dgsElement),"Bad argument @dgsGetProperties at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsElement))
 	assert(not properties or type(properties) == "table","Bad argument @dgsGetProperties at argument 2, expect none or table got "..type(properties))
 	if not dgsElementData[dgsElement] then return false end
-	if not properties then
-		return dgsElementData[dgsElement]
-	else
-		local data = {}
-		for k,key in ipairs(properties) do
-			data[key] = dgsElementData[dgsElement][key]
-		end
-		return data
+	if not properties then return dgsElementData[dgsElement] end
+	local data = {}
+	for k,key in ipairs(properties) do
+		data[key] = dgsElementData[dgsElement][key]
 	end
+	return data
 end
 
 function dgsSetPropertyInherit(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
 	assert(dgsIsDxElement(dxgui) or isTable,"Bad argument @dgsSetPropertyInherit at argument 1, expect a dgs-dxgui element/table got "..dgsGetType(dxgui))
-	if isTable then
-		for k,v in ipairs(dxgui) do
-			if key == "functions" then
-				local fnc = loadstring(value)
-				assert(fnc,"Bad argument @dgsSetPropertyInherit at argument 2, failed to load function")
-				value = {fnc,{...}}
-			elseif key == "text" then
-				if dgsElementType[v] == "dgs-dxmemo" then
-					return handleDxMemoText(v,value)
-				elseif dgsElementType[v] == "dgs-dxedit" then
-					return handleDxEditText(v,value)
-				end
-			elseif key == "absPos" then
-				dgsSetPosition(v,value[1],value[2],false)
-			elseif key == "rltPos" then
-				dgsSetPosition(v,value[1],value[2],true)
-			elseif key == "absSize" then
-				dgsSetSize(v,value[1],value[2],false)
-			elseif key == "rltSize" then
-				dgsSetSize(v,value[1],value[2],true)
-			end
-			dgsSetData(v,tostring(key),value)
-			for index,child in ipairs(dgsGetChildren(v)) do
-				dgsSetPropertyInherit(child,key,value,...)
-			end
-		end
-		return true
-	else
-		if key == "functions" then
-			local fnc = loadstring(value)
-			assert(fnc,"Bad argument @dgsSetPropertyInherit at argument 2, failed to load function")
-			value = {fnc,{...}}
-		elseif key == "text" then
-			if dgsElementType[dxgui] == "dgs-dxmemo" then
-				return handleDxMemoText(dxgui,value)
-			elseif dgsElementType[dxgui] == "dgs-dxedit" then
-				return handleDxEditText(dxgui,value)
-			end
-		elseif key == "absPos" then
-			dgsSetPosition(dxgui,value[1],value[2],false)
-		elseif key == "rltPos" then
-			dgsSetPosition(dxgui,value[1],value[2],true)
-		elseif key == "absSize" then
-			dgsSetSize(dxgui,value[1],value[2],false)
-		elseif key == "rltSize" then
-			dgsSetSize(dxgui,value[1],value[2],true)
-		end
-		dgsSetData(dxgui,tostring(key),value)
-		for index,child in ipairs(dgsGetChildren(dxgui)) do
+	local dxElements = isTable and dxgui or {dxgui}
+	for i=1,#dxElements do
+		local dgsEle = dxElements[i]
+		dgsSetProperty(dgsEle,key,value)
+		for index,child in ipairs(dgsGetChildren(dgsEle)) do
 			dgsSetPropertyInherit(child,key,value,...)
 		end
 	end
+	return true
 end

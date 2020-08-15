@@ -17,11 +17,8 @@ function dgsCreateMenuList(x,y,sx,sy,data,relative,parent)
 	assert(type(y) == "number","Bad argument @dgsCreateMenuList at argument 2, expect number got "..type(y))
 	assert(type(sx) == "number","Bad argument @dgsCreateMenuList at argument 3, expect number got "..type(sx))
 	assert(type(sy) == "number","Bad argument @dgsCreateMenuList at argument 4, expect number got "..type(sy))
-	if isElement(parent) then
-		assert(dgsIsDxElement(parent),"Bad argument @dgsCreateMenuList at argument 6, expect dgs-dxgui got "..dgsGetType(parent))
-	end
 	local menulist = createElement("dgs-dxmenulist")
-	local _ = dgsIsDxElement(parent) and dgsSetParent(menulist,parent,true,true) or table.insert(CenterFatherTable,menulist)
+	dgsSetParent(menulist,parent,true,true)
 	dgsSetType(menulist,"dgs-dxmenulist")
 	calculateGuiPositionSize(menulist,x,y,relative,sx,sy,relative,true)
 	triggerEvent("onDgsCreate",menulist,sourceResource)

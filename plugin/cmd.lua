@@ -161,8 +161,9 @@ function outputCmdMessage(cmd,str)
 	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
 	dgsMemoAppendText(cmd,str.."\n",true)
 	local textTable = dgsElementData[cmd].text
-	dgsMemoSetCaretPosition(cmd,textTable[#textTable][-1])
-	dgsMemoSetVerticalScrollPosition(cmd,100)
+	local toLine = #textTable
+	local toIndex = utf8.len(textTable[toLine][0])
+	dgsMemoSetCaretPosition(cmd,toIndex,toLine)
 end
 
 function receiveCmdEditInput(cmd,str)

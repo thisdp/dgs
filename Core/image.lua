@@ -28,6 +28,7 @@ function dgsCreateImage(x,y,w,h,img,relative,parent,color)
 		UVPos = {},
 	})
 	dgsSetType(image,"dgs-dximage")
+	dgsSetParent(image,parent,true,true)
 	local texture = img
 	if img and type(img) == "string" then
 		texture,textureExists = dgsImageCreateTextureExternal(image,sourceResource,texture)
@@ -37,7 +38,6 @@ function dgsCreateImage(x,y,w,h,img,relative,parent,color)
 	dgsSetData(image,"color",color or 0xFFFFFFFF)
 	dgsSetData(image,"rotationCenter",{0,0}) --0~1
 	dgsSetData(image,"rotation",0) --0~360
-	local _ = dgsIsDxElement(parent) and dgsSetParent(image,parent,true,true) or tableInsert(CenterFatherTable,image)
 	calculateGuiPositionSize(image,__x,__y,relative or false,__w,__h,relative or false,true)
 	triggerEvent("onDgsCreate",image,sourceResource)
 	return image
