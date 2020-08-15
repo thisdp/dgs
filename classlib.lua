@@ -909,14 +909,14 @@ class {
 		return call(dgsOOP.dgsRes,"dgsCreateSelector",x,y,w,h,rlt,parent.dgsElement,...)
 	end;
 	public = {
-		--[[setColor = dgsOOP.genOOPFnc("dgsLabelSetColor",true),
-		getColor = dgsOOP.genOOPFnc("dgsLabelGetColor"),
-		setHorizontalAlign = dgsOOP.genOOPFnc("dgsLabelSetHorizontalAlign",true),
-		getHorizontalAlign = dgsOOP.genOOPFnc("dgsLabelGetHorizontalAlign"),
-		setVerticalAlign = dgsOOP.genOOPFnc("dgsLabelSetVerticalAlign",true),
-		getVerticalAlign = dgsOOP.genOOPFnc("dgsLabelGetVerticalAlign"),
-		getTextExtent = dgsOOP.genOOPFnc("dgsLabelGetTextExtent"),
-		getFontHeight = dgsOOP.genOOPFnc("dgsLabelGetFontHeight"),]]
+		addItem = dgsOOP.genOOPFnc("dgsSelectorAddItem"),
+		removeItem = dgsOOP.genOOPFnc("dgsSelectorRemoveItem",true),
+		setSelectedItem = dgsOOP.genOOPFnc("dgsSelectorSetSelectedItem",true),
+		getSelectedItem = dgsOOP.genOOPFnc("dgsSelectorGetSelectedItem"),
+		setItemText = dgsOOP.genOOPFnc("dgsSelectorSetItemText",true),
+		getItemText = dgsOOP.genOOPFnc("dgsSelectorGetItemText"),
+		setItemData = dgsOOP.genOOPFnc("dgsSelectorSetItemData",true),
+		getItemData = dgsOOP.genOOPFnc("dgsSelectorGetItemData"),
 	};
 }
 
