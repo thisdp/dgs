@@ -363,14 +363,17 @@ function dgsSetData(element,key,value,nocheck)
 						if not dgsElementData[element].locked then
 							if oldValue and oldValue ~= value then
 								local grades = dgsElementData[element].grades
+								local scaler = dgsElementData[element].map
+								local nValue,oValue = value/100*(scaler[2]-scaler[1])+scaler[1],oValue/100*(scaler[2]-scaler[1])+scaler[1]
 								if grades then
-									local currentGrade = math.floor(value/100*grades+0.5)
-									dgsSetData(element,"currentGrade",currentGrade)
-									dgsElementData[element][key] = currentGrade/grades*100
-									triggerEvent("onDgsElementScroll",element,element,dgsElementData[element][key],oldValue)
+									nValue,oValue = math.floor(nValue/100*grades+0.5),math.floor(oValue/100*grades+0.5)
+									dgsSetData(element,"currentGrade",nValue)
+									nValue = currentGrade/grades*100
+									dgsElementData[element][key] = nValue/grades*100
 								else
-									triggerEvent("onDgsElementScroll",element,element,value,oldValue)
+									dgsElementData[element][key] = nValue
 								end
+								triggerEvent("onDgsElementScroll",element,element,dgsElementData[element][key],oldValue,nValue,oValue)
 							end
 						else
 							dgsElementData[element][key] = oldValue

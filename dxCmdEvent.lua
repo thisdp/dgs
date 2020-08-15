@@ -78,9 +78,6 @@ function dgsBuildInCMD(command)
 				dgsCmdAddEventToWhiteList(cmdSystem["cmd"],{"changeMode"})
 				local version = getElementData(resourceRoot,"Version") or "N/A"
 				outputCmdMessage(cmdSystem["cmd"],"( Thisdp's Dx Graphical User Interface System ) Version: "..version)
-				if command == "cmd" then
-					outputCmdMessage(cmdSystem["cmd"],"[Warnning]Command 'cmd' is deprecated, use 'dgscmd' instead")
-				end
 			end,310,1,command)
 			dgsShowCursor(true,"cmd")
 		end,310,1,command)
@@ -100,7 +97,6 @@ function dgsBuildInCMD(command)
 		end,500,1)
 	end
 end
-addCommandHandler("cmd",dgsBuildInCMD)
 addCommandHandler("dgscmd",dgsBuildInCMD)
 
 addEventHandler("onDgsWindowClose",resourceRoot,function()
