@@ -92,6 +92,7 @@ function dgsGetDxGUIFromResource(res)
 end
 
 function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
+	if parent == resourceRoot then parent = nil end
 	assert(dgsIsDxElement(child),"Bad argument @dgsSetParent at argument 1, expect a dgs-element element got "..dgsGetType(child))
 	assert(not dgsElementData[child] or not dgsElementData[child].attachTo, "Bad argument @dgsSetParent at argument 1, attached dgs element can not have a parent")
 	local _parent = FatherTable[child]
