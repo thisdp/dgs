@@ -584,6 +584,78 @@ function checkPixelShaderVersion()
 end
 checkPixelShaderVersion()
 
+--Render Target Assigner
+--[[
+RTState:
+	state:
+		-1: Use Built-in RT
+		0: None
+		1: Assigning RT
+		2: Assigned RT
+
+Assign Priority:
+	If queue items have same priority, smaller first
+	If queue items have different priority, high priority first
+	Priority is determinated by how many children.
+	If RT has already been created but priority is low, delete.
+]]
+--[[
+rtAssignQueue = {}
+rtUsing = {}
+
+function dgsPushRTAssignQueue(element,w,h,priority)
+	local RTState = dgsElementData[element].RTState or {state=0,RT=nil}
+	if RTState.state == 0 then
+		RTState.state = 1
+		table.insert(rtAssignQueue,{element,w,h,w*h,priority})
+	end
+	dgsElementData[element].RTState = RTState
+end
+
+function dgsGetTotalVideoMemoryForMTA()
+	local dxStatus = dxGetStatus()
+	return dxStatus.VideoMemoryFreeForMTA+dxStatus.VideoMemoryUsedByFonts+dxStatus.VideoMemoryUsedByTextures+dxStatus.VideoMemoryUsedByRenderTargets
+end
+
+function dgsAssignRT(index)
+	local element,w,h,size,priority = rtAssignQueue[index][1]
+	local RTState = dgsElementData[element].RTState or {state=0,RT=nil,priority=priority}
+	local vmRemain = dxGetStatus().VideoMemoryFreeForMTA
+	if size < vmRemain then
+		if RTState.state == 1 then
+			local rt = dxCreateRenderTarget(w,h,true)
+			table.remove(rtAssignQueue,index)
+			if not rt then
+				outputDebugString("[DGS]Failed to create render target (Expected:"..size.."MB/"..vmRemain.."MB)")
+				RTState.state = 0
+				return false
+			end
+			RTState.state = 2
+			RTState.RT = rt
+			rtUsing[element] = {element,rt,w,h}
+			return true
+		end
+	end
+	return false
+end
+
+function dgsRemoveRT(element)
+	local RTState = dgsElementData[element].RTState or {state=0,RT=nil}
+	if RTState.state == 1 then
+		table.remove(rtAssignQueue,index)
+	else
+		if isElement(RTState.RT) then
+			destroyElement(RTState.RT)
+		end
+		RTState.RT = nil
+	end
+	RTState.state = 0
+end
+
+function dgsGetRTAssignState(element)
+	local RTState = dgsElementData[element].RTState or {state=0,RT=nil}
+	return RTState.state
+end]]
 --------------------------------Events
 events = {
 	"onDgsMouseLeave",

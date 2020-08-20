@@ -838,23 +838,21 @@ end
 
 KeyHolder = {}
 function onClientKeyCheck(button,state)
-	if state then
-		if button:sub(1,5) ~= "mouse" then
-			if isTimer(KeyHolder.Timer) then killTimer(KeyHolder.Timer) end
-			KeyHolder = {}
-			KeyHolder.lastKey = button
-			KeyHolder.Timer = setTimer(function()
-				if not getKeyState(KeyHolder.lastKey) then
-					KeyHolder = {}
-					return
-				end
-				KeyHolder.repeatKey = true
-				KeyHolder.repeatStartTick = getTickCount()
-				KeyHolder.repeatDuration = 25
-			end,400,1)
-			if onClientKeyTriggered(button) then
-				cancelEvent()
+	if state and button:sub(1,5) ~= "mouse" then
+		if isTimer(KeyHolder.Timer) then killTimer(KeyHolder.Timer) end
+		KeyHolder = {}
+		KeyHolder.lastKey = button
+		KeyHolder.Timer = setTimer(function()
+			if not getKeyState(KeyHolder.lastKey) then
+				KeyHolder = {}
+				return
 			end
+			KeyHolder.repeatKey = true
+			KeyHolder.repeatStartTick = getTickCount()
+			KeyHolder.repeatDuration = 25
+		end,400,1)
+		if onClientKeyTriggered(button) then
+			cancelEvent()
 		end
 	end
 end
@@ -1336,18 +1334,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local pos = dgsElementData[guiele].position
 					local length,lrlt = dgsElementData[guiele].length[1],dgsElementData[guiele].length[2]
 					local slotRange
-					local arrowPos = 0
 					local arrowWid = dgsElementData[guiele].arrowWidth
 					if isHorizontal then
-						if scrollArrow then
-							arrowPos = arrowWid[2] and h*arrowWid[1] or arrowWid[1]
-						end
-						slotRange = w-arrowPos*2
+						slotRange = w-(scrollArrow and (arrowWid[2] and h*arrowWid[1] or arrowWid[1])*2 or 0)
 					else
-						if scrollArrow then
-							arrowPos = arrowWid[2] and w*arrowWid[1] or arrowWid[1]
-						end
-						slotRange = h-arrowPos*2
+						slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1])*2 or 0)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
 					local py = pos*0.01*(slotRange-cursorRange)
