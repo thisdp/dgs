@@ -346,7 +346,6 @@ function dgsSetData(dgsEle,key,value,nocheck)
 						nValue,oValue = nValue/100*grades+0.5,oValue/100*grades+0.5
 						nValue,oValue = nValue-nValue%1,oValue-oValue%1
 						dgsSetData(dgsEle,"currentGrade",nValue)
-						nValue = currentGrade/grades*100
 						dgsElementData[dgsEle][key] = nValue/grades*100
 					else
 						dgsElementData[dgsEle][key] = nValue
