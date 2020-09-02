@@ -341,7 +341,8 @@ function dgsSetData(dgsEle,key,value,nocheck)
 				if not dgsElementData[dgsEle].locked then
 					local grades = dgsElementData[dgsEle].grades
 					local scaler = dgsElementData[dgsEle].map
-					local nValue,oValue = value/100*(scaler[2]-scaler[1])+scaler[1],oldValue/100*(scaler[2]-scaler[1])+scaler[1]
+					--local nValue,oValue = value/100*(scaler[2]-scaler[1])+scaler[1],oldValue/100*(scaler[2]-scaler[1])+scaler[1]
+					local nValue,oValue = value,oldValue
 					if grades then
 						nValue,oValue = nValue/100*grades+0.5,oValue/100*grades+0.5
 						nValue,oValue = nValue-nValue%1,oValue-oValue%1
