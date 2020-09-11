@@ -198,7 +198,7 @@
 		padding = {2,2},
 		caretStyle = 0,
 		caretThick = 1.2,
-		caretOffset = 3,
+		caretOffset = 0,
 		caretHeight = 1,
 		typingSound = nil,
 		placeHolder = "",

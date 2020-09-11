@@ -1008,7 +1008,8 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 				selStartX = selStartX-selStartX%1
 				if caretStyle == 0 then
 					if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
-						local selStartY = h/2-h/2*caretHeight+sideheight
+						local offset = eleData.caretOffset
+						local selStartY = h/2-h/2*caretHeight+sideheight-offset
 						local selEndY = (h/2-selStartY)*2
 						dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,isPostGUI)
 					end

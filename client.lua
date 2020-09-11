@@ -280,10 +280,11 @@ function dgsCoreRender()
 			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+99,25+parentIndex*15)
 		end
 		local version = getElementData(resourceRoot,"Version") or "?"
+		local freeMemory = " | Free VMemory: "..(dxGetStatus().VideoMemoryFreeForMTA).." MB" or "N/A"
 		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-129,sW,sH,black)
 		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-130)
-		dxDrawText("Version: "..version,6,sH*0.4-114,sW,sH,black)
-		dxDrawText("Version: "..version,5,sH*0.4-115)
+		dxDrawText("Version: "..version..freeMemory,6,sH*0.4-114,sW,sH,black)
+		dxDrawText("Version: "..version..freeMemory,5,sH*0.4-115)
 		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-99,sW,sH,black)
 		local tickColor
 		if ticks <= 8 then
