@@ -71,8 +71,6 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
 	local leftX,leftY,leftZ = topY*vz-vy*topZ,topZ*vx-vz*topX,topX*vy-vx*topY --Left Point
 	local leftModel = (leftX^2+leftY^2+leftZ^2)^0.5
 	local leftX,leftY,leftZ = leftX/leftModel*w,leftY/leftModel*w,leftZ/leftModel*w
-	local r,g,b = fromcolor(color)
-	color = tocolor(r,g,b)
 	local rightBottom = {leftX+topX+x,leftY+topY+y,leftZ+topZ+z,color,0,1}
 	local rightTop = {leftX-topX+x,leftY-topY+y,leftZ-topZ+z,color,0,0}
 	local leftBottom = {-leftX+topX+x,-leftY+topY+y,-leftZ+topZ+z,color,1,1}
