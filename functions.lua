@@ -92,6 +92,7 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 				addPosY = pSize[2]-addPosY
 			end
 		end
+		local _tmp = dgsElement
 		if dgsElementType[dgsElement] == "dgs-dxtab" then
 			dgsElement = eleData.parent
 			eleData = dgsElementData[dgsElement]
@@ -118,7 +119,9 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 		else
 			x,y = x+addPosX,y+addPosY
 		end
-		assert(startEle ~= dgsElement,"Find an infinite loop")
+		if startEle == dgsElement then
+			return _,_,startEle,_tmp
+		end
 	until(not isElement(dgsElement) or (rndSuspend and dgsElementData[dgsElement].renderTarget_parent))
 	return x,y
 end
@@ -130,7 +133,8 @@ function dgsGetPosition(dgsElement,bool,includeParent,rndSuspend,includeSide)
 	end
 	if includeParent then
 		local absPos = dgsElementData[dgsElement].absPos or {0,0}
-		guielex,guieley = getParentLocation(dgsElement,rndSuspend,absPos[1],absPos[2],includeSide)
+		guielex,guieley,startElement,brokenElement = getParentLocation(dgsElement,rndSuspend,absPos[1],absPos[2],includeSide)
+		assert(not brokenElement,"Bad argument @dgsGetPosition, Found an infinite loop under "..tostring(brokenElement).."("..dgsGetType(brokenElement).."), start from element "..tostring(startElement).."("..dgsGetType(startElement)..")")
 		if relative then
 			return guielex/sW,guieley/sH
 		else
