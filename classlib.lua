@@ -456,7 +456,7 @@ class {
 		isAlphaing = dgsOOP.genOOPFnc("dgsIsAlphaing"),
 		stopAlphaing = dgsOOP.genOOPFnc("dgsStopAlphaing",true),
 		getPostGUI = dgsOOP.genOOPFnc("dgsGetPostGUI"),
-		setPostGUI = dgsOOP.genOOPFnc("dgsGetPostGUI",true),
+		setPostGUI = dgsOOP.genOOPFnc("dgsSetPostGUI",true),
 		detachFromGridList = dgsOOP.genOOPFnc("dgsDetachFromGridList",true),
 		getAttachedGridList = dgsOOP.genOOPFnc("dgsGetAttachedGridList",true),
 		attachToGridList = dgsOOP.genOOPFnc("dgsAttachToGridList",true),
