@@ -169,93 +169,86 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
-	if x and y then
-		local itemData = eleData.itemData
-		local itemCount = #itemData
-		local selector = eleData.selectorText
-		local alignment = eleData.alignment
-		local font = eleData.font
-		local colorcoded = eleData.colorcoded
-		local defaultText = eleData.defaultText
-		local itemTextColorDef = eleData.itemTextColor
-		local selectorSize = eleData.selectorSize
-		local selectorTextColor = eleData.selectorTextColor
-		local itemTextSizeDef = eleData.itemTextSize
-		local selectorTextSize = eleData.selectorTextSize
-		local selectorSizeX,selectorSizeY
-		if selectorSize[1] then
-			selectorSizeX = selectorSize[1]*(selectorSize[3] and w or 1)
-		end
-		if selectorSize[2] then
-			selectorSizeY = selectorSize[2]*(selectorSize[3] and h or 1)
-		end
-		selectorSizeX,selectorSizeY = selectorSizeX or selectorSizeY,selectorSizeY or selectorSizeX
-		local selectorStartY = y+(h-selectorSizeY)/2
-		local selectorEndY = selectorStartY+selectorSizeY
-
-		local preEnterData = false
-		local selectorTextColors = {1,1,1}
-		if MouseData.enter == source then
-			if my >= selectorStartY and my <= selectorEndY then
-				if mx >= cx and mx <= cx+selectorSizeX then				--Left Arrow
-					preEnterData = 1
-				elseif mx >= cx+w-selectorSizeX and mx <= cx+w then		--Right Arrow
-					preEnterData = 3
-				else
-					preEnterData = 2
-				end
-			end
-			if not MouseData.selectorClickData then
-				MouseData.selectorEnterData = preEnterData
-				if MouseData.selectorEnterData then
-					selectorTextColors[preEnterData] = 2
-				end
-			else
-				if MouseData.clickl == source then
-					selectorTextColors[MouseData.selectorClickData] = 3
-				else
-					selectorTextColors[MouseData.selectorClickData] = 2
-				end
-			end
-		end
-		local selectorTextColorLeft = selectorTextColor[selectorTextColors[1]]
-		local selectorTextColorRight = selectorTextColor[selectorTextColors[3]]
-
-		local selectorImageLeft = eleData.selectorImageLeft[selectorTextColors[1]]
-		local selectorImageRight = eleData.selectorImageRight[selectorTextColors[3]]
-		local selectorImageColorLeft = eleData.selectorImageColorLeft[selectorTextColors[1]]
-		local selectorImageColorRight = eleData.selectorImageColorRight[selectorTextColors[3]]
-
-		if selectorImageColorLeft then
-			if selectorImageLeft then
-				dxDrawImage(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageLeft,0,0,0,selectorImageColorLeft,isPostGUI)
-			else
-				dxDrawRectangle(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorLeft,isPostGUI)
-			end
-		end
-		if selectorImageColorRight then
-			if selectorImageRight then
-				dxDrawImage(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageRight,0,0,0,selectorImageColorRight,isPostGUI)
-			else
-				dxDrawRectangle(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorRight,isPostGUI)
-			end
-		end
-		local renderItem = itemData[eleData.selectedItem]
-		if eleData.selectedItem ~= -1 and renderItem then
-			local itemTextColor = type(renderItem[3]) == "table" and renderItem[3][selectorTextColors[2]] or renderItem[3]
-			dxDrawText(renderItem[1],x+selectorSizeX,y,x+w-selectorSizeX,y+h,itemTextColor,renderItem[5],renderItem[6],renderItem[7],renderItem[2][1],renderItem[2][2],false,false,isPostGUI,renderItem[4])
-		else
-			local itemTextColor = type(itemTextColorDef) == "table" and itemTextColorDef[selectorTextColors[2]] or itemTextColorDef
-			dxDrawText(defaultText,x+selectorSizeX,y,x+w-selectorSizeX,y+h,itemTextColor,itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-		end
-		dxDrawText(selector[1],x,selectorStartY,x+selectorSizeX,selectorEndY,selectorTextColorLeft,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-		dxDrawText(selector[2],x+w-selectorSizeX,selectorStartY,x+w,selectorEndY,selectorTextColorRight,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-		if enabled[1] and mx then
-			if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-				MouseData.hit = source
-			end
-		end
-	else
-		visible = false
+	local itemData = eleData.itemData
+	local itemCount = #itemData
+	local selector = eleData.selectorText
+	local alignment = eleData.alignment
+	local font = eleData.font
+	local colorcoded = eleData.colorcoded
+	local defaultText = eleData.defaultText
+	local itemTextColorDef = eleData.itemTextColor
+	local selectorSize = eleData.selectorSize
+	local selectorTextColor = eleData.selectorTextColor
+	local itemTextSizeDef = eleData.itemTextSize
+	local selectorTextSize = eleData.selectorTextSize
+	local selectorSizeX,selectorSizeY
+	if selectorSize[1] then
+		selectorSizeX = selectorSize[1]*(selectorSize[3] and w or 1)
 	end
+	if selectorSize[2] then
+		selectorSizeY = selectorSize[2]*(selectorSize[3] and h or 1)
+	end
+	selectorSizeX,selectorSizeY = selectorSizeX or selectorSizeY,selectorSizeY or selectorSizeX
+	local selectorStartY = y+(h-selectorSizeY)/2
+	local selectorEndY = selectorStartY+selectorSizeY
+
+	local preEnterData = false
+	local selectorTextColors = {1,1,1}
+	if MouseData.enter == source then
+		if my >= selectorStartY and my <= selectorEndY then
+			if mx >= cx and mx <= cx+selectorSizeX then				--Left Arrow
+				preEnterData = 1
+			elseif mx >= cx+w-selectorSizeX and mx <= cx+w then		--Right Arrow
+				preEnterData = 3
+			else
+				preEnterData = 2
+			end
+		end
+		if not MouseData.selectorClickData then
+			MouseData.selectorEnterData = preEnterData
+			if MouseData.selectorEnterData then
+				selectorTextColors[preEnterData] = 2
+			end
+		else
+			if MouseData.clickl == source then
+				selectorTextColors[MouseData.selectorClickData] = 3
+			else
+				selectorTextColors[MouseData.selectorClickData] = 2
+			end
+		end
+	end
+	local selectorTextColorLeft = selectorTextColor[selectorTextColors[1]]
+	local selectorTextColorRight = selectorTextColor[selectorTextColors[3]]
+
+	local selectorImageLeft = eleData.selectorImageLeft[selectorTextColors[1]]
+	local selectorImageRight = eleData.selectorImageRight[selectorTextColors[3]]
+	local selectorImageColorLeft = eleData.selectorImageColorLeft[selectorTextColors[1]]
+	local selectorImageColorRight = eleData.selectorImageColorRight[selectorTextColors[3]]
+
+	if selectorImageColorLeft then
+		if selectorImageLeft then
+			dxDrawImage(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageLeft,0,0,0,selectorImageColorLeft,isPostGUI)
+		else
+			dxDrawRectangle(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorLeft,isPostGUI)
+		end
+	end
+	if selectorImageColorRight then
+		if selectorImageRight then
+			dxDrawImage(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageRight,0,0,0,selectorImageColorRight,isPostGUI)
+		else
+			dxDrawRectangle(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorRight,isPostGUI)
+		end
+	end
+	local renderItem = itemData[eleData.selectedItem]
+	if eleData.selectedItem ~= -1 and renderItem then
+		local itemTextColor = type(renderItem[3]) == "table" and renderItem[3][selectorTextColors[2]] or renderItem[3]
+		dxDrawText(renderItem[1],x+selectorSizeX,y,x+w-selectorSizeX,y+h,itemTextColor,renderItem[5],renderItem[6],renderItem[7],renderItem[2][1],renderItem[2][2],false,false,isPostGUI,renderItem[4])
+	else
+		local itemTextColor = type(itemTextColorDef) == "table" and itemTextColorDef[selectorTextColors[2]] or itemTextColorDef
+		dxDrawText(defaultText,x+selectorSizeX,y,x+w-selectorSizeX,y+h,itemTextColor,itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+	end
+	dxDrawText(selector[1],x,selectorStartY,x+selectorSizeX,selectorEndY,selectorTextColorLeft,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+	dxDrawText(selector[2],x+w-selectorSizeX,selectorStartY,x+w,selectorEndY,selectorTextColorRight,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+
+	return rndtgt
 end

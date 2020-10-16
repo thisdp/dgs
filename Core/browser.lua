@@ -43,10 +43,5 @@ end
 dgsRenderer["dgs-dxbrowser"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
 	local color = applyColorAlpha(eleData.color,parentAlpha)
 	dxDrawImage(x,y,w,h,source,0,0,0,color,isPostGUI)
-	if enabled[1] and mx then
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-			MouseData.hit = source
-		end
-	end
 	return rndtgt
 end

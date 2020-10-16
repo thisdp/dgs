@@ -60,6 +60,7 @@ function createFullDemo()
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
+	
 end
 
 function testButtonDisable()
@@ -288,8 +289,8 @@ function gridlistTest()
     dgsSetProperty(gridlist,"clip",false)
     --dgsSetProperty(gridlist,"leading",10)
     --dgsSetProperty(gridlist,"mode",true)
-    dgsGridListAddColumn(gridlist,"test1",0.2)
-    dgsGridListAddColumn(gridlist,"test2",0.1)
+    dgsGridListAddColumn(gridlist,"test1",0.4)
+    dgsGridListAddColumn(gridlist,"test2",0.8)
     local tick = getTickCount()
     bg = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
     dgsSetProperty(gridlist,"rowHeight",200)

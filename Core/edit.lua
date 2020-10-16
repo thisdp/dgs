@@ -1027,10 +1027,5 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 			end
 		end
 	end
-	if enabled[1] and mx then
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-			MouseData.hit = source
-		end
-	end
 	return rndtgt
 end

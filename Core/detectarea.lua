@@ -13,19 +13,26 @@ local dxSetBlendMode = dxSetBlendMode
 --
 detectAreaBuiltIn = {}
 function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
-	assert(type(x) == "number","Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy))
-	local detectarea = createElement("dgs-dxdetectarea")
-	dgsSetType(detectarea,"dgs-dxdetectarea")
-	dgsSetParent(detectarea,parent,true,true)
-	dgsSetData(detectarea,"renderBuffer",{})
-	dgsSetData(detectarea,"debugMode",false)
-	calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
-	triggerEvent("onDgsCreate",detectarea,sourceResource)
-	dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
-	return detectarea
+	if not x then
+		local detectarea = createElement("dgs-dxdetectarea")
+		triggerEvent("onDgsCreate",detectarea,sourceResource)
+		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
+		return detectarea
+	else
+		assert(type(x) == "number","Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
+		assert(type(y) == "number","Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
+		assert(type(sx) == "number","Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx))
+		assert(type(sy) == "number","Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy))
+		local detectarea = createElement("dgs-dxdetectarea")
+		dgsSetType(detectarea,"dgs-dxdetectarea")
+		dgsSetParent(detectarea,parent,true,true)
+		dgsSetData(detectarea,"renderBuffer",{})
+		dgsSetData(detectarea,"debugMode",false)
+		calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
+		triggerEvent("onDgsCreate",detectarea,sourceResource)
+		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
+		return detectarea
+	end
 end
 
 detectAreaPreDefine = [[
@@ -105,6 +112,16 @@ function dgsDetectAreaUpdateDebugView(detectarea)
 		dxSetTexturePixels(dgsElementData[detectarea].debugTexture,checkFunction)
 	end
 	return true
+end
+
+function dgsDetectAreaAttachToElement(da,ele)
+	local fnc = function(source,mx,my,collideBox)
+		local x,y,w,h = collideBox[1],collideBox[2],collideBox[3],collideBox[4]
+		if mx >= x and mx <= x+w and my >= y and my <= y+h then
+			return source
+		end
+	end
+	dgsSetData(ele,"dgsCollider",fnc)
 end
 
 ----------------------------------------------------------------

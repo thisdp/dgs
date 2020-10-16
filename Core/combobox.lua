@@ -599,15 +599,10 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		end
 		dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI,colorcoded)
 	end
-	if enabled[1] and mx then
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-			MouseData.hit = source
-		end
-	end
 	return rndtgt
 end
 
-dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
 	local combo = eleData.myCombo
 	local DataTab = dgsElementData[combo]
 	local itemData = DataTab.itemData
@@ -676,15 +671,6 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 		dxSetBlendMode("add")
 		dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-	end
-	if enabled[1] and mx then
-		local height = itemDataCount*itemHeight
-		if height > h then
-			height = h
-		end
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+height then
-			MouseData.hit = source
-		end
 	end
 	return rndtgt
 end

@@ -425,17 +425,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 	dxSetRenderTarget(newRndTgt,true)
 	rndtgt = newRndTgt
 	dxSetRenderTarget(rndtgt)
-	if enabled[1] and mx then
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-			MouseData.scrollPane = source
-			MouseData.hit = source
-			if mx >= cx+relSizX and my >= cy+relSizY and scbstate[1] and scbstate[2] then
-				enabled[1] = false
-			end
-		else
-			MouseData.scrollPane = false
-			enabled[1] = false
-		end
+	if MouseData.hit == source then
+		MouseData.scrollPane = source
 	end
 	return rndtgt,_,_,_,OffsetX,OffsetY
 end

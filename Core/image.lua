@@ -152,10 +152,5 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData
 	else
 		dxDrawRectangle(x,y,w,h,colors,isPostGUI)
 	end
-	if enabled[1] and mx then
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-			MouseData.hit = source
-		end
-	end
 	return rndtgt
 end

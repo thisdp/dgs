@@ -242,11 +242,6 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local height = eleData["tabHeight"][2] and eleData["tabHeight"][1]*h or eleData["tabHeight"][1]
 	local bgColor = eleData.bgColor
 	local font = eleData.font or systemFont
-	if enabled[1] and mx then
-		if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-			MouseData.hit = source
-		end
-	end
 	if selected == -1 then
 		dxDrawRectangle(x,y+height,w,h-height,eleData.bgColor,isPostGUI)
 	else

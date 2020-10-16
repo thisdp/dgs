@@ -1552,10 +1552,5 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 			end
 		end
 	end
-	if enabled[1] and mx then
-		if mx >= cx-2 and mx<= cx+w-1 and my >= cy-2 and my <= cy+h-1 then
-			MouseData.hit = source
-		end
-	end
 	return rndtgt
 end

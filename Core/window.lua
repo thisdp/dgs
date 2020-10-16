@@ -203,10 +203,5 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 		end
 	end
 	dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,eleData.colorcoded)
-	if enabled[1] and mx and mx then
-		if mx >= x and mx<= x+w and my >= y and my <= y+h then
-			MouseData.hit = source
-		end
-	end
 	return rndtgt
 end

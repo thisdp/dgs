@@ -99,6 +99,19 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 			local h = eleData.absSize[2]
 			local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
 			x,y = x+eleData.absPos[1],y+eleData.absPos[2]+tabHeight
+		elseif eleData.attachedToGridList then
+			local data = eleData.attachedToGridList	--GridList,Row,Column
+			local gridList = data[1]	--Grid List
+			local gridListEleData = dgsElementData[gridList]
+			local scbThickV = dgsElementData[ gridListEleData.scrollbars[1] ].visible and gridListEleData.scrollBarThick or 0
+			local columnData = gridListEleData.columnData
+			local rowData = gridListEleData.rowData
+			local columnOffset = rowData[data[2]][-4] or gridListEleData.columnOffset
+			local columnMoveOffset = gridListEleData.columnMoveOffset
+			local rowHeight = gridListEleData.rowHeight
+			local leading = gridListEleData.leading
+			local w = gridListEleData.absSize[1]
+			x,y = x+columnMoveOffset+gridListEleData.columnOffset+columnOffset+columnData[data[3]][3]*(gridListEleData.columnRelative and (w-scbThickV) or 1), y+gridListEleData.rowMoveOffset+(data[2]-1)*(leading+rowHeight)+gridListEleData.columnHeight
 		end
 		dgsElement = FatherTable[dgsElement]
 		if dgsElementType[dgsElement] == "dgs-dxwindow" then
@@ -116,6 +129,7 @@ function getParentLocation(dgsElement,rndSuspend,x,y,includeSide)
 			local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
 			maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 			x,y = x+addPosX-maxX*dgsElementData[scrollbar[2]].position*0.01,y+addPosY-maxY*dgsElementData[scrollbar[1]].position*0.01
+
 		else
 			x,y = x+addPosX,y+addPosY
 		end

@@ -53,6 +53,31 @@ dgsRenderSetting = {
 	renderPriority = "normal",
 }
 dgsRenderer = {}
+dgsCollider = {
+	default = function(source,mx,my,collideBox)
+		local x,y,w,h = collideBox[1],collideBox[2],collideBox[3],collideBox[4]
+		if mx >= x and mx <= x+w and my >= y and my <= y+h then
+			return source
+		end
+	end,
+	["dgs-dxcombobox-Box"] = function(source,mx,my,collideBox)
+		local eleData = dgsElementData[source]
+		local combo = eleData.myCombo
+		local DataTab = dgsElementData[combo]
+		local itemData = DataTab.itemData
+		local itemDataCount = #itemData
+		local itemHeight = DataTab.itemHeight
+		local height = itemDataCount*itemHeight
+		collideBox[4] = height > collideBox[4] and collideBox[4] or height
+		local x,y,w,h = collideBox[1],collideBox[2],collideBox[3],collideBox[4]
+		if mx >= x and mx <= x+w and my >= y and my <= y+h then
+			return source
+		end
+	end,
+}
+for i=1,#dgsType do
+	dgsCollider[dgsType[i]] = dgsCollider[dgsType[i]] or dgsCollider.default
+end
 
 function dgsGetRenderSetting(name) return dgsRenderSetting[name] end
 
@@ -440,9 +465,23 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 			------------------------------------Main Renderer
 			local _mx,_my,rt,noRender
 			if dgsRenderer[eleType] then
-				--local usingBlurBox =
+				local _hitElement
+				local collideBox = {cx,cy,w,h}
+				if enabled[1] and mx then
+					MouseData.hit = (eleData.dgsCollider or dgsCollider[eleType])(source,mx,my,collideBox) or MouseData.hit
+					if eleType == "dgs-dxgridlist" then
+						_hitElement = MouseData.hit
+					end
+				end
 				rt,noRender,_mx,_my,offx,offy = dgsRenderer[eleType](source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
 				if MouseData.hit then
+					if _hitElement and _hitElement ~= MouseData.hit then
+						local scbThickV = dgsElementData[ eleData.scrollbars[1] ].visible and eleData.scrollBarThick or 0
+						local scbThickH = dgsElementData[ eleData.scrollbars[2] ].visible and eleData.scrollBarThick or 0
+						if mx > cx+w-scbThickH or my > cy+h-scbThickV then
+							MouseData.hit = source
+						end
+					end
 					MouseData.WithinElements[MouseData.hit] = true
 				end
 				if debugMode then

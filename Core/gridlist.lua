@@ -2113,12 +2113,5 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-	if enabled then
-		if beforeHit == MouseData.hit then
-			if mx >= cx and mx<= cx+w and my >= cy and my <= cy+h then
-				MouseData.hit = source
-			end
-		end
-	end
 	return rndtgt
 end
