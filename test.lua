@@ -92,7 +92,7 @@ end
 
 function createTestMemo()
 	local sW,sH = dgsGetScreenSize()
-	local memo = dgsCreateMemo(500,200,200,300,[[This is a dgs-dxmemo
+	local memo = dgsCreateMemo(10,10,200,300,[[This is a dgs-dxmemo
 
 	Thisdp's
 	DirectX
@@ -123,9 +123,9 @@ function createTestMemo()
 	--dgsMemoSetReadOnly(memo,true)
 	dgsSetFont(memo,"default-bold")
 	dgsSetProperty(memo,"selectVisible",false)
-	dgsMemoSetWordWrapState(memo,true)
+	dgsMemoSetWordWrapState(memo,false)
 end
-
+ createTestMemo()
 function editTest() --Test Tab Switch for edit.
 	edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	setTimer(function()
@@ -266,24 +266,19 @@ function testBrowser()
 end
 
 function testPasteHandler()
-	local browser = dgsCreateBrowser(100,100,1400,700,false,_,true,true)
-	addEventHandler("onClientBrowserCreated",browser,function()
-		loadBrowserURL(source,"http://mta/local/html/pasteHandler.html")
-		setDevelopmentMode(true,true)
-		toggleBrowserDevTools(source,true)
-	end,false)
-	material = dgsCreate3DInterface(4,0,6,16,9,1600,900,tocolor(128,128,128,255),1,2,0,_,0)
-	addEvent("onDgsPaste",true)
-	addEventHandler("onDgsPaste",browser,function(data)
-		data = split(data,",")[2]
-		local file = fileCreate("temp")
-		fileWrite(file,base64Decode(data))
-		fileClose(file)
-		local texture = dxCreateTexture("temp")
-		dgsCreateImage(0,0,1,1,texture,true,material)
+	dgsEnablePasteHandler()
+	dgsFocusPasteHandler()
+	local image = false
+	addEventHandler("onDgsPaste",root,function(data,typ)
+		if isElement(image) then destroyElement(image) end
+		if typ == "file" then
+			image = dgsCreateImage(100,100,200,200,data,false)
+		else
+			print(data)
+		end
 	end)
 end
-
+testPasteHandler()
 function gridlistTest()
     gridlist = dgsCreateGridList(500,50,600,600,false)
     dgsSetProperty(gridlist,"clip",false)
