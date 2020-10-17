@@ -278,7 +278,7 @@ function testPasteHandler()
 		end
 	end)
 end
-testPasteHandler()
+
 function gridlistTest()
     gridlist = dgsCreateGridList(500,50,600,600,false)
     dgsSetProperty(gridlist,"clip",false)
