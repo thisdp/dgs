@@ -16,14 +16,14 @@
 				var item = e.clipboardData.items[i];
 				if (item.kind === "string") {
 					item.getAsString(function (str) {
-						console.log(str)
+						mta.triggerEvent("DGSI_Paste",str,"string")
 					})
 				} else if (item.kind === "file") {
 					var pasteFile = item.getAsFile()
 					var reader = new FileReader();
 					reader.readAsDataURL(pasteFile);
 					reader.onload = function(){
-						mta.triggerEvent("onDgsPaste",reader.result)
+						mta.triggerEvent("DGSI_Paste",reader.result,"file")
 					}
 				}
 			}

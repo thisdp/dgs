@@ -704,10 +704,12 @@ events = {
 	"onDgsStopAniming",
 	"onDgsMouseDrag",
 	"onDgsStart",
+	"onDgsPaste", --DGS Paste Handler
 	-------Plugin events
 	"onDgsRemoteImageLoad",
 	"onDgsQRCodeLoad",
 	-------internal events
+	"DGSI_Paste",
 	"DGSI_ReceiveIP",
 	"DGSI_SendAboutData",
 	"DGSI_ReceiveQRCode",
