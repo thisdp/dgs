@@ -60,7 +60,6 @@ function createFullDemo()
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
-	
 end
 
 function testButtonDisable()
@@ -125,7 +124,7 @@ function createTestMemo()
 	dgsSetProperty(memo,"selectVisible",false)
 	dgsMemoSetWordWrapState(memo,false)
 end
- createTestMemo()
+
 function editTest() --Test Tab Switch for edit.
 	edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	setTimer(function()
