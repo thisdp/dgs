@@ -13,6 +13,7 @@ local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
 local tableInsert = table.insert
+local tableRemove = table.remove
 --[[
 Selector Data Structure:
 {
@@ -93,11 +94,11 @@ function dgsSelectorAddItem(selector,text,pos)
 end
 
 function dgsSelectorRemoveItem(selector,item)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorAddItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	assert(type(item) == "number","Bad argument @dgsSelectorAddItem at argument 2, expect number got "..type(item))
+	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorRemoveItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
+	assert(type(item) == "number","Bad argument @dgsSelectorRemoveItem at argument 2, expect number got "..type(item))
 	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
-		tableRemove(itemData,pos)
+		tableRemove(itemData,item)
 		dgsElementData[selector].selectedItem = #itemData >= 1 and math.restrict(dgsElementData[selector].selectedItem,1,#itemData) or -1
 	end
 	return false
@@ -158,6 +159,7 @@ end
 function dgsSelectorGetItemData(selector,item,key)
 	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorGetItemData at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
 	assert(type(item) == "number","Bad argument @dgsSelectorGetItemData at argument 2, expect number got "..type(item))
+	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
 		itemData[item][9] = itemData[item][9] or {}
 		return itemData[item][9][key]
