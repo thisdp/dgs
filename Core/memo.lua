@@ -1108,7 +1108,6 @@ function checkMMScrollBar(source,new,old)
 			if isWordWrap then
 				local mapTable = dgsElementData[memo].wordWrapMapText
 				local temp = math.max(mathFloor((#mapTable-canHold)*new*0.01)+1,1)
-				print(temp,getTickCount())
 				local wordWrapShowLine = dgsElementData[memo].wordWrapShowLine
 				wordWrapShowLine[3] = temp
 				local startStrongLine
