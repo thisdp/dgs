@@ -1612,11 +1612,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		if button == "left" then
 			MouseData.clickl = false
 			MouseData.lock3DInterface = false
+			MouseData.MoveScroll = false
 		elseif button == "right" then
 			MouseData.clickr = false
 		end
 		MouseData.Move = false
-		MouseData.MoveScroll = false
 		MouseData.Scale = false
 		MouseData.scbClickData = nil
 		MouseData.selectorClickData = nil
