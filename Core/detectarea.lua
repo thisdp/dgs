@@ -15,8 +15,11 @@ detectAreaBuiltIn = {}
 function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	if not x then
 		local detectarea = createElement("dgs-dxdetectarea")
+		dgsSetType(detectarea,"dgs-dxdetectarea")
 		triggerEvent("onDgsCreate",detectarea,sourceResource)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
+		dgsSetData(detectarea,"debugTextureSize",{sW/2,sH/2})
+		dgsSetData(detectarea,"debugModeAlpha",128)
 		return detectarea
 	else
 		assert(type(x) == "number","Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
@@ -26,8 +29,8 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 		local detectarea = createElement("dgs-dxdetectarea")
 		dgsSetType(detectarea,"dgs-dxdetectarea")
 		dgsSetParent(detectarea,parent,true,true)
-		dgsSetData(detectarea,"renderBuffer",{})
 		dgsSetData(detectarea,"debugMode",false)
+		dgsSetData(detectarea,"debugModeAlpha",128)
 		calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
 		triggerEvent("onDgsCreate",detectarea,sourceResource)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
@@ -70,8 +73,10 @@ function dgsDetectAreaSetFunction(detectarea,fncStr)
 	return true
 end
 
-function dgsDetectAreaSetDebugModeEnabled(detectarea,state)
+function dgsDetectAreaSetDebugModeEnabled(detectarea,state,alpha)
+	assert(dgsGetType(detectarea) == "dgs-dxdetectarea","Bad argument @dgsDetectAreaSetDebugModeEnabled at argument 1, except dgs-dxdetectarea got "..dgsGetType(detectarea))
 	dgsSetData(detectarea,"debugMode",state)
+	dgsSetData(detectarea,"debugModeAlpha",alpha or dgsElementData[detectarea].debugModeAlpha)
 	if state then
 		dgsDetectAreaUpdateDebugView(detectarea)
 	elseif isElement(dgsElementData[detectarea].debugTexture) then
@@ -80,13 +85,14 @@ function dgsDetectAreaSetDebugModeEnabled(detectarea,state)
 end
 
 function dgsDetectAreaGetDebugModeEnabled(detectarea)
+	assert(dgsGetType(detectarea) == "dgs-dxdetectarea","Bad argument @dgsDetectAreaGetDebugModeEnabled at argument 1, except dgs-dxdetectarea got "..dgsGetType(detectarea))
 	return dgsElementData[detectarea].debugMode
 end
 
 function dgsDetectAreaUpdateDebugView(detectarea)
 	if not dgsElementData[detectarea].debugMode then return end
 	local checkFunction = dgsElementData[detectarea].checkFunction
-	local absSize = dgsElementData[detectarea].absSize
+	local absSize = dgsElementData[detectarea].absSize or dgsElementData[detectarea].debugTextureSize
 	if isElement(dgsElementData[detectarea].debugTexture) then
 		local mX,mY = dxGetMaterialSize(dgsElementData[detectarea].debugTexture)
 		if mX ~= absSize[1] and mY ~= absSize[2] then

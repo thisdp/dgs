@@ -464,11 +464,40 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 			if eleData.PixelInt then x,y,w,h = x-x%1,y-y%1,w-w%1,h-h%1 end
 			------------------------------------Main Renderer
 			local _mx,_my,rt,noRender
+			local daDebugColor,daDebugTexture = 0xFFFFFF
 			if dgsRenderer[eleType] then
 				local _hitElement
 				local collideBox = {cx,cy,w,h}
-				if enabled[1] and mx then
-					MouseData.hit = (eleData.dgsCollider or dgsCollider[eleType])(source,mx,my,collideBox) or MouseData.hit
+				if enabled[1] and mx and eleType ~= "dgs-dxdetectarea" then
+					if eleData.dgsCollider and dgsElementType[eleData.dgsCollider] == "dgs-dxdetectarea" then
+						local daEleData = dgsElementData[eleData.dgsCollider]
+						local checkPixel = daEleData.checkFunction
+						if checkPixel then
+							local _mx,_my = (mx-x)/w,(my-y)/h
+							if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+								if type(checkPixel) == "function" then
+									local checkFnc = daEleData.checkFunction
+									if checkFnc((mx-x)/w,(my-y)/h,mx,my) then
+										MouseData.hit = source
+										daDebugColor = 0xFF0000
+									end
+								else
+									local px,py = dxGetPixelsSize(checkPixel)
+									local pixX,pixY = _mx*px,_my*py
+									local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
+									local gray = ((r or 0)+(g or 0)+(b or 0))/3
+									if gray >= 128 then
+										MouseData.hit = source
+										daDebugColor = 0xFF0000
+									end
+								end
+							end
+							daDebugTexture = daEleData.debugTexture
+							daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
+						end
+					else
+						MouseData.hit = dgsCollider[eleType](source,mx,my,collideBox) or MouseData.hit
+					end
 					if eleType == "dgs-dxgridlist" then
 						_hitElement = MouseData.hit
 					end
@@ -486,6 +515,9 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 				end
 				if debugMode then
 					dgsElementData[source].debugData = {x,y,w,h,cx,cy}
+					if daDebugTexture then
+						dxDrawImage(x,y,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI)
+					end
 				end
 				rndtgt = rt or rndtgt
 				OffsetX,OffsetY = offx or OffsetX,offy or OffsetY

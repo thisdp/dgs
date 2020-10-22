@@ -315,15 +315,26 @@ function test3DInterfaceAttach()
 	dgsSetParent(window,material)
 end
 
-function exampleDetectArea()
-	local image = dgsCreateImage(200,200,100,100,_,false,_,tocolor(255,255,255,128))
-	local da = dgsCreateDetectArea(0,0,100,100,false,image)
-	dgsDetectAreaSetFunction(da,[[
-		if (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25 then
-			return true
-		end
-	]])
+function exampleDetectAreaApplying()
+	--local da = dgsCreateDetectArea(0,0,100,100,false,image)
+	local da = dgsCreateDetectArea()
 	dgsDetectAreaSetDebugModeEnabled(da,true)
+	dgsDetectAreaSetFunction(da,[[
+		return (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25
+	]])
+	
+	local image1 = dgsCreateImage(200,200,100,100,_,false,_,tocolor(255,255,255,128))
+	dgsApplyDetectArea(image1,da)
+end
+
+function exampleDetectArea()
+	local da = dgsCreateDetectArea(100,100,100,100,false)
+	dgsDetectAreaSetDebugModeEnabled(da,true)
+	dgsDetectAreaSetFunction(da,[[
+		return (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25
+	]])
+	
+	local image1 = dgsCreateImage(0,0,100,100,_,false,da,tocolor(255,255,255,128))
 end
 
 function test3DText()
