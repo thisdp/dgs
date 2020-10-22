@@ -196,6 +196,9 @@
 	<export function="dgsGetBrowser" type="client" />
 	<export function="dgsAttachToAutoDestroy" type="client" />
 	<export function="dgsDetachFromAutoDestroy" type="client" />
+	<export function="dgsGetDetectArea" type="client" />
+	<export function="dgsApplyDetectArea" type="client" />
+	<export function="dgsRemoveDetectArea" type="client" />
 
 	<export function="dgsTranslationTableExists" type="client" />
 	<export function="dgsSetTranslationTable" type="client" />
@@ -634,6 +637,13 @@
 
 	<export function="dgsRequestQRCode" type="client" />
 	<export function="dgsGetQRCodeLoaded" type="client" />
+
+	<export function="dgsEnablePasteHandler" type="client" />
+	<export function="dgsFocusPasteHandler" type="client" />
+	<export function="dgsIsPasteHandlerFocused" type="client" />
+	<export function="dgsBlurPasteHandler" type="client" />
+	<export function="dgsDisablePasteHandler" type="client" />
+	<export function="dgsIsPasteHandlerEnabled" type="client" />
 
 	<export function="dgsCreateCanvas" type="client" />
 

@@ -62,17 +62,7 @@ function createFullDemo()
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
 
-function testButtonDisable()
-	local button = dgsCreateButton(500,500,200,80,"test",false)
-	dgsSetEnabled(button,false)
-end
-
-function testMoveHandler()
-	local window = dgsCreateWindow(100,100,800,800,"test",false)
-	local button = dgsCreateButton(50+i,0,200,80,"test",false,window)
-end
-
-function testProgressBar()
+function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
 	dgsProgressBarSetStyle(pb,"ring-round",{rotation=90})
@@ -83,49 +73,19 @@ function testProgressBar()
 	end)
 end
 
-function testButtonPerformance()
-	for i=1,1000 do
-		local button = dgsCreateButton(500,500,200,80,"test",false)
-	end
-end
-
-function createTestMemo()
+function MemoTest()
 	local sW,sH = dgsGetScreenSize()
 	local memo = dgsCreateMemo(10,10,200,300,[[This is a dgs-dxmemo
 
-	Thisdp's
-	DirectX
-	Graphical User Interface
-	System
+	Thisdp's DirectX Graphical User Interface System
 
-	MTA DxLib
-	Version 2.88
-	Test UTF8: 你好
-	Test Selection
-
-	DGS Memo Updates
-	1.Added Scroll Bars
-	2.Fix backspace and delete doesn't works well
-
-	Very looooooooooong
-	Test Scroll Bars
-	1
-	2
-	3
-	4
-	5
-	6
-	7
-	8
-	9
-	10]],false)
-	--dgsMemoSetReadOnly(memo,true)
+	Test UTF8: 你好]],false)
 	dgsSetFont(memo,"default-bold")
 	dgsSetProperty(memo,"selectVisible",false)
 	dgsMemoSetWordWrapState(memo,false)
 end
 
-function editTest() --Test Tab Switch for edit.
+function EditTest() --Test Tab Switch for edit.
 	edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	setTimer(function()
 		dgsEditSetMaxLength(edit,10,true)
@@ -173,32 +133,7 @@ print(hasArabicCharacters("aلعت القياسا"))
 0x1EE00-0x1EEFF
 ]]
 
-function gridlistTest()
-	gridlist = dgsCreateGridList(300,50,600,600,false)
-	dgsSetProperty(gridlist,"clip",false)
-	--dgsSetProperty(gridlist,"leading",10)
-	--dgsSetProperty(gridlist,"mode",true)
-	dgsGridListAddColumn(gridlist,"test1",0.2)
-	dgsGridListAddColumn(gridlist,"test2",0.1)
-	for i=1,200 do
-		local row = dgsGridListAddRow(gridlist)
-		dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
-		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
-	end
-	dgsGridListSetMultiSelectionEnabled(gridlist,true)
-	dgsGridListSetSelectedItems(gridlist,{{1,1},{1,2}})
-	configGridList(gridlist)
-	dgsGridListSetColumnFont(gridlist,1,"default-bold")
-	dgsGridListSetScrollPosition(gridlist,100)
-end
-
-function centerEdit()
-	edit = dgsCreateEdit(100,300,300,100,"center edit",false)
-	dgsSetProperty(edit,"alignment",{"left","center"})
-	dgsEditSetWhiteList(edit,"%l")
-end
-
-function dgsAnimTest()
+function AnimTest()
 	if not dgsEasingFunctionExists("shadowOffset") then
 		dgsAddEasingFunction("shadowOffset",[[
 			local old = setting[3] or {}
@@ -234,51 +169,18 @@ function GridListSortingTest()
 
 		gridlist = dgsCreateGridList(200,50,600,600,false)
 		dgsGridListAddColumn(gridlist,"test1",0.2)
-		--dgsGridListAddColumn(gridlist,"test2",0.1)
 		dgsSetProperty(gridlist,"mode",false)
 		for i=1,30 do
 			local row = dgsGridListAddRow(gridlist)
 			dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
-			--dgsGridListSetItemText(gridlist,row,2,tostring(500-i).." Test DGS")
 		end
-		--dgsGridListSetSortEnabled(gridlist,false) --disable click sorting
-		--dgsGridListSetSortFunction(gridlist,sortfnc)
-		--dgsGridListSetSortColumn(gridlist,2)
+		dgsGridListSetSortEnabled(gridlist,false)
+		dgsGridListSetSortFunction(gridlist,sortfnc)
+		dgsGridListSetSortColumn(gridlist,2)
 	end
 end
 
-function Plugin_media()
-	bro = dgsCreateMediaBrowser(600,600)
-	rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
-	material1 = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
-	img = dgsCreateImage(0,0,800,500,rndRect1,false,material1)
-	dgsMediaLoadMedia(bro,"test.webm","VIDEO") -- Give a video file PLZ! (Only .webm file)
-	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
-	dgsMediaPlay(bro)
-end
-
-function testBrowser()
-	local browser = dgsCreateBrowser(100,100,1400,700,false,_,false,true)
-	addEventHandler("onClientBrowserCreated",browser,function()
-		loadBrowserURL(browser,"http://www.youtube.com")
-	end)
-end
-
-function testPasteHandler()
-	dgsEnablePasteHandler()
-	dgsFocusPasteHandler()
-	local image = false
-	addEventHandler("onDgsPaste",root,function(data,typ)
-		if isElement(image) then destroyElement(image) end
-		if typ == "file" then
-			image = dgsCreateImage(100,100,200,200,data,false)
-		else
-			print(data)
-		end
-	end)
-end
-
-function gridlistTest()
+function GridListTest()
     gridlist = dgsCreateGridList(500,50,600,600,false)
     dgsSetProperty(gridlist,"clip",false)
     --dgsSetProperty(gridlist,"leading",10)
@@ -297,7 +199,31 @@ function gridlistTest()
     end
 end
 
-function test3DInterface()
+function MediaBrowserTest()
+	bro = dgsCreateMediaBrowser(600,600)
+	rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
+	material1 = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
+	img = dgsCreateImage(0,0,800,500,rndRect1,false,material1)
+	dgsMediaLoadMedia(bro,"test.webm","VIDEO") -- Give a video file PLZ! (Only .webm file)
+	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
+	dgsMediaPlay(bro)
+end
+
+function PasteHandlerTest()
+	dgsEnablePasteHandler()
+	dgsFocusPasteHandler()
+	local image = false
+	addEventHandler("onDgsPaste",root,function(data,typ)
+		if isElement(image) then destroyElement(image) end
+		if typ == "file" then
+			image = dgsCreateImage(100,100,200,200,data,false)
+		else
+			print(data)
+		end
+	end)
+end
+
+function _3DInterfaceTest()
 	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
 	--material2 = dgsCreate3DInterface(0,0,5,4,4,400,400,tocolor(255,255,255,255),1,0,0)
@@ -305,7 +231,7 @@ function test3DInterface()
 	--edit2 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material2)
 end
 
-function test3DInterfaceAttach()
+function _3DInterfaceAttachTest()
 	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
 	dgsSetProperty(material,"faceRelativeTo","world")
@@ -315,29 +241,22 @@ function test3DInterfaceAttach()
 	dgsSetParent(window,material)
 end
 
-function exampleDetectAreaApplying()
-	--local da = dgsCreateDetectArea(0,0,100,100,false,image)
+function DetectAreaApplyingTest()
 	local da = dgsCreateDetectArea()
 	dgsDetectAreaSetDebugModeEnabled(da,true)
-	dgsDetectAreaSetFunction(da,[[
-		return (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25
-	]])
-	
+	dgsDetectAreaSetFunction(da,[[return (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25]])
 	local image1 = dgsCreateImage(200,200,100,100,_,false,_,tocolor(255,255,255,128))
 	dgsApplyDetectArea(image1,da)
 end
 
-function exampleDetectArea()
+function DetectAreaAsParentTest()
 	local da = dgsCreateDetectArea(100,100,100,100,false)
 	dgsDetectAreaSetDebugModeEnabled(da,true)
-	dgsDetectAreaSetFunction(da,[[
-		return (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25
-	]])
-	
+	dgsDetectAreaSetFunction(da,[[return (mxRlt-0.5)^2+(myRlt-0.5)^2 < 0.25]])
 	local image1 = dgsCreateImage(0,0,100,100,_,false,da,tocolor(255,255,255,128))
 end
 
-function test3DText()
+function _3DTextTest()
 	local text = dgsCreate3DText(0,0,4,"DGS 3D Text Test",white)
 	dgsSetProperty(text,"fadeDistance",20)
 	dgsSetProperty(text,"shadow",{1,1,tocolor(0,0,0,255),true})
@@ -345,7 +264,24 @@ function test3DText()
 	dgs3DTextAttachToElement(text,localPlayer,0,5)
 end
 
-function languageTest_ComboBox()
+function ScrollBarTest()
+	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
+	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
+	dgsSetProperty(scrollbar,"scrollArrow",false)
+	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
+end
+
+function SelectorTest()
+	selector = dgsCreateSelector(400,500,100,20,false)
+	dgsSetProperty(selector,"selectorImageColorLeft",{0x9900FF00,0x9900FF00,0x9900FF00})
+	dgsSetProperty(selector,"selectorImageColorRight",{0x99FF0000,0x99FF0000,0x99FF0000})
+	dgsSetProperty(selector,"selectorText",{"-","+"})
+	for i=1,5000 do
+		dgsSelectorAddItem(selector,i)
+	end
+end
+-------------------------Language Test
+function LanguageChangeInComboBoxTest()
 	languageTab = {wtf="DGS %rep%"}
 	languageTab2 = {wtf="Test %rep% %rep%"}
 	dgsSetTranslationTable("test",languageTab)
@@ -360,24 +296,7 @@ function languageTest_ComboBox()
 	end,1000,1)
 end
 
-function testScrollBar()
-	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
-	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
-	dgsSetProperty(scrollbar,"scrollArrow",false)
-	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
-end
-
-function dgsSelector()
-	selector = dgsCreateSelector(400,500,100,20,false)
-	dgsSetProperty(selector,"selectorImageColorLeft",{0x9900FF00,0x9900FF00,0x9900FF00})
-	dgsSetProperty(selector,"selectorImageColorRight",{0x99FF0000,0x99FF0000,0x99FF0000})
-	dgsSetProperty(selector,"selectorText",{"-","+"})
-	for i=1,5000 do
-		dgsSelectorAddItem(selector,i)
-	end
-end
-
-function languageTest_GridList()
+function LanguageChangeInGridListTest()
 	languageTab = {wtf="DGS %rep%",test="Test Lang1"}
 	languageTab2 = {wtf="Test %rep% %rep%",test="Test Lang2"}
 	dgsSetTranslationTable("test",languageTab)
@@ -395,7 +314,7 @@ function languageTest_GridList()
 	end,1000,1)
 end
 
-function languageTest_label()
+function LanguageInLabelTest()
 	languageTab = {wot="D-G-S %rep%"}
 	dgsSetTranslationTable("test",languageTab)
 	dgsSetAttachTranslation("test")
@@ -403,7 +322,7 @@ function languageTest_label()
 	dgsSetText(label,{"wot","1"})
 end
 
-function languageTest_TabPanel()
+function LanguageChangeInTabPanelTest()
 	languageTab = {wtf="DGS %rep%",test="Test Lang1"}
 	languageTab2 = {wtf="Test %rep% %rep%",test="Test Lang2"}
 	dgsSetTranslationTable("test",languageTab)
@@ -425,8 +344,6 @@ function dgsRoundRectTest()
 	local rndRect = dgsCreateRoundRect(0.5,true,tocolor(0,0,0,150),_,false,true)
 	local button = dgsCreateButton(200,200,800,400,"text",false)
 	dgsSetProperty(button,"image",{rndRect,rndRect,rndRect})
-	--local rndRect2 = dgsCreateRoundRect(0.5,tocolor(0,0,0,150))
-	--local image2 = dgsCreateImage(200,400,400,100,rndRect2,false,_,tocolor(255,0,0,255))
 end
 
 function dgsRoundRectWithWindowText()
@@ -445,7 +362,7 @@ function test9SliceScale()
 	--local image = dgsCreateImage(400,400,400,400,nSli,false)
 end
 -----------------------------Plugin Test
-function scrollPane3DEffectTest()
+function ScrollPane3DEffectTest()
 	material = dgsCreate3DInterface(0,0,4,4,4,500,500,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
 	dgsSetProperty(material,"fadeDistance",1000)
@@ -471,15 +388,7 @@ function QRCodeTest()
 	end,false)
 end
 -----Blur Box
-function blurboxTest()
-	local blurbox = dgsCreateBlurBox(sW,sH)
-	dgsCreateImage(0,0,800,800,blurbox,false)
-	dgsBlurBoxSetIntensity(blurbox,5)
-	dgsBlurBoxSetLevel(blurbox,15)
-end
-
------Blur Box For Label
-function blurboxLabelTest()
+function BlurBoxTest()
 	local blurbox = dgsCreateBlurBox(sW,sH)
 	dgsCreateImage(0,0,800,800,blurbox,false)
 	dgsBlurBoxSetIntensity(blurbox,5)
@@ -621,27 +530,4 @@ for i=1,500 do
 end
 print(getTickCount()-tick)
 end,50,1)
-]]
-
---[[
-local shader = dxCreateShader([ [
-float borderSoft = 0.002;
-float radius = 0.1;
-
-float getDistance(float w,float h,float2 p){
-	return distance(p,float2(clamp(p.x,-w*0.5,w*0.5),clamp(p.y,-h*0.5,h*0.5)));
-}
-
-float4 ep(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
-	tex-=0.5;
-	color.a *= 1-(getDistance(0.5,0.5,tex)-borderSoft-radius)/borderSoft;
-	return color;
-}
-
-technique t{
-	pass p0{
-		PixelShader = compile ps_2_0 ep();
-	}
-}
-] ])
 ]]

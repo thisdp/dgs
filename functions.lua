@@ -272,6 +272,11 @@ function dgsRemoveDetectArea(dgsEle)
 	return dgsSetData(dgsEle,"dgsCollider",nil)
 end
 
+function dgsGetDetectArea(dgsEle)
+	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetDetectArea at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
+	return dgsElementData[dgsEle].dgsCollider
+end
+
 function dgsSetVisible(dgsEle,visible)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsSetVisible at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
 	if type(dgsEle) == "table" then
