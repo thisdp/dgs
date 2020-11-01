@@ -505,29 +505,3 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
---[[
-loadstring(dgsImportOOPClass())()
-local function init()
-	--Test window
-	local window = dgsWindow(300, 300, 300, 300, "Color Picker")
-	window.size.width = 100
-	window.ignoreTitle = true
-	local input = window
-		:dgsEdit(0, 50, 200, 35, "Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
-		:center(_,true)
-	local button = window:dgsButton(75, 100, 150, 35, "Button")
-	local radiobutton = window
-		:dgsRadioButton(75, 150, 100, 35, "Option 1")
-		:center(_,true)
-	local colorpicker = dgsCreateColorPicker("HSVRing", 400, 190, 100, 100, false, window.dgsElement)
-	dgsCenterElement(colorpicker,_,true)
-end
-
-setTimer(function()
-local tick = getTickCount()
-for i=1,500 do
-	init()
-end
-print(getTickCount()-tick)
-end,50,1)
-]]
