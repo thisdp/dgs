@@ -258,6 +258,7 @@ function dgsEditSetWhiteList(edit,str)
 	local textSize = dgsElementData[edit].textSize
 	local index = dgsEditGetCaretPosition(edit,true)
 	local whiteList = str or ""
+	local oldText = dgsElementData[edit].text
 	local text = utf8Gsub(dgsElementData[edit].text,whiteList,"")
 	local textLen = utf8Len(text)
 	dgsElementData[edit].text = text
@@ -270,7 +271,7 @@ function dgsEditSetWhiteList(edit,str)
 	end
 	dgsSetData(edit,"undoHistory",{})
 	dgsSetData(edit,"redoHistory",{})
-	triggerEvent("onDgsTextChange",edit)
+	triggerEvent("onDgsTextChange",edit,oldText)
 end
 
 function dgsEditInsertText(edit,index,text)
@@ -299,6 +300,7 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 	assert(dgsGetType(fromIndex) == "number","Bad argument @dgsEditDeleteText at argument 2, expect number, got "..dgsGetType(fromIndex))
 	assert(dgsGetType(toIndex) == "number","Bad argument @dgsEditDeleteText at argument 3, expect number, got "..dgsGetType(toIndex))
 	local text = dgsElementData[edit].text
+	local oldText = text
 	local textLen = utf8Len(text)
 	local isMask = dgsElementData[edit].masked
 	local fromIndex = (fromIndex < 0 and 0) or (fromIndex > textLen and textLen) or fromIndex
@@ -342,17 +344,18 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
 	end
 	dgsElementData[edit].textFontLen = _dxGetTextWidth(text,dgsElementData[edit].textSize[1],dgsElementData[edit].font)
-	triggerEvent("onDgsTextChange",edit)
+	triggerEvent("onDgsTextChange",edit,oldText)
 	return deletedText
 end
 
 function dgsEditClearText(edit)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditClearText at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
+	local oldText = dgsElementData[edit].text
 	dgsElementData[edit].text = ""
 	dgsSetData(edit,"caretPos",0)
 	dgsSetData(edit,"selectFrom",0)
 	dgsElementData[edit].textFontLen = 0
-	triggerEvent("onDgsTextChange",edit)
+	triggerEvent("onDgsTextChange",edit,oldText)
 	return true
 end
 
@@ -599,6 +602,7 @@ end
 
 function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 	local textData = dgsElementData[edit].text
+	local oldText = textData
 	local maxLength = dgsElementData[edit].maxLength
 	if not noclear then
 		dgsElementData[edit].text = ""
@@ -627,7 +631,7 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 			dgsEditSetCaretPosition(edit,index+textLen)
 		end
 	end
-	triggerEvent("onDgsTextChange",edit)
+	triggerEvent("onDgsTextChange",edit,oldText)
 	if dgsElementData[edit].enableRedoUndoRecord then
 		historyRecState = historyRecState or 1
 		if historyRecState ~= 0 and textLen ~= 0 then
