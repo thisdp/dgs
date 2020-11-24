@@ -456,6 +456,12 @@
 	<export function="dgsScrollBarGetLocked" type="client" />
 	<export function="dgsScrollBarSetGrades" type="client" />
 	<export function="dgsScrollBarGetGrades" type="client" />
+	<export function="dgsScrollBarSetCursorWidth" type="client" />
+	<export function="dgsScrollBarGetCursorWidth" type="client" />
+	<export function="dgsScrollBarSetTroughWidth" type="client" />
+	<export function="dgsScrollBarGetTroughWidth" type="client" />
+	<export function="dgsScrollBarSetArrowSize" type="client" />
+	<export function="dgsScrollBarGetArrowSize" type="client" />
 
 	<export function="dgsCreateSelector" type="client" />
 	<export function="dgsSelectorAddItem" type="client" />

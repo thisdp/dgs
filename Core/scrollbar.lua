@@ -144,9 +144,10 @@ function scrollScrollBar(scrollbar,button,speed)
 	dgsSetData(scrollbar,"position",mathClamp(gpos,0,100))
 end
 
-function dgsScrollBarSetCursorLength(scrollbar,size,relative)
+function dgsScrollBarSetCursorLength(scrollbar,length,relative)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorLength at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	return dgsSetData(scrollbar,"length",{size,relative or false})
+	assert(tonumber(length),"Bad argument @dgsScrollBarSetCursorLength at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(length))
+	return dgsSetData(scrollbar,"length",{tonumber(length),relative or false})
 end
 
 function dgsScrollBarGetCursorLength(scrollbar,relative)
@@ -155,9 +156,9 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 	local eleData = dgsElementData[scrollbar]
 	local slotRange
 	local scrollArrow = eleData.scrollArrow
-	local arrowPos = 0
 	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local arrowWid = eleData.arrowWidth
+	local isHorizontal = eleData.isHorizontal
 	if isHorizontal then
 		slotRange = w-(scrollArrow and (arrowWid[2] and h*arrowWid[1] or arrowWid[1]) or 0)*2
 	else
@@ -167,6 +168,98 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 	return relative and multiplier/slotRange or multiplier
 end
 
+function dgsScrollBarSetCursorWidth(scrollbar,width,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	assert(tonumber(width),"Bad argument @dgsScrollBarSetCursorWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	return dgsSetData(scrollbar,"cursorWidth",{width,relative or false})
+end
+
+function dgsScrollBarGetCursorWidth(scrollbar,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	assert(tonumber(width),"Bad argument @dgsScrollBarGetCursorWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	local relative = relative or false
+	local eleData = dgsElementData[scrollbar]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local cursorWidth = eleData.cursorWidth
+	if relative == cursorWidth[1] then
+		return cursorWidth[0]
+	else
+		local isHorizontal = eleData.isHorizontal
+		local absCursorWid = cursorWidth[1] and cursorWidth[0]*(isHorizontal and w or h) or cursorWidth[0]
+		return relative and absCursorWid*(isHorizontal and w or h) or absCursorWid
+	end
+end
+
+
+function dgsScrollBarSetTroughWidth(scrollbar,width,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetTroughWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	assert(tonumber(width),"Bad argument @dgsScrollBarSetTroughWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	return dgsSetData(scrollbar,"troughWidth",{width,relative or false})
+end
+
+function dgsScrollBarGetTroughWidth(scrollbar,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetTroughWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	assert(tonumber(width),"Bad argument @dgsScrollBarGetTroughWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	local relative = relative or false
+	local eleData = dgsElementData[scrollbar]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local troughWidth = eleData.troughWidth
+	if relative == troughWidth[1] then
+		return troughWidth[0]
+	else
+		local isHorizontal = eleData.isHorizontal
+		local absTroughWid = troughWidth[1] and troughWidth[0]*(isHorizontal and w or h) or troughWidth[0]
+		return relative and absTroughWid*(isHorizontal and w or h) or absTroughWid
+	end
+end
+
+function dgsScrollBarSetArrowSize(scrollbar,size,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetArrowSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	assert(tonumber(size),"Bad argument @dgsScrollBarSetArrowSize at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(size))
+	return dgsSetData(scrollbar,"arrowWidth",{size,relative or false})
+end
+
+function dgsScrollBarGetArrowSize(scrollbar,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetArrowSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	local relative = relative or false
+	local eleData = dgsElementData[scrollbar]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local arrowWidth = eleData.arrowWidth
+	if relative == arrowWidth[1] then
+		return arrowWidth[0]
+	else
+		local isHorizontal = eleData.isHorizontal
+		local absArrowSize = arrowWidth[1] and arrowWidth[0]*(isHorizontal and w or h) or arrowWidth[0]
+		return relative and absArrowSize*(isHorizontal and w or h) or absArrowSize
+	end
+end
+
+local allowedClickAction = { none=1, step=2, jump=3 }
+function dgsScrollBarSetTroughClickAction(scrollbar,action)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetTroughClickAction at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	assert(allowedClickAction[action],"Bad argument @dgsScrollBarSetTroughClickAction at argument at 2, expect a string (none/step/jump) got "..tostring(action))
+	return dgsSetData(scrollbar,"troughClickAction",action)
+end
+
+function dgsScrollBarGetTroughClickAction(scb)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetTroughClickAction at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	return dgsElementData[scrollbar].troughClickAction or "none"
+end
+
+
+--[[
+function dgsScrollBarSetCursorWidth(scrollbar,width,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+
+	return relative and multiplier/slotRange or multiplier
+end
+
+function dgsScrollBarGetCursorWidth(scrollbar,width,relative)
+	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+
+	return relative and multiplier/slotRange or multiplier
+end
+]]
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
