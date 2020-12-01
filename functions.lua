@@ -274,7 +274,7 @@ end
 
 function dgsGetDetectArea(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsGetDetectArea at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
-	return dgsElementData[dgsEle].dgsCollider
+	return dgsElementData[dgsEle].dgsCollider or false
 end
 
 function dgsSetVisible(dgsEle,visible)
