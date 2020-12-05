@@ -36,12 +36,12 @@ function dgsLocateObjectPreviewResource(name)
 	addEventHandler("onClientResourceStop",getResourceRootElement(objPrevResStatus.res),onObjPrevStop)
 end
 
-function dgsCreateObjectPreviewHandle(objEle,rX,rY,rZ)
+function dgsCreateObjectPreviewHandle(objEle,rX,rY,rZ,isSecRT)
 	assert(objPrevResStatus.name ~= "","Bad argument @dgsCreateObjectPreviewHandle, couldn't find Object Preview resource, please locate it")
 	local objType = dgsGetType(objEle)
 	assert(isElement(objEle), "Bad argument @dgsCreateObjectPreviewHandle at argument 1, expected element got "..objType)
 	local OP = exports[objPrevResStatus.name]
-	local objPrevEle = OP:createObjectPreview(objEle,rX,rY,rZ,0,0,100,100)
+	local objPrevEle = OP:createObjectPreview(objEle,rX,rY,rZ,0,0,100,100,false,false,isSecRT ~= false)
 	OP:setAlpha(objPrevEle,0)
 	dgsSetData(objPrevEle,"asPlugin","dgs-dxobjectpreviewhandle")
 	dgsSetData(objEle,"SOVelement",objPrevEle)
