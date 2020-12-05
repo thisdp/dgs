@@ -175,7 +175,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 		end
 		posX,posY = posX+x,posY+y
 		if iconImage[buttonState] then
-			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,iconColor[buttonState],isPostGUI)
+			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI)
 		end
 	end
 	return rndtgt
