@@ -7,6 +7,7 @@ dgsConfig.updateSystemDisabled		= false		-- Minutes
 dgsConfig.backupMeta				= true		-- Backup meta.xml
 dgsConfig.backupStyleMeta			= true		-- Backup style files meta index from meta.xml
 dgsConfig.g2d						= true		-- GUI To DGS command line
+dgsConfig.enableBuiltInCMD			= true		-- Enable DGS Built CMD /dgscmd
 
 function loadConfig()
 	if fileExists("config.txt") then
@@ -25,6 +26,7 @@ function loadConfig()
 			outputDebugString("[DGS]Invaild Config File!",2)
 		end
 	end
+	setElementData(resourceRoot,"allowCMD",dgsConfig.enableBuiltInCMD)
 	if dgsConfig.g2d then
 		outputDebugString("[DGS]G2D is enabled!")
 	end
