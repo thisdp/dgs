@@ -241,6 +241,8 @@ function dgsComboBoxAddItem(combobox,text)
 		text = dgsTranslate(combobox,text,sourceResource)
 	end
 	local tab = {
+		[-5] = dgsElementData[combobox].colorcoded,
+		[-4] = dgsElementData[combobox].font,
 		[-3] = dgsElementData[combobox].itemTextSize,
 		[-2] = dgsElementData[combobox].itemTextColor,
 		[-1] = dgsElementData[combobox].itemImage,
@@ -306,16 +308,6 @@ function dgsComboBoxSetItemColor(combobox,item,color)
 	return false
 end
 
-function dgsComboBoxSetState(combobox,state)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetState at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	return dgsSetData(combobox,"listState",state and 1 or -1)
-end
-
-function dgsComboBoxGetState(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetState at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	return dgsElementData[combobox].listState == 1 and true or false
-end
-
 function dgsComboBoxGetItemColor(combobox,item)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemColor at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","@dgsComboBoxGetItemColor argument 2,expect number got "..type(item))
@@ -325,6 +317,82 @@ function dgsComboBoxGetItemColor(combobox,item)
 		return data[item][-2]
 	end
 	return false
+end
+
+function dgsComboBoxSetItemFont(combobox,item,font)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemFont at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemFont at argument 2, expect number got "..type(item))
+	assert(fontBuiltIn[font] or dgsGetType(font) == "dx-font","Bad argument @dgsComboBoxSetItemFont at argument 3, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
+	local data = dgsElementData[combobox].itemData
+	item = mathFloor(item)
+	if item >= 1 and item <= #data then
+		data[item][-4] = font
+		return true
+	end
+	return false
+end
+
+function dgsComboBoxGetItemFont(combobox,item)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemFont at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(item) == "number","@dgsComboBoxGetItemFont argument 2,expect number got "..type(item))
+	local data = dgsElementData[combobox].itemData
+	item = mathFloor(item)
+	if item >= 1 and item <= #data then
+		return data[item][-4]
+	end
+	return false
+end
+
+function dgsComboBoxSetItemImage(combobox,item,image,color,offx,offy,w,h)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemImage at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemImage at argument 2, expect number got "..type(item))
+	local data = dgsElementData[combobox].itemData
+	item = mathFloor(item)
+	if item >= 1 and item <= #data then
+		local imageData = data[item][-6] or {}
+		imageData[1] = image or imageData[1]
+		imageData[2] = color or imageData[2] or white
+		imageData[3] = offx or imageData[3] or 0
+		imageData[4] = offy or imageData[4] or 0
+		imageData[5] = w or imageData[5] or dgsGetSize(combobox)
+		imageData[6] = h or imageData[6] or dgsElementData[combobox].itemHeight
+		data[item][-6] = imageData
+		return true
+	end
+	return false
+end
+
+function dgsComboBoxGetItemImage(combobox,item)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemImage at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(item) == "number","Bad argument @dgsComboBoxGetItemImage at argument 2, expect number got "..type(item))
+	local data = dgsElementData[combobox].itemData
+	item = mathFloor(item)
+	if item >= 1 and item <= #data then
+		return unpack(data[item][-6] or {})
+	end
+	return false
+end
+
+function dgsComboBoxRemoveItemImage(combobox,item)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxRemoveItemImage at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	assert(type(item) == "number","Bad argument @dgsComboBoxRemoveItemImage at argument 2, expect number got "..type(item))
+	local data = dgsElementData[combobox].itemData
+	item = mathFloor(item)
+	if item >= 1 and item <= #data and data[item][-6] then
+		data[item][-6] = nil
+		return true
+	end
+	return false
+end
+
+function dgsComboBoxSetState(combobox,state)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetState at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	return dgsSetData(combobox,"listState",state and 1 or -1)
+end
+
+function dgsComboBoxGetState(combobox)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetState at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	return dgsElementData[combobox].listState == 1 and true or false
 end
 
 function dgsComboBoxRemoveItem(combobox,item)
@@ -581,18 +649,20 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*parentAlpha})
 	dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,isPostGUI)
 	if textBox and not captionEdit then
-		local itemTextPadding = eleData.textPadding
-		local font = eleData.font or systemFont
-		local textColor = eleData.textColor
+		local data = eleData.itemData[eleData.select] or {}
+		local itemTextPadding = dgsElementData[source].itemTextPadding
+		local font = data[-4] or eleData.font or systemFont
+		local textColor = data[-2] or eleData.textColor
 		local rb = eleData.alignment
-		local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
-		local colorcoded = eleData.colorcoded
+		local txtSizX,txtSizY = data[-3] and data[-3][1] or eleData.textSize[1],data[-3] and (data[-3][2] or data[-3][1]) or eleData.textSize[2] or eleData.textSize[1]
+		local colorcoded = data[-5] or eleData.colorcoded
 		local shadow = eleData.shadow
 		local wordbreak = eleData.wordbreak
-		local selection = eleData.select
-		local itemData = eleData.itemData
-		local sele = itemData[selection]
-		local text = sele and sele[1] or eleData.caption
+		local text = data[1] or eleData.caption
+		local image = data[-6]
+		if image and isElement(image[1]) then
+			dxDrawImage(x+image[3],y+image[4],image[5],image[6],image[1],0,0,0,image[2],isPostGUI)
+		end
 		local nx,ny,nw,nh = x+itemTextPadding[1],y,x+textBoxLen-itemTextPadding[2],y+h
 		if shadow then
 			dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI)
@@ -638,9 +708,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 		end
 		local preSelect = DataTab.preSelect
 		local Select = DataTab.select
-		local font = DataTab.font
 		local shadow = dgsElementData[combo].shadow
-		local colorcoded = eleData.colorcoded
 		local wordbreak = eleData.wordbreak
 		local clip = eleData.clip
 		local itemTextPadding = dgsElementData[combo].itemTextPadding
@@ -650,6 +718,8 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 			local textColor = lc_rowData[-2]
 			local image = lc_rowData[-1]
 			local color = lc_rowData[0]
+			local font = lc_rowData[-4]
+			local colorcoded = lc_rowData[-5]
 			local itemState = 1
 			itemState = i == preSelect and 2 or itemState
 			itemState = i == Select and 3 or itemState
@@ -659,6 +729,10 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 				dxDrawImage(0,rowpos_1+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,color[itemState])
 			else
 				dxDrawRectangle(0,rowpos_1+itemMoveOffset,w,itemHeight,color[itemState])
+			end
+			local rowImage = lc_rowData[-6]
+			if rowImage and isElement(rowImage[1]) then
+				dxDrawImage(0+rowImage[3],rowpos_1+itemMoveOffset+rowImage[4],rowImage[5],rowImage[6],rowImage[1],0,0,0,rowImage[2])
 			end
 			local _y,_sx,_sy = rowpos_1+itemMoveOffset,sW-itemTextPadding[2],rowpos+itemMoveOffset
 			local text = itemData[i][1]

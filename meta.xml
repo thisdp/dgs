@@ -34,13 +34,13 @@
 	<script src="functions.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
-	
+
 	<script src="plugin/pluginManager.lua" type="client" />
-	
+
 	<script src="plugin/objPrevSupport.lua" type="client" />
-	
+
 	<script src="plugin/cmd.lua" type="client" />
-	
+
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
 	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
@@ -52,32 +52,32 @@
 	<file src="plugin/ColorPicker/HSVComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
-	
+
 	<script src="plugin/Effect3D.lua" type="client" />
-	
+
 	<script src="plugin/roundRect.lua" type="client" />
-	
+
 	<script src="plugin/QRCode.lua" type="client" />
-	
+
 	<script src="plugin/remoteImage.lua" type="client" />
-	
+
 	<script src="plugin/canvas.lua" type="client" />
-	
+
 	<script src="plugin/nineSlice.lua" type="client" />
-	
+
 	<script src="plugin/BlurBox.lua" type="client" />
-	
+
 	<script src="plugin/circle.lua" type="client" />
-	
+
 	<script src="plugin/pasteHandler/pasteHandler.lua" type="client"/>
 	<file src="plugin/pasteHandler/pasteHandler.html" />
-	
+
 	<script src="plugin/mask/mask.lua" type="client" />
 	<file src="plugin/mask/maskTexture.fx" type="client" />
 	<file src="plugin/mask/mask-Circle.fx" type="client" />
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
-	
-	
+
+
 	<script src="styleManager/styleManager.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="update.lua" type="server" />
@@ -313,6 +313,11 @@
 	<export function="dgsComboBoxGetItemCount" type="client" />
 	<export function="dgsComboBoxSetViewCount" type="client" />
 	<export function="dgsComboBoxGetViewCount" type="client" />
+	<export function="dgsComboBoxSetItemFont" type="client" />
+	<export function="dgsComboBoxGetItemFont" type="client" />
+	<export function="dgsComboBoxSetItemImage" type="client" />
+	<export function="dgsComboBoxGetItemImage" type="client" />
+	<export function="dgsComboBoxRemoveItemImage" type="client" />
 
 	<export function="dgsCreateButton" type="client" />
 
