@@ -656,12 +656,16 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		local wordbreak = eleData.wordbreak
 		local text = item[1] or eleData.caption
 		local image = item[-6]
-		if image and isElement(image[1]) then
+		if image then
 			local imagex = x+(image[7] and image[3]*textBoxLen or image[3])
 			local imagey = y+(image[7] and image[4]*h or image[4])
 			local imagew = image[7] and image[5]*textBoxLen or image[5]
 			local imageh = image[7] and image[6]*h or image[6]
-			dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI)
+			if isElement(image[1]) then
+				dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI)
+			else
+				dxDrawRectangle(imagex,imagey,imagew,imageh,applyColorAlpha(image[2],parentAlpha),isPostGUI)
+			end
 		end
 		local nx,ny,nw,nh = x+itemTextPadding[1],y,x+textBoxLen-itemTextPadding[2],y+h
 		if shadow then
@@ -730,13 +734,17 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 				dxDrawRectangle(0,rowpos+itemMoveOffset,w,itemHeight,color[itemState])
 			end
 			local rowImage = item[-6]
-			if rowImage and isElement(rowImage[1]) then
+			if rowImage then
 				local itemWidth = dgsElementData[scrollbar].visible and w-dgsElementData[scrollbar].absSize[1] or w
 				local imagex = rowImage[7] and rowImage[3]*itemWidth or rowImage[3]
 				local imagey = (rowpos+itemMoveOffset) + (rowImage[7] and rowImage[4]*itemHeight or rowImage[4])
 				local imagew = rowImage[7] and rowImage[5]*itemWidth or rowImage[5]
 				local imageh = rowImage[7] and rowImage[6]*itemHeight or rowImage[6]
-				dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2])
+				if isElement(rowImage[1]) then
+					dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2])
+				else
+					dxDrawRectangle(imagex,imagey,imagew,imageh,rowImage[2])
+				end
 			end
 			local _y,_sx,_sy = rowpos+itemMoveOffset,sW-itemTextPadding[2],rowpos+itemHeight+itemMoveOffset
 			local text = itemData[i][1]
