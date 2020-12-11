@@ -859,6 +859,10 @@ function dgsAttachToTranslation(dgsEle,name)
 		LanguageTranslationAttach[name] = LanguageTranslationAttach[name] or {}
 		tableInsert(LanguageTranslationAttach[name],dgsEle)
 	end
+	local text = dgsElementData[dgsEle]._translationText
+	if text then
+		dgsSetData(dgsEle,"text",text)
+	end
 	return true
 end
 
@@ -915,7 +919,7 @@ function dgsTranslate(dgsEle,textTable,sourceResource)
 			if type(textArg) == "table" then
 				textArg = dgsTranslate(dgsEle,textArg,sourceResource)
 			end
-			local _value = value:gsub("\%\%rep\%\%",textArg,1)
+			local _value = value:gsub("%%rep%%",textArg,1)
 			if _value == value then break end
 			count = count+1
 			value = _value
