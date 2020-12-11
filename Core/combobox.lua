@@ -344,7 +344,7 @@ function dgsComboBoxGetItemFont(combobox,item)
 	return false
 end
 
-function dgsComboBoxSetItemImage(combobox,item,image,color,offx,offy,w,h)
+function dgsComboBoxSetItemImage(combobox,item,image,color,offx,offy,w,h,relative)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemImage at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemImage at argument 2, expect number got "..type(item))
 	local data = dgsElementData[combobox].itemData
@@ -355,8 +355,9 @@ function dgsComboBoxSetItemImage(combobox,item,image,color,offx,offy,w,h)
 		imageData[2] = color or imageData[2] or white
 		imageData[3] = offx or imageData[3] or 0
 		imageData[4] = offy or imageData[4] or 0
-		imageData[5] = w or imageData[5] or dgsGetSize(combobox)
-		imageData[6] = h or imageData[6] or dgsElementData[combobox].itemHeight
+		imageData[5] = w or imageData[5] or relative and 1 or dgsGetSize(combobox)
+		imageData[6] = h or imageData[6] or relative and 1 or dgsElementData[combobox].itemHeight
+		imageData[7] = relative or false
 		data[item][-6] = imageData
 		return true
 	end
@@ -655,8 +656,16 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		local wordbreak = eleData.wordbreak
 		local text = item[1] or eleData.caption
 		local image = item[-6]
-		if image and isElement(image[1]) then
-			dxDrawImage(x+image[3],y+image[4],image[5],image[6],image[1],0,0,0,image[2],isPostGUI)
+		if image then
+			local imagex = x+(image[7] and image[3]*textBoxLen or image[3])
+			local imagey = y+(image[7] and image[4]*h or image[4])
+			local imagew = image[7] and image[5]*textBoxLen or image[5]
+			local imageh = image[7] and image[6]*h or image[6]
+			if isElement(image[1]) then
+				dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI)
+			else
+				dxDrawRectangle(imagex,imagey,imagew,imageh,applyColorAlpha(image[2],parentAlpha),isPostGUI)
+			end
 		end
 		local nx,ny,nw,nh = x+itemTextPadding[1],y,x+textBoxLen-itemTextPadding[2],y+h
 		if shadow then
@@ -725,8 +734,17 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 				dxDrawRectangle(0,rowpos+itemMoveOffset,w,itemHeight,color[itemState])
 			end
 			local rowImage = item[-6]
-			if rowImage and isElement(rowImage[1]) then
-				dxDrawImage(0+rowImage[3],rowpos+itemMoveOffset+rowImage[4],rowImage[5],rowImage[6],rowImage[1],0,0,0,rowImage[2])
+			if rowImage then
+				local itemWidth = dgsElementData[scrollbar].visible and w-dgsElementData[scrollbar].absSize[1] or w
+				local imagex = rowImage[7] and rowImage[3]*itemWidth or rowImage[3]
+				local imagey = (rowpos+itemMoveOffset) + (rowImage[7] and rowImage[4]*itemHeight or rowImage[4])
+				local imagew = rowImage[7] and rowImage[5]*itemWidth or rowImage[5]
+				local imageh = rowImage[7] and rowImage[6]*itemHeight or rowImage[6]
+				if isElement(rowImage[1]) then
+					dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2])
+				else
+					dxDrawRectangle(imagex,imagey,imagew,imageh,rowImage[2])
+				end
 			end
 			local _y,_sx,_sy = rowpos+itemMoveOffset,sW-itemTextPadding[2],rowpos+itemHeight+itemMoveOffset
 			local text = itemData[i][1]
