@@ -924,6 +924,7 @@ function dgsTranslate(dgsEle,textTable,sourceResource)
 			count = count+1
 			value = _value
 		end
+		value = value:gsub("%%rep%%","")
 		return value
 	end
 	return false
