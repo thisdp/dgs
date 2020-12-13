@@ -636,9 +636,9 @@ end
 		-4					-3							-2				-1				0								1																																2																																	...
 		columnOffset		bgImage						hoverable		selectable		bgColor							column1																															column2																																...
 {
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement	},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement	},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh},unhoverable,unselectable,attachedElement	},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement	},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement	},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement	},		...		},
 	{	the same as preview table																																																																																						},
 }
 
@@ -950,7 +950,7 @@ function dgsGridListGetRowCount(gridlist)
 	return #dgsElementData[gridlist].rowData
 end
 
-function dgsGridListSetItemImage(gridlist,row,column,image,color,offx,offy,w,h)
+function dgsGridListSetItemImage(gridlist,row,column,image,color,offx,offy,w,h,relative)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemImage at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetItemImage at argument 2, expect number got "..dgsGetType(row))
 	assert(type(column) == "number","Bad argument @dgsGridListSetItemImage at argument 3, expect number got "..dgsGetType(column))
@@ -961,8 +961,9 @@ function dgsGridListSetItemImage(gridlist,row,column,image,color,offx,offy,w,h)
 		imageData[2] = color or imageData[2] or white
 		imageData[3] = offx or imageData[3] or 0
 		imageData[4] = offy or imageData[4] or 0
-		imageData[5] = w or imageData[5] or dgsGridListGetColumnWidth(gridlist,column,false)
-		imageData[6] = h or imageData[6] or dgsElementData[gridlist].rowHeight
+		imageData[5] = w or imageData[5] or relative and 1 or dgsGridListGetColumnWidth(gridlist,column,false)
+		imageData[6] = h or imageData[6] or relative and 1 or dgsElementData[gridlist].rowHeight
+		imageData[7] = relative or false
 		rowData[row][column][7] = imageData
 		return true
 	end
@@ -1891,10 +1892,14 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 							local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
 							if currentRowData[7] then
 								local imageData = currentRowData[7]
+								local imagex = _x+(imageData[7] and imageData[3]*_backgroundWidth or imageData[3])
+								local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])
+								local imagew = imageData[7] and imageData[5]*_backgroundWidth or imageData[5]
+								local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]
 								if isElement(imageData[1]) then
-									dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2])
+									dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
 								else
-									dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
+									dxDrawRectangle(imagex,imagey,imagew,imageh,imageData[2])
 								end
 							end
 							textBuffer[textBufferCnt] = {currentRowData[1],_x-_x%1,_sx-_sx%1,currentRowData[2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
