@@ -169,7 +169,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 					seeThroughStuff = canBeBlocked.seeThroughStuff ~= nil and canBeBlocked.seeThroughStuff or g_canBeBlocked.seeThroughStuff
 					ignoreSomeObjectsForCamera = canBeBlocked.ignoreSomeObjectsForCamera ~= nil and canBeBlocked.ignoreSomeObjectsForCamera or g_canBeBlocked.ignoreSomeObjectsForCamera
 				}
-				canBeBlocked = g_canBeBlocked
+				canBeBlocked = tmpCanBeBlocked
 			end
 			local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
 			local colorcoded = eleData.colorcoded
