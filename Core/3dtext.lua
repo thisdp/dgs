@@ -160,16 +160,13 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 				if canBeBlocked == true then
 					canBeBlocked = g_canBeBlocked
 				end
-				tmpCanBeBlocked = {
-					checkBuildings = canBeBlocked.checkBuildings ~= nil and canBeBlocked.checkBuildings or g_canBeBlocked.checkBuildings
-					checkVehicles = canBeBlocked.checkVehicles ~= nil and canBeBlocked.checkVehicles or g_canBeBlocked.checkVehicles
-					checkPeds = canBeBlocked.checkPeds ~= nil and canBeBlocked.checkPeds or g_canBeBlocked.checkPeds
-					checkObjects = canBeBlocked.checkObjects ~= nil and canBeBlocked.checkObjects or g_canBeBlocked.checkObjects
-					checkDummies = canBeBlocked.checkDummies ~= nil and canBeBlocked.checkDummies or g_canBeBlocked.checkDummies
-					seeThroughStuff = canBeBlocked.seeThroughStuff ~= nil and canBeBlocked.seeThroughStuff or g_canBeBlocked.seeThroughStuff
-					ignoreSomeObjectsForCamera = canBeBlocked.ignoreSomeObjectsForCamera ~= nil and canBeBlocked.ignoreSomeObjectsForCamera or g_canBeBlocked.ignoreSomeObjectsForCamera
-				}
-				canBeBlocked = tmpCanBeBlocked
+				if canBeBlocked.checkBuildings == nil then canBeBlocked.checkBuildings = g_canBeBlocked.checkBuildings end
+				if canBeBlocked.checkVehicles == nil then canBeBlocked.checkVehicles = g_canBeBlocked.checkVehicles end
+				if canBeBlocked.checkPeds == nil then canBeBlocked.checkPeds = g_canBeBlocked.checkPeds end
+				if canBeBlocked.checkObjects == nil then canBeBlocked.checkObjects = g_canBeBlocked.checkObjects end
+				if canBeBlocked.checkDummies == nil then canBeBlocked.checkDummies = g_canBeBlocked.checkDummies end
+				if canBeBlocked.seeThroughStuff == nil then canBeBlocked.seeThroughStuff = g_canBeBlocked.seeThroughStuff end
+				if canBeBlocked.ignoreSomeObjectsForCamera == nil then canBeBlocked.ignoreSomeObjectsForCamera = g_canBeBlocked.ignoreSomeObjectsForCamera end
 			end
 			local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
 			local colorcoded = eleData.colorcoded
@@ -177,6 +174,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			local text = eleData.text
 			local font = eleData.font or systemFont
 			local subPixelPositioning = eleData.subPixelPositioning
+			print(canBeBlocked.checkBuildings)
 			if (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera))) then
 				local fadeMulti = 1
 				if maxDistance > fadeDistance and distance >= fadeDistance then
