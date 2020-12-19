@@ -702,7 +702,7 @@ function dgsGridListAddRows(gridlist,row,t,isRawData)
 	row = tonumber(row) or #rowData
 	if isRawData then
 		for i=1,#t do
-			tableInsert(rowData,row+i,t[i])
+			tableInsert(rowData,row+i,t[i])	--This will skip language check
 		end
 	else
 		for i=1,#t do
