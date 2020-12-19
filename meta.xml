@@ -506,6 +506,7 @@
 	<export function="dgsGridListSetColumnTextSize" type="client" />
 	<export function="dgsGridListInsertRowAfter" type="client" />
 	<export function="dgsGridListAddRow" type="client" />
+	<export function="dgsGridListAddRows" type="client" />
 	<export function="dgsGridListRemoveRow" type="client" />
 	<export function="dgsGridListClearRow" type="client" />
 	<export function="dgsGridListClearColumn" type="client" />
