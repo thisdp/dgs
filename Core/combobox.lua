@@ -94,7 +94,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetData(combobox,"alignment",{"left","center"})
 	dgsSetData(combobox,"itemAlignment",{"left","center"})
 	dgsSetData(combobox,"FromTo",{0,0})
-	dgsSetData(combobox,"moveHardness",0.1)
+	dgsSetData(combobox,"moveHardness",{0.1,0.9})
 	dgsSetData(combobox,"itemMoveOffset",0)
 	dgsSetData(combobox,"itemMoveOffsetTemp",0)
 	dgsSetData(combobox,"scrollSize",20)	--60px pixels
@@ -685,7 +685,9 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	local itemHeight = DataTab.itemHeight
 	--Smooth Item
 	local _itemMoveOffset = DataTab.itemMoveOffset
-	DataTab.itemMoveOffsetTemp = lerp(DataTab.moveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
+	local scrollbar = dgsElementData[combo].scrollbar
+	local itemMoveHardness = dgsElementData[ scrollbar ].moveType == "slow" and DataTab.moveHardness[1] or DataTab.moveHardness[2]
+	DataTab.itemMoveOffsetTemp = lerp(itemMoveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
 	local itemMoveOffset = DataTab.itemMoveOffsetTemp-DataTab.itemMoveOffsetTemp%1
 
 	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1
@@ -696,7 +698,6 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 		dxSetRenderTarget(renderTarget,true)
 		dxSetBlendMode("modulate_add")
 		local rb_l = dgsElementData[combo].itemAlignment
-		local scrollbar = dgsElementData[combo].scrollbar
 		local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
 		if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h and MouseData.enter == source then
 			local toffset = (whichRowToStart*itemHeight)+itemMoveOffset

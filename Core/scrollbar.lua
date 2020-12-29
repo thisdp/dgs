@@ -81,6 +81,7 @@ function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
 	end
 	if pos < 0 then pos = 0 end
 	if pos > 100 then pos = 100 end
+	dgsSetData(scrollbar,"moveType","fast")
 	return dgsSetData(scrollbar,"position",pos)
 end
 
@@ -375,6 +376,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 							position = (gy < 0 and 0) or (gy > 1 and 1) or gy
 						end
 					end
+					dgsSetData(source,"moveType","fast")
 					dgsSetData(source,"position",position*100)
 				end
 			else

@@ -1,5 +1,5 @@
 dgsConfig.backupMeta = true
-dgsConfig.enableBuiltInCMD = false
+dgsConfig.enableBuiltInCMD = true
 dgsConfig.updateSystemDisabled = false
 dgsConfig.updateCheck = true
 dgsConfig.g2d = true

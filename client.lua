@@ -616,6 +616,7 @@ addEventHandler("onClientKey",root,function(button,state)
 		local scrollbar = MouseData.enter
 		local dgsType = dgsGetType(MouseData.enter)
 		if dgsGetType(scrollbar) == "dgs-dxscrollbar" then
+			dgsSetData(scrollbar,"moveType","slow")
 			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 		elseif dgsType == "dgs-dxgridlist" then
 			local scrollbar
@@ -630,11 +631,13 @@ addEventHandler("onClientKey",root,function(button,state)
 				scrollbar = dgsElementData[MouseData.enter].scrollbars[whichScrollBar]
 			end
 			if scrollbar then
+				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxmemo" then
 			local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
 			if dgsGetVisible(scrollbar) then
+				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif isElement(MouseData.scrollPane) then
@@ -650,6 +653,7 @@ addEventHandler("onClientKey",root,function(button,state)
 				scrollbar = dgsElementData[MouseData.scrollPane].scrollbars[whichScrollBar]
 			end
 			if scrollbar then
+				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxtabpanel" or dgsType == "dgs-dxtab" then
@@ -675,6 +679,7 @@ addEventHandler("onClientKey",root,function(button,state)
 			local combo = dgsElementData[MouseData.enter].myCombo
 			local scrollbar = dgsElementData[combo].scrollbar
 			if dgsGetVisible(scrollbar) then
+				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxselector" then
@@ -1075,9 +1080,11 @@ function onClientMouseTriggered()
 			if MouseData.scbEnterData == 1 or MouseData.scbEnterData == 5 then
 				if dgsElementData[scrollbar].scrollArrow then
 					scrollScrollBar(scrollbar,MouseData.scbClickData == 5)
+					dgsSetData(scrollbar,"moveType","slow")
 				end
 			elseif MouseData.scbEnterData == 2 or MouseData.scbEnterData == 4 then
 				local troughClickAction = dgsElementData[scrollbar].troughClickAction
+				dgsSetData(scrollbar,"moveType","fast")
 				if troughClickAction == "step" then
 					scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
 				elseif troughClickAction == "jump" then

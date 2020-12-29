@@ -39,7 +39,7 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 	dgsSetData(scrollpane,"maxChildSize",{0,0})
 	dgsSetData(scrollpane,"horizontalMoveOffsetTemp",0)
 	dgsSetData(scrollpane,"verticalMoveOffsetTemp",0)
-	dgsSetData(scrollpane,"moveHardness",0.1)
+	dgsSetData(scrollpane,"moveHardness",{0.1,0.9})
 	--dgsSetData(scrollpane,"childSizeRef",{{},{}}) --Horizontal,Vertical //to optimize
 	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
 	dgsSetData(scrollpane,"configNextFrame",false)
@@ -366,8 +366,10 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 	local _OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
 	local _OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
-	local OffsetX = lerp(eleData.moveHardness,eleData.horizontalMoveOffsetTemp,_OffsetX)
-	local OffsetY = lerp(eleData.moveHardness,eleData.verticalMoveOffsetTemp,_OffsetY)
+	local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+	local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+	local OffsetX = lerp(xMoveHardness,eleData.horizontalMoveOffsetTemp,_OffsetX)
+	local OffsetY = lerp(yMoveHardness,eleData.verticalMoveOffsetTemp,_OffsetY)
 	eleData.horizontalMoveOffsetTemp = OffsetX
 	eleData.verticalMoveOffsetTemp = OffsetY
 	if OffsetX > 0 then
