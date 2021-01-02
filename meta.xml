@@ -557,6 +557,7 @@
 	<export function="dgsGridListSetSortColumn" type="client" />
 	<export function="dgsGridListGetSortColumn" type="client" />
 	<export function="dgsGridListSort" type="client" />
+	<export function="dgsGridListScrollTo" type="client" />
 	<export function="dgsGridListGetEnterColumn" type="client" />
 	<export function="dgsGridListSetScrollPosition" type="client" />
 	<export function="dgsGridListGetScrollPosition" type="client" />

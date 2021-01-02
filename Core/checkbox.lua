@@ -3,6 +3,8 @@ local dxDrawImage = dxDrawImageExt
 local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
 local dxDrawRectangle = dxDrawRectangle
+local _dxDrawImage = _dxDrawImage
+local _dxDrawImageSection = _dxDrawImageSection
 --
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
 function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
@@ -177,7 +179,7 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		finalcolor = applyColorAlpha(color[colorimgid],parentAlpha)
 	end
 	if image[colorimgid] then
-		dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI)
+		dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,finalcolor,isPostGUI)
 	end

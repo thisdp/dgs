@@ -11,6 +11,8 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+local _dxDrawImage = _dxDrawImage
+local _dxDrawImageSection = _dxDrawImageSection
 --
 ----Speed UP
 local mathFloor = math.floor
@@ -987,11 +989,11 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 			finalcolor = bgColor
 		end
 		if bgImage then
-			dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI)
+			dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 		else
 			dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
 		end
-		dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		_dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		if placeHolderIgnoreRndTgt then
 			if text == "" and MouseData.nowShow ~= source then
 				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)

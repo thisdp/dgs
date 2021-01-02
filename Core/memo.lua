@@ -11,6 +11,8 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+local _dxDrawImage = _dxDrawImage
+local _dxDrawImageSection = _dxDrawImageSection
 --
 ----Speed UP
 local mathFloor = math.floor
@@ -1335,7 +1337,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 	local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
 	local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 	if bgImage then
-		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI)
+		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
 	end
@@ -1444,7 +1446,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 			dxSetRenderTarget(rndtgt)
 			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-			dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 			if MouseData.nowShow == source and MouseData.editMemoCursor then
 				local CaretShow = true
 				if eleData.readOnly then
@@ -1522,7 +1524,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 			dxSetRenderTarget(rndtgt)
 			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-			dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 			if MouseData.nowShow == source and MouseData.editMemoCursor then
 				local CaretShow = true
 				if eleData.readOnly then

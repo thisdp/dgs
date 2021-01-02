@@ -3,8 +3,10 @@ local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.f
 local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
 local tableInsert = table.insert
 local tableRemove = table.remove
-local _dxDrawImageSection = dxDrawImageSection
-local _dxDrawImage = dxDrawImage
+_dxDrawImageSection = dxDrawImageSection
+_dxDrawImage = dxDrawImage
+local __dxDrawImageSection = dxDrawImageSection
+local __dxDrawImage = dxDrawImage
 ClientInfo = {
 	SupportedPixelShader={}
 }
@@ -443,20 +445,26 @@ function HSL2HSV(H,S,L)
 	return H*360,HSV_S*100,HSV_V*100
 end
 --------------------------------Dx Utility
-function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 	local dgsBasicType = dgsGetType(image)
 	if dgsBasicType == "table" then
-		return _dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
+		__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
 	elseif dgsBasicType == "dgs-dxcustomrenderer" then
-		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+		dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 	else
 		local pluginType = dgsGetPluginType(image)
 		if pluginType == "dgs-dxcanvas" then
 			dgsCanvasRender(image)
 		elseif pluginType == "dgs-dxblurbox" then
-			return _dxDrawImageSection(posX,posY,width,height,posX*blurboxFactor,posY*blurboxFactor,width*blurboxFactor,height*blurboxFactor,image,rotation,rotationX,rotationY,color,false)
+			__dxDrawImageSection(posX,posY,width,height,posX*blurboxFactor,posY*blurboxFactor,width*blurboxFactor,height*blurboxFactor,image,rotation,rotationX,rotationY,color,false)
 		end
-		return _dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+		local blendMode
+		if isInRndTgt and dgsBasicType == "shader" then
+			blendMode = dxGetBlendMode()
+			dxSetBlendMode("blend")
+		end
+		__dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+		if blendMode then dxSetBlendMode(blendMode) end
 	end
 end
 
@@ -468,7 +476,7 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 		if dgsGetPluginType(image) == "dgs-dxcanvas" then
 			dgsCanvasRender(image)
 		end
-		return _dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
+		return __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	end
 end
 

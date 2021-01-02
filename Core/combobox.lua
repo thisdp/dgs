@@ -10,6 +10,8 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+local _dxDrawImage = _dxDrawImage
+local _dxDrawImageSection = _dxDrawImageSection
 --
 local lerp = math.lerp
 local mathFloor = math.floor
@@ -616,7 +618,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local bgColor = eleData.bgColor or finalcolor
 	local bgImage = eleData.bgImage
 	if imgs[selectState] then
-		dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[selectState],0,0,0,finalcolor,isPostGUI)
+		dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[selectState],0,0,0,finalcolor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x+w-buttonLen,y,buttonLen,h,finalcolor,isPostGUI)
 	end
@@ -624,7 +626,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local arrowOutSideColor = eleData.arrowOutSideColor
 	local textBoxLen = w-buttonLen
 	if bgImage then
-		dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,applyColorAlpha(bgColor,parentAlpha),isPostGUI)
+		dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,applyColorAlpha(bgColor,parentAlpha),isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y,textBoxLen,h,applyColorAlpha(bgColor,parentAlpha),isPostGUI)
 	end
@@ -643,7 +645,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	dxSetShaderValue(shader,"_color",{r/255,g/255,b/255,a/255*parentAlpha})
 	local r,g,b,a = fromcolor(arrowOutSideColor,true)
 	dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*parentAlpha})
-	dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,isPostGUI)
+	dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,isPostGUI,rndtgt)
 	if textBox and not captionEdit then
 		local item = eleData.itemData[eleData.select] or {}
 		local itemTextPadding = dgsElementData[source].itemTextPadding
@@ -662,7 +664,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 			local imagew = image[7] and image[5]*textBoxLen or image[5]
 			local imageh = image[7] and image[6]*h or image[6]
 			if isElement(image[1]) then
-				dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI)
+				dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI,rndtgt)
 			else
 				dxDrawRectangle(imagex,imagey,imagew,imageh,applyColorAlpha(image[2],parentAlpha),isPostGUI)
 			end
@@ -730,7 +732,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 			itemState = i == Select and 3 or itemState
 			local rowpos = (i-1)*itemHeight
 			if image[itemState] then
-				dxDrawImage(0,rowpos+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,color[itemState])
+				dxDrawImage(0,rowpos+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,color[itemState],false,rndtgt)
 			else
 				dxDrawRectangle(0,rowpos+itemMoveOffset,w,itemHeight,color[itemState])
 			end
@@ -742,7 +744,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 				local imagew = rowImage[7] and rowImage[5]*itemWidth or rowImage[5]
 				local imageh = rowImage[7] and rowImage[6]*itemHeight or rowImage[6]
 				if isElement(rowImage[1]) then
-					dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2])
+					dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2],false,rndtgt)
 				else
 					dxDrawRectangle(imagex,imagey,imagew,imageh,rowImage[2])
 				end
@@ -756,7 +758,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 		end
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode("add")
-		dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		_dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	end
 	return rndtgt

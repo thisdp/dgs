@@ -11,6 +11,8 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+local _dxDrawImage = _dxDrawImage
+local _dxDrawImageSection = _dxDrawImageSection
 --
 local assert = assert
 local lerp = math.lerp
@@ -393,7 +395,7 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,el
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if eleData.bgImage then
 			bgColor = bgColor or 0xFFFFFFFF
-			dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI,rndtgt)
 			bgColor = applyColorAlpha(bgColor,parentAlpha)
 		elseif eleData.bgColor then
 			bgColor = applyColorAlpha(bgColor,parentAlpha)

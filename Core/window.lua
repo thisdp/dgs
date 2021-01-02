@@ -172,12 +172,12 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 	local titimg,titleColor,titsize = eleData.titleImage,eleData.isFocused and eleData.titleColor or (eleData.titleColorBlur or eleData.titleColor),eleData.titleHeight
 	titleColor = applyColorAlpha(titleColor,parentAlpha)
 	if img then
-		dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,isPostGUI)
+		dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y+titsize,w,h-titsize,color,isPostGUI)
 	end
 	if titimg then
-		dxDrawImage(x,y,w,titsize,titimg,0,0,0,titleColor,isPostGUI)
+		dxDrawImage(x,y,w,titsize,titimg,0,0,0,titleColor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y,w,titsize,titleColor,isPostGUI)
 	end

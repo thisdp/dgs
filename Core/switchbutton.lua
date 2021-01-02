@@ -181,14 +181,14 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 			color = applyColorAlpha(color,parentAlpha)
 		end
 		if animProgress == 0 then
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,color,isPostGUI) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
+			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,color,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
 		elseif animProgress == 1 then
-			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,color,isPostGUI) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
+			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,color,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
 		else
 			local offColor = applyColorAlpha(color,1-animProgress)
 			local onColor = applyColorAlpha(color,animProgress)
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
-			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
+			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
+			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
 		end
 	elseif style == 1 then
 		local colorOn = colorOn[colorImgID]
@@ -209,8 +209,8 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			colorOff = applyColorAlpha(colorOff,parentAlpha)
 		end
-		local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,cursorX-x+cursorWidth/2,h,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI) or dxDrawRectangle(x,y,cursorX-x+cursorWidth/2,h,colorOff,isPostGUI)
-		local _empty = imageOn[colorImgBgID] and dxDrawImage(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI) or dxDrawRectangle(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,colorOn,isPostGUI)
+		local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,cursorX-x+cursorWidth/2,h,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(x,y,cursorX-x+cursorWidth/2,h,colorOff,isPostGUI)
+		local _empty = imageOn[colorImgBgID] and dxDrawImage(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,colorOn,isPostGUI)
 	end
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
@@ -235,7 +235,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	dxDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordbreak,isPostGUI,colorcoded)
 	----Cursor
 	if cursorImage then
-		dxDrawImage(cursorX,y,cursorWidth,h,cursorImage,0,0,0,cursorColor,isPostGUI)
+		dxDrawImage(cursorX,y,cursorWidth,h,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(cursorX,y,cursorWidth,h,cursorColor,isPostGUI)
 	end

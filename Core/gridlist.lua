@@ -11,6 +11,8 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+local _dxDrawImage = _dxDrawImage
+local _dxDrawImageSection = _dxDrawImageSection
 --
 local lerp = math.lerp
 local tostring = tostring
@@ -1120,15 +1122,12 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local eleData = dgsElementData[gridlist]
 	local rowMoveOffset = rowMoveOffset or eleData.rowMoveOffsetTemp
 	local rowHeight = eleData.rowHeight
-	local leading = eleData.leading
-	local rowHeightLeadingTemp = rowHeight + leading
-	local scbThick = eleData.scrollBarThick
+	local rowHeightLeadingTemp = rowHeight + eleData.leading
 	local scrollbars = eleData.scrollbars
-	local scbThickH = dgsElementData[ scrollbars[2] ].visible and scbThick or 0
-	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local scbThickH = dgsElementData[ scrollbars[2] ].visible and eleData.scrollBarThick or 0
+	local h = eleData.absSize[2]
 	local columnHeight = eleData.columnHeight
-	local rowData = eleData.rowData
-	local rowCount = #rowData
+	local rowCount = #eleData.rowData
 	if eleData.mode then
 		local temp1 = rowMoveOffset/rowHeightLeadingTemp
 		local whichRowToStart = -(temp1-temp1%1)+1
@@ -1144,7 +1143,7 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	end
 end
 
-function dgsGridListScrollTo(gridlist,row,column)
+function dgsGridListScrollTo(gridlist,row,column,smoothMove)
 	if row then
 		local rowData = dgsElementData[gridlist].rowData
 		local rowCounts = #rowData
@@ -1731,12 +1730,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	if bgImage then
-		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI)
+		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,isPostGUI)
 	end
 	if columnImage then
-		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI)
+		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y,w,columnHeight,columnColor,isPostGUI)
 	end
@@ -1763,17 +1762,29 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local rowHeightLeadingTemp = rowHeight+leading
 	--Smooth Row
 	local _rowMoveOffset = eleData.rowMoveOffset
-	local rowMoveHardness = dgsElementData[ scrollbars[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-	eleData.rowMoveOffsetTemp = lerp(rowMoveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
-	local rowMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
-	if (rowMoveOffset~=_rowMoveOffset) then
+	local rowMoveOffset = _rowMoveOffset
+	if eleData.rowMoveOffsetTemp ~= _rowMoveOffset then
+		local rowMoveHardness = dgsElementData[ scrollbars[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+		eleData.rowMoveOffsetTemp = lerp(rowMoveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
+		local rMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
 		dgsGridListUpdateRowMoveOffset(source)
+		if rMoveOffset-eleData.rowMoveOffsetTemp <= 0.5 and rMoveOffset-eleData.rowMoveOffsetTemp >= -0.5 then
+			eleData.rowMoveOffsetTemp = rMoveOffset
+		end
+		rowMoveOffset = rMoveOffset
 	end
 	--Smooth Column
 	local _columnMoveOffset = eleData.columnMoveOffset
-	local columnMoveHardness  = dgsElementData[ scrollbars[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-	eleData.columnMoveOffsetTemp = lerp(columnMoveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
-	local columnMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
+	local columnMoveOffset = _columnMoveOffset
+	if eleData.columnMoveOffsetTemp ~= _columnMoveOffset then
+		local columnMoveHardness  = dgsElementData[ scrollbars[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+		eleData.columnMoveOffsetTemp = lerp(columnMoveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
+		local cMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
+		if cMoveOffset-eleData.columnMoveOffsetTemp <= 0.5 and cMoveOffset-eleData.columnMoveOffsetTemp >= -0.5 then
+			eleData.columnMoveOffsetTemp = cMoveOffset
+		end
+		columnMoveOffset = cMoveOffset
+	end
 	--
 	local columnOffset = eleData.columnOffset
 	local rowTextSx,rowTextSy = eleData.rowTextSize[1],eleData.rowTextSize[2] or eleData.rowTextSize[1]
@@ -2133,7 +2144,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 					backgroundWidth = w-_x+x-scbThickV
 				end
 				if #image > 0 then
-					dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,image[rowState],0,0,0,color[rowState],isPostGUI)
+					dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,image[rowState],0,0,0,color[rowState],isPostGUI,rndtgt)
 				else
 					dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,color[rowState],isPostGUI)
 				end
@@ -2142,7 +2153,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 					if currentRowData[7] then
 						local imageData = currentRowData[7]
 						if isElement(imageData[1]) then
-							dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2])
+							dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2],rndtgt)
 						else
 							dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 						end

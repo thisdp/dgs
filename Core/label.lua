@@ -21,8 +21,20 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	local label = createElement("dgs-dxlabel")
 	dgsSetType(label,"dgs-dxlabel")
 	dgsSetParent(label,parent,true,true)
-	dgsSetData(label,"renderBuffer",{})
-	dgsSetData(label,"textColor",textColor or styleSettings.label.textColor)
+	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.label.textSize[1], tonumber(scaley) or styleSettings.label.textSize[2]
+	dgsElementData[label] = {
+		alignment = {right or "left",bottom or "top"};
+		clip = false;
+		colorcoded = false;
+		font = styleSettings.label.font or systemFont;
+		rotation = 0;
+		rotationCenter = {0, 0};
+		shadow = shadowoffsetx,shadowoffsety,shadowcolor;
+		subPixelPositioning = false;
+		textColor = textColor or styleSettings.label.textColor;
+		textSize = {textSizeX, textSizeY};
+		wordbreak = false;
+	}
 	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[label]._translationText = text
@@ -30,17 +42,6 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 	else
 		dgsSetData(label,"text",tostring(text))
 	end
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.label.textSize[1], tonumber(scaley) or styleSettings.label.textSize[2]
-	dgsSetData(label,"textSize",{textSizeX,textSizeY})
-	dgsSetData(label,"clip",false)
-	dgsSetData(label,"wordbreak",false)
-	dgsSetData(label,"colorcoded",false)
-	dgsSetData(label,"rotation",0)
-	dgsSetData(label,"rotationCenter",{0,0})
-	dgsSetData(label,"subPixelPositioning",false)
-	dgsSetData(label,"shadow",{shadowoffsetx,shadowoffsety,shadowcolor})
-	dgsSetData(label,"alignment",{right or "left",bottom or "top"})
-	dgsSetData(label,"font",styleSettings.label.font or systemFont)
 	calculateGuiPositionSize(label,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",label,sourceResource)
 	return label

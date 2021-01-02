@@ -5,6 +5,8 @@ local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
 local dxGetTextWidth = dxGetTextWidth
+local _dxDrawImage = _dxDrawImage
+local _dxDrawImageSection = _dxDrawImageSection
 --
 
 function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg,selimg,cliimg,norcolor,hovcolor,clicolor)
@@ -15,15 +17,33 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
 	dgsSetParent(button,parent,true,true)
-	dgsSetData(button,"renderBuffer",{})
 	local norcolor = norcolor or styleSettings.button.color[1]
 	local hovcolor = hovcolor or styleSettings.button.color[2]
 	local clicolor = clicolor or styleSettings.button.color[3]
-	dgsSetData(button,"color",{norcolor,hovcolor,clicolor})
 	local norimg = norimg or dgsCreateTextureFromStyle(styleSettings.button.image[1])
 	local hovimg = selimg or dgsCreateTextureFromStyle(styleSettings.button.image[2])
 	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.button.image[3])
-	dgsSetData(button,"image",{norimg,hovimg,cliimg})
+	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.button.textSize[1], tonumber(scaley) or styleSettings.button.textSize[2]
+	dgsElementData[button] = {
+		alignment = {"center","center"};
+		clickOffset = {0,0};
+		clickType = 1;	--1:LMB;2:Wheel;3:RMB
+		clip = false;
+		color = {norcolor, hovcolor, clicolor};
+		colorcoded = false;
+		font = styleSettings.button.font or systemFont;
+		iconColor = tocolor(255,255,255,255);
+		iconDirection = "left";
+		iconImage = nil;
+		iconOffset = 5;
+		iconSize = {1,1,true}; -- Text's font height
+		image = {norimg, hovimg, cliimg};
+		shadow = {};
+		textColor = tonumber(textColor) or styleSettings.button.textColor;
+		textOffset = {0,0,false};
+		textSize = {textSizeX, textSizeY};
+		wordbreak = false;
+	}
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[button]._translationText = text
@@ -31,27 +51,13 @@ function dgsCreateButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,
 	else
 		dgsSetData(button,"text",tostring(text))
 	end
-	dgsSetData(button,"textColor",tonumber(textColor) or styleSettings.button.textColor)
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.button.textSize[1], tonumber(scaley) or styleSettings.button.textSize[2]
-	dgsSetData(button,"textSize",{textSizeX,textSizeY})
-	dgsSetData(button,"shadow",{_,_,_})
-	dgsSetData(button,"font",styleSettings.button.font or systemFont)
-	dgsSetData(button,"clickoffset",{0,0})
-	dgsSetData(button,"textOffset",{0,0,false})
-	dgsSetData(button,"iconImage",_)
-	dgsSetData(button,"iconColor",tocolor(255,255,255,255))
-	dgsSetData(button,"iconDirection","left")
-	dgsSetData(button,"iconSize",{1,1,true}) -- Text's font height
-	dgsSetData(button,"iconOffset",5)
-	dgsSetData(button,"clip",false)
-	dgsSetData(button,"clickType",1)	--1:LMB;2:Wheel;3:RMB
-	dgsSetData(button,"wordbreak",false)
-	dgsSetData(button,"colorcoded",false)
-	dgsSetData(button,"alignment",{"center","center"})
 	calculateGuiPositionSize(button,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",button,sourceResource)
 	return button
 end
+
+--function dgsButtonSetIconImage()
+--function dgsButtonSetIconColor()
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -97,7 +103,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 	end
 	------------------------------------
 	if imgs[buttonState] then
-		dxDrawImage(x,y,w,h,imgs[buttonState],0,0,0,finalcolor,isPostGUI)
+		dxDrawImage(x,y,w,h,imgs[buttonState],0,0,0,finalcolor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
 	end
@@ -113,7 +119,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 		local clip = eleData.clip
 		local wordbreak = eleData.wordbreak
 		if buttonState == 3 then
-			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickoffset[1],txtoffsetsY+eleData.clickoffset[2]
+			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickOffset[1],txtoffsetsY+eleData.clickOffset[2]
 		end
 		local textX,textY = x+txtoffsetsX,y+txtoffsetsY
 		local shadow = eleData.shadow
@@ -175,7 +181,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 		end
 		posX,posY = posX+x,posY+y
 		if iconImage[buttonState] then
-			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI)
+			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
 		end
 	end
 	return rndtgt

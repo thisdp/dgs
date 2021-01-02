@@ -229,14 +229,14 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 
 	if selectorImageColorLeft then
 		if selectorImageLeft then
-			dxDrawImage(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageLeft,0,0,0,selectorImageColorLeft,isPostGUI)
+			dxDrawImage(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageLeft,0,0,0,selectorImageColorLeft,isPostGUI,rndtgt)
 		else
 			dxDrawRectangle(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorLeft,isPostGUI)
 		end
 	end
 	if selectorImageColorRight then
 		if selectorImageRight then
-			dxDrawImage(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageRight,0,0,0,selectorImageColorRight,isPostGUI)
+			dxDrawImage(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageRight,0,0,0,selectorImageColorRight,isPostGUI,rndtgt)
 		else
 			dxDrawRectangle(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorRight,isPostGUI)
 		end

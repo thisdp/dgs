@@ -145,9 +145,9 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData
 		local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
 		local rot = eleData.rotation or 0
 		if not sx or not sy or not px or not py then
-			dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,isPostGUI)
+			dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,isPostGUI,rndtgt)
 		else
-			dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,rot,rotOffy,rotOffy,colors,isPostGUI)
+			dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,rot,rotOffy,rotOffy,colors,isPostGUI,rndtgt)
 		end
 	else
 		dxDrawRectangle(x,y,w,h,colors,isPostGUI)

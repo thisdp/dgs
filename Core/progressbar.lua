@@ -19,7 +19,7 @@ ProgressBarStyle = {
 		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2
 		local iSizXPercent = iSizX*percent
 		if bgImage then
-			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet)
+			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet,rndtgt)
 		else
 			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
 		end
@@ -35,30 +35,30 @@ ProgressBarStyle = {
 				else
 					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
 				end
-				dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
-				dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[1],0,0,0,indicatorColor[2],rendSet)
+				dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
+				dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[1],0,0,0,indicatorColor[2],rendSet,rndtgt)
 			else
-				dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
-				dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet)
+				dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
+				dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet,rndtgt)
 			end
 		elseif isElement(indicatorImage) then
 			if type(indicatorColor) == "table" then
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
-					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor[1],rendSet)
-					dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx*percent,0,sx*(1-percent),sy,indicatorImage,0,0,0,indicatorColor[2],rendSet)
+					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor[1],rendSet,rndtgt)
+					dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx*percent,0,sx*(1-percent),sy,indicatorImage,0,0,0,indicatorColor[2],rendSet,rndtgt)
 				else
-					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[1],rendSet)
-					dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[2],rendSet)
+					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[1],rendSet,rndtgt)
+					dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[2],rendSet,rndtgt)
 				end
 			else
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
-					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet)
+					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
 				else
-					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor,rendSet)
+					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
 				end
 			end
 		elseif type(indicatorColor) == "table" then
@@ -74,7 +74,7 @@ ProgressBarStyle = {
 		local iSizYPercent = iSizY*percent
 		local iSizYPercentRev = iSizY*(1-percent)
 		if bgImage then
-			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet)
+			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet,rndtgt)
 		else
 			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
 		end
@@ -90,30 +90,30 @@ ProgressBarStyle = {
 				else
 					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
 				end
-				dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
-				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy2,sx2,sy2*(1-percent),indicatorImage[1],0,0,0,indicatorColor[2],rendSet)
+				dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
+				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy2,sx2,sy2*(1-percent),indicatorImage[1],0,0,0,indicatorColor[2],rendSet,rndtgt)
 			else
-				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet)
-				dxDrawImage(iPosX,iSizYPercent+iPosY,iSizX,iSizY-iSizYPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet)
+				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
+				dxDrawImage(iPosX,iSizYPercent+iPosY,iSizX,iSizY-iSizYPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet,rndtgt)
 			end
 		elseif isElement(indicatorImage) then
 			if type(indicatorColor) == "table" then
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
-					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor[1],rendSet)
-					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy,sx,sy*(1-percent),indicatorImage,0,0,0,indicatorColor[2],rendSet)
+					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor[1],rendSet,rndtgt)
+					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy,sx,sy*(1-percent),indicatorImage,0,0,0,indicatorColor[2],rendSet,rndtgt)
 				else
-					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor[1],rendSet)
-					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage,0,0,0,indicatorColor[2],rendSet)
+					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor[1],rendSet,rndtgt)
+					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage,0,0,0,indicatorColor[2],rendSet,rndtgt)
 				end
 			else
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
-					dxDrawImageSection(iPosX,iPosY,iSizX,iSizYPercent,0,0,sx,sy*percent,indicatorImage,0,0,0,indicatorColor,rendSet)
+					dxDrawImageSection(iPosX,iPosY,iSizX,iSizYPercent,0,0,sx,sy*percent,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
 				else
-					dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor,rendSet)
+					dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
 				end
 			end
 		elseif type(indicatorColor) == "table" then
@@ -137,7 +137,7 @@ ProgressBarStyle = {
 		dxSetShaderValue(circle,"thickness",styleData.thickness)
 		dxSetShaderValue(circle,"radius",styleData.radius)
 		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
-		dxDrawImage(x,y,w,h,circle,styleData.rotation,0,0,bgColor,rendSet)
+		dxDrawImage(x,y,w,h,circle,styleData.rotation,0,0,bgColor,rendSet,rndtgt)
 	end,
 }
 
