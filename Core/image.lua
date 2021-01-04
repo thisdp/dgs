@@ -90,7 +90,7 @@ function dgsImageGetUVSize(gui,relative)
 	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetUVSize at argument 1, expect dgs-dximage got "..dgsGetType(gui))
 	local texture = dgsElementData[gui].image
 	if isElement(texture) and getElementType(texture) ~= "shader" then
-		local UVSize = dgsElementData[gui].UVSize
+		local UVSize = dgsElementData[gui].UVSize or {1,1,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local sizeU,sizeV = UVSize[1],UVSize[2]
 		if UVSize[3] and not relative then
@@ -112,7 +112,7 @@ function dgsImageGetUVPosition(gui,relative)
 	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetUVPosition at argument 1, expect dgs-dximage got "..dgsGetType(gui))
 	local texture = dgsElementData[gui].image
 	if isElement(texture) and getElementType(texture) ~= "shader" then
-		local UVPos = dgsElementData[gui].UVPos
+		local UVPos = dgsElementData[gui].UVPos or {0,0,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local posU,posV = UVPos[1],UVPos[2]
 		if UVPos[3] and not relative then
