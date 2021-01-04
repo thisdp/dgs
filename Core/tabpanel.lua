@@ -112,9 +112,10 @@ function dgsTabPanelGetWidth(tabpanel,includeInvisible)
 	local wid = 0
 	local tabs = dgsElementData[tabpanel].tabs
 	local tabPadding = dgsElementData[tabpanel].tabPadding
-	local padding = tabPadding[2] and tabPadding[1]*tp_w or tabPadding[1]
+	local tabLengthAll = dgsElementData[tabpanel].tabLengthAll
+	local padding = tabPadding[2] and tabPadding[1]*tabLengthAll or tabPadding[1]
 	local tabGapSize = dgsElementData[tabpanel].tabGapSize
-	local gapSize = tabGapSize[2] and tabGapSize[1]*tp_w or tabGapSize[1]
+	local gapSize = tabGapSize[2] and tabGapSize[1]*tabLengthAll or tabGapSize[1]
 	local cnt = 0
 	if includeInvisible then
 		for i=1,#tabs do
