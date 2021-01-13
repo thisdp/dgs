@@ -6,53 +6,71 @@ local dxDrawRectangle = dxDrawRectangle
 local _dxDrawImage = _dxDrawImage
 local _dxDrawImageSection = _dxDrawImageSection
 --
+local assert = assert
+local type = type
+local tostring = tostring
+local tonumber = tonumber
+--
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
-function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
-	assert(type(x) == "number","Bad argument @dgsCreateCheckBox at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateCheckBox at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateCheckBox at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
-	assert(type(sy) == "number","Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(sy))
-	assert(not state or state == true,"@dgsCreateCheckBox at argument 6, expect boolean/nil got "..type(state))
+function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
+	local xCheck,yCheck,wCheck,hCheck,stateCheck = type(x) == "number",type(y) == "number",type(w) == "number",type(h) == "number",not state or state == true
+	if not xCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 3, expect number got "..type(w)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(h)) end
+	if not stateCheck then assert(false,"@dgsCreateCheckBox at argument 6, expect boolean/nil got "..type(state)) end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
 	dgsSetParent(cb,parent,true,true)
-	dgsSetData(cb,"renderBuffer",{})
 
 	local imageUnchecked = styleSettings.checkbox.image_f
 	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
 	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
 	cliimg_f = cliimg_f or dgsCreateTextureFromStyle(imageUnchecked[3])
-	dgsSetData(cb,"image_f",{norimg_f,hovimg_f,cliimg_f})
 	local colorUnchecked = styleSettings.checkbox.color_f
 	norcolor_f = norcolor_f or colorUnchecked[1]
 	hovcolor_f = hovcolor_f or colorUnchecked[2]
 	clicolor_f = clicolor_f or colorUnchecked[3]
-	dgsSetData(cb,"color_f",{norcolor_f,hovcolor_f,clicolor_f})
 
 	local imageChecked = styleSettings.checkbox.image_t
 	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
 	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
 	cliimg_t = cliimg_t or dgsCreateTextureFromStyle(imageChecked[3])
-	dgsSetData(cb,"image_t",{norimg_t,hovimg_t,cliimg_t})
 	local colorChecked = styleSettings.checkbox.color_t
 	norcolor_t = norcolor_t or colorChecked[1]
 	hovcolor_t = hovcolor_t or colorChecked[2]
 	clicolor_t = clicolor_t or colorChecked[3]
-	dgsSetData(cb,"color_t",{norcolor_t,hovcolor_t,clicolor_t})
 
 	local imageIndeterminate = styleSettings.checkbox.image_i
 	norimg_i = norimg_i or dgsCreateTextureFromStyle(imageIndeterminate[1])
 	hovimg_i = hovimg_i or dgsCreateTextureFromStyle(imageIndeterminate[2])
 	cliimg_i = cliimg_i or dgsCreateTextureFromStyle(imageIndeterminate[3])
-	dgsSetData(cb,"image_i",{norimg_i,hovimg_i,cliimg_i})
 	local colorIndeterminate = styleSettings.checkbox.color_i
 	norcolor_i = norcolor_i or colorIndeterminate[1]
 	hovcolor_i = hovcolor_i or colorIndeterminate[2]
 	clicolor_i = clicolor_i or colorIndeterminate[3]
-	dgsSetData(cb,"color_i",{norcolor_i,hovcolor_i,clicolor_i})
+	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.checkbox.textSize[1], tonumber(scaley) or styleSettings.checkbox.textSize[2]
+	dgsElementData[cb] = {
+		image_i = {norimg_i,hovimg_i,cliimg_i},
+		image_t = {norimg_t,hovimg_t,cliimg_t},
+		image_f = {norimg_f,hovimg_f,cliimg_f},
+		color_i = {norcolor_i,hovcolor_i,clicolor_i},
+		color_t = {norcolor_t,hovcolor_t,clicolor_t},
+		color_f = {norcolor_f,hovcolor_f,clicolor_f},
+		cbParent = dgsIsDxElement(parent) and parent or resourceRoot,
+		textColor = textColor or styleSettings.checkbox.textColor,
+		textSize = {textSizeX,textSizeY},
+		textPadding = styleSettings.checkbox.textPadding or {2,false},
+		buttonSize = styleSettings.checkbox.buttonSize,
+		shadow = {_,_,_},
+		font = styleSettings.checkbox.font or systemFont,
+		clip = false,
+		wordbreak = false,
+		colorcoded = false,
+		state = state,
+		alignment = {"left","center"},
+	}
 
-	dgsSetData(cb,"cbParent",dgsIsDxElement(parent) and parent or resourceRoot)
 	dgsAttachToTranslation(cb,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[cb]._translationText = text
@@ -60,19 +78,7 @@ function dgsCreateCheckBox(x,y,sx,sy,text,state,relative,parent,textColor,scalex
 	else
 		dgsSetData(cb,"text",tostring(text))
 	end
-	dgsSetData(cb,"textColor",textColor or styleSettings.checkbox.textColor)
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.checkbox.textSize[1], tonumber(scaley) or styleSettings.checkbox.textSize[2]
-	dgsSetData(cb,"textSize",{textSizeX,textSizeY})
-	dgsSetData(cb,"textPadding",styleSettings.checkbox.textPadding or {2,false})
-	dgsSetData(cb,"buttonSize",styleSettings.checkbox.buttonSize)
-	dgsSetData(cb,"shadow",{_,_,_})
-	dgsSetData(cb,"font",styleSettings.checkbox.font or systemFont)
-	dgsSetData(cb,"clip",false)
-	dgsSetData(cb,"wordbreak",false)
-	dgsSetData(cb,"colorcoded",false)
-	dgsSetData(cb,"state",state)
-	dgsSetData(cb,"alignment",{"left","center"})
-	calculateGuiPositionSize(cb,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",cb,sourceResource)
 	return cb
 end

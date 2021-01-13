@@ -31,82 +31,85 @@ Selection Mode
 2-> Column Selection
 3-> Cell Selection
 ]]
-function dgsCreateGridList(x,y,sx,sy,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,rownorc,rowhovc,rowselc,bgImage,columnImage,rownori,rowhovi,rowseli)
-	assert(type(x) == "number","Bad argument @dgsCreateGridList at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateGridList at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateGridList at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateGridList at argument 4, expect number got "..type(sy))
-	local gridlist = createElement("dgs-dxgridlist")
-	dgsSetType(gridlist,"dgs-dxgridlist")
-	dgsSetParent(gridlist,parent,true,true)
-	dgsSetData(gridlist,"renderBuffer",{})
-	dgsSetData(gridlist,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.gridlist.bgImage))
-	dgsSetData(gridlist,"bgColor",bgColor or styleSettings.gridlist.bgColor)
-	dgsSetData(gridlist,"columnImage",columnImage or dgsCreateTextureFromStyle(styleSettings.gridlist.columnImage))
-	dgsSetData(gridlist,"columnColor",columnColor or styleSettings.gridlist.columnColor)
-	dgsSetData(gridlist,"columnTextColor",columnTextColor or styleSettings.gridlist.columnTextColor)
-	dgsSetData(gridlist,"columnTextSize",styleSettings.gridlist.columnTextSize)
-	dgsSetData(gridlist,"columnOffset",styleSettings.gridlist.columnOffset)
-	dgsSetData(gridlist,"columnData",{})
-	dgsSetData(gridlist,"columnMoveOffset",0)
-	dgsSetData(gridlist,"columnMoveOffsetTemp",0)
-	dgsSetData(gridlist,"columnRelative",true)
-	dgsSetData(gridlist,"columnShadow",false)
-	dgsSetData(gridlist,"guiCompat",false)
+function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,rownorc,rowhovc,rowselc,bgImage,columnImage,rownori,rowhovi,rowseli)
+	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
+	if not __x then assert(false,"Bad argument @dgsCreateGridList at argument 1, expect number got "..type(x)) end
+	if not __y then assert(false,"Bad argument @dgsCreateGridList at argument 2, expect number got "..type(y)) end
+	if not __w then assert(false,"Bad argument @dgsCreateGridList at argument 3, expect number got "..type(w)) end
+	if not __h then assert(false,"Bad argument @dgsCreateGridList at argument 4, expect number got "..type(h)) end
+	local relative = relative or false
+	local scbThick = styleSettings.gridlist.scrollBarThick
 	local columnHeight = tonumber(columnHeight) or styleSettings.gridlist.columnHeight
-	dgsSetData(gridlist,"columnHeight",columnHeight,true)
-	dgsSetData(gridlist,"selectedColumn",-1)
 	local rownorc = rownorc or styleSettings.gridlist.rowColor[1]
 	local rowhovc = rowhovc or styleSettings.gridlist.rowColor[2]
 	local rowselc = rowselc or styleSettings.gridlist.rowColor[3]
-	dgsSetData(gridlist,"rowColor",{rownorc,rowhovc,rowselc})	--Normal/Hover/Selected
 	local rownori = rownori or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[1])
 	local rowhovi = rowhovi or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[2])
 	local rowseli = rowseli or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[3])
-	dgsSetData(gridlist,"rowImage",{rownori,rowhovi,rowseli})	--Normal/Hover/Selected
-	dgsSetData(gridlist,"rowData",{})
-	dgsSetData(gridlist,"rowTextSize",styleSettings.gridlist.rowTextSize)
-	dgsSetData(gridlist,"rowTextColor",styleSettings.gridlist.rowTextColor)
-	dgsSetData(gridlist,"rowTextPosOffset",{0,0})
-	dgsSetData(gridlist,"columnTextPosOffset",{0,0})
-	dgsSetData(gridlist,"rowShadow",false)
-	dgsSetData(gridlist,"rowMoveOffset",0,true)
-	dgsSetData(gridlist,"rowMoveOffsetTemp",0)
-	dgsSetData(gridlist,"moveHardness",{0.1,0.9},true)
-	dgsSetData(gridlist,"moveType",0,true)	--0 for wheel, 1 For scroll bar
-	dgsSetData(gridlist,"rowHeight",styleSettings.gridlist.rowHeight)
+	local gridlist = createElement("dgs-dxgridlist")
+	dgsSetType(gridlist,"dgs-dxgridlist")
+	dgsSetParent(gridlist,parent,true,true)
+	dgsElementData[gridlist] = {
+		autoSort = true,
+		backgroundOffset = styleSettings.gridlist.backgroundOffset,
+		bgImage = bgImage or dgsCreateTextureFromStyle(styleSettings.gridlist.bgImage),
+		bgColor = bgColor or styleSettings.gridlist.bgColor,
+		colorcoded = false,
+		clip = true,
+		columnColor = columnColor or styleSettings.gridlist.columnColor,
+		columnData = {},
+		columnHeight = columnHeight,
+		columnImage = columnImage or dgsCreateTextureFromStyle(styleSettings.gridlist.columnImage),
+		columnMoveOffset = 0,
+		columnMoveOffsetTemp = 0,
+		columnTextColor = columnTextColor or styleSettings.gridlist.columnTextColor,
+		columnTextPosOffset = {0,0},
+		columnTextSize = styleSettings.gridlist.columnTextSize,
+		columnOffset = styleSettings.gridlist.columnOffset,
+		columnRelative = true,
+		columnShadow = false,
+		defaultColumnOffset = styleSettings.gridlist.defaultColumnOffset,
+		enableNavigation = true,
+		font = styleSettings.gridlist.font or systemFont,
+		guiCompat = false,
+		itemClick = {},
+		lastSelectedItem = {1,1},
+		leading = 0,
+		mode = false,
+		mouseSelectButton = {true,false,false},
+		mouseWheelScrollBar = false,--false:vertical; true:horizontal
+		moveHardness = {0.1,0.9},
+		moveType = 0,	--0 for wheel, 1 For scroll bar
+		multiSelection = false,
+		nextRenderSort = false,
+		preSelect = {},
+		rowColor = {rownorc,rowhovc,rowselc},	--Normal/Hover/Selected
+		rowData = {},
+		rowHeight = styleSettings.gridlist.rowHeight,
+		rowImage = {rownori,rowhovi,rowseli},	--Normal/Hover/Selected
+		rowMoveOffset = 0,
+		rowMoveOffsetTemp = 0,
+		rowTextSize = styleSettings.gridlist.rowTextSize,
+		rowTextColor = styleSettings.gridlist.rowTextColor,
+		rowTextPosOffset = {0,0},
+		rowSelect = {},
+		rowShadow = false,
+		scrollBarThick = scbThick,
+		scrollBarLength = {},
+		scrollBarState = {nil,nil},
+		scrollFloor = {false,false},--move offset ->int or float
+		scrollSize = 60,			--60 pixels
+		sectionColumnOffset = styleSettings.gridlist.sectionColumnOffset,
+		sectionFont = systemFont,
+		selectedColumn = -1,
+		selectionMode = 1,
+		sortColumn = false,
+		sortEnabled = true,
+	}
 	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
-	dgsElementData[gridlist].nextRenderSort = false
-	dgsSetData(gridlist,"sortEnabled",true)
-	dgsSetData(gridlist,"autoSort",true)
-	dgsSetData(gridlist,"sortColumn",false)
-	dgsSetData(gridlist,"sectionColumnOffset",styleSettings.gridlist.sectionColumnOffset)
-	dgsSetData(gridlist,"defaultColumnOffset",styleSettings.gridlist.defaultColumnOffset)
-	dgsSetData(gridlist,"backgroundOffset",styleSettings.gridlist.backgroundOffset)
-	local scbThick = styleSettings.gridlist.scrollBarThick
-	dgsSetData(gridlist,"scrollBarThick",scbThick,true)
-	dgsSetData(gridlist,"font",styleSettings.gridlist.font or systemFont)
-	dgsSetData(gridlist,"sectionFont",systemFont)
-	dgsSetData(gridlist,"colorcoded",false)
-	dgsSetData(gridlist,"selectionMode",1)
-	dgsSetData(gridlist,"multiSelection",false)
-	dgsSetData(gridlist,"mode",false,true)
-	dgsSetData(gridlist,"clip",true)
-	dgsSetData(gridlist,"leading",0,true)
-	dgsSetData(gridlist,"preSelect",{})
-	dgsSetData(gridlist,"rowSelect",{})
-	dgsSetData(gridlist,"itemClick",{})
-	dgsSetData(gridlist,"mouseSelectButton",{true,false,false})
-	dgsSetData(gridlist,"enableNavigation",true)
-	dgsSetData(gridlist,"lastSelectedItem",{1,1})
-	dgsSetData(gridlist,"scrollBarState",{nil,nil})
-	dgsSetData(gridlist,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
-	dgsSetData(gridlist,"scrollFloor",{false,false}) --move offset ->int or float
-	dgsSetData(gridlist,"scrollSize",60)	--60 pixels
-	dgsSetData(gridlist,"scrollBarLength",{},true)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or getThisResource()])
 	dgsElementData[gridlist].configNextFrame = false
-	calculateGuiPositionSize(gridlist,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(gridlist,__x,__y,relative,__w,__h,relative,true)
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]
 	local columnRender,rowRender

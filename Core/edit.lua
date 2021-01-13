@@ -19,6 +19,7 @@ local mathFloor = math.floor
 local utf8Sub = utf8.sub
 local utf8Len = utf8.len
 local utf8Gsub = utf8.gsub
+local utf8Lower = utf8.lower
 local strRep = string.rep
 local tableInsert = table.insert
 local tableRemove = table.remove
@@ -44,69 +45,71 @@ local splitChar = "\r\n"
 local splitChar2 = "\n"
 local editsCount = 1
 ----
-function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor,selectMode)
-	assert(type(x) == "number","Bad argument @dgsCreateEdit at argument 1, expect number, got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateEdit at argument 2, expect number, got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateEdit at argument 3, expect number, got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateEdit at argument 4, expect number, got "..type(sy))
+function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor,selectMode)
+	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
+	if not __x then assert(false,"Bad argument @dgsCreateEdit at argument 1, expect number got "..type(x)) end
+	if not __y then assert(false,"Bad argument @dgsCreateEdit at argument 2, expect number got "..type(y)) end
+	if not __w then assert(false,"Bad argument @dgsCreateEdit at argument 3, expect number got "..type(w)) end
+	if not __h then assert(false,"Bad argument @dgsCreateEdit at argument 4, expect number got "..type(h)) end
 	text = tostring(text)
 	local edit = createElement("dgs-dxedit")
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetParent(edit,parent,true,true)
-	dgsSetData(edit,"renderBuffer",{})
-	dgsSetData(edit,"bgColor",bgColor or styleSettings.edit.bgColor)
-	dgsSetData(edit,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.edit.bgImage))
-	dgsSetData(edit,"bgColorBlur",styleSettings.edit.bgColorBlur)
-	dgsSetData(edit,"bgImageBlur",dgsCreateTextureFromStyle(styleSettings.edit.bgImageBlur))
 	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.edit.textSize[1], tonumber(scaley) or styleSettings.edit.textSize[2]
-	dgsSetData(edit,"textSize",{textSizeX,textSizeY},true)
-	dgsSetData(edit,"font",styleSettings.edit.font or systemFont,true)
-	dgsElementData[edit].text = ""
-	dgsSetData(edit,"textColor",textColor or styleSettings.edit.textColor)
-	dgsSetData(edit,"caretPos",0)
-	dgsSetData(edit,"selectFrom",0)
-	dgsSetData(edit,"masked",false)
-	dgsSetData(edit,"maskText",styleSettings.edit.maskText)
-	dgsSetData(edit,"showPos",0)
-	dgsSetData(edit,"placeHolder",styleSettings.edit.placeHolder)
-	dgsSetData(edit,"placeHolderFont",systemFont)
-	dgsSetData(edit,"placeHolderColor",styleSettings.edit.placeHolderColor)
-	dgsSetData(edit,"placeHolderColorcoded",styleSettings.edit.placeHolderColorcoded)
-	dgsSetData(edit,"placeHolderOffset",styleSettings.edit.placeHolderOffset)
-	dgsSetData(edit,"placeHolderIgnoreRenderTarget",styleSettings.edit.placeHolderIgnoreRenderTarget)
-	dgsSetData(edit,"padding",styleSettings.edit.padding,true)
-	dgsSetData(edit,"alignment",{"left","center"})
-	dgsSetData(edit,"caretStyle",styleSettings.edit.caretStyle)
-	dgsSetData(edit,"caretThick",styleSettings.edit.caretThick)
-	dgsSetData(edit,"caretOffset",styleSettings.edit.caretOffset)
-	dgsSetData(edit,"caretColor",styleSettings.edit.caretColor)
-	dgsSetData(edit,"caretHeight",styleSettings.edit.caretHeight)
-	dgsSetData(edit,"readOnly",false)
-	dgsSetData(edit,"readOnlyCaretShow",false)
-	dgsSetData(edit,"clearSelection",true)
-	dgsSetData(edit,"enableTabSwitch",true)
-	dgsSetData(edit,"clearSwitchPos",false)
-	dgsSetData(edit,"lastSwitchPosition",-1)
-	dgsSetData(edit,"underlineOffset",0)
-	dgsSetData(edit,"lockView",false)
-	dgsSetData(edit,"allowCopy",true)
-	dgsSetData(edit,"autoCompleteShow",false)
-	dgsSetData(edit,"autoCompleteTextColor",nil)
-	dgsSetData(edit,"autoCompleteSkip",false)
-	dgsSetData(edit,"autoComplete",{})
-	dgsSetData(edit,"autoCompleteConfirmKey","tab")
-	dgsSetData(edit,"selectColor",styleSettings.edit.selectColor)
-	dgsSetData(edit,"selectColorBlur",styleSettings.edit.selectColorBlur)
-	dgsSetData(edit,"historyMaxRecords",100)
-	dgsSetData(edit,"enableRedoUndoRecord",true)
-	dgsSetData(edit,"undoHistory",{})
-	dgsSetData(edit,"redoHistory",{})
-	dgsSetData(edit,"typingSound",styleSettings.edit.typingSound)
-	dgsSetData(edit,"maxLength",0x3FFFFFFF)
-	dgsSetData(edit,"rtl",nil)	--nil: auto; false:disabled; true: enabled
-	dgsSetData(edit,"editCounts",editsCount) --Tab Switch
+	dgsElementData[edit] = {
+		text = "",
+		bgColor = bgColor or styleSettings.edit.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(styleSettings.edit.bgImage),
+		bgColorBlur = styleSettings.edit.bgColorBlur,
+		bgImageBlur = dgsCreateTextureFromStyle(styleSettings.edit.bgImageBlur),
+		textSize = {textSizeX,textSizeY},
+		font = styleSettings.edit.font or systemFont,
+		textColor = textColor or styleSettings.edit.textColor,
+		caretPos = 0,
+		selectFrom = 0,
+		masked = false,
+		maskText = styleSettings.edit.maskText,
+		showPos = 0,
+		placeHolder = styleSettings.edit.placeHolder,
+		placeHolderFont = systemFont,
+		placeHolderColor = styleSettings.edit.placeHolderColor,
+		placeHolderColorcoded = styleSettings.edit.placeHolderColorcoded,
+		placeHolderOffset = styleSettings.edit.placeHolderOffset,
+		placeHolderIgnoreRenderTarget = styleSettings.edit.placeHolderIgnoreRenderTarget,
+		padding = styleSettings.edit.padding,
+		alignment = {"left","center"},
+		caretStyle = styleSettings.edit.caretStyle,
+		caretThick = styleSettings.edit.caretThick,
+		caretOffset = styleSettings.edit.caretOffset,
+		caretColor = styleSettings.edit.caretColor,
+		caretHeight = styleSettings.edit.caretHeight,
+		readOnly = false,
+		readOnlyCaretShow = false,
+		clearSelection = true,
+		enableTabSwitch = true,
+		clearSwitchPos = false,
+		lastSwitchPosition = -1,
+		underlineOffset = 0,
+		lockView = false,
+		allowCopy = true,
+		autoCompleteShow = false,
+		autoCompleteTextColor = nil,
+		autoCompleteSkip = false,
+		autoComplete = {},
+		autoCompleteConfirmKey = "tab",
+		selectColor = styleSettings.edit.selectColor,
+		selectColorBlur = styleSettings.edit.selectColorBlur,
+		historyMaxRecords = 100,
+		enableRedoUndoRecord = true,
+		undoHistory = {},
+		redoHistory = {},
+		typingSound = styleSettings.edit.typingSound,
+		maxLength = 0x3FFFFFFF,
+		rtl = nil,	--nil: auto; false:disabled; true: enabled
+		editCounts = editsCount, --Tab Switch
+	}
 	editsCount = editsCount+1
-	calculateGuiPositionSize(edit,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(edit,__x,__y,relative or false,__w,__h,relative or false,true)
 	local sx,sy = dgsGetSize(edit,false)
 	local padding = dgsElementData[edit].padding
 	local sizex,sizey = sx-padding[1]*2,sy-padding[2]*2
@@ -125,18 +128,18 @@ function dgsCreateEdit(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 			local text = dgsElementData[source].text
 			dgsSetData(source,"autoCompleteShow",false)
 			if text ~= "" then
-				local lowertxt = utf8.lower(text)
-				local textLen = utf8.len(text)
+				local lowertxt = utf8Lower(text)
+				local textLen = utf8Len(text)
 				local acTable = dgsElementData[source].autoComplete
 				for k,v in pairs(acTable) do
 					if v == true then
-						if utf8.sub(k,1,textLen) == text then
+						if utf8Sub(k,1,textLen) == text then
 							dgsSetData(source,"autoCompleteShow",{k,k})
 							break
 						end
 					elseif v == false then
-						if utf8.lower(utf8.sub(k,1,textLen)) == lowertxt then
-							dgsSetData(source,"autoCompleteShow",{k,text..utf8.sub(k,textLen+1)})
+						if utf8Lower(utf8Sub(k,1,textLen)) == lowertxt then
+							dgsSetData(source,"autoCompleteShow",{k,text..utf8Sub(k,textLen+1)})
 							break
 						end
 					end
@@ -603,38 +606,37 @@ function dgsEditAlignmentShowPosition(edit,text)
 end
 
 function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
-	local textData = dgsElementData[edit].text
+	local eleData = dgsElementData[edit]
+	local textData = eleData.text
 	local oldText = textData
-	local maxLength = dgsElementData[edit].maxLength
+	local maxLength = eleData.maxLength
 	if not noclear then
-		dgsElementData[edit].text = ""
-		textData = dgsElementData[edit].text
+		eleData.text = ""
+		textData = eleData.text
 		dgsSetData(edit,"caretPos",0)
 		dgsSetData(edit,"selectFrom",0)
 	end
-	local font = dgsElementData[edit].font or systemFont
-	local textSize = dgsElementData[edit].textSize
+	local font = eleData.font or systemFont
+	local textSize = eleData.textSize
 	local _index = dgsEditGetCaretPosition(edit,true)
 	local index = index or _index
-	local whiteList = dgsElementData[edit].whiteList or ""
+	local whiteList = eleData.whiteList or ""
 	local textDataLen = utf8Len(textData)
 	local text = utf8Sub(text,1,maxLength-textDataLen)
 	local _textLen = utf8Len(text)
 	local textData_add = utf8Sub(textData,1,index)..text..utf8Sub(textData,index+1)
 	local newTextData = utf8Gsub(textData_add,whiteList,"")
 	local textLen = utf8Len(newTextData)-textDataLen
-	dgsElementData[edit].text = newTextData
-	if dgsElementData[edit].masked then
-		newTextData = strRep(dgsElementData[edit].maskText,utf8Len(newTextData))
-	end
-	dgsElementData[edit].textFontLen = _dxGetTextWidth(newTextData,dgsElementData[edit].textSize[1],dgsElementData[edit].font)
+	eleData.text = newTextData
+	newTextData = eleData.masked and strRep(eleData.maskText,utf8Len(newTextData)) or newTextData
+	eleData.textFontLen = _dxGetTextWidth(newTextData,eleData.textSize[1],eleData.font)
 	if not noAffectCaret then
 		if index <= _index then
 			dgsEditSetCaretPosition(edit,index+textLen)
 		end
 	end
 	triggerEvent("onDgsTextChange",edit,oldText)
-	if dgsElementData[edit].enableRedoUndoRecord then
+	if eleData.enableRedoUndoRecord then
 		historyRecState = historyRecState or 1
 		if historyRecState ~= 0 and textLen ~= 0 then
 			dgsEditSaveHistory(edit,historyRecState,2,textLen == 1 and 1 or 2,index,textLen)

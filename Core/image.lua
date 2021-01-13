@@ -13,6 +13,7 @@ local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
 local tonumber = tonumber
+local type = type
 local assert = assert
 local tableInsert = table.insert
 
