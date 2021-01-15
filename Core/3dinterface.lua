@@ -1,5 +1,8 @@
 local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.acos,math.deg
-function LookRotation(x,y,z,rot)
+local assert = assert
+local type = type
+
+local function LookRotation(x,y,z,rot)
 	local rx = deg(acos(((x^2+z^2)/(x^2+y^2+z^2))^0.5))
 	if (y > 0) then
 		rx = 360-rx
@@ -22,38 +25,41 @@ function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
 end
 
 function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot)
-	assert(type(x) == "number","Bad argument @dgsCreate3DInterface at argument 1, expect a number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreate3DInterface at argument 2, expect a number got "..type(y))
-	assert(type(y) == "number","Bad argument @dgsCreate3DInterface at argument 3, expect a number got "..type(z))
-	assert(type(w) == "number","Bad argument @dgsCreate3DInterface at argument 4, expect a number got "..type(w))
-	assert(type(h) == "number","Bad argument @dgsCreate3DInterface at argument 5, expect a number got "..type(h))
-	assert(type(resolX) == "number","Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(resolX))
-	assert(type(resolY) == "number","Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(resolX))
+	local xCheck,yCheck,zCheck,wCheck,hCheck,rxCheck,ryCheck = type(x) == "number",type(y) == "number",type(z) == "number",type(w) == "number",type(h) == "number",type(w) == "number",type(h) == "number",type(rx) == "number",type(ry) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 1, expect a number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 2, expect a number got "..type(y)) end
+	if not zCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 3, expect a number got "..type(z)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 4, expect a number got "..type(w)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 5, expect a number got "..type(h)) end
+	if not rxCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(resolX)) end
+	if not ryCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(resolX)) end
 	local interface = createElement("dgs-dx3dinterface")
 	table.insert(dx3DInterfaceTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
-	dgsSetData(interface,"renderBuffer",{})
-	dgsSetData(interface,"position",{x,y,z})
-	dgsSetData(interface,"faceTo",{faceX,faceY,faceZ})
-	dgsSetData(interface,"size",{w,h})
-	dgsSetData(interface,"faceRelativeTo","self")
-	dgsSetData(interface,"color",color or tocolor(255,255,255,255))
-	dgsSetData(interface,"resolution",{resolX,resolY})
-	dgsSetData(interface,"maxDistance",distance or 200)
-	dgsSetData(interface,"fadeDistance",distance or 180)
-	dgsSetData(interface,"filterShader",false)
-	dgsSetData(interface,"blendMode","add")
-	dgsSetData(interface,"attachTo",false)
-	dgsSetData(interface,"dimension",-1)
-	dgsSetData(interface,"interior",-1)
-	dgsSetData(interface,"rotation",rot or 0)
+	dgsElementData[interface] = {
+		renderBuffer = {},
+		position = {x,y,z},
+		faceTo = {faceX,faceY,faceZ},
+		size = {w,h},
+		faceRelativeTo = "self",
+		color = color or 0xFFFFFFFF,
+		resolution = {resolX,resolY},
+		maxDistance = distance or 200,
+		fadeDistance = distance or 180,
+		filterShader = false,
+		blendMode = "add",
+		attachTo = false,
+		dimension = -1,
+		interior = -1,
+		rotation = rot or 0,
+	}
 	local renderTarget,err = dxCreateRenderTarget(resolX,resolY,true,interface)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,interface,-1)
 	else
 		outputDebugString(err)
 	end
-	dgsSetData(interface,"renderTarget_parent",renderTarget)
+	dgsElementData[interface].renderTarget_parent = renderTarget
 	triggerEvent("onDgsCreate",interface,sourceResource)
 	if not isElement(renderTarget) then
 		destroyElement(interface)

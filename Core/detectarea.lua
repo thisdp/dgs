@@ -11,6 +11,9 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local assert = assert
+local type = type
+
 detectAreaBuiltIn = {}
 function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 	if not x then
@@ -22,10 +25,11 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 		dgsSetData(detectarea,"debugModeAlpha",128)
 		return detectarea
 	else
-		assert(type(x) == "number","Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x))
-		assert(type(y) == "number","Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y))
-		assert(type(sx) == "number","Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx))
-		assert(type(sy) == "number","Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy))
+		local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+		if not xCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x)) end
+		if not yCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y)) end
+		if not wCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx)) end
+		if not hCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy)) end
 		local detectarea = createElement("dgs-dxdetectarea")
 		dgsSetType(detectarea,"dgs-dxdetectarea")
 		dgsSetParent(detectarea,parent,true,true)

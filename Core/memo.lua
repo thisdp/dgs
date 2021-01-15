@@ -24,6 +24,8 @@ local utf8Len = utf8.len
 local utf8Insert = utf8.insert
 local utf8Byte = utf8.byte
 local _dxGetTextWidth = dxGetTextWidth
+local assert = assert
+local type = type
 GlobalMemoParent = guiCreateLabel(-1,0,0,0,"",true)
 GlobalMemo = guiCreateMemo(-1,0,0,0,"",true,GlobalMemoParent)
 dgsSetData(GlobalMemo,"linkedDxMemo",nil)
@@ -57,57 +59,61 @@ dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 		}
 ]]
 function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor)
-	assert(type(x) == "number","Bad argument @dgsCreateMemo at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateMemo at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateMemo at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateMemo at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateMemo at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateMemo at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateMemo at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateMemo at argument 4, expect number got "..type(sy)) end
 	text = tostring(text)
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
 	dgsSetParent(memo,parent,true,true)
-	dgsSetData(memo,"renderBuffer",{})
-	dgsSetData(memo,"bgColor",bgColor or styleSettings.memo.bgColor)
-	dgsSetData(memo,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.memo.bgImage))
-	dgsSetData(memo,"bgColorBlur",styleSettings.memo.bgColorBlur)
-	dgsSetData(memo,"bgImageBlur",dgsCreateTextureFromStyle(styleSettings.memo.bgImageBlur))
-	dgsSetData(memo,"font",styleSettings.memo.font or systemFont,true)
-	dgsElementData[memo].text = {}
-	dgsSetData(memo,"wordWrap",false,true)	--false:Normal Mode; 1:Word Wrap by character; 2:Word Wrap by word;
-	dgsSetData(memo,"wordWrapShowLine",{1,1,1})
-	dgsSetData(memo,"wordWrapMapText",{})
-	dgsSetData(memo,"textColor",textColor or styleSettings.memo.textColor)
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.memo.textSize[1], tonumber(scaley) or styleSettings.memo.textSize[2]
-	dgsSetData(memo,"textSize",{textSizeX,textSizeY},true)
-	dgsSetData(memo,"caretPos",{0,1})
-	dgsSetData(memo,"selectFrom",{0,1})
-	--dgsSetData(memo,"insertMode",false)
-	dgsSetData(memo,"rightLength",{0,1})
-	dgsSetData(memo,"scrollSize",3)	-- Lines
-	dgsSetData(memo,"showPos",0)
-	dgsSetData(memo,"showLine",1)
-	dgsSetData(memo,"caretStyle",styleSettings.memo.caretStyle)
-	dgsSetData(memo,"caretThick",styleSettings.memo.caretThick)
-	dgsSetData(memo,"caretOffset",styleSettings.memo.caretOffset)
-	dgsSetData(memo,"caretColor",styleSettings.memo.caretColor)
-	dgsSetData(memo,"caretHeight",styleSettings.memo.caretHeight)
-	dgsSetData(memo,"scrollBarThick",styleSettings.memo.scrollBarThick,true)
-	dgsSetData(memo,"allowCopy",true)
-	dgsSetData(memo,"readOnly",false)
-	dgsSetData(memo,"readOnlyCaretShow",false)
-	dgsSetData(memo,"scrollBarState",{nil,nil},true)
-	dgsSetData(memo,"historyMaxRecords",100)
-	dgsSetData(memo,"enableRedoUndoRecord",true)
-	dgsSetData(memo,"undoHistory",{})
-	dgsSetData(memo,"redoHistory",{})
-	dgsSetData(memo,"padding",styleSettings.memo.padding)
-	dgsSetData(memo,"typingSound",styleSettings.memo.typingSound)
-	dgsSetData(memo,"selectColor",styleSettings.memo.selectColor)
-	dgsSetData(memo,"selectColorBlur",styleSettings.memo.selectColorBlur)
-	dgsSetData(memo,"selectVisible",styleSettings.memo.selectVisible)
-	dgsSetData(memo,"configNextFrame",false)
-	dgsSetData(memo,"rebuildMapTableNextFrame",false)
-	dgsSetData(memo,"maxLength",0x3FFFFFFF)
-	dgsSetData(memo,"scrollBarLength",{},true)
+	local style = styleSettings.memo
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	dgsElementData[memo] = {
+		renderBuffer = {},
+		bgColor = bgColor or style.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgColorBlur = style.bgColorBlur,
+		bgImageBlur = bgImageBlur,
+		font = style.font or systemFont,
+		text = {},
+		wordWarp = false,
+		wordWrapShowLine = {1,1,1},
+		wordWrapMapText = {},
+		textColor = textColor or style.textColor,
+		textSize = {textSizeX,textSizeY},
+		caretPos = {0,1},
+		selectForm = {0,1},
+		--insertMode = false,
+		rightLength = {0,1},
+		scrollSize = 3,
+		showPos = 0,
+		showLine = 1,
+		caretStyle = style.caretStyle,
+		caretThick = style.caretThick,
+		caretOffest = style.caretOffest,
+		caretColor = style.caretColor,
+		caretHeight = style.caretHeight,
+		scrollBarThick = style.scrollBarThick,
+		allowCopy = true,
+		readOnly = false,
+		readOnlyCaretShow = false,
+		scrollBarState = {nil,nil},
+		historyMaxRecords = 100,
+		enableRedoUndoRecord = true,
+		undoHistory = {},
+		redoHistory = {},
+		padding = style.padding,
+		typingSound = style.typingSound,
+		selectColor = style.selectColor,
+		selectColorBlur = style.selectColorBlur,
+		selectVisible = style.selectVisible,
+		configNextFrame = false,
+		rebuildMapTableNextFrame = false,
+		maxLength = 0x3FFFFFFF,
+		scrollBarLength = {},
+	}
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
@@ -130,8 +136,8 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	else
 		outputDebugString(err)
 	end
-	dgsSetData(memo,"renderTarget",renderTarget)
-	dgsSetData(memo,"scrollbars",{scrollbar1,scrollbar2})
+	dgsElementData[memo].renderTarget = renderTarget
+	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
 	triggerEvent("onDgsCreate",memo,sourceResource)
 	return memo

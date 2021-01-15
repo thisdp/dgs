@@ -12,56 +12,60 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local assert = assert
+local type = type
+
 function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t)
-	assert(type(x) == "number","Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy)) end
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
 	dgsSetParent(rb,parent,true,true)
-	dgsSetData(rb,"renderBuffer",{})
-
-	local imageUnchecked = styleSettings.radiobutton.image_f
+	local style = styleSettings.radiobutton
+	local imageUnchecked = style.image_f
 	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
 	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
 	cliimg_f = cliimg_f or dgsCreateTextureFromStyle(imageUnchecked[3])
-	dgsSetData(rb,"image_f",{norimg_f,hovimg_f,cliimg_f})
-	local colorUnchecked = styleSettings.radiobutton.color_f
+	local colorUnchecked = style.color_f
 	norcolor_f = norcolor_f or colorUnchecked[1]
 	hovcolor_f = hovcolor_f or colorUnchecked[2]
 	clicolor_f = clicolor_f or colorUnchecked[3]
-	dgsSetData(rb,"color_f",{norcolor_f,hovcolor_f,clicolor_f})
-
-	local imageChecked = styleSettings.radiobutton.image_t
+	local imageChecked = style.image_t
 	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
 	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
 	cliimg_t = cliimg_t or dgsCreateTextureFromStyle(imageChecked[3])
-	dgsSetData(rb,"image_t",{norimg_t,hovimg_t,cliimg_t})
-	local colorChecked = styleSettings.radiobutton.color_t
+	local colorChecked = style.color_t
 	norcolor_t = norcolor_t or colorChecked[1]
 	hovcolor_t = hovcolor_t or colorChecked[2]
 	clicolor_t = clicolor_t or colorChecked[3]
-	dgsSetData(rb,"color_t",{norcolor_t,hovcolor_t,clicolor_t})
-
-	dgsSetData(rb,"rbParent",dgsIsDxElement(parent) and parent or resourceRoot)
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	dgsElementData[rb] = {
+		renderBuffer = {},
+		image_f = {norimg_f,hovimg_f,cliimg_f},
+		color_f = {norcolor_f,hovcolor_f,clicolor_f},
+		image_t = {norimg_t,hovimg_t,cliimg_t},
+		color_t = {norcolor_t,hovcolor_t,clicolor_t},
+		rbParent = dgsIsDxElement(parent) and parent or resourceRoot,
+		text = tostring(text),
+		textColor = textColor or style.textColor,
+		textSize = {textSizeX,textSizeY},
+		textPadding = style.textPadding,
+		buttonSize = style.buttonSize,
+		shadow = {},
+		font = style.font or systemFont,
+		clip = false,
+		wordbreak = false,
+		colorcoded = false,
+		alignment = {left,"center"},
+	}
 	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[rb]._translationText = text
-		text = dgsTranslate(rb,text,sourceResource)
+		dgsElementData[rb].text = dgsTranslate(rb,text,sourceResource)
 	end
-	dgsSetData(rb,"text",tostring(text))
-	dgsSetData(rb,"textColor",textColor or styleSettings.radiobutton.textColor)
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.radiobutton.textSize[1], tonumber(scaley) or styleSettings.radiobutton.textSize[2]
-	dgsSetData(rb,"textSize",{textSizeX,textSizeY})
-	dgsSetData(rb,"textPadding",styleSettings.radiobutton.textPadding)
-	dgsSetData(rb,"buttonSize",styleSettings.radiobutton.buttonSize)
-	dgsSetData(rb,"shadow",{_,_,_})
-	dgsSetData(rb,"font",styleSettings.radiobutton.font or systemFont)
-	dgsSetData(rb,"clip",false)
-	dgsSetData(rb,"wordbreak",false)
-	dgsSetData(rb,"colorcoded",false)
-	dgsSetData(rb,"alignment",{"left","center"})
 	calculateGuiPositionSize(rb,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",rb,sourceResource)
 	return rb

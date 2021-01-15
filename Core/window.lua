@@ -12,21 +12,45 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local tonumber = tonumber
+local assert = assert
+local type = type
+local tonumber = tonumber
+
 function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton)
-	assert(type(x) == "number","Bad argument @dgsCreateWindow at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateWindow at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateWindow at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateWindow at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateWindow at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateWindow at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateWindow at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateWindow at argument 4, expect number got "..type(sy)) end
 	local window = createElement("dgs-dxwindow")
 	dgsSetType(window,"dgs-dxwindow")
 	dgsSetParent(window,nil,true,true)
-	dgsSetData(window,"renderBuffer",{})
-	dgsSetData(window,"titleImage",titleImage or dgsCreateTextureFromStyle(styleSettings.window.titleImage))
-	dgsSetData(window,"textColor",tonumber(textColor) or styleSettings.window.textColor)
-	dgsSetData(window,"titleColorBlur",tonumber(titleColor) or styleSettings.window.titleColorBlur)
-	dgsSetData(window,"titleColor",tonumber(titleColor) or styleSettings.window.titleColor)
-	dgsSetData(window,"image",image or dgsCreateTextureFromStyle(styleSettings.window.image))
-	dgsSetData(window,"color",tonumber(color) or styleSettings.window.color)
+	local style = styleSettings.window
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	dgsElementData[window] = {
+		renderBuffer = {},
+		titleImage = titleImage or dgsCreateTextureFromStyle(style.titleImage),
+		textColor = tonumber(textColor) or style.textColor,
+		titleColorBlur = tonumber(titleColor) or style.titleColorBlur,
+		titleColor = tonumber(titleColor) or style.titleColor,
+		image = image or dgsCreateTextureFromStyle(style.image),
+		color = tonumber(color) or style.color,
+		textSize = {textSizeX,textSizeY},
+		titleHeight = tonumber(titleHeight) or style.titleHeight,
+		borderSize = tonumber(borderSize) or style.borderSize,
+		ignoreTitle = false,
+		colorcoded = false,
+		movable = true,
+		sizable = true,
+		clip = true,
+		wordbreak = false,
+		alignment = {"center","center"},
+		movetyp = false; --false only title;true are al,
+		font = style.font or systemFont,
+		minSize = {60,60},
+		maxSize = {20000,20000},
+	}
 	dgsAttachToTranslation(window,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[window]._translationText = text
@@ -34,31 +58,16 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 	else
 		dgsSetData(window,"text",tostring(text))
 	end
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.window.textSize[1], tonumber(scaley) or styleSettings.window.textSize[2]
-	dgsSetData(window,"textSize",{textSizeX,textSizeY})
-	dgsSetData(window,"titleHeight",tonumber(titleHeight) or styleSettings.window.titleHeight)
-	dgsSetData(window,"borderSize",tonumber(borderSize) or styleSettings.window.borderSize)
-	dgsSetData(window,"ignoreTitle",false,true)
-	dgsSetData(window,"colorcoded",false)
-	dgsSetData(window,"movable",true)
-	dgsSetData(window,"sizable",true)
-	dgsSetData(window,"clip",true)
-	dgsSetData(window,"wordbreak",false)
-	dgsSetData(window,"alignment",{"center","center"})
-	dgsSetData(window,"movetyp",false) --false only title;true are all
-	dgsSetData(window,"font",styleSettings.window.font or systemFont)
-	dgsSetData(window,"minSize",{60,60})
-	dgsSetData(window,"maxSize",{20000,20000})
 	calculateGuiPositionSize(window,x,y,relative,sx,sy,relative,true)
 	triggerEvent("onDgsCreate",window,sourceResource)
 	local createCloseButton = true
 	if noCloseButton == nil then
-		createCloseButton = styleSettings.window.closeButton
+		createCloseButton = style.closeButton
 	elseif noCloseButton then
 		createCloseButton = false
 	end
 	if createCloseButton then
-		local buttonOff = dgsCreateButton(40,0,40,24,styleSettings.window.closeButtonText,false,window,_,_,_,_,_,_,styleSettings.window.closeButtonColor[1],styleSettings.window.closeButtonColor[2],styleSettings.window.closeButtonColor[3],true)
+		local buttonOff = dgsCreateButton(40,0,40,24,style.closeButtonText,false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
 		addEventHandler("onDgsMouseClickUp",buttonOff,function(button)
 			if button == "left" then
 				local window = dgsGetParent(source)
@@ -67,12 +76,12 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 				end
 			end
 		end,false)
-		dgsSetData(window,"closeButtonSize",{40,24,false})
-		dgsSetData(window,"closeButton",buttonOff)
-		dgsSetSide(buttonOff,"right",false)
-		dgsSetData(buttonOff,"ignoreParentTitle",true,true)
-		dgsSetData(buttonOff,"font","default-bold")
-		dgsSetData(buttonOff,"alignment",{"center","center"})
+		dgsElementData[window].closeButtonSize = {40,24,false}
+		dgsElementData[window].closeButton = buttonOff
+		dgsElementData[buttonOff].lor = "right"
+		dgsElementData[buttonOff].font = "default-bold"
+		dgsElementData[buttonOff].alignment = {"center","center"}
+		dgsElementData[buttonOff].ignoreParentTitle = true
 		dgsSetPosition(buttonOff,40,0,false)
 	end
 	return window

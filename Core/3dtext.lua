@@ -11,28 +11,34 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-
+--
 local getScreenFromWorldPosition = getScreenFromWorldPosition
+local assert = assert
+local type = type
 
 function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded)
-	assert(type(x) == "number","Bad argument @dgsCreate3DText at argument 1, expect a number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y))
-	assert(type(y) == "number","Bad argument @dgsCreate3DText at argument 3, expect a number got "..type(z))
+	local xCheck,yCheck,zCheck = type(x) == "number",type(y) == "number",type(z) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreate3DText at argument 1, expect a number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y)) end
+	if not zCheck then assert(false,"Bad argument @dgsCreate3DText at argument 3, expect a number got "..type(z)) end
 	local text3d = createElement("dgs-dx3dtext")
 	table.insert(dx3DTextTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
-	dgsSetData(text3d,"renderBuffer",{})
-	dgsSetData(text3d,"position",{x,y,z})
-	dgsSetData(text3d,"textSize",{sizeX or 1,sizeY or 1})
-	dgsSetData(text3d,"fixTextSize",false)
-	dgsSetData(text3d,"font",font or styleSettings.text3D.font or systemFont)
-	dgsSetData(text3d,"color",color or tocolor(255,255,255,255))
-	dgsSetData(text3d,"maxDistance",maxDistance or 80)
-	dgsSetData(text3d,"fadeDistance",maxDistance or 80)
-	dgsSetData(text3d,"dimension",-1)
-	dgsSetData(text3d,"interior",-1)
-	dgsSetData(text3d,"canBeBlocked",false)
-	dgsSetData(text3d,"subPixelPositioning",true)
+	dgsElementData[text3d] = {
+		renderBuffer = {},
+		position = {x,y,z},
+		textSize = {sizeX or 1,sizeY or 1},
+		fixTextSize = false,
+		font = font or styleSettings.text3D.font or systemFont,
+		color = color or 0xFFFFFFFF,
+		colorcoded = colorcoded or false,
+		maxDistance = maxDistance or 80,
+		fadeDistance = maxDistance or 80,
+		dimension = -1,
+		interior = -1,
+		canBeBlocked = false,
+		subPixelPositioning = true,
+	}
 	dgsAttachToTranslation(text3d,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[text3d]._translationText = text
@@ -40,7 +46,6 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	else
 		dgsSetData(text3d,"text",tostring(text))
 	end
-	dgsSetData(text3d,"colorcoded",colorcoded or false)
 	triggerEvent("onDgsCreate",text3d,sourceResource)
 	return text3d
 end
@@ -174,7 +179,6 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			local text = eleData.text
 			local font = eleData.font or systemFont
 			local subPixelPositioning = eleData.subPixelPositioning
-			print(canBeBlocked.checkBuildings)
 			if (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera))) then
 				local fadeMulti = 1
 				if maxDistance > fadeDistance and distance >= fadeDistance then

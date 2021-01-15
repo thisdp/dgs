@@ -15,12 +15,16 @@ local _dxDrawImage = _dxDrawImage
 local _dxDrawImageSection = _dxDrawImageSection
 --
 local mathFloor = math.floor
+local assert = assert
+local type = type
+local tonumber = tonumber
 
 function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
-	assert(type(x) == "number","Bad argument @dgsCreateTabPanel at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateTabPanel at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateTabPanel at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateTabPanel at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 4, expect number got "..type(sy)) end
 	if bgImage then
 		local eleType = dgsIsMaterialElement(bgImage)
 		assert(eleType == true,"Bad argument @dgsCreateTabPanel at argument 8, expect material got "..eleType)
@@ -28,21 +32,24 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
 	dgsSetParent(tabpanel,parent,true,true)
-	local tabHeight = tabHeight or styleSettings.tabpanel.tabHeight
-	dgsSetData(tabpanel,"tabHeight",{tabHeight,false})
-	dgsSetData(tabpanel,"tabMaxWidth",{10000,false})
-	dgsSetData(tabpanel,"tabMinWidth",{10,false})
-	dgsSetData(tabpanel,"bgColor",tonumber(bgColor) or styleSettings.tabpanel.bgColor)
-	dgsSetData(tabpanel,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.tabpanel.bgImage))
-	dgsSetData(tabpanel,"tabs",{})
-	dgsSetData(tabpanel,"font",styleSettings.tabpanel.font or systemFont)
-	dgsSetData(tabpanel,"selected",-1)
-	dgsSetData(tabpanel,"preSelect",-1)
-	dgsSetData(tabpanel,"tabPadding",styleSettings.tabpanel.tabPadding,true)
-	dgsSetData(tabpanel,"tabGapSize",styleSettings.tabpanel.tabGapSize,true)
-	dgsSetData(tabpanel,"scrollSpeed",styleSettings.tabpanel.scrollSpeed)
-	dgsSetData(tabpanel,"showPos",0)
-	dgsSetData(tabpanel,"tabLengthAll",0)
+	local style = styleSettings.tabpanel
+	local tabHeight = tabHeight or style.tabHeight
+	dgsElementData[tabpanel] = {
+		tabHeight = {tabHeight,false};
+		tabMaxWidth = {10000,false};
+		tabMinWidth = {10,false};
+		bgColor = tonumber(bgColor) or style.bgColor;
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage);
+		tabs = {};
+		font = style.font or systemFont;
+		selected = -1;
+		preSelect = -1;
+		tabPadding = style.tabPadding;
+		tabGapSize = style.tabGapSize;
+		scrollSpeed = style.scrollSpeed;
+		showPos = 0;
+		tabLengthAll = 0;
+	}
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
 	local abx = dgsElementData[tabpanel].absSize[1]
 	local renderTarget,err = dxCreateRenderTarget(abx,tabHeight,true,tabpanel)
@@ -51,25 +58,23 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	else
 		outputDebugString(err)
 	end
-	dgsSetData(tabpanel,"renderTarget",renderTarget)
+	dgsElementData[tabpanel].renderTarget = renderTarget
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
 end
 
 function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
+	local typeCheck =  dgsGetType(tabpanel) == "dgs-dxtabpanel"
+	if not typeCheck then assert(false,"Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..dgsGetType(tabpanel)) end
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
 	dgsSetParent(tab,tabpanel,true,true)
-	dgsSetData(tab,"parent",tabpanel)
-	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or getThisResource()])
+	local style = styleSettings.tab
 	local tabs = dgsElementData[tabpanel].tabs
 	local id = #tabs+1
 	table.insert(tabs,id,tab)
-	dgsSetData(tab,"id",id)
 	local w = dgsElementData[tabpanel].absSize[1]
-	dgsSetData(tab,"font",styleSettings.tab.font)
-	local font = styleSettings.tab.font or dgsElementData[tabpanel].font
+	local font = style.font or dgsElementData[tabpanel].font
 	local t_minWid,t_maxWid = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 	local wid = math.restrict(dxGetTextWidth(text,textSizex or 1,font),minwidth,maxwidth)
@@ -77,26 +82,30 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
 	local tabGapSize = dgsElementData[tabpanel].tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
-	dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll+wid+padding*2+gapSize*math.min(#tabs,1))
-	dgsSetData(tab,"width",wid,true)
-	dgsSetData(tab,"textColor",tonumber(textColor) or styleSettings.tab.textColor)
-	local textSizeX,textSizeY = tonumber(textSizex) or styleSettings.tab.textSize[1], tonumber(textSizex) or styleSettings.tab.textSize[2]
-	dgsSetData(tab,"textSize",{textSizeX,textSizeY})
-	dgsSetData(tab,"bgColor",tonumber(bgColor) or styleSettings.tab.bgColor or dgsElementData[tabpanel].bgColor)
-	dgsSetData(tab,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.tab.bgImage) or dgsElementData[tabpanel].bgImage)
-
-	local tabnorimg = tabnorimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[1])
-	local tabhovimg = tabhovimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[2])
-	local tabcliimg = tabcliimg or dgsCreateTextureFromStyle(styleSettings.tab.tabImage[3])
-	dgsSetData(tab,"tabImage",{tabnorimg,tabhovimg,tabcliimg})
-
-	local tabnorcolor = tabnorcolor or styleSettings.tab.tabColor[1]
-	local tabhovcolor = tabhovcolor or styleSettings.tab.tabColor[2]
-	local tabclicolor = tabclicolor or styleSettings.tab.tabColor[3]
-	dgsSetData(tab,"tabColor",{tabnorcolor,tabhovcolor,tabclicolor})
+	local textSizeX,textSizeY = tonumber(textSizex) or style.textSize[1], tonumber(textSizex) or style.textSize[2]
+	local tabnorimg = tabnorimg or dgsCreateTextureFromStyle(style.tabImage[1])
+	local tabhovimg = tabhovimg or dgsCreateTextureFromStyle(style.tabImage[2])
+	local tabcliimg = tabcliimg or dgsCreateTextureFromStyle(style.tabImage[3])
+	local tabnorcolor = tabnorcolor or style.tabColor[1]
+	local tabhovcolor = tabhovcolor or style.tabColor[2]
+	local tabclicolor = tabclicolor or style.tabColor[3]
+	dgsElementData[tab] = {
+		parent = tabpanel,
+		id = id,
+		font = style.font or systemFont,
+		tabLengthAll = dgsElementData[tabpanel].tabLengthAll+wid+padding*2+gapSize*math.min(#tabs,1),
+		width = wid,
+		textColor = tonumber(textColor) or style.textColor,
+		textSize = {textSizeX,textSizeY},
+		bgColor = tonumber(bgColor) or style.bgColor or dgsElementData[tabpanel].bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage) or dgsElementData[tabpanel].bgImage,
+		tabImage = {tabnorimg,tabhovimg,tabcliimg},
+		tabColor = {tabnorcolor,tabhovcolor,tabclicolor},
+	}
 	if dgsElementData[tabpanel].selected == -1 then
-		dgsSetData(tabpanel,"selected",id)
+		dgsElementData[tabpanel].selected = id
 	end
+	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[tab]._translationText = text
 		dgsSetData(tab,"text",text)

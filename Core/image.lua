@@ -24,21 +24,23 @@ function dgsCreateImage(x,y,w,h,img,relative,parent,color)
 	if not __w then assert(false,"Bad argument @dgsCreateImage at argument 3, expect number got "..type(w)) end
 	if not __h then assert(false,"Bad argument @dgsCreateImage at argument 4, expect number got "..type(h)) end
 	local image = createElement("dgs-dximage")
-	dgsSetData(image,"renderBuffer",{
-		UVSize = {},
-		UVPos = {},
-	})
 	dgsSetType(image,"dgs-dximage")
 	dgsSetParent(image,parent,true,true)
 	local texture = img
 	if img and type(img) == "string" then
-		texture,textureExists = dgsImageCreateTextureExternal(image,sourceResource,texture)
+		texture = dgsImageCreateTextureExternal(image,sourceResource,texture)
 		if not isElement(texture) then return false end
 	end
-	dgsSetData(image,"image",texture)
-	dgsSetData(image,"color",color or 0xFFFFFFFF)
-	dgsSetData(image,"rotationCenter",{0,0}) --0~1
-	dgsSetData(image,"rotation",0) --0~360
+	dgsElementData[image] = {
+		renderBuffer = {
+			UVSize = {},
+			UVPos = {},
+		},
+		image = texture,
+		color = color or 0xFFFFFFFF,
+		rotationCenter = {0,0}, -- 0~1
+		rotation = 0, -- 0~360
+	}
 	calculateGuiPositionSize(image,__x,__y,relative or false,__w,__h,relative or false,true)
 	triggerEvent("onDgsCreate",image,sourceResource)
 	return image

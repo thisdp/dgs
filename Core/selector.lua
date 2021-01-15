@@ -14,6 +14,9 @@ local dxSetBlendMode = dxSetBlendMode
 --
 local tableInsert = table.insert
 local tableRemove = table.remove
+local assert = assert
+local type = type
+local tonumber = tonumber
 --[[
 Selector Data Structure:
 {
@@ -23,40 +26,42 @@ Selector Data Structure:
 }
 ]]
 function dgsCreateSelector(x,y,sx,sy,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor)
-	assert(type(x) == "number","Bad argument @dgsCreateSelector at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateSelector at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateSelector at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateSelector at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateSelector at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateSelector at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateSelector at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateSelector at argument 4, expect number got "..type(sy)) end
 	local selector = createElement("dgs-dxselector")
 	dgsSetType(selector,"dgs-dxselector")
 	dgsSetParent(selector,parent,true,true)
+	local style = styleSettings.selector
 	local textSizeX,textSizeY = tonumber(scalex),tonumber(scaley)
-	dgsSetData(selector,"itemTextColor",textColor or styleSettings.selector.itemTextColor)
-	dgsSetData(selector,"itemTextSize",{textSizeX or styleSettings.selector.itemTextSize[1],textSizeY or styleSettings.selector.itemTextSize[2]})
-	dgsSetData(selector,"clip",false)
-	dgsSetData(selector,"selectorText",{textSizeX or styleSettings.selector.selectorText[1],textSizeY or styleSettings.selector.selectorText[2]})
-	dgsSetData(selector,"selectorTextSize",styleSettings.selector.selectorTextSize)
-	dgsSetData(selector,"selectorTextColor",styleSettings.selector.selectorTextColor)
-	dgsSetData(selector,"selectorSize",{nil,1,true})
-	dgsSetData(selector,"selectorImageColorLeft",styleSettings.selector.selectorImageColorLeft)
-	dgsSetData(selector,"selectorImageLeft",styleSettings.selector.selectorImageLeft)
-	dgsSetData(selector,"selectorImageColorRight",styleSettings.selector.selectorImageColorRight)
-	dgsSetData(selector,"selectorImageRight",styleSettings.selector.selectorImageRight)
-	dgsSetData(selector,"colorcoded",false)
-
-	dgsSetData(selector,"quickLeap",0.02)
-	dgsSetData(selector,"quickLeapState",0)
-	dgsSetData(selector,"quickLeapTick",0)
-	dgsSetData(selector,"scrollChangeCount",1)
-
-	dgsSetData(selector,"enableScroll",true)
-	dgsSetData(selector,"defaultText","-")
-	dgsSetData(selector,"alignment",{"center","center"})
-	dgsSetData(selector,"itemData",{})
-	dgsSetData(selector,"subPixelPositioning",false)
-	dgsSetData(selector,"shadow",{shadowoffsetx,shadowoffsety,shadowcolor})
-	dgsSetData(selector,"font",styleSettings.selector.font or systemFont)
-	dgsSetData(selector,"selectedItem",-1)
+	dgsElementData[selector] = {
+		itemTextColor = tonumber(textColor or style.itemTextColor),
+		itemTextSize = {textSizeX,textSizeY or style.itemTextSize[2]},
+		clip = false,
+		selectorText = {textSizeX or style.selectorText[1],textSizeY or style.selectorText[2]},
+		selectorTextSize = style.selectorTextSize,
+		selectorTextColor = style.selectorTextColor,
+		selectorSize = {nil,1,true},
+		selectorImageColorLeft = style.selectorImageColorLeft,
+		selectorImageLeft = style.selectorImageLeft,
+		selectorImageColorRight = style.selectorImageColorRight,
+		selectorImageRight = style.selectorImageRight,
+		colorcoded = false,
+		quickLeap = 0.02,
+		quickLeapState = 0,
+		quickLeapTick = 0,
+		scrollChangeCount = 1,
+		enableScroll = true,
+		defaultText = "-",
+		alignment = {"center","center"},
+		itemData = {},
+		subPixelPositioning = false,
+		shadow = {shadowoffsetx,shadowoffsety,shadowcolor},
+		font = style.font or systemFont,
+		selectedItem = -1,
+	}
 	calculateGuiPositionSize(selector,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",selector,sourceResource)
 	return selector

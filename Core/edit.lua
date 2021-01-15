@@ -55,34 +55,35 @@ function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 	local edit = createElement("dgs-dxedit")
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetParent(edit,parent,true,true)
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.edit.textSize[1], tonumber(scaley) or styleSettings.edit.textSize[2]
+	local style = styleSettings.edit
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
 	dgsElementData[edit] = {
 		text = "",
-		bgColor = bgColor or styleSettings.edit.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(styleSettings.edit.bgImage),
-		bgColorBlur = styleSettings.edit.bgColorBlur,
-		bgImageBlur = dgsCreateTextureFromStyle(styleSettings.edit.bgImageBlur),
+		bgColor = bgColor or style.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgColorBlur = style.bgColorBlur,
+		bgImageBlur = dgsCreateTextureFromStyle(style.bgImageBlur),
 		textSize = {textSizeX,textSizeY},
-		font = styleSettings.edit.font or systemFont,
-		textColor = textColor or styleSettings.edit.textColor,
+		font = style.font or systemFont,
+		textColor = textColor or style.textColor,
 		caretPos = 0,
 		selectFrom = 0,
 		masked = false,
-		maskText = styleSettings.edit.maskText,
+		maskText = style.maskText,
 		showPos = 0,
-		placeHolder = styleSettings.edit.placeHolder,
+		placeHolder = style.placeHolder,
 		placeHolderFont = systemFont,
-		placeHolderColor = styleSettings.edit.placeHolderColor,
-		placeHolderColorcoded = styleSettings.edit.placeHolderColorcoded,
-		placeHolderOffset = styleSettings.edit.placeHolderOffset,
-		placeHolderIgnoreRenderTarget = styleSettings.edit.placeHolderIgnoreRenderTarget,
-		padding = styleSettings.edit.padding,
+		placeHolderColor = style.placeHolderColor,
+		placeHolderColorcoded = style.placeHolderColorcoded,
+		placeHolderOffset = style.placeHolderOffset,
+		placeHolderIgnoreRenderTarget = style.placeHolderIgnoreRenderTarget,
+		padding = style.padding,
 		alignment = {"left","center"},
-		caretStyle = styleSettings.edit.caretStyle,
-		caretThick = styleSettings.edit.caretThick,
-		caretOffset = styleSettings.edit.caretOffset,
-		caretColor = styleSettings.edit.caretColor,
-		caretHeight = styleSettings.edit.caretHeight,
+		caretStyle = style.caretStyle,
+		caretThick = style.caretThick,
+		caretOffset = style.caretOffset,
+		caretColor = style.caretColor,
+		caretHeight = style.caretHeight,
 		readOnly = false,
 		readOnlyCaretShow = false,
 		clearSelection = true,
@@ -97,13 +98,13 @@ function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 		autoCompleteSkip = false,
 		autoComplete = {},
 		autoCompleteConfirmKey = "tab",
-		selectColor = styleSettings.edit.selectColor,
-		selectColorBlur = styleSettings.edit.selectColorBlur,
+		selectColor = style.selectColor,
+		selectColorBlur = style.selectColorBlur,
 		historyMaxRecords = 100,
 		enableRedoUndoRecord = true,
 		undoHistory = {},
 		redoHistory = {},
-		typingSound = styleSettings.edit.typingSound,
+		typingSound = style.typingSound,
 		maxLength = 0x3FFFFFFF,
 		rtl = nil,	--nil: auto; false:disabled; true: enabled
 		editCounts = editsCount, --Tab Switch
@@ -120,7 +121,7 @@ function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 	else
 		outputDebugString(err)
 	end
-	dgsSetData(edit,"renderTarget",renderTarget)
+	dgsElementData[edit].renderTarget = renderTarget
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
 	addEventHandler("onDgsTextChange",edit,function()

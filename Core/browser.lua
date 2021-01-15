@@ -1,21 +1,31 @@
+--Dx Functions
+local dxDrawImage = dxDrawImage
+--
+local assert = assert
+local type = type
+
 function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw,browserh,color)
-	assert(type(x) == "number","Bad argument @dgsCreateBrowser at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateBrowser at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateBrowser at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateBrowser at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 4, expect number got "..type(sy)) end
 	local browser = createBrowser(1,1,isLocal and true or false,transparent and true or false)
-	assert(isElement(browser),"Bad argument @dgsCreateBrowser, can't create browser with 'createBrowser' !")
+	local browserCheck = isElement(browser)
+	if not browserCheck then assert(false,"Bad argument @dgsCreateBrowser, can't create browser with 'createBrowser' !") end
 	dgsSetType(browser,"dgs-dxbrowser")
 	dgsSetParent(browser,parent,true,true)
-	dgsSetData(browser,"renderBuffer",{})
-	dgsSetData(browser,"color",color or tocolor(255,255,255,255))
-	dgsSetData(browser,"transparent",transparent and true or false)
-	dgsSetData(browser,"isLocal",isLocal or false)
-	dgsSetData(browser,"requestCommand",{})
+	dgsElementData[browser] = {
+		renderBuffer = {},
+		color = color or white,
+		transparent = transparent and true or false,
+		isLocal = isLocal and true or false,
+		requestCommand = {},
+	}
 	calculateGuiPositionSize(browser,x,y,relative,sx,sy,relative,true)
 	local size = dgsElementData[browser].absSize
 	resizeBrowser(browser,browserw or size[1],browserh or size[2])
-	dgsSetData(browser,"browserSize",{browserw or size[1],browserh or size[2]})
+	dgsElementData[browser].browserSize = {browserw or size[1],browserh or size[2]}
 	triggerEvent("onDgsCreate",browser,sourceResource)
 	addEventHandler("onDgsMouseMove",browser,function(x,y)
 		local size = dgsElementData[source].absSize
