@@ -22,34 +22,35 @@ function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,s
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
 	dgsSetParent(cb,parent,true,true)
+	local style = styleSettings.checkbox
 
-	local imageUnchecked = styleSettings.checkbox.image_f
+	local imageUnchecked = style.image_f
 	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
 	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
 	cliimg_f = cliimg_f or dgsCreateTextureFromStyle(imageUnchecked[3])
-	local colorUnchecked = styleSettings.checkbox.color_f
+	local colorUnchecked = style.color_f
 	norcolor_f = norcolor_f or colorUnchecked[1]
 	hovcolor_f = hovcolor_f or colorUnchecked[2]
 	clicolor_f = clicolor_f or colorUnchecked[3]
 
-	local imageChecked = styleSettings.checkbox.image_t
+	local imageChecked = style.image_t
 	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
 	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
 	cliimg_t = cliimg_t or dgsCreateTextureFromStyle(imageChecked[3])
-	local colorChecked = styleSettings.checkbox.color_t
+	local colorChecked = style.color_t
 	norcolor_t = norcolor_t or colorChecked[1]
 	hovcolor_t = hovcolor_t or colorChecked[2]
 	clicolor_t = clicolor_t or colorChecked[3]
 
-	local imageIndeterminate = styleSettings.checkbox.image_i
+	local imageIndeterminate = style.image_i
 	norimg_i = norimg_i or dgsCreateTextureFromStyle(imageIndeterminate[1])
 	hovimg_i = hovimg_i or dgsCreateTextureFromStyle(imageIndeterminate[2])
 	cliimg_i = cliimg_i or dgsCreateTextureFromStyle(imageIndeterminate[3])
-	local colorIndeterminate = styleSettings.checkbox.color_i
+	local colorIndeterminate = style.color_i
 	norcolor_i = norcolor_i or colorIndeterminate[1]
 	hovcolor_i = hovcolor_i or colorIndeterminate[2]
 	clicolor_i = clicolor_i or colorIndeterminate[3]
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.checkbox.textSize[1], tonumber(scaley) or styleSettings.checkbox.textSize[2]
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
 	dgsElementData[cb] = {
 		image_i = {norimg_i,hovimg_i,cliimg_i},
 		image_t = {norimg_t,hovimg_t,cliimg_t},
@@ -58,12 +59,12 @@ function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,s
 		color_t = {norcolor_t,hovcolor_t,clicolor_t},
 		color_f = {norcolor_f,hovcolor_f,clicolor_f},
 		cbParent = dgsIsDxElement(parent) and parent or resourceRoot,
-		textColor = textColor or styleSettings.checkbox.textColor,
+		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
-		textPadding = styleSettings.checkbox.textPadding or {2,false},
-		buttonSize = styleSettings.checkbox.buttonSize,
+		textPadding = style.textPadding or {2,false},
+		buttonSize = style.buttonSize,
 		shadow = {_,_,_},
-		font = styleSettings.checkbox.font or systemFont,
+		font = style.font or systemFont,
 		clip = false,
 		wordbreak = false,
 		colorcoded = false,

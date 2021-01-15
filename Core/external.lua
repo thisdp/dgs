@@ -2,10 +2,12 @@ function dgsCreateExternal(externalType,externalRef,renderEvent)
 	local external = createElement("dgs-dxexternal")
 	table.insert(CenterFatherTable,external)
 	dgsSetType(external,"dgs-dxexternal")
-	dgsSetData(external,"externalType",externalType)
-	dgsSetData(external,"externalRef",externalRef)
-	dgsSetData(external,"externalRenderer",renderEvent)
-	dgsSetData(external,"externalFunction",{})
+	dgsElementData[external] = {
+		externalType = externalType,
+		externalRef = externalRef,
+		externalRenderer = renderEvent,
+		externalFunction = {},
+	}
 	addEvent(renderEvent,true)
 	calculateGuiPositionSize(external,0,0,false,0,0,false,true)
 	triggerEvent("onDgsCreate",external,sourceResource)

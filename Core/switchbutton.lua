@@ -14,39 +14,51 @@ local dxSetBlendMode = dxSetBlendMode
 --
 local min = math.min
 local max = math.max
---
+local assert = assert
+local type = type
+
 function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
-	assert(type(x) == "number","Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateSwitchButton at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 4, expect number got "..type(sy)) end
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
 	dgsSetParent(switchbutton,parent,true,true)
-	dgsSetData(switchbutton,"renderBuffer",{})
-
-	dgsSetData(switchbutton,"colorOn",styleSettings.switchbutton.colorOn)
-	dgsSetData(switchbutton,"colorOff",styleSettings.switchbutton.colorOff)
-	dgsSetData(switchbutton,"cursorColor",styleSettings.switchbutton.cursorColor)
-
-	local imageOn = styleSettings.switchbutton.imageOn
-	local imageNormalOn = dgsCreateTextureFromStyle(imageOn[1])
-	local imageHoverOn = dgsCreateTextureFromStyle(imageOn[2])
-	local imageClickOn = dgsCreateTextureFromStyle(imageOn[3])
-	dgsSetData(switchbutton,"imageOn",{imageNormalOn,imageHoverOn,imageClickOn})
-
-	local imageOff = styleSettings.switchbutton.imageOff
-	local imageNormalOff = dgsCreateTextureFromStyle(imageOff[1])
-	local imageHoverOff = dgsCreateTextureFromStyle(imageOff[2])
-	local imageClickOff = dgsCreateTextureFromStyle(imageOff[3])
-	dgsSetData(switchbutton,"imageOff",{imageNormalOff,imageHoverOff,imageClickOff})
-
-	local cursorImage = styleSettings.switchbutton.cursorImage
-	local cursorNormal = dgsCreateTextureFromStyle(cursorImage[1])
-	local cursorHover = dgsCreateTextureFromStyle(cursorImage[2])
-	local cursorClick = dgsCreateTextureFromStyle(cursorImage[3])
-	dgsSetData(switchbutton,"cursorImage",{cursorNormal,cursorHover,cursorClick})
-
+	local style = styleSettings.switchbutton
+	local imageOn = style.imageOn
+	local norimg_n,hovimg_n,cliimg_n = dgsCreateTextureFromStyle(imageOn[1]),dgsCreateTextureFromStyle(imageOn[2]),dgsCreateTextureFromStyle(imageOn[3])
+	local imageOff = style.imageOff
+	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(imageOff[1]),dgsCreateTextureFromStyle(imageOff[2]),dgsCreateTextureFromStyle(imageOff[3])
+	local cursorImage = style.cursorImage
+	local norimg_c,hovimg_c,cliimg_c = dgsCreateTextureFromStyle(cursorImage[1]),dgsCreateTextureFromStyle(cursorImage[2]),dgsCreateTextureFromStyle(cursorImage[3])
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	dgsElementData[switchbutton] = {
+		renderBuffer = {};
+		colorOn = style.colorOn,
+		colorOff = style.colorOff,
+		cursorColor = style.cursorColor,
+		imageOn = {norimg_o,hovimg_o,cliimg_o},
+		imageOff = {norimg_f,hovimg_f,cliimg_f},
+		cursorImage = {norimg_c,hovimg_c,cliimg_c},
+		textColorOn = tonumber(textColorOn) or style.textColorOn,
+		textColorOff = tonumber(textColorOff) or style.textColorOff,
+		textSize = {textSizeX,textSizeY},
+		shadow = {nil,nil,nil},
+		font = style.font or systemFont,
+		textOffset = {0.25,true},
+		state = state and true or false,
+		cursorMoveSpeed = 0.2,
+		stateAnim = state and 1 or -1,
+		clickButton = "left"; --"left":LMB;"middle":Wheel;"right":RM,
+		clickState = "up"; --"down":Down;"up":U,
+		cursorWidth = style.cursorWidth,
+		clip = false,
+		wordbreak = false,
+		colorcoded = false,
+		style = 1,
+	}
 	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or getThisResource()])
 	if type(textOn) == "table" then
 		dgsElementData[switchbutton]._translationtextOn = textOn
@@ -56,26 +68,8 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 		dgsElementData[switchbutton]._translationtextOff = textOff
 		textOff = dgsTranslate(switchbutton,textOff,sourceResource)
 	end
-	dgsSetData(switchbutton,"textOn",tostring(textOn))
-	dgsSetData(switchbutton,"textOff",tostring(textOff))
-	dgsSetData(switchbutton,"textColorOn",tonumber(textColorOn) or styleSettings.switchbutton.textColorOn)
-	dgsSetData(switchbutton,"textColorOff",tonumber(textColorOff) or styleSettings.switchbutton.textColorOff)
-
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.switchbutton.textSize[1], tonumber(scaley) or styleSettings.switchbutton.textSize[2]
-	dgsSetData(switchbutton,"textSize",{textSizeX,textSizeY})
-	dgsSetData(switchbutton,"shadow",{_,_,_})
-	dgsSetData(switchbutton,"font",styleSettings.switchbutton.font or systemFont)
-	dgsSetData(switchbutton,"textOffset",{0.25,true})
-	dgsSetData(switchbutton,"state",state and true or false)
-	dgsSetData(switchbutton,"cursorMoveSpeed",0.2)
-	dgsSetData(switchbutton,"stateAnim",state and 1 or -1)
-	dgsSetData(switchbutton,"clickButton","left")	--"left":LMB;"middle":Wheel;"right":RMB
-	dgsSetData(switchbutton,"clickState","up")	--"down":Down;"up":Up
-	dgsSetData(switchbutton,"cursorWidth",styleSettings.switchbutton.cursorWidth)
-	dgsSetData(switchbutton,"clip",false)
-	dgsSetData(switchbutton,"wordbreak",false)
-	dgsSetData(switchbutton,"colorcoded",false)
-	dgsSetData(switchbutton,"style",1)	--default
+	dgsElementData[switchbutton].textOn = tostring(textOn)
+	dgsElementData[switchbutton].textOff = tostring(textOff)
 	calculateGuiPositionSize(switchbutton,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",switchbutton,sourceResource)
 	return switchbutton

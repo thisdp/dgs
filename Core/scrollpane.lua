@@ -15,41 +15,46 @@ local _dxDrawImage = _dxDrawImage
 local _dxDrawImageSection = _dxDrawImageSection
 --
 local assert = assert
+local type = type
 local lerp = math.lerp
 --
 function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
-	assert(type(x) == "number","Bad argument @dgsCreateScrollPane at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateScrollPane at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateScrollPane at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 4, expect number got "..type(sy)) end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	dgsSetParent(scrollpane,parent,true,true)
-	dgsSetData(scrollpane,"renderBuffer",{})
-	local scbThick = styleSettings.scrollpane.scrollBarThick
-	dgsSetData(scrollpane,"scrollBarThick",scbThick,true)
-	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
-	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
-	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
+	local style = styleSettings.scrollpane
+	local scbThick = style.scrollBarThick
+	dgsElementData[scrollpane] = {
+		renderBuffer = {},
+		scrollBarThick = scbThick,
+		maxChildSize = {0,0},
+		horizontalMoveOffsetTemp = 0,
+		verticalMoveOffsetTemp = 0,
+		moveHardness = {0.1,0.9},
+		childSizeRef = {{},{}}, --Horizontal,Vertical //to optimize
+		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
+		configNextFrame = false,
+		mouseWheelScrollBar = false, --false:vertical; true:horizontal
+		scrollBarLength = {},
+		bgColor = false,
+		bgImage = false,
+		sourceTexture = false,
+	}
 	local renderTarget,err = dxCreateRenderTarget(sx,sy,true,scrollpane)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
 	else
 		outputDebugString(err)
 	end
-	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
-	dgsSetData(scrollpane,"maxChildSize",{0,0})
-	dgsSetData(scrollpane,"horizontalMoveOffsetTemp",0)
-	dgsSetData(scrollpane,"verticalMoveOffsetTemp",0)
-	dgsSetData(scrollpane,"moveHardness",{0.1,0.9})
-	--dgsSetData(scrollpane,"childSizeRef",{{},{}}) --Horizontal,Vertical //to optimize
-	dgsSetData(scrollpane,"scrollBarState",{nil,nil},true) --true: force on; false: force off; nil: auto
-	dgsSetData(scrollpane,"configNextFrame",false)
-	dgsSetData(scrollpane,"mouseWheelScrollBar",false) --false:vertical; true:horizontal
-	dgsSetData(scrollpane,"scrollBarLength",{},true)
-	dgsSetData(scrollpane,"bgColor",false)
-	dgsSetData(scrollpane,"bgImage",false)
-	dgsSetData(scrollpane,"sourceTexture",false)
+	dgsElementData[scrollpane].renderTarget_parent = renderTarget
+	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
+	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
+	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local titleOffset = 0
 	if isElement(parent) then
 		if not dgsElementData[scrollpane].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then

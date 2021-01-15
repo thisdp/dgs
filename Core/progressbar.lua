@@ -12,6 +12,10 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local assert = assert
+local type = type
+local isElement = isElement
+
 ProgressBarShaders = {}
 ProgressBarStyle = {
 	["normal-horizontal"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
@@ -142,38 +146,44 @@ ProgressBarStyle = {
 }
 
 function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode)
-	assert(type(x) == "number","Bad argument @dgsCreateProgressBar at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateProgressBar at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateProgressBar at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateProgressBar at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 4, expect number got "..type(sy)) end
 	if isElement(bgImage) then
 		local imgtyp = getElementType(bgImage)
-		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 7, expect texture got "..getElementType(bgImage))
+		local imgCheck = imgtyp == "texture" or imgtyp == "shader"
+		if not imgCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 7, expect texture got "..imgtyp) end
 	end
 	if isElement(indicatorImage) then
 		local imgtyp = getElementType(indicatorImage)
-		assert(imgtyp == "texture" or imgtyp == "shader","Bad argument @dgsCreateProgressBar at argument 9, expect texture got "..getElementType(indicatorImage))
+		local imgCheck = imgtyp == "texture" or imgtyp == "shader"
+		if not imgCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 9, expect texture got "..imgtyp) end
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
 	dgsSetParent(progressbar,parent,true,true)
-	dgsSetData(progressbar,"renderBuffer",{})
-	dgsSetData(progressbar,"bgColor",bgColor or styleSettings.progressbar.bgColor)
-	dgsSetData(progressbar,"bgImage",bgImage or dgsCreateTextureFromStyle(styleSettings.progressbar.bgImage))
-	dgsSetData(progressbar,"indicatorColor",indicatorColor or styleSettings.progressbar.indicatorColor)
-	dgsSetData(progressbar,"indicatorImage",indicatorImage or dgsCreateTextureFromStyle(styleSettings.progressbar.indicatorImage))
-	dgsSetData(progressbar,"indicatorMode",indicatorMode and true or false)
-	dgsSetData(progressbar,"padding",styleSettings.progressbar.padding)
-	dgsSetData(progressbar,"styleData",{})
-	dgsSetData(progressbar,"style","normal-horizontal")
-	dgsSetData(progressbar,"progress",0)
-	dgsSetData(progressbar,"map",{0,100})
+	local style = styleSettings.progressbar
+	dgsElementData[progressbar] = {
+		renderBuffer = {},
+		bgColor = bgColor or style.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		indicatorColor = indicatorColor or style.indicatorColor,
+		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(style.indicatorImage),
+		indicatorMode = indicatorMode and true  or false,
+		padding = style.padding,
+		styleData = {},
+		style = "normal-horizontal",
+		progress = 0,
+		map = {0,100},
+	}
 	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
 	local mx,my = false,false
 	if isElement(indicatorImage) then
 		mx,my = dxGetMaterialSize(indicatorImage)
 	end
-	dgsSetData(progressbar,"indicatorUVSize",{mx,my})
+	dgsElementData[progressbar].indicatorUVSize = {mx,my}
 	triggerEvent("onDgsCreate",progressbar,sourceResource)
 	return progressbar
 end

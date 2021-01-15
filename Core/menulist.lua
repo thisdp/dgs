@@ -11,12 +11,16 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+
+local assert = assert
+local type = type
 --
 function dgsCreateMenuList(x,y,sx,sy,data,relative,parent)
-	assert(type(x) == "number","Bad argument @dgsCreateMenuList at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateMenuList at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateMenuList at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateMenuList at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateMenuList at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateMenuList at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateMenuList at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateMenuList at argument 4, expect number got "..type(sy)) end
 	local menulist = createElement("dgs-dxmenulist")
 	dgsSetParent(menulist,parent,true,true)
 	dgsSetType(menulist,"dgs-dxmenulist")

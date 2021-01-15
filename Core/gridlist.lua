@@ -37,40 +37,41 @@ function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTe
 	if not __y then assert(false,"Bad argument @dgsCreateGridList at argument 2, expect number got "..type(y)) end
 	if not __w then assert(false,"Bad argument @dgsCreateGridList at argument 3, expect number got "..type(w)) end
 	if not __h then assert(false,"Bad argument @dgsCreateGridList at argument 4, expect number got "..type(h)) end
+	local style = styleSettings.gridlist
 	local relative = relative or false
-	local scbThick = styleSettings.gridlist.scrollBarThick
-	local columnHeight = tonumber(columnHeight) or styleSettings.gridlist.columnHeight
-	local rownorc = rownorc or styleSettings.gridlist.rowColor[1]
-	local rowhovc = rowhovc or styleSettings.gridlist.rowColor[2]
-	local rowselc = rowselc or styleSettings.gridlist.rowColor[3]
-	local rownori = rownori or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[1])
-	local rowhovi = rowhovi or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[2])
-	local rowseli = rowseli or dgsCreateTextureFromStyle(styleSettings.gridlist.rowImage[3])
+	local scbThick = style.scrollBarThick
+	local columnHeight = tonumber(columnHeight) or style.columnHeight
+	local rownorc = rownorc or style.rowColor[1]
+	local rowhovc = rowhovc or style.rowColor[2]
+	local rowselc = rowselc or style.rowColor[3]
+	local rownori = rownori or dgsCreateTextureFromStyle(style.rowImage[1])
+	local rowhovi = rowhovi or dgsCreateTextureFromStyle(style.rowImage[2])
+	local rowseli = rowseli or dgsCreateTextureFromStyle(style.rowImage[3])
 	local gridlist = createElement("dgs-dxgridlist")
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsSetParent(gridlist,parent,true,true)
 	dgsElementData[gridlist] = {
 		autoSort = true,
-		backgroundOffset = styleSettings.gridlist.backgroundOffset,
-		bgImage = bgImage or dgsCreateTextureFromStyle(styleSettings.gridlist.bgImage),
-		bgColor = bgColor or styleSettings.gridlist.bgColor,
+		backgroundOffset = style.backgroundOffset,
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgColor = bgColor or style.bgColor,
 		colorcoded = false,
 		clip = true,
-		columnColor = columnColor or styleSettings.gridlist.columnColor,
+		columnColor = columnColor or style.columnColor,
 		columnData = {},
 		columnHeight = columnHeight,
-		columnImage = columnImage or dgsCreateTextureFromStyle(styleSettings.gridlist.columnImage),
+		columnImage = columnImage or dgsCreateTextureFromStyle(style.columnImage),
 		columnMoveOffset = 0,
 		columnMoveOffsetTemp = 0,
-		columnTextColor = columnTextColor or styleSettings.gridlist.columnTextColor,
+		columnTextColor = columnTextColor or style.columnTextColor,
 		columnTextPosOffset = {0,0},
-		columnTextSize = styleSettings.gridlist.columnTextSize,
-		columnOffset = styleSettings.gridlist.columnOffset,
+		columnTextSize = style.columnTextSize,
+		columnOffset = style.columnOffset,
 		columnRelative = true,
 		columnShadow = false,
-		defaultColumnOffset = styleSettings.gridlist.defaultColumnOffset,
+		defaultColumnOffset = style.defaultColumnOffset,
 		enableNavigation = true,
-		font = styleSettings.gridlist.font or systemFont,
+		font = style.font or systemFont,
 		guiCompat = false,
 		itemClick = {},
 		lastSelectedItem = {1,1},
@@ -85,12 +86,12 @@ function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTe
 		preSelect = {},
 		rowColor = {rownorc,rowhovc,rowselc},	--Normal/Hover/Selected
 		rowData = {},
-		rowHeight = styleSettings.gridlist.rowHeight,
+		rowHeight = style.rowHeight,
 		rowImage = {rownori,rowhovi,rowseli},	--Normal/Hover/Selected
 		rowMoveOffset = 0,
 		rowMoveOffsetTemp = 0,
-		rowTextSize = styleSettings.gridlist.rowTextSize,
-		rowTextColor = styleSettings.gridlist.rowTextColor,
+		rowTextSize = style.rowTextSize,
+		rowTextColor = style.rowTextColor,
 		rowTextPosOffset = {0,0},
 		rowSelect = {},
 		rowShadow = false,
@@ -99,7 +100,7 @@ function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTe
 		scrollBarState = {nil,nil},
 		scrollFloor = {false,false},--move offset ->int or float
 		scrollSize = 60,			--60 pixels
-		sectionColumnOffset = styleSettings.gridlist.sectionColumnOffset,
+		sectionColumnOffset = style.sectionColumnOffset,
 		sectionFont = systemFont,
 		selectedColumn = -1,
 		selectionMode = 1,

@@ -18,20 +18,21 @@ local assert = assert
 local type = type
 
 function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
-	assert(type(x) == "number","Bad argument @dgsCreateScrollBar at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateScrollBar at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateScrollBar at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy)) end
 	local isHorizontal = isHorizontal or false
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
 	dgsSetParent(scrollbar,parent,true,true)
-	dgsSetData(scrollbar,"renderBuffer",{})
-	local deprecatedImage = styleSettings.scrollbar.image or {}
-	local arrowImage = arrowImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.arrowImage) or dgsCreateTextureFromStyle(deprecatedImage[1])
-	local cursorImage = cursorImage or dgsCreateTextureFromStyle(styleSettings.scrollbar.cursorImage) or dgsCreateTextureFromStyle(deprecatedImage[2])
+	local style = styleSettings.scrollbar
+	local deprecatedImage = style.image or {}
+	local arrowImage = arrowImage or dgsCreateTextureFromStyle(style.arrowImage) or dgsCreateTextureFromStyle(deprecatedImage[1])
+	local cursorImage = cursorImage or dgsCreateTextureFromStyle(style.cursorImage) or dgsCreateTextureFromStyle(deprecatedImage[2])
 	if not troughImage then
-		troughImage = isHorizontal and styleSettings.scrollbar.troughImageHorizontal or styleSettings.scrollbar.troughImage
+		troughImage = isHorizontal and style.troughImageHorizontal or style.troughImage
 		if troughImage and type(troughImage) == "table" then
 			if type(troughImage[1]) == "table" then
 				troughImage = {dgsCreateTextureFromStyle(troughImage[1]),dgsCreateTextureFromStyle(troughImage[2])}
@@ -41,29 +42,30 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 		end
 	end
 	dgsElementData[scrollbar] = {
-		arrowBgColor = styleSettings.scrollbar.arrowBgColor or false;
-		arrowColor = {arrowColorNormal or styleSettings.scrollbar.arrowColor[1],arrowColorHover or styleSettings.scrollbar.arrowColor[2],arrowColorClick or styleSettings.scrollbar.arrowColor[3]};
-		arrowImage = arrowImage;
-		arrowWidth = styleSettings.scrollbar.arrowWidth or styleSettings.scrollbar.cursorWidth or {1,true};
-		currentGrade = 0;
-		cursorColor = {cursorColorNormal or styleSettings.scrollbar.cursorColor[1],cursorColorHover or styleSettings.scrollbar.cursorColor[2],cursorColorClick or styleSettings.scrollbar.cursorColor[3]};
-		cursorImage = cursorImage;
-		cursorWidth = styleSettings.scrollbar.cursorWidth or {1,true};
-		grades = false;
-		imageRotation = styleSettings.scrollbar.imageRotation;
-		isHorizontal = isHorizontal; --vertical or horizontal
-		length = {30,false};
-		locked = false;
-		map = {0,100};
-		minLength = 5;
-		multiplier = {1,false};
-		position = 0;
-		scrollArrow = styleSettings.scrollbar.scrollArrow;
-		troughColor = troughColor or styleSettings.scrollbar.troughColor;
-		troughImage = troughImage;
-		troughClickAction = "none";
-		troughWidth = styleSettings.scrollbar.troughWidth or styleSettings.scrollbar.cursorWidth or {1,true};
-		wheelReversed = false;
+		renderBuffer = {},
+		arrowBgColor = style.arrowBgColor or false,
+		arrowColor = {arrowColorNormal or style.arrowColor[1],arrowColorHover or style.arrowColor[2],arrowColorClick or style.arrowColor[3]},
+		arrowImage = arrowImage,
+		arrowWidth = style.arrowWidth or style.cursorWidth or {1,true},
+		currentGrade = 0,
+		cursorColor = {cursorColorNormal or style.cursorColor[1],cursorColorHover or style.cursorColor[2],cursorColorClick or style.cursorColor[3]},
+		cursorImage = cursorImage,
+		cursorWidth = style.cursorWidth or {1,true},
+		grades = false,
+		imageRotation = style.imageRotation,
+		isHorizontal = isHorizontal; --vertical or horizonta,
+		length = {30,false},
+		locked = false,
+		map = {0,100},
+		minLength = 5,
+		multiplier = {1,false},
+		position = 0,
+		scrollArrow = style.scrollArrow,
+		troughColor = troughColor or style.troughColor,
+		troughImage = troughImage,
+		troughClickAction = "none",
+		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
+		wheelReversed = false,
 	}
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar,sourceResource)

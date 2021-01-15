@@ -18,32 +18,33 @@ function dgsCreateButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,no
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
 	dgsSetParent(button,parent,true,true)
-	local norcolor = norcolor or styleSettings.button.color[1]
-	local hovcolor = hovcolor or styleSettings.button.color[2]
-	local clicolor = clicolor or styleSettings.button.color[3]
-	local norimg = norimg or dgsCreateTextureFromStyle(styleSettings.button.image[1])
-	local hovimg = selimg or dgsCreateTextureFromStyle(styleSettings.button.image[2])
-	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.button.image[3])
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.button.textSize[1], tonumber(scaley) or styleSettings.button.textSize[2]
+	local style = styleSettings.button
+	local norcolor = norcolor or style.color[1]
+	local hovcolor = hovcolor or style.color[2]
+	local clicolor = clicolor or style.color[3]
+	local norimg = norimg or dgsCreateTextureFromStyle(style.image[1])
+	local hovimg = selimg or dgsCreateTextureFromStyle(style.image[2])
+	local cliimg = cliimg or dgsCreateTextureFromStyle(style.image[3])
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
 	dgsElementData[button] = {
-		alignment = {"center","center"};
-		clickOffset = {0,0};
-		clickType = 1;	--1:LMB;2:Wheel;3:RMB
-		clip = false;
-		color = {norcolor, hovcolor, clicolor};
-		colorcoded = false;
-		font = styleSettings.button.font or systemFont;
-		iconColor = tocolor(255,255,255,255);
-		iconDirection = "left";
-		iconImage = nil;
-		iconOffset = 5;
-		iconSize = {1,1,true}; -- Text's font height
-		image = {norimg, hovimg, cliimg};
-		shadow = {};
-		textColor = tonumber(textColor) or styleSettings.button.textColor;
-		textOffset = {0,0,false};
-		textSize = {textSizeX, textSizeY};
-		wordbreak = false;
+		alignment = {"center","center"},
+		clickOffset = {0,0},
+		clickType = 1;	--1:LMB;2:Wheel;3:RM,
+		clip = false,
+		color = {norcolor, hovcolor, clicolor},
+		colorcoded = false,
+		font = style.font or systemFont,
+		iconColor = 0xFFFFFFFF,
+		iconDirection = "left",
+		iconImage = nil,
+		iconOffset = 5,
+		iconSize = {1,1,true}; -- Text's font heigh,
+		image = {norimg, hovimg, cliimg},
+		shadow = {},
+		textColor = tonumber(textColor) or style.textColor,
+		textOffset = {0,0,false},
+		textSize = {textSizeX, textSizeY},
+		wordbreak = false,
 	}
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then

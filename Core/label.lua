@@ -12,28 +12,32 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local assert = assert
+local type = type
 
 function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor,right,bottom)
-	assert(type(x) == "number","Bad argument @dgsCreateLabel at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateLabel at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateLabel at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateLabel at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateLabel at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateLabel at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateLabel at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateLabel at argument 4, expect number got "..type(sy)) end
 	local label = createElement("dgs-dxlabel")
 	dgsSetType(label,"dgs-dxlabel")
 	dgsSetParent(label,parent,true,true)
-	local textSizeX,textSizeY = tonumber(scalex) or styleSettings.label.textSize[1], tonumber(scaley) or styleSettings.label.textSize[2]
+	local style = styleSettings.label
+	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
 	dgsElementData[label] = {
-		alignment = {right or "left",bottom or "top"};
-		clip = false;
-		colorcoded = false;
-		font = styleSettings.label.font or systemFont;
-		rotation = 0;
-		rotationCenter = {0, 0};
-		shadow = shadowoffsetx,shadowoffsety,shadowcolor;
-		subPixelPositioning = false;
-		textColor = textColor or styleSettings.label.textColor;
-		textSize = {textSizeX, textSizeY};
-		wordbreak = false;
+		alignment = {right or "left",bottom or "top"},
+		clip = false,
+		colorcoded = false,
+		font = style.font or systemFont,
+		rotation = 0,
+		rotationCenter = {0, 0},
+		shadow = shadowoffsetx,shadowoffsety,shadowcolor,
+		subPixelPositioning = false,
+		textColor = textColor or style.textColor,
+		textSize = {textSizeX, textSizeY},
+		wordbreak = false,
 	}
 	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then

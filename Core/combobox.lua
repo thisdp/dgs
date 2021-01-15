@@ -19,6 +19,8 @@ local mathMin = math.min
 local mathMax = math.max
 local tableInsert = table.insert
 local tableRemove = table.remove
+local assert = assert
+local type = type
 --[[
 Item List Struct:
 table = {
@@ -36,72 +38,73 @@ index:	-2			-1					0					1
 ]]
 
 function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColor,scalex,scaley,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor)
-	assert(type(x) == "number","Bad argument @dgsCreateComboBox at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsCreateComboBox at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsCreateComboBox at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsCreateComboBox at argument 4, expect number got "..type(sy))
+	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
+	if not xCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 4, expect number got "..type(sy)) end
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
 	dgsSetParent(combobox,parent,true,true)
-	dgsSetData(combobox,"renderBuffer",{})
-
-	local defcolor = defcolor or styleSettings.combobox.color[1]
-	local hovcolor = hovcolor or styleSettings.combobox.color[2]
-	local clicolor = clicolor or styleSettings.combobox.color[3]
-	dgsSetData(combobox,"color",{defcolor,hovcolor,clicolor})
-
-	local defimg = defimg or dgsCreateTextureFromStyle(styleSettings.combobox.image[1])
-	local hovimg = hovimg or dgsCreateTextureFromStyle(styleSettings.combobox.image[2])
-	local cliimg = cliimg or dgsCreateTextureFromStyle(styleSettings.combobox.image[3])
-	dgsSetData(combobox,"image",{defimg,hovimg,cliimg})
-
-	local idefcolor = styleSettings.combobox.itemColor[1]
-	local ihovcolor = styleSettings.combobox.itemColor[2]
-	local iclicolor = styleSettings.combobox.itemColor[3]
-	dgsSetData(combobox,"itemColor",{idefcolor,ihovcolor,iclicolor})
-
-	local idefimg = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[1])
-	local ihovimg = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[2])
-	local icliimage = dgsCreateTextureFromStyle(styleSettings.combobox.itemImage[3])
-	dgsSetData(combobox,"itemImage",{idefimg,ihovimg,icliimage})
-
-	dgsSetData(combobox,"textColor",textColor or styleSettings.combobox.textColor)
-	dgsSetData(combobox,"itemTextColor",textColor or styleSettings.combobox.itemTextColor)
+	local style = styleSettings.combobox
+	local defcolor = defcolor or style.color[1]
+	local hovcolor = hovcolor or style.color[2]
+	local clicolor = clicolor or style.color[3]
+	local defimg = defimg or dgsCreateTextureFromStyle(style.image[1])
+	local hovimg = hovimg or dgsCreateTextureFromStyle(style.image[2])
+	local cliimg = cliimg or dgsCreateTextureFromStyle(style.image[3])
+	local idefcolor = style.itemColor[1]
+	local ihovcolor = style.itemColor[2]
+	local iclicolor = style.itemColor[3]
+	local idefimg = dgsCreateTextureFromStyle(style.itemImage[1])
+	local ihovimg = dgsCreateTextureFromStyle(style.itemImage[2])
+	local icliimage = dgsCreateTextureFromStyle(style.itemImage[3])
 	local textScaleX,textScaleY = tonumber(scalex),tonumber(scaley)
-	dgsSetData(combobox,"textSize",{textScaleX or styleSettings.combobox.textSize[1],textScaleY or styleSettings.combobox.textSize[2]})
-	dgsSetData(combobox,"itemTextSize",{textScaleX or styleSettings.combobox.itemTextSize[1],textScaleY or styleSettings.combobox.itemTextSize[2]})
-	dgsSetData(combobox,"shadow",false)
-	dgsSetData(combobox,"font",styleSettings.combobox.font or systemFont)
-	dgsSetData(combobox,"bgColor",styleSettings.combobox.bgColor)
-	dgsSetData(combobox,"bgImage",dgsCreateTextureFromStyle(styleSettings.combobox.bgImage))
-	dgsSetData(combobox,"buttonLen",{1,true}) --1,isRelative
-	dgsSetData(combobox,"textBox",true) --enable textbox
-	dgsSetData(combobox,"select",-1)
-	dgsSetData(combobox,"clip",false)
-	dgsSetData(combobox,"wordbreak",false)
-	dgsSetData(combobox,"itemHeight",itemheight or styleSettings.combobox.itemHeight)
-	dgsSetData(combobox,"viewCount",false,true)
-	dgsSetData(combobox,"colorcoded",false)
-	dgsSetData(combobox,"listState",-1,true)
-	dgsSetData(combobox,"listStateAnim",-1)
-	dgsSetData(combobox,"autoHideAfterSelected",styleSettings.combobox.autoHideAfterSelected)
-	dgsSetData(combobox,"itemTextPadding",styleSettings.combobox.itemTextPadding)
-	dgsSetData(combobox,"textPadding",styleSettings.combobox.textPadding)
-	dgsSetData(combobox,"arrowColor",styleSettings.combobox.arrowColor)
-	dgsSetData(combobox,"arrowSettings",styleSettings.combobox.arrowSettings or {0.3,0.15,0.04})
-	dgsSetData(combobox,"arrowOutSideColor",styleSettings.combobox.arrowOutSideColor)
-	local scbThick = styleSettings.combobox.scrollBarThick
-	dgsSetData(combobox,"scrollBarThick",scbThick,true)
-	dgsSetData(combobox,"itemData",{})
-	dgsSetData(combobox,"alignment",{"left","center"})
-	dgsSetData(combobox,"itemAlignment",{"left","center"})
-	dgsSetData(combobox,"FromTo",{0,0})
-	dgsSetData(combobox,"moveHardness",{0.1,0.9})
-	dgsSetData(combobox,"itemMoveOffset",0)
-	dgsSetData(combobox,"itemMoveOffsetTemp",0)
-	dgsSetData(combobox,"scrollSize",20)	--60px pixels
-	dgsSetData(combobox,"scrollFloor",true)
-	dgsSetData(combobox,"configNextFrame",false)
+	local scbThick = style.scrollBarThick
+	dgsElementData[combobox] = {
+		renderBuffer = {},
+		color = {defcolor,hovcolor,clicolor},
+		image = {defimg,hovimg,cliimg},
+		itemColor = {idefcolor,ihovcolor,iclicolor},
+		itemImage = {idefimg,ihovimg,icliimage},
+		textColor = textColor or style.textColor,
+		itemTextColor = textColor or style.itemTextColor,
+		textSize = {textScaleX or style.textSize[1],textScaleY or style.textSize[2]},
+		itemTextSize = {textScaleX or style.itemTextSize[1],textScaleY or style.itemTextSize[2]},
+		shadow = false,
+		font = style.font or systemFont,
+		bgColor = style.bgColor,
+		bgImage = dgsCreateTextureFromStyle(style.bgImage),
+		buttonLen = {1,true}, --1,isRelative
+		textBox = true,
+		select = -1,
+		clip = false,
+		wordbreak = false,
+		itemHeight = itemheight or style.itemHeight,
+		viewCount = false,
+		colorcoded = false,
+		listState = -1,
+		listStateAnim = -1,
+		autoHideAfterSelected = style.autoHideAfterSelected,
+		itemTextPadding = style.itemTextPadding,
+		textPadding = style.textPadding,
+		arrow = dgsCreateTextureFromStyle(style.arrow),
+		arrowColor = style.arrowColor,
+		arrowSettings = style.arrowSettings or {0.3,0.15,0.04},
+		arrowOutSideColor = style.arrowOutSideColor,
+		scrollBarThick = scbThick,
+		itemData = {},
+		alignment = {"left","center"},
+		itemAlignment = {"left","center"},
+		FromTo = {0,0},
+		moveHardness = {0.1,0.9},
+		itemMoveOffset = 0,
+		itemMoveOffsetTemp = 0,
+		scrollSize = 20, --60px pixels
+		scrollFloor = true,
+		captionEdit = false,
+		configNextFrame = false,
+	}
 	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or getThisResource()])
 	if type(caption) == "table" then
 		dgsElementData[combobox]._translationText = caption
@@ -109,12 +112,10 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	else
 		dgsSetData(combobox,"caption",tostring(caption))
 	end
-	dgsSetData(combobox,"captionEdit",false)
-	dgsSetData(combobox,"arrow",dgsCreateTextureFromStyle(styleSettings.combobox.arrow))
 	calculateGuiPositionSize(combobox,x,y,relative or false,sx,sy,relative or false,true)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
-	dgsSetData(combobox,"myBox",box)
-	dgsSetData(box,"myCombo",combobox)
+	dgsElementData[combobox].myBox = box
+	dgsElementData[box].myCombo = combobox
 	local boxsiz = dgsElementData[box].absSize
 	local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox)
 	if renderTarget ~= false then
@@ -122,7 +123,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	else
 		outputDebugString(err)
 	end
-	dgsSetData(combobox,"renderTarget",renderTarget)
+	dgsElementData[combobox].renderTarget = renderTarget
 	local scrollbar = dgsCreateScrollBar(boxsiz[1]-scbThick,0,scbThick,boxsiz[2],false,false,box)
 	dgsSetData(scrollbar,"length",{0,true})
 	dgsSetData(scrollbar,"multiplier",{1,true})
@@ -131,7 +132,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	dgsSetVisible(scrollbar,false)
 	dgsSetVisible(box,false)
 	addEventHandler("onDgsElementScroll",scrollbar,checkCBScrollBar,false)
-	dgsSetData(combobox,"scrollbar",scrollbar)
+	dgsElementData[combobox].scrollbar = scrollbar
 	addEventHandler("onDgsBlur",box,function(nextFocused)
 		local combobox = dgsElementData[source].myCombo
 		local scb = dgsElementData[combobox].scrollbar
@@ -430,11 +431,12 @@ function dgsComboBoxClear(combobox)
 end
 
 function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
-	assert(type(x) == "number","Bad argument @dgsComboBoxCreateBox at argument 1, expect number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgsComboBoxCreateBox at argument 2, expect number got "..type(y))
-	assert(type(sx) == "number","Bad argument @dgsComboBoxCreateBox at argument 3, expect number got "..type(sx))
-	assert(type(sy) == "number","Bad argument @dgsComboBoxCreateBox at argument 4, expect number got "..type(sy))
-	assert(dgsGetType(parent) == "dgs-dxcombobox","Bad argument @dgsComboBoxCreateBox at argument 6, expect dgs-dxcombobox got "..dgsGetType(parent))
+	local xCheck,yCheck,wCheck,hCheck,pCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number",dgsGetType(parent) == "dgs-dxcombobox"
+	if not xCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 1, expect number got "..type(x)) end
+	if not yCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 2, expect number got "..type(y)) end
+	if not wCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 3, expect number got "..type(sx)) end
+	if not hCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 4, expect number got "..type(sy)) end
+	if not pCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 6, expect dgs-dxcombobox got "..dgsGetType(parent)) end
 	local box = createElement("dgs-dxcombobox-Box")
 	dgsSetType(box,"dgs-dxcombobox-Box")
 	dgsSetParent(box,parent,true,true)
