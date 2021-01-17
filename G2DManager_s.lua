@@ -21,6 +21,7 @@ G2DHelp = {
 	{"-l","	","List all selected resources"},
 	{"-e","	","Start to convert"},
 	{"-q","	","Stop converting process"},
+	{"-crawl","autocomplete type","Crawl and Generate DGS autocomplete"},
 }
 
 addCommandHandler("g2d",function(player,command,...)
@@ -80,7 +81,7 @@ addCommandHandler("g2d",function(player,command,...)
 				outputDebugString("[DGS-G2D] Selections cleared!")
 			elseif args[1] == "-e" or args[1] == "-exe" then
 				if not G2D.Process then
-					print("[DGS-G2D] Scanning files...")
+					print("[DGS-G2D]Scanning files...")
 					local process = {}
 					for resN,res in pairs(G2D.select) do
 						local xml = xmlLoadFile(":"..resN.."/meta.xml")
@@ -91,23 +92,35 @@ addCommandHandler("g2d",function(player,command,...)
 							end
 						end
 					end
-					print("[DGS-G2D] "..#process.." files to be converted")
+					print("[DGS-G2D]"..#process.." files to be converted")
 					G2D.Process = true
 					G2D.Running = {}
 					G2D.Files = process
 					G2DStart()
 				else
-					print("[DGS-G2D] G2D is running!")
+					print("[DGS-G2D]G2D is running!")
 				end
 			elseif args[1] == "-q" then
 				if G2D.Process then
-					print("[DGS-G2D] G2D process terminated!")
+					print("[DGS-G2D]G2D process terminated!")
 					G2D.Process = false
 				else
-					print("[DGS-G2D] G2D is not running!")
+					print("[DGS-G2D]G2D is not running!")
+				end
+			elseif args[1] == "-crawl" then
+				if args[2] and args[2] ~= "" then
+					if args[2] == "npp" or args[2] == "n++" then
+						CrawlWikiFromMTA("npp")
+					elseif args[2] == "vscode" or arg[2] == "vsc" then
+						CrawlWikiFromMTA("vsc")
+					else
+						print("[DGS]Current type is not supported!")
+					end
+				else
+					print("[DGS]Please select target type: g2d -g <npp/vsc>")
 				end
 			else
-				outputDebugString("[DGS-G2D] Command help")
+				outputDebugString("[DGS-G2D]Command help")
 				outputDebugString("Option		Arguments		Comment")
 				for i=1,#G2DHelp do
 					local items = G2DHelp[i]
@@ -117,6 +130,8 @@ addCommandHandler("g2d",function(player,command,...)
 		end
 	end
 end)
+
+----------------
 
 local keyword = {
 	["and"] = 1,
@@ -839,7 +854,7 @@ converEventTable = {
 
 
 function showProgress(progress)
-	print("[G2D] Progress "..string.format("%.2f",progress).."%")
+	print("[G2D]Progress "..string.format("%.2f",progress).."%")
 end
 
 G2DRunningData = {
@@ -851,7 +866,7 @@ function G2DStart()
 	local k,filename = next(G2D.Files,(G2D.Running or {})[2])
 	if not filename then
 		G2D.Process = false
-		return print("[G2D] Process Done")
+		return print("[G2D]Process Done")
 	end
 	local cor = coroutine.create(processFile)
 	G2D.Running = {cor,k}
@@ -874,7 +889,7 @@ function processExpired(isEnd)
 end
 
 function processFile(filename)
-	print("[G2D] Start to process file '"..filename.."'")
+	print("[G2D]Start to process file '"..filename.."'")
 	local file = fileOpen(filename)
 	local str = fileRead(file,fileGetSize(file))
 	local utf8BOM = false
@@ -888,7 +903,7 @@ function processFile(filename)
 	DGSLLex(ls)
 	local az = AnalyzerState(ls.result)
 	local convTabCnt = #convertFunctionTable
-	print("[G2D] Replacing Functions")
+	print("[G2D]Replacing Functions")
 	for i=1,convTabCnt do
 		az:set(convertFunctionTable[i])
 		az:executeProcess()
@@ -899,7 +914,7 @@ function processFile(filename)
 		end
 	end
 	local convTabCnt = #converEventTable
-	print("[G2D] Replacing Events")
+	print("[G2D]Replacing Events")
 	for i=1,convTabCnt do
 		az:set(converEventTable[i],true)
 		az:executeProcess()
@@ -912,4 +927,188 @@ function processFile(filename)
 	showProgress(100)
 	az:generateFile(filename,utf8BOM)
 	return processExpired(true)
+end
+
+
+-------------------------------------
+
+local mainWikiURL = "https://wiki.multitheftauto.com"
+local threadPoolSize = 2
+function CrawlWikiFromMTA(t)
+	local targetURL = mainWikiURL.."/wiki/Template:DGSFUNCTIONS"
+	print("[DGS]Crawling wiki...")
+	fetchRemote(targetURL,{},function(data,info,t)
+		if info.success then
+			local startPos = 0
+			print("[DGS]Wiki data is ready, Reading...")
+			local fncList = {type=t}
+			while(true) do
+				liStart_1,liStart_2 = string.find(data,"%<li%>",startPos)
+				liEnd_1,liEnd_2 = string.find(data,"%<%/li%>",startPos)
+				if not liStart_1 or not liEnd_1 then break end
+				local str = string.sub(data,liStart_2+1,liEnd_1-1)
+				local xmlNode = xmlLoadString(str)
+				local fncName = xmlNodeGetValue(xmlNode)
+				local nTable = {
+					href=xmlNodeGetAttribute(xmlNode,"href"),
+					title=xmlNodeGetAttribute(xmlNode,"title"),
+					isEmpty = xmlNodeGetAttribute(xmlNode,"class") == "new",
+					name = fncName,
+				}
+				table.insert(fncList,nTable)
+				startPos = liEnd_2
+			end
+			print("[DGS]Function list("..#fncList..") is ready, Crawling...")
+			local fRProg = {thread=0,index=0,valid=0,progress=0,total=#fncList}
+			local fncData = {}
+			setTimer(function()
+				if fRProg.progress < fRProg.total then
+					for i=1,threadPoolSize-fRProg.thread do
+						fRProg.index = fRProg.index+1
+						if fRProg.index <= fRProg.total then
+							item = fncList[fRProg.index]
+							if item then
+								if not item.isEmpty then
+									local poolID
+									for tableIndex=1,threadPoolSize do
+										if not fRProg[tableIndex] then
+											poolID = tableIndex
+											break
+										end
+									end
+									fRProg.thread = fRProg.thread+1
+									fRProg[poolID] = fetchRemote(mainWikiURL.."/index.php?title="..item.title.."&action=edit",{queueName=poolID},function(data,info,poolID,index)
+										fRProg.progress = fRProg.progress+1
+										fRProg.thread = fRProg.thread-1
+										fRProg[poolID] = false
+										if info.success then
+											print("[DGS]Recorded ("..fRProg.progress.."/"..fRProg.total..")["..fncList[index].name.."]")
+											local startPos = data:find("%<textarea")
+											local _,endPos = data:find("%<%/textarea>",startPos)
+											local line = data:sub(startPos,endPos)
+											local xmlNode = xmlLoadString(line)
+											local pageSource = xmlNodeGetValue(xmlNode)
+											local _,rangeStart = pageSource:find("==Syntax==")
+											local _,syntaxStart = pageSource:find("%<syntaxhighlight lang%=\"lua\"%>",rangeStart+1)
+											local syntaxEnd = pageSource:find("%<%/syntaxhighlight%>",syntaxStart+1)
+											local targetSyntax = pageSource:sub(syntaxStart+1,syntaxEnd-1)
+											local targetSyntax = targetSyntax:gsub("\r",""):gsub("\n","")
+											fncList[index].syntax = targetSyntax
+										else
+											print("[DGS]Failed to get remote wiki data ("..info.statusCode ..")")
+										end
+									end,{poolID,fRProg.index})
+									fRProg.valid = fRProg.valid+1
+								else
+									fRProg.progress = fRProg.progress+1
+								end
+							end
+						end
+					end
+				else
+					print("[DGS]Crawling stage complete [Total:"..fRProg.total.."/Valid:"..fRProg.valid.."]")
+					killTimer(sourceTimer)
+					fncList.valid = fRProg.valid
+					AnalyzeFunction(fncList)
+				end
+			end,50,0)
+		end
+	end,{t})
+end
+
+function AnalyzeFunction(tab)
+	print("[DGS]Start to analyze syntax")
+	local nTable = {}
+	local validCount = 0
+	for i=1,#tab do
+		local item = tab[i]
+		if item.syntax then
+			validCount = validCount+1
+			print("[DGS]Analyzing syntax ("..validCount.."/"..tab.valid..")["..item.name.."]")
+			local startPos,endPos = string.find(item.syntax,item.name)
+			local rets = split(item.syntax:sub(1,startPos-1)," ")
+			local argStr = item.syntax:sub(endPos+1):gsub("%(",""):gsub("%)","")
+			local argSplited = split(argStr,"%[")
+			local reqArgStr = argSplited[1] or ""
+			local optArgStr = (argSplited[2] or ""):gsub("%]","")
+			
+			local reqArgs = split(reqArgStr,",")
+			local optArgs = split(optArgStr,",")
+			local emptyArgCheck = {req={},opt={}}
+			for _i=1,#reqArgs do
+				reqArgs[_i] = reqArgs[_i]:match("^[%s]*(.-)[%s]*$") or reqArgs[_i]
+				if reqArgs[_i] == "" then
+					table.insert(emptyArgCheck.req,_i)
+				end
+			end
+			for _i=1,#optArgs do
+				optArgs[_i] = optArgs[_i]:match("^[%s]*(.-)[%s]*$") or optArgs[_i]
+				if optArgs[_i] == "" then
+					table.insert(emptyArgCheck.opt,_i)
+				end
+			end
+			for _i=1,#rets do
+				rets[_i] = rets[_i]:gsub(",",""):gsub(" ","")
+			end
+			
+			for i=1,#emptyArgCheck.req do
+				table.remove(reqArgs,emptyArgCheck.req[i])
+			end
+			for i=1,#emptyArgCheck.opt do
+				table.remove(optArgs,emptyArgCheck.opt[i])
+			end
+			local resultTable = {returns=rets,fncName=item.name,requiredArguments=reqArgs,optionalArguments=optArgs}
+			table.insert(nTable,resultTable)
+		end
+	end
+	print("[DGS]Syntax analyzing stage done")
+	if tab.type == "npp" then
+		GenerateNPPAutoComplete(nTable)
+	elseif tab.type == "vsc" then
+		GenerateVSCodeAutoComplete(nTable)
+	end
+end
+
+function GenerateNPPAutoComplete(tab)
+	if fileExists("nppAC4DGS.xml") then fileDelete("nppAC4DGS.xml") end
+	print("[DGS]Generating NPP autocomplete file...")
+	local xml = xmlCreateFile("nppAC4DGS.xml","NotepadPlus")
+	local envNode = xmlCreateChild(xml,"Environment")
+	local acNode = xmlCreateChild(xml,"AutoComplete")
+	xmlNodeSetAttribute(envNode,"ignoreCase","no")
+	xmlNodeSetAttribute(envNode,"startFunc","(")
+	xmlNodeSetAttribute(envNode,"stopFunc",")")
+	xmlNodeSetAttribute(envNode,"paramSeparator",",")
+	xmlNodeSetAttribute(envNode,"terminal",";")
+	xmlNodeSetAttribute(envNode,"additionalWordChar",".:")
+	xmlNodeSetAttribute(acNode,"language","lua")
+	for i=1,#tab do
+		local item = tab[i]
+		local kwNode = xmlCreateChild(acNode,"KeyWord")
+		xmlNodeSetAttribute(kwNode,"name",item.fncName)
+		xmlNodeSetAttribute(kwNode,"func","yes")
+		local olNode = xmlCreateChild(kwNode,"Overload")
+		xmlNodeSetAttribute(olNode,"retVal",table.concat(item.returns,", "))
+		for argid=1,#item.requiredArguments do
+			local paramNode = xmlCreateChild(olNode,"Param")
+			xmlNodeSetAttribute(paramNode,"name",item.requiredArguments[argid])
+		end
+		for argid=1,#item.optionalArguments do
+			local paramNode = xmlCreateChild(olNode,"Param")
+			xmlNodeSetAttribute(paramNode,"name",item.optionalArguments[argid])
+		end
+	end
+	xmlSaveFile(xml)
+	xmlUnloadFile(xml)
+	local f = fileOpen("nppAC4DGS.xml")
+	local str = "<?xml version=\"1.0\" encoding=\"Windows-1252\" ?>\r\n"..fileRead(f,fileGetSize(f))
+	fileSetPos(f,0)
+	fileWrite(f,str)
+	fileClose(f)
+	print("[DGS]NPP autocomplete file is saved as nppAC4DGS.xml -> Done")
+end
+
+
+function GenerateVSCodeAutoComplete(tab)
+
 end

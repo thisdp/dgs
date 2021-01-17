@@ -4,18 +4,11 @@ local type = type
 
 local function LookRotation(x,y,z,rot)
 	local rx = deg(acos(((x^2+z^2)/(x^2+y^2+z^2))^0.5))
-	if (y > 0) then
-		rx = 360-rx
-	end
+	rx = y > 0 and 360-rx or rx
 	local ry = deg(atan2(x, z))
-	if (ry < 0) then
-		ry = ry+ 180
-	end
-	if (x < 0) then
-		ry = ry+ 180
-	end
-	rz = rot
-	return rz,ry,rz
+	ry = ry < 0 and ry+ 180 or ry
+	ry = x < 0 and ry+ 180 or ry
+	return rx,ry,rot
 end
 
 function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)

@@ -148,7 +148,6 @@ function AnimTest()
 	local label = dgsCreateLabel(500,500,400,20,"Testttttttttttttttttttt",false)
 	dgsAnimTo(label,"shadow",{100,100,tocolor(0,0,0,255)},"shadowOffset",10000)
 end
-
 function GridListSortingTest()
 	for x=1,10 do
 		local sortfnc = [[
