@@ -1965,7 +1965,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 									dxDrawRectangle(imagex,imagey,imagew,imageh,imageData[2])
 								end
 							end
-							textBuffer[textBufferCnt] = {currentRowData[1],_x-_x%1,_sx-_sx%1,currentRowData[2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
+							
+							local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
+							textBuffer[textBufferCnt] = {currentRowData[1],_x-_x%1,_sx-_sx%1,color[rowState],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
 							textBufferCnt = textBufferCnt + 1
 						end
 					end

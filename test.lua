@@ -20,6 +20,7 @@ function createFullDemo()
 	gridlist:setMultiSelectionEnabled(true)
 	gridlist:addColumn("Column 1",0.8,true)
 	gridlist:addColumn("Column 2",0.8,true)
+	gridlist:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
 	for i=1,100 do
 		gridlist:addRow(i,i,math.random(1,500))
 		if i%5 == 0 then
