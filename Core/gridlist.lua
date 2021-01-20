@@ -357,7 +357,7 @@ function dgsGridListSetColumnFont(gridlist,pos,font,affectRow)
 	assert(fontBuiltIn[font] or dgsGetType(font) == "dx-font","Bad argument @dgsGridListSetColumnFont at argument 3, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
-	if #columnData == 0 then return end
+	if #columnData == 0 then return false end
 	assert(pos >= 1 and pos <= #columnData, "Bad argument @dgsGridListSetColumnFont at argument 2, Out Of Range [1,"..#columnData.."]")
 	columnData[pos][9] = font
 	if affectRow then
@@ -374,7 +374,7 @@ function dgsGridListGetColumnFont(gridlist,column)
 	assert(type(column) == "number","Bad argument @dgsGridListGetColumnFont at argument 2, expect number got "..dgsGetType(column))
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
-	if #columnData == 0 then return end
+	if #columnData == 0 then return false end
 	assert(column >= 1 and column <= #columnData, "Bad argument @dgsGridListSetColumnFont at argument 2, Out Of Range [1,"..#columnData.."]")
 	return columnData[column][9]
 end
@@ -384,7 +384,7 @@ function dgsGridListGetColumnTextSize(gridlist,column)
 	assert(type(column) == "number","Bad argument @dgsGridListGetColumnTextSize at argument 2, expect number got "..dgsGetType(column))
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
-	if #columnData == 0 then return end
+	if #columnData == 0 then return false end
 	assert(column >= 1 and column <= #columnData, "Bad argument @dgsGridListGetColumnTextSize at argument 2, Out Of Range [1,"..#columnData.."]")
 	return columnData[column][7],columnData[column][8]
 end
@@ -395,7 +395,7 @@ function dgsGridListSetColumnTextSize(gridlist,column,sizeX,sizeY)
 	assert(type(sizeX) == "number","Bad argument @dgsGridListSetColumnTextSize at argument 3, expect number got "..dgsGetType(sizeX))
 	local eleData = dgsElementData[gridlist]
 	local columnData = eleData.columnData
-	if #columnData == 0 then return end
+	if #columnData == 0 then return false end
 	assert(column >= 1 and column <= #columnData, "Bad argument @dgsGridListSetColumnTextSize at argument 2, Out Of Range [1,"..#columnData.."]")
 	columnData[column][7] = sizeX
 	columnData[column][8] = sizeY or sizeX
