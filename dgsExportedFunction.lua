@@ -75,6 +75,7 @@ function dgsG2DLoadHooker()
 		_guiFocus = guiFocus
 		_guiGetAlpha = guiGetAlpha
 		_guiGetEnabled = guiGetEnabled
+		_guiSetFont = guiSetFont
 		_guiGetFont = guiGetFont
 		_guiGetInputEnabled = guiGetInputEnabled
 		_guiGetInputMode = guiGetInputMode
@@ -217,7 +218,6 @@ function dgsG2DLoadHooker()
 		guiMoveToBack = dgsMoveToBack
 		guiSetAlpha = dgsSetAlpha
 		guiSetEnabled = dgsSetEnabled
-		guiSetFont = dgsSetFont
 		guiSetInputEnabled = dgsSetInputEnabled
 		guiSetInputMode = dgsSetInputMode
 		guiSetPosition = dgsSetPosition
@@ -415,6 +415,18 @@ function dgsG2DLoadHooker()
 		guiScrollPaneSetVerticalScrollPosition = dgsScrollPaneSetVerticalScrollPosition
 		guiGetBrowser = dgsGetBrowser
 
+		local fontReplace = {
+            ["default-normal"]="default",
+			["default-small"]="arial",
+			["default-bold-small"]="default-bold",
+			["clear-normal"]="clear",
+			["sa-gothic"]="beckett",
+			["sa-header"]="diploma",
+        }
+        guiSetFont = function(gl,font)
+            return dgsSetFont(gl,fontReplace[font] or font)
+		end
+
 		addEvent("onDgsEditAccepted-C",true)
 		addEvent("onDgsTextChange-C",true)
 		addEvent("onDgsComboBoxSelect-C",true)
@@ -452,6 +464,29 @@ function dgsG2DLoadHooker()
 
 		addEventHandler = function(even,...)
 			_addEventHandler(eventReplace[even] or even,...)
+		end
+		local typeReplace ={
+			["dgs-dxbutton"]="gui-button",
+			["dgs-dxedit"]="gui-edit",
+			["dgs-dxprogressbar"]="gui-progressbar",
+			["dgs-dxwindow"]="gui-window",
+			["dgs-dxlabel"]="gui-label",
+			["dgs-dxscrollpane"]="gui-scrollpane",
+			["dgs-dxtab"]="gui-tab",
+			["dgs-dxmemo"]="gui-memo",
+			["dgs-dxtabpanel"]="gui-tabpanel",
+			["dgs-dximage"]="gui-staticimage",
+			["dgs-dxscrollbar"]="gui-scrollbar",
+			["dgs-dxcombobox"]="gui-combobox",
+			["dgs-dxcheckbox"]="gui-checkbox",
+			["dgs-dxradiobutton"]="gui-radiobutton",
+			["dgs-dxgridlist"]="gui-gridlist",
+		}
+		_getElementType = getElementType
+
+		getElementType = function(gl)
+			local typ = _getElementType(gl)
+			return typ and typeReplace[typ] or typ
 		end
 	]]
 end
