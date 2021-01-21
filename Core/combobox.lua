@@ -147,6 +147,18 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 			dgsComboBoxSetState(combobox,false)
 		end
 	end,false)
+	addEventHandler("onDgsSizeChange",combobox,function()
+		local box = dgsElementData[combobox].myBox
+		if not dgsElementData[box].relative[2] then
+			local size = dgsElementData[source].absSize
+			local bsize = dgsElementData[box].absSize
+			dgsSetSize(box,size[1],bsize[2],false)
+		end
+	end,false)
+	addEventHandler("onDgsSizeChange",box,function()
+		local combobox = dgsElementData[source].myCombo
+		dgsSetData(combobox,"configNextFrame",true)
+	end,false)
 	triggerEvent("onDgsCreate",combobox,sourceResource)
 	dgsSetData(combobox,"hitoutofparent",true)
 	return combobox
@@ -213,6 +225,7 @@ function dgsComboBoxSetBoxHeight(combobox,height,relative)
 	assert(type(height) == "number","Bad argument @dgsComboBoxSetBoxHeight at argument 2, expect number got "..type(height))
 	relative = relative and true or false
 	local box = dgsElementData[combobox].myBox
+	dgsSetData(combobox,"configNextFrame",true)
 	if isElement(box) then
 		local size = relative and dgsElementData[box].rltSize or dgsElementData[box].absSize
 		return dgsSetSize(box,size[1],height,relative)
@@ -234,9 +247,6 @@ end
 function dgsComboBoxAddItem(combobox,text)
 	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxAddItem at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
 	local data = dgsElementData[combobox].itemData
-	local itemHeight = dgsElementData[combobox].itemHeight
-	local box = dgsElementData[combobox].myBox
-	local size = dgsElementData[box].absSize
 	local id = #data+1
 	local _text
 	if type(text) == "table" then
@@ -256,10 +266,6 @@ function dgsComboBoxAddItem(combobox,text)
 	}
 
 	tableInsert(data,id,tab)
-	if id*itemHeight > size[2] then
-		local scrollBar = dgsElementData[combobox].scrollbar
-		dgsSetVisible(scrollBar,true)
-	end
 	dgsSetData(combobox,"configNextFrame",true)
 	return id
 end
@@ -408,13 +414,7 @@ function dgsComboBoxRemoveItem(combobox,item)
 	local item = mathFloor(item)
 	if item >= 1 and item <= #data then
 		tableRemove(data,item)
-		local itemHeight = dgsElementData[combobox].itemHeight
-		local box = dgsElementData[combobox].myBox
-		local size = dgsElementData[box].absSize
-		if #data*itemHeight < size[2] then
-			local scrollBar = dgsElementData[combobox].scrollbar
-			dgsSetVisible(scrollBar,false)
-		end
+		dgsSetData(combobox,"configNextFrame",true)
 		return true
 	end
 	return false
@@ -425,8 +425,7 @@ function dgsComboBoxClear(combobox)
 	local data = dgsElementData[combobox].itemData
 	tableRemove(data)
 	dgsElementData[combobox].itemData = {}
-	local scb = dgsElementData[combobox].scrollbar
-	dgsSetVisible(scb,false)
+	dgsSetData(combobox,"configNextFrame",true)
 	return true
 end
 
@@ -475,8 +474,13 @@ function dgsComboBoxGetSelectedItem(combobox)
 end
 
 function configComboBox(combobox,remainBox)
+	local box = dgsElementData[combobox].myBox
+	local size = dgsElementData[box].absSize
+	local itemData = dgsElementData[combobox].itemData
+	local scrollbar = dgsElementData[combobox].scrollbar
+	local itemHeight = dgsElementData[combobox].itemHeight
+	dgsSetVisible(scrollbar,#itemData*itemHeight > size[2])
 	if not remainBox then
-		local box = dgsElementData[combobox].myBox
 		local boxsiz = dgsElementData[box].absSize
 		local renderTarget = dgsElementData[combobox].renderTarget
 		if isElement(renderTarget) then destroyElement(renderTarget) end
@@ -488,7 +492,6 @@ function configComboBox(combobox,remainBox)
 			outputDebugString(err)
 		end
 		dgsSetData(combobox,"renderTarget",renderTarget)
-		local scrollbar = dgsElementData[combobox].scrollbar
 		dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
 		dgsSetSize(scrollbar,sbt,boxsiz[2],false)
 		local itemData = dgsElementData[combobox].itemData
