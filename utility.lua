@@ -178,6 +178,30 @@ function string.split(s,delim)
 	t[index] = sub(s,start)
 	return t
 end
+--[[
+0: symbol
+1: character
+]]
+function utf8.getCharType(c)
+	local cCode = utf8.byte(c)
+	local cType = 1
+	if cCode <= 47 then
+		cType = 0
+	elseif cCode <= 57 then
+		cType = 1
+	elseif cCode <= 64 then
+		cType = 0
+	elseif cCode <= 90 then
+		cType = 1
+	elseif cCode <= 96 then
+		cType = 0
+	elseif cCode <= 122 then
+		cType = 1
+	elseif cCode <= 127 then
+		cType = 0
+	end
+	return cType
+end
 --------------------------------Math Utility
 function findRotation(x1,y1,x2,y2,offsetFix)
 	local t = -deg(atan2(x2-x1,y2-y1))+offsetFix
@@ -673,6 +697,7 @@ events = {
 	"onDgsMouseClickUp",
 	"onDgsMouseClickDown",
 	"onDgsMouseDoubleClick",
+	"onDgsMouseMultiClick",
 	"onDgsWindowClose",
 	"onDgsPositionChange",
 	"onDgsSizeChange",

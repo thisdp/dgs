@@ -148,8 +148,54 @@ function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 			end
 		end
 	end,false)
+	addEventHandler("onDgsMouseMultiClick",edit,function(button,state,x,y,times)
+		if button == "left" and state == "down" then
+			if times== 1 then
+				local shift = getKeyState("lshift") or getKeyState("rshift")
+				local pos,side = searchEditMousePosition(source,x)
+				dgsEditSetCaretPosition(source,pos,shift)
+			elseif times == 2 then
+				local pos,side = searchEditMousePosition(source,x)
+				local s,e = dgsEditSearchFullWordType(source,pos,side)
+				dgsEditSetCaretPosition(source,s)
+				dgsEditSetCaretPosition(source,e,true)
+			elseif times == 3 then
+				local pos,side = searchEditMousePosition(source,x)
+				dgsEditSetCaretPosition(source,_)
+				dgsEditSetCaretPosition(source,0,true)
+			end
+		end
+	end,false)
 	triggerEvent("onDgsCreate",edit,sourceResource)
 	return edit
+end
+
+function dgsEditSearchFullWordType(edit,pos,side)
+	local text = dgsElementData[edit].text
+	local textLen = utf8Len(text)
+	if side == 1 then
+		pos = pos+1
+	end
+	local startStr = utf8Sub(text,pos,pos)
+	if not startStr or startStr == "" then return 0,textLen end
+	local startType = utf8.getCharType(startStr)
+	local frontPos = pos
+	local backPos = pos
+	while true do
+		frontPos = frontPos-1
+		if frontPos < 0 then break end
+		local searchChar = utf8Sub(text,frontPos,frontPos)
+		if not searchChar or searchChar == "" then break end 
+		if utf8.getCharType(searchChar) ~= startType then break end
+	end
+	while true do
+		backPos = backPos+1
+		if backPos > textLen then break end
+		local searchChar = utf8Sub(text,backPos,backPos)
+		if not searchChar or searchChar == "" then break end 
+		if utf8.getCharType(searchChar) ~= startType then break end
+	end
+	return frontPos,backPos-1
 end
 
 function dgsEditSetMasked(edit,masked)
@@ -166,14 +212,15 @@ function dgsEditMoveCaret(edit,offset,selectText)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditMoveCaret at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
 	assert(type(offset) == "number","Bad argument @dgsEditMoveCaret at argument 2, expect number, got "..type(offset))
 	local text = dgsElementData[edit].text
+	local textLen = utf8Len(text)
 	if dgsElementData[edit].masked then
-		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
+		text = strRep(dgsElementData[edit].maskText,textLen)
 	end
 	local pos = dgsElementData[edit].caretPos+mathFloor(offset)
 	if pos < 0 then
 		pos = 0
-	elseif pos > utf8Len(text) then
-		pos = utf8Len(text)
+	elseif pos > textLen then
+		pos = textLen
 	end
 	dgsSetData(edit,"caretPos",pos)
 	local isReadOnlyShow = true
@@ -191,13 +238,14 @@ end
 
 function dgsEditSetCaretPosition(edit,pos,doSelect)
 	assert(dgsGetType(edit) == "dgs-dxedit","Bad argument @dgsEditSetCaretPosition at argument 1, expect dgs-dxedit, got "..dgsGetType(edit))
-	assert(type(pos) == "number","Bad argument @dgsEditSetCaretPosition at argument 2, expect number, got "..type(pos))
+	assert(pos == nil or type(pos) == "number","Bad argument @dgsEditSetCaretPosition at argument 2, expect number/nil, got "..type(pos))
 	local text = dgsElementData[edit].text
+	local textLen = utf8Len(text)
 	if dgsElementData[edit].masked then
-		text = strRep(dgsElementData[edit].maskText,utf8Len(text))
+		text = strRep(dgsElementData[edit].maskText,textLen)
 	end
-	if pos > utf8Len(text) then
-		pos = utf8Len(text)
+	if not pos or pos > textLen then
+		pos = textLen
 	elseif pos < 0 then
 		pos = 0
 	end
@@ -508,27 +556,16 @@ function searchEditMousePosition(dxedit,posx)
 		lastWidth = Next
 		local offsetL = start-Last
 		if i <= sfrom and pos <= offsetL then
-			return sfrom
+			return sfrom,1
 		elseif i >= sto and pos >= offsetR then
-			return sto
+			return sto,-1
 		elseif pos >= offsetL and pos <= offsetR then
-			return i
+			return i,pos-start < 0 and -1 or 1
 		end
 		start = start + Next*2
 	end
-	return -1
+	return -1,0
 end
-
-function checkEditMousePosition(button,state,x,y)
-	if dgsGetType(source) == "dgs-dxedit" then
-		if state == "down" then
-			local shift = getKeyState("lshift") or getKeyState("rshift")
-			local pos = searchEditMousePosition(source,x)
-			dgsEditSetCaretPosition(source,pos,shift)
-		end
-	end
-end
-addEventHandler("onDgsMouseClick",root,checkEditMousePosition)
 
 addEventHandler("onClientGUIAccepted",resourceRoot,function()
 	local dxEdit = dgsElementData[source].linkedDxEdit

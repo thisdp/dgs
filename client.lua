@@ -711,9 +711,21 @@ function onClientKeyTriggered(button)
 		local shift = getKeyState("lshift") or getKeyState("rshift")
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
 		if button == "arrow_l" then
-			dgsEditMoveCaret(dgsEdit,-1,shift)
+			if ctrl then
+				local pos = dgsElementData[dgsEdit].caretPos
+				local f,b = dgsEditSearchFullWordType(dgsEdit,pos,-1)
+				dgsEditMoveCaret(dgsEdit,f-pos,shift)
+			else
+				dgsEditMoveCaret(dgsEdit,-1,shift)
+			end
 		elseif button == "arrow_r" then
-			dgsEditMoveCaret(dgsEdit,1,shift)
+			if ctrl then
+				local pos = dgsElementData[dgsEdit].caretPos
+				local f,b = dgsEditSearchFullWordType(dgsEdit,pos,1)
+				dgsEditMoveCaret(dgsEdit,b-pos,shift)
+			else
+				dgsEditMoveCaret(dgsEdit,1,shift)
+			end
 		elseif button == "arrow_u" then
 			local cmd = dgsElementData[dgsEdit].mycmd
 			if dgsGetPluginType(cmd) == "dgs-dxcmd" then
@@ -748,7 +760,12 @@ function onClientKeyTriggered(button)
 					dgsEditDeleteText(dgsEdit,cpos,spos)
 					dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
 				else
-					dgsEditDeleteText(dgsEdit,cpos,cpos+1)
+					if ctrl then
+						local f,b = dgsEditSearchFullWordType(dgsEdit,cpos,1)
+						dgsEditDeleteText(dgsEdit,cpos,b)
+					else
+						dgsEditDeleteText(dgsEdit,cpos,cpos+1)
+					end
 				end
 			end
 		elseif button == "backspace" then
@@ -759,7 +776,12 @@ function onClientKeyTriggered(button)
 					dgsEditDeleteText(dgsEdit,cpos,spos)
 					dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
 				else
-					dgsEditDeleteText(dgsEdit,cpos-1,cpos)
+					if ctrl then
+						local f,b = dgsEditSearchFullWordType(dgsEdit,cpos,-1)
+						dgsEditDeleteText(dgsEdit,f,cpos)
+					else
+						dgsEditDeleteText(dgsEdit,cpos-1,cpos)
+					end
 				end
 			end
 		elseif button == "c" or button == "x" and ctrl then
@@ -1366,10 +1388,13 @@ function checkScale(source)
 	return false
 end
 
-DoubleClick = {}
-DoubleClick.Interval = 250
-DoubleClick.down = false
-DoubleClick.up = false
+multiClick = {
+	Interval = 250;
+	left = {up = {0,false,false},down = {0,false,false}},
+	right = {up = {0,false,false},down = {0,false,false}},
+	middle = {up = {0,false,false},down = {0,false,false}},
+}
+
 GirdListDoubleClick = {}
 GirdListDoubleClick.down = false
 GirdListDoubleClick.up = false
@@ -1410,7 +1435,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					local x,y = dgsGetPosition(guiele,false,true)
 					local w,h = dgsGetSize(guiele,false)
 					local isHorizontal = dgsElementData[guiele].isHorizontal
-					local pos = dgsElementData[guiele].position
 					local length,lrlt = dgsElementData[guiele].length[1],dgsElementData[guiele].length[2]
 					local slotRange
 					local arrowWid = dgsElementData[guiele].arrowWidth
@@ -1420,8 +1444,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1])*2 or 0)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
-					local py = pos*0.01*(slotRange-cursorRange)
-					checkScrollBar(guiele,py,isHorizontal)
+					checkScrollBar(guiele,dgsElementData[guiele].position*0.01*(slotRange-cursorRange),isHorizontal)
 					local parent = dgsElementData[guiele].attachedToParent
 					if isElement(parent) then
 						if guiele == dgsElementData[parent].scrollbars[1] then
@@ -1479,7 +1502,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 					--------
 					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] ~= false then
-						local old1,old2
 						local selectionMode = dgsElementData[guiele].selectionMode
 						local multiSelection = dgsElementData[guiele].multiSelection
 						local preSelect = dgsElementData[guiele].preSelect
@@ -1489,8 +1511,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 							if selectionMode == 1 then
 								if multiSelection then
 									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],1)
-										dgsGridListSelectItem(guiele,preSelect[1],1,not selected)
+										dgsGridListSelectItem(guiele,preSelect[1],1,not dgsGridListItemIsSelected(guiele,preSelect[1],1))
 									elseif shift then
 										if clicked and #clicked == 2 then
 											dgsGridListSetSelectedItem(guiele,-1,-1)
@@ -1511,8 +1532,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 							elseif selectionMode == 2 then
 								if multiSelection then
 									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,1,preSelect[2])
-										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
+										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not dgsGridListItemIsSelected(guiele,1,preSelect[2]))
 									elseif shift then
 										if clicked and #clicked == 2 then
 											dgsGridListSetSelectedItem(guiele,-1,-1)
@@ -1533,8 +1553,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 							elseif selectionMode == 3 then
 								if multiSelection then
 									if ctrl then
-										local selected = dgsGridListItemIsSelected(guiele,preSelect[1],preSelect[2])
-										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not selected)
+										dgsGridListSelectItem(guiele,preSelect[1],preSelect[2],not dgsGridListItemIsSelected(guiele,preSelect[1],preSelect[2]))
 									elseif shift then
 										if clicked and #clicked == 2 then
 											dgsGridListSetSelectedItem(guiele,-1,-1)
@@ -1578,23 +1597,25 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
 		end
 		if not isElement(guiele) then return end
-		if DoubleClick[state] and isTimer(DoubleClick[state].timer) and DoubleClick[state].ele == guiele and DoubleClick[state].but == button then
-			triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)
-			killTimer(DoubleClick[state].timer)
-			DoubleClick[state] = {}
-		else
-			if DoubleClick[state] then
-				if isTimer(DoubleClick[state].timer) then
-					killTimer(DoubleClick[state].timer)
-				end
+		if isTimer(multiClick[button][state][3]) then killTimer(multiClick[button][state][3]) end
+		if multiClick[button][state][1] == 0 then multiClick[button][state][2] = guiele end
+		if multiClick[button][state][2] == guiele then
+			multiClick[button][state][1] = multiClick[button][state][1]+1
+			if multiClick[button][state][1] == 2 then
+				triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)
 			end
-			DoubleClick[state] = {}
-			DoubleClick[state].ele = guiele
-			DoubleClick[state].but = button
-			DoubleClick[state].timer = setTimer(function()
-				DoubleClick[state] = false
-			end,DoubleClick.Interval,1)
+			triggerEvent("onDgsMouseMultiClick",guiele,button,state,x,y,multiClick[button][state][1])
+			multiClick[button][state][3] = setTimer(function(button,state)
+				multiClick[button][state][1] = 0
+				multiClick[button][state][2] = false
+				multiClick[button][state][3] = false
+			end,multiClick.Interval,1,button,state)
+		else
+			multiClick[button][state][1] = 0
+			multiClick[button][state][2] = false
+			multiClick[button][state][3] = false
 		end
+		
 		if not isElement(guiele) then return end
 		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
 			local clicked = dgsElementData[guiele].itemClick
