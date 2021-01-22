@@ -62,6 +62,7 @@ function createFullDemo()
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
+createFullDemo()
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
@@ -505,3 +506,7 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
+
+
+
+	edit1 = dgsCreateEdit(400,400,200,50,"DGS 3D Interface Edit 1啊啊 啊啊",false)

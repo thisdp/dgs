@@ -1,23 +1,28 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
 local dxDrawImageSection = dxDrawImageSectionExt
-local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
 local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
---
-local assert = assert
-local type = type
+local dxGetMaterialSize = dxGetMaterialSize
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
 local isElement = isElement
+local assert = assert
+local tonumber = tonumber
+local type = type
 
 ProgressBarShaders = {}
-ProgressBarStyle = {
+local ProgressBarStyle = {
 	["normal-horizontal"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 		local eleData = dgsElementData[source]
 		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2

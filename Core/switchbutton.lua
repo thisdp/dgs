@@ -1,21 +1,27 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
-local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsTranslate = dgsTranslate
+local dgsAttachToTranslation = dgsAttachToTranslation
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
+local assert = assert
+local tonumber = tonumber
+local tostring = tostring
+local tocolor = tocolor
+local type = type
 local min = math.min
 local max = math.max
-local assert = assert
-local type = type
 
 function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
 	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
@@ -28,7 +34,7 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	dgsSetParent(switchbutton,parent,true,true)
 	local style = styleSettings.switchbutton
 	local imageOn = style.imageOn
-	local norimg_n,hovimg_n,cliimg_n = dgsCreateTextureFromStyle(imageOn[1]),dgsCreateTextureFromStyle(imageOn[2]),dgsCreateTextureFromStyle(imageOn[3])
+	local norimg_o,hovimg_o,cliimg_o = dgsCreateTextureFromStyle(imageOn[1]),dgsCreateTextureFromStyle(imageOn[2]),dgsCreateTextureFromStyle(imageOn[3])
 	local imageOff = style.imageOff
 	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(imageOff[1]),dgsCreateTextureFromStyle(imageOff[2]),dgsCreateTextureFromStyle(imageOff[3])
 	local cursorImage = style.cursorImage

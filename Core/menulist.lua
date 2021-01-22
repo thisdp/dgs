@@ -11,7 +11,14 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-
+--
+local triggerEvent = triggerEvent
+local createElement = createElement
+local dgsSetType = dgsSetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local dgsAttachToTranslation = dgsAttachToTranslation
+local calculateGuiPositionSize = calculateGuiPositionSize
 local assert = assert
 local type = type
 --

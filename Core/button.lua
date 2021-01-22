@@ -5,9 +5,22 @@ local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
 local dxGetTextWidth = dxGetTextWidth
-local _dxDrawImage = _dxDrawImage
-local _dxDrawImageSection = _dxDrawImageSection
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsSetParent = dgsSetParent
+local dgsGetType = dgsGetType
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
+local assert = assert
+local tonumber = tonumber
+local type = type
 
 function dgsCreateButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,norimg,selimg,cliimg,norcolor,hovcolor,clicolor)
 	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)

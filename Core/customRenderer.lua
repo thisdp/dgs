@@ -11,6 +11,13 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsSetData = dgsSetData
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
+local loadstring = loadstring
 --
 --This is a special dgs element that won't be rendered itself.
 --This dgs element is usually used for plugins

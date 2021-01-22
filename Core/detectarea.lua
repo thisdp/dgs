@@ -1,16 +1,15 @@
 --Dx Functions
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
-local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
-local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
 local dxGetPixelsSize = dxGetPixelsSize
 local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
 --
+local triggerEvent = triggerEvent
+local createElement = createElement
+local dgsSetType = dgsSetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
 local assert = assert
 local type = type
 

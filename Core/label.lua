@@ -1,18 +1,23 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
-local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
-local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsTranslate = dgsTranslate
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
 local assert = assert
+local tonumber = tonumber
 local type = type
 
 function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor,right,bottom)

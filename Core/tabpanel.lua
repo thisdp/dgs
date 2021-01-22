@@ -1,23 +1,37 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
+local _dxDrawImage = _dxDrawImage
 local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local _dxDrawImage = _dxDrawImage
-local _dxDrawImageSection = _dxDrawImageSection
---
-local mathFloor = math.floor
+local dxCreateRenderTarget = dxCreateRenderTarget
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsTranslate = dgsTranslate
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local isElement = isElement
+local destroyElement = destroyElement
+local triggerEvent = triggerEvent
+local createElement = createElement
 local assert = assert
-local type = type
 local tonumber = tonumber
+local type = type
+local mathClamp = math.restrict
+local mathMin = math.min
+local mathFloor = math.floor
+local mathInRange = math.inRange
+local tableInsert = table.insert
+local tableRemove = table.remove
 
 function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
@@ -51,8 +65,7 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 		tabLengthAll = 0;
 	}
 	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
-	local abx = dgsElementData[tabpanel].absSize[1]
-	local renderTarget,err = dxCreateRenderTarget(abx,tabHeight,true,tabpanel)
+	local renderTarget,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,tabpanel,-1)
 	else
@@ -70,17 +83,18 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	dgsSetType(tab,"dgs-dxtab")
 	dgsSetParent(tab,tabpanel,true,true)
 	local style = styleSettings.tab
-	local tabs = dgsElementData[tabpanel].tabs
+	local eleData = dgsElementData[tabpanel]
+	local tabs = eleData.tabs
 	local id = #tabs+1
-	table.insert(tabs,id,tab)
-	local w = dgsElementData[tabpanel].absSize[1]
-	local font = style.font or dgsElementData[tabpanel].font
-	local t_minWid,t_maxWid = dgsElementData[tabpanel].tabMinWidth,dgsElementData[tabpanel].tabMaxWidth
+	tableInsert(tabs,id,tab)
+	local w = eleData.absSize[1]
+	local font = style.font or eleData.font
+	local t_minWid,t_maxWid = eleData.tabMinWidth,eleData.tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-	local wid = math.restrict(dxGetTextWidth(text,textSizex or 1,font),minwidth,maxwidth)
-	local tabPadding = dgsElementData[tabpanel].tabPadding
+	local wid = mathClamp(dxGetTextWidth(text,textSizex or 1,font),minwidth,maxwidth)
+	local tabPadding = eleData.tabPadding
 	local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
-	local tabGapSize = dgsElementData[tabpanel].tabGapSize
+	local tabGapSize = eleData.tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
 	local textSizeX,textSizeY = tonumber(textSizex) or style.textSize[1], tonumber(textSizex) or style.textSize[2]
 	local tabnorimg = tabnorimg or dgsCreateTextureFromStyle(style.tabImage[1])
@@ -93,17 +107,17 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 		parent = tabpanel,
 		id = id,
 		font = style.font or systemFont,
-		tabLengthAll = dgsElementData[tabpanel].tabLengthAll+wid+padding*2+gapSize*math.min(#tabs,1),
+		tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1),
 		width = wid,
 		textColor = tonumber(textColor) or style.textColor,
 		textSize = {textSizeX,textSizeY},
-		bgColor = tonumber(bgColor) or style.bgColor or dgsElementData[tabpanel].bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage) or dgsElementData[tabpanel].bgImage,
+		bgColor = tonumber(bgColor) or style.bgColor or eleData.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage) or eleData.bgImage,
 		tabImage = {tabnorimg,tabhovimg,tabcliimg},
 		tabColor = {tabnorcolor,tabhovcolor,tabclicolor},
 	}
-	if dgsElementData[tabpanel].selected == -1 then
-		dgsElementData[tabpanel].selected = id
+	if eleData.selected == -1 then
+		eleData.selected = id
 	end
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
@@ -119,11 +133,11 @@ end
 function dgsTabPanelGetWidth(tabpanel,includeInvisible)
 	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelGetWidth at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
 	local wid = 0
-	local tabs = dgsElementData[tabpanel].tabs
-	local tabPadding = dgsElementData[tabpanel].tabPadding
-	local w = dgsElementData[tabpanel].absSize[1]
+	local eleData = dgsElementData[tabpanel]
+	local tabs = eleData.tabs
+	local tabPadding,tabGapSize = eleData.tabPadding,eleData.tabGapSize
+	local w = eleData.absSize[1]
 	local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
-	local tabGapSize = dgsElementData[tabpanel].tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
 	local cnt = 0
 	if includeInvisible then
@@ -164,12 +178,12 @@ function dgsTabPanelMoveTab(tabpanel,from,to)
 		local _tab = tabs[i]
 		dgsElementData[_tab].id = dgsElementData[_tab].id-1
 	end
-	table.remove(tabs,myid)
+	tableRemove(tabs,myid)
 	for i=to,#tabs do
 		local _tab = tabs[i]
 		dgsElementData[_tab].id = dgsElementData[_tab].id+1
 	end
-	table.insert(tabs,to,tab)
+	tableInsert(tabs,to,tab)
 	return true
 end
 
@@ -181,20 +195,21 @@ end
 function dgsDeleteTab(tab)
 	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsDeleteTab at at argument 1, expect dgs-dxtab got "..dgsGetType(tab))
 	local tabpanel = dgsElementData[tab].parent
+	local eleData = dgsElementData[tabpanel]
 	if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
-		local w = dgsElementData[tabpanel].absSize[1]
+		local w = eleData.absSize[1]
 		local tabWidth = dgsElementData[tab].width
-		local tabs = dgsElementData[tabpanel].tabs
-		local tabPadding = dgsElementData[tabpanel].tabPadding
+		local tabs = eleData.tabs
+		local tabPadding = eleData.tabPadding
 		local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
-		local tabGapSize = dgsElementData[tabpanel].tabGapSize
+		local tabGapSize = eleData.tabGapSize
 		local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
-		dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-tabWidth-padding*2-gapSize*math.min(#tabs,1))
+		dgsSetData(tabpanel,"tabLengthAll",eleData.tabLengthAll-tabWidth-padding*2-gapSize*mathMin(#tabs,1))
 		local id = dgsElementData[tab].id
 		for i=id,#tabs do
 			dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
 		end
-		table.remove(tabs,id)
+		tableRemove(tabs,id)
 	end
 	for k,v in pairs(dgsGetChildren(tab)) do
 		destroyElement(v)
@@ -235,12 +250,11 @@ function dgsSetSelectedTab(tabpanel,id)
 	assert(idtype == "number" or idtype == "dgs-dxtab","Bad argument @dgsSetSelectedTab at at argument 2, expect number/dgs-dxtab got "..idtype)
 	local tabs = dgsElementData[tabpanel].tabs
 	id = idtype == "dgs-dxtab" and dgsElementData[id].id or id
-	if math.inRange(1,#tabs,id) then
+	if mathInRange(1,#tabs,id) then
 		return dgsSetData(tabpanel,"selected",id)
 	end
 	return false
 end
-
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------

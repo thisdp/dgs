@@ -15,6 +15,7 @@ local dxSetBlendMode = dxSetBlendMode
 local getScreenFromWorldPosition = getScreenFromWorldPosition
 local assert = assert
 local type = type
+local tableInsert = table.insert
 
 function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded)
 	local xCheck,yCheck,zCheck = type(x) == "number",type(y) == "number",type(z) == "number"
@@ -22,7 +23,7 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 	if not yCheck then assert(false,"Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y)) end
 	if not zCheck then assert(false,"Bad argument @dgsCreate3DText at argument 3, expect a number got "..type(z)) end
 	local text3d = createElement("dgs-dx3dtext")
-	table.insert(dx3DTextTable,text3d)
+	tableInsert(dx3DTextTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
 	dgsElementData[text3d] = {
 		renderBuffer = {},

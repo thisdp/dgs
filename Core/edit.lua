@@ -1,30 +1,46 @@
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
+local _dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 local _dxDrawImage = _dxDrawImage
-local _dxDrawImageSection = _dxDrawImageSection
---
-----Speed UP
+local dxCreateRenderTarget = dxCreateRenderTarget
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local dgsAttachToTranslation = dgsAttachToTranslation
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local applyColorAlpha = applyColorAlpha
+--Utilities
+local isConsoleActive = isConsoleActive
+local isMainMenuActive = isMainMenuActive
+local isChatBoxInputActive = isChatBoxInputActive
+local getKeyState = getKeyState
+local triggerEvent = triggerEvent
+local addEventHandler = addEventHandler
+local createElement = createElement
+local assert = assert
+local tonumber = tonumber
+local tostring = tostring
+local type = type
+local mathFloor = math.floor
 local mathFloor = math.floor
 local utf8Sub = utf8.sub
 local utf8Len = utf8.len
 local utf8Gsub = utf8.gsub
 local utf8Lower = utf8.lower
+local utf8GetCharType = utf8.getCharType
 local strRep = string.rep
 local tableInsert = table.insert
 local tableRemove = table.remove
 local strChar = string.char
-local _dxGetTextWidth = dxGetTextWidth
 local mathMin = math.min
 local mathMax = math.max
 local acceptedAlignment = {
@@ -36,10 +52,11 @@ local acceptedAlignment = {
 }
 
 ----Initialize
-VerticalAlign = {top=true,center=true,bottom=true}
-HorizontalAlign = {left=true,center=true,right=true}
+local VerticalAlign = {top=true,center=true,bottom=true}
+local HorizontalAlign = {left=true,center=true,right=true}
 GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
 GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
+addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
 dgsSetData(GlobalEdit,"linkedDxEdit",nil)
 local splitChar = "\r\n"
 local splitChar2 = "\n"
@@ -178,7 +195,7 @@ function dgsEditSearchFullWordType(edit,pos,side)
 	end
 	local startStr = utf8Sub(text,pos,pos)
 	if not startStr or startStr == "" then return 0,textLen end
-	local startType = utf8.getCharType(startStr)
+	local startType = utf8GetCharType(startStr)
 	local frontPos = pos
 	local backPos = pos
 	while true do
@@ -186,14 +203,14 @@ function dgsEditSearchFullWordType(edit,pos,side)
 		if frontPos < 0 then break end
 		local searchChar = utf8Sub(text,frontPos,frontPos)
 		if not searchChar or searchChar == "" then break end 
-		if utf8.getCharType(searchChar) ~= startType then break end
+		if utf8GetCharType(searchChar) ~= startType then break end
 	end
 	while true do
 		backPos = backPos+1
 		if backPos > textLen then break end
 		local searchChar = utf8Sub(text,backPos,backPos)
 		if not searchChar or searchChar == "" then break end 
-		if utf8.getCharType(searchChar) ~= startType then break end
+		if utf8GetCharType(searchChar) ~= startType then break end
 	end
 	return frontPos,backPos-1
 end

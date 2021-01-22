@@ -749,6 +749,7 @@ events = {
 	"DGSI_ReceiveRemoteImage",
 	-------
 }
+local addEvent = addEvent
 for i=1,#events do
 	addEvent(events[i],true)
 end

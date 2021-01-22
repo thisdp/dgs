@@ -1,16 +1,26 @@
 --Dx Functions
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
 local dxDrawRectangle = dxDrawRectangle
-local _dxDrawImage = _dxDrawImage
-local _dxDrawImageSection = _dxDrawImageSection
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetData = dgsSetData
+local dgsSetParent = dgsSetParent
+local applyColorAlpha = applyColorAlpha
+local dgsTranslate = dgsTranslate
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
 local assert = assert
 local type = type
 local tostring = tostring
 local tonumber = tonumber
---
+
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
 function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
 	local xCheck,yCheck,wCheck,hCheck,stateCheck = type(x) == "number",type(y) == "number",type(w) == "number",type(h) == "number",not state or state == true

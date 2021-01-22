@@ -7,12 +7,6 @@ animGUIList = {}
 moveGUIList = {}
 sizeGUIList = {}
 alphaGUIList = {}
---[[
-function dgsAttachAnimationToEvent(gui,animType,animName,...)
-	local args = {...}
-	dgsSetData()
-end]]
-
 function dgsIsAniming(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsIsAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return animGUIList[gui] or false

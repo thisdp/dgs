@@ -1,24 +1,36 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local _dxDrawImage = _dxDrawImage
-local _dxDrawImageSection = _dxDrawImageSection
---
-local lerp = math.lerp
-local tostring = tostring
+local dxCreateRenderTarget = dxCreateRenderTarget
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsTranslate = dgsTranslate
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
 local assert = assert
+local tonumber = tonumber
+local loadstring = loadstring
 local type = type
+local setmetatable = setmetatable
+local setfenv = setfenv
+local lerp = math.lerp
+local tableSort = table.sort
 local tableInsert = table.insert
+local tableRemove = table.remove
+local tableRemoveItemFromArray = table.removeItemFromArray
 self = false
 mouseButtonOrder = {
 	left=1,
@@ -266,7 +278,7 @@ function dgsGridListSort(gridlist,sortColumn)
 	if sortColumn then
 		local rowData = dgsElementData[gridlist].rowData
 		local sortFunction = dgsElementData[gridlist].sortFunction
-		table.sort(rowData,sortFunction)
+		tableSort(rowData,sortFunction)
 		dgsElementData[gridlist].rowData = rowData
 		return true
 	end
@@ -465,7 +477,7 @@ function dgsGridListRemoveColumn(gridlist,pos)
 	local columnData = dgsElementData[gridlist].columnData
 	assert(columnData[pos],"Bad argument @dgsGridListRemoveColumn at argument 2, column index is out of range [max "..#columnData..", got "..pos.."]")
 	local oldLen = columnData[pos][3]
-	table.remove(columnData,pos)
+	tableRemove(columnData,pos)
 	local lastColumnLen = 0
 	for k,v in ipairs(columnData) do
 		if k >= pos then
@@ -940,7 +952,7 @@ function dgsGridListRemoveRow(gridlist,row)
 	if row == 0 or row > #rowData then
 		return false
 	end
-	table.remove(rowData,row)
+	tableRemove(rowData,row)
 	dgsElementData[gridlist].configNextFrame = true
 	return true
 end
@@ -1508,14 +1520,14 @@ function checkGLScrollBar(scb,new,old)
 end
 
 function configGridList(gridlist)
-	local scrollbar = dgsElementData[gridlist].scrollbars
-	local sx,sy = dgsElementData[gridlist].absSize[1],dgsElementData[gridlist].absSize[2]
-	local columnHeight = dgsElementData[gridlist].columnHeight
-	local rowHeight = dgsElementData[gridlist].rowHeight
-	local scbThick = dgsElementData[gridlist].scrollBarThick
+	local eleData = dgsElementData[gridlist]
+	local scrollbar = eleData.scrollbars
+	local sx,sy = eleData.absSize[1],eleData.absSize[2]
+	local columnHeight,rowHeight,leading = eleData.columnHeight,eleData.rowHeight,eleData.leading
+	local scbThick = eleData.scrollBarThick
 	local columnCount =  dgsGridListGetColumnCount(gridlist)
 	local columnWidth = dgsGridListGetColumnAllWidth(gridlist,columnCount,false,true)
-	local rowLength = #dgsElementData[gridlist].rowData*(rowHeight+dgsElementData[gridlist].leading)
+	local rowLength = #eleData.rowData*(rowHeight+leading)
 	local scbX,scbY = sx-scbThick,sy-scbThick
 	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
@@ -1535,7 +1547,7 @@ function configGridList(gridlist)
 	if scbStateV == nil then
 		scbStateV = scbStateH
 	end
-	local forceState = dgsElementData[gridlist].scrollBarState
+	local forceState = eleData.scrollBarState
 	if forceState[1] ~= nil then
 		scbStateV = forceState[1]
 	end
@@ -1562,25 +1574,25 @@ function configGridList(gridlist)
 	local scroll2 = dgsElementData[scrollbar[2]].position
 	dgsSetData(gridlist,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
 
-	local scbLengthVrt = dgsElementData[gridlist].scrollBarLength[1]
+	local scbLengthVrt = eleData.scrollBarLength[1]
 	local higLen = 1-(rowLength-rowShowRange)/rowLength
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
-	local verticalScrollSize = dgsElementData[gridlist].scrollSize/(rowLength-rowShowRange)
+	local verticalScrollSize = eleData.scrollSize/(rowLength-rowShowRange)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 
 	local scbLengthHoz = dgsElementData[gridlist].scrollBarLength[2]
 	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
-	local horizontalScrollSize = dgsElementData[gridlist].scrollSize*5/(columnWidth-columnShowRange)
+	local horizontalScrollSize = eleData.scrollSize*5/(columnWidth-columnShowRange)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 
-	local rentarg = dgsElementData[gridlist].renderTarget
+	local rentarg = eleData.renderTarget
 	if rentarg then
 		if isElement(rentarg[1]) then destroyElement(rentarg[1]) end
 		if isElement(rentarg[2]) then destroyElement(rentarg[2]) end
-		if not dgsElementData[gridlist].mode then
+		if not eleData.mode then
 			local columnRender,rowRender
 			if relSizX*columnHeight ~= 0 then
 				columnRender,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist)
@@ -1602,7 +1614,7 @@ function configGridList(gridlist)
 		end
 	end
 	dgsGridListUpdateRowMoveOffset(gridlist)
-	dgsElementData[gridlist].configNextFrame = false
+	eleData.configNextFrame = false
 end
 
 function dgsGridListResetScrollBarPosition(gridlist,vertical,horizontal)
@@ -1681,11 +1693,9 @@ function dgsAttachToGridList(element,gridlist,row,column)
 	dgsDetachElements(element)
 	dgsSetParent(element,gridlist)
 	local rowData = dgsElementData[gridlist].rowData
-	if rowData[row] then
-		if rowData[row][column] then
-			rowData[row][column][10] = rowData[row][column][10] or {}
-			table.insert(rowData[row][column][10],element)
-		end
+	if rowData[row] and rowData[row][column] then
+		rowData[row][column][10] = rowData[row][column][10] or {}
+		tableInsert(rowData[row][column][10],element)
 	end
 	return dgsSetData(element,"attachedToGridList",{gridlist,row,column})
 end
@@ -1695,7 +1705,7 @@ function dgsGetAttachedGridList(element)
 	if attachData then
 		return attachData[1],attachData[2],attachData[3]
 	end
-	return false
+	return false,false,false
 end
 
 function dgsDetachFromGridList(element)
@@ -1706,11 +1716,9 @@ function dgsDetachFromGridList(element)
 	local row = attachData[2]
 	local column = attachData[3]
 	local rowData = dgsElementData[gridlist].rowData
-	if rowData[row] then
-		if rowData[row][column] then
-			rowData[row][column][10] = rowData[row][column][10] or {}
-			table.removeItemFromArray(rowData[row][column][10],element)
-		end
+	if rowData[row] and rowData[row][column] then
+		rowData[row][column][10] = rowData[row][column][10] or {}
+		tableRemoveItemFromArray(rowData[row][column][10],element)
 	end
 	return dgsSetData(element,"attachedToGridList",nil)
 end
@@ -1718,9 +1726,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
-	if eleData.configNextFrame then
-		configGridList(source)
-	end
+	if eleData.configNextFrame then configGridList(source) end
 	local bgColor,bgImage = applyColorAlpha(eleData.bgColor,parentAlpha),eleData.bgImage
 	local columnColor,columnImage = applyColorAlpha(eleData.columnColor,parentAlpha),eleData.columnImage
 	local font = eleData.font or systemFont
@@ -1749,7 +1755,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	if sortColumn and columnData[sortColumn] then
 		if eleData.nextRenderSort then
 			dgsGridListSort(source)
-			dgsElementData[source].nextRenderSort = false
+			eleData.nextRenderSort = false
 		end
 	end
 	local columnTextColor = eleData.columnTextColor
@@ -1760,7 +1766,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local leading = eleData.leading
 	local scbThick = eleData.scrollBarThick
 	local scrollbars = eleData.scrollbars
-	local scbThickV,scbThickH = dgsElementData[ scrollbars[1] ].visible and scbThick or 0,dgsElementData[ scrollbars[2] ].visible and scbThick or 0
+	local scb1,scb2 = scrollbars[1],scrollbars[2]
+	local scbThickV,scbThickH = dgsElementData[scb1].visible and scbThick or 0,dgsElementData[scb2].visible and scbThick or 0
 	local colorcoded = eleData.colorcoded
 	local shadow = eleData.rowShadow
 	local rowHeightLeadingTemp = rowHeight+leading
@@ -1768,7 +1775,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local _rowMoveOffset = eleData.rowMoveOffset
 	local rowMoveOffset = _rowMoveOffset
 	if eleData.rowMoveOffsetTemp ~= _rowMoveOffset then
-		local rowMoveHardness = dgsElementData[ scrollbars[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+		local rowMoveHardness = dgsElementData[scb1].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
 		eleData.rowMoveOffsetTemp = lerp(rowMoveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
 		local rMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
 		dgsGridListUpdateRowMoveOffset(source)
@@ -1781,7 +1788,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local _columnMoveOffset = eleData.columnMoveOffset
 	local columnMoveOffset = _columnMoveOffset
 	if eleData.columnMoveOffsetTemp ~= _columnMoveOffset then
-		local columnMoveHardness  = dgsElementData[ scrollbars[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+		local columnMoveHardness  = dgsElementData[scb2].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
 		eleData.columnMoveOffsetTemp = lerp(columnMoveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
 		local cMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
 		if cMoveOffset-eleData.columnMoveOffsetTemp <= 0.5 and cMoveOffset-eleData.columnMoveOffsetTemp >= -0.5 then
@@ -1807,7 +1814,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		local renderTarget = eleData.renderTarget
 		local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
 		dxSetRenderTarget(renderTarget[1],true)
-		dxSetBlendMode("modulate_add")
+			dxSetBlendMode("modulate_add")
 			local cpos = {}
 			local cend = {}
 			local multiplier = columnRelt and (w-scbThickV) or 1
@@ -1825,10 +1832,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 				local _tempStartx = tempCpos+tempColumnOffset
 				local _tempEndx = _tempStartx+data[2]*multiplier
 				if _tempStartx <= w and _tempEndx >= 0 then
-					cpos[id] = tempCpos
-					cend[id] = _tempEndx
-					cPosStart = cPosStart or id
-					cPosEnd = id
+					cpos[id],cend[id] = tempCpos,_tempEndx
+					cPosStart,cPosEnd = cPosStart or id,id
 					if isDraw1 then
 						local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
 						local textPosL = _tempStartx+columnTextPosOffset[1]

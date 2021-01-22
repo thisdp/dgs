@@ -1,21 +1,26 @@
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
-local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
-local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
+local isElement = isElement
+local assert = assert
+local tonumber = tonumber
+local tostring = tostring
+local type = type
+local mathFloor = math.floor
 local mathAbs = math.abs
 local mathClamp = math.restrict
-local assert = assert
-local type = type
 
 function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
 	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
@@ -75,10 +80,7 @@ end
 function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetScrollPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	assert(type(pos) == "number","Bad argument @dgsScrollBarSetScrollPosition at argument at 2, expect number got "..type(pos))
-	if isGrade then
-		local grades = dgsElementData[scrollbar].grades
-		pos = pos/grades*100
-	end
+	pos = isGrade and dgsElementData[scrollbar].grades/grades*100 or pos
 	local scaler = dgsElementData[scrollbar].map
 	if pos < 0 then pos = 0 end
 	if pos > 100 then pos = 100 end
@@ -101,7 +103,7 @@ function dgsScrollBarGetScrollPosition(scrollbar,isGrade,isAbsolute)
 	if isGrade then
 		local grades = dgsElementData[scrollbar].grades
 		if not grades then return pos end
-		pos = math.floor(pos/100*grades+0.5)
+		pos = mathFloor(pos/100*grades+0.5)
 	end
 	return pos
 end
@@ -252,21 +254,6 @@ function dgsScrollBarGetTroughClickAction(scb)
 	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetTroughClickAction at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
 	return dgsElementData[scrollbar].troughClickAction or "none"
 end
-
-
---[[
-function dgsScrollBarSetCursorWidth(scrollbar,width,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-
-	return relative and multiplier/slotRange or multiplier
-end
-
-function dgsScrollBarGetCursorWidth(scrollbar,width,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-
-	return relative and multiplier/slotRange or multiplier
-end
-]]
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -292,9 +279,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,ele
 	local colorImageIndex = {1,1,1,1,1}
 	local slotRange
 	local scrollArrow =  eleData.scrollArrow
-	local cursorWidth = eleData.cursorWidth
-	local troughWidth = eleData.troughWidth
-	local arrowWidth = eleData.arrowWidth
+	local cursorWidth,troughWidth,arrowWidth = eleData.cursorWidth,eleData.troughWidth,eleData.arrowWidth
 	local imgRot = eleData.imageRotation
 	local troughPadding,cursorPadding,arrowPadding
 	if isHorizontal then

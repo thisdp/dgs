@@ -1,29 +1,21 @@
 --Check whether you enable/disable dgs update system..
 --If you don't trust dgs.. Please Disable It In "config.txt"
 
-local check
-if fileExists("update.cfg") then
-	check = fileOpen("update.cfg")
-else
-	check = fileCreate("update.cfg")
-end
-local allstr = fileRead(check,fileGetSize(check))
-setElementData(resourceRoot,"Version",allstr)
+local check = fileExists("update.cfg") and fileOpen("update.cfg") or fileCreate("update.cfg")
+local version = tonumber(fileRead(check,fileGetSize(check))) or 0
 fileClose(check)
-
+setElementData(resourceRoot,"Version",version)
 if dgsConfig.updateSystemDisabled then return end
 
 local _fetchRemote = fetchRemote
 function fetchRemote(...)
-	if hasObjectPermissionTo(getThisResource(),"function.fetchRemote",true) then
-		return _fetchRemote(...)
-	else
+	if not hasObjectPermissionTo(getThisResource(),"function.fetchRemote",true) then
 		outputDebugString("[DGS]Request 'fetchRemote', but access denied. Use the command 'aclrequest allow dgs all'",2)
+		return false
 	end
-	return false
+	return _fetchRemote(...)
 end
 
-Version = tonumber(allstr) or 0
 RemoteVersion = 0
 ManualUpdate = false
 updateTimer = false
@@ -34,20 +26,20 @@ function checkUpdate()
 		if err == 0 then
 			RemoteVersion = tonumber(data)
 			if not ManualUpdate then
-				if RemoteVersion > Version then
-					outputDebugString("[DGS]Remote Version Got [Remote:"..data.." Current:"..allstr.."].")
+				if RemoteVersion > version then
+					outputDebugString("[DGS]Remote Version Got [Remote:"..data.." Current:"..version.."].")
 					outputDebugString("[DGS]Update? Command: updatedgs")
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
-						if RemoteVersion > Version then
-							outputDebugString("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..allstr.."].")
+						if RemoteVersion > version then
+							outputDebugString("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..version.."].")
 							outputDebugString("[DGS]Update? Command: updatedgs")
 						else
 							killTimer(updateTimer)
 						end
 					end,dgsConfig.updateCheckNoticeInterval*60000,0)
 				else
-					outputDebugString("[DGS]Current Version("..allstr..") is the latest!")
+					outputDebugString("[DGS]Current Version("..version..") is the latest!")
 				end
 			else
 				startUpdate()
@@ -71,7 +63,7 @@ addCommandHandler("updatedgs",function(player)
 		outputDebugString("[DGS]Player "..getPlayerName(player).." attempt to update dgs (Allowed)")
 		outputDebugString("[DGS]Preparing for updating dgs")
 		outputChatBox("[DGS]Preparing for updating dgs",root,0,255,0)
-		if RemoteVersion > Version then
+		if RemoteVersion > version then
 			startUpdate()
 		else
 			ManualUpdate = true
@@ -99,7 +91,7 @@ function startUpdate()
 				outputDebugString("[DGS]Requesting Verification Data...")
 				getGitHubTree()
 			else
-				outputDebugString("[DGS]!Can't Get Remote Update Data (ERROR:"..err..")",2)
+				outputDebugString("[DGS]Can't Get Remote Update Data (ERROR:"..err..")",2)
 			end
 		end)
 	end,50,1)
@@ -107,10 +99,7 @@ end
 
 preUpdate = {}
 fileHash = {}
-preUpdateCount = 0
 UpdateCount = 0
-FetchCount = 0
-preFetch = 0
 folderGetting = {}
 function getGitHubTree(path,nextPath)
 	nextPath = nextPath or ""
@@ -211,10 +200,7 @@ function DownloadFinish()
 	outputDebugString("[DGS]Please Restart DGS")
 	outputChatBox("[DGS]Update Complete ( "..#preUpdate.." File"..(#preUpdate==1 and "" or "s").." Changed )",root,0,255,0)
 	preUpdate = {}
-	preUpdateCount = 0
 	UpdateCount = 0
-	FetchCount = 0
-	preFetch = 0
 end
 
 addCommandHandler("dgsver",function(pla,cmd)

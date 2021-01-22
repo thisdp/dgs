@@ -1,6 +1,7 @@
 local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.acos,math.deg
 local assert = assert
 local type = type
+local tableInsert = table.insert
 
 local function LookRotation(x,y,z,rot)
 	local rx = deg(acos(((x^2+z^2)/(x^2+y^2+z^2))^0.5))
@@ -27,7 +28,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	if not rxCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(resolX)) end
 	if not ryCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(resolX)) end
 	local interface = createElement("dgs-dx3dinterface")
-	table.insert(dx3DInterfaceTable,interface)
+	tableInsert(dx3DInterfaceTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
 	dgsElementData[interface] = {
 		renderBuffer = {},

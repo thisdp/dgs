@@ -7,6 +7,8 @@
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
 	<script src="client.lua" type="client" />
+	<script src="functions.lua" type="client" />
+	<script src="styleManager/styleManager.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
@@ -31,7 +33,6 @@
 	<script src="Core/window.lua" type="client" />
 	<script src="Core/external.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
-	<script src="functions.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
 
@@ -78,7 +79,6 @@
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
 
 
-	<script src="styleManager/styleManager.lua" type="client" />
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="update.lua" type="server" />
 	<script src="G2DManager_s.lua" type="server" />
@@ -191,8 +191,8 @@
 	<export function="dgsDetachElements" type="client" />
 	<export function="dgsElementIsAttached" type="client" />
 	<export function="dgsGetCursorPosition" type="client" />
-	<export function="dgsSetDoubleClickInterval" type="client" />
-	<export function="dgsGetDoubleClickInterval" type="client" />
+	<export function="dgsSetMultiClickInterval" type="client" />
+	<export function="dgsSetMultiClickInterval" type="client" />
 	<export function="dgsGetBrowser" type="client" />
 	<export function="dgsAttachToAutoDestroy" type="client" />
 	<export function="dgsDetachFromAutoDestroy" type="client" />

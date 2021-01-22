@@ -1,7 +1,6 @@
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
@@ -9,25 +8,45 @@ local dxSetShaderValue = dxSetShaderValue
 local dxGetPixelsSize = dxGetPixelsSize
 local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
+local dxCreateRenderTarget = dxCreateRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local _dxDrawImage = _dxDrawImage
 local _dxDrawImageSection = _dxDrawImageSection
---
-----Speed UP
-local mathFloor = math.floor
+local _dxGetTextWidth = dxGetTextWidth
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsTranslate = dgsTranslate
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local addEventHandler = addEventHandler
+local createElement = createElement
+local isElement = isElement
+local assert = assert
+local tonumber = tonumber
+local tostring = tostring
+local type = type
+local tocolor = tocolor
+local tableSort = table.sort
 local tableInsert = table.insert
 local tableRemove = table.remove
+local mathFloor = math.floor
+local mathRestrict = math.restrict
 local utf8Sub = utf8.sub
 local utf8Gsub = utf8.gsub
 local utf8Len = utf8.len
 local utf8Insert = utf8.insert
 local utf8Byte = utf8.byte
-local _dxGetTextWidth = dxGetTextWidth
-local assert = assert
-local type = type
 GlobalMemoParent = guiCreateLabel(-1,0,0,0,"",true)
 GlobalMemo = guiCreateMemo(-1,0,0,0,"",true,GlobalMemoParent)
+addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
 dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 --[[
 ---------------In Normal Mode------------------
@@ -78,7 +97,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		bgImageBlur = bgImageBlur,
 		font = style.font or systemFont,
 		text = {},
-		wordWarp = false,
+		wordWrap = false,
 		wordWrapShowLine = {1,1,1},
 		wordWrapMapText = {},
 		textColor = textColor or style.textColor,
@@ -160,21 +179,22 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoMoveCaret at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	assert(type(indexOffset) == "number","Bad argument @dgsMemoMoveCaret at argument 2, expect number got "..type(indexOffset))
 	lineOffset = lineOffset or 0
-	local index = dgsElementData[memo].caretPos[1]
-	local line = dgsElementData[memo].caretPos[2]
-	local font = dgsElementData[memo].font
-	local size = dgsElementData[memo].absSize
-	local padding = dgsElementData[memo].padding
-	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
-	local scbThick = dgsElementData[memo].scrollBarThick
-	local scrollbars = dgsElementData[memo].scrollbars
+	local eleData = dgsElementData[memo]
+	local index = eleData.caretPos[1]
+	local line = eleData.caretPos[2]
+	local font = eleData.font
+	local size = eleData.absSize
+	local padding = eleData.padding
+	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
+	local scbThick = eleData.scrollBarThick
+	local scrollbars = eleData.scrollbars
 	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
 	local canHold = mathFloor((size[2]-scbTakes[2]-padding[2]*2)/fontHeight)
-	local textTable = dgsElementData[memo].text
-	local isWordWrap = dgsElementData[memo].wordWrap
+	local textTable = eleData.text
+	local isWordWrap = eleData.wordWrap
 	if isWordWrap then
-		local wordWrapShowLine = dgsElementData[memo].wordWrapShowLine
-		local mapTable = dgsElementData[memo].wordWrapMapText
+		local wordWrapShowLine = eleData.wordWrapShowLine
+		local mapTable = eleData.wordWrapMapText
 		local weakIndex,weakLine = dgsMemoTransformStrongLineToWeakLine(textTable,mapTable,index,line,indexOffset > 0)
 		local newWeakIndex,newWeakLine = dgsMemoSeekPosition(mapTable,weakIndex+indexOffset,weakLine+lineOffset,noMoveLine)
 		local newIndex,newLine = dgsMemoTransfromWeakLineToStrongLine(textTable,mapTable,newWeakIndex,newWeakLine)
@@ -189,8 +209,8 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 		end
 		dgsSetData(memo,"caretPos",{newIndex,newLine})
 		local isReadOnlyShow = true
-		if dgsElementData[memo].readOnly then
-			isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
+		if eleData.readOnly then
+			isReadOnlyShow = eleData.readOnlyCaretShow
 		end
 		if not noselect or not isReadOnlyShow then
 			dgsSetData(memo,"selectFrom",{newIndex,newLine})
@@ -198,10 +218,10 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 	else
 		local text = (textTable[line] or {[0]=""})[0]
 		local pos,line = dgsMemoSeekPosition(textTable,index+mathFloor(indexOffset),line+mathFloor(lineOffset),noMoveLine)
-		local showLine = dgsElementData[memo].showLine
+		local showLine = eleData.showLine
 		local targetLine = line-showLine
-		local showPos = dgsElementData[memo].showPos
-		local nowLen = _dxGetTextWidth(utf8Sub(text,0,pos),dgsElementData[memo].textSize[1],font)
+		local showPos = eleData.showPos
+		local nowLen = _dxGetTextWidth(utf8Sub(text,0,pos),eleData.textSize[1],font)
 		local targetLen = nowLen-showPos
 		if targetLen > size[1]-padding[1]*2-scbTakes[1] then
 			dgsSetData(memo,"showPos",-(size[1]-padding[1]*2-scbTakes[1]-nowLen))
@@ -219,8 +239,8 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 		end
 		dgsSetData(memo,"caretPos",{pos,line})
 		local isReadOnlyShow = true
-		if dgsElementData[memo].readOnly then
-			isReadOnlyShow = dgsElementData[memo].readOnlyCaretShow
+		if eleData.readOnly then
+			isReadOnlyShow = eleData.readOnlyCaretShow
 		end
 		if not noselect or not isReadOnlyShow then
 			dgsSetData(memo,"selectFrom",{pos,line})
@@ -272,30 +292,31 @@ end
 function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	assert(type(tpos) == "number","Bad argument @dgsMemoSetCaretPosition at argument 2, expect number got "..type(tpos))
-	local textTable = dgsElementData[memo].text
-	local curpos = dgsElementData[memo].caretPos
+	local eleData = dgsElementData[memo]
+	local textTable = eleData.text
+	local curpos = eleData.caretPos
 	tline = tline or curpos[2]
 	local text = (textTable[tline] or {[-1]=0,[0]=""})[0]
 	local index,line
-	local isWordWrap = dgsElementData[memo].wordWrap
-	local showLine = dgsElementData[memo].showLine
-	local font = dgsElementData[memo].font
-	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
-	local padding = dgsElementData[memo].padding
-	local size = dgsElementData[memo].absSize
-	local scbThick = dgsElementData[memo].scrollBarThick
-	local scrollbars = dgsElementData[memo].scrollbars
+	local isWordWrap = eleData.wordWrap
+	local showLine = eleData.showLine
+	local font = eleData.font
+	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
+	local padding = eleData.padding
+	local size = eleData.absSize
+	local scbThick = eleData.scrollBarThick
+	local scrollbars = eleData.scrollbars
 	local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
 	local canHold = mathFloor((size[2]-padding[2]*2-scbTakes[2])/fontHeight)
 	if isWordWrap then
 		if noSeekPosition then
-			index = math.restrict(tpos,0,utf8Len(text))
+			index = mathRestrict(tpos,0,utf8Len(text))
 			line = tline
 		else
 			index,line = dgsMemoSeekPosition(textTable,tpos,tline)
 		end
-		local wordWrapShowLine = dgsElementData[memo].wordWrapShowLine
-		local mapTable = dgsElementData[memo].wordWrapMapText
+		local wordWrapShowLine = eleData.wordWrapShowLine
+		local mapTable = eleData.wordWrapMapText
 		local weakIndex,weakLine = dgsMemoTransformStrongLineToWeakLine(textTable,mapTable,index,line)
 		local targetLine = weakLine-wordWrapShowLine[3]+1
 		if targetLine >= canHold then
@@ -320,13 +341,13 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 		end
 	else
 		if noSeekPosition then
-			index = math.restrict(tpos,0,utf8Len(text))
+			index = mathRestrict(tpos,0,utf8Len(text))
 			line = tline
 		else
 			index,line = dgsMemoSeekPosition(textTable,tpos,tline)
 		end
-		local showPos = dgsElementData[memo].showPos
-		local nowLen = _dxGetTextWidth(utf8Sub(text,0,index),dgsElementData[memo].textSize[1],font)
+		local showPos = eleData.showPos
+		local nowLen = _dxGetTextWidth(utf8Sub(text,0,index),eleData.textSize[1],font)
 		local targetLen = nowLen-showPos
 		if targetLen > size[1]-padding[1]*2-scbTakes[1] then
 			dgsSetData(memo,"showPos",-(size[1]-padding[1]*2-scbTakes[1]-nowLen))
@@ -406,18 +427,19 @@ function resetMemo(x,y)
 end
 addEventHandler("onClientCursorMove",root,resetMemo)
 
-function searchMemoMousePosition(dxmemo,posx,posy)
-	local font = dgsElementData[dxmemo].font or systemFont
-	local txtSizX = dgsElementData[dxmemo].textSize[1]
-	local padding = dgsElementData[dxmemo].padding
-	local fontHeight = dxGetFontHeight(dgsElementData[dxmemo].textSize[2],font)
-	local showPos = dgsElementData[dxmemo].showPos
-	local isWordWrap = dgsElementData[dxmemo].wordWrap
-	local showLine = isWordWrap and dgsElementData[dxmemo].wordWrapShowLine[3] or dgsElementData[dxmemo].showLine
-	local x,y = dgsGetPosition(dxmemo,false,true)
-	local originalText = dgsElementData[dxmemo].text
-	local allText = isWordWrap and dgsElementData[dxmemo].wordWrapMapText or originalText
-	local selLine = math.restrict(mathFloor((posy-y-padding[1])/fontHeight)+showLine,1,#allText)
+function searchMemoMousePosition(memo,posx,posy)
+	local eleData = dgsElementData[memo]
+	local font = eleData.font or systemFont
+	local txtSizX = eleData.textSize[1]
+	local padding = eleData.padding
+	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
+	local showPos = eleData.showPos
+	local isWordWrap = eleData.wordWrap
+	local showLine = isWordWrap and eleData.wordWrapShowLine[3] or eleData.showLine
+	local x,y = dgsGetPosition(memo,false,true)
+	local originalText = eleData.text
+	local allText = isWordWrap and eleData.wordWrapMapText or originalText
+	local selLine = mathRestrict(mathFloor((posy-y-padding[1])/fontHeight)+showLine,1,#allText)
 	local text = (allText[selLine] or {[0]=""})[0]
 	local pos = posx-x-padding[1]+showPos
 	local sfrom,sto,templen = 0,utf8Len(text),0
@@ -668,18 +690,19 @@ end
 local splitChar = "\r\n"
 local splitChar2 = "\n"
 function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
-	local textTable = dgsElementData[memo].text or {}
-	local maxLength = dgsElementData[memo].maxLength
+	local eleData = dgsElementData[memo]
+	local textTable = eleData.text or {}
+	local maxLength = eleData.maxLength
 	if not noclear then
-		dgsElementData[memo].text = {{[-1]=0,[0]="",[1]={}}}
-		textTable = dgsElementData[memo].text
+		eleData.text = {{[-1]=0,[0]="",[1]={}}}
+		textTable = eleData.text
 		dgsSetData(memo,"caretPos",{0,1})
 		dgsSetData(memo,"selectFrom",{0,1})
 		dgsSetData(memo,"rightLength",{0,1})
 		configMemo(memo)
 	end
-	local font = dgsElementData[memo].font
-	local textSize = dgsElementData[memo].textSize
+	local font = eleData.font
+	local textSize = eleData.textSize
 	local _index,_line = dgsMemoGetCaretPosition(memo,true)
 	local index,line = index or _index,line or _line
 	local fixed = utf8Gsub(text,splitChar,splitChar2)
@@ -692,12 +715,12 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	if (textLen >= maxLength) then
 	return false
 	end
-	local isWordWrap = dgsElementData[memo].wordWrap
-	local mapTable = dgsElementData[memo].wordWrapMapText or {}
-	local size = dgsElementData[memo].absSize
-	local padding = dgsElementData[memo].padding
-	local scbThick = dgsElementData[memo].scrollBarThick
-	local scrollbars = dgsElementData[memo].scrollbars
+	local isWordWrap = eleData.wordWrap
+	local mapTable = eleData.wordWrapMapText or {}
+	local size = eleData.absSize
+	local padding = eleData.padding
+	local scbThick = eleData.scrollBarThick
+	local scrollbars = eleData.scrollbars
 	local scbTakes1 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4
 	local canHold = mathFloor(size[1]-padding[1]*2-scbTakes1)
 
@@ -740,17 +763,17 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 				insertLine = insertLine + splitedTextLine
 			end
 
-			if dgsElementData[memo].rightLength[1] < textTable[theline][-1] then
-				dgsElementData[memo].rightLength = {textTable[theline][-1],theline}
-			elseif dgsElementData[memo].rightLength[2] > line+#tab-1 then
-				dgsElementData[memo].rightLength[2] = dgsElementData[memo].rightLength[2]+1
+			if eleData.rightLength[1] < textTable[theline][-1] then
+				eleData.rightLength = {textTable[theline][-1],theline}
+			elseif eleData.rightLength[2] > line+#tab-1 then
+				eleData.rightLength[2] = eleData.rightLength[2]+1
 			end
 		end
-		dgsElementData[memo].text = textTable
-		local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
+		eleData.text = textTable
+		local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 		local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
 		local canHold = mathFloor((size[2]-padding[2]*2-scbTakes[2])/fontHeight)
-		if dgsElementData[scrollbars[1]].visible or dgsElementData[memo].rightLength[1] > size[1]-padding[1]*2-scbTakes[1] or dgsElementData[scrollbars[2]].visible or #textTable > canHold then
+		if dgsElementData[scrollbars[1]].visible or eleData.rightLength[1] > size[1]-padding[1]*2-scbTakes[1] or dgsElementData[scrollbars[2]].visible or #textTable > canHold then
 			configMemo(memo)
 		end
 		if not noAffectCaret then
@@ -786,24 +809,25 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 	assert(dgsGetType(toIndex) == "number","Bad argument @dgsMemoDeleteText at argument 4, expect number got "..dgsGetType(toIndex))
 	assert(dgsGetType(toLine) == "number","Bad argument @dgsMemoDeleteText at argument 5, expect number got "..dgsGetType(toLine))
 	if fromIndex == toIndex and fromLine == toLine then return end
-	local textTable = dgsElementData[memo].text
-	local mapTable = dgsElementData[memo].wordWrapMapText
-	local font = dgsElementData[memo].font
-	local textSize = dgsElementData[memo].textSize
-	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
-	local size = dgsElementData[memo].absSize
-	local padding = dgsElementData[memo].padding
-	local scbThick = dgsElementData[memo].scrollBarThick
-	local scrollbars = dgsElementData[memo].scrollbars
+	local eleData = dgsElementData[memo]
+	local textTable = eleData.text
+	local mapTable = eleData.wordWrapMapText
+	local font = eleData.font
+	local textSize = eleData.textSize
+	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
+	local size = eleData.absSize
+	local padding = eleData.padding
+	local scbThick = eleData.scrollBarThick
+	local scrollbars = eleData.scrollbars
 	local textLines = #textTable
-	local isWordWrap = dgsElementData[memo].wordWrap
+	local isWordWrap = eleData.wordWrap
 	local lineTextFrom = textTable[fromLine][0]
 	local lineTextTo = textTable[toLine][0]
 	local lineTextFromCnt = utf8Len(lineTextFrom)
 	local lineTextToCnt = utf8Len(lineTextTo)
 	local insertLine,lineCnt
-	fromIndex,toIndex = math.restrict(fromIndex,0,lineTextFromCnt),math.restrict(toIndex,0,lineTextToCnt)
-	fromLine,toLine = math.restrict(fromLine,1,textLines),math.restrict(toLine,1,textLines)
+	fromIndex,toIndex = mathRestrict(fromIndex,0,lineTextFromCnt),mathRestrict(toIndex,0,lineTextToCnt)
+	fromLine,toLine = mathRestrict(fromLine,1,textLines),mathRestrict(toLine,1,textLines)
 	if fromLine > toLine then
 		fromLine,toLine,fromIndex,toIndex = toLine,fromLine,toIndex,fromIndex
 	end
@@ -836,25 +860,25 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 		textTable[fromLine][1] = dgsMemoInsertMapTable(mapTable,insertLine,splitedText,textTable[fromLine])
 		insertLine = insertLine + splitedTextLine
 	end
-	dgsElementData[memo].text = textTable
+	eleData.text = textTable
 	local line,len = seekMaxLengthLine(memo)
-	dgsElementData[memo].rightLength = {len,line}
-	if dgsElementData[scrollbars[1]].visible or dgsElementData[memo].rightLength[1] > size[1]-padding[2]*2-scbTakes[1] or dgsElementData[scrollbars[2]].visible or #textTable > canHold then
+	eleData.rightLength = {len,line}
+	if dgsElementData[scrollbars[1]].visible or eleData.rightLength[1] > size[1]-padding[2]*2-scbTakes[1] or dgsElementData[scrollbars[2]].visible or #textTable > canHold then
 		configMemo(memo)
 	end
 	if not noAffectCaret then
-		local cpos = dgsElementData[memo].caretPos
+		local cpos = eleData.caretPos
 		if cpos[2] > fromLine then
 			dgsMemoSetCaretPosition(memo,cpos[1]-(toIndex-fromIndex),cpos[2]-(toLine-fromLine))
 		elseif cpos[2] == fromLine and cpos[1] >= fromIndex then
 			dgsMemoSetCaretPosition(memo,fromIndex,fromLine)
 		end
 	end
-	local textTable = dgsElementData[memo].text
+	local textTable = eleData.text
 	if isWordWrap then
-		local mapTable = dgsElementData[memo].wordWrapMapText
+		local mapTable = eleData.wordWrapMapText
 		local mapTableCnt = #mapTable
-		local wordWrapShowLine = dgsElementData[memo].wordWrapShowLine
+		local wordWrapShowLine = eleData.wordWrapShowLine
 		if mapTableCnt> canHold and wordWrapShowLine[3]-1+canHold > mapTableCnt then
 			wordWrapShowLine[3] = 1-canHold+mapTableCnt
 			local startStrongLine
@@ -873,8 +897,8 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 			wordWrapShowLine[2] = startWeakLine
 		end
 	else
-		if #textTable > canHold and dgsElementData[memo].showLine-1+canHold > #textTable then
-			dgsElementData[memo].showLine = 1-canHold+#textTable
+		if #textTable > canHold and eleData.showLine-1+canHold > #textTable then
+			eleData.showLine = 1-canHold+#textTable
 		end
 	end
 	triggerEvent("onDgsTextChange",memo)
@@ -910,14 +934,14 @@ function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,isDelete)
 	local textTable = dgsElementData[memo].text
 	local textLines = #textTable
 	cindex,cline,tindex,tline = cindex or 0,cline or 1,tindex or utf8Len(textTable[textLines][0]),tline or textLines
-	cline = math.restrict(cline,1,textLines)
-	tline = math.restrict(tline,1,textLines)
+	cline = mathRestrict(cline,1,textLines)
+	tline = mathRestrict(tline,1,textLines)
 	local lineTextFrom = textTable[cline][0]
 	local lineTextTo = textTable[tline][0]
 	local lineTextFromCnt = utf8Len(lineTextFrom)
 	local lineTextToCnt = utf8Len(lineTextTo)
-	cindex = math.restrict(cindex,0,lineTextFromCnt)
-	tindex = math.restrict(tindex,0,lineTextToCnt)
+	cindex = mathRestrict(cindex,0,lineTextFromCnt)
+	tindex = mathRestrict(tindex,0,lineTextToCnt)
 	if cline > tline then
 		tline,cline = cline,tline
 	end
@@ -1025,32 +1049,33 @@ function seekMaxLengthLine(memo)
 end
 
 function configMemo(memo)
-	local size = dgsElementData[memo].absSize
-	local padding = dgsElementData[memo].padding
-	local scrollbar = dgsElementData[memo].scrollbars
+	local eleData = dgsElementData[memo]
+	local size = eleData.absSize
+	local padding = eleData.padding
+	local scrollbar = eleData.scrollbars
 	local scrollBarBefore = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
 	local textCnt
-	if dgsElementData[memo].wordWrap then
-		textCnt = #dgsElementData[memo].wordWrapMapText	--Weak Line for word Wrap
+	if eleData.wordWrap then
+		textCnt = #eleData.wordWrapMapText	--Weak Line for word Wrap
 	else
-		textCnt = #dgsElementData[memo].text			--Strong Line for no word Wrap
+		textCnt = #eleData.text			--Strong Line for no word Wrap
 	end
-	local font = dgsElementData[memo].font
-	local textSize = dgsElementData[memo].textSize
-	local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
-	local scbThick = dgsElementData[memo].scrollBarThick
+	local font = eleData.font
+	local textSize = eleData.textSize
+	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
+	local scbThick = eleData.scrollBarThick
 	local scbStateV,scbStateH = false,false
-	if not dgsElementData[memo].wordWrap then
-		scbStateH = dgsElementData[memo].rightLength[1] > size[1]-padding[1]*2
+	if not eleData.wordWrap then
+		scbStateH = eleData.rightLength[1] > size[1]-padding[1]*2
 	end
 	local scbTakes2 = scbStateH and scbThick or 0
 	local canHold = mathFloor((size[2]-padding[2]*2-scbTakes2)/fontHeight)
 	scbStateV = textCnt > canHold
 	local scbTakes1 = scbStateV and scbThick or 0
-	if not dgsElementData[memo].wordWrap then
-		scbStateH = dgsElementData[memo].rightLength[1] > size[1]-padding[1]*2-scbTakes1
+	if not eleData.wordWrap then
+		scbStateH = eleData.rightLength[1] > size[1]-padding[1]*2-scbTakes1
 	end
-	local forceState = dgsElementData[memo].scrollBarState
+	local forceState = eleData.scrollBarState
 	if forceState[1] ~= nil then
 		scbStateV = forceState[1]
 	end
@@ -1066,27 +1091,27 @@ function configMemo(memo)
 	dgsSetSize(scrollbar[1],scbThick,size[2]-padding[2]*2-scbTakes2,false)
 	dgsSetSize(scrollbar[2],size[1]-padding[1]*2-scbTakes1,scbThick,false)
 
-	local scbLengthVrt = dgsElementData[memo].scrollBarLength[1]
+	local scbLengthVrt = eleData.scrollBarLength[1]
 	local higLen = 1-(textCnt-canHold)/textCnt
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
-	local verticalScrollSize = dgsElementData[memo].scrollSize/(textCnt-canHold)
+	local verticalScrollSize = eleData.scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 
-	local scbLengthHoz = dgsElementData[memo].scrollBarLength[2]
-	local widLen = 1-(dgsElementData[memo].rightLength[1]-size[1]+scbTakes1+padding[1]*2)/dgsElementData[memo].rightLength[1]
+	local scbLengthHoz = eleData.scrollBarLength[2]
+	local widLen = 1-(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)/eleData.rightLength[1]
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
-	local horizontalScrollSize = dgsElementData[memo].scrollSize*5/(dgsElementData[memo].rightLength[1]-size[1]+scbTakes1+padding[1]*2)
+	local horizontalScrollSize = eleData.scrollSize*5/(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	local scrollBarAfter = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
 	if scrollBarAfter[1] ~= scrollBarBefore[1] or scrollBarAfter[2] ~= scrollBarBefore[2] then
 		dgsSetData(memo,"rebuildMapTableNextFrame",true)
 	end
-	local padding = dgsElementData[memo].padding
+	local padding = eleData.padding
 	local sizex,sizey = size[1]-padding[1]*2,size[2]-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local rt_old = dgsElementData[memo].renderTarget
+	local rt_old = eleData.renderTarget
 	if isElement(rt_old) then destroyElement(rt_old) end
 	local renderTarget,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
 	if renderTarget ~= false then
@@ -1101,22 +1126,24 @@ end
 function checkMMScrollBar(source,new,old)
 	local memo = dgsGetParent(source)
 	if dgsGetType(memo) == "dgs-dxmemo" then
-		local scrollbars = dgsElementData[memo].scrollbars
-		local size = dgsElementData[memo].absSize
-		local padding = dgsElementData[memo].padding
-		local scbThick = dgsElementData[memo].scrollBarThick
-		local font = dgsElementData[memo].font
-		local textSize = dgsElementData[memo].textSize
-		local isWordWrap = dgsElementData[memo].wordWrap
-		local textTable = dgsElementData[memo].text
+		local eleData = dgsElementData[memo]
+		local scrollbars = eleData.scrollbars
+		local size = eleData.absSize
+		local padding = eleData.padding
+		local scbThick = eleData.scrollBarThick
+		local font = eleData.font
+		local textSize = eleData.textSize
+		local isWordWrap = eleData.wordWrap
+		local textTable = eleData.text
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if source == scrollbars[1] then
-			local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
+			local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 			local canHold = mathFloor((size[2]-padding[2]*2-scbTakes2)/fontHeight)
 			if isWordWrap then
 				local mapTable = dgsElementData[memo].wordWrapMapText
-				local temp = math.max(mathFloor((#mapTable-canHold)*new*0.01)+1,1)
-				local wordWrapShowLine = dgsElementData[memo].wordWrapShowLine
+				local temp = mathFloor((#mapTable-canHold)*new*0.01)+1
+				if temp <= 1 then temp = 1 end
+				local wordWrapShowLine = eleData.wordWrapShowLine
 				wordWrapShowLine[3] = temp
 				local startStrongLine
 				for i=1,#textTable do
@@ -1138,8 +1165,7 @@ function checkMMScrollBar(source,new,old)
 				dgsSetData(memo,"showLine",temp)
 			end
 		elseif source == scrollbars[2] then
-			local len = dgsElementData[memo].rightLength[1]
-			local canHold = mathFloor(len-size[1]+scbTakes1+padding[1]*2)*0.01
+			local canHold = mathFloor(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)*0.01
 			local temp = new*canHold
 			dgsSetData(memo,"showPos",temp)
 		end
@@ -1147,31 +1173,31 @@ function checkMMScrollBar(source,new,old)
 end
 
 function syncScrollBars(memo,which)
-	local scrollbars = dgsElementData[memo].scrollbars
-	local size = dgsElementData[memo].absSize
-	local padding = dgsElementData[memo].padding
-	local scbThick = dgsElementData[memo].scrollBarThick
-	local font = dgsElementData[memo].font
-	local textSize = dgsElementData[memo].textSize
-	local isWordWrap = dgsElementData[memo].wordWrap
+	local eleData = dgsElementData[memo]
+	local scrollbars = eleData.scrollbars
+	local size = eleData.absSize
+	local padding = eleData.padding
+	local scbThick = eleData.scrollBarThick
+	local font = eleData.font
+	local textSize = eleData.textSize
+	local isWordWrap = eleData.wordWrap
 	local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 	if which == 1 or not which then
-		local fontHeight = dxGetFontHeight(dgsElementData[memo].textSize[2],font)
+		local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 		local canHold = mathFloor((size[2]-padding[2]*2-scbTakes2)/fontHeight)
 		if isWordWrap then
-			local line = #dgsElementData[memo].wordWrapMapText
-			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].wordWrapShowLine[3]-1)*100/(line-canHold)
+			local line = #eleData.wordWrapMapText
+			local new = (line-canHold) == 0 and 0 or (eleData.wordWrapShowLine[3]-1)*100/(line-canHold)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		else
-			local line = #dgsElementData[memo].text
-			local new = (line-canHold) == 0 and 0 or (dgsElementData[memo].showLine-1)*100/(line-canHold)
+			local line = #eleData.text
+			local new = (line-canHold) == 0 and 0 or (eleData.showLine-1)*100/(line-canHold)
 			dgsScrollBarSetScrollPosition(scrollbars[1],new)
 		end
 	end
 	if which == 2 or not which then
-		local len = dgsElementData[memo].rightLength[1]
-		local canHold = mathFloor(len-size[1]+scbTakes1+padding[1]*2)*0.01
-		local new = dgsElementData[memo].showPos/canHold
+		local canHold = mathFloor(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)*0.01
+		local new = eleData.showPos/canHold
 		if new >= 100 then new = 100 end
 		dgsScrollBarSetScrollPosition(scrollbars[2],new)
 	end
@@ -1181,6 +1207,7 @@ function dgsMemoSetScrollBarState(memo,vertical,horizontal)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetScrollBarState at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
 	dgsSetData(memo,"scrollBarState",{vertical,horizontal},true)
 	dgsSetData(memo,"configNextFrame",true)
+	return true
 end
 
 function dgsMemoGetScrollBarState(memo)
@@ -1260,15 +1287,16 @@ end)
 
 function dgsMemoRebuildWordWrapMapTable(memo)
 	dgsSetData(memo,"rebuildMapTableNextFrame",false)
-	local isWordWrap = dgsElementData[memo].wordWrap
+	local eleData = dgsElementData[memo]
+	local isWordWrap = eleData.wordWrap
 	if isWordWrap then
-		local textTable = dgsElementData[memo].text
-		local size = dgsElementData[memo].absSize
-		local padding = dgsElementData[memo].padding
-		local font = dgsElementData[memo].font
-		local textSizeX = dgsElementData[memo].textSize[1]
-		local scbThick = dgsElementData[memo].scrollBarThick
-		local scrollbars = dgsElementData[memo].scrollbars
+		local textTable = eleData.text
+		local size = eleData.absSize
+		local padding = eleData.padding
+		local font = eleData.font
+		local textSizeX = eleData.textSize[1]
+		local scbThick = eleData.scrollBarThick
+		local scrollbars = eleData.scrollbars
 		local scbTakes1 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4
 		local canHold = mathFloor(size[1]-padding[1]*2-scbTakes1)
 		local insertLine = 1
@@ -1285,14 +1313,15 @@ function dgsMemoRebuildWordWrapMapTable(memo)
 end
 
 function dgsMemoRebuildTextTable(memo)
-	local textTable = dgsElementData[memo].text
-	local textSize = dgsElementData[memo].textSize
-	local font = dgsElementData[memo].font
+	local eleData = dgsElementData[memo]
+	local textTable = eleData.text
+	local textSize = eleData.textSize
+	local font = eleData.font
 	for i=1,#textTable do
 		local text = textTable[i][0]
 		textTable[i][-1] = _dxGetTextWidth(text,textSize[1],font)
-		if dgsElementData[memo].rightLength[1] < textTable[i][-1] then
-			dgsElementData[memo].rightLength = {textTable[i][-1],i}
+		if eleData.rightLength[1] < textTable[i][-1] then
+			eleData.rightLength = {textTable[i][-1],i}
 		end
 	end
 	configMemo(memo)
@@ -1354,7 +1383,6 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 			end
 			local allLines = #eleData.wordWrapMapText
 			local textColor = eleData.textColor
-			local showLine = eleData.showLine
 			local wordWrapShowLine = eleData.wordWrapShowLine
 			local caretHeight = eleData.caretHeight-1
 			local canHoldLines = mathFloor((h-4)/fontHeight)
@@ -1380,13 +1408,9 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 						selPosStart,selPosEnd = selectFro[1],caretPos[1]
 					end
 				end
-				local isInWeakLine = false
 				local lineCnt = 0
 				local rndLine,rndPos,totalLine = eleData.wordWrapShowLine[1],eleData.wordWrapShowLine[2],eleData.wordWrapShowLine[3]
-				if rndLine <= 1 then
-					rndLine = 1
-				end
-				local caretPos = eleData.caretPos
+				if rndLine <= 1 then rndLine = 1 end
 				for a=rndLine,#text do
 					local weakLinePos = 0
 					local nextWeakLineLen = 0
@@ -1469,7 +1493,6 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 							cursorWidth = txtSizX*8
 						end
 						local offset = eleData.caretOffset
-						local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
 						local caretRenderY = caretDrawPos[2]+fontHeight*(1-caretHeight)*0.85+offset-2
 						dxDrawLine(caretRenderX,caretRenderY,caretRenderX+cursorWidth,caretRenderY,caretColor,eleData.caretThick,isPostGUI)
 					end

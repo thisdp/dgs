@@ -1656,7 +1656,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					GirdListDoubleClick[state].but = button
 					GirdListDoubleClick[state].timer = setTimer(function()
 						GirdListDoubleClick[state].gridlist = false
-					end,DoubleClick.Interval,1)
+					end,multiClick.Interval,1)
 				end
 			end
 		end

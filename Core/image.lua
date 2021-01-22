@@ -1,21 +1,25 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
 local dxDrawImageSection = dxDrawImageSectionExt
-local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
-local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
---
+local dxGetMaterialSize = dxGetMaterialSize
+local dxCreateTexture = dxCreateTexture
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+--Utilities
+local isElement = isElement
+local getElementType = getElementType
+local triggerEvent = triggerEvent
+local createElement = createElement
+local assert = assert
 local tonumber = tonumber
 local type = type
-local assert = assert
-local tableInsert = table.insert
 
 function dgsCreateImage(x,y,w,h,img,relative,parent,color)
 	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
@@ -64,10 +68,10 @@ end
 
 function dgsImageCreateTextureExternal(gui,res,img)
 	if res then
-		img = string.gsub(img,"\\","/")
-		if not string.find(img,":") then
+		img = img:gsub("\\","/")
+		if not img:find(img,":") then
 			img = ":"..getResourceName(res).."/"..img
-			img = string.gsub(img,"//","/") or img
+			img = img:gsub(img,"//","/") or img
 		end
 	end
 	texture = dxCreateTexture(img)

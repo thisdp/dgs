@@ -566,8 +566,6 @@ function GlobalEditMemoBlurCheck()
 		dgsBlur(dxChild)
 	end
 end
-addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
-addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
 
 function dgsFocus(dgsEle)
 	assert(dgsIsDxElement(dgsEle),"Bad argument @dgsFocus at argument 1, expect a dgs-dxgui element got "..dgsGetType(dgsEle))
@@ -653,12 +651,11 @@ function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
 	end
 end
 
-function dgsGetDoubleClickInterval() return DoubleClick.Interval end
+function dgsGetMultiClickInterval() return multiClick.Interval end
 
-function dgsSetDoubleClickInterval(interval)
-	assert(type(interval) == "number","Bad argument @dgsSetDoubleClickInterval at argument 1, expect a number got "..type(interval))
-	assert(interval >= 50,"Bad argument @dgsSetDoubleClickInterval at argument 1, interval is too short, minimum is 50")
-	DoubleClick.Interval = interval
+function dgsSetMultiClickInterval(interval)
+	assert(type(interval) == "number","Bad argument @dgsSetClickInterval at argument 1, expect a number got "..type(interval))
+	multiClick.Interval = interval
 	return true
 end
 

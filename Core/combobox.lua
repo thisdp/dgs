@@ -1,18 +1,24 @@
 --Dx Functions
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
 local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 local _dxDrawImage = _dxDrawImage
-local _dxDrawImageSection = _dxDrawImageSection
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
+local calculateGuiPositionSize = calculateGuiPositionSize
+local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
+--Utilities
+local triggerEvent = triggerEvent
+local addEventHandler = addEventHandler
+local createElement = createElement
 local lerp = math.lerp
 local mathFloor = math.floor
 local mathMin = math.min
@@ -21,6 +27,9 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 local assert = assert
 local type = type
+local tonumber = tonumber
+local tostring = tostring
+local tocolor = tocolor
 --[[
 Item List Struct:
 table = {
@@ -693,7 +702,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	--Smooth Item
 	local _itemMoveOffset = DataTab.itemMoveOffset
 	local scrollbar = dgsElementData[combo].scrollbar
-	local itemMoveHardness = dgsElementData[ scrollbar ].moveType == "slow" and DataTab.moveHardness[1] or DataTab.moveHardness[2]
+	local itemMoveHardness = dgsElementData[scrollbar].moveType == "slow" and DataTab.moveHardness[1] or DataTab.moveHardness[2]
 	DataTab.itemMoveOffsetTemp = lerp(itemMoveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
 	local itemMoveOffset = DataTab.itemMoveOffsetTemp-DataTab.itemMoveOffsetTemp%1
 

@@ -1,22 +1,23 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
-local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsGetType = dgsGetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local applyColorAlpha = applyColorAlpha
+local dgsTranslate = dgsTranslate
+local calculateGuiPositionSize = calculateGuiPositionSize
+--Utilities
+local triggerEvent = triggerEvent
+local createElement = createElement
+local assert = assert
+local tonumber = tonumber
+local type = type
 local tableInsert = table.insert
 local tableRemove = table.remove
-local assert = assert
-local type = type
-local tonumber = tonumber
 --[[
 Selector Data Structure:
 {
@@ -69,12 +70,13 @@ end
 
 function dgsSelectorAddItem(selector,text,pos)
 	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorAddItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	local alignment = dgsElementData[selector].alignment
-	local itemTextColor = dgsElementData[selector].itemTextColor
-	local itemTextSize = dgsElementData[selector].itemTextSize
-	local colorcoded = dgsElementData[selector].colorcoded
-	local font = dgsElementData[selector].font
-	local itemData = dgsElementData[selector].itemData
+	local eleData = dgsElementData[selector]
+	local alignment = eleData.alignment
+	local itemTextColor = eleData.itemTextColor
+	local itemTextSize = eleData.itemTextSize
+	local colorcoded = eleData.colorcoded
+	local font = eleData.font
+	local itemData = eleData.itemData
 	local pos = tonumber(pos) or #itemData+1
 
 	if type(text) == "table" then
@@ -92,8 +94,8 @@ function dgsSelectorAddItem(selector,text,pos)
 		_translationText=_text,
 		{}, --item data
 	})
-	if dgsElementData[selector].selectedItem == -1 then
-		dgsElementData[selector].selectedItem = 1
+	if eleData.selectedItem == -1 then
+		eleData.selectedItem = 1
 	end
 	return pos
 end
@@ -177,7 +179,6 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
 	local itemData = eleData.itemData
-	local itemCount = #itemData
 	local selector = eleData.selectorText
 	local alignment = eleData.alignment
 	local font = eleData.font

@@ -1,6 +1,22 @@
 --Dx Functions
 local dxDrawImage = dxDrawImage
---
+--DGS Functions
+local dgsSetType = dgsSetType
+local dgsSetParent = dgsSetParent
+local dgsGetPosition = dgsGetPosition
+local calculateGuiPositionSize = calculateGuiPositionSize
+local applyColorAlpha = applyColorAlpha
+--Browser Functions
+local injectBrowserMouseMove = injectBrowserMouseMove
+local injectBrowserMouseDown = injectBrowserMouseDown
+local injectBrowserMouseUp = injectBrowserMouseUp
+local resizeBrowser = resizeBrowser
+local createBrowser = createBrowser
+local focusBrowser = focusBrowser
+--Utilities
+local isElement = isElement
+local triggerEvent = triggerEvent
+local addEventHandler = addEventHandler
 local assert = assert
 local type = type
 

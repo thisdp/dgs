@@ -1,21 +1,21 @@
 --Dx Functions
-local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
-local dxGetPixelsSize = dxGetPixelsSize
-local dxGetPixelColor = dxGetPixelColor
-local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
-local dxSetBlendMode = dxSetBlendMode
 --
+local triggerEvent = triggerEvent
+local isElement = isElement
+local createElement = createElement
+local addEventHandler = addEventHandler
+local dgsSetType = dgsSetType
+local dgsSetParent = dgsSetParent
+local dgsSetData = dgsSetData
+local dgsAttachToTranslation = dgsAttachToTranslation
+local dgsTranslate = dgsTranslate
+local calculateGuiPositionSize = calculateGuiPositionSize
 local tonumber = tonumber
 local assert = assert
 local type = type
-local tonumber = tonumber
 
 function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton)
 	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
@@ -71,9 +71,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 		addEventHandler("onDgsMouseClickUp",buttonOff,function(button)
 			if button == "left" then
 				local window = dgsGetParent(source)
-				if isElement(window) then
-					dgsCloseWindow(window)
-				end
+				if isElement(window) then dgsCloseWindow(window) end
 			end
 		end,false)
 		dgsElementData[window].closeButtonSize = {40,24,false}
@@ -94,6 +92,12 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 		if not isElement(closeButton) then
 			local cbSize = dgsElementData[window].closeButtonSize
 			local buttonOff = dgsCreateButton(40,0,cbSize[1],cbSize[2],"×",cbSize[3],window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
+			addEventHandler("onDgsMouseClickUp",buttonOff,function(button)
+				if button == "left" then
+					local window = dgsGetParent(source)
+					if isElement(window) then dgsCloseWindow(window) end
+				end
+			end,false)
 			dgsSetData(window,"closeButton",buttonOff)
 			dgsSetData(buttonOff,"ignoreParentTitle",true)
 			dgsSetSide(buttonOff,"right",false)
