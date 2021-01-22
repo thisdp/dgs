@@ -62,7 +62,6 @@ function createFullDemo()
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
 end
-createFullDemo()
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
@@ -227,9 +226,7 @@ end
 function _3DInterfaceTest()
 	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
-	--material2 = dgsCreate3DInterface(0,0,5,4,4,400,400,tocolor(255,255,255,255),1,0,0)
-	edit1 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material)
-	--edit2 = dgsCreateEdit(0,0,1,1,"DGS 3D Interface Edit 1",true,material2)
+	edit1 = dgsCreateMemo(0,0,1,1,"123",true,material)
 end
 
 function _3DInterfaceAttachTest()
@@ -506,7 +503,3 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
-
-
-
-	edit1 = dgsCreateEdit(400,400,200,50,"DGS 3D Interface Edit 1啊啊 啊啊",false)
