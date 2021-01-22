@@ -132,6 +132,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		rebuildMapTableNextFrame = false,
 		maxLength = 0x3FFFFFFF,
 		scrollBarLength = {},
+		multiClickCounter = {false,false,0},
 	}
 	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
@@ -158,6 +159,40 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 	dgsElementData[memo].renderTarget = renderTarget
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
+	
+	addEventHandler("onDgsMouseMultiClick",memo,function(button,state,x,y,times)
+		if state == "down" then
+			local pos,line,side = searchMemoMousePosition(source,x,y)
+			eleData = dgsElementData[source]
+			if button == "left" then
+				if not eleData.multiClickCounter[1] then
+					eleData.multiClickCounter = {pos,line,times-1}
+				elseif eleData.multiClickCounter[1] ~= pos or eleData.multiClickCounter[2] ~= line then
+					eleData.multiClickCounter = {pos,line,times-1}
+				end
+			end
+			local t = times-eleData.multiClickCounter[3]
+			if t == 1 then
+				if button ~= "middle" then
+					local shift = getKeyState("lshift") or getKeyState("rshift")
+					dgsMemoSetCaretPosition(source,pos,line,shift)
+				end
+			elseif t == 2 then
+				if button == "left" then
+					local textTable = dgsElementData[memo].text
+					local text = textTable[line][0]
+					local s,e = dgsSearchFullWordType(text,pos,side)
+					dgsMemoSetCaretPosition(source,s,line)
+					dgsMemoSetCaretPosition(source,e,line,true)
+				end
+			elseif t == 3 then
+				if button == "left" then
+					dgsMemoSetCaretPosition(source,_,line)
+					dgsMemoSetCaretPosition(source,0,line,true)
+				end
+			end
+		end
+	end,false)
 	triggerEvent("onDgsCreate",memo,sourceResource)
 	return memo
 end
@@ -291,12 +326,15 @@ end
 
 function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(tpos) == "number","Bad argument @dgsMemoSetCaretPosition at argument 2, expect number got "..type(tpos))
 	local eleData = dgsElementData[memo]
 	local textTable = eleData.text
 	local curpos = eleData.caretPos
 	tline = tline or curpos[2]
 	local text = (textTable[tline] or {[-1]=0,[0]=""})[0]
+	if tpos == nil then
+		tpos = utf8Len(text)
+	end
+	assert(type(tpos) == "number","Bad argument @dgsMemoSetCaretPosition at argument 2, expect number got "..type(tpos))
 	local index,line
 	local isWordWrap = eleData.wordWrap
 	local showLine = eleData.showLine
@@ -463,7 +501,7 @@ function searchMemoMousePosition(memo,posx,posy)
 		if sto-sfrom <= 10 then break end
 	end
 	local start = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
-	local resultIndex,resultLine = 0,1
+	local resultIndex,resultLine,resultOffset = 0,1,1
 	for i=sfrom,sto do
 		local poslen1 = _dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
 		local theNext = _dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
@@ -471,13 +509,13 @@ function searchMemoMousePosition(memo,posx,posy)
 		local theLast = _dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
 		local offsetL = poslen1-theLast
 		if i <= sfrom and pos <= offsetL then
-			resultIndex,resultLine = sfrom,selLine
+			resultIndex,resultLine,resultOffset = sfrom,selLine,1
 			break
 		elseif i >= sto and pos >= offsetR then
-			resultIndex,resultLine = sto,selLine
+			resultIndex,resultLine,resultOffset = sto,selLine,-1
 			break
 		elseif pos >= offsetL and pos <= offsetR then
-			resultIndex,resultLine = i,selLine
+			resultIndex,resultLine,resultOffset = i,selLine,pos-start < 0 and -1 or 1
 			break
 		end
 	end
@@ -497,7 +535,7 @@ function searchMemoMousePosition(memo,posx,posy)
 			end
 		end
 	end
-	return resultIndex,resultLine
+	return resultIndex,resultLine,resultOffset
 end
 
 function searchTextFromPosition(text,font,textSizeX,pos)
@@ -916,17 +954,6 @@ function dgsMemoClearText(memo)
 	triggerEvent("onDgsTextChange",memo)
 	return true
 end
-
-function checkMemoMousePosition(button,state,x,y)
-	if dgsGetType(source) == "dgs-dxmemo" then
-		if state == "down" and button ~= "middle" then
-			local pos,line = searchMemoMousePosition(source,x,y)
-			local shift = getKeyState("lshift") or getKeyState("rshift")
-			dgsMemoSetCaretPosition(source,pos,line,shift)
-		end
-	end
-end
-addEventHandler("onDgsMouseClick",root,checkMemoMousePosition)
 
 function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,isDelete)
 	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetPartOfText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))

@@ -166,53 +166,31 @@ function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 		end
 	end,false)
 	addEventHandler("onDgsMouseMultiClick",edit,function(button,state,x,y,times)
-		if button == "left" and state == "down" then
+		if state == "down" then
 			if times== 1 then
-				local shift = getKeyState("lshift") or getKeyState("rshift")
-				local pos,side = searchEditMousePosition(source,x)
-				dgsEditSetCaretPosition(source,pos,shift)
+				if button ~= "middle" then
+					local shift = getKeyState("lshift") or getKeyState("rshift")
+					local pos,side = searchEditMousePosition(source,x)
+					dgsEditSetCaretPosition(source,pos,shift)
+				end
 			elseif times == 2 then
-				local pos,side = searchEditMousePosition(source,x)
-				local s,e = dgsEditSearchFullWordType(source,pos,side)
-				dgsEditSetCaretPosition(source,s)
-				dgsEditSetCaretPosition(source,e,true)
+				if button == "left" then
+					local pos,side = searchEditMousePosition(source,x)
+					local text = dgsElementData[source].text
+					local s,e = dgsSearchFullWordType(text,pos,side)
+					dgsEditSetCaretPosition(source,s)
+					dgsEditSetCaretPosition(source,e,true)
+				end
 			elseif times == 3 then
-				local pos,side = searchEditMousePosition(source,x)
-				dgsEditSetCaretPosition(source,_)
-				dgsEditSetCaretPosition(source,0,true)
+				if button == "left" then
+					dgsEditSetCaretPosition(source,_)
+					dgsEditSetCaretPosition(source,0,true)
+				end
 			end
 		end
 	end,false)
 	triggerEvent("onDgsCreate",edit,sourceResource)
 	return edit
-end
-
-function dgsEditSearchFullWordType(edit,pos,side)
-	local text = dgsElementData[edit].text
-	local textLen = utf8Len(text)
-	if side == 1 then
-		pos = pos+1
-	end
-	local startStr = utf8Sub(text,pos,pos)
-	if not startStr or startStr == "" then return 0,textLen end
-	local startType = utf8GetCharType(startStr)
-	local frontPos = pos
-	local backPos = pos
-	while true do
-		frontPos = frontPos-1
-		if frontPos < 0 then break end
-		local searchChar = utf8Sub(text,frontPos,frontPos)
-		if not searchChar or searchChar == "" then break end 
-		if utf8GetCharType(searchChar) ~= startType then break end
-	end
-	while true do
-		backPos = backPos+1
-		if backPos > textLen then break end
-		local searchChar = utf8Sub(text,backPos,backPos)
-		if not searchChar or searchChar == "" then break end 
-		if utf8GetCharType(searchChar) ~= startType then break end
-	end
-	return frontPos,backPos-1
 end
 
 function dgsEditSetMasked(edit,masked)

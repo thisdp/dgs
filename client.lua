@@ -160,6 +160,7 @@ function dgsCoreRender()
 		local intfaceClickElementl = false
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
+		MouseData.WithinElements = {}
 		for i=1,dx3DInterfaceTableSize do
 			local v = dx3DInterfaceTable[i]
 			local eleData = dgsData[v]
@@ -172,7 +173,6 @@ function dgsCoreRender()
 		end
 		dxSetBlendMode("blend")
 		dxSetRenderTarget()
-		MouseData.WithinElements = {}
 		local intfaceMx,intfaceMy = MouseX,MouseY
 		MouseData.intfaceHitElement = MouseData.hit
 		local mx,my = normalMx,normalMy
@@ -511,7 +511,9 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 							MouseData.hit = source
 						end
 					end
-					MouseData.WithinElements[MouseData.hit] = true
+					if MouseData.hit then
+						MouseData.WithinElements[MouseData.hit] = true
+					end
 				end
 				if debugMode then
 					dgsElementData[source].debugData = {x,y,w,h,cx,cy}
@@ -1602,9 +1604,9 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		if multiClick[button][state][2] == guiele then
 			multiClick[button][state][1] = multiClick[button][state][1]+1
 			if multiClick[button][state][1] == 2 then
-				triggerEvent("onDgsMouseDoubleClick",guiele,button,state,x,y)
+				triggerEvent("onDgsMouseDoubleClick",guiele,button,state,MouseX or x,MouseY or y)
 			end
-			triggerEvent("onDgsMouseMultiClick",guiele,button,state,x,y,multiClick[button][state][1])
+			triggerEvent("onDgsMouseMultiClick",guiele,button,state,MouseX or x,MouseY or y,multiClick[button][state][1])
 			multiClick[button][state][3] = setTimer(function(button,state)
 				multiClick[button][state][1] = 0
 				multiClick[button][state][2] = false

@@ -1,5 +1,6 @@
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.find,string.format,byte
+local utf8Len,utf8Byte,utf8Sub = utf8.len,utf8.byte,utf8.sub
 local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
 local tableInsert = table.insert
 local tableRemove = table.remove
@@ -201,6 +202,32 @@ function utf8.getCharType(c)
 		cType = 0
 	end
 	return cType
+end
+
+local utf8GetCharType = utf8.getCharType
+function dgsSearchFullWordType(text,index,side)
+	local textLen = utf8Len(text)
+	if side == 1 then index = index+1 end
+	local startStr = utf8Sub(text,index,index)
+	if not startStr or startStr == "" then return 0,textLen end
+	local startType = utf8GetCharType(startStr)
+	local frontPos = index
+	local backPos = index
+	while true do
+		frontPos = frontPos-1
+		if frontPos < 0 then break end
+		local searchChar = utf8Sub(text,frontPos,frontPos)
+		if not searchChar or searchChar == "" then break end 
+		if utf8GetCharType(searchChar) ~= startType then break end
+	end
+	while true do
+		backPos = backPos+1
+		if backPos > textLen then break end
+		local searchChar = utf8Sub(text,backPos,backPos)
+		if not searchChar or searchChar == "" then break end 
+		if utf8GetCharType(searchChar) ~= startType then break end
+	end
+	return frontPos,backPos-1
 end
 --------------------------------Math Utility
 function findRotation(x1,y1,x2,y2,offsetFix)
