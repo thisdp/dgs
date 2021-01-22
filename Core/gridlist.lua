@@ -1893,6 +1893,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 			local Select = eleData.rowSelect
 			local sectionFont = eleData.sectionFont or font
 			local dgsElementBuffer = {}
+			local textBufferCnt = 1
+			local textBuffer = {}
 			for i=eleData.FromTo[1],eleData.FromTo[2] do
 				dgsElementBuffer[i] = {}
 				local lc_rowData = rowData[i]
@@ -1904,8 +1906,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 					if eleData.PixelInt then
 						_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 					end
-					local textBuffer = {}
-					local textBufferCnt = 1
 
 					if not cPosStart or not cPosEnd then break end
 					dxSetBlendMode("modulate_add")
@@ -1970,26 +1970,39 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 									dxDrawRectangle(imagex,imagey,imagew,imageh,imageData[2])
 								end
 							end
-							
 							local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
-							textBuffer[textBufferCnt] = {currentRowData[1],_x-_x%1,_sx-_sx%1,color[rowState],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
+							textBuffer[textBufferCnt] = {
+								currentRowData[1],	--Text
+								_x-_x%1,			--startX
+								_y-_y%1,			--startY
+								_sx-_sx%1,			--endX
+								_sy-_sy%1,			--endY
+								color[rowState],
+								_txtScalex,
+								_txtScaley,
+								_txtFont,
+								clip,
+								colorcoded,
+								columnData[id][4]
+							}
 							textBufferCnt = textBufferCnt + 1
 						end
 					end
-					local textBuffers = #textBuffer
-					for a=1,textBuffers do
-						local line = textBuffer[a]
-						local colorcoded = line[9]
-						local text = line[1]
-						if shadow then
-							if colorcoded then
-								text = text:gsub("#%x%x%x%x%x%x","") or text
-							end
-							dxDrawText(text,line[2]+shadow[1]+rowTextPosOffset[1],_y+shadow[2]+rowTextPosOffset[2],line[3]+shadow[1]+rowTextPosOffset[1],_sy+shadow[2]+rowTextPosOffset[2],shadow[3],line[5],line[6],line[7],line[10],"center",line[8],false,false,false,true)
-						end
-						dxDrawText(line[1],line[2]+rowTextPosOffset[1],_y+rowTextPosOffset[2],line[3]+rowTextPosOffset[1],_sy+rowTextPosOffset[2],line[4],line[5],line[6],line[7],line[10],"center",line[8],false,false,colorcoded,true)
-					end
 				end
+			end
+			local textBuffers = #textBuffer
+			for a=1,textBuffers do
+				local line = textBuffer[a]
+				local text = line[1]
+				local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
+				local clr,tSclx,tScly,tFnt,tClip,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11]
+				if shadow then
+					if tClrCode then
+						text = text:gsub("#%x%x%x%x%x%x","") or text
+					end
+					dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadow[3],tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,false,false,true)
+				end
+				dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,false,tClrCode,true)
 			end
 			for rowIndex,row in pairs(dgsElementBuffer) do
 				for columnIndex,items in pairs(row) do
@@ -2101,6 +2114,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		local preSelect = eleData.preSelect
 		local Select = eleData.rowSelect
 		local sectionFont = eleData.sectionFont or font
+		local textBuffer = {}
+		local textBufferCnt = 1
 		for i=eleData.FromTo[1],eleData.FromTo[2] do
 			local lc_rowData = rowData[i]
 			local image = lc_rowData[-3]
@@ -2112,8 +2127,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 			if eleData.PixelInt then
 				_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 			end
-			local textBuffer = {}
-			local textBufferCnt = 1
 			for id=whichColumnToStart,whichColumnToEnd do
 				local currentRowData = lc_rowData[id]
 				local text = currentRowData[1]
@@ -2169,22 +2182,37 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 							dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 						end
 					end
-					textBuffer[textBufferCnt] = {currentRowData[1],_x,_sx+_x,currentRowData[2],_txtScalex,_txtScaley,_txtFont,clip,colorcoded,columnData[id][4]}
+					local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
+					textBuffer[textBufferCnt] = {
+						currentRowData[1],	--Text
+						_x,			--startX
+						_y,			--startY
+						_sx+_x,			--endX
+						_sy,			--endY
+						color[rowState],
+						_txtScalex,
+						_txtScaley,
+						_txtFont,
+						clip,
+						colorcoded,
+						columnData[id][4]
+					}
 					textBufferCnt = textBufferCnt+1
 				end
 			end
-			for i=1,#textBuffer do
-				local line = textBuffer[i]
-				local colorcoded = line[9]
-				local text = line[1]
-				if shadow then
-					if colorcoded then
-						text = text:gsub("#%x%x%x%x%x%x","") or text
-					end
-					dxDrawText(text,line[2]+shadow[1]+rowTextPosOffset[1],_y+shadow[2]+rowTextPosOffset[2],line[3]+shadow[1]+rowTextPosOffset[1],_sy+shadow[2]+rowTextPosOffset[2],shadow[3],line[5],line[6],line[7],line[10],"center",line[8],false,isPostGUI,false,true)
+		end
+		for i=1,#textBuffer do
+			local line = textBuffer[i]
+			local text = line[1]
+			local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
+			local clr,tSclx,tScly,tFnt,tClip,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11]
+			if shadow then
+				if tClrCode then
+					text = text:gsub("#%x%x%x%x%x%x","") or text
 				end
-				dxDrawText(line[1],line[2]+rowTextPosOffset[1],_y+rowTextPosOffset[2],line[3]+rowTextPosOffset[1],_sy+rowTextPosOffset[2],line[4],line[5],line[6],line[7],line[10],"center",line[8],false,isPostGUI,colorcoded,true)
+				dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadow[3],tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,false,true)
 			end
+			dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,colorcoded,true)
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
