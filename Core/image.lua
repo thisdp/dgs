@@ -69,9 +69,9 @@ end
 function dgsImageCreateTextureExternal(gui,res,img)
 	if res then
 		img = img:gsub("\\","/")
-		if not img:find(img,":") then
+		if not img:find(":") then
 			img = ":"..getResourceName(res).."/"..img
-			img = img:gsub(img,"//","/") or img
+			img = img:gsub("//","/") or img
 		end
 	end
 	texture = dxCreateTexture(img)
