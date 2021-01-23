@@ -3,8 +3,7 @@ float3 filterRGB = 0;
 float filterRange = 0.05;
 bool isPixelated = false;
 
-SamplerState sourceSampler
-{
+SamplerState sourceSampler{
 	Texture = sourceTexture;
 	MinFilter = 2;
 	MagFilter = 2;
@@ -14,8 +13,7 @@ SamplerState sourceSampler
 };
 
 
-SamplerState sourceSamplerPixelated
-{
+SamplerState sourceSamplerPixelated{
 	Texture = sourceTexture;
 	MinFilter = 1;
 	MagFilter = 1;
@@ -24,18 +22,15 @@ SamplerState sourceSamplerPixelated
 	AddressV = Wrap;
 };
 
-float4 maskBGFilter(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0
-{
+float4 maskBGFilter(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float4 sampledTexture = isPixelated?tex2D(sourceSamplerPixelated,tex):tex2D(sourceSampler,tex);
 	float diffRGB = distance(sampledTexture.rgb,filterRGB);
 	sampledTexture.a *= (diffRGB-filterRange)/filterRange;
 	return sampledTexture*color;
 }
 
-technique maskTech
-{
-	pass P0
-	{
+technique maskTech{
+	pass P0	{
 		PixelShader = compile ps_2_0 maskBGFilter();
 	}
 }

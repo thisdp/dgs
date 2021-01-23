@@ -714,17 +714,19 @@ function onClientKeyTriggered(button)
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
 		if button == "arrow_l" then
 			if ctrl then
-				local pos = dgsElementData[dgsEdit].caretPos
-				local f,b = dgsEditSearchFullWordType(dgsEdit,pos,-1)
-				dgsEditMoveCaret(dgsEdit,f-pos,shift)
+				local cpos = dgsElementData[dgsEdit].caretPos
+				local text = dgsElementData[dgsEdit].text
+				local f,b = dgsSearchFullWordType(text,cpos,-1)
+				dgsEditMoveCaret(dgsEdit,f-cpos,shift)
 			else
 				dgsEditMoveCaret(dgsEdit,-1,shift)
 			end
 		elseif button == "arrow_r" then
 			if ctrl then
-				local pos = dgsElementData[dgsEdit].caretPos
-				local f,b = dgsEditSearchFullWordType(dgsEdit,pos,1)
-				dgsEditMoveCaret(dgsEdit,b-pos,shift)
+				local cpos = dgsElementData[dgsEdit].caretPos
+				local text = dgsElementData[dgsEdit].text
+				local f,b = dgsSearchFullWordType(text,cpos,1)
+				dgsEditMoveCaret(dgsEdit,b-cpos,shift)
 			else
 				dgsEditMoveCaret(dgsEdit,1,shift)
 			end
@@ -763,7 +765,8 @@ function onClientKeyTriggered(button)
 					dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
 				else
 					if ctrl then
-						local f,b = dgsEditSearchFullWordType(dgsEdit,cpos,1)
+						local text = dgsElementData[dgsEdit].text
+						local f,b = dgsSearchFullWordType(text,cpos,1)
 						dgsEditDeleteText(dgsEdit,cpos,b)
 					else
 						dgsEditDeleteText(dgsEdit,cpos,cpos+1)
@@ -779,7 +782,8 @@ function onClientKeyTriggered(button)
 					dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
 				else
 					if ctrl then
-						local f,b = dgsEditSearchFullWordType(dgsEdit,cpos,-1)
+						local text = dgsElementData[dgsEdit].text
+						local f,b = dgsSearchFullWordType(text,cpos,-1)
 						dgsEditDeleteText(dgsEdit,f,cpos)
 					else
 						dgsEditDeleteText(dgsEdit,cpos-1,cpos)
