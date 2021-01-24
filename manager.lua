@@ -373,6 +373,15 @@ function dgsSetData(dgsEle,key,value,nocheck)
 			end
 		elseif key == "rowMoveOffset" then
 			dgsGridListUpdateRowMoveOffset(dgsEle)
+		elseif key == "defaultSortFunctions" then
+			local sortFunction = dgsElementData[dgsEle].sortFunction
+			local oldDefSortFnc = oldValue
+			local oldUpperSortFnc = sortFunctions[oldDefSortFnc[1]]
+			local oldLowerSortFnc = sortFunctions[oldDefSortFnc[2]]
+			local defSortFnc = dgsElementData[dgsEle].defaultSortFunctions
+			local upperSortFnc = sortFunctions[defSortFnc[1]]
+			local lowerSortFnc = sortFunctions[defSortFnc[2]]
+			local oldSort = sortFunction == oldLowerSortFnc and lowerSortFnc or upperSortFnc
 		end
 	elseif dgsType == "dgs-dxscrollpane" then
 		if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" or key == "scrollBarLength" then

@@ -1501,7 +1501,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						local column = dgsElementData[guiele].selectedColumn
 						if column and column >= 1 then
 							local sortFunction = dgsElementData[guiele].sortFunction
-							local targetfunction = (sortFunction == sortFunctions_upper or dgsElementData[guiele].sortColumn ~= column) and sortFunctions_lower or sortFunctions_upper
+							local defSortFnc = dgsElementData[guiele].defaultSortFunctions
+							local upperSortFnc = sortFunctions[defSortFnc[1]]
+							local lowerSortFnc = sortFunctions[defSortFnc[2]]
+							local targetfunction = (sortFunction == upperSortFnc or dgsElementData[guiele].sortColumn ~= column) and lowerSortFnc or upperSortFnc
 							dgsGridListSetSortFunction(guiele,targetfunction)
 							dgsGridListSetSortColumn(guiele,column)
 						end
