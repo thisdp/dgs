@@ -1927,6 +1927,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 				else
 					eleData.preSelect = {-1,-1}
 				end
+			else
+				eleData.preSelect = {-1,-1}
 			end
 			local preSelect = eleData.preSelect
 			if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
