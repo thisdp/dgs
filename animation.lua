@@ -315,7 +315,6 @@ addEventHandler("onClientRender",root,function()
 					dgsSetData(v,"move",nil)
 					moveGarbage[0] = moveGarbage[0]+1
 					moveGarbage[moveGarbage[0]] = v
-					triggerEvent("onDgsStopMoving",v)
 				end
 			end
 		end
@@ -393,7 +392,6 @@ addEventHandler("onClientRender",root,function()
 					dgsSetData(v,"size",nil)
 					sizeGarbage[0] = sizeGarbage[0]+1
 					sizeGarbage[sizeGarbage[0]] = v
-					triggerEvent("onDgsStopSizing",v)
 				end
 			end
 		end
@@ -453,22 +451,25 @@ addEventHandler("onClientRender",root,function()
 					dgsSetData(v,"calpha",nil)
 					alphaGarbage[0] = alphaGarbage[0]+1
 					alphaGarbage[alphaGarbage[0]] = v
-					triggerEvent("onDgsStopAlphaing",v,true)
 				end
 			end
 		end
 	end
-	for i=1,animGarbage[0] do
-		animGarbage[animGarbage[i]] = nil
-	end
+	--for i=1,animGarbage[0] do
+		--animGUIList[animGarbage[i]] = nil
+		--triggerEvent("onDgsStopAniming",animGarbage[i],true)
+	--end
 	for i=1,moveGarbage[0] do
-		moveGarbage[moveGarbage[i]] = nil
+		moveGUIList[moveGarbage[i]] = nil
+		triggerEvent("onDgsStopMoving",moveGarbage[i],true)
 	end
 	for i=1,sizeGarbage[0] do
-		sizeGarbage[sizeGarbage[i]] = nil
+		sizeGUIList[sizeGarbage[i]] = nil
+		triggerEvent("onDgsStopSizing",sizeGarbage[i],true)
 	end
 	for i=1,alphaGarbage[0] do
 		alphaGUIList[alphaGarbage[i]] = nil
+		triggerEvent("onDgsStopAlphaing",alphaGarbage[i],true)
 	end
 end)
 
