@@ -4,6 +4,11 @@ function createFullDemo()
 	--print("Load String",DGSOOPFnc,err)
 	DGSOOPFnc()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
+		:on("dgsMouseClick",function(button,state)
+			if button == "left" and state == "up" then
+				source:destroy()
+			end
+		end)
 	local scb = window
 		:dgsScrollBar(320,50,260,20,true,false)
 		:setAlpha(0.5)
@@ -18,14 +23,18 @@ function createFullDemo()
 	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"","",true)
 	local gridlist = window:dgsGridList(0,0,290,200,false)
 	gridlist:setMultiSelectionEnabled(true)
+	gridlist:setProperty("rowTextSize",{1.2,1.2})
+	gridlist:setProperty("rowHeight",20)
+	gridlist:setProperty("clip",false)
 	gridlist:addColumn("Column 1",0.8,true)
 	gridlist:addColumn("Column 2",0.8,true)
 	gridlist:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
+	gridlist:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
 	for i=1,100 do
-		gridlist:addRow(i,i,math.random(1,500))
-		if i%5 == 0 then
+		gridlist:addRow(i,i,string.rep("x",math.random(1,40)))
+		--[[if i%5 == 0 then
 			gridlist:setRowAsSection(i,true)
-		end
+		end]]
 	end
 	gridlist.alpha = 1
 	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
@@ -224,10 +233,14 @@ function PasteHandlerTest()
 end
 
 function _3DInterfaceTest()
-	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
+	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(128,128,128,128),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
 	edit1 = dgsCreateMemo(0,0,1,1,"123",true,material)
 end
+
+local teste = dgsCreate3DInterface(0,0,4,1,1,602,602,tocolor(255,255,255,250),0,1,0)
+local tin = dgsCreateImage( 0,0,602,602,_,false,teste,tocolor(255,255,255,155) )
+
 
 function _3DInterfaceAttachTest()
 	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
@@ -260,6 +273,13 @@ function _3DTextTest()
 	dgsSetProperty(text,"shadow",{1,1,tocolor(0,0,0,255),true})
 	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
 	dgs3DTextAttachToElement(text,localPlayer,0,5)
+end
+
+function _3DImageTest()
+	local text = dgsCreate3DImage(0,0,4,_,tocolor(0,128,255,128),10,10)
+	dgsSetProperty(text,"fadeDistance",20)
+	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
+	dgs3DImageAttachToElement(text,localPlayer,0,5)
 end
 
 function ScrollBarTest()
