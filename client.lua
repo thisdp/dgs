@@ -154,7 +154,6 @@ function dgsCoreRender()
 	end
 	local normalMx,normalMy = mx,my
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize+dx3DImageTableSize ~= 0 then
-		local dgsData = dgsElementData
 		dxSetRenderTarget()
 		MouseData.interfaceHit = {}
 		local dxInterfaceHitElement = false
@@ -164,7 +163,7 @@ function dgsCoreRender()
 		MouseData.WithinElements = {}
 		for i=1,dx3DInterfaceTableSize do
 			local v = dx3DInterfaceTable[i]
-			local eleData = dgsData[v]
+			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
 				if renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},eleData.renderTarget_parent,{0,0,0,0},0,0,1,eleData.visible,MouseData.clickl) then
@@ -179,31 +178,31 @@ function dgsCoreRender()
 		local mx,my = normalMx,normalMy
 		for i=1,dx3DTextTableSize do
 			local v = dx3DTextTable[i]
-			local eleData = dgsData[v]
+			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 			end
 		end
 		for i=1,dx3DImageTableSize do
 			local v = dx3DImageTable[i]
-			local eleData = dgsData[v]
+			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 			end
 		end
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
-			local eleData = dgsData[v]
+			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		for i=1,centerTableSize do
 			local v = CenterFatherTable[i]
-			local eleData = dgsData[v]
+			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		for i=1,topTableSize do
 			local v = TopFatherTable[i]
-			local eleData = dgsData[v]
+			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,{eleData.enabled,eleData.enabled},nil,{0,0,0,0},0,0,1,eleData.visible)
 		end
 		if intfaceClickElementl then
@@ -1277,6 +1276,8 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			tableRemoveItemFromArray(dx3DInterfaceTable,source)
 		elseif dgsType == "dgs-dx3dtext" then
 			tableRemoveItemFromArray(dx3DTextTable,source)
+		elseif dgsType == "dgs-dx3dimage" then
+			tableRemoveItemFromArray(dx3DImageTable,source)
 		else
 			local parent = dgsGetParent(source)
 			if not isElement(parent) then

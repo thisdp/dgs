@@ -51,8 +51,21 @@ function dgs3DImageGetImage(image)
 end
 
 function dgs3DImageSetImage(image,imgTex)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetImage at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetImage at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
 	return dgsSetData(image,"image",imgTex)
+end
+
+function dgs3DImageSetSize(image,w,h)
+	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetSize at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	assert(type(w) == "number","Bad argument @dgs3DImageSetSize at argument 2, expect a number got "..type(w))
+	assert(type(h) == "number","Bad argument @dgs3DImageSetSize at argument 3, expect a number got "..type(h))
+	return dgsSetData(image,"imageSize",{w,h})
+end
+
+function dgs3DImageGetSize(image)
+	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetSize at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	local size = dgsElementData[image].imageSize
+	return size[1],size[2]
 end
 
 function dgs3DImageGetDimension(image)
