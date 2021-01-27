@@ -43,8 +43,10 @@ function dgsCreateLabel(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,s
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX, textSizeY},
 		wordbreak = false,
+		textRenderTable = {},
+		charSpacing = false, --false for using default
 	}
-	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(label,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[label]._translationText = text
 		dgsSetData(label,"text",text)
