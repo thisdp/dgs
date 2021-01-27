@@ -13,6 +13,7 @@ CenterFatherTable = {}		--Store Center Father Element (Default)
 TopFatherTable = {}			--Store Top Father Element
 dx3DInterfaceTable = {}
 dx3DTextTable = {}
+dx3DImageTable = {}
 FatherTable = {}			--Store Father Element
 ChildrenTable = {}			--Store Children Element
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
@@ -264,6 +265,7 @@ dgsElementType = {}
 dgsType = {
 	"dgs-dx3dinterface",
 	"dgs-dx3dtext",
+	"dgs-dx3dimage",
 	"dgs-dxbutton",
 	"dgs-dxedit",
 	"dgs-dxexternal",

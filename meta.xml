@@ -11,6 +11,7 @@
 	<script src="styleManager/styleManager.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
+	<script src="Core/3dimage.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
 	<script src="Core/button.lua" type="client" />
 	<script src="Core/checkbox.lua" type="client" />
@@ -87,8 +88,6 @@
 
 	<!--$Add Your Styles Here-->
 	<!--You can also add your custom plugins here -->
-	<file src="customOOPScriptList.lua" type="client" />
-	<file src="plugin/pluginOOP.lua" type="client" />
 	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
 	<!--(Default Style) Don't touch this style with your bear hand-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
@@ -260,6 +259,21 @@
 	<export function="dgs3DTextGetDimension" type="client" />
 	<export function="dgs3DTextSetInterior" type="client" />
 	<export function="dgs3DTextGetInterior" type="client" />
+
+	<export function="dgsCreate3DImage" type="client" />
+	<export function="dgs3DImageSetImage" type="client" />
+	<export function="dgs3DImageGetImage" type="client" />
+	<export function="dgs3DImageGetDimension" type="client" />
+	<export function="dgs3DImageSetDimension" type="client" />
+	<export function="dgs3DImageGetInterior" type="client" />
+	<export function="dgs3DImageSetInterior" type="client" />
+	<export function="dgs3DImageAttachToElement" type="client" />
+	<export function="dgs3DImageIsAttached" type="client" />
+	<export function="dgs3DImageDetachFromElement" type="client" />
+	<export function="dgs3DImageSetAttachedOffsets" type="client" />
+	<export function="dgs3DImageGetAttachedOffsets" type="client" />
+	<export function="dgs3DImageSetPosition" type="client" />
+	<export function="dgs3DImageGetPosition" type="client" />
 
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
