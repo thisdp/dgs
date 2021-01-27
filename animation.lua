@@ -66,7 +66,7 @@ function dgsStopAniming(gui,property)
 				triggerEvent("onDgsStopAniming",gui,k)
 				if callback then callback() end
 			end
-			dgsSetData(gui,"anim",{})
+			dgsSetData(gui,"anim",nil)
 		end
 		return true
 	end
@@ -111,7 +111,7 @@ function dgsStopMoving(gui)
 	end
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if moveGUIList[gui] then
-		dgsSetData(gui,"move",false)
+		dgsSetData(gui,"move",nil)
 		moveGUIList[gui] = nil
 		triggerEvent("onDgsStopMoving",gui)
 		return true
@@ -157,7 +157,7 @@ function dgsStopSizing(gui)
 	end
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if sizeGUIList[gui] then
-		dgsSetData(gui,"size",false)
+		dgsSetData(gui,"size",nil)
 		sizeGUIList[gui] = nil
 		triggerEvent("onDgsStopSizing",gui)
 		return true
@@ -196,7 +196,7 @@ end
 function dgsStopAlphaing(gui)
 	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if alphaGUIList[gui] then
-		dgsSetData(gui,"calpha",false)
+		dgsSetData(gui,"calpha",nil)
 		alphaGUIList[gui] = nil
 		triggerEvent("onDgsStopAlphaing",gui)
 		return true
@@ -209,225 +209,266 @@ addEventHandler("onClientRender",root,function()
 	local tick = getTickCount()
 	local diff = tick-tickCount
 	tickCount = tick
+	local animGarbage = {[0]=0}
 	for v,value in pairs(animGUIList) do
-		if not dgsIsDxElement(v) or not value then animGUIList[v] = nil end
-		local animList = dgsElementData[v].anim
-		if animGUIList[v] then
-			for _,data in pairs(animList) do
-				local propertyName,targetValue,oldValue,easing,thetime,isReversed = data[1],data[2],data[3],data[4],data[5],data.reverseProgress
-				local changeTime = tickCount-data[0]
-				local ctPercent = changeTime/thetime
-				local linearProgress = ctPercent >= 1 and 1 or ctPercent
-				linearProgress = isReversed and 1-linearProgress or linearProgress
-				if easingBuiltIn[easing] then
-					local percent = oldValue+getEasingValue(linearProgress,easing)*(targetValue-oldValue)
-					dgsSetProperty(v,propertyName,percent)
-				else
-					if SelfEasing[easing] then
-						local value = SelfEasing[easing](linearProgress,{propertyName,targetValue,oldValue},v)
-						dgsSetProperty(v,propertyName,value)
+		if not dgsIsDxElement(v) or not value then
+			animGarbage[0] = animGarbage[0]+1
+			animGarbage[animGarbage[0]] = v
+		else
+			local animList = dgsElementData[v].anim
+			if animGUIList[v] then
+				for _,data in pairs(animList) do
+					local propertyName,targetValue,oldValue,easing,thetime,isReversed = data[1],data[2],data[3],data[4],data[5],data.reverseProgress
+					local changeTime = tickCount-data[0]
+					local ctPercent = changeTime/thetime
+					local linearProgress = ctPercent >= 1 and 1 or ctPercent
+					linearProgress = isReversed and 1-linearProgress or linearProgress
+					if easingBuiltIn[easing] then
+						local percent = oldValue+getEasingValue(linearProgress,easing)*(targetValue-oldValue)
+						dgsSetProperty(v,propertyName,percent)
 					else
+						if SelfEasing[easing] then
+							local value = SelfEasing[easing](linearProgress,{propertyName,targetValue,oldValue},v)
+							dgsSetProperty(v,propertyName,value)
+						else
+							dgsStopAniming(v,propertyName)
+							assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
+						end
+					end
+					if ctPercent >= 1 then
 						dgsStopAniming(v,propertyName)
-						assert(false,"Bad argument @dgsAnimTo, easing function is missing during running easing funcition("..easing..")")
 					end
-				end
-				if ctPercent >= 1 then
-					dgsStopAniming(v,propertyName)
 				end
 			end
 		end
 	end
+	local moveGarbage = {[0]=0}
 	for v,value in pairs(moveGUIList) do
-		if not dgsIsDxElement(v) or not value then moveGUIList[v] = nil end
-		local data = dgsElementData[v].move
-		if not data then moveGUIList[v] = nil end
-		if moveGUIList[v] then
-			local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
-			local nx,ny = dgsGetPosition(v,rlt)
-			local compMove = false
-			local percentx,percenty
-			if mtype then
-				local disx,disy = x-ox,y-oy
-				local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
-				local speedX,speedY = torvx*diff*symbolX*0.001,vy*diff*symbolY*0.001
-				local finishX,finishY = false,false
-				if disx ~= 0 then
-					local progress = (nx-ox)/disx
-					if easingBuiltIn[easing] then
-						percentx = getEasingValue(progress,easing)
-					else
-						percentx = getEasingValue2(progress,easing,settings,v)
-					end
-					if progress < 1 then
-						nx = nx+speedX
-						if nx*symbolX > x*symbolX then
+		if not dgsIsDxElement(v) or not value then
+			moveGarbage[0] = moveGarbage[0]+1
+			moveGarbage[moveGarbage[0]] = v
+		else
+			local data = dgsElementData[v].move
+			if not data then moveGUIList[v] = nil end
+			if moveGUIList[v] then
+				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
+				local nx,ny = dgsGetPosition(v,rlt)
+				local compMove = false
+				local percentx,percenty
+				if mtype then
+					local disx,disy = x-ox,y-oy
+					local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
+					local speedX,speedY = torvx*diff*symbolX*0.001,vy*diff*symbolY*0.001
+					local finishX,finishY = false,false
+					if disx ~= 0 then
+						local progress = (nx-ox)/disx
+						if easingBuiltIn[easing] then
+							percentx = getEasingValue(progress,easing)
+						else
+							percentx = getEasingValue2(progress,easing,settings,v)
+						end
+						if progress < 1 then
+							nx = nx+speedX
+							if nx*symbolX > x*symbolX then
+								nx = x
+							end
+						else
 							nx = x
+							finishX = true
 						end
-					else
-						nx = x
-						finishX = true
 					end
-				end
-				if disy ~= 0 then
-					local progress = (ny-oy)/disy
-					if easingBuiltIn[easing] then
-						percenty = getEasingValue(progress,easing)
-					else
-						percenty = getEasingValue2(progress,easing,settings,v)
-					end
-					if progress < 1 then
-						ny = ny+speedY
-						if ny*symbolY > y*symbolY then
+					if disy ~= 0 then
+						local progress = (ny-oy)/disy
+						if easingBuiltIn[easing] then
+							percenty = getEasingValue(progress,easing)
+						else
+							percenty = getEasingValue2(progress,easing,settings,v)
+						end
+						if progress < 1 then
+							ny = ny+speedY
+							if ny*symbolY > y*symbolY then
+								ny = y
+							end
+						else
 							ny = y
+							finishY = true
 						end
+					end
+					compMove = finishX and finishY
+				else
+					local changeTime = tickCount-data[0]
+					local temp = changeTime/torvx
+					if easingBuiltIn[easing] then
+						percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 					else
-						ny = y
-						finishY = true
+						percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
+					end
+					if temp >= 1 then
+						compMove = true
+						nx,ny = x,y
+					else
+						nx,ny = percentx,percenty
 					end
 				end
-				compMove = finishX and finishY
-			else
-				local changeTime = tickCount-data[0]
-				local temp = changeTime/torvx
-				if easingBuiltIn[easing] then
-					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
-				else
-					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
+				dgsSetPosition(v,nx,ny,rlt)
+				if compMove then
+					dgsSetData(v,"move",nil)
+					moveGarbage[0] = moveGarbage[0]+1
+					moveGarbage[moveGarbage[0]] = v
+					triggerEvent("onDgsStopMoving",v)
 				end
-				if temp >= 1 then
-					compMove = true
-					nx,ny = x,y
-				else
-					nx,ny = percentx,percenty
-				end
-			end
-			dgsSetPosition(v,nx,ny,rlt)
-			if compMove then
-				dgsStopMoving(v)
 			end
 		end
 	end
+	local sizeGarbage = {[0]=0}
 	for v,value in pairs(sizeGUIList) do
-		if not dgsIsDxElement(v) or not value then sizeGUIList[v] = nil end
-		local data = dgsGetData(v,"size")
-		if not data then sizeGUIList[v] = nil end
-		if sizeGUIList[v] then
-			local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
-			local nx,ny = dgsGetSize(v,rlt)
-			local compSize = false
-			local percentx,percenty
-			if mtype then
-				local disx,disy = x-ox,y-oy
-				local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
-				local speedX,speedY = torvx*diff*symbolX*0.001,vy*diff*symbolY*0.001
-				local finishX,finishY = false,false
-				if disx ~= 0 then
-					local progress = (nx-ox)/disx
-					if easingBuiltIn[easing] then
-						percentx = getEasingValue(progress,easing)
-					else
-						percentx = getEasingValue2(progress,easing,settings,v)
-					end
-					if progress < 1 then
-						nx = nx+speedX
-						if nx*symbolX > x*symbolX then
+		if not dgsIsDxElement(v) or not value then
+			sizeGarbage[0] = sizeGarbage[0]+1
+			sizeGarbage[sizeGarbage[0]] = v
+		else
+			local data = dgsElementData[v].size
+			if not data then sizeGUIList[v] = nil end
+			if sizeGUIList[v] then
+				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
+				local nx,ny = dgsGetSize(v,rlt)
+				local compSize = false
+				local percentx,percenty
+				if mtype then
+					local disx,disy = x-ox,y-oy
+					local symbolX,symbolY = disx < 0 and -1 or 1,disy < 0 and -1 or 1
+					local speedX,speedY = torvx*diff*symbolX*0.001,vy*diff*symbolY*0.001
+					local finishX,finishY = false,false
+					if disx ~= 0 then
+						local progress = (nx-ox)/disx
+						if easingBuiltIn[easing] then
+							percentx = getEasingValue(progress,easing)
+						else
+							percentx = getEasingValue2(progress,easing,settings,v)
+						end
+						if progress < 1 then
+							nx = nx+speedX
+							if nx*symbolX > x*symbolX then
+								nx = x
+							end
+						else
 							nx = x
+							finishX = true
 						end
-					else
-						nx = x
-						finishX = true
 					end
-				end
-				if disy ~= 0 then
-					local progress = (ny-oy)/disy
-					if easingBuiltIn[easing] then
-						percenty = getEasingValue(progress,easing)
-					else
-						percenty = getEasingValue2(progress,easing,settings,v)
-					end
-					if progress < 1 then
-						ny = ny+speedY
-						if ny*symbolY > y*symbolY then
+					if disy ~= 0 then
+						local progress = (ny-oy)/disy
+						if easingBuiltIn[easing] then
+							percenty = getEasingValue(progress,easing)
+						else
+							percenty = getEasingValue2(progress,easing,settings,v)
+						end
+						if progress < 1 then
+							ny = ny+speedY
+							if ny*symbolY > y*symbolY then
+								ny = y
+							end
+						else
 							ny = y
+							finishY = true
 						end
+					end
+					compSize = finishX and finishY
+				else
+					local changeTime = tickCount-data[0]
+					local temp = changeTime/torvx
+					if easingBuiltIn[easing] then
+						percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 					else
-						ny = y
-						finishY = true
+						percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
+					end
+					if temp >= 1 then
+						compSize = true
+						nx,ny = x,y
+					else
+						nx,ny = percentx,percenty
 					end
 				end
-				compSize = finishX and finishY
-			else
-				local changeTime = tickCount-data[0]
-				local temp = changeTime/torvx
-				if easingBuiltIn[easing] then
-					percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
-				else
-					percentx,percenty = interpolateBetween2(ox,oy,0,x,y,0,temp,easing,settings,v)
+				dgsSetSize(v,nx,ny,rlt)
+				if compSize then
+					dgsSetData(v,"size",nil)
+					sizeGarbage[0] = sizeGarbage[0]+1
+					sizeGarbage[sizeGarbage[0]] = v
+					triggerEvent("onDgsStopSizing",v)
 				end
-				if temp >= 1 then
-					compSize = true
-					nx,ny = x,y
-				else
-					nx,ny = percentx,percenty
-				end
-			end
-			dgsSetSize(v,nx,ny,rlt)
-			if compSize then
-				dgsStopSizing(v)
 			end
 		end
 	end
+	local alphaGarbage = {[0]=0}
 	for v,value in pairs(alphaGUIList) do
-		if not dgsIsDxElement(v) or not value then alphaGUIList[v] = nil end
-		local data = dgsElementData[v].calpha
-		if not data then alphaGUIList[v] = nil end
-		local oldAlpha,endalpha,mtype,easing,torv,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[-1]
-		local alp = dgsElementData[v].alpha
-		if not alp then alphaGUIList[v] = nil end
-		if alphaGUIList[v] then
-			local compAlpha = false
-			local percentalp
-			if mtype then
-				local disAlpha = endalpha-oldAlpha
-				local symbolAlpha = disAlpha < 0 and -1 or 1
-				local speed = torv*diff*symbolAlpha*0.001
-				if disAlpha ~= 0 then
-					local progress = (alp-oldAlpha)/disAlpha
-					if easingBuiltIn[easing] then
-						percentx = getEasingValue(progress,easing)
-					else
-						percentx = getEasingValue2(progress,easing,settings,v)
-					end
-					if progress < 1 then
-						alp = alp+speed
-						if alp*symbolAlpha > endalpha*symbolAlpha then
-							alp = endalpha
+		if not dgsIsDxElement(v) or not value then
+			alphaGarbage[0] = alphaGarbage[0]+1
+			alphaGarbage[alphaGarbage[0]] = v
+		else
+			local data = dgsElementData[v].calpha
+			if not data then alphaGUIList[v] = nil end
+			local oldAlpha,endalpha,mtype,easing,torv,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[-1]
+			local alp = dgsElementData[v].alpha
+			if not alp then alphaGUIList[v] = nil end
+			if alphaGUIList[v] then
+				local compAlpha = false
+				local percentalp
+				if mtype then
+					local disAlpha = endalpha-oldAlpha
+					local symbolAlpha = disAlpha < 0 and -1 or 1
+					local speed = torv*diff*symbolAlpha*0.001
+					if disAlpha ~= 0 then
+						local progress = (alp-oldAlpha)/disAlpha
+						if easingBuiltIn[easing] then
+							percentx = getEasingValue(progress,easing)
+						else
+							percentx = getEasingValue2(progress,easing,settings,v)
 						end
+						if progress < 1 then
+							alp = alp+speed
+							if alp*symbolAlpha > endalpha*symbolAlpha then
+								alp = endalpha
+							end
+						else
+							alp = endalpha
+							compAlpha = true
+						end
+					end
+				else
+					local changeTime = tickCount-data[0]
+					local temp = changeTime/torv
+					if easingBuiltIn[easing] then
+						percentalp = interpolateBetween(oldAlpha,0,0,endalpha,0,0,temp,easing or "Linear")
 					else
-						alp = endalpha
+						percentalp = interpolateBetween2(oldAlpha,0,0,endalpha,0,0,temp,easing,settings,v)
+					end
+					if temp >= 1 then
 						compAlpha = true
+						alp = endalpha
+					else
+						alp = percentalp
 					end
 				end
-			else
-				local changeTime = tickCount-data[0]
-				local temp = changeTime/torv
-				if easingBuiltIn[easing] then
-					percentalp = interpolateBetween(oldAlpha,0,0,endalpha,0,0,temp,easing or "Linear")
-				else
-					percentalp = interpolateBetween2(oldAlpha,0,0,endalpha,0,0,temp,easing,settings,v)
+				dgsSetData(v,"alpha",alp)
+				if compAlpha then
+					dgsSetData(v,"calpha",nil)
+					alphaGarbage[0] = alphaGarbage[0]+1
+					alphaGarbage[alphaGarbage[0]] = v
+					triggerEvent("onDgsStopAlphaing",v,true)
 				end
-				if temp >= 1 then
-					compAlpha = true
-					alp = endalpha
-				else
-					alp = percentalp
-				end
-			end
-			dgsSetData(v,"alpha",alp)
-			if compAlpha then
-				dgsStopAlphaing(v)
 			end
 		end
+	end
+	for i=1,animGarbage[0] do
+		animGarbage[animGarbage[i]] = nil
+	end
+	for i=1,moveGarbage[0] do
+		moveGarbage[moveGarbage[i]] = nil
+	end
+	for i=1,sizeGarbage[0] do
+		sizeGarbage[sizeGarbage[i]] = nil
+	end
+	for i=1,alphaGarbage[0] do
+		alphaGUIList[alphaGarbage[i]] = nil
 	end
 end)
 

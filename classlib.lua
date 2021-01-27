@@ -270,8 +270,8 @@ class {
 		translationTableExists = dgsOOP.genOOPFncNonObj("dgsTranslationTableExists"),
 		setTranslationTable = dgsOOP.genOOPFncNonObj("dgsSetTranslationTable"),
 		setAttachTranslation = dgsOOP.genOOPFncNonObj("dgsSetAttachTranslation"),
-		setDoubleClickInterval = dgsOOP.genOOPFncNonObj("dgsSetDoubleClickInterval"),
-		getDoubleClickInterval = dgsOOP.genOOPFncNonObj("dgsGetDoubleClickInterval"),
+		setMultiClickInterval = dgsOOP.genOOPFncNonObj("dgsSetMultiClickInterval"),
+		getMultiClickInterval = dgsOOP.genOOPFncNonObj("dgsGetMultiClickInterval"),
 		RGBToHSV = dgsOOP.genOOPFncNonObj("dgsRGBToHSV"),
 		RGBToHSL = dgsOOP.genOOPFncNonObj("dgsRGBToHSL"),
 		HSLToRGB = dgsOOP.genOOPFncNonObj("dgsHSLToRGB"),
@@ -577,6 +577,8 @@ class {
 		getCaptionText = dgsOOP.genOOPFnc("dgsComboBoxGetCaptionText"),
 		setEditEnabled = dgsOOP.genOOPFnc("dgsComboBoxSetEditEnabled",true),
 		getEditEnabled = dgsOOP.genOOPFnc("dgsComboBoxGetEditEnabled"),
+		setViewCount = dgsOOP.genOOPFnc("dgsComboBoxSetViewCount",true),
+		getViewCount = dgsOOP.genOOPFnc("dgsComboBoxGetViewCount"),
 		getText = dgsOOP.genOOPFnc("dgsComboBoxGetText"),
 	};
 }
@@ -741,6 +743,20 @@ class {
 		sort = dgsOOP.genOOPFnc("dgsGridListSort",true),
 		setNavigationEnabled = dgsOOP.genOOPFnc("dgsGridListSetNavigationEnabled",true),
 		getNavigationEnabled = dgsOOP.genOOPFnc("dgsGridListGetNavigationEnabled"),
+		setItemTextSize = dgsOOP.genOOPFnc("dgsGridListSetItemTextSize",true),
+		getItemTextSize = dgsOOP.genOOPFnc("dgsGridListGetItemTextSize"),
+		setColumnTextSize = dgsOOP.genOOPFnc("dgsGridListSetColumnTextSize",true),
+		getColumnTextSize = dgsOOP.genOOPFnc("dgsGridListGetColumnTextSize"),
+		setItemFont = dgsOOP.genOOPFnc("dgsGridListSetItemFont",true),
+		getItemFont = dgsOOP.genOOPFnc("dgsGridListGetItemFont"),
+		setRowSelectable = dgsOOP.genOOPFnc("dgsGridListSetRowSelectable",true),
+		getRowSelectable = dgsOOP.genOOPFnc("dgsGridListGetRowSelectable"),
+		setRowHoverable = dgsOOP.genOOPFnc("dgsGridListSetRowHoverable",true),
+		getRowHoverable = dgsOOP.genOOPFnc("dgsGridListGetRowHoverable"),
+		setItemSelectable = dgsOOP.genOOPFnc("dgsGridListSetItemSelectable",true),
+		getItemSelectable = dgsOOP.genOOPFnc("dgsGridListGetItemSelectable"),
+		setItemHoverable = dgsOOP.genOOPFnc("dgsGridListSetItemHoverable",true),
+		getItemHoverable = dgsOOP.genOOPFnc("dgsGridListGetItemHoverable"),
 	};
 }
 
@@ -881,6 +897,12 @@ class {
 		getLocked = dgsOOP.genOOPFnc("dgsScrollBarGetLocked"),
 		setGrades = dgsOOP.genOOPFnc("dgsScrollBarSetGrades",true),
 		getGrades = dgsOOP.genOOPFnc("dgsScrollBarGetGrades"),
+		setCursorWidth = dgsOOP.genOOPFnc("dgsScrollBarSetCursorWidth",true),
+		getCursorWidth = dgsOOP.genOOPFnc("dgsScrollBarGetCursorWidth"),
+		setTroughWidth = dgsOOP.genOOPFnc("dgsScrollBarSetTroughWidth",true),
+		getTroughWidth = dgsOOP.genOOPFnc("dgsScrollBarGetTroughWidth"),
+		setArrowSize = dgsOOP.genOOPFnc("dgsScrollBarSetArrowSize",true),
+		getArrowSize = dgsOOP.genOOPFnc("dgsScrollBarGetArrowSize"),
 	};
 }
 
@@ -1118,6 +1140,7 @@ class {
 		getPosition = dgsOOP.genOOPFnc("dgs3DTextGetPosition"),
 	};
 }
+--------------------DGS Built-in Plugins
 
 dgsRootInstance = dgsOOP.dgsRoot()
 end

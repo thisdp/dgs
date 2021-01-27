@@ -33,16 +33,12 @@ local tocolor = tocolor
 --[[
 Item List Struct:
 table = {
-index:	-2			-1					0					1
-		textColor	BackGround Image	BackGround Color	Text
-	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
-	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
-	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
-	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
-	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
-	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
-	{	color,		{def,hov,sel},		{def,hov,sel},		text	},
-	{	...														},
+index:	-3			-2			-1					0					1
+		ItemData	textColor	BackGround Image	BackGround Color	Text
+	{	dataTable,	color,		{def,hov,sel},		{def,hov,sel},		text	},
+	{	dataTable,	color,		{def,hov,sel},		{def,hov,sel},		text	},
+	{	dataTable,	color,		{def,hov,sel},		{def,hov,sel},		text	},
+	{				...														},
 }
 ]]
 
@@ -305,6 +301,36 @@ function dgsComboBoxGetItemText(combobox,item)
 	local item = mathFloor(item)
 	if item >= 1 and item <= #data then
 		return data[item][1]
+	end
+	return false
+end
+
+function dgsComboBoxSetItemData(combobox,item,data,...)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(combobox))
+	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemData at argument 2, expect number got "..dgsGetType(item))
+	local itemData = dgsElementData[combobox].itemData
+	if item > 0 and item <= #itemData then
+		if select("#",...) == 0 then
+			itemData[item][-1] = data
+			return true
+		else
+			itemData[item][-2] = itemData[item][-2] or {}
+			itemData[item][-2][data] = ...
+		end
+	end
+	return false
+end
+
+function dgsComboBoxGetItemData(combobox,item,key)
+	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsGridListGetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(combobox))
+	assert(type(key) == "number","Bad argument @dgsGridListGetItemData at argument 2, expect number got "..dgsGetType(key))
+	local itemData = dgsElementData[combobox].itemData
+	if item > 0 and item <= #itemData then
+		if not key then
+			return itemData[item][-1]
+		else
+			return (itemData[item][-2] or {})[key] or false
+		end
 	end
 	return false
 end

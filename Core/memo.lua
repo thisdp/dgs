@@ -591,7 +591,6 @@ function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
 	if isSplitByWord == 2 then
 		while(text ~= "") do
 			local breakPoint = false
-			local tick = getTickCount()
 			local index = searchTextFromPosition(text,font,textSizeX,maxWidth)
 			if index < utf8Len(text) then
 				local NextWordByte = utf8Byte(text,index+1,index+1)
@@ -627,7 +626,6 @@ function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
 		return splitTable,cnt-1
 	else
 		while(text ~= "") do
-			local tick = getTickCount()
 			local index = searchTextFromPosition(text,font,textSizeX,maxWidth)
 			local tempText = utf8Sub(text,1,index)
 			text = utf8Sub(text,index+1)

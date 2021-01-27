@@ -499,5 +499,26 @@ function dgsImportOOPClass()
 	local OOPFile = fileOpen("classlib.lua")
 	local str = fileRead(OOPFile,fileGetSize(OOPFile))
 	fileClose(OOPFile)
+	if fileExists("customOOP.lua") then
+		local customOOPFileList = fileOpen("customOOP.lua")
+		local s = fileRead(customOOPFileList,fileGetSize(customOOPFileList)):gsub("\r\n","\n")
+		local list = split(s,"\n")
+		for i=1,#list do
+			if fileExists(list[i]) then
+				local customOOPCode = fileOpen(list[i])
+				local s = fileRead(customOOPCode,fileGetSize(customOOPCode))
+				fileClose(customOOPCode)
+				local f,e = loadstring(s)
+				if f then
+					str = str.."\n"..s
+				else
+					outputDebugString("[DGS]Failed to load custom OOP script ("..list[i]..":"..e..")",1)
+				end
+			else
+				outputDebugString("[DGS]Failed to load custom OOP script (Could not find "..list[i]..")",1)
+			end
+		end
+		fileClose(customOOPFileList)
+	end
 	return str
 end

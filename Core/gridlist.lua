@@ -661,7 +661,7 @@ function dgsGridListGetColumnWidth(gridlist,pos,relative)
 	return false
 end
 
-function dgsGridListSetItemData(gridlist,row,column,data)
+function dgsGridListSetItemData(gridlist,row,column,data,...)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListSetItemData at argument 2, expect number got "..dgsGetType(row))
 	assert(type(column) == "number","Bad argument @dgsGridListSetItemData at argument 3, expect number got "..dgsGetType(column))
@@ -669,14 +669,19 @@ function dgsGridListSetItemData(gridlist,row,column,data)
 	if row > 0 and row <= #rowData then
 		local columnData = dgsElementData[gridlist].columnData
 		if column > 0 and column <= #columnData then
-			rowData[row][column][-1] = data
-			return true
+			if select("#",...) == 0 then
+				rowData[row][column][-1] = data
+				return true
+			else
+				rowData[row][column][-2] = rowData[row][column][-2] or {}
+				rowData[row][column][-2][data] = ...
+			end
 		end
 	end
 	return false
 end
 
-function dgsGridListGetItemData(gridlist,row,column)
+function dgsGridListGetItemData(gridlist,row,column,key)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListGetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
 	assert(type(row) == "number","Bad argument @dgsGridListGetItemData at argument 2, expect number got "..dgsGetType(row))
 	assert(type(column) == "number","Bad argument @dgsGridListGetItemData at argument 3, expect number got "..dgsGetType(column))
@@ -684,7 +689,11 @@ function dgsGridListGetItemData(gridlist,row,column)
 	if row > 0 and row <= #rowData then
 		local columnData = dgsElementData[gridlist].columnData
 		if column > 0 and column <= #columnData then
-			return rowData[row][column][-1]
+			if not key then
+				return rowData[row][column][-1]
+			else
+				return (rowData[row][column][-2] or {})[key] or false
+			end
 		end
 	end
 	return false
