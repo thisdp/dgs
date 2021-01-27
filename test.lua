@@ -238,9 +238,6 @@ function _3DInterfaceTest()
 	edit1 = dgsCreateMemo(0,0,1,1,"123",true,material)
 end
 
-local teste = dgsCreate3DInterface(0,0,4,1,1,602,602,tocolor(255,255,255,250),0,1,0)
-local tin = dgsCreateImage( 0,0,602,602,_,false,teste,tocolor(255,255,255,155) )
-
 
 function _3DInterfaceAttachTest()
 	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
