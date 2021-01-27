@@ -68,7 +68,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 		colorcoded = false,
 		alignment = {left,"center"},
 	}
-	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[rb]._translationText = text
 		dgsElementData[rb].text = dgsTranslate(rb,text,sourceResource)

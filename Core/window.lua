@@ -51,7 +51,7 @@ function dgsCreateWindow(x,y,sx,sy,text,relative,textColor,titleHeight,titleImag
 		minSize = {60,60},
 		maxSize = {20000,20000},
 	}
-	dgsAttachToTranslation(window,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(window,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[window]._translationText = text
 		dgsSetData(window,"text",text)

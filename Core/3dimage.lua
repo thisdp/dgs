@@ -40,7 +40,6 @@ function dgsCreate3DImage(x,y,z,img,color,sizeX,sizeY,maxDistance,colorcoded)
 		canBeBlocked = false,
 		subPixelPositioning = true,
 	}
-	dgsAttachToTranslation(image3d,resourceTranslation[sourceResource or getThisResource()])
 	triggerEvent("onDgsCreate",image3d,sourceResource)
 	return image3d
 end

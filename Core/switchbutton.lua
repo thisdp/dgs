@@ -65,7 +65,7 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 		colorcoded = false,
 		style = 1,
 	}
-	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or resource])
 	if type(textOn) == "table" then
 		dgsElementData[switchbutton]._translationtextOn = textOn
 		textOn = dgsTranslate(switchbutton,textOn,sourceResource)

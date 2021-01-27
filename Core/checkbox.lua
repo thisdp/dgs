@@ -82,7 +82,7 @@ function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,s
 		alignment = {"left","center"},
 	}
 
-	dgsAttachToTranslation(cb,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(cb,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[cb]._translationText = text
 		dgsSetData(cb,"text",text)

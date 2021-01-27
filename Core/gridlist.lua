@@ -123,7 +123,7 @@ function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTe
 		defaultSortFunctions = {"greaterUpper","greaterLower"},
 	}
 	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
-	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or resource])
 	dgsElementData[gridlist].configNextFrame = false
 	calculateGuiPositionSize(gridlist,__x,__y,relative,__w,__h,relative,true)
 	local aSize = dgsElementData[gridlist].absSize

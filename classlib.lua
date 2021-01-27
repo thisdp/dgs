@@ -278,9 +278,9 @@ class {
 		HSVToRGB = dgsOOP.genOOPFncNonObj("dgsHSVToRGB"),
 		HSVToHSL = dgsOOP.genOOPFncNonObj("dgsHSVToHSL"),
 		HSLToHSV = dgsOOP.genOOPFncNonObj("dgsHSLToHSV"),
+		dgs3DImage = function(...) return dgsOOP.dgs3DImage(dgsRootInstance,...) end,
 		dgs3DInterface = function(...) return dgsOOP.dgs3DInterface(dgsRootInstance,...) end,
 		dgs3DText = function(...) return dgsOOP.dgs3DText(dgsRootInstance,...) end,
-		dgsWindow = function(...) return dgsOOP.dgsWindow(dgsRootInstance,...) end,
 		dgsBrowser = function(...) return dgsOOP.dgsBrowser(dgsRootInstance,...) end,
 		dgsButton = function(...) return dgsOOP.dgsButton(dgsRootInstance,...) end,
 		dgsCheckBox = function(...) return dgsOOP.dgsCheckBox(dgsRootInstance,...) end,
@@ -298,6 +298,7 @@ class {
 		dgsScrollPane = function(...) return dgsOOP.dgsScrollPane(dgsRootInstance,...) end,
 		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(dgsRootInstance,...) end,
 		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(dgsRootInstance,...) end,
+		dgsWindow = function(...) return dgsOOP.dgsWindow(dgsRootInstance,...) end,
 		dgsGetInstance = function(dgsElement,...)
 			local typ = type(dgsElement)
 			if typ ~= "table" and typ ~= "userdata" then return dgsElement end
@@ -353,6 +354,7 @@ class {
 			end
 			return true
 		end,
+		dgs3DImage = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DImage",...)) end,
 		dgs3DInterface = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)) end,
 		dgs3DText = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DText",...)) end,
 
@@ -1138,6 +1140,32 @@ class {
 		getAttachedOffsets = dgsOOP.genOOPFnc("dgs3DTextGetAttachedOffsets"),
 		setPosition = dgsOOP.genOOPFnc("dgs3DTextSetPosition",true),
 		getPosition = dgsOOP.genOOPFnc("dgs3DTextGetPosition"),
+	};
+}
+
+class {
+	extends = "dgs3D";
+	type = "dgs3DImage";
+	dgsType="dgs-dx3dimage";
+	preInstantiate = function(parent,...)
+		return call(dgsOOP.dgsRes,"dgsCreate3DImage",...)
+	end;
+	public = {
+		setSize = dgsOOP.genOOPFnc("dgs3DImageGetSize"),
+		getSize = dgsOOP.genOOPFnc("dgs3DImageSetSize",true),
+		setImage = dgsOOP.genOOPFnc("dgs3DImageGetImage"),
+		getImage = dgsOOP.genOOPFnc("dgs3DImageSetImage",true),
+		getDimension = dgsOOP.genOOPFnc("dgs3DImageGetDimension"),
+		setDimension = dgsOOP.genOOPFnc("dgs3DImageSetDimension",true),
+		getInterior = dgsOOP.genOOPFnc("dgs3DImageGetInterior"),
+		setInterior = dgsOOP.genOOPFnc("dgs3DImageSetInterior",true),
+		attachToElement = dgsOOP.genOOPFnc("dgs3DImageAttachToElement",true),
+		detachFromElement = dgsOOP.genOOPFnc("dgs3DImageDetachFromElement",true),
+		isAttached = dgsOOP.genOOPFnc("dgs3DImageIsAttached"),
+		setAttachedOffsets = dgsOOP.genOOPFnc("dgs3DImageSetAttachedOffsets",true),
+		getAttachedOffsets = dgsOOP.genOOPFnc("dgs3DImageGetAttachedOffsets"),
+		setPosition = dgsOOP.genOOPFnc("dgs3DImageSetPosition",true),
+		getPosition = dgsOOP.genOOPFnc("dgs3DImageGetPosition"),
 	};
 }
 --------------------DGS Built-in Plugins
