@@ -192,8 +192,8 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDa
 						distance = 50
 					end
 					local antiDistance = 1/distance
-					local w = imageSizeX*imageSizeX/distance*50
-					local h = imageSizeY*imageSizeY/distance*50
+					local w = imageSizeX/distance*50
+					local h = imageSizeY/distance*50
 					local color = applyColorAlpha(eleData.color,parentAlpha*fadeMulti)
 					local x,y=x-w*0.5,y-h*0.5
 					if image then
