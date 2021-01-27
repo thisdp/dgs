@@ -1624,10 +1624,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			end
 			triggerEvent("onDgsMouseMultiClick",guiele,button,state,MouseX or x,MouseY or y,multiClick[button][state][1])
 			multiClick[button][state][3] = setTimer(function(button,state)
-				multiClick[button][state][1] = {0,false,false}
+				multiClick[button][state] = {0,false,false}
 			end,multiClick.Interval,1,button,state)
 		else
-			multiClick[button][state][1] = {0,false,false}
+			multiClick[button][state] = {0,false,false}
 		end
 		
 		if not isElement(guiele) then return end
