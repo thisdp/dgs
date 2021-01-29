@@ -4,11 +4,6 @@ function createFullDemo()
 	--print("Load String",DGSOOPFnc,err)
 	DGSOOPFnc()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
-		:on("dgsMouseClick",function(button,state)
-			if button == "left" and state == "up" then
-				source:destroy()
-			end
-		end)
 	local scb = window
 		:dgsScrollBar(320,50,260,20,true,false)
 		:setAlpha(0.5)
