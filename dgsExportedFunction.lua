@@ -221,7 +221,6 @@ function dgsG2DLoadHooker()
 		guiSetInputEnabled = dgsSetInputEnabled
 		guiSetInputMode = dgsSetInputMode
 		guiSetPosition = dgsSetPosition
-		guiSetProperty = dgsSetProperty
 		guiSetSize = dgsSetSize
 		guiSetText = dgsSetText
 		guiSetVisible = dgsSetVisible
@@ -425,6 +424,33 @@ function dgsG2DLoadHooker()
         }
         guiSetFont = function(gl,font)
             return dgsSetFont(gl,fontReplace[font] or font)
+		end
+
+		guiSetProperty = function(gl,prop,v)
+			local eleType = getElementType(gl)
+			if prop == "NormalTextColour" or prop == "HoverTextColour" or prop == "PushedTextColour" then
+				local a,r,g,b = getColorFromString("#"..v)
+				local ct = dgsGetProperty(gl,"textColor")
+				if prop == "NormalTextColour" and type (ct) ~= "table" then
+					return dgsSetProperty(gl,"textColor",tocolor(r,g,b,a))
+				else
+					if type(ct) ~= "table" then
+						ct = {ct}
+					end
+					ct[prop == "NormalTextColour" and 1 or prop == "HoverTextColour" and 2 or 3] = tocolor(r,g,b,a)
+					return dgsSetProperty(gl,"textColor",ct)
+				end
+			elseif prop == "Disabled" then
+				return dgsSetProperty(gl,"enabled",not v:lower() == "true")
+			elseif prop == "Visible" then
+				return dgsSetVisible(gl,v:lower() == "true")
+			elseif prop == "ReadOnly" then
+				return dgsSetProperty(gl,"readOnly",v:lower() == "true")
+			elseif prop == "Alpha" or prop == "Font" or prop == "Text" then
+				return dgsSetProperty(gl,prop:lower(),v)
+			else
+				return dgsSetProperty(gl,prop,v)
+			end
 		end
 
 		addEvent("onDgsEditAccepted-C",true)
