@@ -234,12 +234,12 @@ function dgsG2DLoadHooker()
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
 		guiComboBoxGetItemText = dgsComboBoxGetItemText
-		guiComboBoxGetSelected = dgsComboBoxGetSelected
+		guiComboBoxGetSelected = dgsComboBoxGetSelectedItem
 		guiComboBoxIsOpen = dgsComboBoxGetState
 		guiComboBoxRemoveItem = dgsComboBoxRemoveItem
 		guiComboBoxSetItemText = dgsComboBoxSetItemText
 		guiComboBoxSetOpen = dgsComboBoxSetState
-		guiComboBoxSetSelected = dgsComboBoxSetSelected
+		guiComboBoxSetSelected = dgsComboBoxSetSelectedItem
 		guiCreateEdit = dgsCreateEdit
 		guiEditGetCaretIndex = dgsEditGetCaretPosition
 		guiEditGetMaxLength = dgsEditGetMaxLength
