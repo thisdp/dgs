@@ -21,8 +21,8 @@ function createFullDemo()
 	gridlist:setProperty("rowTextSize",{1.2,1.2})
 	gridlist:setProperty("rowHeight",20)
 	gridlist:setProperty("clip",false)
-	gridlist:addColumn("Column 1",0.8,true)
-	gridlist:addColumn("Column 2",0.8,true)
+	gridlist:addColumn("Column 1",0.8,_,"center")
+	gridlist:addColumn("Column 2",0.8,_,"center")
 	gridlist:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
 	gridlist:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
 	for i=1,100 do
@@ -232,7 +232,6 @@ function _3DInterfaceTest()
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
 	edit1 = dgsCreateMemo(0,0,1,1,"123",true,material)
 end
-
 
 function _3DInterfaceAttachTest()
 	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
