@@ -1139,12 +1139,12 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = math.lerp(0.01,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = math.lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0
 					end
-					dgsSelectorSetSelectedItem(selector,math.floor(math.restrict(currentItem-offsetItem,1,itemCount)))
+					dgsSelectorSetSelectedItem(selector,math.ceil(math.restrict(currentItem-offsetItem,1,itemCount)))
 				end
 			elseif MouseData.selectorEnterData == 3 then
 				local itemData = dgsElementData[selector].itemData
@@ -1153,7 +1153,7 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = math.lerp(0.01,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = math.lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0

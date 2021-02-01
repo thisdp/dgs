@@ -294,6 +294,7 @@ class {
 		dgsMemo = function(...) return dgsOOP.dgsMemo(dgsRootInstance,...) end,
 		dgsProgressBar = function(...) return dgsOOP.dgsProgressBar(dgsRootInstance,...) end,
 		dgsRadioButton = function(...) return dgsOOP.dgsRadioButton(dgsRootInstance,...) end,
+		dgsSelector = function(...) return dgsOOP.dgsSelector(dgsRootInstance,...) end,
 		dgsScrollBar = function(...) return dgsOOP.dgsScrollBar(dgsRootInstance,...) end,
 		dgsScrollPane = function(...) return dgsOOP.dgsScrollPane(dgsRootInstance,...) end,
 		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(dgsRootInstance,...) end,
@@ -495,6 +496,7 @@ class {
 		dgsScrollBar = function(...) return dgsOOP.dgsScrollBar(...) end,
 		dgsScrollPane = function(...) return dgsOOP.dgsScrollPane(...) end,
 		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(...) end,
+		dgsSelector = function(...) return dgsOOP.dgsSelector(...) end,
 		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(...) end,
 	};
 	default = {
