@@ -612,7 +612,7 @@ function dgsGridListGetColumnTextSize(gridlist,c)
 	return cData[c][7],cData[c][8]
 end
 
-function dgsGridListSetColumnTextSize(gridlist,column,sizeX,sizeY)
+function dgsGridListSetColumnTextSize(gridlist,c,sizeX,sizeY)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetColumnTextSize",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData = eleData.columnData
@@ -623,8 +623,8 @@ function dgsGridListSetColumnTextSize(gridlist,column,sizeX,sizeY)
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnTextSize",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
 	local c = c-c%1
 	if not (type(sizeX) == "number") then error(dgsGenAsrt(sizeX,"dgsGridListSetColumnTextSize",3,"number")) end
-	columnData[column][7] = sizeX
-	columnData[column][8] = sizeY or sizeX
+	cData[c][7] = sizeX
+	cData[c][8] = sizeY or sizeX
 	return true
 end
 
@@ -635,17 +635,17 @@ function dgsGridListSetColumnRelative(gridlist,relative,transformColumn)
 	local transformColumn = transformColumn == false and true or false
 	dgsSetData(gridlist,"columnRelative",relative)
 	if transformColumn then
-		local columnData = dgsElementData[gridlist].columnData
+		local cData = dgsElementData[gridlist].columnData
 		local w,h = dgsGetSize(v,false)
 		if relative then
-			for k,v in ipairs(columnData) do
-				columnData[k][2] = columnData[k][2]/w
-				columnData[k][3] = columnData[k][3]/w
+			for k,v in ipairs(cData) do
+				cData[k][2] = cData[k][2]/w
+				cData[k][3] = cData[k][3]/w
 			end
 		else
-			for k,v in ipairs(columnData) do
-				columnData[k][2] = columnData[k][2]*w
-				columnData[k][3] = columnData[k][3]*w
+			for k,v in ipairs(cData) do
+				cData[k][2] = cData[k][2]*w
+				cData[k][3] = cData[k][3]*w
 			end
 		end
 	end
@@ -1201,7 +1201,7 @@ function dgsGridListSetItemData(gridlist,r,c,data,...)
 	return false
 end
 
-function dgsGridListGetItemData(gridlist,r,column,key)
+function dgsGridListGetItemData(gridlist,r,c,key)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetItemData",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData,rData = eleData.columnData,eleData.rowData
@@ -1675,18 +1675,18 @@ function dgsGridListSelectItem(gridlist,r,c,state)
 			end
 		elseif selectionMode == 2 then
 			selectedItem[1] = selectedItem[1] or {}
-			selectedItem[1][column] = state or nil
+			selectedItem[1][c] = state or nil
 			if not next(selectedItem[1]) then
 				selectedItem[1] = nil
 			end
 		elseif selectionMode == 3 then
 			selectedItem[r] = selectedItem[r] or {}
-			selectedItem[r][column] = state or nil
+			selectedItem[r][c] = state or nil
 			if not next(selectedItem[r]) then
 				selectedItem[r] = nil
 			end
 		end
-		triggerEvent("onDgsGridListSelect",gridlist,r,column)
+		triggerEvent("onDgsGridListSelect",gridlist,r,c)
 		eleData.rowSelect = selectedItem
 		return true
 	end
