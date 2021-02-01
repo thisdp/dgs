@@ -1420,7 +1420,7 @@ function dgsGridListRemoveItemImage(gridlist,r,c)
 	return false
 end
 
-function dgsGridListGetItemImage(gridlist,row,column)
+function dgsGridListGetItemImage(gridlist,r,c)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetItemImage",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData,rData = eleData.columnData,eleData.rowData
@@ -1437,7 +1437,7 @@ function dgsGridListGetItemImage(gridlist,row,column)
 	return false
 end
 
-function dgsGridListSetItemText(gridlist,row,column,text,isSection)
+function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetItemText",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData,rData = eleData.columnData,eleData.rowData
