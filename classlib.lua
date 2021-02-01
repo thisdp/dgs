@@ -355,10 +355,25 @@ class {
 			end
 			return true
 		end,
-		dgs3DImage = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DImage",...)) end,
-		dgs3DInterface = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)) end,
-		dgs3DText = function(...) return dgsGetInstance(call(dgsOOP.dgsRes,"dgsCreate3DText",...)) end,
-
+		dgsBrowser = function(...) return dgsOOP.dgsBrowser(...) end,
+		dgsButton = function(...) return dgsOOP.dgsButton(...) end,
+		dgsCheckBox = function(...) return dgsOOP.dgsCheckBox(...) end,
+		dgsComboBox = function(...) return dgsOOP.dgsComboBox(...) end,
+		dgsCustomRenderer = function(...) return dgsOOP.dgsCustomRenderer(...) end,
+		dgsDetectArea = function(...) return dgsOOP.dgsDetectArea(...) end,
+		dgsEdit = function(...) return dgsOOP.dgsEdit(...) end,
+		dgsGridList = function(...) return dgsOOP.dgsGridList(...) end,
+		dgsImage = function(...) return dgsOOP.dgsImage(...) end,
+		dgsLabel = function(...) return dgsOOP.dgsLabel(...) end,
+		dgsMemo = function(...) return dgsOOP.dgsMemo(...) end,
+		dgsProgressBar = function(...) return dgsOOP.dgsProgressBar(...) end,
+		dgsRadioButton = function(...) return dgsOOP.dgsRadioButton(...) end,
+		dgsSelector = function(...) return dgsOOP.dgsSelector(...) end,
+		dgsScrollBar = function(...) return dgsOOP.dgsScrollBar(...) end,
+		dgsScrollPane = function(...) return dgsOOP.dgsScrollPane(...) end,
+		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(...) end,
+		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(...) end,
+		dgsWindow = function(...) return dgsOOP.dgsWindow(...) end,
 	};
 }
 
@@ -479,25 +494,6 @@ class {
 		attach = dgsOOP.genOOPFnc("dgsAttachElements",true),
 		detach = dgsOOP.genOOPFnc("dgsDetachElements",true),
 		isAttached = dgsOOP.genOOPFnc("dgsElementIsAttached"),
-
-		dgsBrowser = function(...) return dgsOOP.dgsBrowser(...) end,
-		dgsButton = function(...) return dgsOOP.dgsButton(...) end,
-		dgsCheckBox = function(...) return dgsOOP.dgsCheckBox(...) end,
-		dgsComboBox = function(...) return dgsOOP.dgsComboBox(...) end,
-		dgsCustomRenderer = function(...) return dgsOOP.dgsCustomRenderer(...) end,
-		dgsDetectArea = function(...) return dgsOOP.dgsDetectArea(...) end,
-		dgsEdit = function(...) return dgsOOP.dgsEdit(...) end,
-		dgsGridList = function(...) return dgsOOP.dgsGridList(...) end,
-		dgsImage = function(...) return dgsOOP.dgsImage(...) end,
-		dgsLabel = function(...) return dgsOOP.dgsLabel(...) end,
-		dgsMemo = function(...) return dgsOOP.dgsMemo(...) end,
-		dgsProgressBar = function(...) return dgsOOP.dgsProgressBar(...) end,
-		dgsRadioButton = function(...) return dgsOOP.dgsRadioButton(...) end,
-		dgsScrollBar = function(...) return dgsOOP.dgsScrollBar(...) end,
-		dgsScrollPane = function(...) return dgsOOP.dgsScrollPane(...) end,
-		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(...) end,
-		dgsSelector = function(...) return dgsOOP.dgsSelector(...) end,
-		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(...) end,
 	};
 	default = {
 
@@ -1090,7 +1086,39 @@ class {
 				end
 			end
 			return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,key,value) and self or false
-		end
+		end,
+		getChild = dgsOOP.genOOPFnc("dgsGetChild"),
+		getChildren = dgsOOP.genOOPFnc("dgsGetChildren"),
+		getType = dgsOOP.genOOPFnc("dgsGetType"),
+		getProperty = dgsOOP.genOOPFnc("dgsGetProperty"),
+		setProperty = dgsOOP.genOOPFnc("dgsSetProperty",true),
+		getProperties = function(self,...) return call(dgsOOP.dgsRes,"dgsGetProperties",self.dgsElement,...) end,
+		setProperties = dgsOOP.genOOPFnc("dgsSetProperties",true),
+		getVisible = dgsOOP.genOOPFnc("dgsGetVisible"),
+		setVisible = dgsOOP.genOOPFnc("dgsSetVisible",true),
+		getEnabled = dgsOOP.genOOPFnc("dgsGetEnabled"),
+		setEnabled = dgsOOP.genOOPFnc("dgsSetEnabled",true),
+		blur = dgsOOP.genOOPFnc("dgsBlur",true),
+		focus = dgsOOP.genOOPFnc("dgsFocus",true),
+		getAlpha = dgsOOP.genOOPFnc("dgsGetAlpha"),
+		setAlpha = dgsOOP.genOOPFnc("dgsSetAlpha",true),
+		bringToFront = dgsOOP.genOOPFnc("dgsBringToFront",true),
+		moveToBack = dgsOOP.genOOPFnc("dgsMoveToBack",true),
+		simulateClick = dgsOOP.genOOPFnc("dgsSimulateClick",true),
+		animTo = dgsOOP.genOOPFnc("dgsAnimTo",true),
+		isAniming = dgsOOP.genOOPFnc("dgsIsAniming"),
+		stopAniming = dgsOOP.genOOPFnc("dgsStopAniming",true),
+		alphaTo = dgsOOP.genOOPFnc("dgsAlphaTo",true),
+		isAlphaing = dgsOOP.genOOPFnc("dgsIsAlphaing"),
+		stopAlphaing = dgsOOP.genOOPFnc("dgsStopAlphaing",true),
+		getPostGUI = dgsOOP.genOOPFnc("dgsGetPostGUI"),
+		setPostGUI = dgsOOP.genOOPFnc("dgsSetPostGUI",true),
+		destroy = function(self) return destroyElement(self.dgsElement) end;
+		isElement = dgsOOP.genOOPFnc("isElement",true);
+		getElement = function(self) return self.dgsElement end,
+		attachToTranslation = dgsOOP.genOOPFnc("dgsAttachToTranslation",true),
+		detachFromTranslation = dgsOOP.genOOPFnc("dgsDetachFromTranslation",true),
+		getTranslationName = dgsOOP.genOOPFnc("dgsGetTranslationName"),
 	};
 }
 
@@ -1143,6 +1171,8 @@ class {
 		getAttachedOffsets = dgsOOP.genOOPFnc("dgs3DTextGetAttachedOffsets"),
 		setPosition = dgsOOP.genOOPFnc("dgs3DTextSetPosition",true),
 		getPosition = dgsOOP.genOOPFnc("dgs3DTextGetPosition"),
+		getText = dgsOOP.genOOPFnc("dgsGetText"),
+		setText = dgsOOP.genOOPFnc("dgsSetText",true),
 	};
 }
 
