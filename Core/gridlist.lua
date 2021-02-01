@@ -1118,7 +1118,7 @@ function dgsGridListSetRowBackGroundImage(gridlist,r,nImg,sImg,cImg)
 	return true
 end
 
-function dgsGridListSetRowAsSection(gridlist,row,enabled,enableMouseClickAndSelect)
+function dgsGridListSetRowAsSection(gridlist,r,enabled,enableMouseClickAndSelect)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetRowAsSection",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local rData = eleData.rowData
