@@ -187,6 +187,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 		else
 			local offColor = applyColorAlpha(color,1-animProgress)
 			local onColor = applyColorAlpha(color,animProgress)
+			
 			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
 			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
 		end
@@ -209,6 +210,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			colorOff = applyColorAlpha(colorOff,parentAlpha)
 		end
+		
 		local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,cursorX-x+cursorWidth/2,h,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(x,y,cursorX-x+cursorWidth/2,h,colorOff,isPostGUI)
 		local _empty = imageOn[colorImgBgID] and dxDrawImage(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,colorOn,isPostGUI)
 	end

@@ -520,15 +520,17 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 			dgsCanvasRender(image)
 		elseif pluginType == "dgs-dxblurbox" then
 			__dxDrawImageSection(posX,posY,width,height,posX*blurboxFactor,posY*blurboxFactor,width*blurboxFactor,height*blurboxFactor,image,rotation,rotationX,rotationY,color,false)
+		else
+			local blendMode
+			if isInRndTgt and dgsBasicType == "shader" then
+				blendMode = dxGetBlendMode()
+				dxSetBlendMode("blend")
+			end
+			__dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+			if blendMode then dxSetBlendMode(blendMode) end
 		end
-		local blendMode
-		if isInRndTgt and dgsBasicType == "shader" then
-			blendMode = dxGetBlendMode()
-			dxSetBlendMode("blend")
-		end
-		__dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
-		if blendMode then dxSetBlendMode(blendMode) end
 	end
+	return true
 end
 
 function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
