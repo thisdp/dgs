@@ -567,7 +567,6 @@ function dgsSetData(dgsEle,key,value,nocheck)
 end
 
 compatibility = {}
-
 function checkCompatibility(dgsEle,key)
 	local eleTyp = dgsGetType(dgsEle)
 	if compatibility[eleTyp] then

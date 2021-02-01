@@ -313,15 +313,15 @@ function dgsSetRoundUpPoints(points)
 end
 --------------------------------Built-in Utility
 HorizontalAlign = {
-	left = true,
-	center = true,
-	right = true,
+	left = "left",
+	center = "center",
+	right = "right",
 }
 
 VerticalAlign = {
-	top = true,
-	center = true,
-	bottom = true,
+	top = "top",
+	center = "center",
+	bottom = "bottom",
 }
 --------------------------------Color Utility
 function fromcolor(int,useMath,relative)
@@ -494,6 +494,18 @@ function HSL2HSV(H,S,L)
 	local HSV_V = L+tmp
 	local HSV_S = L>0 and 2*tmp/HSV_V or S
 	return H*360,HSV_S*100,HSV_V*100
+end
+-----------------Assert Utility
+--dgsGenerateAssertString
+function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends)
+	local reqValue = reqValueStr and "("..reqValueStr..")" or ""
+	local appendInfo = appends and " ("..appends..")" or ""
+	local inspectV = inspect(x)
+	if #inspectV >= 24 then
+		inspectV = inspectV:sub(1,24).."..."
+	end
+	local str = "\nBad Argument @'"..funcName.."'"..appendInfo.." excepted "..reqType..reqValue.." at argument "..argx..", got "..dgsGetType(x).."("..inspectV..")"
+	return str
 end
 --------------------------------Dx Utility
 function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)

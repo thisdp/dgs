@@ -682,6 +682,7 @@ class {
 		getScrollBar = dgsOOP.genOOPFnc("dgsGridListGetScrollBar"),
 		setScrollPosition = dgsOOP.genOOPFnc("dgsGridListSetScrollPosition",true),
 		getScrollPosition = dgsOOP.genOOPFnc("dgsGridListGetScrollPosition"),
+		scollTo = dgsOOP.genOOPFnc("dgsGridListScrollTo",true),
 		setHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsGridListSetHorizontalScrollPosition",true),
 		getHorizontalScrollPosition = dgsOOP.genOOPFnc("dgsGridListGetHorizontalScrollPosition"),
 		setVerticalScrollPosition = dgsOOP.genOOPFnc("dgsGridListSetVerticalScrollPosition",true),
