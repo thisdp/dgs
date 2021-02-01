@@ -196,7 +196,7 @@ end
 
 function dgsGridListSetNavigationEnabled(gridlist)
 	assert(dgsGetType(gridlist) == "dgs-dxgridlist","Bad argument @dgsGridListSetNavigationEnabled at argument 1, expect dgs-dxgridlist got "..dgsGetType(gridlist))
-	return dgsSetData(grid,"enableNavigation",state)
+	return dgsSetData(gridlist,"enableNavigation",state)
 end
 -----------------------------Sort
 sortFunctions.greaterUpper = function(...)
@@ -633,12 +633,7 @@ function dgsGridListGetColumnAllWidth(gridlist,pos,relative,mode)
 			end
 		end
 	elseif pos == 0 then
-		local dataLength = 0
-		if relative then
-			return rlt and dataLength or dataLength/columnSize
-		else
-			return rlt and dataLength*columnSize or dataLength
-		end
+		return 0
 	end
 	return false
 end
@@ -1189,8 +1184,8 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local rowMoveOffset = rowMoveOffset or eleData.rowMoveOffsetTemp
 	local rowHeight = eleData.rowHeight
 	local rowHeightLeadingTemp = rowHeight + eleData.leading
-	local scrollbars = eleData.scrollbars
-	local scbThickH = dgsElementData[ scrollbars[2] ].visible and eleData.scrollBarThick or 0
+	local scrollbar = eleData.scrollbars[2]
+	local scbThickH = dgsElementData[scrollbar].visible and eleData.scrollBarThick or 0
 	local h = eleData.absSize[2]
 	local columnHeight = eleData.columnHeight
 	local rowCount = #eleData.rowData
@@ -1210,31 +1205,54 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 end
 
 function dgsGridListScrollTo(gridlist,row,column,smoothMove)
+	if dgsElementData[gridlist].configNextFrame then configGridList(gridlist) end
 	if row then
-		local rowData = dgsElementData[gridlist].rowData
+		local eleData = dgsElementData[gridlist]
+		local rowData = eleData.rowData
 		local rowCounts = #rowData
 		if row >=1 and row <= #rowData then
-			local rowHeight = dgsElementData[gridlist].rowHeight
-			local leading = dgsElementData[gridlist].leading
+			local scb = eleData.scrollbars[2]
+			local rowHeight = eleData.rowHeight
+			local leading = eleData.leading
 			local rowHeightLeadingTemp = rowHeight+leading
-			local fromTo = dgsElementData[gridlist].FromTo
-			local scrollBars = dgsElementData[gridlist].scrollbars
-			local sy = dgsElementData[gridlist].absSize[2]
-			local scbThick = dgsElementData[gridlist].scrollBarThick
-			local columnHeight = dgsElementData[gridlist].columnHeight
-			local scbThickH = dgsElementData[scrollBars[2]].visible and scbThick or 0
+			local sy = eleData.absSize[2]
+			local columnHeight = eleData.columnHeight
+			local scbThickH = dgsElementData[scb].visible and eleData.scrollBarThick or 0
 			local gridListRange = sy-scbThickH-columnHeight
-			if row <= fromTo[1] then
-				local scrollPos = ((row-1)*rowHeightLeadingTemp)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
+			local rowMoveOffset = eleData.rowMoveOffset
+			local rowBeforeHeight = (row-1)*rowHeightLeadingTemp
+			local rowFullHeight = rowBeforeHeight+rowHeight
+			if rowBeforeHeight+rowMoveOffset < 0 then
+				local scrollPos = rowBeforeHeight/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
 				dgsGridListSetScrollPosition(gridlist,scrollPos)
-			elseif row > fromTo[2] then
-				local scrollPos = ((row-1)*rowHeightLeadingTemp+rowHeight-gridListRange)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
+			elseif rowFullHeight+rowMoveOffset > gridListRange then
+				local scrollPos = (rowFullHeight-gridListRange)/(rowCounts*rowHeightLeadingTemp-gridListRange)*100
 				dgsGridListSetScrollPosition(gridlist,scrollPos)
 			end
 		end
 	end
 	if column then
-	--todo
+		local eleData = dgsElementData[gridlist]
+		local columnData = eleData.columnData
+		local columnCounts = #columnData
+		if column >=1 and column <= #columnData then
+			local scb = eleData.scrollbars[1]
+			local sx = eleData.absSize[1]
+			local columnOffset = eleData.columnOffset
+			local scbThickV = dgsElementData[scb].visible and eleData.scrollBarThick or 0
+			local gridListRange = sx-scbThickV
+			local columnMoveOffset = eleData.columnMoveOffset
+			local columnFullWidth = dgsGridListGetColumnAllWidth(gridlist,column,false)
+			local columnBeforeWidth = columnFullWidth-dgsGridListGetColumnWidth(gridlist,column,false)
+			local allWidth = dgsGridListGetColumnAllWidth(gridlist,#columnData)
+			if columnBeforeWidth+columnMoveOffset+columnOffset < 0 then
+				local scrollPos = columnBeforeWidth/(allWidth-gridListRange)*100
+				dgsGridListSetScrollPosition(gridlist,_,scrollPos)
+			elseif columnFullWidth+columnMoveOffset+columnOffset > sx then
+				local scrollPos = (columnFullWidth-gridListRange)/(allWidth-gridListRange)*100
+				dgsGridListSetScrollPosition(gridlist,_,scrollPos)
+			end
+		end
 	end
 end
 
