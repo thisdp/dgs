@@ -1457,7 +1457,7 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 		end
 		rData[r][c][1] = tostring(text)
 		if isSection then
-			dgsGridListSetRowAsSection(gridlist,row,true)
+			dgsGridListSetRowAsSection(gridlist,r,true)
 		end
 		return true
 	end
