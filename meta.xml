@@ -518,6 +518,8 @@
 	<export function="dgsGridListSetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnFont" type="client" />
 	<export function="dgsGridListGetColumnFont" type="client" />
+	<export function="dgsGridListSetColumnAlignment" type="client" />
+	<export function="dgsGridListGetColumnAlignment" type="client" />
 	<export function="dgsGridListGetColumnTextSize" type="client" />
 	<export function="dgsGridListSetColumnTextSize" type="client" />
 	<export function="dgsGridListInsertRowAfter" type="client" />
@@ -530,6 +532,8 @@
 	<export function="dgsGridListGetRowCount" type="client" />
 	<export function="dgsGridListSetItemText" type="client" />
 	<export function="dgsGridListGetItemText" type="client" />
+	<export function="dgsGridListSetItemAlignment" type="client" />
+	<export function="dgsGridListGetItemAlignment" type="client" />
 	<export function="dgsGridListGetSelectedItem" type="client" />
 	<export function="dgsGridListSetSelectedItem" type="client" />
 	<export function="dgsGridListGetSelectedItems" type="client" />
