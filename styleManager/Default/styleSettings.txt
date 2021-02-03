@@ -420,7 +420,12 @@
 -----------------------------------------------------------------------------------DGS Tab Panel
 	tabpanel = {
 	---Color
-		bgColor = tocolor(54,57,64,255), --Background color of tab panel
+		bgColor = tocolor(54,57,64,255),	--Background color of tab panel
+		textColor = {						--If tab doesn't have color, use this one.
+			tocolor(255,255,255,255),	--Normal
+			tocolor(255,255,255,255),	--Hovered
+			tocolor(255,255,255,255),	--Selected
+		},
 	---Image
 		bgImage = {},
 	---Values
@@ -434,12 +439,12 @@
 -----------------------------------------------------------------------------------DGS Tab
 	tab = {
 	---Color
-		textColor = tocolor(255,255,255,255),	--Text color
+		textColor = nil,		--Use Tab Panel's
 		bgColor = nil,			--Background color of tab panel when selected(This will overwrite the background color of tab panel when selected). nil for using tab panel's bgColor
 		tabColor = {	--Background color of tab
 			tocolor(50,50,50,180),	--Normal
-			tocolor(80,80,80,190),	--Hover
-			tocolor(54,57,64,255),	--Select
+			tocolor(80,80,80,190),	--Hovered
+			tocolor(54,57,64,255),	--Selected
 		},
 	---Image
 		bgImage = {},

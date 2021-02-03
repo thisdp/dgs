@@ -61,6 +61,8 @@ function dgsCreateTabPanel(x,y,w,h,relative,parent,tabHeight,bgImage,bgColor)
 		scrollSpeed = style.scrollSpeed;
 		showPos = 0;
 		tabLengthAll = 0;
+		colorcoded = false;
+		wordbreak = false;
 	}
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
 	local renderTarget,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
@@ -84,6 +86,7 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 	dgsSetParent(tab,tabpanel,true,true)
 	local style = styleSettings.tab
 	local eleData = dgsElementData[tabpanel]
+	local pTextColor = eleData.textColor
 	local w = eleData.absSize[1]
 	local tabs = eleData.tabs
 	local id = #tabs+1
@@ -109,7 +112,7 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 		font = style.font or systemFont,
 		tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1),
 		width = wid,
-		textColor = tonumber(textColor) or style.textColor,
+		textColor = tonumber(textColor) or style.textColor or pTextColor,
 		textSize = {textSizeX,textSizeY},
 		bgColor = tonumber(bgColor) or style.bgColor or eleData.bgColor,
 		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage) or eleData.bgImage,
@@ -120,6 +123,8 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 		iconImage = nil,
 		iconOffset = 5,
 		iconSize = {1,1,true}; -- Text's font heigh,
+		colorcoded = nil;
+		wordbreak = nil;
 	}
 	if eleData.selected == -1 then eleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or resource])
@@ -269,6 +274,8 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local tabs = eleData.tabs
 	local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
 	local font = eleData.font or systemFont
+	local colorcoded = eleData.colorcoded
+	local wordbreak = eleData.wordbreak
 	if selected == -1 then
 		dxDrawRectangle(x,y+height,w,h-height,eleData.bgColor,isPostGUI)
 	else
@@ -284,6 +291,9 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 				local t = tabs[d]
 				local tabData = dgsElementData[t]
 				if tabData.visible then
+					local tWordbreak,tColorcoded = tabData.wordbreak,tabData.colorcoded
+					if tWordbreak == nil then tWordbreak = wordbreak end
+					if tColorcoded == nil then tColorcoded = colorcoded end
 					local width = tabData.width+tabPadding*2
 					local _width = 0
 					if tabs[d+1] then
@@ -319,11 +329,57 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 						else
 							dxDrawRectangle(tabsize,0,width,height,finalcolor)
 						end
-						local textSize = tabData.textSize
+						local textSizeX,textSizeY = tabData.textSize[1],tabData.textSize[2]
 						if eleData.PixelInt then
 							_tabsize,_width = tabsize-tabsize%1,mathFloor(width+tabsize)
 						end
-						dxDrawText(tabData.text,_tabsize,0,_width,height,tabTextColor[selState],textSize[1],textSize[2],tabData.font or font,"center","center",false,false,false,colorcoded,true)
+						--[[local iconImage = eleData.iconImage
+						if iconImage then
+							local iconColor = eleData.iconColor
+							iconImage = type(iconImage) == "table" and iconImage or {iconImage,iconImage,iconImage}
+							iconColor = type(iconColor) == "table" and iconColor or {iconColor,iconColor,iconColor}
+							local iconSize = eleData.iconSize
+							local fontHeight = dxGetFontHeight(textSizeY,font)
+							local fontWidth = dxGetTextWidth(text,textSizeX,font,colorcoded)
+							local iconHeight,iconWidth = iconSize[2],iconSize[1]
+							if iconSize[3] == "text" then
+								iconWidth,iconHeight = fontHeight*iconSize[1],fontHeight*iconSize[2]
+							elseif iconSize[3] == true then
+								iconWidth,iconHeight = w*iconSize[1],h*iconSize[2]
+							end
+							local posX,posY = txtoffsetsY,txtoffsetsX
+							local iconOffset = eleData.iconOffset
+							if eleData.iconDirection == "left" then
+								if alignment[1] == "left" then
+									posX = posX-iconWidth-iconOffset
+								elseif alignment[1] == "right" then
+									posX = posX+w-fontWidth-iconWidth-iconOffset
+								else
+									posX = posX+w/2-fontWidth/2-iconWidth-iconOffset
+								end
+							elseif eleData.iconDirection == "right" then
+								if alignment[1] == "left" then
+									posX = posX+fontWidth+iconOffset
+								elseif alignment[1] == "right" then
+									posX = posX+w+iconOffset
+								else
+									posX = posX+w/2+fontWidth/2+iconOffset
+								end
+							end
+							if alignment[2] == "top" then
+								posY = posY
+							elseif alignment[2] == "bottom" then
+								posY = posY+h-fontHeight
+							else
+								posY = posY+(h-iconHeight)/2
+							end
+							posX,posY = posX+x,posY+y
+							if iconImage[buttonState] then
+								dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
+							end
+						end]]
+						
+						dxDrawText(tabData.text,_tabsize,0,_width,height,tabTextColor[selState],textSizeX,textSizeY,tabData.font or font,"center","center",false,false,false,colorcoded,true)
 						if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and tabData.enabled and enabled[2] then
 							eleData.rndPreSelect = d
 							MouseData.hit = t

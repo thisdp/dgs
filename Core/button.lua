@@ -50,7 +50,7 @@ function dgsCreateButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,no
 		iconDirection = "left",
 		iconImage = nil,
 		iconOffset = 5,
-		iconSize = {1,1,true}; -- Text's font heigh,
+		iconSize = {1,1,"text"}; -- Can be false/true/"text"
 		image = {norimg, hovimg, cliimg},
 		shadow = {},
 		textColor = tonumber(textColor) or style.textColor,
@@ -129,33 +129,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
 	local alignment = eleData.alignment
-	if #text ~= 0 then
-		local clip = eleData.clip
-		local wordbreak = eleData.wordbreak
-		if buttonState == 3 then
-			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickOffset[1],txtoffsetsY+eleData.clickOffset[2]
-		end
-		local textX,textY = x+txtoffsetsX,y+txtoffsetsY
-		local shadow = eleData.shadow
-		if shadow then
-			local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
-			if shadowoffx and shadowoffy and shadowc then
-				local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-				if shadowIsOutline then
-					dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-					dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-					dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-				end
-			end
-		end
-		local textColor = eleData.textColor
-		if type(textColor) == "table" then
-			textColor = textColor[buttonState] or textColor[1]
-		end
-		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
-	end
+	
 	local iconImage = eleData.iconImage
 	if iconImage then
 		local iconColor = eleData.iconColor
@@ -164,10 +138,13 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 		local iconSize = eleData.iconSize
 		local fontHeight = dxGetFontHeight(txtSizY,font)
 		local fontWidth = dxGetTextWidth(text,txtSizX,font,colorcoded)
-		local iconHeight = iconSize[3] and fontHeight*iconSize[2] or iconSize[2]
-		local posY = txtoffsetsY
-		local iconWidth = iconSize[3] and fontHeight*iconSize[1] or iconSize[1]
-		local posX = txtoffsetsX
+		local iconHeight,iconWidth = iconSize[2],iconSize[1]
+		if iconSize[3] == "text" then
+			iconWidth,iconHeight = fontHeight*iconSize[1],fontHeight*iconSize[2]
+		elseif iconSize[3] == true then
+			iconWidth,iconHeight = w*iconSize[1],h*iconSize[2]
+		end
+		local posX,posY = txtoffsetsY,txtoffsetsX
 		local iconOffset = eleData.iconOffset
 		if eleData.iconDirection == "left" then
 			if alignment[1] == "left" then
@@ -198,5 +175,34 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleDat
 			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
 		end
 	end
+	
+	if #text ~= 0 then
+		local clip = eleData.clip
+		local wordbreak = eleData.wordbreak
+		if buttonState == 3 then
+			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickOffset[1],txtoffsetsY+eleData.clickOffset[2]
+		end
+		local textX,textY = x+txtoffsetsX,y+txtoffsetsY
+		local shadow = eleData.shadow
+		if shadow then
+			local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
+			if shadowoffx and shadowoffy and shadowc then
+				local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+				local shadowc = applyColorAlpha(shadowc,parentAlpha)
+				dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+				if shadowIsOutline then
+					dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+					dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+					dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+				end
+			end
+		end
+		local textColor = eleData.textColor
+		if type(textColor) == "table" then
+			textColor = textColor[buttonState] or textColor[1]
+		end
+		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
+	end
+	
 	return rndtgt
 end

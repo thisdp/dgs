@@ -6,11 +6,11 @@ remoteImageDefaultImages = {
 	failedTex = DGSBuiltInTex.transParent_1x1,
 }
 --[[
-	loadState:
-		0 = unloaded
-		1 = loading
-		2 = loaded
-		3 = failed
+loadState:
+	0 = unloaded
+	1 = loading
+	2 = loaded
+	3 = failed
 ]]
 function dgsCreateRemoteImage(website)
 	local remoteImage = dxCreateShader(remoteImagePlaceHolder)
@@ -97,10 +97,8 @@ end)
 --------------Shader
 remoteImagePlaceHolder = [[
 texture textureRef;
-
-technique remoteImage {
-	Pass P0 {
+technique remoteImage{
+	Pass P0{
 		Texture[0] = textureRef;
 	}
-}
-]]
+}]]
