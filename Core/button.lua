@@ -23,11 +23,10 @@ local tonumber = tonumber
 local type = type
 
 function dgsCreateButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,norimg,selimg,cliimg,norcolor,hovcolor,clicolor)
-	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
-	if not __x then assert(false,"Bad argument @dgsCreateButton at argument 1, expect number got "..type(x)) end
-	if not __y then assert(false,"Bad argument @dgsCreateButton at argument 2, expect number got "..type(y)) end
-	if not __w then assert(false,"Bad argument @dgsCreateButton at argument 3, expect number got "..type(w)) end
-	if not __h then assert(false,"Bad argument @dgsCreateButton at argument 4, expect number got "..type(h)) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateButton",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateButton",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateButton",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateButton",4,"number")) end
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
 	dgsSetParent(button,parent,true,true)
@@ -66,7 +65,7 @@ function dgsCreateButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,no
 	else
 		dgsSetData(button,"text",tostring(text))
 	end
-	calculateGuiPositionSize(button,__x,__y,relative or false,__w,__h,relative or false,true)
+	calculateGuiPositionSize(button,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",button,sourceResource)
 	return button
 end

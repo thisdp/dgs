@@ -9,7 +9,7 @@ local dgsSetData = dgsSetData
 local dgsSetParent = dgsSetParent
 local applyColorAlpha = applyColorAlpha
 local dgsTranslate = dgsTranslate
-local dgsIsDxElement = dgsIsDxElement
+local dgsIsType = dgsIsType
 local dgsAttachToTranslation = dgsAttachToTranslation
 local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
@@ -22,12 +22,11 @@ local type = type
 local tostring = tostring
 local tonumber = tonumber
 
-function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t)
-	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateRadioButton at argument 4, expect number got "..type(sy)) end
+function dgsCreateRadioButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateRadioButton",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateRadioButton",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateRadioButton",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateRadioButton",4,"number")) end
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
 	dgsSetParent(rb,parent,true,true)
@@ -55,7 +54,7 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 		color_f = {norcolor_f,hovcolor_f,clicolor_f},
 		image_t = {norimg_t,hovimg_t,cliimg_t},
 		color_t = {norcolor_t,hovcolor_t,clicolor_t},
-		rbParent = dgsIsDxElement(parent) and parent or resourceRoot,
+		rbParent = dgsIsType(parent) and parent or resourceRoot,
 		text = tostring(text),
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
@@ -73,28 +72,28 @@ function dgsCreateRadioButton(x,y,sx,sy,text,relative,parent,textColor,scalex,sc
 		dgsElementData[rb]._translationText = text
 		dgsElementData[rb].text = dgsTranslate(rb,text,sourceResource)
 	end
-	calculateGuiPositionSize(rb,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(rb,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",rb,sourceResource)
 	return rb
 end
 
 function dgsRadioButtonGetSelected(rb)
-	assert(dgsGetType(rb) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonGetSelected at argument 1, expect dgs-dxradiobutton got "..dgsGetType(rb))
+	if dgsGetType(rb) ~= "dgs-dxradiobutton" then error(dgsGenAsrt(rb,"dgsRadioButtonGetSelected",1,"dgs-dxradiobutton")) end
 	local _parent = dgsGetParent(rb)
-	local parent = dgsIsDxElement(_parent) and _parent or resourceRoot
+	local parent = dgsIsType(_parent) and _parent or resourceRoot
 	return dgsGetData(parent,"RadioButton") == rb
 end
 
 function dgsRadioButtonSetSelected(rb,state)
-	assert(dgsGetType(rb) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonSetSelected at argument 1, expect dgs-dxradiobutton got "..dgsGetType(rb))
+	if dgsGetType(rb) ~= "dgs-dxradiobutton" then error(dgsGenAsrt(rb,"dgsRadioButtonSetSelected",1,"dgs-dxradiobutton")) end
 	state = state and true or false
 	local _parent = dgsGetParent(rb)
-	local parent = dgsIsDxElement(_parent) and _parent or resourceRoot
+	local parent = dgsIsType(_parent) and _parent or resourceRoot
 	local _rb = dgsGetData(parent,"RadioButton")
 	if state then
 		if rb ~= _rb then
 			dgsSetData(parent,"RadioButton",rb)
-			if dgsIsDxElement(_rb) then
+			if dgsIsType(_rb) then
 				triggerEvent("onDgsRadioButtonChange",_rb,false)
 			end
 			triggerEvent("onDgsRadioButtonChange",rb,true)
@@ -107,30 +106,28 @@ function dgsRadioButtonSetSelected(rb,state)
 	end
 end
 
-function dgsRadioButtonSetHorizontalAlign(radiobutton,align)
-	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonSetHorizontalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
-	assert(HorizontalAlign[align],"Bad argument @dgsRadioButtonSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
-	local alignment = dgsElementData[radiobutton].alignment
-	return dgsSetData(radiobutton,"alignment",{align,alignment[2]})
+function dgsRadioButtonSetHorizontalAlign(rb,align)
+	if dgsGetType(rb) ~= "dgs-dxradiobutton" then error(dgsGenAsrt(rb,"dgsRadioButtonSetHorizontalAlign",1,"dgs-dxradiobutton")) end
+	if not HorizontalAlign[align] then error(dgsGenAsrt(align,"dgsRadioButtonSetHorizontalAlign",2,"string","left/center/right")) end
+	local alignment = dgsElementData[rb].alignment
+	return dgsSetData(rb,"alignment",{align,alignment[2]})
 end
 
-function dgsRadioButtonSetVerticalAlign(radiobutton,align)
-	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonSetVerticalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
-	assert(VerticalAlign[align],"Bad argument @dgsRadioButtonSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
-	local alignment = dgsElementData[radiobutton].alignment
-	return dgsSetData(radiobutton,"alignment",{alignment[1],align})
+function dgsRadioButtonSetVerticalAlign(rb,align)
+	if dgsGetType(rb) ~= "dgs-dxradiobutton" then error(dgsGenAsrt(rb,"dgsRadioButtonSetVerticalAlign",1,"dgs-dxradiobutton")) end
+	if not VerticalAlign[align] then error(dgsGenAsrt(align,"dgsRadioButtonSetVerticalAlign",2,"string","top/center/bottom")) end
+	local alignment = dgsElementData[rb].alignment
+	return dgsSetData(rb,"alignment",{alignment[1],align})
 end
 
-function dgsRadioButtonGetHorizontalAlign(radiobutton)
-	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonGetHorizontalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
-	local alignment = dgsElementData[radiobutton].alignment
-	return alignment[1]
+function dgsRadioButtonGetHorizontalAlign(rb)
+	if dgsGetType(rb) ~= "dgs-dxradiobutton" then error(dgsGenAsrt(rb,"dgsRadioButtonGetHorizontalAlign",1,"dgs-dxradiobutton")) end
+	return dgsElementData[rb].alignment[1]
 end
 
-function dgsRadioButtonGetVerticalAlign(radiobutton)
-	assert(dgsGetType(radiobutton) == "dgs-dxradiobutton","Bad argument @dgsRadioButtonGetVerticalAlign at argument 1, except a dgs-dxradiobutton got "..dgsGetType(radiobutton))
-	local alignment = dgsElementData[radiobutton].alignment
-	return alignment[2]
+function dgsRadioButtonGetVerticalAlign(rb)
+	if dgsGetType(rb) ~= "dgs-dxradiobutton" then error(dgsGenAsrt(rb,"dgsRadioButtonGetVerticalAlign",1,"dgs-dxradiobutton")) end
+	return dgsElementData[rb].alignment[2]
 end
 
 ----------------------------------------------------------------

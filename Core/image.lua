@@ -22,11 +22,10 @@ local tonumber = tonumber
 local type = type
 
 function dgsCreateImage(x,y,w,h,img,relative,parent,color)
-	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
-	if not __x then assert(false,"Bad argument @dgsCreateImage at argument 1, expect number got "..type(x)) end
-	if not __y then assert(false,"Bad argument @dgsCreateImage at argument 2, expect number got "..type(y)) end
-	if not __w then assert(false,"Bad argument @dgsCreateImage at argument 3, expect number got "..type(w)) end
-	if not __h then assert(false,"Bad argument @dgsCreateImage at argument 4, expect number got "..type(h)) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateImage",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateImage",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateImage",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateImage",4,"number")) end
 	local image = createElement("dgs-dximage")
 	dgsSetType(image,"dgs-dximage")
 	dgsSetParent(image,parent,true,true)
@@ -40,33 +39,33 @@ function dgsCreateImage(x,y,w,h,img,relative,parent,color)
 		rotation = 0, -- 0~360
 	}
 	dgsElementData[image].image = type(img) == "string" and dgsImageCreateTextureExternal(image,sourceResource,img) or img
-	calculateGuiPositionSize(image,__x,__y,relative or false,__w,__h,relative or false,true)
+	calculateGuiPositionSize(image,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",image,sourceResource)
 	return image
 end
 
-function dgsImageGetImage(gui)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetImage at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	return dgsElementData[gui].image
+function dgsImageGetImage(image)
+	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetImage",1,"dgs-dximage")) end
+	return dgsElementData[image].image
 end
 
-function dgsImageSetImage(gui,img)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetImage at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	local texture = dgsElementData[gui].image
+function dgsImageSetImage(image,img)
+	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageSetImage",1,"dgs-dximage")) end
+	local texture = dgsElementData[image].image
 	if isElement(texture) and dgsElementData[texture] then
-		if dgsElementData[texture].parent == gui then
+		if dgsElementData[texture].parent == image then
 			destroyElement(texture)
 		end
 	end
 	texture = img
 	if type(texture) == "string" then
-		texture,textureExists = dgsImageCreateTextureExternal(gui,sourceResource,texture)
+		texture,textureExists = dgsImageCreateTextureExternal(image,sourceResource,texture)
 		if not textureExists then return false end
 	end
-	return dgsSetData(gui,"image",texture)
+	return dgsSetData(image,"image",texture)
 end
 
-function dgsImageCreateTextureExternal(gui,res,img)
+function dgsImageCreateTextureExternal(image,res,img)
 	if res then
 		img = img:gsub("\\","/")
 		if not img:find(":") then
@@ -77,22 +76,22 @@ function dgsImageCreateTextureExternal(gui,res,img)
 	texture = dxCreateTexture(img)
 	if isElement(texture) then
 		dgsElementData[texture] = {parent=image}
-		dgsAttachToAutoDestroy(texture,gui)
+		dgsAttachToAutoDestroy(texture,image)
 		return texture,true
 	end
 	return false
 end
 
-function dgsImageSetUVSize(gui,sx,sy,relative)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetUVSize at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	return dgsSetData(gui,"UVSize",{sx,sy,relative})
+function dgsImageSetUVSize(image,sx,sy,relative)
+	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageSetUVSize",1,"dgs-dximage")) end
+	return dgsSetData(image,"UVSize",{sx,sy,relative})
 end
 
-function dgsImageGetUVSize(gui,relative)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetUVSize at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	local texture = dgsElementData[gui].image
+function dgsImageGetUVSize(image,relative)
+	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetUVSize",1,"dgs-dximage")) end
+	local texture = dgsElementData[image].image
 	if isElement(texture) and getElementType(texture) ~= "shader" then
-		local UVSize = dgsElementData[gui].UVSize or {1,1,true}
+		local UVSize = dgsElementData[image].UVSize or {1,1,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local sizeU,sizeV = UVSize[1],UVSize[2]
 		if UVSize[3] and not relative then
@@ -105,16 +104,16 @@ function dgsImageGetUVSize(gui,relative)
 	return false
 end
 
-function dgsImageSetUVPosition(gui,x,y,relative)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageSetUVPosition at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	return dgsSetData(gui,"UVPos",{x,y,relative})
+function dgsImageSetUVPosition(image,x,y,relative)
+	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageSetUVPosition",1,"dgs-dximage")) end
+	return dgsSetData(image,"UVPos",{x,y,relative})
 end
 
-function dgsImageGetUVPosition(gui,relative)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetUVPosition at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	local texture = dgsElementData[gui].image
+function dgsImageGetUVPosition(image,relative)
+	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetUVPosition",1,"dgs-dximage")) end
+	local texture = dgsElementData[image].image
 	if isElement(texture) and getElementType(texture) ~= "shader" then
-		local UVPos = dgsElementData[gui].UVPos or {0,0,true}
+		local UVPos = dgsElementData[image].UVPos or {0,0,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local posU,posV = UVPos[1],UVPos[2]
 		if UVPos[3] and not relative then
@@ -127,10 +126,10 @@ function dgsImageGetUVPosition(gui,relative)
 	return false
 end
 
-function dgsImageGetNativeSize(gui)
-	assert(dgsGetType(gui) == "dgs-dximage","Bad argument @dgsImageGetNativeSize at argument 1, expect dgs-dximage got "..dgsGetType(gui))
-	if isElement(dgsElementData[gui].image) then
-		return dxGetMaterialSize(gui)
+function dgsImageGetNativeSize(image)
+	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetNativeSize",1,"dgs-dximage")) end
+	if isElement(dgsElementData[image].image) then
+		return dxGetMaterialSize(image)
 	end
 	return false
 end

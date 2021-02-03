@@ -26,12 +26,11 @@ Selector Data Structure:
 	{text,alignment,color,colorcoded,sizex,sizey,font},
 }
 ]]
-function dgsCreateSelector(x,y,sx,sy,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor)
-	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateSelector at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateSelector at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateSelector at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateSelector at argument 4, expect number got "..type(sy)) end
+function dgsCreateSelector(x,y,w,h,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateSelector",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateSelector",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSelector",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSelector",4,"number")) end
 	local selector = createElement("dgs-dxselector")
 	dgsSetType(selector,"dgs-dxselector")
 	dgsSetParent(selector,parent,true,true)
@@ -63,13 +62,13 @@ function dgsCreateSelector(x,y,sx,sy,relative,parent,textColor,scalex,scaley,sha
 		font = style.font or systemFont,
 		selectedItem = -1,
 	}
-	calculateGuiPositionSize(selector,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(selector,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",selector,sourceResource)
 	return selector
 end
 
 function dgsSelectorAddItem(selector,text,pos)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorAddItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorAddItem",1,"dgs-dxselector")) end
 	local eleData = dgsElementData[selector]
 	local alignment = eleData.alignment
 	local itemTextColor = eleData.itemTextColor
@@ -101,8 +100,8 @@ function dgsSelectorAddItem(selector,text,pos)
 end
 
 function dgsSelectorRemoveItem(selector,item)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorRemoveItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	assert(type(item) == "number","Bad argument @dgsSelectorRemoveItem at argument 2, expect number got "..type(item))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorRemoveItem",1,"dgs-dxselector")) end
+	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorRemoveItem",2,"number")) end
 	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
 		tableRemove(itemData,item)
@@ -112,8 +111,8 @@ function dgsSelectorRemoveItem(selector,item)
 end
 
 function dgsSelectorSetSelectedItem(selector,item)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorSetSelectedItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	assert(type(item) == "number","Bad argument @dgsSelectorSetSelectedItem at argument 2, expect number got "..type(item))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetSelectedItem",1,"dgs-dxselector")) end
+	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorSetSelectedItem",2,"number")) end
 	local prev = dgsElementData[selector].selectedItem
 	dgsSetData(selector,"selectedItem",item)
 	triggerEvent("onDgsSelectorSelect",selector,item,prev)
@@ -121,13 +120,13 @@ function dgsSelectorSetSelectedItem(selector,item)
 end
 
 function dgsSelectorGetSelectedItem(selector)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorGetSelectedItem at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetSelectedItem",1,"dgs-dxselector")) end
 	return dgsElementData[selector].selectedItem
 end
 
 function dgsSelectorGetItemText(selector,item,retTransOrig)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorGetItemText at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	assert(type(item) == "number","Bad argument @dgsSelectorGetItemText at argument 2, expect number got "..type(item))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemText",1,"dgs-dxselector")) end
+	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorGetItemText",2,"number")) end
 	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
 		return retTransOrig and itemData[8] or itemData[1]
@@ -136,8 +135,8 @@ function dgsSelectorGetItemText(selector,item,retTransOrig)
 end
 
 function dgsSelectorSetItemText(selector,item,text)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorSetItemText at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	assert(type(item) == "number","Bad argument @dgsSelectorSetItemText at argument 2, expect number got "..type(item))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemText",1,"dgs-dxselector")) end
+	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorSetItemText",2,"number")) end
 	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
 		if type(text) == "table" then
@@ -152,8 +151,8 @@ function dgsSelectorSetItemText(selector,item,text)
 end
 
 function dgsSelectorSetItemData(selector,item,key,data)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorSetItemData at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	assert(type(item) == "number","Bad argument @dgsSelectorSetItemData at argument 2, expect number got "..type(item))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemData",1,"dgs-dxselector")) end
+	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorSetItemData",2,"number")) end
 	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
 		itemData[item][9] = itemData[item][9] or {}
@@ -164,8 +163,8 @@ function dgsSelectorSetItemData(selector,item,key,data)
 end
 
 function dgsSelectorGetItemData(selector,item,key)
-	assert(dgsGetType(selector) == "dgs-dxselector","Bad argument @dgsSelectorGetItemData at argument 1, expect dgs-dxselector got "..dgsGetType(selector))
-	assert(type(item) == "number","Bad argument @dgsSelectorGetItemData at argument 2, expect number got "..type(item))
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemData",1,"dgs-dxselector")) end
+	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorGetItemData",2,"number")) end
 	local itemData = dgsElementData[selector].itemData
 	if itemData[item] then
 		itemData[item][9] = itemData[item][9] or {}

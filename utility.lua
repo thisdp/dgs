@@ -26,6 +26,13 @@ fontBuiltIn = {
 	["beckett"]=true,
 }
 
+-------Built-in Blend Modes
+blendModeBuiltIn = {
+	blend = "blend",
+	add = "add",
+	modulate_add = "modulate_add",
+	overwrite = "overwrite",
+}
 -------Built-in Easing Functions
 easingBuiltIn = {
 	Linear = true,
@@ -497,14 +504,18 @@ function HSL2HSV(H,S,L)
 end
 -----------------Assert Utility
 --dgsGenerateAssertString
-function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends)
+function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends,ends)
 	local reqValue = reqValueStr and "("..reqValueStr..")" or ""
 	local appendInfo = appends and " ("..appends..")" or ""
 	local inspectV = inspect(x)
 	if #inspectV >= 24 then
 		inspectV = inspectV:sub(1,24).."..."
 	end
-	local str = "\nBad Argument @'"..funcName.."'"..appendInfo.." excepted "..reqType..reqValue.." at argument "..argx..", got "..dgsGetType(x).."("..inspectV..")"
+	local expected = reqType and " expected "..reqType..reqValue or ""
+	local got = reqType and " got "..dgsGetType(x).."("..inspectV..")" or ""
+	local ends = ends and (" "..ends) or ""
+	local argIndex = argx and (" at argument "..argx) or ""
+	local str = "\nBad Argument @'"..funcName.."'"..appendInfo..expected..argIndex..","..got..ends
 	return str
 end
 --------------------------------Dx Utility

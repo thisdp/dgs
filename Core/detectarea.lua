@@ -24,17 +24,16 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 		dgsSetData(detectarea,"debugModeAlpha",128)
 		return detectarea
 	else
-		local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-		if not xCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 1, expect number got "..type(x)) end
-		if not yCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 2, expect number got "..type(y)) end
-		if not wCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 3, expect number got "..type(sx)) end
-		if not hCheck then assert(false,"Bad argument @dgsCreateDetectArea at argument 4, expect number got "..type(sy)) end
+		if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateGridList",1,"number")) end
+		if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
+		if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
+		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
 		local detectarea = createElement("dgs-dxdetectarea")
 		dgsSetType(detectarea,"dgs-dxdetectarea")
 		dgsSetParent(detectarea,parent,true,true)
 		dgsSetData(detectarea,"debugMode",false)
 		dgsSetData(detectarea,"debugModeAlpha",128)
-		calculateGuiPositionSize(detectarea,x,y,relative or false,sx,sy,relative or false,true)
+		calculateGuiPositionSize(detectarea,x,y,relative or false,w,h,relative or false,true)
 		triggerEvent("onDgsCreate",detectarea,sourceResource)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 		return detectarea
@@ -59,12 +58,12 @@ function dgsDetectAreaDefaultFunction(mxRlt,myRlt,mxAbs,myAbs)
 end
 
 function dgsDetectAreaSetFunction(detectarea,fncStr)
-	assert(dgsGetType(detectarea) == "dgs-dxdetectarea","Bad argument @dgsDetectAreaSetFunction at argument 1, except dgs-dxdetectarea got "..dgsGetType(detectarea))
-	assert(type(fncStr) == "string" or (isElement(fncStr) and getElementType(fncStr) == "texture"),"Bad argument @dgsDetectAreaSetFunction at argument 2, expect string/texture got "..dgsGetType(fncStr))
+	if dgsGetType(detectarea) ~= "dgs-dxdetectarea" then error(dgsGenAsrt(detectarea,"dgsDetectAreaSetFunction",1,"dgs-dxdetectarea")) end
+	if not (dgsIsType(fncStr,"string") or dgsIsType(fncStr,"texture")) then error(dgsGenAsrt(fncStr,"dgsDetectAreaSetFunction",2,"string/texture")) end
 	if type(fncStr) == "string" then
 		fncStr = detectAreaBuiltIn[fncStr] or fncStr
-		local fnc = loadstring(detectAreaPreDefine..fncStr)
-		assert(type(fnc) == "function","Bad argument @dgsDetectAreaSetFunction at argument 2, failed to load function")
+		local fnc,err = loadstring(detectAreaPreDefine..fncStr)
+		if not fnc then error(dgsGenAsrt(fnc,"dgsDetectAreaSetFunction",2,_,_,_,"Failed to load function:"..err)) end
 		dgsSetData(detectarea,"checkFunction",fnc)
 		dgsSetData(detectarea,"checkFunctionImage",nil)
 	else
@@ -77,7 +76,7 @@ function dgsDetectAreaSetFunction(detectarea,fncStr)
 end
 
 function dgsDetectAreaSetDebugModeEnabled(detectarea,state,alpha)
-	assert(dgsGetType(detectarea) == "dgs-dxdetectarea","Bad argument @dgsDetectAreaSetDebugModeEnabled at argument 1, except dgs-dxdetectarea got "..dgsGetType(detectarea))
+	if dgsGetType(detectarea) ~= "dgs-dxdetectarea" then error(dgsGenAsrt(detectarea,"dgsDetectAreaSetDebugModeEnabled",1,"dgs-dxdetectarea")) end
 	dgsSetData(detectarea,"debugMode",state)
 	dgsSetData(detectarea,"debugModeAlpha",alpha or dgsElementData[detectarea].debugModeAlpha)
 	if state then
@@ -88,7 +87,7 @@ function dgsDetectAreaSetDebugModeEnabled(detectarea,state,alpha)
 end
 
 function dgsDetectAreaGetDebugModeEnabled(detectarea)
-	assert(dgsGetType(detectarea) == "dgs-dxdetectarea","Bad argument @dgsDetectAreaGetDebugModeEnabled at argument 1, except dgs-dxdetectarea got "..dgsGetType(detectarea))
+	if dgsGetType(detectarea) ~= "dgs-dxdetectarea" then error(dgsGenAsrt(detectarea,"dgsDetectAreaGetDebugModeEnabled",1,"dgs-dxdetectarea")) end
 	return dgsElementData[detectarea].debugMode
 end
 

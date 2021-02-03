@@ -22,12 +22,11 @@ local mathFloor = math.floor
 local mathAbs = math.abs
 local mathClamp = math.restrict
 
-function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
-	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateScrollBar at argument 4, expect number got "..type(sy)) end
+function dgsCreateScrollBar(x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateScrollBar",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateScrollBar",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateScrollBar",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateScrollBar",4,"number")) end
 	local isHorizontal = isHorizontal or false
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
@@ -72,14 +71,14 @@ function dgsCreateScrollBar(x,y,sx,sy,isHorizontal,relative,parent,arrowImage,tr
 		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
 		wheelReversed = false,
 	}
-	calculateGuiPositionSize(scrollbar,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(scrollbar,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar,sourceResource)
 	return scrollbar
 end
 
 function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetScrollPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(type(pos) == "number","Bad argument @dgsScrollBarSetScrollPosition at argument at 2, expect number got "..type(pos))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetScrollPosition",1,"dgs-dxscrollbar")) end
+	if not(type(pos) == "number") then error(dgsGenAsrt(pos,"dgsScrollBarSetScrollPosition",2,"number")) end
 	pos = isGrade and dgsElementData[scrollbar].grades/grades*100 or pos
 	local scaler = dgsElementData[scrollbar].map
 	if pos < 0 then pos = 0 end
@@ -94,7 +93,7 @@ function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
 end
 
 function dgsScrollBarGetScrollPosition(scrollbar,isGrade,isAbsolute)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetScrollPosition at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetScrollPosition",1,"dgs-dxscrollbar")) end
 	local pos = dgsElementData[scrollbar].position
 	local scaler = dgsElementData[scrollbar].map
 	if not isAbsolute then
@@ -109,19 +108,19 @@ function dgsScrollBarGetScrollPosition(scrollbar,isGrade,isAbsolute)
 end
 
 function dgsScrollBarSetLocked(scrollbar,state)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetLocked at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetLocked",1,"dgs-dxscrollbar")) end
 	local state = state and true or false
 	return dgsSetData(scrollbar,"locked",state)
 end
 
 function dgsScrollBarGetLocked(scrollbar)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetLocked at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetLocked",1,"dgs-dxscrollbar")) end
 	return dgsElementData[scrollbar].locked
 end
 
 function dgsScrollBarSetGrades(scrollbar,grades,remainMultipler)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetGrades at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(not grades or type(grades) == "number","Bad argument @dgsScrollBarSetGrades at argument at 2, expect false or a number got "..dgsGetType(grades))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetGrades",1,"dgs-dxscrollbar")) end
+	if grades and type(grades) ~= "number" then error(dgsGenAsrt(grades,"dgsScrollBarSetGrades",2,"number")) end
 	if not remainMultipler then
 		dgsSetData(scrollbar,"multiplier",{1/grades,true})
 	end
@@ -129,7 +128,7 @@ function dgsScrollBarSetGrades(scrollbar,grades,remainMultipler)
 end
 
 function dgsScrollBarGetGrades(scrollbar)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetGrades at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetGrades",1,"dgs-dxscrollbar")) end
 	return dgsElementData[scrollbar].grades
 end
 
@@ -154,13 +153,13 @@ function scrollScrollBar(scrollbar,button,speed)
 end
 
 function dgsScrollBarSetCursorLength(scrollbar,length,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorLength at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(tonumber(length),"Bad argument @dgsScrollBarSetCursorLength at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(length))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetCursorLength",1,"dgs-dxscrollbar")) end
+	if not(type(length) == "number") then error(dgsGenAsrt(length,"dgsScrollBarSetCursorLength",2,"number")) end
 	return dgsSetData(scrollbar,"length",{tonumber(length),relative or false})
 end
 
 function dgsScrollBarGetCursorLength(scrollbar,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetCursorLength at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetCursorLength",1,"dgs-dxscrollbar")) end
 	local relative = relative or false
 	local eleData = dgsElementData[scrollbar]
 	local slotRange
@@ -178,14 +177,14 @@ function dgsScrollBarGetCursorLength(scrollbar,relative)
 end
 
 function dgsScrollBarSetCursorWidth(scrollbar,width,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(tonumber(width),"Bad argument @dgsScrollBarSetCursorWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetCursorWidth",1,"dgs-dxscrollbar")) end
+	if not(type(width) == "number") then error(dgsGenAsrt(width,"dgsScrollBarSetCursorWidth",2,"number")) end
 	return dgsSetData(scrollbar,"cursorWidth",{width,relative or false})
 end
 
 function dgsScrollBarGetCursorWidth(scrollbar,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetCursorWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(tonumber(width),"Bad argument @dgsScrollBarGetCursorWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetCursorWidth",1,"dgs-dxscrollbar")) end
+	if not(type(width) == "number") then error(dgsGenAsrt(width,"dgsScrollBarGetCursorWidth",2,"number")) end
 	local relative = relative or false
 	local eleData = dgsElementData[scrollbar]
 	local w,h = eleData.absSize[1],eleData.absSize[2]
@@ -201,14 +200,13 @@ end
 
 
 function dgsScrollBarSetTroughWidth(scrollbar,width,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetTroughWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(tonumber(width),"Bad argument @dgsScrollBarSetTroughWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetTroughWidth",1,"dgs-dxscrollbar")) end
+	if not(type(width) == "number") then error(dgsGenAsrt(width,"dgsScrollBarSetTroughWidth",2,"number")) end
 	return dgsSetData(scrollbar,"troughWidth",{width,relative or false})
 end
 
 function dgsScrollBarGetTroughWidth(scrollbar,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetTroughWidth at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(tonumber(width),"Bad argument @dgsScrollBarGetTroughWidth at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(width))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetTroughWidth",1,"dgs-dxscrollbar")) end
 	local relative = relative or false
 	local eleData = dgsElementData[scrollbar]
 	local w,h = eleData.absSize[1],eleData.absSize[2]
@@ -223,13 +221,13 @@ function dgsScrollBarGetTroughWidth(scrollbar,relative)
 end
 
 function dgsScrollBarSetArrowSize(scrollbar,size,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetArrowSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(tonumber(size),"Bad argument @dgsScrollBarSetArrowSize at argument at 2, expect dgs-dxscrollbar got "..dgsGetType(size))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetArrowSize",1,"dgs-dxscrollbar")) end
+	if not(type(size) == "number") then error(dgsGenAsrt(size,"dgsScrollBarSetArrowSize",2,"number")) end
 	return dgsSetData(scrollbar,"arrowWidth",{size,relative or false})
 end
 
 function dgsScrollBarGetArrowSize(scrollbar,relative)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetArrowSize at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetArrowSize",1,"dgs-dxscrollbar")) end
 	local relative = relative or false
 	local eleData = dgsElementData[scrollbar]
 	local w,h = eleData.absSize[1],eleData.absSize[2]
@@ -245,13 +243,13 @@ end
 
 local allowedClickAction = { none=1, step=2, jump=3 }
 function dgsScrollBarSetTroughClickAction(scrollbar,action)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarSetTroughClickAction at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
-	assert(allowedClickAction[action],"Bad argument @dgsScrollBarSetTroughClickAction at argument at 2, expect a string (none/step/jump) got "..tostring(action))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetTroughClickAction",1,"dgs-dxscrollbar")) end
+	if not(allowedClickAction[action]) then error(dgsGenAsrt(action,"dgsScrollBarSetTroughClickAction",2,"number","1/2/3")) end
 	return dgsSetData(scrollbar,"troughClickAction",action)
 end
 
 function dgsScrollBarGetTroughClickAction(scb)
-	assert(dgsGetType(scrollbar) == "dgs-dxscrollbar","Bad argument @dgsScrollBarGetTroughClickAction at argument at 1, expect dgs-dxscrollbar got "..dgsGetType(scrollbar))
+	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetTroughClickAction",1,"dgs-dxscrollbar")) end
 	return dgsElementData[scrollbar].troughClickAction or "none"
 end
 ----------------------------------------------------------------

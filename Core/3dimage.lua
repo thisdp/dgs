@@ -18,10 +18,9 @@ local type = type
 local tableInsert = table.insert
 
 function dgsCreate3DImage(x,y,z,img,color,sizeX,sizeY,maxDistance,colorcoded)
-	local xCheck,yCheck,zCheck = type(x) == "number",type(y) == "number",type(z) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreate3DImage at argument 1, expect a number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreate3DImage at argument 2, expect a number got "..type(y)) end
-	if not zCheck then assert(false,"Bad argument @dgsCreate3DImage at argument 3, expect a number got "..type(z)) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",3,"number")) end
 	local image3d = createElement("dgs-dx3dimage")
 	tableInsert(dx3DImageTable,image3d)
 	dgsSetType(image3d,"dgs-dx3dimage")
@@ -45,71 +44,71 @@ function dgsCreate3DImage(x,y,z,img,color,sizeX,sizeY,maxDistance,colorcoded)
 end
 
 function dgs3DImageGetImage(image)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetImage at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetImage",1,"dgs-dx3dimage")) end
 	return dgsElementData[image].image
 end
 
 function dgs3DImageSetImage(image,imgTex)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetImage at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetImage",1,"dgs-dx3dimage")) end
 	return dgsSetData(image,"image",imgTex)
 end
 
 function dgs3DImageSetSize(image,w,h)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetSize at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
-	assert(type(w) == "number","Bad argument @dgs3DImageSetSize at argument 2, expect a number got "..type(w))
-	assert(type(h) == "number","Bad argument @dgs3DImageSetSize at argument 3, expect a number got "..type(h))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetSize",1,"dgs-dx3dimage")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgs3DImageSetSize",2,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgs3DImageSetSize",3,"number")) end
 	return dgsSetData(image,"imageSize",{w,h})
 end
 
 function dgs3DImageGetSize(image)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetSize at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetSize",1,"dgs-dx3dimage")) end
 	local size = dgsElementData[image].imageSize
 	return size[1],size[2]
 end
 
 function dgs3DImageGetDimension(image)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetDimension at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetDimension",1,"dgs-dx3dimage")) end
 	return dgsElementData[image].dimension or -1
 end
 
 function dgs3DImageSetDimension(image,dimension)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetDimension at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
-	assert(type(dimension) == "number","Bad argument @dgs3DImageSetDimension at argument 2, expect a number got "..type(dimension))
-	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DImageSetDimension at argument 2, out of range [0~65535] got "..dimension)
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetDimension",1,"dgs-dx3dimage")) end
+	local inRange = dimension >= -1 and dimension <= 65535
+	if not(type(dimension) == "number" and inRange) then error(dgsGenAsrt(dimension,"dgs3DImageSetDimension",2,"number","-1~65535",inRange and "Out Of Range")) end
 	return dgsSetData(image,"dimension",dimension-dimension%1)
 end
 
 function dgs3DImageGetInterior(image)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetInterior at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetInterior",1,"dgs-dx3dimage")) end
 	return dgsElementData[image].interior or -1
 end
 
 function dgs3DImageSetInterior(image,interior)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetInterior at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
-	assert(type(interior) == "number","Bad argument @dgs3DImageSetInterior at argument 2, expect a number got "..type(interior))
-	assert(interior >= -1,"Bad argument @dgs3DImageSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetInterior",1,"dgs-dx3dimage")) end
+	local inRange = interior >= -1
+	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DImageSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
 	return dgsSetData(image,"interior",interior-interior%1)
 end
 
 function dgs3DImageAttachToElement(image,element,offX,offY,offZ)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageAttachToElement at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
-	assert(isElement(element),"Bad argument @dgs3DImageAttachToElement at argument 2, expect an element got "..dgsGetType(element))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageAttachToElement",1,"dgs-dx3dimage")) end
+	if not(isElement(element)) then error(dgsGenAsrt(element,"dgs3DImageAttachToElement",2,"element")) end
 	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
 	return dgsSetData(image,"attachTo",{element,offX,offY,offZ})
 end
 
 function dgs3DImageIsAttached(image)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageIsAttached at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageIsAttached",1,"dgs-dx3dimage")) end
 	return dgsElementData[image].attachTo
 end
 
 function dgs3DImageDetachFromElement(image)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageDetachFromElement at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageDetachFromElement",1,"dgs-dx3dimage")) end
 	return dgsSetData(image,"attachTo",false)
 end
 
 function dgs3DImageSetAttachedOffsets(image,offX,offY,offZ)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetAttachedOffsets at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetAttachedOffsets",1,"dgs-dx3dimage")) end
 	local attachTable = dgsElementData[image].attachTo
 	if attachTable then
 		local offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
@@ -119,7 +118,7 @@ function dgs3DImageSetAttachedOffsets(image,offX,offY,offZ)
 end
 
 function dgs3DImageGetAttachedOffsets(image,offX,offY,offZ)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetAttachedOffsets at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetAttachedOffsets",1,"dgs-dx3dimage")) end
 	local attachTable = dgsElementData[image].attachTo
 	if attachTable then
 		local offX,offY,offZ = attachTable[2],attachTable[3],attachTable[4]
@@ -129,15 +128,15 @@ function dgs3DImageGetAttachedOffsets(image,offX,offY,offZ)
 end
 
 function dgs3DImageSetPosition(image,x,y,z)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageSetPosition at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
-	assert(type(x) == "number","Bad argument @dgs3DImageSetPosition at argument 2, expect a number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgs3DImageSetPosition at argument 3, expect a number got "..type(y))
-	assert(type(z) == "number","Bad argument @dgs3DImageSetPosition at argument 4, expect a number got "..type(z))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetPosition",1,"dgs-dx3dimage")) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",2,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",3,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",4,"number")) end
 	return dgsSetData(image,"position",{x,y,z})
 end
 
 function dgs3DImageGetPosition(image)
-	assert(dgsGetType(image) == "dgs-dx3dimage","Bad argument @dgs3DImageGetPosition at argument 1, expect a dgs-dx3dimage got "..dgsGetType(image))
+	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetPosition",1,"dgs-dx3dimage")) end
 	local pos = dgsElementData[image].position
 	return pos[1],pos[2],pos[3]
 end

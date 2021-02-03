@@ -77,12 +77,11 @@ dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 			...
 		}
 ]]
-function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor)
-	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateMemo at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateMemo at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateMemo at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateMemo at argument 4, expect number got "..type(sy)) end
+function dgsCreateMemo(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateMemo",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateMemo",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateMemo",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateMemo",4,"number")) end
 	text = tostring(text)
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
@@ -134,7 +133,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 		scrollBarLength = {},
 		multiClickCounter = {false,false,0},
 	}
-	calculateGuiPositionSize(memo,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
@@ -198,7 +197,7 @@ function dgsCreateMemo(x,y,sx,sy,text,relative,parent,textColor,scalex,scaley,bg
 end
 
 function dgsMemoGetLineCount(memo,forceStrongLine)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetLineCount at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetLineCount",1,"dgs-dxmemo")) end
 	if not forceStrongLine and dgsElementData[memo].wordWrap then
 		return #dgsElementData[memo].wordWrapMapText
 	end
@@ -206,13 +205,13 @@ function dgsMemoGetLineCount(memo,forceStrongLine)
 end
 
 function dgsMemoGetScrollBar(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetScrollBar at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetScrollBar",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].scrollbars
 end
 
 function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoMoveCaret at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(indexOffset) == "number","Bad argument @dgsMemoMoveCaret at argument 2, expect number got "..type(indexOffset))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoMoveCaret",1,"dgs-dxmemo")) end
+	if not(type(indexOffset) == "number") then error(dgsGenAsrt(indexOffset,"dgsMemoMoveCaret",2,"number")) end
 	lineOffset = lineOffset or 0
 	local eleData = dgsElementData[memo]
 	local index = eleData.caretPos[1]
@@ -325,7 +324,7 @@ function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
 end
 
 function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetCaretPosition",1,"dgs-dxmemo")) end
 	local eleData = dgsElementData[memo]
 	local textTable = eleData.text
 	local curpos = eleData.caretPos
@@ -334,7 +333,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	if tpos == nil then
 		tpos = utf8Len(text)
 	end
-	assert(type(tpos) == "number","Bad argument @dgsMemoSetCaretPosition at argument 2, expect number got "..type(tpos))
+	if not (type(tpos) == "number") then error(dgsGenAsrt(tpos,"dgsMemoSetCaretPosition",1,"number")) end
 	local index,line
 	local isWordWrap = eleData.wordWrap
 	local showLine = eleData.showLine
@@ -413,45 +412,45 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 end
 
 function dgsMemoGetLineLength(memo,line)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetLineLength",1,"dgs-dxmemo")) end
 	local textTable = dgsElementData[memo].text
 	return textTable[line] and textTable[line][-1] or false
 end
 
 function dgsMemoGetCaretPosition(memo,detail)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretPosition at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetCaretPosition",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
 end
 
 function dgsMemoSetCaretStyle(memo,style)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetCaretStyle at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(style) == "number","Bad argument @dgsMemoSetCaretStyle at argument 2, expect number got "..type(style))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetCaretStyle",1,"dgs-dxmemo")) end
+	if not(type(style) == "number") then error(dgsGenAsrt(style,"dgsMemoSetCaretStyle",2,"number")) end
 	return dgsSetData(memo,"cursorStyle",style)
 end
 
 function dgsMemoGetCaretStyle(memo,style)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetCaretStyle at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetCaretStyle",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].cursorStyle
 end
 
 function dgsMemoSetMaxLength(memo,maxLength)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetMaxLength at argument 1, expect dgs-dxmemo, got "..dgsGetType(edit))
-	assert(type(maxLength) == "number","Bad argument @dgsMemoSetMaxLength at argument 2, expect number, got "..type(maxLength))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetMaxLength",1,"dgs-dxmemo")) end
+	if not(type(maxLength) == "number") then error(dgsGenAsrt(maxLength,"dgsMemoSetMaxLength",2,"number")) end
 	return dgsSetData(memo,"maxLength",maxLength)
 end
 
 function dgsMemoGetMaxLength(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetMaxLength at argument 1, expect dgs-dxmemo, got "..dgsGetType(edit))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetMaxLength",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].maxLength
 end
 
 function dgsMemoSetReadOnly(memo,state)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetReadOnly",1,"dgs-dxmemo")) end
 	return dgsSetData(memo,"readOnly",state and true or false)
 end
 
 function dgsMemoGetReadOnly(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetReadOnly at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetReadOnly",1,"dgs-dxmemo")) end
 	return dgsGetData(memo,"readOnly")
 end
 
@@ -822,8 +821,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 end
 
 function dgsMemoAppendText(memo,text,noAffectCaret)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoAppendText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsMemoAppendText at argument 2, expect string/number got "..dgsGetType(text))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoAppendText",1,"dgs-dxmemo")) end
 	local textTable = dgsElementData[memo].text
 	local line = #textTable
 	local index = textTable[line][-1]
@@ -831,19 +829,18 @@ function dgsMemoAppendText(memo,text,noAffectCaret)
 end
 
 function dgsMemoInsertText(memo,index,line,text,noAffectCaret)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoInsertText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(dgsGetType(index) == "number","Bad argument @dgsMemoInsertText at argument 2, expect number got "..dgsGetType(index))
-	assert(dgsGetType(line) == "number","Bad argument @dgsMemoInsertText at argument 3, expect number got "..dgsGetType(line))
-	assert(type(text) == "number" or type(text) == "string","Bad argument @dgsMemoInsertText at argument 4, expect string/number got "..dgsGetType(text))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoInsertText",1,"dgs-dxmemo")) end
+	if not(dgsGetType(index) == "number") then error(dgsGenAsrt(index,"dgsMemoInsertText",2,"number")) end
+	if not(dgsGetType(line) == "number") then error(dgsGenAsrt(line,"dgsMemoInsertText",3,"number")) end
 	return handleDxMemoText(memo,tostring(text),true,noAffectCaret,index,line)
 end
 
 function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoDeleteText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(dgsGetType(fromIndex) == "number","Bad argument @dgsMemoDeleteText at argument 2, expect number got "..dgsGetType(fromIndex))
-	assert(dgsGetType(fromLine) == "number","Bad argument @dgsMemoDeleteText at argument 3, expect number got "..dgsGetType(fromLine))
-	assert(dgsGetType(toIndex) == "number","Bad argument @dgsMemoDeleteText at argument 4, expect number got "..dgsGetType(toIndex))
-	assert(dgsGetType(toLine) == "number","Bad argument @dgsMemoDeleteText at argument 5, expect number got "..dgsGetType(toLine))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoDeleteText",1,"dgs-dxmemo")) end
+	if not(dgsGetType(fromIndex) == "number") then error(dgsGenAsrt(fromIndex,"dgsMemoDeleteText",2,"number")) end
+	if not(dgsGetType(fromLine) == "number") then error(dgsGenAsrt(fromLine,"dgsMemoDeleteText",3,"number")) end
+	if not(dgsGetType(toIndex) == "number") then error(dgsGenAsrt(toIndex,"dgsMemoDeleteText",4,"number")) end
+	if not(dgsGetType(toIndex) == "number") then error(dgsGenAsrt(toIndex,"dgsMemoDeleteText",5,"number")) end
 	if fromIndex == toIndex and fromLine == toLine then return end
 	local eleData = dgsElementData[memo]
 	local textTable = eleData.text
@@ -941,7 +938,7 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 end
 
 function dgsMemoClearText(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoClearText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoClearText",1,"dgs-dxmemo")) end
 	dgsElementData[memo].text = {{[-1]=0,[0]=""}}
 	dgsSetData(memo,"caretPos",{0,1})
 	dgsSetData(memo,"wordWrapMapText",{})
@@ -954,7 +951,7 @@ function dgsMemoClearText(memo)
 end
 
 function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,isDelete)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetPartOfText at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetPartOfText",1,"dgs-dxmemo")) end
 	local outStr = ""
 	local textTable = dgsElementData[memo].text
 	local textLines = #textTable
@@ -989,9 +986,9 @@ function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,isDelete)
 end
 
 function dgsMemoSetSelectedArea(memo,fromIndex,fromLine,...)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetSelectedArea at argument 1, except a dgs-memo got "..dgsGetType(memo))
-	assert(type(fromIndex) == "number","Bad argument @dgsMemoSetSelectedArea at argument 2, except a number got "..type(fromIndex))
-	assert(type(fromLine) == "number","Bad argument @dgsMemoSetSelectedArea at argument 3, except a number got "..type(fromLine))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetSelectedArea",1,"dgs-dxmemo")) end
+	if not(dgsGetType(fromIndex) == "number") then error(dgsGenAsrt(fromIndex,"dgsMemoSetSelectedArea",2,"number")) end
+	if not(dgsGetType(fromLine) == "number") then error(dgsGenAsrt(fromLine,"dgsMemoSetSelectedArea",3,"number")) end
 	local args = {...}
 	local textTable = dgsElementData[memo].text
 	local toIndex,toLine
@@ -1000,13 +997,13 @@ function dgsMemoSetSelectedArea(memo,fromIndex,fromLine,...)
 			toLine = #textTable
 			toIndex = utf8Len(textTable[toLine][0])
 		else
-			assert(type(args[1]) == "number","Bad argument @dgsMemoSetSelectedArea at argument 4, except a number got "..type(args[1]))
+			if not(dgsGetType(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsMemoSetSelectedArea",4,"number")) end
 			toIndex,toLine = dgsMemoSeekPosition(textTable,fromIndex+args[1],fromLine)
 		end
 	elseif #args == 2 then
 		toIndex,toLine = args[1],args[2]
-		assert(type(toIndex) == "number","Bad argument @dgsMemoSetSelectedArea at argument 4, except a number got "..type(toIndex))
-		assert(type(toLine) == "number","Bad argument @dgsMemoSetSelectedArea at argument 5, except a number got "..type(toLine))
+		if not(dgsGetType(toIndex) == "number") then error(dgsGenAsrt(toIndex,"dgsMemoSetSelectedArea",4,"number")) end
+		if not(dgsGetType(toLine) == "number") then error(dgsGenAsrt(toLine,"dgsMemoSetSelectedArea",5,"number")) end
 		if #textTable <= toLine then
 			toLine = #textTable
 		end
@@ -1021,32 +1018,32 @@ function dgsMemoSetSelectedArea(memo,fromIndex,fromLine,...)
 end
 
 function dgsMemoGetSelectedArea(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetSelectedArea at argument 1, except a dgs-memo got "..dgsGetType(memo))
-	local fromIndex,fromLine = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
-	local toIndex,toLine = dgsElementData[memo].selectFrom[1],dgsElementData[memo].selectFrom[2]
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetSelectedArea",1,"dgs-dxmemo")) end
+	local eleData = dgsElementData[memo]
+	local fromIndex,fromLine = eleData.caretPos[1],eleData.caretPos[2]
+	local toIndex,toLine = eleData.selectFrom[1],eleData.selectFrom[2]
 	return fromIndex,fromLine,toIndex,toLine
 end
 
-function dgsMemoSetTypingSound(memo,sound)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetTypingSound at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
-	assert(type(sound) == "string" or not sound,"Bad argument @dgsMemoSetTypingSound at argument 2, expect a string or nil got "..dgsGetType(sound))
-	local path = sound
+function dgsMemoSetTypingSound(memo,path)
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetTypingSound",1,"dgs-dxmemo")) end
+	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsMemoSetTypingSound",2,"string")) end
 	if sourceResource then
-		if not find(sound,":") then
-			path = ":"..getResourceName(sourceResource).."/"..sound
+		if not path:find(":") then
+			path = ":"..getResourceName(sourceResource).."/"..path
 		end
 	end
-	assert(fileExists(path),"Bad argument @dgsMemoSetTypingSound at argument 1,couldn't find such file '"..path.."'")
+	if not fileExists(path) then error(dgsGenAsrt(memo,"dgsMemoSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
 	dgsElementData[memo].typingSound = path
 end
 
 function dgsMemoGetTypingSound(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetTypingSound at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTypingSound",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].typingSound
 end
 
 function dgsMemoSetWordWrapState(memo,state)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetWordWrapState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetWordWrapState",1,"dgs-dxmemo")) end
 	if state == true then
 		state = 1
 	elseif state ~= false and state ~= 1 and state ~= 2 then
@@ -1056,7 +1053,7 @@ function dgsMemoSetWordWrapState(memo,state)
 end
 
 function dgsMemoGetWordWrapState(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetWordWrapState at argument 1, expect a dgs-dxmemo "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetWordWrapState",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].wordWrap
 end
 
@@ -1229,21 +1226,21 @@ function syncScrollBars(memo,which)
 end
 
 function dgsMemoSetScrollBarState(memo,vertical,horizontal)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetScrollBarState at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetScrollBarState",1,"dgs-dxmemo")) end
 	dgsSetData(memo,"scrollBarState",{vertical,horizontal},true)
 	dgsSetData(memo,"configNextFrame",true)
 	return true
 end
 
 function dgsMemoGetScrollBarState(memo)
-	assert(dgsGetType(memo) == "dgs-dxscrollpane","Bad argument @dgsMemoGetScrollBarState at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetScrollBarState",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].scrollBarState[1],dgsElementData[memo].scrollBarState[2]
 end
 
 function dgsMemoSetScrollPosition(memo,vertical,horizontal)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsMemoSetScrollPosition at at argument 2, expect nil, none or number∈[0,100] got "..dgsGetType(vertical).."("..tostring(vertical)..")")
-	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsMemoSetScrollPosition at at argument 3,  expect nil, none or number∈[0,100] got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetScrollPosition",1,"dgs-dxmemo")) end
+	if vertical and not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsMemoSetScrollPosition",2,"nil/number","0~100")) end
+	if horizontal and not (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100) then error(dgsGenAsrt(horizontal,"dgsMemoSetScrollPosition",3,"nil/number","0~100")) end
 	local scb = dgsElementData[memo].scrollbars
 	local state1,state2 = true,true
 	if dgsElementData[scb[1]].visible then
@@ -1256,34 +1253,34 @@ function dgsMemoSetScrollPosition(memo,vertical,horizontal)
 end
 
 function dgsMemoGetScrollPosition(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetScrollPosition",1,"dgs-dxmemo")) end
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
 end
 
 --Make compatibility for GUI
 function dgsMemoGetHorizontalScrollPosition(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetHorizontalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetHorizontalScrollPosition",1,"dgs-dxmemo")) end
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[2])
 end
 
 function dgsMemoSetHorizontalScrollPosition(memo,horizontal)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetHorizontalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100,"Bad argument @dgsMemoSetHorizontalScrollPosition at at argument 3, expect number ranges from 0 to 100 got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetHorizontalScrollPosition",1,"dgs-dxmemo")) end
+	if horizontal and not (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100) then error(dgsGenAsrt(horizontal,"dgsMemoSetHorizontalScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarSetScrollPosition(scb[2],horizontal)
 end
 
 function dgsMemoGetVerticalScrollPosition(memo)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoGetVerticalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetVerticalScrollPosition",1,"dgs-dxmemo")) end
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[1])
 end
 
 function dgsMemoSetVerticalScrollPosition(memo,vertical)
-	assert(dgsGetType(memo) == "dgs-dxmemo","Bad argument @dgsMemoSetVerticalScrollPosition at at argument 1, expect dgs-dxmemo got "..dgsGetType(memo))
-	assert(type(vertical) == "number" and vertical>= 0 and vertical <= 100,"Bad argument @dgsMemoSetVerticalScrollPosition at at argument 2, expect number ranges from 0 to 100 got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetVerticalScrollPosition",1,"dgs-dxmemo")) end
+	if vertical and not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsMemoSetVerticalScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end

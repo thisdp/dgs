@@ -32,7 +32,6 @@
 	<script src="Core/selector.lua" type="client" />
 	<script src="Core/switchbutton.lua" type="client" />
 	<script src="Core/window.lua" type="client" />
-	<script src="Core/external.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
@@ -337,8 +336,6 @@
 
 	<export function="dgsCreateButton" type="client" />
 
-	<export function="dgsCreateExternal" type="client" />
-
 	<export function="dgsCreateEdit" type="client" />
 	<export function="dgsEditMoveCaret" type="client" />
 	<export function="dgsEditGetCaretPosition" type="client" />
@@ -416,9 +413,12 @@
 	<export function="dgsMediaPause" type="client" />
 	<export function="dgsMediaStop" type="client" />
 	<export function="dgsMediaSetSize" type="client" />
+	<export function="dgsMediaSetSpeed" type="client" />
+	<export function="dgsMediaGetSpeed" type="client" />
 	<export function="dgsMediaSetFilled" type="client" />
 	<export function="dgsMediaGetFilled" type="client" />
 	<export function="dgsMediaSetFullScreen" type="client" />
+	<export function="dgsMediaGetFullScreen" type="client" />
 	<export function="dgsMediaGetDuration" type="client" />
 	<export function="dgsMediaGetCurrentPosition" type="client" />
 	<export function="dgsMediaSetCurrentPosition" type="client" />

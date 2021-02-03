@@ -415,15 +415,6 @@ function renderGUI(source,mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAl
 		local absPos = eleData.absPos
 		local absSize = eleData.absSize
 
-		if eleData.externalFunction then
-			if eleData.externalFunction.dgsGetPosition then
-				absPos = eleData.externalFunction.dgsGetPosition(eleData.externalRef,false)
-			end
-			if eleData.externalFunction.dgsGetSize then
-				absSize = eleData.externalFunction.dgsGetPosition(eleData.externalRef,false)
-			end
-		end
-
 		--Side Processing
 		local PosX,PosY,w,h = 0,0,0,0
 		if eleTypeP == "dgs-dxwindow" then
@@ -714,121 +705,119 @@ end)
 
 function onClientKeyTriggered(button)
 	local makeEventCancelled = false
+	local eleData = dgsElementData[MouseData.nowShow]
 	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-		local dgsEdit = MouseData.nowShow
-		local text = dgsElementData[dgsEdit].text
+		local edit = MouseData.nowShow
+		local text = eleData.text
 		local shift = getKeyState("lshift") or getKeyState("rshift")
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
 		if button == "arrow_l" then
 			if ctrl then
-				local cpos = dgsElementData[dgsEdit].caretPos
-				local text = dgsElementData[dgsEdit].text
+				local cpos = eleData.caretPos
+				local text = eleData.text
 				local f,b = dgsSearchFullWordType(text,cpos,-1)
-				dgsEditMoveCaret(dgsEdit,f-cpos,shift)
+				dgsEditMoveCaret(edit,f-cpos,shift)
 			else
-				dgsEditMoveCaret(dgsEdit,-1,shift)
+				dgsEditMoveCaret(edit,-1,shift)
 			end
 		elseif button == "arrow_r" then
 			if ctrl then
-				local cpos = dgsElementData[dgsEdit].caretPos
-				local text = dgsElementData[dgsEdit].text
+				local cpos = eleData.caretPos
+				local text = eleData.text
 				local f,b = dgsSearchFullWordType(text,cpos,1)
-				dgsEditMoveCaret(dgsEdit,b-cpos,shift)
+				dgsEditMoveCaret(edit,b-cpos,shift)
 			else
-				dgsEditMoveCaret(dgsEdit,1,shift)
+				dgsEditMoveCaret(edit,1,shift)
 			end
 		elseif button == "arrow_u" then
-			local cmd = dgsElementData[dgsEdit].mycmd
+			local cmd = eleData.mycmd
 			if dgsGetPluginType(cmd) == "dgs-dxcmd" then
 				local int = dgsElementData[cmd].cmdCurrentHistory+1
 				local history = dgsElementData[cmd].cmdHistory
 				if history[int] then
 					dgsSetData(cmd,"cmdCurrentHistory",int)
-					dgsSetText(dgsEdit,history[int])
-					dgsEditSetCaretPosition(dgsEdit,#history[int])
+					dgsSetText(edit,history[int])
+					dgsEditSetCaretPosition(edit,#history[int])
 				end
 			end
 		elseif button == "arrow_d" then
-			local cmd = dgsElementData[dgsEdit].mycmd
+			local cmd = eleData.mycmd
 			if dgsGetPluginType(cmd) == "dgs-dxcmd" then
 				local int = dgsElementData[cmd].cmdCurrentHistory-1
 				local history = dgsElementData[cmd].cmdHistory
 				if history[int] then
 					dgsSetData(cmd,"cmdCurrentHistory",int)
-					dgsSetText(dgsEdit,history[int])
-					dgsEditSetCaretPosition(dgsEdit,#history[int])
+					dgsSetText(edit,history[int])
+					dgsEditSetCaretPosition(edit,#history[int])
 				end
 			end
 		elseif button == "home" then
-			dgsEditSetCaretPosition(dgsEdit,0,shift)
+			dgsEditSetCaretPosition(edit,0,shift)
 		elseif button == "end" then
-			dgsEditSetCaretPosition(dgsEdit,#text,shift)
+			dgsEditSetCaretPosition(edit,#text,shift)
 		elseif button == "delete" then
-			if not dgsElementData[dgsEdit].readOnly then
-				local cpos = dgsElementData[dgsEdit].caretPos
-				local spos = dgsElementData[dgsEdit].selectFrom
+			if not eleData.readOnly then
+				local cpos,spos = eleData.caretPos,eleData.selectFrom
 				if cpos ~= spos then
-					dgsEditDeleteText(dgsEdit,cpos,spos)
-					dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
+					dgsEditDeleteText(edit,cpos,spos)
+					eleData.selectFrom = eleData.caretPos
 				else
 					if ctrl then
-						local text = dgsElementData[dgsEdit].text
+						local text = eleData.text
 						local f,b = dgsSearchFullWordType(text,cpos,1)
-						dgsEditDeleteText(dgsEdit,cpos,b)
+						dgsEditDeleteText(edit,cpos,b)
 					else
-						dgsEditDeleteText(dgsEdit,cpos,cpos+1)
+						dgsEditDeleteText(edit,cpos,cpos+1)
 					end
 				end
 			end
 		elseif button == "backspace" then
-			if not dgsElementData[dgsEdit].readOnly then
-				local cpos = dgsElementData[dgsEdit].caretPos
-				local spos = dgsElementData[dgsEdit].selectFrom
+			if not eleData.readOnly then
+				local cpos,spos = eleData.caretPos,eleData.selectFrom
 				if cpos ~= spos then
-					dgsEditDeleteText(dgsEdit,cpos,spos)
-					dgsElementData[dgsEdit].selectFrom = dgsElementData[dgsEdit].caretPos
+					dgsEditDeleteText(edit,cpos,spos)
+					eleData.selectFrom = eleData.caretPos
 				else
 					if ctrl then
-						local text = dgsElementData[dgsEdit].text
+						local text = eleData.text
 						local f,b = dgsSearchFullWordType(text,cpos,-1)
-						dgsEditDeleteText(dgsEdit,f,cpos)
+						dgsEditDeleteText(edit,f,cpos)
 					else
-						dgsEditDeleteText(dgsEdit,cpos-1,cpos)
+						dgsEditDeleteText(edit,cpos-1,cpos)
 					end
 				end
 			end
 		elseif button == "c" or button == "x" and ctrl then
-			if dgsElementData[dgsEdit].allowCopy then
-				local cpos = dgsElementData[dgsEdit].caretPos
-				local spos = dgsElementData[dgsEdit].selectFrom
+			if eleData.allowCopy then
+				local cpos,spos = eleData.caretPos,eleData.selectFrom
 				if cpos ~= spos then
-					local deleteText = button == "x" and not dgsElementData[dgsEdit].readOnly
-					local theText = dgsEditGetPartOfText(dgsEdit,cpos,spos,deleteText)
+					local deleteText = button == "x" and not eleData.readOnly
+					local theText = dgsEditGetPartOfText(edit,cpos,spos,deleteText)
 					setClipboard(theText)
 				end
 			end
 		elseif button == "z" and ctrl then
-			dgsEditDoOpposite(dgsEdit,true)
+			dgsEditDoOpposite(edit,true)
 		elseif button == "y" and ctrl then
-			dgsEditDoOpposite(dgsEdit,false)
+			dgsEditDoOpposite(edit,false)
 		elseif button == "tab" then
 			makeEventCancelled = true
-			local autoCompleteShow = dgsElementData[dgsEdit].autoCompleteShow
+			local autoCompleteShow = eleData.autoCompleteShow
 			if autoCompleteShow then
-				dgsSetText(dgsEdit,autoCompleteShow[1])
+				dgsSetText(edit,autoCompleteShow[1])
 			else
-				triggerEvent("onDgsEditPreSwitch",dgsEdit)
+				triggerEvent("onDgsEditPreSwitch",edit)
 			end
 		elseif button == "a" and ctrl then
-			dgsSetData(dgsEdit,"caretPos",0)
-			local text = dgsElementData[dgsEdit].text
-			dgsSetData(dgsEdit,"selectFrom",utf8Len(text))
+			dgsSetData(edit,"caretPos",0)
+			local text = eleData.text
+			dgsSetData(edit,"selectFrom",utf8Len(text))
 		end
 	elseif dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
 		local memo = MouseData.nowShow
 		local shift = getKeyState("lshift") or getKeyState("rshift")
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
-		local isWordWrap = dgsElementData[memo].wordWrap
+		local isWordWrap = eleData.wordWrap
 		if button == "arrow_l" then
 			dgsMemoMoveCaret(memo,-1,0,shift)
 		elseif button == "arrow_r" then
@@ -839,8 +828,8 @@ function onClientKeyTriggered(button)
 			dgsMemoMoveCaret(memo,0,1,shift,true)
 		elseif button == "home" then
 			if isWordWrap then
-				local text = dgsElementData[memo].text
-				local index,line = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
+				local text = eleData.text
+				local index,line = eleData.caretPos[1],eleData.caretPos[2]
 				local weakLineIndex,weakLine = dgsMemoFindWeakLineInStrongLine(text[line],index)
 				local currentPos = utf8Len(text[line][0],1,index)-utf8Len(text[line][1][weakLine][0],1,weakLineIndex)
 				dgsMemoSetCaretPosition(memo,currentPos,ctrl and 1,shift)
@@ -848,45 +837,42 @@ function onClientKeyTriggered(button)
 				dgsMemoSetCaretPosition(memo,0,ctrl and 1,shift)
 			end
 		elseif button == "end" then
-			local text = dgsElementData[memo].text
-			local index,line = dgsElementData[memo].caretPos[1],dgsElementData[memo].caretPos[2]
+			local text = eleData.text
+			local index,line = eleData.caretPos[1],eleData.caretPos[2]
 			if isWordWrap then
-				local weakLineIndex,weakLine = dgsMemoFindWeakLineInStrongLine(dgsElementData[memo].text[line],index,true)
-				local currentPos = utf8Len(dgsElementData[memo].text[line][0],1,index)-utf8Len(text[line][1][weakLine][0],1,weakLineIndex)+dgsElementData[memo].text[line][1][weakLine][3]
+				local weakLineIndex,weakLine = dgsMemoFindWeakLineInStrongLine(eleData.text[line],index,true)
+				local currentPos = utf8Len(eleData.text[line][0],1,index)-utf8Len(text[line][1][weakLine][0],1,weakLineIndex)+eleData.text[line][1][weakLine][3]
 				dgsMemoSetCaretPosition(memo,currentPos,ctrl and #text,shift,not ctrl and true)
 			else
 				dgsMemoSetCaretPosition(memo,utf8Len(text[line][0] or ""),ctrl and #text,shift)
 			end
 		elseif button == "delete" then
-			if not dgsElementData[memo].readOnly then
-				local cpos = dgsElementData[memo].caretPos
-				local spos = dgsElementData[memo].selectFrom
+			if not eleData.readOnly then
+				local cpos,spos = eleData.caretPos,eleData.selectFrom
 				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
 					dgsMemoDeleteText(memo,cpos[1],cpos[2],spos[1],spos[2])
-					dgsElementData[memo].selectFrom = dgsElementData[memo].caretPos
+					eleData.selectFrom = eleData.caretPos
 				else
-					local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[memo].text,cpos[1]+1,cpos[2])
-					dgsMemoDeleteText(memo,cpos[1],cpos[2],tarindex,tarline)
+					local tIndex,tLine = dgsMemoSeekPosition(eleData.text,cpos[1]+1,cpos[2])
+					dgsMemoDeleteText(memo,cpos[1],cpos[2],tIndex,tLine)
 				end
 			end
 		elseif button == "backspace" then
-			if not dgsElementData[memo].readOnly then
-				local cpos = dgsElementData[memo].caretPos
-				local spos = dgsElementData[memo].selectFrom
+			if not eleData.readOnly then
+				local cpos,spos = eleData.caretPos,eleData.selectFrom
 				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
 					dgsMemoDeleteText(memo,cpos[1],cpos[2],spos[1],spos[2])
-					dgsElementData[memo].selectFrom = dgsElementData[memo].caretPos
+					eleData.selectFrom = eleData.caretPos
 				else
-					local tarindex,tarline = dgsMemoSeekPosition(dgsElementData[memo].text,cpos[1]-1,cpos[2])
-					dgsMemoDeleteText(memo,tarindex,tarline,cpos[1],cpos[2])
+					local tIndex,tLine = dgsMemoSeekPosition(eleData.text,cpos[1]-1,cpos[2])
+					dgsMemoDeleteText(memo,tIndex,tLine,cpos[1],cpos[2])
 				end
 			end
 		elseif button == "c" or button == "x" and ctrl then
-			if dgsElementData[memo].allowCopy then
-				local cpos = dgsElementData[memo].caretPos
-				local spos = dgsElementData[memo].selectFrom
+			if eleData.allowCopy then
+				local cpos,spos = eleData.caretPos,eleData.selectFrom
 				if not(cpos[1] == spos[1] and cpos[2] == spos[2]) then
-					local deleteText = button == "x" and not dgsElementData[memo].readOnly
+					local deleteText = button == "x" and not eleData.readOnly
 					local theText = dgsMemoGetPartOfText(memo,cpos[1],cpos[2],spos[1],spos[2],deleteText)
 					setClipboard(theText)
 				end
@@ -896,10 +882,10 @@ function onClientKeyTriggered(button)
 		end
 	elseif dgsGetType(MouseData.nowShow) == "dgs-dxgridlist" then
 		local gridlist = MouseData.nowShow
-		if dgsElementData[gridlist].enableNavigation then
+		if eleData.enableNavigation then
 			if button == "arrow_u" then
-				if dgsElementData[gridlist].selectionMode ~= 2 then
-					local lastSelected = dgsElementData[gridlist].lastSelectedItem
+				if eleData.selectionMode ~= 2 then
+					local lastSelected = eleData.lastSelectedItem
 					local nextSelected = lastSelected[1]-1 <= 1 and 1 or lastSelected[1]-1
 					while(true) do
 						if dgsGridListGetRowSelectable(gridlist,nextSelected) then
@@ -912,17 +898,17 @@ function onClientKeyTriggered(button)
 					end
 				end
 			elseif button == "arrow_d" then
-				if dgsElementData[gridlist].selectionMode ~= 2 then
-					local lastSelected = dgsElementData[gridlist].lastSelectedItem
-					local rowCount = #dgsElementData[gridlist].rowData
-					local nextSelected = lastSelected[1]+1 >= rowCount and rowCount or lastSelected[1]+1
+				if eleData.selectionMode ~= 2 then
+					local lastSelected = eleData.lastSelectedItem
+					local rLen = #eleData.rowData
+					local nextSelected = lastSelected[1]+1 >= rLen and rLen or lastSelected[1]+1
 					while(true) do
 						if dgsGridListGetRowSelectable(gridlist,nextSelected) then
 							dgsGridListSetSelectedItem(gridlist,nextSelected,lastSelected[2],true)
 							break
 						else
 							nextSelected = nextSelected+1
-							if nextSelected+1 > rowCount then
+							if nextSelected+1 > rLen then
 								break
 							end
 						end
@@ -930,17 +916,17 @@ function onClientKeyTriggered(button)
 					dgsGridListSetSelectedItem(gridlist,nextSelected,lastSelected[2],true)
 				end
 			elseif button == "arrow_l" then
-				if dgsElementData[gridlist].selectionMode ~= 1 then
-					local lastSelected = dgsElementData[gridlist].lastSelectedItem
+				if eleData.selectionMode ~= 1 then
+					local lastSelected = eleData.lastSelectedItem
 					local nextSelected = lastSelected[2]-1
 					dgsGridListSetSelectedItem(gridlist,lastSelected[1],nextSelected <= 1 and 1 or nextSelected,true)
 				end
 			elseif button == "arrow_r" then
-				if dgsElementData[gridlist].selectionMode ~= 1 then
-					local lastSelected = dgsElementData[gridlist].lastSelectedItem
+				if eleData.selectionMode ~= 1 then
+					local lastSelected = eleData.lastSelectedItem
 					local nextSelected = lastSelected[2]+1
-					local columCount = #dgsElementData[gridlist].columnData
-					dgsGridListSetSelectedItem(gridlist,lastSelected[1],nextSelected >= columCount and columCount or nextSelected,true)
+					local cLen = #eleData.columnData
+					dgsGridListSetSelectedItem(gridlist,lastSelected[1],nextSelected >= cLen and cLen or nextSelected,true)
 				end
 			end
 		end
@@ -1200,17 +1186,16 @@ addEventHandler("onDgsMouseClick",root,onDGSMouseCheck)
 
 addEventHandler("onClientElementDestroy",resourceRoot,function()
 	local parent = dgsGetParent(source) or root
-	if dgsIsDxElement(source) then
+	if dgsIsType(source) then
+		local eleData = dgsElementData[source] or {}
 		triggerEvent("onDgsDestroy",source)
-		local isAttachedToGridList = dgsElementData[source].attachedToGridList
+		local isAttachedToGridList = eleData.attachedToGridList
 		if isAttachedToGridList then dgsDetachFromGridList(source) end
 		local child = ChildrenTable[source] or {}
 		for i=1,#child do
-			if isElement(child[1]) then
-				destroyElement(child[1])
-			end
+			if isElement(child[1]) then destroyElement(child[1]) end
 		end
-		local autoDestroyList = dgsElementData[source].autoDestroyList or {}
+		local autoDestroyList = eleData.autoDestroyList or {}
 		for i=-10,#autoDestroyList do	--From -10, to reserve dynamic space
 			local ele = autoDestroyList[i]
 			if ele and isElement(ele) then
@@ -1223,16 +1208,16 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		elseif dgsType == "dgs-dxmemo" then
 			blurEditMemo()
 		elseif dgsType == "dgs-dxtabpanel" then
-			local tabs = dgsElementData[source].tabs or {}
+			local tabs = eleData.tabs or {}
 			for i=1,#tabs do
 				destroyElement(tabs[i])
 			end
 		elseif dgsType == "dgs-dxtab" then
-			local isRemove = dgsElementData[source].isRemove
+			local isRemove = eleData.isRemove
 			if not isRemove then
-				local tabpanel = dgsElementData[source].parent
+				local tabpanel = eleData.parent
 				if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
-					local wid = dgsElementData[source].width
+					local wid = eleData.width
 					local w = dgsElementData[tabpanel].absSize[1]
 					local tabs = dgsElementData[tabpanel].tabs
 					local tabPadding = dgsElementData[tabpanel].tabPadding
@@ -1240,7 +1225,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 					local tabGapSize = dgsElementData[tabpanel].tabGapSize
 					local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
 					dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-wid-sidesize*2-gapSize*min(#tabs,1))
-					local id = dgsElementData[source].id
+					local id = eleData.id
 					for i=id,#tabs do
 						dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
 					end
@@ -1248,14 +1233,14 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				end
 			end
 		elseif dgsType == "dgs-dximage" then
-			local image = dgsElementData[source].image
+			local image = eleData.image
 			if isElement(image) then
 				if dgsElementData[image] and dgsElementData[image].parent == image then
 					destroyElement(image)
 				end
 			end
 		elseif dgsType == "shader" then
-			if dgsElementData[source].asPlugin == "dgs-dxblurbox" then
+			if eleData.asPlugin == "dgs-dxblurbox" then
 				blurboxShaders = blurboxShaders-1
 				if blurboxShaders == 0 and isElement(BlurBoxGlobalScreenSource) then
 					destroyElement(BlurBoxGlobalScreenSource)
@@ -1281,7 +1266,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		else
 			local parent = dgsGetParent(source)
 			if not isElement(parent) then
-				local layer = dgsElementData[source].alwaysOn or "center"
+				local layer = eleData.alwaysOn or "center"
 				if layer == "bottom" then
 					tableRemoveItemFromArray(BottomFatherTable,source)
 				elseif layer == "center" then
@@ -1293,7 +1278,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				tableRemoveItemFromArray(ChildrenTable[parent] or {},source)
 			end
 		end
-		if (dgsElementData[source] or {})._translationText then
+		if eleData._translationText then
 			tableRemoveItemFromArray(LanguageTranslationAttach,source)
 		end
 	end
@@ -1343,12 +1328,13 @@ function checkScrollBar(source,py,sd)
 end
 
 function checkScale(source)
-	local sizeData = dgsElementData[source].sizeHandlerData
+	local eleData = dgsElementData[source]
+	local sizeData = eleData.sizeHandlerData
 	if sizeData then
 		local mx,my = getCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
-		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local w,h = eleData.absSize[1],eleData.absSize[2]
 		local offsetx,offsety = mx-x,my-y
 		local leftRel,rightRel,topRel,bottomRel = sizeData[5],sizeData[6],sizeData[7],sizeData[8]
 		local left = leftRel and sizeData[1]*w or sizeData[1]
@@ -1377,11 +1363,11 @@ function checkScale(source)
 		local mx,my = getCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
-		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local w,h = eleData.absSize[1],eleData.absSize[2]
 		local offsets = {mx-x,my-y,mx-x-w,my-y-h}
-		local sizable = dgsElementData[source].sizable
+		local sizable = eleData.sizable
 		if not sizable then return false end
-		local borderSize = dgsElementData[source].borderSize
+		local borderSize = eleData.borderSize
 		if abs(offsets[1]) < borderSize then
 			offsets[5] = 1
 		elseif abs(offsets[3]) < borderSize then
@@ -1429,15 +1415,16 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			focusBrowser()
 		end
 		local parent = dgsGetParent(guiele)
+		local eleData = dgsElementData[guiele]
 		if guitype == "dgs-dxswitchbutton" then
-			if dgsElementData[guiele].clickState == state and dgsElementData[guiele].clickButton == button then
-				dgsSetData(guiele,"state", not dgsElementData[guiele].state)
+			if eleData.clickState == state and eleData.clickButton == button then
+				dgsSetData(guiele,"state", not eleData.state)
 			end
 		end
 		if state == "down" then
 			dgsBringToFront(guiele,button)
 			if guitype == "dgs-dxscrollpane" then
-				local scrollbar = dgsElementData[guiele].scrollbars
+				local scrollbar = eleData.scrollbars
 				dgsBringToFront(scrollbar[1],"left",_,true)
 				dgsBringToFront(scrollbar[2],"left",_,true)
 			end
@@ -1446,21 +1433,21 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					checkMove(guiele)
 				end
 				if guitype == "dgs-dxscrollbar" then
-					local scrollArrow = dgsElementData[guiele].scrollArrow
+					local scrollArrow = eleData.scrollArrow
 					local x,y = dgsGetPosition(guiele,false,true)
 					local w,h = dgsGetSize(guiele,false)
-					local isHorizontal = dgsElementData[guiele].isHorizontal
-					local length,lrlt = dgsElementData[guiele].length[1],dgsElementData[guiele].length[2]
+					local isHorizontal = eleData.isHorizontal
+					local length,lrlt = eleData.length[1],eleData.length[2]
 					local slotRange
-					local arrowWid = dgsElementData[guiele].arrowWidth
+					local arrowWid = eleData.arrowWidth
 					if isHorizontal then
 						slotRange = w-(scrollArrow and (arrowWid[2] and h*arrowWid[1] or arrowWid[1])*2 or 0)
 					else
 						slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1])*2 or 0)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
-					checkScrollBar(guiele,dgsElementData[guiele].position*0.01*(slotRange-cursorRange),isHorizontal)
-					local parent = dgsElementData[guiele].attachedToParent
+					checkScrollBar(guiele,eleData.position*0.01*(slotRange-cursorRange),isHorizontal)
+					local parent = eleData.attachedToParent
 					if isElement(parent) then
 						if guiele == dgsElementData[parent].scrollbars[1] then
 							dgsSetData(parent,"mouseWheelScrollBar",false)
@@ -1471,59 +1458,60 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				elseif guitype == "dgs-dxradiobutton" then
 					dgsRadioButtonSetSelected(guiele,true)
 				elseif guitype == "dgs-dxcheckbox" then
-					dgsCheckBoxSetSelected(guiele,not dgsElementData[guiele].state)
+					dgsCheckBoxSetSelected(guiele,not eleData.state)
 				elseif guitype == "dgs-dxcombobox-Box" then
-					local combobox = dgsElementData[guiele].myCombo
-					local preSelect = dgsElementData[combobox].preSelect
-					local oldSelect = dgsElementData[combobox].select
-					dgsElementData[combobox].select = preSelect
-					local captionEdit = dgsElementData[combobox].captionEdit
+					local combobox = eleData.myCombo
+					local comboEleData = dgsElementData[combobox]
+					local preSelect = comboEleData.preSelect
+					local oldSelect = comboEleData.select
+					comboEleData.select = preSelect
+					local captionEdit = comboEleData.captionEdit
 					if isElement(captionEdit) then
-						local selection = dgsElementData[combobox].select
-						local itemData = dgsElementData[combobox].itemData
+						local selection = comboEleData.select
+						local itemData = comboEleData.itemData
 						dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
 					end
-					if dgsElementData[combobox].autoHideAfterSelected then
+					if comboEleData.autoHideAfterSelected then
 						dgsSetData(combobox,"listState",-1)
 					end
 					triggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
 				elseif guitype == "dgs-dxtab" then
-					local tabpanel = dgsElementData[guiele].parent
+					local tabpanel = eleData.parent
 					dgsBringToFront(tabpanel)
 					if dgsElementData[tabpanel]["preSelect"] ~= -1 then
 						dgsSetData(tabpanel,"selected",dgsElementData[tabpanel]["preSelect"])
 					end
 				elseif guitype == "dgs-dxcombobox" then
-					dgsSetData(guiele,"listState",dgsElementData[guiele].listState == 1 and -1 or 1)
+					dgsSetData(guiele,"listState",eleData.listState == 1 and -1 or 1)
 				elseif guitype == "dgs-dxselector" then
 
 				end
 			end
 			if guitype == "dgs-dxgridlist" then
-				local clickButton = dgsElementData[guiele].mouseSelectButton
+				local clickButton = eleData.mouseSelectButton
 				local isSelectButtonEnabled = clickButton[mouseButtonOrder[button]]
 				if isSelectButtonEnabled then
-					local oPreSelect = dgsElementData[guiele].oPreSelect
-					local rowData = dgsElementData[guiele].rowData
+					local oPreSelect = eleData.oPreSelect
+					local rowData = eleData.rowData
 					----Sort
-					if dgsElementData[guiele].sortEnabled then
-						local column = dgsElementData[guiele].selectedColumn
+					if eleData.sortEnabled then
+						local column = eleData.selectedColumn
 						if column and column >= 1 then
-							local sortFunction = dgsElementData[guiele].sortFunction
-							local defSortFnc = dgsElementData[guiele].defaultSortFunctions
+							local sortFunction = eleData.sortFunction
+							local defSortFnc = eleData.defaultSortFunctions
 							local upperSortFnc = sortFunctions[defSortFnc[1]]
 							local lowerSortFnc = sortFunctions[defSortFnc[2]]
-							local targetfunction = (sortFunction == upperSortFnc or dgsElementData[guiele].sortColumn ~= column) and lowerSortFnc or upperSortFnc
+							local targetfunction = (sortFunction == upperSortFnc or eleData.sortColumn ~= column) and lowerSortFnc or upperSortFnc
 							dgsGridListSetSortFunction(guiele,targetfunction)
 							dgsGridListSetSortColumn(guiele,column)
 						end
 					end
 					--------
 					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] ~= false then
-						local selectionMode = dgsElementData[guiele].selectionMode
-						local multiSelection = dgsElementData[guiele].multiSelection
-						local preSelect = dgsElementData[guiele].preSelect
-						local clicked = dgsElementData[guiele].itemClick
+						local selectionMode = eleData.selectionMode
+						local multiSelection = eleData.multiSelection
+						local preSelect = eleData.preSelect
+						local clicked = eleData.itemClick
 						local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
 						if #preSelect == 2 then
 							if selectionMode == 1 then
@@ -1537,15 +1525,15 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 											for row = startRow,endRow do
 												dgsGridListSelectItem(guiele,row,1,true)
 											end
-											dgsElementData[guiele].itemClick = clicked
+											eleData.itemClick = clicked
 										end
 									else
 										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-										dgsElementData[guiele].itemClick = preSelect
+										eleData.itemClick = preSelect
 									end
 								else
 									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-									dgsElementData[guiele].itemClick = preSelect
+									eleData.itemClick = preSelect
 								end
 							elseif selectionMode == 2 then
 								if multiSelection then
@@ -1558,15 +1546,15 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 											for column = startColumn, endColumn do
 												dgsGridListSelectItem(guiele,preSelect[1],column,true)
 											end
-											dgsElementData[guiele].itemClick = clicked
+											eleData.itemClick = clicked
 										end
 									else
 										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-										dgsElementData[guiele].itemClick = preSelect
+										eleData.itemClick = preSelect
 									end
 								else
 									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-									dgsElementData[guiele].itemClick = preSelect
+									eleData.itemClick = preSelect
 								end
 							elseif selectionMode == 3 then
 								if multiSelection then
@@ -1582,15 +1570,15 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 													dgsGridListSelectItem(guiele,row,column,true)
 												end
 											end
-											dgsElementData[guiele].itemClick = clicked
+											eleData.itemClick = clicked
 										end
 									else
 										dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-										dgsElementData[guiele].itemClick = preSelect
+										eleData.itemClick = preSelect
 									end
 								else
 									dgsGridListSetSelectedItem(guiele,preSelect[1],preSelect[2])
-									dgsElementData[guiele].itemClick = preSelect
+									eleData.itemClick = preSelect
 								end
 							end
 						end
@@ -1632,8 +1620,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		
 		if not isElement(guiele) then return end
 		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
-			local clicked = dgsElementData[guiele].itemClick
-			local selectionMode = dgsElementData[guiele].selectionMode
+			local clicked = eleData.itemClick
+			local selectionMode = eleData.selectionMode
 			if dgsGetType(guiele) == "dgs-dxgridlist" and GirdListDoubleClick[state].gridlist == guiele and GirdListDoubleClick[state].but == button then
 				local pass = true
 				if selectionMode == 1 then
@@ -1662,7 +1650,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				end
 			end
 			if dgsGetType(guiele) == "dgs-dxgridlist" then
-				local clicked = dgsElementData[guiele].itemClick
+				local clicked = eleData.itemClick
 				if clicked[1] ~= -1 and clicked[2] ~= -1 then
 					GirdListDoubleClick[state] = {}
 					GirdListDoubleClick[state].item,GirdListDoubleClick[state].column = clicked[1],clicked[2]

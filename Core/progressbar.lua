@@ -150,21 +150,18 @@ local ProgressBarStyle = {
 	end,
 }
 
-function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode)
-	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 4, expect number got "..type(sy)) end
+function dgsCreateProgressBar(x,y,w,h,relative,parent,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateProgressBar",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateProgressBar",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateProgressBar",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateProgressBar",4,"number")) end
 	if isElement(bgImage) then
 		local imgtyp = getElementType(bgImage)
-		local imgCheck = imgtyp == "texture" or imgtyp == "shader"
-		if not imgCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 7, expect texture got "..imgtyp) end
+		if not(imgtyp == "texture" or imgtyp == "shader") then error(dgsGenAsrt(bgImage,"dgsCreateProgressBar",7,"texture")) end
 	end
 	if isElement(indicatorImage) then
 		local imgtyp = getElementType(indicatorImage)
-		local imgCheck = imgtyp == "texture" or imgtyp == "shader"
-		if not imgCheck then assert(false,"Bad argument @dgsCreateProgressBar at argument 9, expect texture got "..imgtyp) end
+		if not(imgtyp == "texture" or imgtyp == "shader") then error(dgsGenAsrt(indicatorImage,"dgsCreateProgressBar",9,"texture")) end
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
@@ -183,7 +180,7 @@ function dgsCreateProgressBar(x,y,sx,sy,relative,parent,bgImage,bgColor,indicato
 		progress = 0,
 		map = {0,100},
 	}
-	calculateGuiPositionSize(progressbar,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(progressbar,x,y,relative or false,w,h,relative or false,true)
 	local mx,my = false,false
 	if isElement(indicatorImage) then
 		mx,my = dxGetMaterialSize(indicatorImage)
@@ -200,7 +197,7 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 		end
 		return true
 	end
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetStyle at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetStyle",1,"dgs-dxprogressbar")) end
 	if ProgressBarStyle[style] then
 		dgsSetData(progressbar,"style",style)
 		for k,v in pairs(dgsElementData[progressbar].styleData.elements or {}) do
@@ -228,27 +225,28 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 end
 
 function dgsProgressBarGetStyle(progressbar)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyle at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetStyle",1,"dgs-dxprogressbar")) end
 	return dgsElementData[progressbar].style
 end
+
 function dgsProgressBarGetStyleProperty(progressbar,propertyName)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyleProperty at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetStyleProperty",1,"dgs-dxprogressbar")) end
 	return dgsElementData[progressbar].styleData[propertyName]
 end
 
 function dgsProgressBarGetStyleProperties(progressbar)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetStyleProperties at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetStyleProperties",1,"dgs-dxprogressbar")) end
 	return dgsElementData[progressbar].styleData
 end
 
 function dgsProgressBarSetStyleProperty(progressbar,propertyName,value)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetStyleProperty at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetStyleProperty",1,"dgs-dxprogressbar")) end
 	dgsElementData[progressbar].styleData[propertyName] = value
 	return true
 end
 
 function dgsProgressBarGetProgress(progressbar,isAbsolute)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarGetProgress at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetProgress",1,"dgs-dxprogressbar")) end
 	local progress = dgsElementData[progressbar].progress
 	local scaler = dgsElementData[progressbar].map
 	if not isAbsolute then
@@ -258,7 +256,7 @@ function dgsProgressBarGetProgress(progressbar,isAbsolute)
 end
 
 function dgsProgressBarSetProgress(progressbar,progress,isAbsolute)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetProgress at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetProgress",1,"dgs-dxprogressbar")) end
 	local scaler = dgsElementData[progressbar].map
 	if progress < 0 then progress = 0 end
 	if progress > 100 then progress = 100 end
@@ -274,12 +272,12 @@ function dgsProgressBarSetProgress(progressbar,progress,isAbsolute)
 end
 
 function dgsProgressBarSetMode(progressbar,mode)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetMode",1,"dgs-dxprogressbar")) end
 	return dgsSetData(progressbar,"indicatorMode",mode and true or false)
 end
 
 function dgsProgressBarGetMode(progressbar)
-	assert(dgsGetType(progressbar) == "dgs-dxprogressbar","Bad argument @dgsProgressBarSetindicatorMode at argument 1, expect dgs-dxprogressbar got "..dgsGetType(progressbar))
+	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetMode",1,"dgs-dxprogressbar")) end
 	return dgsElementData[progressbar].indicatorMode
 end
 

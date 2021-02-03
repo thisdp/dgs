@@ -20,15 +20,13 @@ local addEventHandler = addEventHandler
 local assert = assert
 local type = type
 
-function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw,browserh,color)
-	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateBrowser at argument 4, expect number got "..type(sy)) end
+function dgsCreateBrowser(x,y,w,h,relative,parent,isLocal,transparent,browserw,browserh,color)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateBrowser",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateBrowser",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBrowser",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBrowser",4,"number")) end
 	local browser = createBrowser(1,1,isLocal and true or false,transparent and true or false)
-	local browserCheck = isElement(browser)
-	if not browserCheck then assert(false,"Bad argument @dgsCreateBrowser, can't create browser with 'createBrowser' !") end
+	if not isElement(browser) then error(dgsGenAsrt(browser,"dgsCreateBrowser",_,_,_,_,"Failed to create browser!")) end
 	dgsSetType(browser,"dgs-dxbrowser")
 	dgsSetParent(browser,parent,true,true)
 	dgsElementData[browser] = {
@@ -38,7 +36,7 @@ function dgsCreateBrowser(x,y,sx,sy,relative,parent,isLocal,transparent,browserw
 		isLocal = isLocal and true or false,
 		requestCommand = {},
 	}
-	calculateGuiPositionSize(browser,x,y,relative,sx,sy,relative,true)
+	calculateGuiPositionSize(browser,x,y,relative,w,h,relative,true)
 	local size = dgsElementData[browser].absSize
 	resizeBrowser(browser,browserw or size[1],browserh or size[2])
 	dgsElementData[browser].browserSize = {browserw or size[1],browserh or size[2]}

@@ -23,12 +23,11 @@ local type = type
 local min = math.min
 local max = math.max
 
-function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
-	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateSwitchButton at argument 4, expect number got "..type(sy)) end
+function dgsCreateSwitchButton(x,y,w,h,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateSwitchButton",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateSwitchButton",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSwitchButton",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSwitchButton",4,"number")) end
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
 	dgsSetParent(switchbutton,parent,true,true)
@@ -76,23 +75,23 @@ function dgsCreateSwitchButton(x,y,sx,sy,textOn,textOff,state,relative,parent,te
 	end
 	dgsElementData[switchbutton].textOn = tostring(textOn)
 	dgsElementData[switchbutton].textOff = tostring(textOff)
-	calculateGuiPositionSize(switchbutton,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(switchbutton,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",switchbutton,sourceResource)
 	return switchbutton
 end
 
 function dgsSwitchButtonGetState(switchbutton)
-	assert(dgsGetType(switchbutton) == "dgs-dxswitchbutton","Bad argument @dgsSwitchButtonGetState at argument at 1, expect dgs-dxswitchbutton got "..dgsGetType(switchbutton))
+	if not(dgsGetType(switchbutton) == "dgs-dxswitchbutton") then error(dgsGenAsrt(switchbutton,"dgsSwitchButtonGetState",1,"dgs-dxswitchbutton")) end
 	return dgsElementData[switchbutton].state
 end
 
 function dgsSwitchButtonSetState(switchbutton,state)
-	assert(dgsGetType(switchbutton) == "dgs-dxswitchbutton","Bad argument @dgsSwitchButtonSetState at argument at 1, expect dgs-dxswitchbutton got "..dgsGetType(switchbutton))
+	if not(dgsGetType(switchbutton) == "dgs-dxswitchbutton") then error(dgsGenAsrt(switchbutton,"dgsSwitchButtonSetState",1,"dgs-dxswitchbutton")) end
 	return dgsSetData(switchbutton,"state",state and true or false)
 end
 
 function dgsSwitchButtonSetText(switchbutton,textOn,textOff)
-	assert(dgsGetType(switchbutton) == "dgs-dxswitchbutton","Bad argument @dgsSwitchButtonSetText at argument at 1, expect dgs-dxswitchbutton got "..dgsGetType(switchbutton))
+	if not(dgsGetType(switchbutton) == "dgs-dxswitchbutton") then error(dgsGenAsrt(switchbutton,"dgsSwitchButtonSetText",1,"dgs-dxswitchbutton")) end
 	if type(textOn) == "table" then
 		dgsElementData[switchbutton]._translationtextOn = textOn
 		textOn = dgsTranslate(switchbutton,textOn,sourceResource)
@@ -112,7 +111,7 @@ function dgsSwitchButtonSetText(switchbutton,textOn,textOff)
 end
 
 function dgsSwitchButtonGetText(switchbutton)
-	assert(dgsGetType(switchbutton) == "dgs-dxswitchbutton","Bad argument @dgsSwitchButtonGetText at argument at 1, expect dgs-dxswitchbutton got "..dgsGetType(switchbutton))
+	if not(dgsGetType(switchbutton) == "dgs-dxswitchbutton") then error(dgsGenAsrt(switchbutton,"dgsSwitchButtonGetText",1,"dgs-dxswitchbutton")) end
 	return dgsElementData[switchbutton].textOn,dgsElementData[switchbutton].textOff
 end
 

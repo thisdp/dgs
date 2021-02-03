@@ -18,10 +18,9 @@ local type = type
 local tableInsert = table.insert
 
 function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded)
-	local xCheck,yCheck,zCheck = type(x) == "number",type(y) == "number",type(z) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreate3DText at argument 1, expect a number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreate3DText at argument 2, expect a number got "..type(y)) end
-	if not zCheck then assert(false,"Bad argument @dgsCreate3DText at argument 3, expect a number got "..type(z)) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DText",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DText",2,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DText",3,"number")) end
 	local text3d = createElement("dgs-dx3dtext")
 	tableInsert(dx3DTextTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
@@ -52,48 +51,48 @@ function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcode
 end
 
 function dgs3DTextGetDimension(text)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextGetDimension at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetDimension",1,"dgs-dx3dtext")) end
 	return dgsElementData[text].dimension or -1
 end
 
 function dgs3DTextSetDimension(text,dimension)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetDimension at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
-	assert(type(dimension) == "number","Bad argument @dgs3DTextSetDimension at argument 2, expect a number got "..type(dimension))
-	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DTextSetDimension at argument 2, out of range [0~65535] got "..dimension)
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetDimension",1,"dgs-dx3dtext")) end
+	local inRange = dimension >= -1 and dimension <= 65535
+	if not(type(dimension) == "number" and inRange) then error(dgsGenAsrt(dimension,"dgs3DTextSetDimension",2,"number","-1~65535",inRange and "Out Of Range")) end
 	return dgsSetData(text,"dimension",dimension-dimension%1)
 end
 
 function dgs3DTextGetInterior(text)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextGetInterior at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetInterior",1,"dgs-dx3dtext")) end
 	return dgsElementData[text].interior or -1
 end
 
 function dgs3DTextSetInterior(text,interior)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetInterior at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
-	assert(type(interior) == "number","Bad argument @dgs3DTextSetInterior at argument 2, expect a number got "..type(interior))
-	assert(interior >= -1,"Bad argument @dgs3DTextSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetInterior",1,"dgs-dx3dtext")) end
+	local inRange = interior >= -1
+	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DTextSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
 	return dgsSetData(text,"interior",interior-interior%1)
 end
 
 function dgs3DTextAttachToElement(text,element,offX,offY,offZ)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextAttachToElement at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
-	assert(isElement(element),"Bad argument @dgs3DTextAttachToElement at argument 2, expect an element got "..dgsGetType(element))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextAttachToElement",1,"dgs-dx3dtext")) end
+	if not isElement(element) then error(dgsGenAsrt(element,"dgs3DTextAttachToElement",2,"element")) end
 	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
 	return dgsSetData(text,"attachTo",{element,offX,offY,offZ})
 end
 
 function dgs3DTextIsAttached(text)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextIsAttached at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextIsAttached",1,"dgs-dx3dtext")) end
 	return dgsElementData[text].attachTo
 end
 
 function dgs3DTextDetachFromElement(text)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextDetachFromElement at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextDetachFromElement",1,"dgs-dx3dtext")) end
 	return dgsSetData(text,"attachTo",false)
 end
 
 function dgs3DTextSetAttachedOffsets(text,offX,offY,offZ)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetAttachedOffsets at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetAttachedOffsets",1,"dgs-dx3dtext")) end
 	local attachTable = dgsElementData[text].attachTo
 	if attachTable then
 		local offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
@@ -103,7 +102,7 @@ function dgs3DTextSetAttachedOffsets(text,offX,offY,offZ)
 end
 
 function dgs3DTextGetAttachedOffsets(text,offX,offY,offZ)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextGetAttachedOffsets at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetAttachedOffsets",1,"dgs-dx3dtext")) end
 	local attachTable = dgsElementData[text].attachTo
 	if attachTable then
 		local offX,offY,offZ = attachTable[2],attachTable[3],attachTable[4]
@@ -113,15 +112,15 @@ function dgs3DTextGetAttachedOffsets(text,offX,offY,offZ)
 end
 
 function dgs3DTextSetPosition(text,x,y,z)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextSetPosition at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
-	assert(type(x) == "number","Bad argument @dgs3DTextSetPosition at argument 2, expect a number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgs3DTextSetPosition at argument 3, expect a number got "..type(y))
-	assert(type(z) == "number","Bad argument @dgs3DTextSetPosition at argument 4, expect a number got "..type(z))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetPosition",1,"dgs-dx3dtext")) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DText",2,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DText",3,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DText",4,"number")) end
 	return dgsSetData(text,"position",{x,y,z})
 end
 
 function dgs3DTextGetPosition(text)
-	assert(dgsGetType(text) == "dgs-dx3dtext","Bad argument @dgs3DTextGetPosition at argument 1, expect a dgs-dx3dtext got "..dgsGetType(text))
+	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetPosition",1,"dgs-dx3dtext")) end
 	local pos = dgsElementData[text].position
 	return pos[1],pos[2],pos[3]
 end

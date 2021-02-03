@@ -28,12 +28,11 @@ local tocolor = tocolor
 local type = type
 local lerp = math.lerp
 
-function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
-	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateScrollPane at argument 4, expect number got "..type(sy)) end
+function dgsCreateScrollPane(x,y,w,h,relative,parent)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateScrollPane",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateScrollPane",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateScrollPane",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateScrollPane",4,"number")) end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	dgsSetParent(scrollpane,parent,true,true)
@@ -55,14 +54,14 @@ function dgsCreateScrollPane(x,y,sx,sy,relative,parent)
 		bgImage = false,
 		sourceTexture = false,
 	}
-	local renderTarget,err = dxCreateRenderTarget(sx,sy,true,scrollpane)
+	local renderTarget,err = dxCreateRenderTarget(w,h,true,scrollpane)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
 	else
 		outputDebugString(err)
 	end
 	dgsElementData[scrollpane].renderTarget_parent = renderTarget
-	calculateGuiPositionSize(scrollpane,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(scrollpane,x,y,relative or false,w,h,relative or false,true)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local titleOffset = 0
@@ -258,14 +257,14 @@ function resizeScrollPane(scrollpane,source) --Need optimize
 end
 
 function dgsScrollPaneGetScrollBar(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetScrollBar at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneGetScrollBar",1,"dgs-dxscrollpane")) end
 	return dgsElementData[scrollpane].scrollbars
 end
 
 function dgsScrollPaneSetScrollPosition(scrollpane,vertical,horizontal)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetScrollPosition at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
-	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsScrollPaneSetScrollPosition at at argument 2, expect nil, none or number∈[0,100] got "..dgsGetType(vertical).."("..tostring(vertical)..")")
-	assert(not horizontal or (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100),"Bad argument @dgsScrollPaneSetScrollPosition at at argument 3,  expect nil, none or number∈[0,100] got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetScrollPosition",1,"dgs-dxscrollpane")) end
+	if vertical and not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsScrollPaneSetScrollPosition",2,"nil/number","0~100")) end
+	if horizontal and not (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100) then error(dgsGenAsrt(horizontal,"dgsScrollPaneSetScrollPosition",3,"nil/number","0~100")) end
 	local scb = dgsElementData[scrollpane].scrollbars
 	local state1,state2 = true,true
 	if vertical then
@@ -278,7 +277,7 @@ function dgsScrollPaneSetScrollPosition(scrollpane,vertical,horizontal)
 end
 
 function dgsScrollPaneGetViewOffset(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetViewOffset at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneGetViewOffset",1,"dgs-dxscrollpane")) end
 	local eleData = dgsElementData[scrollpane]
 	local size = eleData.absSize
 	local scrollbar = eleData.scrollbars
@@ -295,7 +294,7 @@ function dgsScrollPaneGetViewOffset(scrollpane)
 end
 
 function dgsScrollPaneSetViewOffset(scrollpane,x,y)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetViewOffset at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetViewOffset",1,"dgs-dxscrollpane")) end
 	local eleData = dgsElementData[scrollpane]
 	local size = eleData.absSize
 	local scrollbar = eleData.scrollbars
@@ -313,46 +312,46 @@ end
 
 --Make compatibility for GUI
 function dgsScrollPaneGetHorizontalScrollPosition(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetHorizontalScrollPosition at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneGetHorizontalScrollPosition",1,"dgs-dxscrollpane")) end
 	local scb = dgsElementData[scrollpane].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[2])
 end
 
 function dgsScrollPaneSetHorizontalScrollPosition(scrollpane,horizontal)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetHorizontalScrollPosition at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
-	assert(type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100,"Bad argument @dgsScrollPaneSetHorizontalScrollPosition at at argument 3, expect number ranges from 0 to 100 got "..dgsGetType(horizontal).."("..tostring(horizontal)..")")
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetHorizontalScrollPosition",1,"dgs-dxscrollpane")) end
+	if horizontal and not (type(horizontal) == "number" and horizontal>= 0 and horizontal <= 100) then error(dgsGenAsrt(horizontal,"dgsScrollPaneSetHorizontalScrollPosition",3,"nil/number","0~100")) end
 	local scb = dgsElementData[scrollpane].scrollbars
 	return dgsScrollBarSetScrollPosition(scb[2],horizontal)
 end
 
 function dgsScrollPaneGetVerticalScrollPosition(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetVerticalScrollPosition at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneGetVerticalScrollPosition",1,"dgs-dxscrollpane")) end
 	local scb = dgsElementData[scrollpane].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[1])
 end
 
 function dgsScrollPaneSetVerticalScrollPosition(scrollpane,vertical)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetVerticalScrollPosition at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
-	assert(type(vertical) == "number" and vertical>= 0 and vertical <= 100,"Bad argument @dgsScrollPaneSetVerticalScrollPosition at at argument 2, expect number ranges from 0 to 100 got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetVerticalScrollPosition",1,"dgs-dxscrollpane")) end
+	if vertical and not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsScrollPaneSetVerticalScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[scrollpane].scrollbars
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end
 
 function dgsScrollPaneGetScrollPosition(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneGetScrollPosition at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneGetScrollPosition",1,"dgs-dxscrollpane")) end
 	local scb = dgsElementData[scrollpane].scrollbars
 	return dgsScrollBarGetScrollPosition(scb[1]),dgsScrollBarGetScrollPosition(scb[2])
 end
 
 function dgsScrollPaneSetScrollBarState(scrollpane,vertical,horizontal)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetScrollBarState at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetScrollBarState",1,"dgs-dxscrollpane")) end
 	dgsSetData(scrollpane,"scrollBarState",{vertical,horizontal},true)
 	dgsSetData(scrollpane,"configNextFrame",true)
 	return true
 end
 
 function dgsScrollPaneGetScrollBarState(scrollpane)
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsScrollPaneSetScrollBarState at at argument 1, expect dgs-dxscrollpane, got "..dgsGetType(scrollpane))
+	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetScrollBarState",1,"dgs-dxscrollpane")) end
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
 end
 

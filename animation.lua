@@ -8,7 +8,7 @@ moveGUIList = {}
 sizeGUIList = {}
 alphaGUIList = {}
 function dgsIsAniming(gui)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsIsAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsIsAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return animGUIList[gui] or false
 end
 
@@ -19,7 +19,7 @@ function dgsAnimTo(gui,property,value,easing,thetime,callback,reverseProgress)
 		end
 		return true
 	end
-	assert(dgsIsDxElement(gui),"Bad argument @dgsAnimTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsAnimTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	local thetime = tonumber(thetime)
 	assert(type(property) == "string","Bad argument @dgsAnimTo at argument 2, expect string got "..type(property))
 	assert(thetime,"Bad argument @dgsAnimTo at argument 6, expect number got "..type(thetime))
@@ -46,7 +46,7 @@ function dgsStopAniming(gui,property)
 		end
 		return true
 	end
-	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsStopAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if animGUIList[gui] then
 		local animList = dgsElementData[gui].anim or {}
 		if property then
@@ -74,7 +74,7 @@ function dgsStopAniming(gui,property)
 end
 
 function dgsIsMoving(gui)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsIsMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsIsMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return moveGUIList[gui] or false
 end
 
@@ -85,7 +85,7 @@ function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 		end
 		return true
 	end
-	assert(dgsIsDxElement(gui),"Bad argument @dgsMoveTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsMoveTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	local x,y,torvx = tonumber(x),tonumber(y),tonumber(torvx)
 	assert(x,"Bad argument @dgsMoveTo at argument 2, expect number got "..type(x))
 	assert(y,"Bad argument @dgsMoveTo at argument 3, expect number got "..type(y))
@@ -109,7 +109,7 @@ function dgsStopMoving(gui)
 		end
 		return true
 	end
-	assert(dgsIsDxElement(gui),"Bad argument @dgsStopMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsStopMoving at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if moveGUIList[gui] then
 		dgsSetData(gui,"move",nil)
 		moveGUIList[gui] = nil
@@ -120,7 +120,7 @@ function dgsStopMoving(gui)
 end
 
 function dgsIsSizing(gui)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsIsSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsIsSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return sizeGUIList[gui] or false
 end
 
@@ -131,7 +131,7 @@ function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 		end
 		return true
 	end
-	assert(dgsIsDxElement(gui),"Bad argument @dgsSizeTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsSizeTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	local x,y,torvx = tonumber(x),tonumber(y),tonumber(torvx)
 	assert(x,"Bad argument @dgsSizeTo at argument 2, expect number got "..type(x))
 	assert(y,"Bad argument @dgsSizeTo at argument 3, expect number got "..type(y))
@@ -155,7 +155,7 @@ function dgsStopSizing(gui)
 		end
 		return true
 	end
-	assert(dgsIsDxElement(gui),"Bad argument @dgsStopSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsStopSizing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if sizeGUIList[gui] then
 		dgsSetData(gui,"size",nil)
 		sizeGUIList[gui] = nil
@@ -166,7 +166,7 @@ function dgsStopSizing(gui)
 end
 
 function dgsIsAlphaing(gui)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsIsAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsIsAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return alphaGUIList[gui] or false
 end
 
@@ -177,7 +177,7 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 		end
 		return true
 	end
-	assert(dgsIsDxElement(gui),"Bad argument @dgsAlphaTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsAlphaTo at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	local toalpha,torv = tonumber(toalpha),tonumber(torv)
 	assert(toalpha,"Bad argument @dgsAlphaTo at argument 2, expect number got "..type(toalpha))
 	assert(torv,"Bad argument @dgsAlphaTo at argument 5, expect number got "..type(torv))
@@ -194,7 +194,7 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 end
 
 function dgsStopAlphaing(gui)
-	assert(dgsIsDxElement(gui),"Bad argument @dgsStopAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
+	assert(dgsIsType(gui),"Bad argument @dgsStopAlphaing at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	if alphaGUIList[gui] then
 		dgsSetData(gui,"calpha",nil)
 		alphaGUIList[gui] = nil
@@ -211,7 +211,7 @@ addEventHandler("onClientRender",root,function()
 	tickCount = tick
 	local animGarbage = {[0]=0}
 	for v,value in pairs(animGUIList) do
-		if not dgsIsDxElement(v) or not value then
+		if not dgsIsType(v) or not value then
 			animGarbage[0] = animGarbage[0]+1
 			animGarbage[animGarbage[0]] = v
 		else
@@ -244,7 +244,7 @@ addEventHandler("onClientRender",root,function()
 	end
 	local moveGarbage = {[0]=0}
 	for v,value in pairs(moveGUIList) do
-		if not dgsIsDxElement(v) or not value then
+		if not dgsIsType(v) or not value then
 			moveGarbage[0] = moveGarbage[0]+1
 			moveGarbage[moveGarbage[0]] = v
 		else
@@ -321,7 +321,7 @@ addEventHandler("onClientRender",root,function()
 	end
 	local sizeGarbage = {[0]=0}
 	for v,value in pairs(sizeGUIList) do
-		if not dgsIsDxElement(v) or not value then
+		if not dgsIsType(v) or not value then
 			sizeGarbage[0] = sizeGarbage[0]+1
 			sizeGarbage[sizeGarbage[0]] = v
 		else
@@ -398,7 +398,7 @@ addEventHandler("onClientRender",root,function()
 	end
 	local alphaGarbage = {[0]=0}
 	for v,value in pairs(alphaGUIList) do
-		if not dgsIsDxElement(v) or not value then
+		if not dgsIsType(v) or not value then
 			alphaGarbage[0] = alphaGarbage[0]+1
 			alphaGarbage[alphaGarbage[0]] = v
 		else

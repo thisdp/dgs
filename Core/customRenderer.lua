@@ -35,16 +35,16 @@ function dgsCreateCustomRenderer(customFnc)
 end
 
 function dgsCustomRendererSetFunction(cr,fncStr)
-	assert(dgsGetType(cr) == "dgs-dxcustomrenderer","Bad argument @dgsCustomRendererSetFunction at argument 1, expected a dgs-dxcustomrenderer got "..dgsGetType(cr))
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererSetFunction",1,"dgs-dxcustomrenderer")) end
 	local fncType = type(fncStr)
 	if fncType == "function" then
 		return dgsSetData(cr,"customRenderer",fncStr)
 	else
-		assert(type(fncStr) == "string","Bad argument @dgsCustomRendererSetFunction at argument 2, expected a string got "..dgsGetType(fncStr))
+		if not (type(fncStr) == "string") then error(dgsGenAsrt(fncStr,"dgsCustomRendererSetFunction",2,"string")) end
 		fncStr = [[posX,posY,width,height,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI = ...
 		]]..fncStr
-		local fnc = loadstring(fncStr)
-		assert(fnc,"Bad argument @dgsCustomRendererSetFunction at argument 2, failed to load function")
+		local fnc,err = loadstring(fncStr)
+		if not fnc then error(dgsGenAsrt(fnc,"dgsCustomRendererSetFunction",2,_,_,_,"Failed to load function:"..err)) end
 		return dgsSetData(cr,"customRenderer",fnc)
 	end
 end

@@ -23,12 +23,11 @@ local tonumber = tonumber
 
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
 function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
-	local xCheck,yCheck,wCheck,hCheck,stateCheck = type(x) == "number",type(y) == "number",type(w) == "number",type(h) == "number",not state or state == true
-	if not xCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 3, expect number got "..type(w)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateCheckBox at argument 4, expect number got "..type(h)) end
-	if not stateCheck then assert(false,"@dgsCreateCheckBox at argument 6, expect boolean/nil got "..type(state)) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateCheckBox",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateCheckBox",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCheckBox",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCheckBox",4,"number")) end
+	if not(type(state) == "boolean") then error(dgsGenAsrt(h,"dgsCreateCheckBox",6,"boolean")) end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
 	dgsSetParent(cb,parent,true,true)
@@ -68,7 +67,7 @@ function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,s
 		color_i = {norcolor_i,hovcolor_i,clicolor_i},
 		color_t = {norcolor_t,hovcolor_t,clicolor_t},
 		color_f = {norcolor_f,hovcolor_f,clicolor_f},
-		cbParent = dgsIsDxElement(parent) and parent or resourceRoot,
+		cbParent = dgsIsType(parent) and parent or resourceRoot,
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
 		textPadding = style.textPadding or {2,false},
@@ -95,13 +94,13 @@ function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,s
 end
 
 function dgsCheckBoxGetSelected(cb)
-	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxGetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxGetSelected",1,"dgs-dxcheckbox")) end
 	return dgsElementData[cb].state
 end
 
 function dgsCheckBoxSetSelected(cb,state)
-	assert(dgsGetType(cb) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxSetSelected at argument 1,expect dgs-dxcheckbox got "..dgsGetType(cb))
-	assert(not state or state == true,"Bad argument @dgsCheckBoxSetSelected at argument 2,expect boolean/nil got "..type(state))
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxSetSelected",1,"dgs-dxcheckbox")) end
+	if not (type(state) == "boolean") then error(dgsGenAsrt(cb,"dgsCheckBoxSetSelected",2,"boolean")) end
 	local oldState = dgsElementData[cb].state
 	if state ~= oldState then
 		triggerEvent("onDgsCheckBoxChange",cb,state,oldState)
@@ -109,30 +108,26 @@ function dgsCheckBoxSetSelected(cb,state)
 	return true
 end
 
-function dgsCheckBoxSetHorizontalAlign(checkbox,align)
-	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxSetHorizontalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
-	assert(HorizontalAlign[align],"Bad argument @dgsCheckBoxSetHorizontalAlign at argument 2, except a string [left/center/right], got"..tostring(align))
-	local alignment = dgsElementData[checkbox].alignment
-	return dgsSetData(checkbox,"alignment",{align,alignment[2]})
+function dgsCheckBoxSetHorizontalAlign(cb,align)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxSetHorizontalAlign",1,"dgs-dxcheckbox")) end
+	if not HorizontalAlign[align] then error(dgsGenAsrt(align,"dgsCheckBoxSetHorizontalAlign",2,"string","left/center/right")) end
+	return dgsSetData(cb,"alignment",{align,dgsElementData[cb].alignment[2]})
 end
 
-function dgsCheckBoxSetVerticalAlign(checkbox,align)
-	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxSetVerticalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
-	assert(VerticalAlign[align],"Bad argument @dgsCheckBoxSetVerticalAlign at argument 2, except a string [top/center/bottom], got"..tostring(align))
-	local alignment = dgsElementData[checkbox].alignment
-	return dgsSetData(checkbox,"alignment",{alignment[1],align})
+function dgsCheckBoxSetVerticalAlign(cb,align)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxSetVerticalAlign",1,"dgs-dxcheckbox")) end
+	if not VerticalAlign[align] then error(dgsGenAsrt(align,"dgsCheckBoxSetVerticalAlign",2,"string","top/center/bottom")) end
+	return dgsSetData(cb,"alignment",{dgsElementData[cb].alignment[1],align})
 end
 
-function dgsCheckBoxGetHorizontalAlign(checkbox)
-	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxGetHorizontalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
-	local alignment = dgsElementData[checkbox].alignment
-	return alignment[1]
+function dgsCheckBoxGetHorizontalAlign(cb)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxGetHorizontalAlign",1,"dgs-dxcheckbox")) end
+	return dgsElementData[cb].alignment[1]
 end
 
-function dgsCheckBoxGetVerticalAlign(checkbox)
-	assert(dgsGetType(checkbox) == "dgs-dxcheckbox","Bad argument @dgsCheckBoxGetVerticalAlign at argument 1, except a dgs-dxcheckbox got "..dgsGetType(checkbox))
-	local alignment = dgsElementData[checkbox].alignment
-	return alignment[2]
+function dgsCheckBoxGetVerticalAlign(cb)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxGetVerticalAlign",1,"dgs-dxcheckbox")) end
+	return dgsElementData[cb].alignment[2]
 end
 
 addEventHandler("onDgsCheckBoxChange",resourceRoot,function(state)

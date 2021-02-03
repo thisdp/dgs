@@ -46,11 +46,10 @@ Selection Mode
 3-> Cell Selection
 ]]
 function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,rownorc,rowhovc,rowselc,bgImage,columnImage,rownori,rowhovi,rowseli)
-	local __x,__y,__w,__h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
-	if not __x then error(dgsGenAsrt(x,"dgsCreateGridList",1,"number")) end
-	if not __y then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
-	if not __w then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
-	if not __h then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateGridList",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
 	local style = styleSettings.gridlist
 	local relative = relative or false
 	local scbThick = style.scrollBarThick
@@ -125,7 +124,7 @@ function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTe
 	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or resource])
 	dgsElementData[gridlist].configNextFrame = false
-	calculateGuiPositionSize(gridlist,__x,__y,relative,__w,__h,relative,true)
+	calculateGuiPositionSize(gridlist,x,y,relative,w,h,relative,true)
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]
 	local columnRender,rowRender
@@ -586,9 +585,9 @@ function dgsGridListGetColumnFont(gridlist,c)
 	return cData[c][9]	--Font
 end
 
-function dgsGridListSetColumnAlignment(gridlist,c,alignment,affectRow)
+function dgsGridListSetColumnAlignment(gridlist,c,align,affectRow)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetColumnAlignment",1,"dgs-dxgridlist")) end
-	if not HorizontalAlign[alignment] then error(dgsGenAsrt(gridlist,"dgsGridListSetColumnAlignment",3,"string","left/center/right")) end
+	if not HorizontalAlign[align] then error(dgsGenAsrt(align,"dgsGridListSetColumnAlignment",3,"string","left/center/right")) end
 	local eleData = dgsElementData[gridlist]
 	local cData = eleData.columnData
 	local cLen = #cData
@@ -597,7 +596,7 @@ function dgsGridListSetColumnAlignment(gridlist,c,alignment,affectRow)
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnAlignment",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
 	local c = c-c%1
-	cData[c][4] = alignment
+	cData[c][4] = align
 	if affectRow then
 		local rData = eleData.rowData
 		for i=1,#rData do
@@ -1315,9 +1314,9 @@ function dgsGridListGetItemTextSize(gridlist,r,c)
 	return false
 end
 
-function dgsGridListSetItemAlignment(gridlist,r,c,alignment)
+function dgsGridListSetItemAlignment(gridlist,r,c,align)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetItemAlignment",1,"dgs-dxgridlist")) end
-	if not (alignment == nil or HorizontalAlign[alignment]) then error(dgsGenAsrt(gridlist,"dgsGridListSetItemAlignment",4,"nil/string","left/center/right")) end
+	if not (align == nil or HorizontalAlign[align]) then error(dgsGenAsrt(align,"dgsGridListSetItemAlignment",4,"nil/string","left/center/right")) end
 	local eleData = dgsElementData[gridlist]
 	local cData,rData = eleData.columnData,eleData.rowData
 	local cLen,rLen = #cData,#rData
@@ -1327,7 +1326,7 @@ function dgsGridListSetItemAlignment(gridlist,r,c,alignment)
 	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemAlignment",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemAlignment",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
 	local c,r = c-c%1,r-r%1
-	rData[r][c][11] = alignment
+	rData[r][c][11] = align
 	return true
 end
 

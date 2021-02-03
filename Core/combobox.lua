@@ -42,12 +42,11 @@ index:	-3			-2			-1					0					1
 }
 ]]
 
-function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColor,scalex,scaley,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor)
-	local xCheck,yCheck,wCheck,hCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateComboBox at argument 4, expect number got "..type(sy)) end
+function dgsCreateComboBox(x,y,w,h,caption,relative,parent,itemheight,textColor,scalex,scaley,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateComboBox",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateComboBox",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateComboBox",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateComboBox",4,"number")) end
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
 	dgsSetParent(combobox,parent,true,true)
@@ -117,7 +116,7 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 	else
 		dgsSetData(combobox,"caption",tostring(caption))
 	end
-	calculateGuiPositionSize(combobox,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(combobox,x,y,relative or false,w,h,relative or false,true)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
 	dgsElementData[combobox].myBox = box
 	dgsElementData[box].myCombo = combobox
@@ -170,31 +169,32 @@ function dgsCreateComboBox(x,y,sx,sy,caption,relative,parent,itemheight,textColo
 end
 
 function dgsComboBoxSetCaptionText(combobox,caption)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetCaptionText",1,"dgs-dxcombobox")) end
 	return dgsSetData(combobox,"caption",caption)
 end
 
 function dgsComboBoxGetText(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	local captionEdit = dgsElementData[combobox].captionEdit
-	local selection = dgsElementData[combobox].select
-	local itemData = dgsElementData[combobox].itemData
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetText",1,"dgs-dxcombobox")) end
+	local eleData = dgsElementData[combobox]
+	local captionEdit = eleData.captionEdit
+	local selection = eleData.select
+	local itemData = eleData.itemData
 	local text = itemData[selection] and itemData[selection][1]
 	if captionEdit then
 		text = text or dgsGetText(captionEdit)
 	else
-		text = text or dgsElementData[combobox].caption
+		text = text or eleData.caption
 	end
 	return text or false
 end
 
 function dgsComboBoxGetCaptionText(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetDefaultText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetCaptionText",1,"dgs-dxcombobox")) end
 	return dgsElementData[combobox].caption
 end
 
 function dgsComboBoxSetEditEnabled(combobox,enabled)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetEditEnabled at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetEditEnabled",1,"dgs-dxcombobox")) end
 	local captionEdit = dgsElementData[combobox].captionEdit
 	if enabled then
 		if not isElement(captionEdit) then
@@ -221,13 +221,13 @@ end
 
 
 function dgsComboBoxGetEditEnabled(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetEditEnabled at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetEditEnabled",1,"dgs-dxcombobox")) end
 	return isElement(dgsElementData[combobox].captionEdit) and true or false
 end
 
 function dgsComboBoxSetBoxHeight(combobox,height,relative)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetBoxHeight at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(height) == "number","Bad argument @dgsComboBoxSetBoxHeight at argument 2, expect number got "..type(height))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetBoxHeight",1,"dgs-dxcombobox")) end
+	if not type(height) == "number" then error(dgsGenAsrt(height,"dgsComboBoxSetBoxHeight",2,"number")) end
 	relative = relative and true or false
 	local box = dgsElementData[combobox].myBox
 	dgsSetData(combobox,"configNextFrame",true)
@@ -239,7 +239,7 @@ function dgsComboBoxSetBoxHeight(combobox,height,relative)
 end
 
 function dgsComboBoxGetBoxHeight(combobox,relative)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetBoxHeight at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetBoxHeight",1,"dgs-dxcombobox")) end
 	relative = relative and true or false
 	local box = dgsElementData[combobox].myBox
 	if isElement(box) then
@@ -250,7 +250,7 @@ function dgsComboBoxGetBoxHeight(combobox,relative)
 end
 
 function dgsComboBoxAddItem(combobox,text)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxAddItem at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxAddItem",1,"dgs-dxcombobox")) end
 	local data = dgsElementData[combobox].itemData
 	local id = #data+1
 	local _text
@@ -275,188 +275,189 @@ function dgsComboBoxAddItem(combobox,text)
 	return id
 end
 
-function dgsComboBoxSetItemText(combobox,item,text)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemText at argument 2, expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		if type(text) == "table" then
-			data[item]._translationText = text
-			text = dgsTranslate(combobox,text,sourceResource)
-		else
-			data[item]._translationText = nil
-		end
-		data[item][1] = tostring(text)
+function dgsComboBoxSetItemText(combobox,i,text)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetItemText",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	if type(text) == "table" then
+		data[i]._translationText = text
+		text = dgsTranslate(combobox,text,sourceResource)
+	else
+		data[i]._translationText = nil
+	end
+	data[i][1] = tostring(text)
+	return true
+end
+
+function dgsComboBoxGetItemText(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemText",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return data[i][1]
+end
+
+function dgsComboBoxSetItemData(combobox,i,data,...)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetItemData",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	if select("#",...) == 0 then
+		iData[i][-1] = data
+		return true
+	else
+		iData[i][-2] = iData[i][-2] or {}
+		iData[i][-2][data] = ...
 		return true
 	end
 	return false
 end
 
-function dgsComboBoxGetItemText(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemText at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(tonumber(item),"Bad argument @dgsComboBoxGetItemText at argument 2, expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	local item = tonumber(item)
-	local item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		return data[item][1]
-	end
-	return false
-end
-
-function dgsComboBoxSetItemData(combobox,item,data,...)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(combobox))
-	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemData at argument 2, expect number got "..dgsGetType(item))
-	local itemData = dgsElementData[combobox].itemData
-	if item > 0 and item <= #itemData then
-		if select("#",...) == 0 then
-			itemData[item][-1] = data
-			return true
-		else
-			itemData[item][-2] = itemData[item][-2] or {}
-			itemData[item][-2][data] = ...
-		end
-	end
-	return false
-end
-
-function dgsComboBoxGetItemData(combobox,item,key)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsGridListGetItemData at argument 1, expect dgs-dxgridlist got "..dgsGetType(combobox))
-	assert(type(key) == "number","Bad argument @dgsGridListGetItemData at argument 2, expect number got "..dgsGetType(key))
-	local itemData = dgsElementData[combobox].itemData
-	if item > 0 and item <= #itemData then
-		if not key then
-			return itemData[item][-1]
-		else
-			return (itemData[item][-2] or {})[key] or false
-		end
+function dgsComboBoxGetItemData(combobox,i,key)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemData",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	if not key then
+		return itemData[i][-1]
+	else
+		return (itemData[i][-2] or {})[key] or false
 	end
 	return false
 end
 
 function dgsComboBoxGetItemCount(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemCount at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemCount",1,"dgs-dxcombobox")) end
 	return #dgsElementData[combobox].itemData
 end
 
-function dgsComboBoxSetItemColor(combobox,item,color)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemColor at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemColor at argument 2, expect number got "..type(item))
-	assert(type(color) == "number" or type(color) == "number","Bad argument @dgsComboBoxSetItemColor at argument 3, expect number/string got "..type(color))
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		data[item][-2] = color
-		return true
-	end
-	return false
+function dgsComboBoxSetItemColor(combobox,i,color)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetItemColor",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	iData[i][-2] = color
+	return true
 end
 
-function dgsComboBoxGetItemColor(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemColor at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","@dgsComboBoxGetItemColor argument 2,expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		return data[item][-2]
-	end
-	return false
+function dgsComboBoxGetItemColor(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemColor",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return iData[i][-2]
 end
 
-function dgsComboBoxSetItemFont(combobox,item,font)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemFont at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemFont at argument 2, expect number got "..type(item))
-	assert(fontBuiltIn[font] or dgsGetType(font) == "dx-font","Bad argument @dgsComboBoxSetItemFont at argument 3, invaild font (Type:"..dgsGetType(font)..",Value:"..tostring(font)..")")
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		data[item][-4] = font
-		return true
-	end
-	return false
+function dgsComboBoxSetItemFont(combobox,i,font)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetItemFont",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	iData[i][-4] = font
+	return true
 end
 
-function dgsComboBoxGetItemFont(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemFont at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","@dgsComboBoxGetItemFont argument 2,expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		return data[item][-4]
-	end
-	return false
+function dgsComboBoxGetItemFont(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemFont",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return iData[i][-4]
 end
 
-function dgsComboBoxSetItemImage(combobox,item,image,color,offx,offy,w,h,relative)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetItemImage at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","Bad argument @dgsComboBoxSetItemImage at argument 2, expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		local imageData = data[item][-6] or {}
-		imageData[1] = image or imageData[1]
-		imageData[2] = color or imageData[2] or white
-		imageData[3] = offx or imageData[3] or 0
-		imageData[4] = offy or imageData[4] or 0
-		imageData[5] = w or imageData[5] or relative and 1 or dgsGetSize(combobox)
-		imageData[6] = h or imageData[6] or relative and 1 or dgsElementData[combobox].itemHeight
-		imageData[7] = relative or false
-		data[item][-6] = imageData
-		return true
-	end
-	return false
+function dgsComboBoxSetItemImage(combobox,i,image,color,offx,offy,w,h,relative)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetItemImage",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	local imageData = iData[i][-6] or {}
+	imageData[1] = image or imageData[1]
+	imageData[2] = color or imageData[2] or white
+	imageData[3] = offx or imageData[3] or 0
+	imageData[4] = offy or imageData[4] or 0
+	imageData[5] = w or imageData[5] or relative and 1 or dgsGetSize(combobox)
+	imageData[6] = h or imageData[6] or relative and 1 or dgsElementData[combobox].itemHeight
+	imageData[7] = relative or false
+	iData[i][-6] = imageData
+	return true
 end
 
-function dgsComboBoxGetItemImage(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetItemImage at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","Bad argument @dgsComboBoxGetItemImage at argument 2, expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		return unpack(data[item][-6] or {})
-	end
-	return false
+function dgsComboBoxGetItemImage(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemImage",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return unpack(iData[i][-6] or {})
 end
 
-function dgsComboBoxRemoveItemImage(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxRemoveItemImage at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(item) == "number","Bad argument @dgsComboBoxRemoveItemImage at argument 2, expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	item = mathFloor(item)
-	if item >= 1 and item <= #data and data[item][-6] then
-		data[item][-6] = nil
-		return true
-	end
-	return false
+function dgsComboBoxRemoveItemImage(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxRemoveItemImage",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxRemoveItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	iData[i][-6] = nil
+	return true
 end
 
 function dgsComboBoxSetState(combobox,state)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetState at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetState",1,"dgs-dxcombobox")) end
 	return dgsSetData(combobox,"listState",state and 1 or -1)
 end
 
 function dgsComboBoxGetState(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetState at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetState",1,"dgs-dxcombobox")) end
 	return dgsElementData[combobox].listState == 1 and true or false
 end
 
-function dgsComboBoxRemoveItem(combobox,item)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxRemoveItem at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(tonumber(item),"Bad argument @dgsComboBoxRemoveItem at argument 2, expect number got "..type(item))
-	local data = dgsElementData[combobox].itemData
-	local item = tonumber(item)
-	local item = mathFloor(item)
-	if item >= 1 and item <= #data then
-		tableRemove(data,item)
-		dgsSetData(combobox,"configNextFrame",true)
-		return true
-	end
-	return false
+function dgsComboBoxRemoveItem(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxRemoveItem",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxRemoveItem",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	tableRemove(iData,i)
+	dgsElementData[combobox].configNextFrame = true
+	return true
 end
 
 function dgsComboBoxClear(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxClear at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxClear",1,"dgs-dxcombobox")) end
 	local data = dgsElementData[combobox].itemData
 	tableRemove(data)
 	dgsElementData[combobox].itemData = {}
@@ -464,41 +465,37 @@ function dgsComboBoxClear(combobox)
 	return true
 end
 
-function dgsComboBoxCreateBox(x,y,sx,sy,relative,parent)
-	local xCheck,yCheck,wCheck,hCheck,pCheck = type (x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number",dgsGetType(parent) == "dgs-dxcombobox"
-	if not xCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 4, expect number got "..type(sy)) end
-	if not pCheck then assert(false,"Bad argument @dgsComboBoxCreateBox at argument 6, expect dgs-dxcombobox got "..dgsGetType(parent)) end
+function dgsComboBoxCreateBox(x,y,w,h,relative,parent)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsComboBoxCreateBox",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsComboBoxCreateBox",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsComboBoxCreateBox",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsComboBoxCreateBox",4,"number")) end
+	if not(dgsGetType(parent) == "dgs-dxcombobox") then error(dgsGenAsrt(parent,"dgsComboBoxCreateBox",6,"dgs-dxcombobox")) end
 	local box = createElement("dgs-dxcombobox-Box")
 	dgsSetType(box,"dgs-dxcombobox-Box")
 	dgsSetParent(box,parent,true,true)
 	insertResource(sourceResource,box)
-	calculateGuiPositionSize(box,x,y,relative or false,sx,sy,relative or false,true)
+	calculateGuiPositionSize(box,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",box)
 	return box
 end
 
-function dgsComboBoxSetSelectedItem(combobox,id)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetSelectedItem at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(type(id) == "number","Bad argument @dgsComboBoxSetSelectedItem at argument 2, expect number got "..type(id))
-	local itemData = dgsElementData[combobox].itemData
+function dgsComboBoxSetSelectedItem(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetSelectedItem",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen or i == -1)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetSelectedItem",2,"number","-1,1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
 	local old = dgsElementData[combobox].select
-	if not id or id == -1 then
-		dgsSetData(combobox,"select",-1)
-		triggerEvent("onDgsComboBoxSelect",combobox,-1,old)
-		return true
-	elseif id >= 1 and id <= #itemData then
-		dgsSetData(combobox,"select",id)
-		triggerEvent("onDgsComboBoxSelect",combobox,id,old)
-		return true
-	end
-	return false
+	dgsSetData(combobox,"select",i)
+	triggerEvent("onDgsComboBoxSelect",combobox,i,old)
+	return true
 end
 
 function dgsComboBoxGetSelectedItem(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetSelectedItem at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetSelectedItem",1,"dgs-dxcombobox")) end
 	local itemData = dgsElementData[combobox].itemData
 	local selected = dgsElementData[combobox].select
 	if selected < 1 and selected > #itemData then
@@ -509,17 +506,20 @@ function dgsComboBoxGetSelectedItem(combobox)
 end
 
 function configComboBox(combobox,remainBox)
-	local box = dgsElementData[combobox].myBox
+	local eleData = dgsElementData[combobox]
+	local box = eleData.myBox
 	local size = dgsElementData[box].absSize
-	local itemData = dgsElementData[combobox].itemData
-	local scrollbar = dgsElementData[combobox].scrollbar
-	local itemHeight = dgsElementData[combobox].itemHeight
-	dgsSetVisible(scrollbar,#itemData*itemHeight > size[2])
+	local iData = eleData.itemData
+	local iLen = #iData
+	local scrollbar = eleData.scrollbar
+	local itemHeight = eleData.itemHeight
+	local allHeight = iLen*itemHeight
+	dgsSetVisible(scrollbar,allHeight > size[2])
 	if not remainBox then
 		local boxsiz = dgsElementData[box].absSize
-		local renderTarget = dgsElementData[combobox].renderTarget
+		local renderTarget = eleData.renderTarget
 		if isElement(renderTarget) then destroyElement(renderTarget) end
-		local sbt = dgsElementData[combobox].scrollBarThick
+		local sbt = eleData.scrollBarThick
 		local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox)
 		if renderTarget ~= false then
 			dgsAttachToAutoDestroy(renderTarget,combobox,-1)
@@ -529,28 +529,25 @@ function configComboBox(combobox,remainBox)
 		dgsSetData(combobox,"renderTarget",renderTarget)
 		dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
 		dgsSetSize(scrollbar,sbt,boxsiz[2],false)
-		local itemData = dgsElementData[combobox].itemData
-		local itemHeight = dgsElementData[combobox].itemHeight
-		local itemLength = itemHeight*#itemData
-		local higLen = 1-(itemLength-boxsiz[2])/itemLength
+		local higLen = 1-(allHeight-boxsiz[2])/allHeight
 		higLen = higLen >= 0.95 and 0.95 or higLen
 		dgsSetData(scrollbar,"length",{higLen,true})
-		local verticalScrollSize = dgsElementData[combobox].scrollSize/(itemLength-boxsiz[2])
+		local verticalScrollSize = eleData.scrollSize/(allHeight-boxsiz[2])
 		dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
 		dgsSetData(combobox,"configNextFrame",false)
 	end
 	---------------Caption edit
-	local edit = dgsElementData[combobox].captionEdit
+	local edit = eleData.captionEdit
 	if edit then
-		local size = dgsElementData[combobox].absSize
+		local size = eleData.absSize
 		local w,h = size[1],size[2]
-		local buttonLen_t = dgsElementData[combobox].buttonLen
+		local buttonLen_t = eleData.buttonLen
 		local buttonLen = 0
-		if dgsElementData[combobox].textBox then
+		if eleData.textBox then
 			buttonLen = w - (buttonLen_t[2] and buttonLen_t[1]*h or buttonLen_t[1])
 		end
 		dgsSetSize(edit,buttonLen,h,false)
-		dgsSetVisible(edit,dgsElementData[combobox].textBox)
+		dgsSetVisible(edit,eleData.textBox)
 	end
 end
 
@@ -583,8 +580,8 @@ addEventHandler("onDgsComboBoxStateChange",resourceRoot,function(state)
 end)
 
 function dgsComboBoxSetScrollPosition(combobox,vertical)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetScrollPosition at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
-	assert(not vertical or (type(vertical) == "number" and vertical>= 0 and vertical <= 100),"Bad argument @dgsComboBoxSetScrollPosition at at argument 2, expect nil, none or number∈[0,100] got "..dgsGetType(vertical).."("..tostring(vertical)..")")
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetScrollPosition",1,"dgs-dxcombobox")) end
+	if vertical and not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsComboBoxSetScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[combobox].scrollbar
 	if dgsElementData[scb].visible then
 		return dgsScrollBarSetScrollPosition(scb,vertical)
@@ -593,23 +590,24 @@ function dgsComboBoxSetScrollPosition(combobox,vertical)
 end
 
 function dgsComboBoxGetScrollPosition(combobox)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetScrollPosition at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetScrollPosition",1,"dgs-dxcombobox")) end
 	local scb = dgsElementData[combobox].scrollbar
 	return dgsScrollBarGetScrollPosition(scb)
 end
 
 function dgsComboBoxSetViewCount(combobox,count)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxSetViewCount at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetViewCount",1,"dgs-dxcombobox")) end
+	if not (count == nil or type(count) == "number") then error(dgsGenAsrt(count,"dgsComboBoxSetViewCount",2,"nil/number")) end
 	if type(count) == "number" then
-		dgsSetData(combobox,"viewCount",count,true)
-		return dgsComboBoxSetBoxHeight (combobox,count * dgsGetData(combobox,"itemHeight"))
+		dgsSetData(combobox,"viewCount",count)
+		return dgsComboBoxSetBoxHeight(combobox,count*dgsElementData[combobox].itemHeight)
 	else
 		return dgsSetData (combobox,"viewCount",false,true)
 	end
 end
 
 function dgsComboBoxGetViewCount(combobox,count)
-	assert(dgsGetType(combobox) == "dgs-dxcombobox","Bad argument @dgsComboBoxGetViewCount at at argument 1, expect dgs-dxcombobox got "..dgsGetType(combobox))
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetViewCount",1,"dgs-dxcombobox")) end
 	return dgsElementData[combobox].viewCount
 end
 

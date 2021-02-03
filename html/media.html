@@ -30,29 +30,29 @@
 						mta.triggerEvent("onDgsMediaStop",element.currentTime)
 					}
 					element.ontimeupdate = function(){
-						mta.triggerEvent("onDgsMediaTimeUpdate",element.currentTime)
+						mta.triggerEvent("onDgsMediaTimeUpdate",element.currentTime,element.seekable.start(0),element.seekable.end(0))
 					}
 				}else{
 					mta.triggerEvent("onDgsMediaBrowserReturn",1)
 				}
 			}
-			function mediaSetCurrentTime(time){
+			function setCurrentTime(time){
 				var element = document.getElementById("element");
 				if(element!=null){
-					element.currentTime = time;
+					element.currentTime = time
 				}
 			}
-			function mediaLoop(state){
+			function setLooped(state){
 				var element = document.getElementById("element");
 				if(element!=null){
-					element.loop = state;
+					element.loop = state
 				}
 			}
 			function stopMedia(){
 				var element = document.getElementById("element");
 				if(element!=null){
 					if(element.stop)
-						element.stop();
+						element.stop()
 				}
 			}
 			function playMedia(){
@@ -60,45 +60,51 @@
 				if(element!=null){
 					if(element.play)
 					try {
-						element.play();
+						element.play()
 					} catch (error) {
 						console.log(error)
 					}
+				}
+			}
+			function setSpeed(speed){
+				var element = document.getElementById("element");
+				if(element!=null){
+					element.playbackRate=speed
 				}
 			}
 			function pauseMedia(){
 				var element = document.getElementById("element");
 				if(element!=null){
 					if(element.pause)
-						element.pause();
+						element.pause()
 				}
 			}
-			function resizeMedia(w,h){
-				var element = document.getElementById("element");
+			function setSize(w,h){
+				var element = document.getElementById("element")
 				if(element!=null){
-					element.width = w;
-					element.height = h;
+					element.width = w
+					element.height = h
 				}
 			}
 			function clearMedia(){
-				var element = document.getElementById("element");
+				var element = document.getElementById("element")
 				if(element!=null)
 					element.parentNode.removeChild(element);
 			}
-			function mediaFill(state){
-				var element = document.getElementById("element");
+			function setFilled(state){
+				var element = document.getElementById("element")
 				if(state){
-					element.style.cssText = "object-fit: fill;";
+					element.style.cssText = "object-fit: fill;"
 				}else{
-					element.style.cssText = "object-fit: none;";
+					element.style.cssText = "object-fit: none;"
 				}
 			}
-			function mediaFullScreen(state)	{
+			function setFullScreen(state){
 				if(state){
-					var element = document.getElementById('element');
-					element.webkitRequestFullScreen();
+					var element = document.getElementById('element')
+					element.webkitRequestFullScreen()
 				}else{
-					document.webkitExitFullscreen();
+					document.webkitExitFullscreen()
 				}
 			}
 		</script>

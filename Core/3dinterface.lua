@@ -3,30 +3,19 @@ local assert = assert
 local type = type
 local tableInsert = table.insert
 
-local function LookRotation(x,y,z,rot)
-	local rx = deg(acos(((x^2+z^2)/(x^2+y^2+z^2))^0.5))
-	rx = y > 0 and 360-rx or rx
-	local ry = deg(atan2(x, z))
-	ry = ry < 0 and ry+ 180 or ry
-	ry = x < 0 and ry+ 180 or ry
-	return rx,ry,rot
-end
-
 function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
-	local rx,ry,rz = LookRotation(fx,fy,fz,rotation)
 	dxSetShaderValue(shader, "sElementColor",r/255,g/255,b/255,a/255)
 	dxSetShaderValue(shader, "sTexColor", tex )
 end
 
 function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot)
-	local xCheck,yCheck,zCheck,wCheck,hCheck,rxCheck,ryCheck = type(x) == "number",type(y) == "number",type(z) == "number",type(w) == "number",type(h) == "number",type(w) == "number",type(h) == "number",type(rx) == "number",type(ry) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 1, expect a number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 2, expect a number got "..type(y)) end
-	if not zCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 3, expect a number got "..type(z)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 4, expect a number got "..type(w)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 5, expect a number got "..type(h)) end
-	if not rxCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 6, expect a number got "..type(resolX)) end
-	if not ryCheck then assert(false,"Bad argument @dgsCreate3DInterface at argument 7, expect a number got "..type(resolX)) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DInterface",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DInterface",2,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DInterface",3,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreate3DInterface",4,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreate3DInterface",5,"number")) end
+	if not(type(resolX) == "number") then error(dgsGenAsrt(resolX,"dgsCreate3DInterface",6,"number")) end
+	if not(type(resolY) == "number") then error(dgsGenAsrt(resolY,"dgsCreate3DInterface",7,"number")) end
 	local interface = createElement("dgs-dx3dinterface")
 	tableInsert(dx3DInterfaceTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
@@ -46,6 +35,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 		dimension = -1,
 		interior = -1,
 		rotation = rot or 0,
+		--filterShader = dxCreateShader(defaultFilter)
 	}
 	local renderTarget,err = dxCreateRenderTarget(resolX,resolY,true,interface)
 	if renderTarget ~= false then
@@ -110,24 +100,17 @@ function dgsGetIntersection(lnVec,lnPnt,pnVec,pnPnt)
 	end
 end
 
-local blendMode = {
-	blend = true,
-	add = true,
-	modulate_add = true,
-	overwrite = true,
-}
 
 function dgs3DInterfaceSetRotation(interface,rotation)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetRotation at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(rotation) == "number","Bad argument @dgs3DInterfaceSetRotation at argument 2, expect a number got "..dgsGetType(rotation))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetRotation",1,"dgs-dx3dinterface")) end
+	if not (type(rotation) == "number") then error(dgsGenAsrt(rotation,"dgs3DInterfaceSetRotation",2,"number")) end
 	return dgsSetData(interface,"rotation",rotation)
 end
 
 function dgs3DInterfaceGetRotation(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetRotation at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetRotation",1,"dgs-dx3dinterface")) end
 	return dgsElementData[interface].rotation
 end
-
 
 function dgs3DInterfaceSetFaceTo(interface,fx,fy,fz,relativeTo)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetFaceTo at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
@@ -143,119 +126,116 @@ function dgs3DInterfaceSetFaceTo(interface,fx,fy,fz,relativeTo)
 end
 
 function dgs3DInterfaceGetFaceTo(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetFaceTo at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetFaceTo",1,"dgs-dx3dinterface")) end
 	local faceTo = dgsElementData[interface].faceTo or {}
 	local faceRelativeTo = dgsElementData[interface].faceRelativeTo or "self"
 	return faceTo[1],faceTo[2],faceTo[3],faceRelativeTo
 end
 
 function dgs3DInterfaceSetBlendMode(interface,blend)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetBlendMode at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(blend) == "string","Bad argument @dgs3DInterfaceSetBlendMode at argument 2, expect a string got "..dgsGetType(blend))
-	assert(blendMode[blend],"Bad argument @dgs3DInterfaceSetBlendMode at argument 2, couldn't find such blend mode "..blend)
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetBlendMode",1,"dgs-dx3dinterface")) end
+	if not (type(blend) == "string" and blendModeBuiltIn[blend]) then error(dgsGenAsrt(blend,"dgs3DInterfaceSetBlendMode",2,"string",blendModeBuiltIn[blend] and "blend/add/modulate_add/overwrite")) end
 	return dgsSetData(interface,"blendMode",blend)
 end
 
 function dgs3DInterfaceGetBlendMode(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetBlendMode at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetBlendMode",1,"dgs-dx3dinterface")) end
 	return dgsElementData[interface].blendMode
 end
 
 function dgs3DInterfaceSetPosition(interface,x,y,z)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetBlendMode at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(x) == "number","Bad argument @dgs3DInterfaceSetPosition at argument 2, expect a number got "..type(x))
-	assert(type(y) == "number","Bad argument @dgs3DInterfaceSetPosition at argument 3, expect a number got "..type(y))
-	assert(type(z) == "number","Bad argument @dgs3DInterfaceSetPosition at argument 4, expect a number got "..type(z))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetBlendMode",1,"dgs-dx3dinterface")) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DInterfaceSetPosition",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DInterfaceSetPosition",2,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DInterfaceSetPosition",3,"number")) end
 	return dgsSetData(interface,"position",{x,y,z})
 end
 
 function dgs3DInterfaceGetPosition(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetPosition at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetPosition",1,"dgs-dx3dinterface")) end
 	local pos = dgsElementData[interface].position
 	return pos[1],pos[2],pos[3]
 end
 
 function dgs3DInterfaceSetSize(interface,w,h)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetSize at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(w) == "number","Bad argument @dgs3DInterfaceSetSize at argument 2, expect a number got "..type(w))
-	assert(type(h) == "number","Bad argument @dgs3DInterfaceSetSize at argument 3, expect a number got "..type(h))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetSize",1,"dgs-dx3dinterface")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgs3DInterfaceSetSize",2,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgs3DInterfaceSetSize",3,"number")) end
 	return dgsSetData(interface,"size",{w,h})
 end
 
 function dgs3DInterfaceGetSize(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetSize at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetSize",1,"dgs-dx3dinterface")) end
 	local size = dgsElementData[interface].size
 	return size[1],size[2]
 end
 
 function dgs3DInterfaceGetDimension(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetDimension at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetDimension",1,"dgs-dx3dinterface")) end
 	return dgsElementData[interface].dimension or -1
 end
 
 function dgs3DInterfaceSetDimension(interface,dimension)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetDimension at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(dimension) == "number","Bad argument @dgs3DInterfaceSetDimension at argument 2, expect a number got "..type(dimension))
-	assert(dimension >= -1 and dimension <= 65535,"Bad argument @dgs3DInterfaceSetDimension at argument 2, out of range [ -1 ~ 65535 ] got "..dimension)
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetDimension",1,"dgs-dx3dinterface")) end
+	local inRange = dimension >= -1 and dimension <= 65535
+	if not(type(dimension) == "number" and inRange) then error(dgsGenAsrt(dimension,"dgs3DInterfaceSetDimension",2,"number","-1~65535",inRange and "Out Of Range")) end
 	return dgsSetData(interface,"dimension",dimension-dimension%1)
 end
 
 function dgs3DInterfaceGetInterior(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetInterior at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetInterior",1,"dgs-dx3dinterface")) end
 	return dgsElementData[interface].interior or -1
 end
 
 function dgs3DInterfaceSetInterior(interface,interior)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetInterior at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(interior) == "number","Bad argument @dgs3DInterfaceSetInterior at argument 2, expect a number got "..type(interior))
-	assert(interior >= -1,"Bad argument @dgs3DInterfaceSetInterior at argument 2, out of range [ -1 ~ +∞ ] got "..interior)
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetInterior",1,"dgs-dx3dinterface")) end
+	local inRange = interior >= -1
+	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DInterfaceSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
 	return dgsSetData(interface,"interior",interior-interior%1)
 end
 
-function dgs3DInterfaceSetResolution(interface,w,h)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(w) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
-	assert(type(h) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
+function dgs3DInterfaceSetResolution(interface,resw,resh)
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetResolution",1,"dgs-dx3dinterface")) end
+	if not(type(resw) == "number") then error(dgsGenAsrt(resw,"dgs3DInterfaceSetResolution",2,"number")) end
+	if not(type(resh) == "number") then error(dgsGenAsrt(resh,"dgs3DInterfaceSetResolution",3,"number")) end
 	local oldRT = dgsElementData[interface].renderTarget_parent
 	if isElement(oldRT) then destroyElement(oldRT) end
-	local renderTarget,err = dxCreateRenderTarget(w,h,true,interface)
+	local renderTarget,err = dxCreateRenderTarget(resw,resh,true,interface)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,interface,-1)
 	else
 		outputDebugString(err)
 	end
 	dgsSetData(interface,"renderTarget_parent",renderTarget)
-	return dgsSetData(interface,"resolution",{w,h})
+	return dgsSetData(interface,"resolution",{resw,resh})
 end
 
 function dgs3DInterfaceGetResolution(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetResolution at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(type(w) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 2, expect a number got "..type(w))
-	assert(type(h) == "number","Bad argument @dgs3DInterfaceSetResolution at argument 3, expect a number got "..type(h))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetResolution",1,"dgs-dx3dinterface")) end
 	local size = dgsElementData[interface].resolution
 	return size[1],size[2]
 end
 
 function dgs3DInterfaceAttachToElement(interface,element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceAttachToElement at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
-	assert(isElement(element),"Bad argument @dgs3DInterfaceAttachToElement at argument 2, expect an element got "..dgsGetType(element))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceAttachToElement",1,"dgs-dx3dinterface")) end
+	if not isElement(element) then error(dgsGenAsrt(element,"dgs3DInterfaceAttachToElement",2,"element")) end
 	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
 	local offFaceX,offFaceY,offFaceZ = offFaceX or 0,offFaceY or 1,offFaceZ or 0
 	return dgsSetData(interface,"attachTo",{element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ})
 end
 
 function dgs3DInterfaceIsAttached(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceIsAttached at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceIsAttached",1,"dgs-dx3dinterface")) end
 	return dgsElementData[interface].attachTo
 end
 
 function dgs3DInterfaceDetachFromElement(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceDetachFromElement at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceDetachFromElement",1,"dgs-dx3dinterface")) end
 	return dgsSetData(interface,"attachTo",false)
 end
 
 function dgs3DInterfaceSetAttachedOffsets(interface,offX,offY,offZ,offFaceX,offFaceY,offFaceZ)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetAttachedOffsets at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetAttachedOffsets",1,"dgs-dx3dinterface")) end
 	local attachTable = dgsElementData[interface].attachTo
 	if attachTable then
 		local offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
@@ -266,7 +246,7 @@ function dgs3DInterfaceSetAttachedOffsets(interface,offX,offY,offZ,offFaceX,offF
 end
 
 function dgs3DInterfaceGetAttachedOffsets(interface)
-	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceGetAttachedOffsets at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetAttachedOffsets",1,"dgs-dx3dinterface")) end
 	local attachTable = dgsElementData[interface].attachTo
 	if attachTable then
 		local offX,offY,offZ = attachTable[2],attachTable[3],attachTable[4]
