@@ -18,58 +18,46 @@
 	<head>
 		<meta charset="utf-8" />
 		<script type="text/javascript">
-			function createListener(element)
-			{
-				if(element!=null)
-				{
-					element.addEventListener('play',function(){
+			function createListener(element){
+				if(element!=null){
+					element.onplaying = function(){
 						mta.triggerEvent("onDgsMediaPlay",element.currentTime)
-					});
-					element.addEventListener('pause',function(){
+					}
+					element.onpause = function(){
 						mta.triggerEvent("onDgsMediaPause",element.currentTime)
-					});
-					element.addEventListener('ended',function(){
+					}
+					element.onended = function(){
 						mta.triggerEvent("onDgsMediaStop",element.currentTime)
-					});
-					element.addEventListener('timeupdate',function(){
+					}
+					element.ontimeupdate = function(){
 						mta.triggerEvent("onDgsMediaTimeUpdate",element.currentTime)
-					});
-				}
-				else
-				{
+					}
+				}else{
 					mta.triggerEvent("onDgsMediaBrowserReturn",1)
 				}
 			}
-			function mediaSetCurrentTime(time)
-			{
+			function mediaSetCurrentTime(time){
 				var element = document.getElementById("element");
-				if(element!=null)
-				{
+				if(element!=null){
 					element.currentTime = time;
 				}
 			}
-			function mediaLoop(state)
-			{
+			function mediaLoop(state){
 				var element = document.getElementById("element");
-				if(element!=null)
-				{
+				if(element!=null){
 					element.loop = state;
 				}
 			}
-			function stopMedia()
-			{
+			function stopMedia(){
 				var element = document.getElementById("element");
-				if(element!=null)
-				{
+				if(element!=null){
 					if(element.stop)
 						element.stop();
 				}
 			}
-			function playMedia()
-			{
+			function playMedia(){
 				var element = document.getElementById("element");
-				if(element!=null)
-				{
+				if(element!=null){
 					if(element.play)
 					try {
 						element.play();
@@ -78,51 +66,38 @@
 					}
 				}
 			}
-			function pauseMedia()
-			{
+			function pauseMedia(){
 				var element = document.getElementById("element");
-				if(element!=null)
-				{
+				if(element!=null){
 					if(element.pause)
 						element.pause();
 				}
 			}
-			function resizeMedia(w,h)
-			{
+			function resizeMedia(w,h){
 				var element = document.getElementById("element");
-				if(element!=null)
-				{
+				if(element!=null){
 					element.width = w;
 					element.height = h;
 				}
 			}
-			function clearMedia()
-			{
+			function clearMedia(){
 				var element = document.getElementById("element");
 				if(element!=null)
 					element.parentNode.removeChild(element);
 			}
-			function mediaFill(state)
-			{
+			function mediaFill(state){
 				var element = document.getElementById("element");
-				if(state)
-				{
+				if(state){
 					element.style.cssText = "object-fit: fill;";
-				}
-				else
-				{
+				}else{
 					element.style.cssText = "object-fit: none;";
 				}
 			}
-			function mediaFullScreen(state)
-			{
-				if(state)
-				{
+			function mediaFullScreen(state)	{
+				if(state){
 					var element = document.getElementById('element');
 					element.webkitRequestFullScreen();
-				}
-				else
-				{
+				}else{
 					document.webkitExitFullscreen();
 				}
 			}
