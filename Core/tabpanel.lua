@@ -33,15 +33,13 @@ local mathInRange = math.inRange
 local tableInsert = table.insert
 local tableRemove = table.remove
 
-function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
-	local xCheck,yCheck,wCheck,hCheck = type(x) == "number",type(y) == "number",type(sx) == "number",type(sy) == "number"
-	if not xCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 1, expect number got "..type(x)) end
-	if not yCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 2, expect number got "..type(y)) end
-	if not wCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 3, expect number got "..type(sx)) end
-	if not hCheck then assert(false,"Bad argument @dgsCreateTabPanel at argument 4, expect number got "..type(sy)) end
+function dgsCreateTabPanel(x,y,w,h,relative,parent,tabHeight,bgImage,bgColor)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateTabPanel",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateTabPanel",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateTabPanel",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateTabPanel",4,"number")) end
 	if bgImage then
-		local eleType = dgsIsMaterialElement(bgImage)
-		assert(eleType == true,"Bad argument @dgsCreateTabPanel at argument 8, expect material got "..eleType)
+		if not dgsIsMaterialElement(bgImage) then error(dgsGenAsrt(bgImage,"dgsCreateTabPanel",8,"material")) end
 	end
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
@@ -64,12 +62,12 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 		showPos = 0;
 		tabLengthAll = 0;
 	}
-	calculateGuiPositionSize(tabpanel,x,y,relative,sx,sy,relative,true)
+	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
 	local renderTarget,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,tabpanel,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsElementData[tabpanel].renderTarget = renderTarget
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
@@ -77,17 +75,16 @@ function dgsCreateTabPanel(x,y,sx,sy,relative,parent,tabHeight,bgImage,bgColor)
 end
 
 function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor)
-	local typeCheck =  dgsGetType(tabpanel) == "dgs-dxtabpanel"
-	if not typeCheck then assert(false,"Bad argument @dgsCreateTab at argument 2, expect dgs-dxtabpanel got "..dgsGetType(tabpanel)) end
+	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsCreateTab",2,"dgs-dxtabpanel")) end
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
 	dgsSetParent(tab,tabpanel,true,true)
 	local style = styleSettings.tab
 	local eleData = dgsElementData[tabpanel]
+	local w = eleData.absSize[1]
 	local tabs = eleData.tabs
 	local id = #tabs+1
 	tableInsert(tabs,id,tab)
-	local w = eleData.absSize[1]
 	local font = style.font or eleData.font
 	local t_minWid,t_maxWid = eleData.tabMinWidth,eleData.tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
@@ -115,11 +112,14 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage) or eleData.bgImage,
 		tabImage = {tabnorimg,tabhovimg,tabcliimg},
 		tabColor = {tabnorcolor,tabhovcolor,tabclicolor},
+		iconColor = 0xFFFFFFFF,
+		iconDirection = "left",
+		iconImage = nil,
+		iconOffset = 5,
+		iconSize = {1,1,true}; -- Text's font heigh,
 	}
-	if eleData.selected == -1 then
-		eleData.selected = id
-	end
-	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or getThisResource()])
+	if eleData.selected == -1 then eleData.selected = id end
+	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[tab]._translationText = text
 		dgsSetData(tab,"text",text)
@@ -131,15 +131,14 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 end
 
 function dgsTabPanelGetWidth(tabpanel,includeInvisible)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelGetWidth at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
-	local wid = 0
+	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsTabPanelGetWidth",1,"dgs-dxtabpanel")) end
+	local wid,cnt = 0,0
 	local eleData = dgsElementData[tabpanel]
+	local w = eleData.absSize[1]
 	local tabs = eleData.tabs
 	local tabPadding,tabGapSize = eleData.tabPadding,eleData.tabGapSize
-	local w = eleData.absSize[1]
 	local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
-	local cnt = 0
 	if includeInvisible then
 		for i=1,#tabs do
 			local tab = tabs[i]
@@ -161,15 +160,15 @@ function dgsTabPanelGetWidth(tabpanel,includeInvisible)
 end
 
 function dgsTabPanelGetTabFromID(tabpanel,id)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelGetTabFromID at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
-	assert(type(id) == "number","Bad argument @dgsTabPanelGetTabFromID at at argument 2, expect number got "..type(id))
+	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsTabPanelGetTabFromID",1,"dgs-dxtabpanel")) end
+	if not(type(id) == "number") then error(dgsGenAsrt(id,"dgsTabPanelGetTabFromID",1,"number")) end
 	return dgsElementData[tabpanel].tabs[id]
 end
 
 function dgsTabPanelMoveTab(tabpanel,from,to)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsTabPanelMoveTab at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
-	assert(type(from) == "number","Bad argument @dgsTabPanelMoveTab at at argument 2, expect number got "..type(from))
-	assert(type(to) == "number","Bad argument @dgsTabPanelMoveTab at at argument 3, expect number got "..type(to))
+	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsTabPanelMoveTab",1,"dgs-dxtabpanel")) end
+	if not(type(from) == "number") then error(dgsGenAsrt(from,"dgsTabPanelGetTabFromID",2,"number")) end
+	if not(type(to) == "number") then error(dgsGenAsrt(to,"dgsTabPanelGetTabFromID",3,"number")) end
 	local tab = dgsElementData[tabpanel].tabs[from]
 	local myid = dgsElementData[tab].id
 	local parent = dgsElementData[tab].parent
@@ -188,12 +187,12 @@ function dgsTabPanelMoveTab(tabpanel,from,to)
 end
 
 function dgsTabPanelGetTabID(tab)
-	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsTabPanelGetTabID at at argument 1, expect dgs-dxtab got "..dgsGetType(tab))
+	if not dgsIsType(tab,"dgs-dxtab") then error(dgsGenAsrt(tab,"dgsTabPanelGetTabID",1,"dgs-dxtab")) end
 	return dgsElementData[tab].id
 end
 
 function dgsDeleteTab(tab)
-	assert(dgsGetType(tab) == "dgs-dxtab","Bad argument @dgsDeleteTab at at argument 1, expect dgs-dxtab got "..dgsGetType(tab))
+	if not dgsIsType(tab,"dgs-dxtab") then error(dgsGenAsrt(tab,"dgsDeleteTab",1,"dgs-dxtab")) end
 	local tabpanel = dgsElementData[tab].parent
 	local eleData = dgsElementData[tabpanel]
 	if dgsGetType(tabpanel) == "dgs-dxtabpanel" then
@@ -228,13 +227,14 @@ function configTabPanel(source)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,source,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsSetData(source,"renderTarget",renderTarget)
+	dgsElementData[source].configNextFrame = false
 end
 
 function dgsGetSelectedTab(tabpanel,useNumber)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsGetSelectedTab at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
+	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsGetSelectedTab",1,"dgs-dxtabpanel")) end
 	local id = dgsElementData[tabpanel].selected
 	local tabs = dgsElementData[tabpanel].tabs
 	if useNumber then
@@ -245,9 +245,9 @@ function dgsGetSelectedTab(tabpanel,useNumber)
 end
 
 function dgsSetSelectedTab(tabpanel,id)
-	assert(dgsGetType(tabpanel) == "dgs-dxtabpanel","Bad argument @dgsSetSelectedTab at at argument 1, expect dgs-dxtabpanel got "..dgsGetType(tabpanel))
+	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsSetSelectedTab",1,"dgs-dxtabpanel")) end
 	local idtype = dgsGetType(id)
-	assert(idtype == "number" or idtype == "dgs-dxtab","Bad argument @dgsSetSelectedTab at at argument 2, expect number/dgs-dxtab got "..idtype)
+	if not(idtype=="number" or idtype=="dgs-dxtab") then error(dgsGenAsrt(idtype,"dgsSetSelectedTab",2,"number/dgs-dxtab")) end
 	local tabs = dgsElementData[tabpanel].tabs
 	id = idtype == "dgs-dxtab" and dgsElementData[id].id or id
 	if mathInRange(1,#tabs,id) then
@@ -260,6 +260,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
+	if eleData.configNextFrame then configTabPanel(source) end
 	eleData.rndPreSelect = -1
 	local selected = eleData.selected
 	local tabs = eleData.tabs
