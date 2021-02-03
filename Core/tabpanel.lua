@@ -70,6 +70,9 @@ function dgsCreateTabPanel(x,y,w,h,relative,parent,tabHeight,bgImage,bgColor)
 		outputDebugString(err,2)
 	end
 	dgsElementData[tabpanel].renderTarget = renderTarget
+	addEventHandler("onDgsSizeChange",tabpanel,function()
+		dgsElementData[source].configNextFrame = true
+	end,false)
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
 end
