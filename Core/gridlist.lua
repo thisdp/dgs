@@ -133,7 +133,7 @@ function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTe
 		if columnRender ~= false then
 			dgsAttachToAutoDestroy(columnRender,gridlist,-1)
 		else
-			outputDebugString(err)
+			outputDebugString(err,2)
 		end
 	end
 	if abx*(aby-columnHeight-scbThick) ~= 0 then
@@ -141,7 +141,7 @@ function dgsCreateGridList(x,y,w,h,relative,parent,columnHeight,bgColor,columnTe
 		if rowRender ~= false then
 			dgsAttachToAutoDestroy(rowRender,gridlist,-2)
 		else
-			outputDebugString(err)
+			outputDebugString(err,2)
 		end
 	end
 	dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})
@@ -1959,7 +1959,7 @@ function configGridList(gridlist)
 				if columnRender ~= false then
 					dgsAttachToAutoDestroy(columnRender,gridlist,-1)
 				else
-					outputDebugString(err)
+					outputDebugString(err,2)
 				end
 			end
 			if relSizX*rowShowRange ~= 0 then
@@ -1967,7 +1967,7 @@ function configGridList(gridlist)
 				if rowRender ~= false then
 					dgsAttachToAutoDestroy(rowRender,gridlist,-2)
 				else
-					outputDebugString(err)
+					outputDebugString(err,2)
 				end
 			end
 			dgsSetData(gridlist,"renderTarget",{columnRender,rowRender})

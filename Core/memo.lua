@@ -153,7 +153,7 @@ function dgsCreateMemo(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,memo,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsElementData[memo].renderTarget = renderTarget
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
@@ -1139,7 +1139,7 @@ function configMemo(memo)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,memo,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsSetData(memo,"renderTarget",renderTarget)
 	dgsSetData(memo,"configNextFrame",false)

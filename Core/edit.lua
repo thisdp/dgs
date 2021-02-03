@@ -135,7 +135,7 @@ function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,edit,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsElementData[edit].renderTarget = renderTarget
 	handleDxEditText(edit,text,false,true)
@@ -475,7 +475,7 @@ function configEdit(edit)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,edit,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsAttachToAutoDestroy(renderTarget,edit,1)
 	dgsSetData(edit,"renderTarget",renderTarget)

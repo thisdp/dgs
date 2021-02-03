@@ -41,7 +41,7 @@ function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,di
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,interface,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsElementData[interface].renderTarget_parent = renderTarget
 	triggerEvent("onDgsCreate",interface,sourceResource)
@@ -204,7 +204,7 @@ function dgs3DInterfaceSetResolution(interface,resw,resh)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,interface,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsSetData(interface,"renderTarget_parent",renderTarget)
 	return dgsSetData(interface,"resolution",{resw,resh})

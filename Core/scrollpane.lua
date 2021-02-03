@@ -58,7 +58,7 @@ function dgsCreateScrollPane(x,y,w,h,relative,parent)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsElementData[scrollpane].renderTarget_parent = renderTarget
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,w,h,relative or false,true)
@@ -229,7 +229,7 @@ function configScrollPane(scrollpane)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
 	else
-		outputDebugString(err)
+		outputDebugString(err,2)
 	end
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
 	dgsSetData(scrollpane,"configNextFrame",false)

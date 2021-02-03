@@ -440,6 +440,8 @@ function dgsSetData(dgsEle,key,value,nocheck)
 			local old = oldValue[2] and oldValue[1]*width or oldValue[1]
 			local tabs = dgsElementData[dgsEle].tabs
 			dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*math.max((#tabs-1),1))
+		elseif key == "tabHeight" then
+			dgsElementData[dgsEle].configNextFrame = true
 		end
 	elseif dgsType == "dgs-dxtab" then
 		if key == "text" then
