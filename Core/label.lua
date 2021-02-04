@@ -37,7 +37,7 @@ function dgsCreateLabel(x,y,w,h,text,relative,parent,textColor,scalex,scaley,sha
 		font = style.font or systemFont,
 		rotation = 0,
 		rotationCenter = {0, 0},
-		shadow = shadowoffsetx,shadowoffsety,shadowcolor,
+		shadow = {shadowoffsetx,shadowoffsety,shadowcolor},
 		subPixelPositioning = false,
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX, textSizeY},

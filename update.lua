@@ -251,6 +251,7 @@ function backupStyleMapper()
 		fileClose(file)
 	end
 end
+
 function recoverStyleMapper()
 	assert(styleBackupStr ~= "","[DGS] Failed to recover style mapper")
 	local meta = fileOpen("updated/meta.xml")

@@ -71,6 +71,10 @@ addCommandHandler("debugdgs",function(command,arg)
 		debugMode = 2
 		setElementData(localPlayer,"DGS-DEBUG",2,false)
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 2 )"),255,255,255,true)
+	elseif arg == "3" then
+		debugMode = 3
+		setElementData(localPlayer,"DGS-DEBUG",3,false)
+		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 3 )"),255,255,255,true)
 	elseif arg == "c" then
 		local comp = not getElementData(localPlayer,"DGS-DEBUG-C")
 		outputChatBox("[DGS]Debug Mode For Compatibility Check "..(comp and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
@@ -191,7 +195,7 @@ end
 1: character
 ]]
 function utf8.getCharType(c)
-	local cCode = utf8.byte(c)
+	local cCode = utf8Byte(c)
 	local cType = 1
 	if cCode <= 47 then
 		cType = 0
@@ -331,6 +335,13 @@ VerticalAlign = {
 	bottom = "bottom",
 }
 --------------------------------Color Utility
+white = 0xFFFFFFFF
+black = 0xFF000000
+green = 0xFF00FF00
+red = 0xFFFF0000
+blue = 0xFF0000FF
+yellow = 0xFFFFFF00
+
 function fromcolor(int,useMath,relative)
 	local a,r,g,b
 	if useMath then
@@ -515,7 +526,7 @@ function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends,ends)
 	local got = reqType and " got "..dgsGetType(x).."("..inspectV..")" or ""
 	local ends = ends and (" "..ends) or ""
 	local argIndex = argx and (" at argument "..argx) or ""
-	local str = "\nBad Argument @'"..funcName.."'"..appendInfo..expected..argIndex..","..got..ends
+	local str = "Bad Argument @'"..funcName.."'"..appendInfo..expected..argIndex..","..got..ends
 	return str
 end
 --------------------------------Dx Utility
@@ -572,7 +583,7 @@ end
 --------------------------------Other Utility
 function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)
-		return string.format("%%%02X",c:byte())
+		return format("%%%02X",byte(c))
 	end)
     return gsub(s," ","+")
 end
@@ -656,7 +667,7 @@ technique RepTexture {
 PixShaderVersion = {"2_0","2_a","2_b","3_0"}
 function checkPixelShaderVersion()
 	for i,ver in ipairs(PixShaderVersion) do
-		local shaderCode = string.gsub(PixelShaderCode,"&rep",ver)
+		local shaderCode = gsub(PixelShaderCode,"&rep",ver)
 		local shader = dxCreateShader(shaderCode)
 		if shader then
 			ClientInfo.SupportedPixelShader[ver] = true

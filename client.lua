@@ -6,21 +6,21 @@ local find = string.find
 local rep = string.rep
 local gsub = string.gsub
 local floor = math.floor
+local ceil = math.ceil
 local min = math.min
 local max = math.max
+local clamp = math.restrict
+local lerp = math.lerp
 local tocolor = tocolor
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
 local dxDrawImageSection = dxDrawImageSectionExt
 local dxDrawText = dxDrawText
-local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
-local dxSetShaderValue = dxSetShaderValue
 local dxGetPixelsSize = dxGetPixelsSize
 local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
-local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
 local utf8Len = utf8.len
@@ -40,12 +40,6 @@ local _getElementID = getElementID
 local getElementID = function(ele) return isElement(ele) and _getElementID(ele) or tostring(ele) end
 ----
 sW,sH = guiGetScreenSize()
-white = 0xFFFFFFFF
-black = 0xFF000000
-green = 0xFF00FF00
-red = 0xFFFF0000
-blue = 0xFF0000FF
-yellow = 0xFFFFFF00
 fontSize = {}
 self,renderArguments = false,false
 dgsRenderSetting = {
@@ -671,7 +665,7 @@ addEventHandler("onClientKey",root,function(button,state)
 				if my < y+height then
 					local speed = dgsElementData[tabpanel].scrollSpeed[2] and dgsElementData[tabpanel].scrollSpeed[1] or dgsElementData[tabpanel].scrollSpeed[1]/width
 					local orgoff = dgsElementData[tabpanel].showPos
-					orgoff = math.restrict(orgoff+scroll*speed,0,1)
+					orgoff = clamp(orgoff+scroll*speed,0,1)
 					dgsSetData(tabpanel,"showPos",orgoff)
 				end
 			end
@@ -687,7 +681,7 @@ addEventHandler("onClientKey",root,function(button,state)
 				local itemData = dgsElementData[MouseData.enter].itemData
 				local itemCount = #itemData
 				local currentItem = dgsElementData[MouseData.enter].selectedItem
-				dgsSelectorSetSelectedItem(MouseData.enter,math.floor(math.restrict(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
+				dgsSelectorSetSelectedItem(MouseData.enter,floor(clamp(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
 			end
 		end
 	elseif state then
@@ -1109,7 +1103,7 @@ function onClientMouseTriggered()
 				if troughClickAction == "step" then
 					scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
 				elseif troughClickAction == "jump" then
-					dgsSetProperty(scrollbar,"position",math.restrict(scbEnterRltPos,0,1)*100)
+					dgsSetProperty(scrollbar,"position",clamp(scbEnterRltPos,0,1)*100)
 				end
 			end
 		elseif dgsType == "dgs-dxselector" then
@@ -1125,12 +1119,12 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = math.lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0
 					end
-					dgsSelectorSetSelectedItem(selector,math.ceil(math.restrict(currentItem-offsetItem,1,itemCount)))
+					dgsSelectorSetSelectedItem(selector,ceil(clamp(currentItem-offsetItem,1,itemCount)))
 				end
 			elseif MouseData.selectorEnterData == 3 then
 				local itemData = dgsElementData[selector].itemData
@@ -1139,12 +1133,12 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = math.lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0
 					end
-					dgsSelectorSetSelectedItem(selector,math.floor(math.restrict(currentItem+offsetItem,1,itemCount)))
+					dgsSelectorSetSelectedItem(selector,floor(clamp(currentItem+offsetItem,1,itemCount)))
 				end
 			end
 		end
@@ -1286,12 +1280,13 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 end)
 
 function checkMove(source)
-	local moveData = dgsElementData[source].moveHandlerData
+	local eleData = dgsElementData[source]
+	local moveData = eleData.moveHandlerData
 	if moveData then
 		local mx,my = getCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
-		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local w,h = eleData.absSize[1],eleData.absSize[2]
 		local offsetx,offsety = mx-x,my-y
 		local xRel,yRel,wRel,hRel = moveData[5],moveData[6],moveData[7],moveData[8]
 		local chx = xRel and moveData[1]*w or moveData[1]
@@ -1307,12 +1302,12 @@ function checkMove(source)
 		local mx,my = getCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
-		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
+		local w,h = eleData.absSize[1],eleData.absSize[2]
 		local offsetx,offsety = mx-x,my-y
-		local moveData = dgsElementData[source].moveHandlerData
-		local movable = dgsElementData[source].movable
+		local moveData = eleData.moveHandlerData
+		local movable = eleData.movable
 		if not movable then return end
-		local titsize = dgsElementData[source].movetyp and h or dgsElementData[source].titleHeight
+		local titsize = eleData.movetyp and h or eleData.titleHeight
 		if offsety > titsize then return end
 		MouseData.Move = {offsetx,offsety}
 		triggerEvent("onDgsElementMove",source,offsetx,offsety)
