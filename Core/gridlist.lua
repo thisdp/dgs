@@ -810,36 +810,32 @@ function dgsGridListGetColumnAllWidth(gridlist,c,relative,mode)
 	local eleData = dgsElementData[gridlist]
 	local cData = eleData.columnData
 	local cLen = #cData
-	if cLen == 0 then return false end
+	if cLen == 0 then return 0 end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnAllWidth",2,"number","0~"..cLen,cNInRange and "Out Of Range")) end
 	local c = c-c%1
 	local columnSize = eleData.absSize[1]-eleData.scrollBarThick
 	local rlt = eleData.columnRelative
-	if c > 0 then
-		if mode then
-			local data = cData[c][3]+cData[c][2]
-			if relative then
-				return rlt and data or data/columnSize
-			else
-				return rlt and data*columnSize or data
-			end
+	if mode then
+		local data = cData[c][3]+cData[c][2]
+		if relative then
+			return rlt and data or data/columnSize
 		else
-			local dataLength = 0
-			for i=1,cLen do
-				dataLength = dataLength + cData[i][2]
-				if i == c then
-					if relative then
-						return rlt and dataLength or dataLength/columnSize
-					else
-						return rlt and dataLength*columnSize or dataLength
-					end
+			return rlt and data*columnSize or data
+		end
+	else
+		local dataLength = 0
+		for i=1,cLen do
+			dataLength = dataLength + cData[i][2]
+			if i == c then
+				if relative then
+					return rlt and dataLength or dataLength/columnSize
+				else
+					return rlt and dataLength*columnSize or dataLength
 				end
 			end
 		end
-	elseif c == 0 then
-		return 0
 	end
 	return false
 end
@@ -1178,7 +1174,7 @@ function dgsGridListRemoveRow(gridlist,r)
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
 	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListRemoveRow",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
 	local r = r-r%1
-	tableRemove(rowData,r)
+	tableRemove(rData,r)
 	dgsElementData[gridlist].configNextFrame = true
 	return true
 end
@@ -1891,22 +1887,22 @@ end
 function configGridList(gridlist)
 	local eleData = dgsElementData[gridlist]
 	local scrollbar = eleData.scrollbars
-	local sx,sy = eleData.absSize[1],eleData.absSize[2]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local columnHeight,rowHeight,leading = eleData.columnHeight,eleData.rowHeight,eleData.leading
 	local scbThick = eleData.scrollBarThick
 	local columnWidth = dgsGridListGetColumnAllWidth(gridlist,#eleData.columnData,false,true)
 	local rowLength = #eleData.rowData*(rowHeight+leading)
-	local scbX,scbY = sx-scbThick,sy-scbThick
+	local scbX,scbY = w-scbThick,h-scbThick
 	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
-	if columnWidth > sx then
+	if columnWidth > w then
 		scbStateH = true
-	elseif columnWidth < sx-scbThick then
+	elseif columnWidth < w-scbThick then
 		scbStateH = false
 	end
-	if rowLength > sy-columnHeight then
+	if rowLength > h-columnHeight then
 		scbStateV = true
-	elseif rowLength < sy-columnHeight-scbThick then
+	elseif rowLength < h-columnHeight-scbThick then
 		scbStateV = false
 	end
 	if scbStateH == nil then scbStateH = scbStateV end
@@ -1915,7 +1911,7 @@ function configGridList(gridlist)
 	if forceState[1] ~= nil then scbStateV = forceState[1] end
 	if forceState[2] ~= nil then scbStateH = forceState[2] end
 	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
-	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
+	local relSizX,relSizY = w-scbThickV,h-scbThickH
 	local rowShowRange = relSizY-columnHeight
 	local columnShowRange = relSizX
 	if scbStateH and scbStateH ~= oriScbStateH then
