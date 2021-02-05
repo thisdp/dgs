@@ -1,11 +1,12 @@
 styleSettings = {}
-styleManager = {}
-styleManager.customStyle = "Default"
-styleManager.sharedTexture = {}
-styleManager.createdTexture = {}
-styleManager.createdShader = {}
-styleManager.styles = {Default="Default"}
-styleManager.styleHistory = {"Default"}
+styleManager = {
+	customStyle = "Default"
+	sharedTexture = {}
+	createdTexture = {}
+	createdShader = {}
+	styles = {Default="Default"}
+	styleHistory = {"Default"}
+}
 
 function scanCustomStyle()
 	local styleMapper = fileOpen("styleManager/styleMapper.lua")
