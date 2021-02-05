@@ -2,6 +2,12 @@
 if not getElementData(root,"__DGSRes") then assert(false,"Invalid DGS Resource! Please check whether your dgs resource is started") end
 if not dgsImportHead then loadstring(exports[getElementData(root,"__DGSRes")]:dgsImportFunction())() end
 if dgsOOP and dgsOOP.dgsRes and isElement(getResourceRootElement(dgsOOP.dgsRes)) then return end
+local getmetatable = getmetatable
+local setmetatable = setmetatable
+local tostring = tostring
+local tonumber = tonumber
+local call = call
+local setfenv = setfenv
 dgsOOP = {
 	dgsClasses = {},
 	dgsInstances = {},
@@ -138,7 +144,7 @@ local function class(tab)
 end
 dgsOOP.class = class
 
-function dgsOOP.generateInterface(dgsElement,meta)
+function dgsOOP.genInterface(dgsElement,meta)
 	local newmeta = dgsOOP.shallowCopy(meta)
 	newmeta.dgsElement = dgsElement
 	return setmetatable({"DGS OOP: Bad usage"},newmeta)()
@@ -392,9 +398,9 @@ class {
 			elseif key == "children" then
 				return self:getChildren()
 			elseif key == "size" then
-				return dgsOOP.generateInterface(self.dgsElement,dgsOOP.size2D)
+				return dgsOOP.genInterface(self.dgsElement,dgsOOP.size2D)
 			elseif key == "position" then
-				return dgsOOP.generateInterface(self.dgsElement,dgsOOP.position2D)
+				return dgsOOP.genInterface(self.dgsElement,dgsOOP.position2D)
 			end
 			return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
 		end,
@@ -655,19 +661,6 @@ class {
 		removeAutoComplete = dgsOOP.genOOPFnc("dgsEditRemoveAutoComplete",true),
 	};
 }
-
---------------------------External
-class {
-	extends = "dgs2D";
-	type = "dgsExternal";
-	dgsType = "dgs-dxexternal";
-	preInstantiate = function(parent,...)
-		return call(dgsOOP.dgsRes,"dgsCreateExternal",...)
-	end;
-	public = {
-	};
-}
-
 --------------------------GridList
 class {
 	extends = "dgs2D";
@@ -1076,7 +1069,7 @@ class {
 			if key == "children" then
 				return self:getChildren()
 			elseif key == "position" then
-				return dgsOOP.generateInterface(self.dgsElement,dgsOOP.position3D)
+				return dgsOOP.genInterface(self.dgsElement,dgsOOP.position3D)
 			end
 			return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
 		end,

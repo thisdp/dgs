@@ -251,8 +251,8 @@ end
 
 function dgsComboBoxAddItem(combobox,text)
 	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxAddItem",1,"dgs-dxcombobox")) end
-	local data = dgsElementData[combobox].itemData
-	local id = #data+1
+	local iData = dgsElementData[combobox].itemData
+	local id = #iData+1
 	local _text
 	if type(text) == "table" then
 		_text = text
@@ -270,7 +270,7 @@ function dgsComboBoxAddItem(combobox,text)
 		_translationText = _text
 	}
 
-	tableInsert(data,id,tab)
+	tableInsert(iData,id,tab)
 	dgsSetData(combobox,"configNextFrame",true)
 	return id
 end
@@ -284,12 +284,12 @@ function dgsComboBoxSetItemText(combobox,i,text)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	if type(text) == "table" then
-		data[i]._translationText = text
+		iData[i]._translationText = text
 		text = dgsTranslate(combobox,text,sourceResource)
 	else
-		data[i]._translationText = nil
+		iData[i]._translationText = nil
 	end
-	data[i][1] = tostring(text)
+	iData[i][1] = tostring(text)
 	return true
 end
 
@@ -301,7 +301,7 @@ function dgsComboBoxGetItemText(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
-	return data[i][1]
+	return iData[i][1]
 end
 
 function dgsComboBoxSetItemData(combobox,i,data,...)
@@ -458,8 +458,6 @@ end
 
 function dgsComboBoxClear(combobox)
 	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxClear",1,"dgs-dxcombobox")) end
-	local data = dgsElementData[combobox].itemData
-	tableRemove(data)
 	dgsElementData[combobox].itemData = {}
 	dgsSetData(combobox,"configNextFrame",true)
 	return true
