@@ -1033,7 +1033,7 @@ function dgsMemoSetTypingSound(memo,path)
 			path = ":"..getResourceName(sourceResource).."/"..path
 		end
 	end
-	if not fileExists(path) then error(dgsGenAsrt(memo,"dgsMemoSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
+	if not fileExists(path) then error(dgsGenAsrt(path,"dgsMemoSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
 	dgsElementData[memo].typingSound = path
 end
 

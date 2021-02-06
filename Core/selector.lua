@@ -99,23 +99,23 @@ function dgsSelectorAddItem(selector,text,pos)
 	return pos
 end
 
-function dgsSelectorRemoveItem(selector,item)
+function dgsSelectorRemoveItem(selector,i)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorRemoveItem",1,"dgs-dxselector")) end
-	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorRemoveItem",2,"number")) end
-	local itemData = dgsElementData[selector].itemData
-	if itemData[item] then
-		tableRemove(itemData,item)
-		dgsElementData[selector].selectedItem = #itemData >= 1 and math.restrict(dgsElementData[selector].selectedItem,1,#itemData) or -1
+	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorRemoveItem",2,"number")) end
+	local iData = dgsElementData[selector].itemData
+	if iData[i] then
+		tableRemove(iData,i)
+		dgsElementData[selector].selectedItem = #iData >= 1 and math.restrict(dgsElementData[selector].selectedItem,1,#iData) or -1
 	end
 	return false
 end
 
-function dgsSelectorSetSelectedItem(selector,item)
+function dgsSelectorSetSelectedItem(selector,i)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetSelectedItem",1,"dgs-dxselector")) end
-	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorSetSelectedItem",2,"number")) end
+	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetSelectedItem",2,"number")) end
 	local prev = dgsElementData[selector].selectedItem
-	dgsSetData(selector,"selectedItem",item)
-	triggerEvent("onDgsSelectorSelect",selector,item,prev)
+	dgsSetData(selector,"selectedItem",i)
+	triggerEvent("onDgsSelectorSelect",selector,i,prev)
 	return true
 end
 
@@ -124,51 +124,51 @@ function dgsSelectorGetSelectedItem(selector)
 	return dgsElementData[selector].selectedItem
 end
 
-function dgsSelectorGetItemText(selector,item,retTransOrig)
+function dgsSelectorGetItemText(selector,i,retTransOrig)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemText",1,"dgs-dxselector")) end
-	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorGetItemText",2,"number")) end
-	local itemData = dgsElementData[selector].itemData
-	if itemData[item] then
-		return retTransOrig and itemData[8] or itemData[1]
+	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorGetItemText",2,"number")) end
+	local iData = dgsElementData[selector].itemData
+	if iData[i] then
+		return retTransOrig and iData[8] or iData[1]
 	end
 	return false
 end
 
-function dgsSelectorSetItemText(selector,item,text)
+function dgsSelectorSetItemText(selector,i,text)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemText",1,"dgs-dxselector")) end
-	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorSetItemText",2,"number")) end
-	local itemData = dgsElementData[selector].itemData
-	if itemData[item] then
+	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetItemText",2,"number")) end
+	local iData = dgsElementData[selector].itemData
+	if iData[i] then
 		if type(text) == "table" then
 			_text = text
 			text = dgsTranslate(selector,text,sourceResource)
 		end
-		itemData[item][1] = tostring(text)
-		itemData[item][8] = _text
+		iData[i][1] = tostring(text)
+		iData[i][8] = _text
 		return true
 	end
 	return false
 end
 
-function dgsSelectorSetItemData(selector,item,key,data)
+function dgsSelectorSetItemData(selector,i,key,data)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemData",1,"dgs-dxselector")) end
-	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorSetItemData",2,"number")) end
-	local itemData = dgsElementData[selector].itemData
-	if itemData[item] then
-		itemData[item][9] = itemData[item][9] or {}
-		itemData[item][9][key] = data
+	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetItemData",2,"number")) end
+	local iData = dgsElementData[selector].itemData
+	if iData[i] then
+		iData[i][9] = iData[i][9] or {}
+		iData[i][9][key] = data
 		return true
 	end
 	return false
 end
 
-function dgsSelectorGetItemData(selector,item,key)
+function dgsSelectorGetItemData(selector,i,key)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemData",1,"dgs-dxselector")) end
-	if not(type(item) == "number") then error(dgsGenAsrt(item,"dgsSelectorGetItemData",2,"number")) end
-	local itemData = dgsElementData[selector].itemData
-	if itemData[item] then
-		itemData[item][9] = itemData[item][9] or {}
-		return itemData[item][9][key]
+	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number")) end
+	local iData = dgsElementData[selector].itemData
+	if iData[i] then
+		iData[i][9] = iData[i][9] or {}
+		return iData[i][9][key]
 	end
 	return false
 end

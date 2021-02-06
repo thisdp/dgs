@@ -742,8 +742,8 @@ end
 
 function dgsGridListSetColumnHeight(gridlist,columnHeight)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetColumnHeight",1,"dgs-dxgridlist")) end
-	if not (type(columnHeight) == "number" and columnHeight >= 0) then error(dgsGenAsrt(gridlist,"dgsGridListSetColumnHeight",2,"number","≥0")) end
-	dgsSetData(gridlist,"columnHeight",columnHeight)
+	if not (type(columnHeight) == "number" and columnHeight >= 0) then error(dgsGenAsrt(columnHeight,"dgsGridListSetColumnHeight",2,"number","≥0")) end
+	return dgsSetData(gridlist,"columnHeight",columnHeight)
 end
 
 function dgsGridListGetColumnHeight(gridlist)

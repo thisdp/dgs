@@ -694,7 +694,7 @@ function dgsEditSetTypingSound(edit,path)
 			path = ":"..getResourceName(sourceResource).."/"..path
 		end
 	end
-	if not fileExists(path) then error(dgsGenAsrt(edit,"dgsEditSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
+	if not fileExists(path) then error(dgsGenAsrt(path,"dgsEditSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
 	dgsElementData[edit].typingSound = path
 end
 
