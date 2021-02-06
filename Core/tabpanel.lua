@@ -64,7 +64,7 @@ function dgsCreateTabPanel(x,y,w,h,relative,parent,tabHeight,bgImage,bgColor)
 		colorcoded = false,
 		wordbreak = false,
 		tabAlignment = "left",
-		tabOffset = {10,false},
+		tabOffset = {0,false},
 	}
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
 	local renderTarget,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
