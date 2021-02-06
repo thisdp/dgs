@@ -47,22 +47,24 @@ function dgsCreateTabPanel(x,y,w,h,relative,parent,tabHeight,bgImage,bgColor)
 	local style = styleSettings.tabpanel
 	local tabHeight = tabHeight or style.tabHeight
 	dgsElementData[tabpanel] = {
-		tabHeight = {tabHeight,false};
-		tabMaxWidth = {10000,false};
-		tabMinWidth = {10,false};
-		bgColor = tonumber(bgColor) or style.bgColor;
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage);
-		tabs = {};
-		font = style.font or systemFont;
-		selected = -1;
-		preSelect = -1;
-		tabPadding = style.tabPadding;
-		tabGapSize = style.tabGapSize;
-		scrollSpeed = style.scrollSpeed;
-		showPos = 0;
-		tabLengthAll = 0;
-		colorcoded = false;
-		wordbreak = false;
+		tabHeight = {tabHeight,false},
+		tabMaxWidth = {10000,false},
+		tabMinWidth = {10,false},
+		bgColor = tonumber(bgColor) or style.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		tabs = {},
+		font = style.font or systemFont,
+		selected = -1,
+		preSelect = -1,
+		tabPadding = style.tabPadding,
+		tabGapSize = style.tabGapSize,
+		scrollSpeed = style.scrollSpeed,
+		showPos = 0,
+		tabLengthAll = 0,
+		colorcoded = false,
+		wordbreak = false,
+		tabAlignment = "left",
+		tabOffset = {10,false},
 	}
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
 	local renderTarget,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
@@ -122,9 +124,9 @@ function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColo
 		iconDirection = "left",
 		iconImage = nil,
 		iconOffset = 5,
-		iconSize = {1,1,true}; -- Text's font heigh,
-		colorcoded = nil;
-		wordbreak = nil;
+		iconSize = {1,1,true}, -- Text's font heigh,
+		colorcoded = nil,
+		wordbreak = nil,
 	}
 	if eleData.selected == -1 then eleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or resource])
@@ -276,6 +278,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	local font = eleData.font or systemFont
 	local colorcoded = eleData.colorcoded
 	local wordbreak = eleData.wordbreak
+	local tabAlignment = eleData.tabAlignment
 	if selected == -1 then
 		dxDrawRectangle(x,y+height,w,h-height,eleData.bgColor,isPostGUI)
 	else
@@ -283,8 +286,17 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 		if isElement(rendt) then
 			dxSetRenderTarget(rendt,true)
 			dxSetBlendMode("blend")
+			local tabOffset = eleData.tabOffset[2] and eleData.tabOffset[1]*w or eleData.tabOffset[1]
 			local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
-			local tabsize = -eleData.showPos*(dgsTabPanelGetWidth(source)-w)
+			local tabAllWidth = dgsTabPanelGetWidth(source)
+			local tabX = tabOffset
+			if tabAlignment == "left" then
+				tabX = tabX-eleData.showPos*(tabAllWidth-w)
+			elseif tabAlignment == "center" then
+				tabX = tabX-(0.5-eleData.showPos)*(tabAllWidth-w)
+			elseif tabAlignment == "right" then
+				tabX = tabX-(1-eleData.showPos)*(tabAllWidth-w)
+			end
 			local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
 			if eleData.PixelInt then height = height-height%1 end
 			for d=1,#tabs do
@@ -299,7 +311,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 					if tabs[d+1] then
 						_width = dgsElementData[tabs[d+1]].width+tabPadding*2
 					end
-					if tabsize+width >= 0 and tabsize <= w then
+					if tabX+width >= 0 and tabX <= w then
 						local tabImage = tabData.tabImage
 						local tabColor = tabData.tabColor
 						local tabTextColor = tabData.textColor
@@ -325,13 +337,13 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 							finalcolor = applyColorAlpha(tabColor[selState],parentAlpha)
 						end
 						if tabImage[selState] then
-							dxDrawImage(tabsize,0,width,height,tabImage[selState],0,0,0,finalcolor,false,rendt)
+							dxDrawImage(tabX,0,width,height,tabImage[selState],0,0,0,finalcolor,false,rendt)
 						else
-							dxDrawRectangle(tabsize,0,width,height,finalcolor)
+							dxDrawRectangle(tabX,0,width,height,finalcolor)
 						end
 						local textSizeX,textSizeY = tabData.textSize[1],tabData.textSize[2]
 						if eleData.PixelInt then
-							_tabsize,_width = tabsize-tabsize%1,mathFloor(width+tabsize)
+							_tabsize,_width = tabX-tabX%1,mathFloor(width+tabX)
 						end
 						--[[local iconImage = eleData.iconImage
 						if iconImage then
@@ -380,12 +392,12 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 						end]]
 						
 						dxDrawText(tabData.text,_tabsize,0,_width,height,tabTextColor[selState],textSizeX,textSizeY,tabData.font or font,"center","center",false,false,false,colorcoded,true)
-						if mx >= tabsize+x and mx <= tabsize+x+width and my > y and my < y+height and tabData.enabled and enabled[2] then
+						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabled[2] then
 							eleData.rndPreSelect = d
 							MouseData.hit = t
 						end
 					end
-					tabsize = tabsize+width+gap
+					tabX = tabX+width+gap
 				end
 			end
 			eleData.preSelect = -1

@@ -1160,7 +1160,7 @@ function dgsGridListSetRowAsSection(gridlist,r,enabled,enableMouseClickAndSelect
 		rData[r][-1] = true
 	end
 	rData[r][-5] = enabled and true or false --Enable Section Mode
-	return dgsSetData(gridlist,"rowData",rData)
+	return true
 end
 
 

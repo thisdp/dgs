@@ -1,11 +1,11 @@
 styleSettings = {}
 styleManager = {
-	customStyle = "Default"
-	sharedTexture = {}
-	createdTexture = {}
-	createdShader = {}
-	styles = {Default="Default"}
-	styleHistory = {"Default"}
+	customStyle = "Default",
+	sharedTexture = {},
+	createdTexture = {},
+	createdShader = {},
+	styles = {Default="Default"},
+	styleHistory = {"Default"},
 }
 
 function scanCustomStyle()
