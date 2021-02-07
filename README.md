@@ -26,28 +26,26 @@ All function names refer simiularly to the original MTA:SA ones. This library us
 
 For a full list of functions and event handlers, check the DGS wiki:
 * **English:** http://wiki.mtasa.com/wiki/dgs
-* **Arabic (عربى):** https://wiki.mtasa.com/wiki/AR/Dgs
+* **Arabic (العربية):** https://wiki.mtasa.com/wiki/AR/Dgs
 * **Chinese:** https://wiki.mtasa.com/wiki/ZH-CN/Dgs
 
-Auto Completion For [Notepad++](https://notepad-plus-plus.org/) *(Thanks To Ahmed Ly)*: http://www.mediafire.com/file/m6dm7815d5dihax/lua.zip
-
-To prevent bugs and issues with the resource, keep the resource names as **dgs**.
+To prevent bugs and issues with the resource, keep the resource name as **dgs**.
 
 The reason why I released DGS is because I am ready to leave MTA. This is my one contribution to the MTA community.
 Finally, I am glad to provide the DGS resource, and everyone is welcome to adjust the code and help make it better by editting the code, adding functions or events.
 
+# Auto Completion
+- [Notepad++](https://drive.google.com/file/d/1H_PiG2gmEz1AyXqZN4956IVgtZOjgMi6/view?usp=sharing)
+
 # Commands
-all comands type it on F8 console
-* **dgscmd:**  to show you serial and version etc. type help  on it to see all comands on it.
+all commands type it on F8 console
+* **dgscmd:**  to show you serial and version etc. type help  on it to see all commands on it.
   * **help:**  to list the available commands in cmd.
-* **aboutdgs:** to show eveything about dgs to work this comand must be **connected to internet**.
-* **updatedgs:** to download the **last verion of dgs** ***Request Admin Rights***.
+* **aboutdgs:** to show everything about dgs must be **connected to the internet**.
+* **updatedgs:** to download the **latest verion of dgs** ***Request Admin Rights***.
 * **dgsver:** to show version dgs on **debugscript** and **game console**.
 * **debugdgs:** to enable the debug message of DGS.
   * **debugdgs 2:** further debug message.
-
-
-
 
 
 **Thanks for your support.**
