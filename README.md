@@ -46,6 +46,7 @@ all commands type it on F8 console
 * **dgsver:** to show version dgs on **debugscript** and **game console**.
 * **debugdgs:** to enable the debug message of DGS.
   * **debugdgs 2:** further debug message.
+  * **debugdgs 3:** further debug message with external creation tracer.
 
 
 **Thanks for your support.**
