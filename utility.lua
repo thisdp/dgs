@@ -238,7 +238,7 @@ function dgsSearchFullWordType(text,index,side)
 		if not searchChar or searchChar == "" then break end 
 		if utf8GetCharType(searchChar) ~= startType then break end
 	end
-	return frontPos,backPos-1
+	return frontPos,backPos-1,startType
 end
 --------------------------------Math Utility
 function findRotation(x1,y1,x2,y2,offsetFix)
