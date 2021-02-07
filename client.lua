@@ -813,9 +813,39 @@ function onClientKeyTriggered(button)
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
 		local isWordWrap = eleData.wordWrap
 		if button == "arrow_l" then
-			dgsMemoMoveCaret(memo,-1,0,shift)
+			if ctrl then
+				local textTable = dgsElementData[memo].text
+				local cpos = dgsElementData[memo].caretPos
+				local index,line = cpos[1],cpos[2]
+				local text = textTable[line][0]
+				local f,b = dgsSearchFullWordType(text,index,-1)
+				if f == 0 then
+					index = index+1
+				end
+				dgsMemoMoveCaret(memo,f-index,0,shift)
+			else
+				dgsMemoMoveCaret(memo,-1,0,shift)
+			end
 		elseif button == "arrow_r" then
-			dgsMemoMoveCaret(memo,1,0,shift)
+			if ctrl then
+				local textTable = dgsElementData[memo].text
+				local cpos = dgsElementData[memo].caretPos
+				local index,line = cpos[1],cpos[2]
+				local text = textTable[line][0]
+				local f,b = dgsSearchFullWordType(text,index,1)
+				if index == utf8Len(text) then
+					index = index-1
+					local nextLine = textTable[line+1]
+					if nextLine then
+						local nextLineText = nextLine[0]
+						local _f,_b = dgsSearchFullWordType(nextLineText,0,1)
+						b = b+_b
+					end
+				end
+				dgsMemoMoveCaret(memo,b-index,0,shift)
+			else
+				dgsMemoMoveCaret(memo,1,0,shift)
+			end
 		elseif button == "arrow_u" then
 			dgsMemoMoveCaret(memo,0,-1,shift,true)
 		elseif button == "arrow_d" then
@@ -846,6 +876,18 @@ function onClientKeyTriggered(button)
 				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
 					dgsMemoDeleteText(memo,cpos[1],cpos[2],spos[1],spos[2])
 					eleData.selectFrom = eleData.caretPos
+				elseif ctrl then
+					local textTable = dgsElementData[memo].text
+					local index,line = cpos[1],cpos[2]
+					local text = textTable[line][0]
+					if index == utf8Len(text) then
+						local tIndex,tLine = dgsMemoSeekPosition(eleData.text,cpos[1]+1,cpos[2])
+						dgsMemoDeleteText(memo,cpos[1],cpos[2],tIndex,tLine)
+					else
+						local f,b = dgsSearchFullWordType(text,index,1)
+						local tIndex,tLine = dgsMemoSeekPosition(eleData.text,b,cpos[2])
+						dgsMemoDeleteText(memo,cpos[1],cpos[2],tIndex,tLine)
+					end
 				else
 					local tIndex,tLine = dgsMemoSeekPosition(eleData.text,cpos[1]+1,cpos[2])
 					dgsMemoDeleteText(memo,cpos[1],cpos[2],tIndex,tLine)
@@ -857,6 +899,18 @@ function onClientKeyTriggered(button)
 				if cpos[1] ~= spos[1] or cpos[2] ~= spos[2] then
 					dgsMemoDeleteText(memo,cpos[1],cpos[2],spos[1],spos[2])
 					eleData.selectFrom = eleData.caretPos
+				elseif ctrl then
+					local textTable = dgsElementData[memo].text
+					local index,line = cpos[1],cpos[2]
+					local text = textTable[line][0]
+					if index == 0 then
+						local tIndex,tLine = dgsMemoSeekPosition(eleData.text,cpos[1]-1,cpos[2])
+						dgsMemoDeleteText(memo,cpos[1],cpos[2],tIndex,tLine)
+					else
+						local f,b = dgsSearchFullWordType(text,index,-1)
+						local tIndex,tLine = dgsMemoSeekPosition(eleData.text,f,cpos[2])
+						dgsMemoDeleteText(memo,tIndex,tLine,cpos[1],cpos[2])
+					end
 				else
 					local tIndex,tLine = dgsMemoSeekPosition(eleData.text,cpos[1]-1,cpos[2])
 					dgsMemoDeleteText(memo,tIndex,tLine,cpos[1],cpos[2])

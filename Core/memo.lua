@@ -187,6 +187,7 @@ function dgsCreateMemo(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 			elseif t == 3 then
 				if button == "left" then
 					dgsMemoSetCaretPosition(source,_,line)
+					dgsMemoMoveCaret(source,1,0)
 					dgsMemoSetCaretPosition(source,0,line,true)
 				end
 			end
