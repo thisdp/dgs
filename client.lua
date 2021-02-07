@@ -819,7 +819,7 @@ function onClientKeyTriggered(button)
 				local index,line = cpos[1],cpos[2]
 				local text = textTable[line][0]
 				local f,b,cType = dgsSearchFullWordType(text,index,-1)
-				if f == 0 and cType == 0 then
+				if index == 0 or (f == 0 and cType == 0) then
 					index = index+1
 				end
 				dgsMemoMoveCaret(memo,f-index,0,shift)
