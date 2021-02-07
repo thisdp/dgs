@@ -111,7 +111,7 @@ addCommandHandler("g2d",function(player,command,...)
 				if args[2] and args[2] ~= "" then
 					if args[2] == "npp" or args[2] == "n++" then
 						CrawlWikiFromMTA("npp")
-					elseif args[2] == "vscode" or arg[2] == "vsc" then
+					elseif args[2] == "vscode" or args[2] == "vsc" then
 						CrawlWikiFromMTA("vsc")
 					else
 						print("[DGS]Current type is not supported!")
@@ -1031,7 +1031,7 @@ function AnalyzeFunction(tab)
 			local argSplited = split(argStr,"%[")
 			local reqArgStr = argSplited[1] or ""
 			local optArgStr = (argSplited[2] or ""):gsub("%]","")
-			
+
 			local reqArgs = split(reqArgStr,",")
 			local optArgs = split(optArgStr,",")
 			local emptyArgCheck = {req={},opt={}}
@@ -1050,7 +1050,7 @@ function AnalyzeFunction(tab)
 			for _i=1,#rets do
 				rets[_i] = rets[_i]:gsub(",",""):gsub(" ","")
 			end
-			
+
 			for i=1,#emptyArgCheck.req do
 				table.remove(reqArgs,emptyArgCheck.req[i])
 			end
