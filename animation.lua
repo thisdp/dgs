@@ -10,10 +10,10 @@ function dgsIsAniming(gui)
 	return animGUIList[gui] or false
 end
 
-function dgsAnimTo(gui,property,value,easing,thetime,callback,reverseProgress)
+function dgsAnimTo(gui,property,value,easing,thetime,callback,reverseProgress,delay)
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsAnimTo(gui[i],property,value,easing,thetime,callback,reverseProgress)
+			dgsAnimTo(gui[i],property,value,easing,thetime,callback,reverseProgress,delay)
 		end
 		return true
 	end
@@ -28,7 +28,7 @@ function dgsAnimTo(gui,property,value,easing,thetime,callback,reverseProgress)
 		dgsElementData[gui].anim = {}
 	end
 	if not dgsElementData[gui].anim[property] then
-		dgsElementData[gui].anim[property] = {[-1]=index,[0]=getTickCount(),property, value, dgsElementData[gui][property],easing,thetime,callback = callback,reverseProgress=reverseProgress}
+		dgsElementData[gui].anim[property] = {[-2]=delay,[-1]=index,[0]=getTickCount(),property, value, dgsElementData[gui][property],easing,thetime,callback = callback,reverseProgress=reverseProgress}
 		if not animGUIList[gui] then
 			animGUIList[gui] = true
 		end
@@ -76,10 +76,10 @@ function dgsIsMoving(gui)
 	return moveGUIList[gui] or false
 end
 
-function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
+function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab,delay)
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsMoveTo(gui[i],x,y,relative,movetype,easing,torvx,vy,tab)
+			dgsMoveTo(gui[i],x,y,relative,movetype,easing,torvx,vy,tab,delay)
 		end
 		return true
 	end
@@ -92,7 +92,7 @@ function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsMoveTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetPosition(gui,relative or false)
-	dgsSetData(gui,"move",{[-1]=tab,[0]=getTickCount(),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
+	dgsSetData(gui,"move",{[-2]=delay,[-1]=tab,[0]=getTickCount(),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not moveGUIList[gui] then
 		moveGUIList[gui] = true
 		return true
@@ -122,10 +122,10 @@ function dgsIsSizing(gui)
 	return sizeGUIList[gui] or false
 end
 
-function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
+function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab,delay)
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsSizeTo(gui[i],x,y,relative,movetype,easing,torvx,vy,tab)
+			dgsSizeTo(gui[i],x,y,relative,movetype,easing,torvx,vy,tab,delay)
 		end
 		return true
 	end
@@ -138,7 +138,7 @@ function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsSizeTo at argument 6, easing function doesn't exist ("..tostring(easing)..")")
 	local ox,oy = dgsGetSize(gui,relative or false)
-	dgsSetData(gui,"size",{[-1]=tab,[0]=getTickCount(),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
+	dgsSetData(gui,"size",{[-2]=delay,[-1]=tab,[0]=getTickCount(),ox,oy,x,y,relative or false,movetype,easing,torvx,vy or torvx})
 	if not sizeGUIList[gui] then
 		sizeGUIList[gui] = true
 		return true
@@ -168,10 +168,10 @@ function dgsIsAlphaing(gui)
 	return alphaGUIList[gui] or false
 end
 
-function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
+function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab,delay)
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsAlphaTo(gui[i],toalpha,movetype,easing,torv,tab)
+			dgsAlphaTo(gui[i],toalpha,movetype,easing,torv,tab,delay)
 		end
 		return true
 	end
@@ -183,7 +183,7 @@ function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab)
 	local easing = easing or "Linear"
 	assert(dgsEasingFunctionExists(easing),"Bad argument @dgsAlphaTo at argument 4, easing function doesn't exist ("..tostring(easing)..")")
 	local toalpha = (toalpha > 1 and 1) or (toalpha < 0 and 0) or toalpha
-	dgsSetData(gui,"calpha",{[-1]=tab,[0]=getTickCount(),dgsElementData[gui].alpha,toalpha,movetype,easing,torv})
+	dgsSetData(gui,"calpha",{[-2]=delay,[-1]=tab,[0]=getTickCount(),dgsElementData[gui].alpha,toalpha,movetype,easing,torv})
 	if not alphaGUIList[gui] then
 		alphaGUIList[gui] = true
 		return true
@@ -216,9 +216,11 @@ addEventHandler("onClientRender",root,function()
 			local animList = dgsElementData[v].anim
 			if animGUIList[v] then
 				for _,data in pairs(animList) do
-					local propertyName,targetValue,oldValue,easing,thetime,isReversed = data[1],data[2],data[3],data[4],data[5],data.reverseProgress
+					local propertyName,targetValue,oldValue,easing,thetime,isReversed,delay = data[1],data[2],data[3],data[4],data[5],data.reverseProgress,data[-2]
 					local changeTime = tickCount-data[0]
+					local changeTime = (tickCount-delay)-data[0]
 					local ctPercent = changeTime/thetime
+					ctPercent = ctPercent <= 0 and 0 or ctPercent
 					local linearProgress = ctPercent >= 1 and 1 or ctPercent
 					linearProgress = isReversed and 1-linearProgress or linearProgress
 					if easingBuiltIn[easing] then
@@ -249,7 +251,7 @@ addEventHandler("onClientRender",root,function()
 			local data = dgsElementData[v].move
 			if not data then moveGUIList[v] = nil end
 			if moveGUIList[v] then
-				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
+				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1],data[-2]
 				local nx,ny = dgsGetPosition(v,rlt)
 				local compMove = false
 				local percentx,percenty
@@ -294,8 +296,9 @@ addEventHandler("onClientRender",root,function()
 					end
 					compMove = finishX and finishY
 				else
-					local changeTime = tickCount-data[0]
+					local changeTime = (tickCount-delay)-data[0]
 					local temp = changeTime/torvx
+					temp = temp <= 0 and 0 or temp
 					if easingBuiltIn[easing] then
 						percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 					else
@@ -326,7 +329,7 @@ addEventHandler("onClientRender",root,function()
 			local data = dgsElementData[v].size
 			if not data then sizeGUIList[v] = nil end
 			if sizeGUIList[v] then
-				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1]
+				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1],data[-2]
 				local nx,ny = dgsGetSize(v,rlt)
 				local compSize = false
 				local percentx,percenty
@@ -371,8 +374,9 @@ addEventHandler("onClientRender",root,function()
 					end
 					compSize = finishX and finishY
 				else
-					local changeTime = tickCount-data[0]
+					local changeTime = (tickCount-delay)-data[0]
 					local temp = changeTime/torvx
+					temp = temp <= 0 and 0 or temp
 					if easingBuiltIn[easing] then
 						percentx,percenty = interpolateBetween(ox,oy,0,x,y,0,temp,easing)
 					else
@@ -402,7 +406,7 @@ addEventHandler("onClientRender",root,function()
 		else
 			local data = dgsElementData[v].calpha
 			if not data then alphaGUIList[v] = nil end
-			local oldAlpha,endalpha,mtype,easing,torv,settings = data[1],data[2],data[3],data[4],data[5],data[6],data[-1]
+			local oldAlpha,endalpha,mtype,easing,torv,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[-1],data[-2]
 			local alp = dgsElementData[v].alpha
 			if not alp then alphaGUIList[v] = nil end
 			if alphaGUIList[v] then
@@ -430,8 +434,9 @@ addEventHandler("onClientRender",root,function()
 						end
 					end
 				else
-					local changeTime = tickCount-data[0]
-					local temp = changeTime/torv
+					local changeTime = (tickCount-delay)-data[0]
+					local temp = changeTime/torvx
+					temp = temp <= 0 and 0 or temp
 					if easingBuiltIn[easing] then
 						percentalp = interpolateBetween(oldAlpha,0,0,endalpha,0,0,temp,easing or "Linear")
 					else
