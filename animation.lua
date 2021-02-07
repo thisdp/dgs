@@ -439,7 +439,7 @@ addEventHandler("onClientRender",root,function()
 					end
 				else
 					local changeTime = (tickCount-delay)-data[0]
-					local temp = changeTime/torvx
+					local temp = changeTime/torv
 					temp = temp <= 0 and 0 or temp
 					if easingBuiltIn[easing] then
 						percentalp = interpolateBetween(oldAlpha,0,0,endalpha,0,0,temp,easing or "Linear")
