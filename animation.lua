@@ -10,10 +10,11 @@ function dgsIsAniming(gui)
 	return animGUIList[gui] or false
 end
 
-function dgsAnimTo(gui,property,value,easing,thetime,callback,reverseProgress,delay)
+function dgsAnimTo(gui,property,value,easing,thetime,delay,callback,reverseProgress)
+	delay = delay or 0
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsAnimTo(gui[i],property,value,easing,thetime,callback,reverseProgress,delay)
+			dgsAnimTo(gui[i],property,value,easing,thetime,delay,callback,reverseProgress)
 		end
 		return true
 	end
@@ -76,10 +77,11 @@ function dgsIsMoving(gui)
 	return moveGUIList[gui] or false
 end
 
-function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,tab,delay)
+function dgsMoveTo(gui,x,y,relative,movetype,easing,torvx,vy,delay,tab)
+	delay = delay or 0
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsMoveTo(gui[i],x,y,relative,movetype,easing,torvx,vy,tab,delay)
+			dgsMoveTo(gui[i],x,y,relative,movetype,easing,torvx,vy,delay,tab)
 		end
 		return true
 	end
@@ -122,10 +124,11 @@ function dgsIsSizing(gui)
 	return sizeGUIList[gui] or false
 end
 
-function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,tab,delay)
+function dgsSizeTo(gui,x,y,relative,movetype,easing,torvx,vy,delay,tab)
+	delay = delay or 0
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsSizeTo(gui[i],x,y,relative,movetype,easing,torvx,vy,tab,delay)
+			dgsSizeTo(gui[i],x,y,relative,movetype,easing,torvx,vy,delay,tab)
 		end
 		return true
 	end
@@ -168,10 +171,11 @@ function dgsIsAlphaing(gui)
 	return alphaGUIList[gui] or false
 end
 
-function dgsAlphaTo(gui,toalpha,movetype,easing,torv,tab,delay)
+function dgsAlphaTo(gui,toalpha,movetype,easing,torv,delay,tab)
+	delay = delay or 0
 	if type(gui) == "table" then
 		for i=1,#gui do
-			dgsAlphaTo(gui[i],toalpha,movetype,easing,torv,tab,delay)
+			dgsAlphaTo(gui[i],toalpha,movetype,easing,torv,delay,tab)
 		end
 		return true
 	end
@@ -251,7 +255,7 @@ addEventHandler("onClientRender",root,function()
 			local data = dgsElementData[v].move
 			if not data then moveGUIList[v] = nil end
 			if moveGUIList[v] then
-				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1],data[-2]
+				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[-1],data[-2]
 				local nx,ny = dgsGetPosition(v,rlt)
 				local compMove = false
 				local percentx,percenty
@@ -329,7 +333,7 @@ addEventHandler("onClientRender",root,function()
 			local data = dgsElementData[v].size
 			if not data then sizeGUIList[v] = nil end
 			if sizeGUIList[v] then
-				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[-1],data[-2]
+				local ox,oy,x,y,rlt,mtype,easing,torvx,vy,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[-1],data[-2]
 				local nx,ny = dgsGetSize(v,rlt)
 				local compSize = false
 				local percentx,percenty
@@ -406,7 +410,7 @@ addEventHandler("onClientRender",root,function()
 		else
 			local data = dgsElementData[v].calpha
 			if not data then alphaGUIList[v] = nil end
-			local oldAlpha,endalpha,mtype,easing,torv,settings,delay = data[1],data[2],data[3],data[4],data[5],data[6],data[-1],data[-2]
+			local oldAlpha,endalpha,mtype,easing,torv,settings,delay = data[1],data[2],data[3],data[4],data[5],data[-1],data[-2]
 			local alp = dgsElementData[v].alpha
 			if not alp then alphaGUIList[v] = nil end
 			if alphaGUIList[v] then
