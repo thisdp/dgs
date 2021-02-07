@@ -31,13 +31,29 @@ function dgsImportFunction(name,nameAs)
 				end
 				addEventHandler("onDgsStart",root,onDgsStart)
 			end)
-
+			local isTraceDebug = getElementData(localPlayer,"DGS-DEBUG") == 3
+			addEventHandler("onClientElementDataChange",localPlayer,function(key,_,v)
+				if key == "DGS-DEBUG" then
+					isTraceDebug = v == 3
+				end
+			end,false)
 			function DGSCallMT:__index(k)
 				if type(k) ~= 'string' then k = tostring(k) end
 				self[k] = function(...)
 					assert(dgsImportHead,"DGS import data is missing or DGS is not running, please reimport dgs functions("..getResourceName(getThisResource())..")")
 					if isElement(dgsRoot) then
-						return call(dgsImportHead.dgsResource, k, ...)
+						if isTraceDebug then
+							local data = debug.getinfo(2)
+							local retValue = {call(dgsImportHead.dgsResource, k, ...)}
+							if k:lower():find("create") then
+								if isElement(retValue[1]) then
+									call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",{line=data.currentline,file=data.source:gsub("\\","/"):gsub("@",":"),fncName=k})
+								end
+							end
+							return unpack(retValue)
+						else
+							return call(dgsImportHead.dgsResource, k, ...)
+						end
 					else
 						dgsImportHead = nil
 						dgsRoot = nil
