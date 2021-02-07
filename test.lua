@@ -1,7 +1,6 @@
 ------------Full demo
 function createFullDemo()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
-	--print("Load String",DGSOOPFnc,err)
 	DGSOOPFnc()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
 	local scb = window
@@ -16,15 +15,18 @@ function createFullDemo()
 	button.textColor = {tocolor(255,0,0,255),tocolor(255,255,0,255),tocolor(255,0,255,255)}
 	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"","",false)
 	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"","",true)
-	local gridlist = window:dgsGridList(0,0,290,200,false)
-	gridlist:setMultiSelectionEnabled(true)
-	gridlist:setProperty("rowTextSize",{1.2,1.2})
-	gridlist:setProperty("rowHeight",20)
-	gridlist:setProperty("clip",false)
-	gridlist:addColumn("Column 1",0.8,_,"center")
-	gridlist:addColumn("Column 2",0.8,_,"center")
-	gridlist:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
-	gridlist:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
+	local gridlist = window
+		:dgsGridList(0,0,290,200,false)
+		:setMultiSelectionEnabled(true)
+		:setProperty("rowTextSize",{1.2,1.2})
+		:setProperty("rowHeight",20)
+		:setProperty("clip",false)
+		:setSelectionMode(3)
+		:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
+		:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
+	for i=1,10 do
+		gridlist:addColumn("Column "..i,0.5)
+	end
 	for i=1,100 do
 		gridlist:addRow(i,i,string.rep("x",math.random(1,40)))
 		--[[if i%5 == 0 then
@@ -32,6 +34,16 @@ function createFullDemo()
 		end]]
 	end
 	gridlist.alpha = 1
+	dgsGridListSetItemColor(gridlist.dgsElement,-1,2,{tocolor(255,0,0,255),tocolor(0,255,0,255),tocolor(255,255,0,255)})
+	dgsGridListScrollTo(gridlist.dgsElement,50,1)
+	dgsGridListSetItemAlignment(gridlist.dgsElement,1,1,"center")
+	dgsGridListSetColumnAlignment(gridlist.dgsElement,1,"left")
+	
+	local selector = window:dgsSelector(180,210,100,20,false)
+	for i=1,100 do
+		selector:addItem(i)
+	end
+	
 	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
 	combobox:setEditEnabled(true)
 	for i=1,100 do
@@ -65,6 +77,13 @@ function createFullDemo()
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
+		:on("dgsMouseClick",function()
+		
+		end)
+		
+	local interface = dgs3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
+	local edit = interface:dgsEdit(0.3,0.4,0.2,0.05,"123123",true)
+	interface:setProperties({alpha=0})
 end
 
 function ProgressBarTest()
@@ -86,7 +105,8 @@ function MemoTest()
 
 	Test UTF8: 你好]],false)
 	dgsSetFont(memo,"default-bold")
-	dgsSetProperty(memo,"selectVisible",false)
+	--dgsSetProperty(memo,"selectVisible",false)
+	--dgsSetProperty(memo,"padding",{20,10})
 	dgsMemoSetWordWrapState(memo,false)
 end
 
@@ -137,7 +157,6 @@ print(hasArabicCharacters("aلعت القياسا"))
 0xFE70-0xFEFF
 0x1EE00-0x1EEFF
 ]]
-
 function AnimTest()
 	if not dgsEasingFunctionExists("shadowOffset") then
 		dgsAddEasingFunction("shadowOffset",[[
@@ -208,9 +227,10 @@ function MediaBrowserTest()
 	rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
 	material1 = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
 	img = dgsCreateImage(0,0,800,500,rndRect1,false,material1)
-	dgsMediaLoadMedia(bro,"test.webm","VIDEO") -- Give a video file PLZ! (Only .webm file)
+	dgsMediaLoadMedia(bro,"a.webm","VIDEO") -- Give a video file PLZ! (Only .webm file)
 	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
 	dgsMediaPlay(bro)
+	dgsMediaSetSpeed(bro,0.5)
 end
 
 function PasteHandlerTest()
@@ -289,7 +309,16 @@ function SelectorTest()
 		dgsSelectorAddItem(selector,i)
 	end
 end
--------------------------Language Test
+
+function TabPanelTest()
+	tabpanel = dgsCreateTabPanel(200,200,400,400,false)
+	dgsSetProperty(tabpanel,"tabHeight",{20,false})
+	tab = dgsCreateTab("test1",tabpanel)
+	tab = dgsCreateTab("test2",tabpanel)
+	tab = dgsCreateTab("test3",tabpanel)
+end
+
+---------------Language Test
 function LanguageChangeInComboBoxTest()
 	languageTab = {wtf="DGS %rep%"}
 	languageTab2 = {wtf="Test %rep% %rep%"}
@@ -368,9 +397,9 @@ end
 function test9SliceScale()
 	local img = dxCreateTexture("palette.png")
 	local nSli = dgsCreateNineSlice(img,0.2,0.8,0.4,0.6,true)
-	--local image = dgsCreateImage(400,400,400,400,nSli,false)
+	local image = dgsCreateImage(400,400,400,400,nSli,false)
 end
------------------------------Plugin Test
+---------------Plugin Test
 function ScrollPane3DEffectTest()
 	material = dgsCreate3DInterface(0,0,4,4,4,500,500,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
@@ -387,7 +416,7 @@ function ScrollPane3DEffectTest()
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
 end
 
------QRCode
+---------------QRCode
 function QRCodeTest()
 	local QRCode = dgsRequestQRCode("https://wiki.multitheftauto.com/wiki/Resource:Dgs")
 	local image = dgsCreateImage(200,200,128,128,QRCode,false)
@@ -396,57 +425,45 @@ function QRCodeTest()
 		outputChatBox(dgsGetQRCodeLoaded(source) and "Loaded" or "Loading")
 	end,false)
 end
------Blur Box
+---------------Blur Box
 function BlurBoxTest()
 	local blurbox = dgsCreateBlurBox(sW,sH)
 	dgsCreateImage(0,0,800,800,blurbox,false)
 	dgsBlurBoxSetIntensity(blurbox,5)
 	dgsBlurBoxSetLevel(blurbox,15)
 end
-
------------------------------OOP Test
-function oopTest()
-	loadstring(dgsImportOOPClass(true))()-- load OOP class
-	window1 = dgsWindow(0,0,0.5,0.1,"test",true) --create a window with oop
-	window2 = dgsWindow(0.2,0,0.5,0.1,"test",true) --create a window with oop
-	label = window1
-		:dgsLabel(0,0,1,1,"label",true) --create a label inside the window
-		:setParent(window2)
-	label.parent = window1
-end
-
+---------------Color Picker
 function testColorPicker()
-	--material1 = dgsCreate3DInterface(0,0,4,4,2,1600,800,tocolor(255,255,255,255),1,0,0,_,0)
-	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material1)
-	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material1)
-	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material1)
-	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material1)
-	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false,material1)
+	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false)
+	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false)
+	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false)
+	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false)
+	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false)
 	dgsBindToColorPicker(r,colorPicker_HSVRing,"RGB","R",true,true)
-	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false,material1)
+	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false)
 	dgsBindToColorPicker(g,colorPicker_HSVRing,"RGB","G",true,true)
-	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false,material1)
+	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false)
 	dgsBindToColorPicker(b,colorPicker_HSVRing,"RGB","B",true,true)
 
-	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false,material1)
+	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false)
 	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSL","H",true,true)
-	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false,material1)
+	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false)
 	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSL","S",true,true)
-	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false,material1)
+	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false)
 	dgsBindToColorPicker(L,colorPicker_HSVRing,"HSL","L",true,true)
 
-	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false,material1)
+	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false)
 	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSV","H",true,true)
-	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false,material1)
+	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false)
 	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSV","S",true,true)
-	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material1)
+	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false)
 	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
 
-	A = dgsColorPickerCreateComponentSelector(500,260,10,500,false,false,material1)
+	A = dgsColorPickerCreateComponentSelector(500,260,10,500,false,false)
 	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
 end
 
------------------------------DGS Object Preview Support Test
+---------------DGS Object Preview Support Test
 function testObjectPreview()
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
 	local objPrevName = "object_preview"
@@ -456,7 +473,7 @@ function testObjectPreview()
 	local image = dgsCreateImage(20,20,300,300,_,false,wind)
 	dgsAttachObjectPreviewToImage(objPrev,image)
 end
------------------------------DGS Animation With Shader Example
+---------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect
 function testButtonEffect()
 	local bEffect = dxCreateShader([[
@@ -489,7 +506,7 @@ function testButtonEffect()
 		local shader = propertyTable.image[1]								--Get the shader
 		local circleRadius = dgsGetProperty(self,"circleRadius") or 0		--Get the property value
 		circleRadius = circleRadius+(setting[2]-circleRadius)*progress		--Calculate the changing
-		if isElement(shader) and dgsGetType(shader) == "shader" then		--Is the shader existing?
+		if dgsGetType(shader) == "shader" then								--Is the shader existing?
 			dxSetShaderValue(shader,"radius",circleRadius*8)				--If so, then set shader value
 		end
 		return circleRadius													--Return the property value
@@ -513,4 +530,11 @@ function testButtonEffect()
 	end
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
+end
+
+---------------------StressTest
+function buttonStress()
+	for i=1,5000 do
+		dgsCreateButton(500,500,200,200,"test",false)
+	end
 end
