@@ -253,7 +253,7 @@ function dgsCoreRender()
 	end
 	local ticks = getTickCount()-tk
 	if debugMode then
-		if isElement(MouseData.hit) and debugMode == 2 then
+		if isElement(MouseData.hit) and debugMode >= 2 then
 			local highlight = MouseData.hit
 			if dgsElementType[MouseData.hit] == "dgs-dxtab" then
 				highlight = dgsElementData[highlight].parent
@@ -293,17 +293,29 @@ function dgsCoreRender()
 				end
 			end
 			local parent = MouseData.hit
-			local parentIndex = 0
 			dxDrawText("Parent List:", sW*0.5+91,11,sW,sH,black)
 			dxDrawText("Parent List:", sW*0.5+90,10)
+			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+100,26,sW,sH,black)
+			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+99,25)
+			local parents = {}
 			while(parent) do
-				dxDrawText("↓"..dgsGetPluginType(parent).."("..tostring(parent)..")", sW*0.5+101,26+parentIndex*15,sW,sH,black)
-				dxDrawText("↓"..dgsGetPluginType(parent).."("..tostring(parent)..")", sW*0.5+100,25+parentIndex*15)
+				tableInsert(parents,1,parent)
 				parent = dgsGetParent(parent)
-				parentIndex = parentIndex+1
 			end
-			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+100,26+parentIndex*15,sW,sH,black)
-			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+99,25+parentIndex*15)
+			for i=1,#parents do
+				local p = parents[i]
+				local debugStr = ""
+				if debugMode == 3 then
+					local debugTrace = dgsElementData[p].debugTrace
+					if debugTrace then
+						debugStr = debugTrace.file..":"..debugTrace.line
+					else
+						debugStr = "untraceable"
+					end
+				end
+				dxDrawText("↑"..dgsGetPluginType(p).."("..tostring(p)..") "..debugStr, sW*0.5+101,26+i*15,sW,sH,black)
+				dxDrawText("↑"..dgsGetPluginType(p).."("..tostring(p)..") "..debugStr, sW*0.5+100,25+i*15)
+			end
 		end
 		local version = getElementData(resourceRoot,"Version") or "?"
 		local freeMemory = " | Free VMemory: "..(dxGetStatus().VideoMemoryFreeForMTA).." MB" or "N/A"
