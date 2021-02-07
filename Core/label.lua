@@ -20,7 +20,28 @@ local assert = assert
 local tonumber = tonumber
 local type = type
 
-function dgsCreateLabel(x,y,w,h,text,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor,right,bottom)
+function dgsCreateLabel(...)
+	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,shadowOffsetX,shadowOffsetY,shadowColor,hAlign,vAlign
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		text = argTable.txt or argTable.text or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[8]
+		textColor = argTable.textColor or argTable[9]
+		scaleX = argTable.scaleX or argTable[10]
+		scaleY = argTable.scaleY or argTable[11]
+		shadowOffsetX = argTable.shadowOffsetX or argTable[12]
+		shadowOffsetY = argTable.shadowOffsetY or argTable[13]
+		shadowColor = argTable.shadowColor or argTable[14]
+		hAlign = argTable.hAlign or argTable.horizontalAlignment or argTable[15]
+		vAlign = argTable.vAlign or argTable.verticalAlignment or argTable[16]
+	else
+		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,shadowOffsetX,shadowOffsetY,shadowColor,hAlign,vAlign = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateLabel",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateLabel",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateLabel",3,"number")) end
@@ -29,15 +50,15 @@ function dgsCreateLabel(x,y,w,h,text,relative,parent,textColor,scalex,scaley,sha
 	dgsSetType(label,"dgs-dxlabel")
 	dgsSetParent(label,parent,true,true)
 	local style = styleSettings.label
-	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[label] = {
-		alignment = {right or "left",bottom or "top"},
+		alignment = {hAlign or "left",vAlign or "top"},
 		clip = false,
 		colorcoded = false,
 		font = style.font or systemFont,
 		rotation = 0,
 		rotationCenter = {0, 0},
-		shadow = {shadowoffsetx,shadowoffsety,shadowcolor},
+		shadow = {shadowOffsetX,shadowOffsetY,shadowColor},
 		subPixelPositioning = false,
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX, textSizeY},
