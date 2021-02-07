@@ -196,9 +196,9 @@ function dgsCreateMemo(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 	return memo
 end
 
-function dgsMemoGetLineCount(memo,forceStrongLine)
+function dgsMemoGetLineCount(memo,strongLineOnly)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetLineCount",1,"dgs-dxmemo")) end
-	if not forceStrongLine and dgsElementData[memo].wordWrap then
+	if not strongLineOnly and dgsElementData[memo].wordWrap then
 		return #dgsElementData[memo].wordWrapMapText
 	end
 	return #dgsElementData[memo].text
