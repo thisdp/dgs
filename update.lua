@@ -58,14 +58,14 @@ end
 addCommandHandler("updatedgs",function(player)
 	local account = getPlayerAccount(player)
 	local accName = getAccountName(account)
-	local isPremit = hasObjectPermissionTo(player,"command.updatedgs")
-	if not isPremit then
+	local isPermit = hasObjectPermissionTo(player,"command.updatedgs")
+	if not isPermit then
 		local adminGroup = aclGetGroup("Admin")
 		local consoleGroup = aclGetGroup("Console")
-		isPremit = isPremit or (adminGroup and isObjectInACLGroup("user."..accName,adminGroup))
-		isPremit = isPremit or (consoleGroup and isObjectInACLGroup("user."..accName,consoleGroup))
+		isPermit = isPermit or (adminGroup and isObjectInACLGroup("user."..accName,adminGroup))
+		isPermit = isPermit or (consoleGroup and isObjectInACLGroup("user."..accName,consoleGroup))
 	end
-	if isPremit then
+	if isPermit then
 		outputDebugString("[DGS]"..getPlayerName(player).." attempt to update dgs (Allowed)")
 		outputDebugString("[DGS]Preparing for updating dgs")
 		outputChatBox("[DGS]Preparing for updating dgs",root,0,255,0)
