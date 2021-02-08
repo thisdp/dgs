@@ -130,7 +130,6 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 			local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
 			maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 			x,y = x+addPosX-maxX*dgsElementData[scrollbar[2]].position*0.01,y+addPosY-maxY*dgsElementData[scrollbar[1]].position*0.01
-
 		else
 			x,y = x+addPosX,y+addPosY
 		end
@@ -163,8 +162,8 @@ end
 
 function dgsSetPosition(dgsEle,x,y,bool,isCenterPosition)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPosition",1,"dgs-dxelement")) end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"number")) end
+	if not(not x or type(x) == "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"nil/number")) end
+	if not(not y or type(y) == "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
 	local bool = bool and true or false
 	local pos = bool and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
 	local x,y = x or pos[1],y or pos[2]
@@ -201,8 +200,8 @@ end
 
 function dgsSetSize(dgsEle,w,h,bool)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSize",1,"dgs-dxelement")) end
-	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"number")) end
-	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"number")) end
+	if not(not w or type(w) == "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
+	if not(not h or type(h) == "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
 	local bool = bool and true or false
 	local size = bool and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 	local w,h = w or size[1],h or size[2]
