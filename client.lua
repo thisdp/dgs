@@ -1754,10 +1754,8 @@ end)
 
 addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	local parent = dgsGetParent(source)
-	if isElement(parent) then
-		if dgsGetType(parent) == "dgs-dxscrollpane" then
-			resizeScrollPane(parent,source)
-		end
+	if isElement(parent) and dgsGetType(parent) == "dgs-dxscrollpane" then
+		resizeScrollPane(parent,source)
 	end
 	local children = ChildrenTable[source] or {}
 	local childrenCnt = #children
