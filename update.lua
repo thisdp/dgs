@@ -57,9 +57,9 @@ end
 
 addCommandHandler("updatedgs",function(player)
 	local account = getPlayerAccount(player)
-	local accName = getAccountName(account)
 	local isPermit = hasObjectPermissionTo(player,"command.updatedgs")
 	if not isPermit then
+		local accName = getAccountName(account)
 		local adminGroup = aclGetGroup("Admin")
 		local consoleGroup = aclGetGroup("Console")
 		isPermit = isPermit or (adminGroup and isObjectInACLGroup("user."..accName,adminGroup))
