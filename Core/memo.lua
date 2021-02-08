@@ -1354,6 +1354,9 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	if MouseData.hit == source and MouseData.nowShow == source then
+		MouseData.topScrollable = source
+	end
 	if eleData.configNextFrame then
 		configMemo(source)
 	end

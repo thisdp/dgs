@@ -37,8 +37,8 @@ function dgsCreateLabel(...)
 		shadowOffsetX = argTable.shadowOffsetX or argTable[12]
 		shadowOffsetY = argTable.shadowOffsetY or argTable[13]
 		shadowColor = argTable.shadowColor or argTable[14]
-		hAlign = argTable.hAlign or argTable.horizontalAlignment or argTable[15]
-		vAlign = argTable.vAlign or argTable.verticalAlignment or argTable[16]
+		hAlign = argTable.hAlign or argTable.horizontalAlign or argTable.horizontalAlignment or argTable[15]
+		vAlign = argTable.vAlign or argTable.verticalAlign or argTable.verticalAlignment or argTable[16]
 	else
 		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,shadowOffsetX,shadowOffsetY,shadowColor,hAlign,vAlign = ...
 	end

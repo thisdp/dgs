@@ -715,6 +715,9 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 end
 
 dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
+	if MouseData.hit == source and MouseData.nowShow == source then
+		MouseData.topScrollable = source
+	end
 	local combo = eleData.myCombo
 	local DataTab = dgsElementData[combo]
 	local itemData = DataTab.itemData

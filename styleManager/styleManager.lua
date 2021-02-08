@@ -4,6 +4,7 @@ styleManager = {
 	sharedTexture = {},
 	createdTexture = {},
 	createdShader = {},
+	createdFont = {},
 	styles = {Default="Default"},
 	styleHistory = {"Default"},
 }
@@ -56,6 +57,41 @@ function newShader(shader,...)
 	end
 	styleManager.createdShader[shader] = true
 	return shader
+end
+
+function newFont(font,...)
+	if not isElement(font) then
+		font = dxCreateFont(font,...)
+	end
+	styleManager.createdFont[font] = true
+	return font
+end
+
+function dgsCreateFontFromStyle(theTable)
+	if theTable then
+		if type(theTable) == "table" then
+			local filePath,size,isBold,quality = theTable[1],theTable[2],theTable[3],theTable[4]
+			if filePath then
+				local thePath = filePath
+				if not isElement(filePath) then
+					thePath = getAvailableFilePath(filePath)
+				end
+				if styleSettings.sharedFont then
+					styleManager.sharedFont[thePath] = styleManager.sharedFont[thePath] or {}
+					local fontInPath = styleManager.sharedFont[thePath]
+					if fontInPath.size == size and fontInPath.isBold == isBold and fontInPath.quality == quality then
+						if isElement(styleManager.sharedFont[thePath].font) then
+							return styleManager.sharedFont[thePath].font
+						end
+					end
+					styleManager.sharedFont[thePath] = {font=newFont(thePath,size,isBold,quality),size = size,isBold = isBold,quality = quality}
+					return styleManager.sharedFont[thePath].font
+				else
+					return newFont(thePath,size,isBold,quality)
+				end
+			end
+		end
+	end
 end
 
 function dgsCreateTextureFromStyle(theTable)

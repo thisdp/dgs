@@ -65,6 +65,9 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxbrowser"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	if MouseData.hit == source and MouseData.nowShow == source then
+		MouseData.topScrollable = source
+	end
 	local color = applyColorAlpha(eleData.color,parentAlpha)
 	dxDrawImage(x,y,w,h,source,0,0,0,color,isPostGUI)
 	return rndtgt

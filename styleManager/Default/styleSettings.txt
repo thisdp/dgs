@@ -5,21 +5,23 @@
 ---------------------------------------------------------------
 ---How to make your own style?
 ---See: http://wiki.mtasa.com/Dgs/StyleManager
+---The syntax of this file is lua table.
 ---------------------------------------------------------------
 ---------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------------------General
-	sharedTexture = true,	--Optimization ( Set to true to share texture element to prevent creating duplicated texture elements)
+	sharedTexture = true,	--Optimization ( Set to true to share texture element with the same creation data to prevent creating duplicated texture elements)
+	sharedFont = true,		--Optimization ( Set to true to share font element with the same creation data to prevent creating duplicated texture elements)
 	disabledColor = true,
 	disabledColorPercent = 0.8,
-	systemFont="default",	--For custom, systemFont="font.ttf", or systemFont={"font.ttf",Size,isBold,Quality}
+	systemFont="default",	--For custom, systemFont="font.ttf", or systemFont={"font.ttf",Size,isBold,Quality} . This path is relative to the style path
 	changeOrder=true,	--Change render order when click dgs element
 ---------------------------------------------------------------------------------------------------Cursor Image
 
 ---------------------------------------------------------------------------------------------------Unique
 -----------------------------------------------------------------------------------DGS 3D Text
 	text3D = {
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 	},
 
 ---------------------------------------------------------------------------------------------------Unique
@@ -39,9 +41,8 @@
 			{},	--Click
 		},
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
-
 	},
 
 -----------------------------------------------------------------------------------DGS Check Box
@@ -81,7 +82,7 @@
 
 		},
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		textPadding = {
 			2,		--Space
@@ -127,9 +128,9 @@
 			{},	--Hover
 			{},	--Select
 		},
-		bgImage = {_},
+		bgImage = {},
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 		itemTextSize = {1,1},
 		itemHeight = 20,
@@ -166,7 +167,7 @@
 			{"Images/radiobutton/rb_t.png"},		--Click
 		},
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		textPadding = {
 			2,		--Space
@@ -192,7 +193,7 @@
 		bgImage = {},	--Background image of edit
 		bgImageBlur = {},	--Background image of edit when blur, set to empty or nil to use bgImage
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		maskText = "*",
 		padding = {2,2},
@@ -229,7 +230,7 @@
 		},
 
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		columnTextSize = {1,1},
 		rowTextSize = {1,1},
 		columnOffset = 10,
@@ -248,7 +249,7 @@
 	---Image
 
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 	},
 
@@ -265,7 +266,7 @@
 		bgImage = {},	--Background image of memo
 		bgImageBlur = {},	--Background image of memo when blur, set to empty or nil to use bgImage
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		maskText = "*",
 		caretStyle = 0,
@@ -369,7 +370,7 @@
 			nil,		--Click
 		},
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		selectorTextSize = {1,1},
 		itemTextSize = {1,1},
 
@@ -411,7 +412,7 @@
 			{},
 		},
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 		textOffset = {0.25,true},
 		cursorWidth = {0.5,true},
@@ -429,7 +430,7 @@
 	---Image
 		bgImage = {},
 	---Values
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		tabPadding = {4,false},
 		tabGapSize = {1,false},
 		scrollSpeed = {10,false},
@@ -475,7 +476,7 @@
 		titleImage = {},
 	---Values
 		closeButton = true,
-		font = nil,	--Using systemFont
+		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 		titleHeight = 25,
 		borderSize = 5,

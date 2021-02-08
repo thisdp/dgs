@@ -256,6 +256,9 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	if MouseData.hit == source and MouseData.nowShow == source then
+		MouseData.topScrollable = source
+	end
 	local isHorizontal = eleData.isHorizontal
 	local image = eleData.image or {}
 	local arrowImage = eleData.arrowImage or image[1]

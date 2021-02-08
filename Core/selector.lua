@@ -177,6 +177,9 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+	if MouseData.hit == source and MouseData.nowShow == source then
+		MouseData.topScrollable = source
+	end
 	local itemData = eleData.itemData
 	local selector = eleData.selectorText
 	local alignment = eleData.alignment
@@ -256,6 +259,5 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 	end
 	dxDrawText(selector[1],x,selectorStartY,x+selectorSizeX,selectorEndY,selectorTextColorLeft,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
 	dxDrawText(selector[2],x+w-selectorSizeX,selectorStartY,x+w,selectorEndY,selectorTextColorRight,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-
 	return rndtgt
 end

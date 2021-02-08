@@ -94,7 +94,7 @@ MouseData.enter = false
 MouseData.lastEnter = false
 MouseData.scbEnterData = false
 MouseData.scbEnterRltPos = false
-MouseData.scrollPane = false
+MouseData.topScrollable = false
 MouseData.hit = false
 MouseData.nowShow = false
 MouseData.editMemoCursor = false
@@ -140,7 +140,6 @@ function dgsCoreRender()
 		MouseData.clickm = false
 		MouseData.lock3DInterface = false
 		MouseData.Scale = false
-		MouseData.scrollPane = false
 		MouseData.dgsCursorPos = {false,false}
 	end
 	if isElement(BlurBoxGlobalScreenSource) then
@@ -150,6 +149,7 @@ function dgsCoreRender()
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize+dx3DImageTableSize ~= 0 then
 		dxSetRenderTarget()
 		MouseData.interfaceHit = {}
+		MouseData.topScrollable = false
 		local dxInterfaceHitElement = false
 		local intfaceClickElementl = false
 		local dimension = getElementDimension(localPlayer)
@@ -223,7 +223,6 @@ function dgsCoreRender()
 			MouseData.clickm = false
 			MouseData.lock3DInterface = false
 			MouseData.Scale = false
-			MouseData.scrollPane = false
 			MouseX,MouseY = nil,nil
 		end
 		triggerEvent("onDgsRender",resourceRoot)
@@ -619,81 +618,88 @@ addEventHandler("onClientKey",root,function(button,state)
 			triggerEvent("onDgsMouseWheel",MouseData.enter,button == "mouse_wheel_down" and -1 or 1)
 		end
 		local scroll = button == "mouse_wheel_down" and 1 or -1
-		local scrollbar = MouseData.enter
-		local dgsType = dgsGetType(MouseData.enter)
+		local enteredElement = MouseData.topScrollable or MouseData.enter
+		local dgsType = dgsGetType(enteredElement)
 		if dgsGetType(scrollbar) == "dgs-dxscrollbar" then
+			local scrollbar = enteredElement
 			dgsSetData(scrollbar,"moveType","slow")
 			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 		elseif dgsType == "dgs-dxgridlist" then
 			local scrollbar
-			local scrollbar1,scrollbar2 = dgsElementData[MouseData.enter].scrollbars[1],dgsElementData[MouseData.enter].scrollbars[2]
+			local gridlist = enteredElement
+			local scrollbar1,scrollbar2 = dgsElementData[gridlist].scrollbars[1],dgsElementData[gridlist].scrollbars[2]
 			local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
 			if visibleScb1 and not visibleScb2 then
 				scrollbar = scrollbar1
 			elseif visibleScb2 and not visibleScb1 then
 				scrollbar = scrollbar2
 			elseif visibleScb1 and visibleScb2 then
-				local whichScrollBar = dgsElementData[MouseData.enter].mouseWheelScrollBar and 2 or 1
-				scrollbar = dgsElementData[MouseData.enter].scrollbars[whichScrollBar]
+				local whichScrollBar = dgsElementData[gridlist].mouseWheelScrollBar and 2 or 1
+				scrollbar = dgsElementData[gridlist].scrollbars[whichScrollBar]
 			end
 			if scrollbar then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxmemo" then
-			local scrollbar = dgsElementData[MouseData.enter].scrollbars[1]
+			local memo = enteredElement
+			local scrollbar = dgsElementData[memo].scrollbars[1]
 			if dgsGetVisible(scrollbar) then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
-		elseif isElement(MouseData.scrollPane) then
+		elseif dgsType == "dgs-dxscrollpane" then
+			local scrollPane = enteredElement
 			local scrollbar
-			local scrollbar1,scrollbar2 = dgsElementData[MouseData.scrollPane].scrollbars[1],dgsElementData[MouseData.scrollPane].scrollbars[2]
+			local scrollbar1,scrollbar2 = dgsElementData[scrollPane].scrollbars[1],dgsElementData[scrollPane].scrollbars[2]
 			local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
 			if visibleScb1 and not visibleScb2 then
 				scrollbar = scrollbar1
 			elseif visibleScb2 and not visibleScb1 then
 				scrollbar = scrollbar2
 			elseif visibleScb1 and visibleScb2 then
-				local whichScrollBar = dgsElementData[MouseData.scrollPane].mouseWheelScrollBar and 2 or 1
-				scrollbar = dgsElementData[MouseData.scrollPane].scrollbars[whichScrollBar]
+				local whichScrollBar = dgsElementData[scrollPane].mouseWheelScrollBar and 2 or 1
+				scrollbar = dgsElementData[scrollPane].scrollbars[whichScrollBar]
 			end
 			if scrollbar then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxtabpanel" or dgsType == "dgs-dxtab" then
-			local tabpanel = MouseData.enter
+			local tabpanel = enteredElement
 			if dgsType == "dgs-dxtab" then
-				tabpanel = dgsElementData[MouseData.enter].parent
+				tabpanel = dgsElementData[tabpanel].parent
 			end
 			local width = dgsTabPanelGetWidth(tabpanel)
-			local w,h = dgsElementData[tabpanel].absSize[1],dgsElementData[tabpanel].absSize[2]
+			local eleData = dgsElementData[tabpanel]
+			local w,h = eleData.absSize[1],eleData.absSize[2]
 			if width > w then
 				local mx,my = getCursorPosition()
 				mx,my = (mx or -1)*sW,(my or -1)*sH
 				local _,y = dgsGetPosition(tabpanel,false,true)
-				local height = dgsElementData[tabpanel].tabHeight[2] and dgsElementData[tabpanel].tabHeight[1]*h or dgsElementData[tabpanel].tabHeight[1]
+				local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
 				if my < y+height then
-					local speed = dgsElementData[tabpanel].scrollSpeed[2] and dgsElementData[tabpanel].scrollSpeed[1] or dgsElementData[tabpanel].scrollSpeed[1]/width
-					local orgoff = dgsElementData[tabpanel].showPos
+					local speed = eleData.scrollSpeed[2] and eleData.scrollSpeed[1] or eleData.scrollSpeed[1]/width
+					local orgoff = eleData.showPos
 					orgoff = clamp(orgoff+scroll*speed,0,1)
 					dgsSetData(tabpanel,"showPos",orgoff)
 				end
 			end
 		elseif dgsType == "dgs-dxcombobox-Box" then
-			local combo = dgsElementData[MouseData.enter].myCombo
+			local comboBox = enteredElement
+			local combo = dgsElementData[comboBox].myCombo
 			local scrollbar = dgsElementData[combo].scrollbar
 			if dgsGetVisible(scrollbar) then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxselector" then
-			if dgsElementData[MouseData.enter].enableScroll and MouseData.nowShow == MouseData.enter then
-				local itemData = dgsElementData[MouseData.enter].itemData
+			local selector = enteredElement
+			if dgsElementData[selector].enableScroll and MouseData.nowShow == selector then
+				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
-				local currentItem = dgsElementData[MouseData.enter].selectedItem
-				dgsSelectorSetSelectedItem(MouseData.enter,floor(clamp(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
+				local currentItem = dgsElementData[selector].selectedItem
+				dgsSelectorSetSelectedItem(selector,floor(clamp(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
 			end
 		end
 	elseif state then

@@ -433,7 +433,7 @@ end
 function dgsCreateFont(path,size,bold,quality)
 	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsCreateFont",1,"string")) end
 	sourceResource = sourceResource or getThisResource()
-	if not string.find(path,":") then
+	if not path:find(":") then
 		local resname = getResourceName(sourceResource)
 		path = ":"..resname.."/"..path
 	end
