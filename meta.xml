@@ -262,6 +262,8 @@
 	<export function="dgsCreate3DImage" type="client" />
 	<export function="dgs3DImageSetImage" type="client" />
 	<export function="dgs3DImageGetImage" type="client" />
+	<export function="dgs3DImageSetSize" type="client" />
+	<export function="dgs3DImageGetSize" type="client" />
 	<export function="dgs3DImageGetDimension" type="client" />
 	<export function="dgs3DImageSetDimension" type="client" />
 	<export function="dgs3DImageGetInterior" type="client" />
