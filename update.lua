@@ -58,9 +58,15 @@ end
 addCommandHandler("updatedgs",function(player)
 	local account = getPlayerAccount(player)
 	local accName = getAccountName(account)
-	local isAdmin = isObjectInACLGroup("user."..accName,aclGetGroup("Admin")) or isObjectInACLGroup("user."..accName,aclGetGroup("Console"))
-	if isAdmin then
-		outputDebugString("[DGS]Player "..getPlayerName(player).." attempt to update dgs (Allowed)")
+	local isPremit = hasObjectPermissionTo(player,"command.updatedgs")
+	if not isPremit then
+		local adminGroup = aclGetGroup("Admin")
+		local consoleGroup = aclGetGroup("Console")
+		isPremit = isPremit or (adminGroup and isObjectInACLGroup("user."..accName,adminGroup))
+		isPremit = isPremit or (consoleGroup and isObjectInACLGroup("user."..accName,consoleGroup))
+	end
+	if isPremit then
+		outputDebugString("[DGS]"..getPlayerName(player).." attempt to update dgs (Allowed)")
 		outputDebugString("[DGS]Preparing for updating dgs")
 		outputChatBox("[DGS]Preparing for updating dgs",root,0,255,0)
 		if RemoteVersion > version then
@@ -71,7 +77,7 @@ addCommandHandler("updatedgs",function(player)
 		end
 	else
 		outputChatBox("[DGS]Access Denined!",player,255,0,0)
-		outputDebugString("[DGS]Player "..getPlayerName(player).." attempt to update dgs (Denied)!",2)
+		outputDebugString("[DGS]"..getPlayerName(player).." attempt to update dgs (Denied)!",2)
 	end
 end)
 
