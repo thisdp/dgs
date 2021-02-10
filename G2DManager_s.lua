@@ -1118,6 +1118,7 @@ function GenerateVSCodeAutoComplete(tab)
 end
 
 function GenerateSublimeAutoComplete(tab)
+	if fileExists("dgs.sublime-completions") then fileDelete("dgs.sublime-completions") end
 	print("[DGS]Generating Sublime autocomplete file...")
 	local t = {scope = "source.lua",completions = {}}
 	for i=1,#tab do
@@ -1125,7 +1126,7 @@ function GenerateSublimeAutoComplete(tab)
 		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..")\t Retruns "..table.concat(item.returns,", ")
 		table.insert(t.completions,{trigger=r,contents=item.fncName})
 	end
-	local f = fileExists("dgs.sublime-completions") and fileOpen("dgs.sublime-completions") or fileCreate("dgs.sublime-completions")
+	local f = fileCreate("dgs.sublime-completions")
 	fileSetPos(f,0)
 	local json = toJSON(t,false,"spaces")
 	fileWrite(f,json:sub(3, json:len() - 1))
