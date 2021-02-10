@@ -113,11 +113,13 @@ addCommandHandler("g2d",function(player,command,...)
 						CrawlWikiFromMTA("npp")
 					elseif args[2] == "vscode" or args[2] == "vsc" then
 						CrawlWikiFromMTA("vsc")
+					elseif args[2] == "sublime" then
+						CrawlWikiFromMTA("sublime")
 					else
 						print("[DGS]Current type is not supported!")
 					end
 				else
-					print("[DGS]Please select target type: g2d -g <npp/vsc>")
+					print("[DGS]Please select target type: g2d -g <npp/vsc/sublime>")
 				end
 			else
 				outputDebugString("[DGS-G2D]Command help")
@@ -1066,6 +1068,8 @@ function AnalyzeFunction(tab)
 		GenerateNPPAutoComplete(nTable)
 	elseif tab.type == "vsc" then
 		GenerateVSCodeAutoComplete(nTable)
+	elseif tab.type == "sublime" then
+		GenerateSublimeAutoComplete(nTable)
 	end
 end
 
@@ -1111,4 +1115,20 @@ end
 
 function GenerateVSCodeAutoComplete(tab)
 
+end
+
+function GenerateSublimeAutoComplete(tab)
+	print("[DGS]Generating Sublime autocomplete file...")
+	local t = {scope = "source.lua",completions = {}}
+	for i=1,#tab do
+		local item = tab[i]
+		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..")\t Retruns "..table.concat(item.returns,", ")
+		table.insert(t.completions,{trigger=r,contents=item.fncName})
+	end
+	local f = fileExists("dgs.sublime-completions") and fileOpen("dgs.sublime-completions") or fileCreate("dgs.sublime-completions")
+	fileSetPos(f,0)
+	local json = toJSON(t,false,"spaces")
+	fileWrite(f,json:sub(3, json:len() - 1))
+	fileClose(f)
+	print("[DGS]Sublime autocomplete file is saved as dgs.sublime-completions -> Done")
 end
