@@ -24,10 +24,10 @@ function dgsCreateDetectArea(x,y,sx,sy,relative,parent)
 		dgsSetData(detectarea,"debugModeAlpha",128)
 		return detectarea
 	else
-		if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateGridList",1,"number")) end
-		if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
-		if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
-		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
+		if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateDetectArea",1,"number")) end
+		if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateDetectArea",2,"number")) end
+		if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateDetectArea",3,"number")) end
+		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateDetectArea",4,"number")) end
 		local detectarea = createElement("dgs-dxdetectarea")
 		dgsSetType(detectarea,"dgs-dxdetectarea")
 		dgsSetParent(detectarea,parent,true,true)
