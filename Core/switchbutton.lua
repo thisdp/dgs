@@ -118,7 +118,7 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local imageOff,imageOn = eleData.imageOff,eleData.imageOn
 	local colorOff,colorOn = eleData.colorOff,eleData.colorOn
 	local textColor,text
@@ -155,7 +155,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	end
 	local cursorImage = eleData.cursorImage[colorImgID]
 	local cursorColor = eleData.cursorColor[colorImgID]
-	if not enabled[1] and not enabled[2] then
+	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
 			color = applyColorAlpha(eleData.disabledColor,parentAlpha)
 		elseif eleData.disabledColor == true then
@@ -168,7 +168,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	end
 	if not style then
 		local color = colorOff[colorImgID]+(colorOn[colorImgID]-colorOff[colorImgID])*animProgress
-		if not enabled[1] and not enabled[2] then
+		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				color = applyColorAlpha(eleData.disabledColor,parentAlpha)
 			elseif eleData.disabledColor == true then
@@ -193,7 +193,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,
 	elseif style == 1 then
 		local colorOn = colorOn[colorImgID]
 		local colorOff = colorOff[colorImgID]
-		if not enabled[1] and not enabled[2] then
+		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				colorOn = applyColorAlpha(eleData.disabledColor,parentAlpha)
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)

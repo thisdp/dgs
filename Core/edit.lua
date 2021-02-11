@@ -925,7 +925,7 @@ end)
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local bgImage = eleData.isFocused and eleData.bgImage or (eleData.bgImageBlur or eleData.bgImage)
 	local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
 	bgColor = applyColorAlpha(bgColor,parentAlpha)
@@ -1017,7 +1017,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 		local finalcolor
-		if not enabled[1] and not enabled[2] then
+		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				finalcolor = eleData.disabledColor
 			elseif eleData.disabledColor == true then

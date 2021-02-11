@@ -1988,7 +1988,7 @@ end)
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
+dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
 	if MouseData.hit == source and MouseData.nowShow == source then
 		MouseData.topScrollable = source
 	end
@@ -2279,7 +2279,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 					local offx = items[2]
 					local offy = items[3]
 					for a=1,#(items[1] or {}) do
-						renderGUI(items[1][a],mx,my,enabled,renderTarget[2],{0,0,position[3],position[4]+columnHeight},offx,offy,parentAlpha,visible,checkElement)
+						renderGUI(items[1][a],mx,my,enabledInherited,enabledSelf,renderTarget[2],0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
 					end
 				end
 			end

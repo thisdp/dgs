@@ -123,8 +123,7 @@ function dgsDetectAreaUpdateDebugView(detectarea)
 end
 
 function dgsDetectAreaAttachToElement(da,ele)
-	local fnc = function(source,mx,my,collideBox)
-		local x,y,w,h = collideBox[1],collideBox[2],collideBox[3],collideBox[4]
+	local fnc = function(source,mx,my,x,y,w,h)
 		if mx >= x and mx <= x+w and my >= y and my <= y+h then
 			return source
 		end
@@ -135,9 +134,9 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local color = 0xFFFFFFFF
-	if enabled[1] and mx then
+	if enabledInherited[1] and mx then
 		local checkPixel = eleData.checkFunction
 		if checkPixel then
 			local _mx,_my = (mx-x)/w,(my-y)/h

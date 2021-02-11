@@ -1353,7 +1353,7 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	if MouseData.hit == source and MouseData.nowShow == source then
 		MouseData.topScrollable = source
 	end
@@ -1381,7 +1381,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,
 	local scrollbars = eleData.scrollbars
 	local selectVisible = eleData.selectVisible
 	local finalcolor
-	if not enabled[1] and not enabled[2] then
+	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
 			finalcolor = eleData.disabledColor
 		elseif eleData.disabledColor == true then

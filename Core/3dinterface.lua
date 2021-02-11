@@ -259,13 +259,13 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local pos = eleData.position
 	local size = eleData.size
 	local faceTo = eleData.faceTo
 	local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 	rndtgt = eleData.renderTarget_parent
-	if x and y and z and w and h and enabled[1] and mx then
+	if x and y and z and w and h and enabledInherited and mx then
 		local lnVec,lnPnt
 		local camX,camY,camZ = getCameraMatrix()
 		if not fx or not fy or not fz then

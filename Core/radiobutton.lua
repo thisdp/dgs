@@ -133,7 +133,7 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local image_f,image_t = eleData.image_f,eleData.image_t
 	local color_f,color_t = eleData.color_f,eleData.color_t
 	local rbParent = eleData.rbParent
@@ -170,7 +170,7 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,e
 		end
 	end
 	local finalcolor
-	if not enabled[1] and not enabled[2] then
+	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
 			finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 		elseif eleData.disabledColor == true then

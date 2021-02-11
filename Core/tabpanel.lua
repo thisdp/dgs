@@ -269,7 +269,7 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt,position,OffsetX,OffsetY,visible)
+dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
 	if eleData.configNextFrame then configTabPanel(source) end
 	eleData.rndPreSelect = -1
 	local selected = eleData.selected
@@ -323,7 +323,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 							selState = 2
 						end
 						local finalcolor
-						if not enabled[2] then
+						if not enabledSelf then
 							if type(eleData.disabledColor) == "number" then
 								finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 							elseif eleData.disabledColor == true then
@@ -392,7 +392,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 						end]]
 						
 						dxDrawText(tabData.text,_tabsize,0,_width,height,tabTextColor[selState],textSizeX,textSizeY,tabData.font or font,"center","center",false,false,false,colorcoded,true)
-						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabled[2] then
+						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
 							MouseData.hit = t
 						end
@@ -413,7 +413,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleD
 			end
 			local children = ChildrenTable[tabs[selected]]
 			for i=1,#children do
-				renderGUI(children[i],mx,my,enabled,rndtgt,position,OffsetX,OffsetY,parentAlpha,visible)
+				renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
 			end
 		end
 	end

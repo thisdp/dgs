@@ -138,7 +138,7 @@ local g_canBeBlocked = {
 	seeThroughStuff = false,
 	ignoreSomeObjectsForCamera = false,
 }
-dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local attachTable = eleData.attachTo
 	local posTable = eleData.position
 	local wx,wy,wz = posTable[1],posTable[2],posTable[3]

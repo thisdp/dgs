@@ -347,7 +347,7 @@ technique DrawCircle{
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabled,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local bgImage = eleData.bgImage
 	local bgColor = applyColorAlpha(eleData.bgColor,parentAlpha)
 	local indicatorImage,indicatorColor = eleData.indicatorImage,eleData.indicatorColor
