@@ -1500,12 +1500,12 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y,isCoolingDown)
 		end
 		if wasEventCancelled() then return end
+		if not isElement(guiele) then return end
 		if state == "down" then
 			triggerEvent("onDgsMouseDown",guiele,button,MouseX or x,MouseY or y,isCoolingDown)
 		elseif state == "up" then
 			triggerEvent("onDgsMouseUp",guiele,button,MouseX or x,MouseY or y,isCoolingDown)
 		end
-		
 		if not isElement(guiele) then return end
 		if isTimer(multiClick[button][state][3]) then killTimer(multiClick[button][state][3]) end
 		if multiClick[button][state][1] == 0 then multiClick[button][state][2] = guiele end
@@ -1521,6 +1521,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		else
 			multiClick[button][state] = {0,false,false}
 		end
+		if not isElement(guiele) then return end
 		local guitype = dgsGetType(guiele)
 		if guitype == "dgs-dxbrowser" then
 			focusBrowser(guiele)
