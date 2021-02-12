@@ -1469,6 +1469,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
 		local eleData = dgsElementData[guiele]
+		local isCoolingDown = false
 		local clickCoolDown = eleData.clickCoolDown
 		if clickCoolDown then
 			local clickTick = getTickCount()
@@ -1476,14 +1477,49 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			lastClickTick[button] = lastClickTick[button] or {}
 			lastClickTick[button][state] = lastClickTick[button][state] or 0
 			local lClickTick = tonumber(lastClickTick[button][state]) or 0
-			if getTickCount()-lClickTick <= clickCoolDown then return end
-			lastClickTick[button][state] = clickTick
+			isCoolingDown = getTickCount()-lClickTick <= clickCoolDown
+			if not isCoolingDown then
+				lastClickTick[button][state] = clickTick
+			end
 			eleData.lastClickTick = lastClickTick
 		end
+		if not isElement(guiele) then return end
+		if state == "up" then
+			if button == "left" then
+				if MouseData.clickl == guiele then
+					triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y,isCoolingDown)
+				end
+			elseif button == "right" then
+				if MouseData.clickr == guiele then
+					triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y,isCoolingDown)
+				end
+			else
+				triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y,isCoolingDown)
+			end
+		else
+			triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y,isCoolingDown)
+		end
+		if wasEventCancelled() then return end
 		if state == "down" then
-			triggerEvent("onDgsMouseDown",guiele,button,MouseX or x,MouseY or y)
+			triggerEvent("onDgsMouseDown",guiele,button,MouseX or x,MouseY or y,isCoolingDown)
 		elseif state == "up" then
-			triggerEvent("onDgsMouseUp",guiele,button,MouseX or x,MouseY or y)
+			triggerEvent("onDgsMouseUp",guiele,button,MouseX or x,MouseY or y,isCoolingDown)
+		end
+		
+		if not isElement(guiele) then return end
+		if isTimer(multiClick[button][state][3]) then killTimer(multiClick[button][state][3]) end
+		if multiClick[button][state][1] == 0 then multiClick[button][state][2] = guiele end
+		if multiClick[button][state][2] == guiele then
+			multiClick[button][state][1] = multiClick[button][state][1]+1
+			if multiClick[button][state][1] == 2 then
+				triggerEvent("onDgsMouseDoubleClick",guiele,button,state,MouseX or x,MouseY or y)
+			end
+			triggerEvent("onDgsMouseMultiClick",guiele,button,state,MouseX or x,MouseY or y,multiClick[button][state][1])
+			multiClick[button][state][3] = setTimer(function(button,state)
+				multiClick[button][state] = {0,false,false}
+			end,multiClick.Interval,1,button,state)
+		else
+			multiClick[button][state] = {0,false,false}
 		end
 		local guitype = dgsGetType(guiele)
 		if guitype == "dgs-dxbrowser" then
@@ -1662,38 +1698,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				end
 			end
 		end
-		if not isElement(guiele) then return end
-		if state == "up" then
-			if button == "left" then
-				if MouseData.clickl == guiele then
-					triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
-				end
-			elseif button == "right" then
-				if MouseData.clickr == guiele then
-					triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
-				end
-			else
-				triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
-			end
-		else
-			triggerEvent("onDgsMouseClick",guiele,button,state,MouseX or x,MouseY or y)
-		end
-		if not isElement(guiele) then return end
-		if isTimer(multiClick[button][state][3]) then killTimer(multiClick[button][state][3]) end
-		if multiClick[button][state][1] == 0 then multiClick[button][state][2] = guiele end
-		if multiClick[button][state][2] == guiele then
-			multiClick[button][state][1] = multiClick[button][state][1]+1
-			if multiClick[button][state][1] == 2 then
-				triggerEvent("onDgsMouseDoubleClick",guiele,button,state,MouseX or x,MouseY or y)
-			end
-			triggerEvent("onDgsMouseMultiClick",guiele,button,state,MouseX or x,MouseY or y,multiClick[button][state][1])
-			multiClick[button][state][3] = setTimer(function(button,state)
-				multiClick[button][state] = {0,false,false}
-			end,multiClick.Interval,1,button,state)
-		else
-			multiClick[button][state] = {0,false,false}
-		end
-		
 		if not isElement(guiele) then return end
 		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
 			local clicked = eleData.itemClick
