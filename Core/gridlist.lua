@@ -2217,8 +2217,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						if id == 1 then
 							_bgX = _x+backgroundOffset
 							backgroundWidth = _backgroundWidth-backgroundOffset
-						elseif backgroundWidth+_x-x >= w or columnCount == id then
-							backgroundWidth = w-_x+x
+						elseif backgroundWidth+_x >= w or columnCount == id then
+							backgroundWidth = w-_x
 						end
 						if #image > 0 then
 							dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,image[rowState],0,0,0,color[rowState])

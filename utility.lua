@@ -261,7 +261,7 @@ function math.inRange(n_min,n_max,value)
 end
 
 function math.lerp(s,a,b)
-	return a + s * (b - a)
+	return a+s*(b-a)
 end
 
 function math.seekEmpty(list)
