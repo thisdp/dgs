@@ -751,6 +751,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"attachedBy",{}) --Attached By
 	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!
 	dgsSetData(source,"enableFullEnterLeaveCheck",false)
+	dgsSetData(source,"clickCoolDown",false)
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"

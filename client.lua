@@ -393,7 +393,6 @@ function dgsCoreRender()
 	end
 end
 
-
 function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visibleInherited,checkElement)
 	local isElementInside = false
 	local eleData = dgsElementData[source]
@@ -1469,6 +1468,18 @@ GirdListDoubleClick.up = false
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
 	if isElement(guiele) then
+		local eleData = dgsElementData[guiele]
+		local clickCoolDown = eleData.clickCoolDown
+		if clickCoolDown then
+			local clickTick = getTickCount()
+			local lastClickTick = eleData.lastClickTick or {}
+			lastClickTick[button] = lastClickTick[button] or {}
+			lastClickTick[button][state] = lastClickTick[button][state] or 0
+			local lClickTick = tonumber(lastClickTick[button][state]) or 0
+			if getTickCount()-lClickTick <= clickCoolDown then return end
+			lastClickTick[button][state] = clickTick
+			eleData.lastClickTick = lastClickTick
+		end
 		if state == "down" then
 			triggerEvent("onDgsMouseDown",guiele,button,MouseX or x,MouseY or y)
 		elseif state == "up" then
@@ -1481,7 +1492,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			focusBrowser()
 		end
 		local parent = dgsGetParent(guiele)
-		local eleData = dgsElementData[guiele]
 		if guitype == "dgs-dxswitchbutton" then
 			if eleData.clickState == state and eleData.clickButton == button then
 				dgsSetData(guiele,"state", not eleData.state)
