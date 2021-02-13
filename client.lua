@@ -1236,26 +1236,28 @@ function dgsCheckHit(hits,mx,my)
 	end
 	if CursorData.enabled then
 		local cData = CursorData[MouseData.cursorType]
-		local image = cData[1]
-		if image then
-			if not isElement(image) then
+		if cData then
+			local image = cData[1]
+			if image and not isElement(image) then
 				CursorData[MouseData.cursorType] = nil
 				cData = nil
 			end
-		end
-		if cData and not isMainMenuActive() then
-			local color = CursorData.color
-			local cursorSize = CursorData.size
-				
-			local rotation = cData[2]
-			local rotCenter = cData[3]
-			local offset = cData[4]
-			local scale = cData[5]
-			local materialSize = cData[6]
-			local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
-			local cursowX,cursorY = mx+offset[1]*cursorW,my+offset[2]*cursorH
-			setCursorAlpha(0)
-			_dxDrawImage(cursowX,cursorY,cursorW,cursorH,cData[1],rotation,rotCenter[1],rotCenter[2],color,true)
+			if not isMainMenuActive() then
+				local color = CursorData.color
+				local cursorSize = CursorData.size
+					
+				local rotation = cData[2]
+				local rotCenter = cData[3]
+				local offset = cData[4]
+				local scale = cData[5]
+				local materialSize = cData[6]
+				local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
+				local cursowX,cursorY = mx+offset[1]*cursorW,my+offset[2]*cursorH
+				setCursorAlpha(0)
+				_dxDrawImage(cursowX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
+			else
+				setCursorAlpha(255)
+			end
 		else
 			setCursorAlpha(255)
 		end
