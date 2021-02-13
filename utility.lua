@@ -769,7 +769,7 @@ function dgsGetRTAssignState(element)
 end]]
 --------------------------------Events
 events = {
-	"onDgsCursorStateChange",
+	"onDgsCursorTypeChange",
 	"onDgsMouseLeave",
 	"onDgsMouseEnter",
 	"onDgsMouseClick",

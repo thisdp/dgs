@@ -1230,7 +1230,7 @@ function dgsCheckHit(hits,mx,my)
 			_cursorType = guiGetCursorType()
 		end
 		if _cursorType ~= MouseData.cursorType then
-			triggerEvent("onDgsCursorStateChange",root,_cursorType,MouseData.cursorType)
+			triggerEvent("onDgsCursorTypeChange",root,_cursorType,MouseData.cursorType)
 			MouseData.cursorType = _cursorType
 		end
 	end
