@@ -1,62 +1,6 @@
 BlurBoxGlobalScreenSource = false
 blurboxShaders = 0
 blurboxFactor = 1/2
-local blurBoxShader
-
-function _dgsCreateBlurBox()
-	if not getElementData(localPlayer,"DGS-DEBUG-C") then
-		outputDebugString("Deprecated usage of function @dgsCreateBlurBox, please check wiki, and run it again with command /debugdgs c",2)
-	else
-		assert(false,"Deprecated usage of function @dgsCreateBlurBox")
-	end
-	if not isElement(BlurBoxGlobalScreenSource) then
-		BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
-	end
-	local shader = dxCreateShader(blurBoxShader)
-	dgsSetData(shader,"asPlugin","dgs-dxblurbox")
-	dxSetShaderValue(shader,"screenSource",BlurBoxGlobalScreenSource)
-	blurboxShaders = blurboxShaders+1
-	triggerEvent("onDgsPluginCreate",shader,sourceResource)
-	return shader
-end
-
-function dgsBlurBoxRender(blurBox,x,y,w,h,postGUI,updateScreenSource)
-	if updateScreenSource then
-		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
-	end
-	dxDrawImageSection(x,y,w,h,x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,blurBox,0,0,0,0xFFFFFFFF,postGUI or false)
-end
-
-----------------Shader
-blurBoxShader = [[
-texture screenSource;
-float brightness = 1;
-
-sampler2D Sampler0 = sampler_state{
-    Texture         = screenSource;
-    MinFilter       = Linear;
-    MagFilter       = Linear;
-    MipFilter       = Linear;
-    AddressU        = Mirror;
-    AddressV        = Mirror;
-};
-
-float4 PixelShaderFunction(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
-    float4 Color = 0;
-    float4 Texel = tex2D(Sampler0,tex);
-    for(int i = -3; i <= 3; i++)
-		for(int j = -3; j <= 3; j++)
-			Color += tex2D(Sampler0,tex+float2(i*ddx(tex.x),j*ddy(tex.y))) *(1.0/49.0)*brightness;
-    Color.a *= diffuse.a;
-	return Color;
-}
-
-technique fxBlur{
-    pass P0{
-        PixelShader = compile ps_2_a PixelShaderFunction();
-    }
-}
-]]
 
 function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
 	local rt = dgsElementData[self].rt
@@ -101,9 +45,8 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 end
 
 function dgsCreateBlurBox(w,h,blursource)
-	if not w and not h then
-		return _dgsCreateBlurBox()
-	end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBlurBox",1,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBlurBox",2,"number")) end
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
 	if isElement(blursource) then
 		dgsSetData(bb,"blurSource",blursource)
