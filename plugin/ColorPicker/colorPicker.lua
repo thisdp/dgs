@@ -221,7 +221,7 @@ ColorAttributeOrder = {
 	HSV={"H","S","V"},
 }
 function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMode,isReversed)
-	assert(dgsIsDxElement(show),"Bad argument @dgsBindToColorPicker at argument 1, expect a dgs-dxgui, got "..dgsGetType(show))
+	assert(dgsIsType(show),"Bad argument @dgsBindToColorPicker at argument 1, expect a dgs-dxgui, got "..dgsGetType(show))
 	assert(dgsGetPluginType(colorPicker) == "dgs-dxcolorpicker","Bad argument @dgsBindToColorPicker at argument 2, expect plugin dgs-dxcolorpicker, got "..dgsGetPluginType(colorPicker))
 	if colorAttribute ~= "A" then
 		assert(AvailableColorType[colorType],"Bad argument @dgsBindToColorPicker at argument 3, only RGB/HSL/HSV supported, got "..tostring(colorType))
@@ -494,7 +494,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 end
 
 function dgsUnbindFromColorPicker(show)
-	assert(dgsIsDxElement(show),"Bad argument @dgsUnbindFromColorPicker at argument 1, expect a dgs-dxgui, got "..dgsGetType(show))
+	assert(dgsIsType(show),"Bad argument @dgsUnbindFromColorPicker at argument 1, expect a dgs-dxgui, got "..dgsGetType(show))
 	local bound = dgsElementData[show].bindColorPicker
 	if bound then
 		local tempColorChange = dgsElementData[show].bindColorPicker_Fnc1
