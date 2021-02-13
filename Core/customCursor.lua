@@ -20,6 +20,7 @@ function dgsSetCustomCursorImage(cursorType,image,rotation,rotationCenter,offset
 			CursorData[k] = nil
 		end
 	end
+	return true
 end
 
 function dgsGetCustomCursorImage(cursorType)
@@ -29,6 +30,7 @@ end
 
 function dgsSetCustomCursorEnabled(state)
 	CursorData.enabled = state and true or false
+	return true
 end
 
 function dgsGetCustomCursorEnabled()
@@ -38,6 +40,7 @@ end
 function dgsSetCustomCursorSize(size)
 	if not(type(size) == "number") then error(dgsGenAsrt(size,"dgsSetCustomCursorSize",1,"number")) end
 	CursorData.size = size
+	return true
 end
 
 function dgsGetCustomCursorSize()
@@ -51,6 +54,7 @@ end
 function dgsSetCustomCursorColor(color)
 	if not(type(color) == "number") then error(dgsGenAsrt(color,"dgsSetCustomCursorColor",1,"number")) end
 	CursorData.color = color
+	return true
 end
 
 function dgsGetCustomCursorColor()
