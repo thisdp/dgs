@@ -1,21 +1,22 @@
 g_DGSCanvasIndex = 0
 function dgsCreateCanvas(renderSource,w,h,color)
-	assert(isElement(renderSource),"Bad argument @dgsCreateCanvas at argument 1, expected texture/shader/render target got "..type(renderSource))
-	local eleType = getElementType(renderSource)
-	assert(eleType=="shader" or eleType=="texture" or eleType=="render-target-texture","Bad argument @dgsCreateCanvas at argument 1, expected texture/shader/render target got "..eleType)
-	assert(type(w) == "number","Bad argument @dgsCreateCanvas at argument 2, expect number got "..type(w))
-	assert(type(h) == "number","Bad argument @dgsCreateCanvas at argument 3, expect number got "..type(h))
+	if not(isMaterial(renderSource)) then error(dgsGenAsrt(renderSource,"dgsCreateCanvas",1,"material")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCanvas",2,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCanvas",3,"number")) end
 	color = color or 0xFFFFFFFF
 	local canvas = dxCreateRenderTarget(w,h,true) -- Main Render Target
-	if not isElement(canvas) then
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		outputDebugString("Failed to create render target for dgs-dxcanvas [Expected:"..(0.0000076*w*h).."MB/Free:"..videoMemory.."MB]",2)
-		return false
+	local rt,err = dxCreateRenderTarget(w,h,true,renderSource)
+	if rt ~= false then
+		dgsAttachToAutoDestroy(rt,renderSource,-1)
+	else
+		outputDebugString(err,2)
 	end
-	dgsSetData(canvas,"asPlugin","dgs-dxcanvas")
-	dgsSetData(canvas,"blendMode","blend")
-	dgsSetData(canvas,"renderSource",renderSource)
-	dgsSetData(canvas,"resolution",{w,h})
+	dgsElementData[canvas] = {
+		asPlugin="dgs-dxcanvas",
+		blendMode="blend",
+		renderSource=renderSource,
+		resolution={w,h},
+	}
 	triggerEvent("onDgsPluginCreate",canvas,sourceResource)
 	return canvas
 end

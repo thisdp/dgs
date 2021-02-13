@@ -162,7 +162,7 @@ end
 
 function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borderOnly,borderThicknessHorizontal,borderThicknessVertical)
 	local radType = dgsGetType(radius)
-	assert(radType == "number" or radType == "table","Bad argument @dgsCreateRoundRect at argument 1, expect number/table got "..dgsGetType(radius))
+	if not(radType == "number" or radType == "table") then error(dgsGenAsrt(radius,"dgsCreateRoundRect",1,"number/table")) end
 	if not getElementData(localPlayer,"DGS-DEBUG-C") then
 		if type(relative) == "number" and radType ~= "table" then
 			outputDebugString("Deprecated argument usage @dgsCreateRoundRect, run it again with command /debugdgs c",2)
@@ -174,7 +174,7 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 	if type(radius) ~= "table" then
 		local rlt = dgsGetType(relative) == "boolean"
 		if not rlt then destroyElement(shader) end
-		assert(rlt,"Bad argument @dgsCreateRoundRect at argument 2, expect boolean got "..dgsGetType(relative))
+		if not(rlt) then error(dgsGenAsrt(relative,"dgsCreateRoundRect",2,"boolean")) end
 		dgsRoundRectSetRadius(shader,radius,relative)
 	else
 		for i=1,4 do
@@ -199,7 +199,7 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 end
 
 function dgsRoundRectSetTexture(rectShader,texture)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetTexture at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetTexture",1,"plugin dgs-dxroundrectangle")) end
 	if isElement(texture) then
 		dxSetShaderValue(rectShader,"textureLoad",true)
 		dxSetShaderValue(rectShader,"sourceTexture",texture)
@@ -211,10 +211,10 @@ function dgsRoundRectSetTexture(rectShader,texture)
 end
 
 function dgsRoundRectSetRadius(rectShader,radius,relative)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetRadius at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetRadius",1,"plugin dgs-dxroundrectangle")) end
 	local radType = dgsGetType(radius)
-	assert(radType == "number" or radType == "table","Bad argument @dgsRoundRectSetRadius at argument 2, expect number/table got "..dgsGetType(radius))
-	if type(radius) ~= "table" then
+	if not(radType == "number" or radType == "table") then error(dgsGenAsrt(radius,"dgsRoundRectSetRadius",2,"number/table")) end
+	if radType ~= "table" then
 		local relative = relative ~= false
 		dxSetShaderValue(rectShader,"radius",{radius,radius,radius,radius})
 		dxSetShaderValue(rectShader,"isRelative",{relative and 1 or 0,relative and 1 or 0,relative and 1 or 0,relative and 1 or 0})
@@ -237,39 +237,39 @@ function dgsRoundRectSetRadius(rectShader,radius,relative)
 end
 
 function dgsRoundRectGetRadius(rectShader)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetRadius at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetRadius",1,"plugin dgs-dxroundrectangle")) end
 	return dgsElementData[rectShader].radius
 end
 
 function dgsRoundRectSetColor(rectShader,color)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetColor at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
-	assert(dgsGetType(color) == "number","Bad argument @dgsRoundRectSetColor at argument 2, expect number got "..dgsGetType(color))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetColor",1,"plugin dgs-dxroundrectangle")) end
+	if not(dgsGetType(color) == "number") then error(dgsGenAsrt(color,"dgsRoundRectSetColor",2,"number")) end
 	dxSetShaderValue(rectShader,"color",{fromcolor(color,true,true)})
 	dgsSetData(rectShader,"color",color)
 	return true
 end
 
 function dgsRoundRectGetColor(rectShader)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetColor at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetColor",1,"plugin dgs-dxroundrectangle")) end
 	return dgsElementData[rectShader].color
 end
 
 function dgsRoundRectGetColorOverwritten(rectShader)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetColorOverwritten at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetColorOverwritten",1,"plugin dgs-dxroundrectangle")) end
 	return dgsElementData[rectShader].colorOverwritten
 end
 
 function dgsRoundRectSetColorOverwritten(rectShader,colorOverwritten)
-	assert(dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetColorOverwritten at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetColorOverwritten",1,"plugin dgs-dxroundrectangle")) end
 	dxSetShaderValue(rectShader,"colorOverwritten",colorOverwritten)
 	return dgsSetData(rectShader,"colorOverwritten",colorOverwritten)
 end
 
 function dgsRoundRectSetBorderThickness(rectShader,horizontal,vertical)
 	vertical = vertical or horizontal
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectSetBorderThickness at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
-	assert(dgsGetType(horizontal) == "number","Bad argument @dgsRoundRectSetBorderThickness at argument 2, expect number got "..dgsGetType(horizontal))
-	assert(dgsElementData[rectShader].borderOnly,"Bad argument @dgsRoundRectSetBorderThickness at argument 1, this round rectangle isn't created with 'border'")
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetBorderThickness",1,"plugin dgs-dxroundrectangle")) end
+	if not(dgsElementData[rectShader].borderOnly) then error(dgsGenAsrt(rectShader,"dgsRoundRectSetBorderThickness",1,_,_,_,"this round rectangle isn't created with 'border'")) end
+	if not(dgsGetType(horizontal) == "number") then error(dgsGenAsrt(horizontal,"dgsRoundRectSetBorderThickness",2,"number")) end
 	if dgsElementData[rectShader].borderOnly then
 		dgsSetData(rectShader,"borderThickness",{horizontal,vertical})
 		dxSetShaderValue(rectShader,"borderThickness",{horizontal,vertical})
@@ -279,7 +279,7 @@ function dgsRoundRectSetBorderThickness(rectShader,horizontal,vertical)
 end
 
 function dgsRoundRectGetBorderThickness(rectShader)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetBorderThickness at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetBorderThickness",1,"plugin dgs-dxroundrectangle")) end
 	if dgsElementData[rectShader].borderOnly then
 		return dgsElementData[rectShader].borderThickness[1],dgsElementData[rectShader].borderThickness[2]
 	end
@@ -287,6 +287,6 @@ function dgsRoundRectGetBorderThickness(rectShader)
 end
 
 function dgsRoundRectGetBorderOnly(rectShader)
-	assert(rectShader and dgsElementData[rectShader].asPlugin == "dgs-dxroundrectangle","Bad argument @dgsRoundRectGetBorderOnly at argument 1, expect dgs-dxroundrectangle got "..dgsGetType(rectShader))
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetBorderOnly",1,"plugin dgs-dxroundrectangle")) end
 	return dgsElementData[rectShader].borderOnly
 end

@@ -13,8 +13,8 @@ function dgsCreateEffect3D(rotFactor)
 end
 
 function dgsEffect3DApplyToScrollPane(effect3d,scrollpane)
-	assert(dgsGetPluginType(effect3d) == "dgs-dxeffect3d","Bad argument @dgsEffect3DApplyToScrollPane at argument 1, expect a dgs-dxeffect3d got "..dgsGetPluginType(effect3d))
-	assert(dgsGetType(scrollpane) == "dgs-dxscrollpane","Bad argument @dgsEffect3DApplyToScrollPane at argument 2, expect a dgs-dxscrollpane got "..dgsGetType(scrollpane))
+	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(effect3d,"dgsEffect3DApplyToScrollPane",1,"plugin dgs-dxeffect3d")) end
+	if not(dgsGetType(scrollpane) == "dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsEffect3DApplyToScrollPane",2,"dgs-dxscrollpane")) end
 	dgsEffect3DRemoveFromScrollPane(effect3d)
 	dgsSetData(effect3d,"applyToScrollPane",scrollpane)
 	dgsSetData(scrollpane,"filter",{effect3d,0,0,0})

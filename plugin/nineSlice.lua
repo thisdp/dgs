@@ -9,11 +9,11 @@ end
 
 function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,relative)
 	relative = relative and true or false
-	assert(dgsGetType(texture) == "texture","Bad argument @dgsCreateNineSlice at argument 1, expect texture got "..dgsGetType(texture))
-	assert(type(gridXLeft) == "number","Bad argument @dgsCreateNineSlice at argument 2, expect number got "..type(gridXLeft))
-	assert(type(gridXRight) == "number","Bad argument @dgsCreateNineSlice at argument 3, expect number got "..type(gridXRight))
-	assert(type(gridYTop) == "number","Bad argument @dgsCreateNineSlice at argument 4, expect number got "..type(gridYTop))
-	assert(type(gridYBottom) == "number","Bad argument @dgsCreateNineSlice at argument 5, expect number got "..type(gridYBottom))
+	if not(dgsGetType(texture) == "texture") then error(dgsGenAsrt(texture,"dgsCreateNineSlice",1,"texture")) end
+	if not(type(gridXLeft) == "number") then error(dgsGenAsrt(gridXLeft,"dgsCreateNineSlice",2,"number")) end
+	if not(type(gridXLeft) == "number") then error(dgsGenAsrt(gridXLeft,"dgsCreateNineSlice",3,"number")) end
+	if not(type(gridYTop) == "number") then error(dgsGenAsrt(gridYTop,"dgsCreateNineSlice",4,"number")) end
+	if not(type(gridYBottom) == "number") then error(dgsGenAsrt(gridYBottom,"dgsCreateNineSlice",5,"number")) end
 	local nineSlice = dgsCreateCustomRenderer()
 	dgsSetData(nineSlice,"asPlugin","dgs-dxnineslice")
 	local shader = dxCreateShader(nineSliceShader)
@@ -41,7 +41,7 @@ end
 
 function dgsNineSliceSetGrid(nineSlice,gridXLeft,gridXRight,gridYTop,gridYBottom,relative)
 	relative = relative and true or false
-	assert(dgsGetPluginType(nineSlice) == "dgs-dxnineslice","Bad argument @dgsCreateNineSlice at argument 1, expect plugin dgs-dxnineslice got "..dgsGetPluginType(nineSlice))
+	if not(dgsGetPluginType(nineSlice) == "dgs-dxnineslice") then error(dgsGenAsrt(nineSlice,"dgsNineSliceSetGrid",1,"dgs-dxnineslice")) end
 	local oGridX = dgsElementData[nineSlice].gridX
 	local oGridY = dgsElementData[nineSlice].gridY
 	local matSize = dgsElementData[nineSlice].textureResolution
@@ -55,7 +55,7 @@ function dgsNineSliceSetGrid(nineSlice,gridXLeft,gridXRight,gridYTop,gridYBottom
 end
 
 function dgsNineSliceGetGrid(nineSlice,relative)
-	assert(dgsGetPluginType(nineSlice) == "dgs-dxnineslice","Bad argument @dgsNineSliceGetGrid at argument 1, expect plugin dgs-dxnineslice got "..dgsGetPluginType(nineSlice))
+	if not(dgsGetPluginType(nineSlice) == "dgs-dxnineslice") then error(dgsGenAsrt(nineSlice,"dgsNineSliceGetGrid",1,"dgs-dxnineslice")) end
 	local gridX = dgsElementData[nineSlice].gridX
 	local gridY = dgsElementData[nineSlice].gridY
 	local matSize = dgsElementData[nineSlice].textureResolution
@@ -67,8 +67,8 @@ function dgsNineSliceGetGrid(nineSlice,relative)
 end
 
 function dgsNineSliceSetTexture(nineSlice,texture)
-	assert(dgsGetPluginType(nineSlice) == "dgs-dxnineslice","Bad argument @dgsNineSliceSetTexture at argument 1, expect plugin dgs-dxnineslice got "..dgsGetPluginType(nineSlice))
-	assert(dgsGetType(texture) == "texture","Bad argument @dgsNineSliceSetTexture at argument 2, expect texture got "..dgsGetType(texture))
+	if not(dgsGetPluginType(nineSlice) == "dgs-dxnineslice") then error(dgsGenAsrt(nineSlice,"dgsNineSliceSetTexture",1,"dgs-dxnineslice")) end
+	if not(dgsGetType(texture) == "texture") then error(dgsGenAsrt(texture,"dgsNineSliceSetTexture",2,"texture")) end
 	dxSetShaderValue(shader,"sourceTexture",texture)
 	dgsSetData(nineSlice,"renderImage",texture)
 	local matX,matY = dxGetMaterialSize(texture)
@@ -77,7 +77,7 @@ function dgsNineSliceSetTexture(nineSlice,texture)
 end
 
 function dgsNineSliceGetTexture(nineSlice)
-	assert(dgsGetPluginType(nineSlice) == "dgs-dxnineslice","Bad argument @dgsNineSliceGetTexture at argument 1, expect plugin dgs-dxnineslice got "..dgsGetPluginType(nineSlice))
+	if not(dgsGetPluginType(nineSlice) == "dgs-dxnineslice") then error(dgsGenAsrt(nineSlice,"dgsNineSliceGetTexture",1,"dgs-dxnineslice")) end
 	return dgsElementData[nineSlice].renderImage
 end
 
@@ -89,8 +89,7 @@ float2 gdY = float2(1/3.0,2/3.0);	//Grid Y
 float2 tR = float2(32,32);	//Texture Resolution
 float2 rR = float2(32,32);	//Render Image Resolution
 
-sampler2D Sampler = sampler_state
-{
+sampler2D Sampler = sampler_state{
     Texture		= sourceTexture;
     MinFilter	= None;
     MagFilter	= None;
@@ -103,14 +102,12 @@ float map(float v,float a,float b,float c,float d) {
     return (v-a)/(b-a)*(d-c)+c;
 }
 
-float4 nineSlice(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0
-{
+float4 nineSlice(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float2 P = 0;
 	float2 t = tex*rR;
 	float horz = rR.x*(t.x>tR.x*gdX[0]);
 	float vect = rR.y*(t.y>tR.y*gdY[0]);
-	if(rR.x/2-abs(rR.x/2-t.x)<tR.x*gdX[0])
-	{
+	if(rR.x/2-abs(rR.x/2-t.x)<tR.x*gdX[0])	{
 		if(t.y<tR.y*gdY[0])
 			P = float2(map(t.x,horz,horz+tR.x*gdX[0],0,gdX[0]),map(t.y,0,tR.y*gdY[0],0,gdY[0]));
 		else if(rR.y-t.y<tR.y*(1-gdY[1]))
@@ -126,10 +123,8 @@ float4 nineSlice(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0
 	return color;
 }
 
-technique nSlice
-{
-	pass p0
-	{
+technique nSlice{
+	pass p0{
 		PixelShader = compile ps_2_0 nineSlice();
 	}
 }

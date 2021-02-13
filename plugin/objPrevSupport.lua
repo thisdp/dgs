@@ -26,20 +26,19 @@ end
 addEventHandler("onClientResourceStart",root,onObjPrevStart)
 
 function dgsLocateObjectPreviewResource(name)
-	assert(type(name) == "string","Bad argument @dgsLocateObjectPreviewResource at argument 1, expect a string got "..dgsGetType(name))
+	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsLocateObjectPreviewResource",1,"string")) end
 	objPrevResStatus.res = getResourceFromName(name)
-	assert(objPrevResStatus.res,"Bad argument @dgsLocateObjectPreviewResource at argument 1, resource "..name.." is not running or doesn't exist")
+	if not(objPrevResStatus.res) then error(dgsGenAsrt(name,"dgsLocateObjectPreviewResource",1,_,_,_,"resource "..name.." is not running or doesn't exist")) end
 	objPrevResStatus.name = name
-	assert(getResourceState(objPrevResStatus.res) == "running","Bad argument @dgsLocateObjectPreviewResource at argument 1, resource "..name.." is not running, please start it")
+	if not(getResourceState(objPrevResStatus.res) == "running") then error(dgsGenAsrt(name,"dgsLocateObjectPreviewResource",1,_,_,_,"resource "..name.." is not running, please start it")) end
 	objPrevResStatus.valid = true
 	removeEventHandler("onClientResourceStop",getResourceRootElement(objPrevResStatus.res),onObjPrevStop)
 	addEventHandler("onClientResourceStop",getResourceRootElement(objPrevResStatus.res),onObjPrevStop)
 end
 
 function dgsCreateObjectPreviewHandle(objEle,rX,rY,rZ)
-	assert(objPrevResStatus.name ~= "","Bad argument @dgsCreateObjectPreviewHandle, couldn't find Object Preview resource, please locate it")
-	local objType = dgsGetType(objEle)
-	assert(isElement(objEle), "Bad argument @dgsCreateObjectPreviewHandle at argument 1, expected element got "..objType)
+	if not(objPrevResStatus.name ~= "") then error(dgsGenAsrt(objEle,"dgsCreateObjectPreviewHandle",_,_,_,_,"couldn't find Object Preview resource, please locate it")) end
+	if not(isElement(objEle)) then error(dgsGenAsrt(objEle,"dgsCreateObjectPreviewHandle",1,"element")) end
 	local OP = exports[objPrevResStatus.name]
 	local objPrevEle = OP:createObjectPreview(objEle,rX,rY,rZ,0,0,100,100,false,false,true)
 	OP:setAlpha(objPrevEle,0)
@@ -69,8 +68,8 @@ function dgsObjectPreviewGetHandleByID(id)
 end
 
 function dgsAttachObjectPreviewToImage(objPrev,dgsImage)
-	assert(dgsGetPluginType(objPrev) == "dgs-dxobjectpreviewhandle","Bad argument @dgsAddObjectPreviewSupport at argument 1, expect a dgs-dxobjectpreviewhandle got "..dgsGetPluginType(objPrev))
-	assert(dgsGetType(dgsImage) == "dgs-dximage","Bad argument @dgsAddObjectPreviewSupport at argument 2, expect a dgs-dximage got "..dgsGetType(dgsImage))
+	if not(dgsGetPluginType(objPrev) == "dgs-dxobjectpreviewhandle") then error(dgsGenAsrt(objPrev,"dgsAttachObjectPreviewToImage",1,"dgs-dxobjectpreviewhandle")) end
+	if not(dgsGetType(dgsImage) == "dgs-dximage") then error(dgsGenAsrt(dgsImage,"dgsAttachObjectPreviewToImage",2,"dgs-dximage")) end
 	dgsSetProperty(dgsImage,"SOVelement",objPrev)
 	local OP = exports[objPrevResStatus.name]
 	OP:setAlpha(objPrev,254)
@@ -97,12 +96,10 @@ function dgsAttachObjectPreviewToImage(objPrev,dgsImage)
 end
 
 function dgsRemoveObjectPreviewFromImage(dgsImage)
-	assert(dgsGetType(dgsImage) == "dgs-dximage","Bad argument @dgsRemoveObjectPreviewFromImage at argument 1, expect a dgs-dximage got "..dgsGetType(dgsImage))
+	if not(dgsGetType(dgsImage) == "dgs-dximage") then error(dgsGenAsrt(dgsImage,"dgsRemoveObjectPreviewFromImage",1,"dgs-dximage")) end
 	local objPrev = dgsElementData[dgsImage].SOVelement
 	local OP = exports[objPrevResStatus.name]
-	if isElement(objPrev) then
-		OP:setAlpha(objPrev,0)
-	end
+	if isElement(objPrev) then OP:setAlpha(objPrev,0) end
 	dgsSetProperty(dgsImage,"functionRunBefore",false)
 	dgsSetProperty(dgsImage,"functions",nil)
 	dgsImageSetImage(dgsImage,nil)
@@ -112,18 +109,19 @@ function dgsRemoveObjectPreviewFromImage(dgsImage)
 end
 
 function dgsConfigureObjectPreview()
-	return [[objectPreview._drawRenderTarget = objectPreview.drawRenderTarget
-		function objectPreview.drawRenderTarget(self)
-			local resName = "]]..getResourceName(getThisResource())..[["
-			local dgsRes = getResourceFromName(resName)
-			if dgsRes then
-				if getResourceState(dgsRes) == "running" then
-					local objPrevEle = exports[resName]:dgsObjectPreviewGetHandleByID(self.renID)
-					if objPrevEle then
-						return false
-					end
+	return [[
+	objectPreview._drawRenderTarget = objectPreview.drawRenderTarget
+	function objectPreview.drawRenderTarget(self)
+		local resName = "]]..getResourceName(getThisResource())..[["
+		local dgsRes = getResourceFromName(resName)
+		if dgsRes then
+			if getResourceState(dgsRes) == "running" then
+				local objPrevEle = exports[resName]:dgsObjectPreviewGetHandleByID(self.renID)
+				if objPrevEle then
+					return false
 				end
 			end
-			--return self:_drawRenderTarget()
-		end]]
+		end
+		--return self:_drawRenderTarget()
+	end]]
 end

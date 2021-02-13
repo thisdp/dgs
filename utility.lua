@@ -83,6 +83,11 @@ addCommandHandler("debugdgs",function(command,arg)
 end)
 
 debugMode = getElementData(localPlayer,"DGS-DEBUG")
+--------------------------------Element Utility
+function isMaterial(ele)
+	local eleType = dgsGetType(ele)
+	return eleType=="shader" or eleType=="texture" or eleType=="render-target-texture"
+end
 --------------------------------Table Utility
 function table.find(tab,ke,num)
 	if num then

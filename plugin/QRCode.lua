@@ -14,7 +14,7 @@ function dgsRequestQRCode(str,w,h)
 end
 
 function dgsGetQRCodeLoaded(QRCode)
-	assert(dgsGetPluginType(QRCode) == "dgs-dxqrcode","Bad argument @dgsGetQRCodeLoaded at argument 1, expect dgs-dxqrcode "..dgsGetPluginType(QRCode))
+	if not(dgsGetPluginType(QRCode) == "dgs-dxqrcode") then error(dgsGenAsrt(QRCode,"dgsGetQRCodeLoaded",1,"dgs-dxqrcode")) end
 	return dgsElementData[QRCode].loaded
 end
 

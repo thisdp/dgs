@@ -133,9 +133,9 @@ function dgsCreateBlurBox(w,h,blursource)
 end
 
 function dgsBlurBoxSetResolution(bb,w,h)
-	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetResolution at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
-	assert(type(w) == "number","Bad argument @dgsBlurBoxSetResolution at argument 2, expect number got "..dgsGetPluginType(w))
-	assert(type(h) == "number","Bad argument @dgsBlurBoxSetResolution at argument 3, expect number got "..dgsGetPluginType(h))
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxSetResolution",1,"dgs-dxblurbox")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsBlurBoxSetResolution",2,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsBlurBoxSetResolution",3,"number")) end
 	local shaders = dgsElementData[bb].shaders
 	local rt = dgsElementData[bb].rt
 	if isElement(rt) then destroyElement(rt) end
@@ -147,8 +147,8 @@ function dgsBlurBoxSetResolution(bb,w,h)
 end
 
 function dgsBlurBoxSetIntensity(bb,intensity)
-	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetIntensity at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
-	assert(type(intensity) == "number","Bad argument @dgsBlurBoxSetIntensity at argument 2, expect number got "..dgsGetPluginType(intensity))
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxSetIntensity",1,"dgs-dxblurbox")) end
+	if not(type(intensity) == "number") then error(dgsGenAsrt(intensity,"dgsBlurBoxSetIntensity",2,"number")) end
 	local shaders = dgsElementData[bb].shaders
 	dgsSetData(bb,"intensity",intensity)
 	dxSetShaderValue(shaders[1],"intensity",intensity)
@@ -157,9 +157,9 @@ function dgsBlurBoxSetIntensity(bb,intensity)
 end
 
 function dgsBlurBoxSetLevel(bb,level)
-	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetLevel at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
-	assert(type(level) == "number","Bad argument @dgsBlurBoxSetLevel at argument 2, expect number got "..dgsGetPluginType(intensity))
-	assert(level>=0 and level <=15,"Bad argument @dgsBlurBoxSetLevel at argument 2, expect number in 0~15, got "..level.." (out of range)")
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxSetLevel",1,"dgs-dxblurbox")) end
+	local inRange = level>=0 and level <=15
+	if not(type(level) == "number" and inRange) then error(dgsGenAsrt(level,"dgsBlurBoxSetLevel",2,"number","0~15",not inRange and "Out of range")) end
 	local level = level-level%1
 	local shaders = dgsElementData[bb].shaders
 	destroyElement(shaders[1])
@@ -178,17 +178,17 @@ function dgsBlurBoxSetLevel(bb,level)
 end
 
 function dgsBlurBoxGetResolution(bb)
-	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxSetResolution at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxGetResolution",1,"dgs-dxblurbox")) end
 	return dgsElementData[bb].resolution[1],dgsElementData[bb].resolution[2]
 end
 
 function dgsBlurBoxGetIntensity(bb,level)
-	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxGetIntensity at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxGetIntensity",1,"dgs-dxblurbox")) end
 	return dgsElementData[bb].intensity
 end
 
 function dgsBlurBoxGetLevel(bb,level)
-	assert(dgsGetPluginType(bb) == "dgs-dxblurbox","Bad argument @dgsBlurBoxGetLevel at argument 1, expect dgs-dxblurbox got "..dgsGetPluginType(bb))
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxGetLevel",1,"dgs-dxblurbox")) end
 	return dgsElementData[bb].level
 end
 

@@ -32,8 +32,8 @@ function dgsCreateRemoteImage(website)
 end
 
 function dgsRemoteImageRequest(remoteImage,website,forceReload)
-	assert(dgsGetPluginType(remoteImage) == "dgs-dxremoteimage","Bad argument @dgsRemoteImageRequest at argument 1, expect dgs-dxremoteimage got "..dgsGetPluginType(website))
-	assert(type(website) == "string","Bad argument @dgsRemoteImageRequest at argument 2, expect string got "..dgsGetType(website))
+	if not(dgsGetPluginType(remoteImage) == "dgs-dxremoteimage") then error(dgsGenAsrt(remoteImage,"dgsRemoteImageRequest",1,"plugin dgs-dxremoteimage")) end
+	if not(type(website) == "string") then error(dgsGenAsrt(remoteImage,"dgsRemoteImageRequest",2,"string")) end
 	local loadState = dgsElementData[remoteImage].loadState
 	if loadState == 1 then	--make sure it is not loading
 		if not forceReload then
@@ -50,7 +50,7 @@ function dgsRemoteImageRequest(remoteImage,website,forceReload)
 end
 
 function dgsRemoteImageAbort(remoteImage)
-	assert(dgsGetPluginType(remoteImage) == "dgs-dxremoteimage","Bad argument @dgsRemoteImageAbort at argument 1, expect dgs-dxremoteimage got "..dgsGetPluginType(website))
+	if not(dgsGetPluginType(remoteImage) == "dgs-dxremoteimage") then error(dgsGenAsrt(remoteImage,"dgsRemoteImageAbort",1,"plugin dgs-dxremoteimage")) end
 	local queueIndex = dgsElementData[remoteImage].queueIndex
 	remoteImageQueue[queueIndex] = "aborted"
 end
@@ -60,7 +60,7 @@ function dgsRemoteImageGetTexture(remoteImage)
 end
 
 function dgsGetRemoteImageLoadState(remoteImage)
-	assert(dgsGetPluginType(remoteImage) == "dgs-dxremoteimage","Bad argument @dgsGetRemoteImageLoadState at argument 1, expect dgs-dxremoteimage "..dgsGetPluginType(remoteImage))
+	if not(dgsGetPluginType(remoteImage) == "dgs-dxremoteimage") then error(dgsGenAsrt(remoteImage,"dgsGetRemoteImageLoadState",1,"plugin dgs-dxremoteimage")) end
 	return dgsElementData[remoteImage].loadState
 end
 

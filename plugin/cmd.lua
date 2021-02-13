@@ -1,12 +1,12 @@
 ﻿cmdBaseWhiteList = {}
 eventHandlers = {}
 
-function dgsCreateCmd(x,y,sx,sy,relative,parent)
-	assert(type(x) == "number","Bad argument @dgsCreateCmd at argument 1, expect number [ got "..type(x).." ]")
-	assert(type(y) == "number","Bad argument @dgsCreateCmd at argument 2, expect number [ got "..type(y).." ]")
-	assert(type(sx) == "number","Bad argument @dgsCreateCmd at argument 3, expect number [ got "..type(sx).." ]")
-	assert(type(sy) == "number","Bad argument @dgsCreateCmd at argument 4, expect number [ got "..type(sy).." ]")
-	local cmdMemo = dgsCreateMemo(x,y,sx,sy,"",relative,parent)
+function dgsCreateCmd(x,y,w,h,relative,parent)
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateCmd",1,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateCmd",2,"number")) end
+	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCmd",3,"number")) end
+	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCmd",4,"number")) end
+	local cmdMemo = dgsCreateMemo(x,y,w,h,"",relative,parent)
 	dgsMemoSetReadOnly(cmdMemo,true)
 	dgsSetData(cmdMemo,"asPlugin","dgs-dxcmd")
 	dgsSetData(cmdMemo,"readOnlyCaretShow",true)
@@ -63,8 +63,8 @@ function dgsCreateCmd(x,y,sx,sy,relative,parent)
 end
 
 function dgsCmdSetMode(cmd,mode,output)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsCmdSetMode at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
-	assert(type(mode) == "string","Bad argument @dgsCMDSetMode at argument 2, expect string [ got "..type(mode).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"dgsCmdSetMode",1,"plugin dgs-dxcmd")) end
+	if not(type(mode) == "string") then error(dgsGenAsrt(mode,"dgsCmdSetMode",2,"plugin string")) end
 	if mode == "function" or mode == "event" then
 		triggerEvent("onCMDModePreChange",cmd,mode)
 		if not wasEventCancelled() then
@@ -79,13 +79,13 @@ function dgsCmdSetMode(cmd,mode,output)
 end
 
 function dgsCmdClearText(cmd)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsCmdSetMode at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"dgsCmdClearText",1,"plugin dgs-dxcmd")) end
 	dgsSetData(cmd,"texts",{})
 end
 
 function dgsCmdAddEventToWhiteList(cmd,rules)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdAddEventToWhiteList at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
-	assert(type(rules) == "table","Bad argument @dgsCmdAddEventToWhiteList at argument 2, expect table [ got "..type(rules).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"dgsCmdAddEventToWhiteList",1,"plugin dgs-dxcmd")) end
+	if not(type(rules) == "table") then error(dgsGenAsrt(rules,"dgsCmdAddEventToWhiteList",2,"table")) end
 	if cmd == "all" then
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
 			local oldrule = dgsGetData(v,"whitelist")
@@ -105,8 +105,8 @@ function dgsCmdAddEventToWhiteList(cmd,rules)
 end
 
 function dgsCmdRemoveEventFromWhiteList(cmd,rules)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdRemoveEventFromWhiteList at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
-	assert(type(rules) == "table","Bad argument @dgsCmdAddEventToWhiteList at argument 2, expect table [ got "..type(rules).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"dgsCmdRemoveEventFromWhiteList",1,"plugin dgs-dxcmd")) end
+	if not(type(rules) == "table") then error(dgsGenAsrt(rules,"dgsCmdRemoveEventFromWhiteList",2,"table")) end
 	if cmd == "all" then
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
 			local oldrule = dgsGetData(v,"whitelist")
@@ -126,7 +126,7 @@ function dgsCmdRemoveEventFromWhiteList(cmd,rules)
 end
 
 function dgsCmdRemoveAllEvents(cmd)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdRemoveAllEvents at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all") then error(dgsGenAsrt(cmd,"dgsCmdRemoveAllEvents",1,"plugin dgs-dxcmd/string","all")) end
 	if cmd == "all" then
 		cmdBaseWhiteList = {}
 		for k,v in pairs(getElementsByType("dgs-dxcmd")) do
@@ -138,8 +138,8 @@ function dgsCmdRemoveAllEvents(cmd)
 end
 
 function dgsCmdIsInWhiteList(cmd,rule)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all","Bad argument @dgsCmdIsInWhiteList at argument 1, expect plugin dgs-dxcmd or string('all') [ got "..dgsGetPluginType(cmd).." ]")
-	assert(type(rule) == "string","Bad argument @dgsCmdIsInWhiteList at argument 2, expect string [ got "..type(rule).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd" or cmd == "all") then error(dgsGenAsrt(cmd,"dgsCmdIsInWhiteList",1,"plugin dgs-dxcmd/string","all")) end
+	if not(type(rule) == "string") then error(dgsGenAsrt(rule,"dgsCmdIsInWhiteList",2,"string")) end
 	if table.find(preinstallWhiteList,rule) then
 		return true
 	else
@@ -158,7 +158,7 @@ function dgsCmdIsInWhiteList(cmd,rule)
 end
 
 function outputCmdMessage(cmd,str)
-	assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @outputCmdMessage at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"outputCmdMessage",1,"plugin dgs-dxcmd")) end
 	dgsMemoAppendText(cmd,str.."\n",true)
 	local textTable = dgsElementData[cmd].text
 	local toLine = #textTable
@@ -194,15 +194,15 @@ end
 
 function dgsCmdAddCommandHandler(str,func)
 	eventHandlers[str] = eventHandlers[str] or {}
-	assert(type(str) == "string","bad argument @addEventHandler at argument 1, expect string [ got "..type(str).." ]")
-	assert(type(func) == "function","bad argument @addEventHandler at argument 2, expect function [ got "..type(func).." ]")
+	if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdAddCommandHandler",1,"string")) end
+	if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdAddCommandHandler",2,"function")) end
 	return table.insert(eventHandlers[str],func)
 end
 
 function dgsCmdRemoveCommandHandler(str,func)
 	eventHandlers[str] = eventHandlers[str] or {}
-	assert(type(str) == "string","bad argument @addEventHandler at argument 1, expect string [ got "..type(str).." ]")
-	assert(type(func) == "function","bad argument @addEventHandler at argument 2, expect function [ got "..type(func).." ]")
+	if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdRemoveCommandHandler",1,"string")) end
+	if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdRemoveCommandHandler",2,"function")) end
 	local id = table.find(eventHandlers[str],func)
 	if id then
 		return table.remove(eventHandlers[str],id)
@@ -239,7 +239,7 @@ function executeCmdCommand(cmd,str,...)
 end
 
 function dgsEventCmdSetPreName(cmd,preName)
-    assert(dgsGetPluginType(cmd) == "dgs-dxcmd","Bad argument @dgsEventCmdSetPreName at argument 1, expect plugin dgs-dxcmd [ got "..dgsGetPluginType(cmd).." ]")
-    assert(type(preName) == "string","Bad argument @dgsEventCmdSetPreName at argument 2, expect string [ got "..type(preName).." ]")
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"dgsEventCmdSetPreName",1,"plugin dgs-dxcmd")) end
+	if not(type(preName) == "string") then error(dgsGenAsrt(preName,"dgsEventCmdSetPreName",1,"string")) end
     return dgsSetData(cmd,"preName",preName)
 end
