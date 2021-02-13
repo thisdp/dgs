@@ -15,6 +15,7 @@ dgsOOP = {
 	dgsRes = getElementData(root,"__DGSRes"),
 	dgsRoot = getResourceRootElement(getElementData(root,"__DGSRes")),
 	transfromEventName = function(eventName,isReverse)
+		--local isFindDGS = eventName:lower():find("dgs") and true or false
 		return isReverse and (eventName:sub(3,3):lower()..eventName:sub(4)) or ("on"..eventName:sub(1,1):upper()..eventName:sub(2))
 	end,
 	getVectorType = function(vec)
@@ -279,6 +280,15 @@ class {
 		setAttachTranslation = gNObjFnc("dgsSetAttachTranslation"),
 		setMultiClickInterval = gNObjFnc("dgsSetMultiClickInterval"),
 		getMultiClickInterval = gNObjFnc("dgsGetMultiClickInterval"),
+		setCursorImage = gNObjFnc("dgsSetCustomCursorImage"),
+		getCursorImage = gNObjFnc("dgsGetCustomCursorImage"),
+		setCustomCursorEnabled = gNObjFnc("dgsSetCustomCursorEnabled"),
+		getCustomCursorEnabled = gNObjFnc("dgsGetCustomCursorEnabled"),
+		setCursorSize = gNObjFnc("dgsSetCursorSize"),
+		getCursorSize = gNObjFnc("dgsGetCursorSize"),
+		setCursorColor = gNObjFnc("dgsSetCursorColor"),
+		getCursorColor = gNObjFnc("dgsGetCursorColor"),
+		getCursorType = gNObjFnc("dgsGetCursorType"),
 		RGBToHSV = gNObjFnc("dgsRGBToHSV"),
 		RGBToHSL = gNObjFnc("dgsRGBToHSL"),
 		HSLToRGB = gNObjFnc("dgsHSLToRGB"),
