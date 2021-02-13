@@ -77,15 +77,22 @@ function createFullDemo()
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
 	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
-		:on("dgsMouseClick",function()
-		
+		:on("dgsMouseClick",function(button,state,x,y,isCoolDown)
+			print(getTickCount(),isCoolDown)
 		end)
-		
+		:setProperty("clickCoolDown",1000)
 	local interface = dgs3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
 	local edit = interface:dgsEdit(0.3,0.4,0.2,0.05,"123123",true)
 	interface:setProperties({alpha=0})
-end
 
+	addEventHandler("onDgsCursorTypeChange",root,function(oldCursorType,newCursorType)
+		--print(getTickCount(),oldCursorType,newCursorType)
+	end)
+
+	--dgsSetCursorImage()
+	--dgsSetCustomCursorEnabled(true)
+end
+--createFullDemo()
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
