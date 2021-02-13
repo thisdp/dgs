@@ -62,6 +62,9 @@ addEventHandler("onClientResourceStop",root,function(res)
 		dgsClear(_,res)
 		resourceTranslation[res] = nil
 	end
+	if res == getThisResource() then	--Recover Cursor Alpha
+		setCursorAlpha(255)
+	end
 end)
 
 function dgsGetGuiLocationOnScreen(dgsEle,rlt,rndsup)

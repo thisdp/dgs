@@ -16,8 +16,66 @@
 	disabledColorPercent = 0.8,
 	systemFont="default",	--For custom, systemFont="font.ttf", or systemFont={"font.ttf",Size,isBold,Quality} . This path is relative to the style path
 	changeOrder=true,	--Change render order when click dgs element
----------------------------------------------------------------------------------------------------Cursor Image
-
+---------------------------------------------------------------------------------------------------Cursor
+	cursor = {
+		enableCustomCursor = false,
+		arrow = {										--arrow cursor
+			image = {"Images/cursor/CursorArrow.png"},	--Image
+			rotation = 0,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {0,0},								--Offset (Relative)
+			scale = 1,									--Scale
+		},
+		sizing_ns = {				           			--N-S (up-down) sizing cursor
+			image = {"Images/cursor/CursorResize.png"},	--Image
+			rotation = 0,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {-0.5,-0.5},						--Offset (Relative)
+			scale = 1.2,								--Scale
+		},
+		sizing_ew ={				            		--E-W (left-right) sizing cursor
+			image = {"Images/cursor/CursorResize.png"},	--Image
+			rotation = 90,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {-0.5,-0.5},						--Offset (Relative)
+			scale = 1.2,								--Scale
+		},
+		sizing_nwse = {				           			--NW-SE diagonal sizing cursor
+			image = {"Images/cursor/CursorResize.png"},	--Image
+			rotation = -45,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {-0.5,-0.5},						--Offset (Relative)
+			scale = 1.2,								--Scale
+		},
+		sizing_nesw = {				           			--NE-SW diagonal sizing cursor
+			image = {"Images/cursor/CursorResize.png"},	--Image
+			rotation = 45,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {-0.5,-0.5},						--Offset (Relative)
+			scale = 1.2,								--Scale
+		},
+		move = {					        			--Move
+			image = {"Images/cursor/CursorMove.png"},	--Image
+			rotation = 0,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {-0.5,-0.5},						--Offset (Relative)
+			scale = 1.2,								--Scale
+		},
+		text = {					        			--I-Beam cursor
+			image = {"Images/cursor/CursorText.png"},	--Image
+			rotation = 0,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {-0.5,-0.5},						--Offset (Relative)
+			scale = 1,									--Scale
+		},
+		pointer = {                            			--Pointer
+			image = {"Images/cursor/CursorPointer.png"},--Image
+			rotation = 0,								--Rotation
+			rotationCenter = {0,0},						--Rotation Center (Relative)
+			offset = {0,0},								--Offset (Relative)
+			scale = 1,									--Scale
+		},
+	},
 ---------------------------------------------------------------------------------------------------Unique
 -----------------------------------------------------------------------------------DGS 3D Text
 	text3D = {

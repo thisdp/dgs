@@ -102,6 +102,8 @@ MouseData.interfaceHit = {}
 MouseData.intfaceHitElement = false
 MouseData.lock3DInterface = false
 MouseData.dgsCursorPos = {}
+MouseData.cursorType = false
+MouseData.cursorColor = 0xFFFFFFFF
 MouseData.EditMemoTimer = setTimer(function()
 	local dgsType = dgsGetType(MouseData.nowShow)
 	if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
@@ -1021,11 +1023,12 @@ end
 addEventHandler("onClientKey",root,onClientKeyCheck)
 
 function dgsCheckHit(hits,mx,my)
+	local enteredElementType = dgsGetType(MouseData.enter)
 	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
 		if MouseData.enter ~= hits then
 			if isElement(MouseData.enter) then
 				triggerEvent("onDgsMouseLeave",MouseData.enter,mx,my,hits)
-				if dgsGetType(MouseData.enter) == "dgs-dxgridlist" then
+				if enteredElementType == "dgs-dxgridlist" then
 					dgsSetData(MouseData.enter,"preSelect",{-1,-1})
 				end
 			end
@@ -1152,6 +1155,111 @@ function dgsCheckHit(hits,mx,my)
 		MouseData.lastPos = {}
 	end
 	MouseData.lastPos = {mx,my}
+	if not isElement(MouseData.clickl) then
+		local _cursorType = "arrow"
+		if MouseData.enter then
+			local eleData = dgsElementData[MouseData.enter]
+			local sizeData = eleData.sizeHandlerData
+			--[[local moveData = eleData.moveHandlerData
+			if moveData or enteredElementType == "dgs-dxwindow" then
+				if eleData.movable then
+					local x,y = dgsGetPosition(MouseData.enter,false,true)
+					local w,h = eleData.absSize[1],eleData.absSize[2]
+					local offsetx,offsety = mx-x,my-y
+					if enteredElementType == "dgs-dxwindow" then
+						local titsize = eleData.movetyp and h or eleData.titleHeight
+						if offsety <= titsize then
+							_cursorType = "move"
+						end
+					else
+						local xRel,yRel,wRel,hRel = moveData[5],moveData[6],moveData[7],moveData[8]
+						local chx = xRel and moveData[1]*w or moveData[1]
+						local chy = yRel and moveData[2]*h or moveData[2]
+						local chw = wRel and moveData[3]*w or moveData[3]
+						local chh = hRel and moveData[4]*h or moveData[4]
+						if offsetx >= chx and offsetx <= chx+chw and offsety >= chy and offsety <= chy+chh then
+							_cursorType = "move"
+						end
+					end
+				end
+			end]]
+			if sizeData or enteredElementType == "dgs-dxwindow" then
+				if eleData.sizable then
+					local x,y = dgsGetPosition(MouseData.enter,false,true)
+					local w,h = eleData.absSize[1],eleData.absSize[2]
+					local offsetx,offsety = mx-x,my-y
+					local left,right,top,bottom
+					if enteredElementType == "dgs-dxwindow" then
+						local borderSize = eleData.borderSize
+						left,right,top,bottom = borderSize,borderSize,borderSize,borderSize
+					else
+						local leftRel,rightRel,topRel,bottomRel = sizeData[5],sizeData[6],sizeData[7],sizeData[8]
+						left = leftRel and sizeData[1]*w or sizeData[1]
+						right = rightRel and sizeData[2]*h or sizeData[2]
+						top = topRel and sizeData[3]*w or sizeData[3]
+						bottom = bottomRel and sizeData[4]*h or sizeData[4]
+					end
+					local offsets = {mx-x,my-y,mx-x-w,my-y-h}
+					if abs(offsets[1]) < left then
+						offsets[5] = 1
+					elseif abs(offsets[3]) < right then
+						offsets[5] = 3
+					end
+					if abs(offsets[2]) < top then
+						offsets[6] = 2
+					elseif abs(offsets[4]) < bottom then
+						offsets[6] = 4
+					end
+					if offsets[5] and offsets[6] then --Horizontal Stretch
+						if offsets[5] == offsets[6]-1 then
+							_cursorType = "sizing_nwse"
+						else
+							_cursorType = "sizing_nesw"
+						end
+					elseif offsets[5] then
+						_cursorType = "sizing_ew"
+					elseif offsets[6] then
+						_cursorType = "sizing_ns"
+					end
+				end
+			elseif enteredElementType == "dgs-dxmemo" or enteredElementType == "dgs-dxedit" then
+				_cursorType = "text"
+			end
+		end
+		if _cursorType == "arrow" then
+			_cursorType = guiGetCursorType()
+		end
+		if _cursorType ~= MouseData.cursorType then
+			triggerEvent("onDgsCursorStateChange",root,_cursorType,MouseData.cursorType)
+			MouseData.cursorType = _cursorType
+		end
+	end
+	if CursorData.enabled then
+		local cData = CursorData[MouseData.cursorType]
+		local image = cData[1]
+		if image then
+			if not isElement(image) then
+				CursorData[MouseData.cursorType] = nil
+				cData = nil
+			end
+		end
+		if cData and not isMainMenuActive() then
+			local color = CursorData.color
+			local cursorSize = CursorData.size
+				
+			local rotation = cData[2]
+			local rotCenter = cData[3]
+			local offset = cData[4]
+			local scale = cData[5]
+			local materialSize = cData[6]
+			local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
+			local cursowX,cursorY = mx+offset[1]*cursorW,my+offset[2]*cursorH
+			setCursorAlpha(0)
+			_dxDrawImage(cursowX,cursorY,cursorW,cursorH,cData[1],rotation,rotCenter[1],rotCenter[2],color,true)
+		else
+			setCursorAlpha(255)
+		end
+	end
 end
 
 function onClientMouseTriggered()

@@ -32,6 +32,7 @@
 	<script src="Core/selector.lua" type="client" />
 	<script src="Core/switchbutton.lua" type="client" />
 	<script src="Core/window.lua" type="client" />
+	<script src="Core/customCursor.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
@@ -85,10 +86,7 @@
 	<script src="test.lua" type="client" />
 	<file src="classlib.lua" type="client" />
 
-	<!--$Add Your Styles Here-->
-	<!--You can also add your custom plugins here -->
-	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
-	<!--(Default Style) Don't touch this style with your bear hand-->
+	<!--(Default Style)-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
 	<file src="styleManager/Default/Images/checkbox/cb_t.png" />
 	<file src="styleManager/Default/Images/checkbox/cb_f.png" />
@@ -101,7 +99,16 @@
 	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" />
 	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" />
 	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" />
+	<file src="styleManager/Default/Images/cursor/CursorText.png" />
+	<file src="styleManager/Default/Images/cursor/CursorMove.png" />
+	<file src="styleManager/Default/Images/cursor/CursorArrow.png" />
+	<file src="styleManager/Default/Images/cursor/CursorPointer.png" />
+	<file src="styleManager/Default/Images/cursor/CursorResize.png" />
 	<file src="styleManager/Default/styleSettings.txt" />
+	<!--$Add Your Styles Here-->
+	<!--You can also add your custom plugins here -->
+	<!--Warning: if you add your styles outside of this area, dgs updater won't keep them-->
+
 	<!--(Custom Style 1) -->
 
 	<!--(Custom Style 2) -->
@@ -199,6 +206,16 @@
 	<export function="dgsGetDetectArea" type="client" />
 	<export function="dgsApplyDetectArea" type="client" />
 	<export function="dgsRemoveDetectArea" type="client" />
+	
+	<export function="dgsSetCustomCursorImage" type="client" />
+	<export function="dgsGetCustomCursorImage" type="client" />
+	<export function="dgsSetCustomCursorEnabled" type="client" />
+	<export function="dgsGetCustomCursorEnabled" type="client" />
+	<export function="dgsSetCustomCursorSize" type="client" />
+	<export function="dgsGetCustomCursorSize" type="client" />
+	<export function="dgsGetCustomCursorType" type="client" />
+	<export function="dgsSetCustomCursorColor" type="client" />
+	<export function="dgsGetCustomCursorColor" type="client" />
 
 	<export function="dgsTranslationTableExists" type="client" />
 	<export function="dgsSetTranslationTable" type="client" />

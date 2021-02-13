@@ -55,7 +55,17 @@ easingBuiltIn = {
 	SineCurve = true,
 	CosineCurve = true,
 }
-
+-------Built-in Cursor Types
+cursorTypesBuiltIn = {
+	arrow = true,
+	sizing_ns = true,
+	sizing_ew = true,
+	sizing_nwse = true,
+	sizing_nesw = true,
+	text = true,
+	move = true,
+	pointer = true,
+}
 -------DGS Built-in Texture
 DGSBuiltInTex = {
 	transParent_1x1 = dxCreateTexture(1,1,"dxt5"),
@@ -88,6 +98,7 @@ function isMaterial(ele)
 	local eleType = dgsGetType(ele)
 	return eleType=="shader" or eleType=="texture" or eleType=="render-target-texture"
 end
+
 --------------------------------Table Utility
 function table.find(tab,ke,num)
 	if num then
@@ -627,7 +638,7 @@ function getProperUnit(value,unit)
 		end
 	end
 end
---------------------------------Other Utility
+
 function dgsRunString(func,...)
 	local fnc = loadstring(func)
 	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
@@ -758,6 +769,7 @@ function dgsGetRTAssignState(element)
 end]]
 --------------------------------Events
 events = {
+	"onDgsCursorStateChange",
 	"onDgsMouseLeave",
 	"onDgsMouseEnter",
 	"onDgsMouseClick",
