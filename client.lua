@@ -1164,29 +1164,6 @@ function dgsCheckHit(hits,mx,my)
 		if MouseData.enter then
 			local eleData = dgsElementData[MouseData.enter]
 			local sizeData = eleData.sizeHandlerData
-			--[[local moveData = eleData.moveHandlerData
-			if moveData or enteredElementType == "dgs-dxwindow" then
-				if eleData.movable then
-					local x,y = dgsGetPosition(MouseData.enter,false,true)
-					local w,h = eleData.absSize[1],eleData.absSize[2]
-					local offsetx,offsety = mx-x,my-y
-					if enteredElementType == "dgs-dxwindow" then
-						local titsize = eleData.movetyp and h or eleData.titleHeight
-						if offsety <= titsize then
-							_cursorType = "move"
-						end
-					else
-						local xRel,yRel,wRel,hRel = moveData[5],moveData[6],moveData[7],moveData[8]
-						local chx = xRel and moveData[1]*w or moveData[1]
-						local chy = yRel and moveData[2]*h or moveData[2]
-						local chw = wRel and moveData[3]*w or moveData[3]
-						local chh = hRel and moveData[4]*h or moveData[4]
-						if offsetx >= chx and offsetx <= chx+chw and offsety >= chy and offsety <= chy+chh then
-							_cursorType = "move"
-						end
-					end
-				end
-			end]]
 			if sizeData or enteredElementType == "dgs-dxwindow" then
 				if eleData.sizable then
 					local x,y = dgsGetPosition(MouseData.enter,false,true)
