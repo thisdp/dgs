@@ -529,14 +529,14 @@
 	<export function="dgsGridListSetColumnRelative" type="client" />
 	<export function="dgsGridListGetColumnRelative" type="client" />
 	<export function="dgsGridListAddColumn" type="client" />
+	<export function="dgsGridListAutoSizeColumn" type="client" />
 	<export function="dgsGridListGetColumnCount" type="client" />
 	<export function="dgsGridListRemoveColumn" type="client" />
-	<export function="dgsGridListGetColumnAllWidth" type="client" />
+	<export function="dgsGridListGetColumnAllWidth" type="clb ient" />
 	<export function="dgsGridListGetColumnWidth" type="client" />
 	<export function="dgsGridListSetColumnWidth" type="client" />
 	<export function="dgsGridListGetColumnHeight" type="client" />
 	<export function="dgsGridListSetColumnHeight" type="client" />
-	<export function="dgsGridListAutoSizeColumn" type="client" />
 	<export function="dgsGridListGetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnTitle" type="client" />
 	<export function="dgsGridListSetColumnFont" type="client" />
@@ -553,33 +553,37 @@
 	<export function="dgsGridListClearColumn" type="client" />
 	<export function="dgsGridListClear" type="client" />
 	<export function="dgsGridListGetRowCount" type="client" />
-	<export function="dgsGridListSetItemText" type="client" />
-	<export function="dgsGridListGetItemText" type="client" />
-	<export function="dgsGridListSetItemAlignment" type="client" />
-	<export function="dgsGridListGetItemAlignment" type="client" />
 	<export function="dgsGridListGetSelectedItem" type="client" />
 	<export function="dgsGridListSetSelectedItem" type="client" />
 	<export function="dgsGridListGetSelectedItems" type="client" />
 	<export function="dgsGridListSetSelectedItems" type="client" />
 	<export function="dgsGridListGetSelectedCount" type="client" />
-	<export function="dgsGridListSetItemColor" type="client" />
-	<export function="dgsGridListGetItemColor" type="client" />
 	<export function="dgsGridListGetRowHoverable" type="client" />
 	<export function="dgsGridListSetRowHoverable" type="client" />
 	<export function="dgsGridListGetRowSelectable" type="client" />
 	<export function="dgsGridListSetRowSelectable" type="client" />
+	<export function="dgsGridListSetRowBackGroundColor" type="client" />
+	<export function="dgsGridListGetRowBackGroundColor" type="client" />
+	<export function="dgsGridListGetRowBackGroundImage" type="client" />
+	<export function="dgsGridListSetRowBackGroundImage" type="client" />
+	<export function="dgsGridListSetItemText" type="client" />
+	<export function="dgsGridListGetItemText" type="client" />
+	<export function="dgsGridListSetItemAlignment" type="client" />
+	<export function="dgsGridListGetItemAlignment" type="client" />
+	<export function="dgsGridListSetItemColor" type="client" />
+	<export function="dgsGridListGetItemColor" type="client" />
 	<export function="dgsGridListGetItemHoverable" type="client" />
 	<export function="dgsGridListSetItemHoverable" type="client" />
 	<export function="dgsGridListGetItemSelectable" type="client" />
 	<export function="dgsGridListSetItemSelectable" type="client" />
+	<export function="dgsGridListSetItemBackGroundColor" type="client" />
+	<export function="dgsGridListGetItemBackGroundColor" type="client" />
+	<export function="dgsGridListSetItemBackGroundImage" type="client" />
+	<export function="dgsGridListGetItemBackGroundImage" type="client" />
 	<export function="dgsGridListSetItemFont" type="client" />
 	<export function="dgsGridListGetItemFont" type="client" />
 	<export function="dgsGridListSetItemTextSize" type="client" />
 	<export function="dgsGridListGetItemTextSize" type="client" />
-	<export function="dgsGridListGetRowBackGroundImage" type="client" />
-	<export function="dgsGridListSetRowBackGroundImage" type="client" />
-	<export function="dgsGridListSetRowBackGroundColor" type="client" />
-	<export function="dgsGridListGetRowBackGroundColor" type="client" />
 	<export function="dgsGridListGetItemData" type="client" />
 	<export function="dgsGridListSetItemData" type="client" />
 	<export function="dgsGridListSetRowAsSection" type="client" />
