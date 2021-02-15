@@ -985,3 +985,40 @@ function dgsApplyLanguageChange(name,translation,attach)
 		end
 	end
 end
+
+
+----Compatibility
+function dgsSetSide(dgsEle,which,where)
+
+	if not getElementData(localPlayer,"DGS-DEBUG-C") then
+		outputDebugString("Deprecated function @'dgsSetSide', use 'dgsSetElementAlignment' instead. To fix, run it again with command /debugdgs c",2)
+	else
+		error("Found deprecated function @'dgsSetSide', replace with 'dgsSetElementAlignment'")
+		return false
+	end
+	
+	if getElement
+	if which == "lor" then
+		dgsSetElementAlignment(dgsEle,where)
+	elseif which == "tob" then
+		dgsSetElementAlignment(dgsEle,_,where)
+	end
+	return true
+end
+
+function dgsGetSide(dgsEle,which)
+	
+	if not getElementData(localPlayer,"DGS-DEBUG-C") then
+		outputDebugString("Deprecated function @'dgsGetSide', use 'dgsGetElementAlignment' instead. To fix, run it again with command /debugdgs c",2)
+	else
+		error("Found deprecated function @'dgsGetSide', replace with 'dgsGetElementAlignment'")
+		return false
+	end
+	
+	local h,v = dgsGetElementAlignment(dgsEle,_,where)
+	if which == "lor" then
+		return h
+	elseif which == "tob" then
+		return v
+	end
+end

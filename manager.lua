@@ -595,7 +595,7 @@ function checkCompatibility(dgsEle,key)
 		for k,v in pairs(compatibility[eleTyp]) do
 			if key == k then
 				if not getElementData(localPlayer,"DGS-DEBUG-C") then
-					outputDebugString("Deprecated property '"..k.."' @dgsSetProperty with "..eleTyp..", run it again with command /debugdgs c",2)
+					outputDebugString("Deprecated property '"..k.."' @dgsSetProperty with "..eleTyp..". To fix, run it again with command /debugdgs c",2)
 					return true
 				else
 					outputDebugString("Found deprecated property '"..k.."' @dgsSetProperty with "..eleTyp..", replace with "..v,2)
