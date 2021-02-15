@@ -994,10 +994,8 @@ function dgsSetSide(dgsEle,which,where)
 		outputDebugString("Deprecated function @'dgsSetSide', use 'dgsSetElementAlignment' instead. To fix, run it again with command /debugdgs c",2)
 	else
 		error("Found deprecated function @'dgsSetSide', replace with 'dgsSetElementAlignment'")
-		return false
 	end
-	
-	if getElement
+
 	if which == "lor" then
 		dgsSetElementAlignment(dgsEle,where)
 	elseif which == "tob" then
@@ -1012,7 +1010,6 @@ function dgsGetSide(dgsEle,which)
 		outputDebugString("Deprecated function @'dgsGetSide', use 'dgsGetElementAlignment' instead. To fix, run it again with command /debugdgs c",2)
 	else
 		error("Found deprecated function @'dgsGetSide', replace with 'dgsGetElementAlignment'")
-		return false
 	end
 	
 	local h,v = dgsGetElementAlignment(dgsEle,_,where)
