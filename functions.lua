@@ -84,15 +84,23 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 		eleData = dgsElementData[dgsEle]
 		local absPos = eleData.absPos or {0,0}
 		local addPosX,addPosY = absPos[1],absPos[2]
+		local parent = FatherTable[dgsEle]
+		local pEleData = dgsElementData[parent]
 		if includeSide then
-			local parent = FatherTable[dgsEle]
-			if eleData.lor == "right" then
-				local pSize = parent and dgsElementData[parent].absSize or {sW,sH}
-				addPosX = pSize[1]-addPosX
+			local eleAlign = eleData.elementAlignment
+			if eleAlign[1] == "right" then
+				local pWidth = parent and pEleData.absSize[1] or sW
+				addPosX = pWidth-addPosX
+			elseif eleAlign[1] == "center" then
+				local pWidth = parent and pEleData.absSize[1] or sW
+				addPosX = addPosX+pWidth/2-eleData.absSize[1]/2
 			end
-			if eleData.tob == "bottom" then
-				local pSize = parent and dgsElementData[parent].absSize or {sW,sH}
-				addPosY = pSize[2]-addPosY
+			if eleAlign[2] == "bottom" then
+				local pHeight = parent and pEleData.absSize[2] or sH
+				addPosY = pHeight-addPosY
+			elseif eleAlign[2] == "center" then
+				local pHeight = parent and pEleData.absSize[2] or sH
+				addPosY = addPosY+pHeight/2-eleData.absSize[2]/2
 			end
 		end
 		local _tmp = dgsEle
@@ -116,8 +124,8 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 			local w = gridListEleData.absSize[1]
 			x,y = x+columnMoveOffset+gridListEleData.columnOffset+columnOffset+columnData[data[3]][3]*(gridListEleData.columnRelative and (w-scbThickV) or 1), y+gridListEleData.rowMoveOffset+(data[2]-1)*(leading+rowHeight)+gridListEleData.columnHeight
 		end
-		dgsEle = FatherTable[dgsEle]
-		eleData = dgsElementData[dgsEle]
+		dgsEle = parent
+		eleData = pEleData
 		if dgsElementType[dgsEle] == "dgs-dxwindow" then
 			local titleHeight = 0
 			if not eleData.ignoreParentTitle and not eleData.ignoreTitle then
@@ -305,14 +313,17 @@ function dgsGetVisible(dgsEle)
 	end
 end
 
-function dgsSetSide(dgsEle,side,topleft)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSide",1,"dgs-dxelement")) end
-	return dgsSetData(dgsEle,topleft and "tob" or "lor",side)
+function dgsSetElementAlignment(dgsEle,horizontal,vertical)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetElementAlignment",1,"dgs-dxelement")) end
+	local eleAlign = dgsElementData[dgsEle].elementAlignment
+	eleAlign[1] = horizontal or eleAlign[1] or "left"
+	eleAlign[2] = vertical or eleAlign[2] or "top"
+	return dgsSetData(dgsEle,"elementAlignment",eleAlign)
 end
 
-function dgsGetSide(dgsEle,topleft)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetSide",1,"dgs-dxelement")) end
-	return dgsElementData[dgsEle][topleft and "tob" or "lor"]
+function dgsGetElementAlignment(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetElementAlignment",1,"dgs-dxelement")) end
+	return dgsElementData[dgsEle].elementAlignment[1],dgsElementData[dgsEle].elementAlignment[2]
 end
 
 function configPosSize(dgsEle,pos,size)
@@ -735,8 +746,7 @@ end
 
 -------------------------
 addEventHandler("onDgsCreate",root,function(theResource)
-	dgsSetData(source,"lor","left")
-	dgsSetData(source,"tob","top")
+	dgsSetData(source,"elementAlignment",{"left","top"})
 	dgsSetData(source,"visible",true)
 	dgsSetData(source,"enabled",true)
 	dgsSetData(source,"ignoreParentTitle",false,true)
@@ -755,6 +765,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!
 	dgsSetData(source,"enableFullEnterLeaveCheck",false)
 	dgsSetData(source,"clickCoolDown",false)
+	dgsSetData(source,"settingListener",{})
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"

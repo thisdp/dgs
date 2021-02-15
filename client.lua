@@ -436,13 +436,20 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			PosX,PosY = PosX+absX,PosY+absY
 			w,h = absW,absH
 		end
-		if eleData.lor == "right" then
+		local eleAlign = eleData.elementAlignment
+		if eleAlign[1] == "right" then	--Horizontal
 			local pWidth = parent and eleDataP.absSize[1] or sW
-			PosX = pWidth-PosX
+			PosX = pWidth-PosX-eleData.absSize[1]
+		elseif eleAlign[1] == "center" then
+			local pWidth = parent and eleDataP.absSize[1] or sW
+			PosX = PosX+pWidth/2-eleData.absSize[1]/2
 		end
-		if eleData.tob == "bottom" then
+		if eleAlign[2] == "bottom" then --Vertical
 			local pHeight = parent and eleDataP.absSize[2] or sH
-			PosY = pHeight-PosY
+			PosY = pHeight-PosY-eleData.absSize[2]
+		elseif eleAlign[2] == "center" then
+			local pHeight = parent and eleDataP.absSize[2] or sH
+			PosY = PosY+pHeight/2-eleData.absSize[2]/2
 		end
 		local x,y = PosX+OffsetX,PosY+OffsetY
 		OffsetX,OffsetY = 0,0
