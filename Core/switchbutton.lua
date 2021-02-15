@@ -20,8 +20,8 @@ local tonumber = tonumber
 local tostring = tostring
 local tocolor = tocolor
 local type = type
-local min = math.min
-local max = math.max
+local mathMin = math.min
+local mathMax = math.max
 
 function dgsCreateSwitchButton(x,y,w,h,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateSwitchButton",1,"number")) end
@@ -244,7 +244,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local state = eleData.state and 1 or -1
 	if eleData.stateAnim ~= state then
 		local stat = eleData.stateAnim+state*eleData.cursorMoveSpeed
-		eleData.stateAnim = state == -1 and max(stat,state) or min(stat,state)
+		eleData.stateAnim = state == -1 and mathMax(stat,state) or mathMin(stat,state)
 	end
 	------------------------------------
 	return rndtgt

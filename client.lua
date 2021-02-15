@@ -1,16 +1,13 @@
 focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 --Speed Up
-local abs = math.abs
-local find = string.find
-local rep = string.rep
-local gsub = string.gsub
-local floor = math.floor
-local ceil = math.ceil
-local min = math.min
-local max = math.max
-local clamp = math.restrict
-local lerp = math.lerp
+local mathAbs = math.abs
+local mathFloor = math.floor
+local mathCeil = math.ceil
+local mathMin = math.min
+local mathMax = math.max
+local mathClamp = math.restrict
+local mathLerp = math.lerp
 local tocolor = tocolor
 --Dx Functions
 local dxDrawLine = dxDrawLine
@@ -681,7 +678,7 @@ addEventHandler("onClientKey",root,function(button,state)
 				if my < y+height then
 					local speed = eleData.scrollSpeed[2] and eleData.scrollSpeed[1] or eleData.scrollSpeed[1]/width
 					local orgoff = eleData.showPos
-					orgoff = clamp(orgoff+scroll*speed,0,1)
+					orgoff = mathClamp(orgoff+scroll*speed,0,1)
 					dgsSetData(tabpanel,"showPos",orgoff)
 				end
 			end
@@ -699,7 +696,7 @@ addEventHandler("onClientKey",root,function(button,state)
 				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
 				local currentItem = dgsElementData[selector].selectedItem
-				dgsSelectorSetSelectedItem(selector,floor(clamp(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
+				dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
 			end
 		end
 	elseif state then
@@ -1200,14 +1197,14 @@ function dgsCheckHit(hits,mx,my)
 						bottom = bottomRel and sizeData[4]*h or sizeData[4]
 					end
 					local offsets = {mx-x,my-y,mx-x-w,my-y-h}
-					if abs(offsets[1]) < left then
+					if mathAbs(offsets[1]) < left then
 						offsets[5] = 1
-					elseif abs(offsets[3]) < right then
+					elseif mathAbs(offsets[3]) < right then
 						offsets[5] = 3
 					end
-					if abs(offsets[2]) < top then
+					if mathAbs(offsets[2]) < top then
 						offsets[6] = 2
-					elseif abs(offsets[4]) < bottom then
+					elseif mathAbs(offsets[4]) < bottom then
 						offsets[6] = 4
 					end
 					if offsets[5] and offsets[6] then --Horizontal Stretch
@@ -1283,7 +1280,7 @@ function onClientMouseTriggered()
 				if troughClickAction == "step" then
 					scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
 				elseif troughClickAction == "jump" then
-					dgsSetProperty(scrollbar,"position",clamp(scbEnterRltPos,0,1)*100)
+					dgsSetProperty(scrollbar,"position",mathClamp(scbEnterRltPos,0,1)*100)
 				end
 			end
 		elseif dgsType == "dgs-dxselector" then
@@ -1299,12 +1296,12 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = mathLerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0
 					end
-					dgsSelectorSetSelectedItem(selector,ceil(clamp(currentItem-offsetItem,1,itemCount)))
+					dgsSelectorSetSelectedItem(selector,mathCeil(mathClamp(currentItem-offsetItem,1,itemCount)))
 				end
 			elseif MouseData.selectorEnterData == 3 then
 				local itemData = dgsElementData[selector].itemData
@@ -1313,12 +1310,12 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = lerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = mathLerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0
 					end
-					dgsSelectorSetSelectedItem(selector,floor(clamp(currentItem+offsetItem,1,itemCount)))
+					dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+offsetItem,1,itemCount)))
 				end
 			end
 		end
@@ -1398,7 +1395,7 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 					local sidesize = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
 					local tabGapSize = dgsElementData[tabpanel].tabGapSize
 					local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
-					dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-wid-sidesize*2-gapSize*min(#tabs,1))
+					dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll-wid-sidesize*2-gapSize*mathMin(#tabs,1))
 					local id = eleData.id
 					for i=id,#tabs do
 						dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
@@ -1517,14 +1514,14 @@ function checkScale(source)
 		local top = topRel and sizeData[3]*w or sizeData[3]
 		local bottom = bottomRel and sizeData[4]*h or sizeData[4]
 		local offsets = {mx-x,my-y,mx-x-w,my-y-h}
-		if abs(offsets[1]) < left then
+		if mathAbs(offsets[1]) < left then
 			offsets[5] = 1
-		elseif abs(offsets[3]) < right then
+		elseif mathAbs(offsets[3]) < right then
 			offsets[5] = 3
 		end
-		if abs(offsets[2]) < top then
+		if mathAbs(offsets[2]) < top then
 			offsets[6] = 2
-		elseif abs(offsets[4]) < bottom then
+		elseif mathAbs(offsets[4]) < bottom then
 			offsets[6] = 4
 		end
 		if not offsets[5] and not offsets[6] then
@@ -1543,14 +1540,14 @@ function checkScale(source)
 		local sizable = eleData.sizable
 		if not sizable then return false end
 		local borderSize = eleData.borderSize
-		if abs(offsets[1]) < borderSize then
+		if mathAbs(offsets[1]) < borderSize then
 			offsets[5] = 1
-		elseif abs(offsets[3]) < borderSize then
+		elseif mathAbs(offsets[3]) < borderSize then
 			offsets[5] = 3
 		end
-		if abs(offsets[2]) < borderSize then
+		if mathAbs(offsets[2]) < borderSize then
 			offsets[6] = 2
-		elseif abs(offsets[4]) < borderSize then
+		elseif mathAbs(offsets[4]) < borderSize then
 			offsets[6] = 4
 		end
 		if not offsets[5] and not offsets[6] then
@@ -1744,7 +1741,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 									elseif shift then
 										if clicked and #clicked == 2 then
 											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
+											local startRow,endRow = mathMin(clicked[1],preSelect[1]),mathMax(clicked[1],preSelect[1])
 											for row = startRow,endRow do
 												dgsGridListSelectItem(guiele,row,1,true)
 											end
@@ -1765,7 +1762,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 									elseif shift then
 										if clicked and #clicked == 2 then
 											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+											local startColumn,endColumn = mathMin(clicked[2],preSelect[2]),mathMax(clicked[2],preSelect[2])
 											for column = startColumn, endColumn do
 												dgsGridListSelectItem(guiele,preSelect[1],column,true)
 											end
@@ -1786,8 +1783,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 									elseif shift then
 										if clicked and #clicked == 2 then
 											dgsGridListSetSelectedItem(guiele,-1,-1)
-											local startRow,endRow = min(clicked[1],preSelect[1]),max(clicked[1],preSelect[1])
-											local startColumn,endColumn = min(clicked[2],preSelect[2]),max(clicked[2],preSelect[2])
+											local startRow,endRow = mathMin(clicked[1],preSelect[1]),mathMax(clicked[1],preSelect[1])
+											local startColumn,endColumn = mathMin(clicked[2],preSelect[2]),mathMax(clicked[2],preSelect[2])
 											for row = startRow,endRow do
 												for column = startColumn, endColumn do
 													dgsGridListSelectItem(guiele,row,column,true)

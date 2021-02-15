@@ -19,7 +19,7 @@ local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 local triggerEvent = triggerEvent
 local addEventHandler = addEventHandler
 local createElement = createElement
-local lerp = math.lerp
+local mathLerp = math.lerp
 local mathFloor = math.floor
 local mathMin = math.min
 local mathMax = math.max
@@ -728,7 +728,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local _itemMoveOffset = DataTab.itemMoveOffset
 	local scrollbar = dgsElementData[combo].scrollbar
 	local itemMoveHardness = dgsElementData[scrollbar].moveType == "slow" and DataTab.moveHardness[1] or DataTab.moveHardness[2]
-	DataTab.itemMoveOffsetTemp = lerp(itemMoveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
+	DataTab.itemMoveOffsetTemp = mathLerp(itemMoveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
 	local itemMoveOffset = DataTab.itemMoveOffsetTemp-DataTab.itemMoveOffsetTemp%1
 
 	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1

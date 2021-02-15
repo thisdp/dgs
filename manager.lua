@@ -7,6 +7,9 @@ local isElement = isElement
 local assert = assert
 local tostring = tostring
 local tonumber = tonumber
+local mathMin = math.min
+local mathMax = math.max
+local mathClamp = math.restrict
 
 BottomFatherTable = {}		--Store Bottom Father Element
 CenterFatherTable = {}		--Store Center Father Element (Default)
@@ -53,7 +56,7 @@ function dgsSetCurrentLayerIndex(dgsEle,index)
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
 	local hasParent = isElement(FatherTable[dgsEle])
 	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
-	local index = math.restrict(1,#theTable+1,index)
+	local index = mathClamp(index,1,#theTable+1)
 	local id = tableFind(theTable,dgsEle)
 	if id then
 		tableRemove(theTable,id)
@@ -439,7 +442,7 @@ function dgsSetData(dgsEle,key,value,nocheck)
 			local change = value[2] and value[1]*width or value[1]
 			local old = oldValue[2] and oldValue[1]*width or oldValue[1]
 			local tabs = dgsElementData[dgsEle].tabs
-			dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*math.max((#tabs-1),1))
+			dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*mathMax((#tabs-1),1))
 		elseif key == "tabAlignment" then
 			dgsElementData[dgsEle].showPos = 0
 		elseif key == "tabHeight" then
@@ -460,7 +463,7 @@ function dgsSetData(dgsEle,key,value,nocheck)
 			local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
 			local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 			dgsElementData[dgsEle].text = tostring(value)
-			dgsSetData(dgsEle,"width",math.restrict(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
 			return triggerEvent("onDgsTextChange",dgsEle)
 		elseif key == "width" then
 			local tabpanel = dgsElementData[dgsEle].parent

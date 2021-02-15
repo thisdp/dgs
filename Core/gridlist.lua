@@ -26,7 +26,7 @@ local loadstring = loadstring
 local type = type
 local setmetatable = setmetatable
 local setfenv = setfenv
-local lerp = math.lerp
+local mathLerp = math.lerp
 local tableSort = table.sort
 local tableInsert = table.insert
 local tableRemove = table.remove
@@ -2042,7 +2042,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local rowMoveOffset = _rowMoveOffset
 	if eleData.rowMoveOffsetTemp ~= _rowMoveOffset then
 		local rowMoveHardness = dgsElementData[scb1].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-		eleData.rowMoveOffsetTemp = lerp(rowMoveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
+		eleData.rowMoveOffsetTemp = mathLerp(rowMoveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
 		local rMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
 		dgsGridListUpdateRowMoveOffset(source)
 		if rMoveOffset-eleData.rowMoveOffsetTemp <= 0.5 and rMoveOffset-eleData.rowMoveOffsetTemp >= -0.5 then
@@ -2055,7 +2055,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnMoveOffset = _columnMoveOffset
 	if eleData.columnMoveOffsetTemp ~= _columnMoveOffset then
 		local columnMoveHardness  = dgsElementData[scb2].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-		eleData.columnMoveOffsetTemp = lerp(columnMoveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
+		eleData.columnMoveOffsetTemp = mathLerp(columnMoveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
 		local cMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
 		if cMoveOffset-eleData.columnMoveOffsetTemp <= 0.5 and cMoveOffset-eleData.columnMoveOffsetTemp >= -0.5 then
 			eleData.columnMoveOffsetTemp = cMoveOffset

@@ -38,7 +38,7 @@ local tableSort = table.sort
 local tableInsert = table.insert
 local tableRemove = table.remove
 local mathFloor = math.floor
-local mathRestrict = math.restrict
+local mathClamp = math.restrict
 local utf8Sub = utf8.sub
 local utf8Gsub = utf8.gsub
 local utf8Len = utf8.len
@@ -348,7 +348,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	local canHold = mathFloor((size[2]-padding[2]*2-scbTakes[2])/fontHeight)
 	if isWordWrap then
 		if noSeekPosition then
-			index = mathRestrict(tpos,0,utf8Len(text))
+			index = mathClamp(tpos,0,utf8Len(text))
 			line = tline
 		else
 			index,line = dgsMemoSeekPosition(textTable,tpos,tline)
@@ -379,7 +379,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 		end
 	else
 		if noSeekPosition then
-			index = mathRestrict(tpos,0,utf8Len(text))
+			index = mathClamp(tpos,0,utf8Len(text))
 			line = tline
 		else
 			index,line = dgsMemoSeekPosition(textTable,tpos,tline)
@@ -477,7 +477,7 @@ function searchMemoMousePosition(memo,posx,posy)
 	local x,y = dgsGetPosition(memo,false,true)
 	local originalText = eleData.text
 	local allText = isWordWrap and eleData.wordWrapMapText or originalText
-	local selLine = mathRestrict(mathFloor((posy-y-padding[1])/fontHeight)+showLine,1,#allText)
+	local selLine = mathClamp(mathFloor((posy-y-padding[1])/fontHeight)+showLine,1,#allText)
 	local text = (allText[selLine] or {[0]=""})[0]
 	local pos = posx-x-padding[1]+showPos
 	local sfrom,sto,templen = 0,utf8Len(text),0
@@ -860,8 +860,8 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 	local lineTextFromCnt = utf8Len(lineTextFrom)
 	local lineTextToCnt = utf8Len(lineTextTo)
 	local insertLine,lineCnt
-	fromIndex,toIndex = mathRestrict(fromIndex,0,lineTextFromCnt),mathRestrict(toIndex,0,lineTextToCnt)
-	fromLine,toLine = mathRestrict(fromLine,1,textLines),mathRestrict(toLine,1,textLines)
+	fromIndex,toIndex = mathClamp(fromIndex,0,lineTextFromCnt),mathClamp(toIndex,0,lineTextToCnt)
+	fromLine,toLine = mathClamp(fromLine,1,textLines),mathClamp(toLine,1,textLines)
 	if fromLine > toLine then
 		fromLine,toLine,fromIndex,toIndex = toLine,fromLine,toIndex,fromIndex
 	end
@@ -957,14 +957,14 @@ function dgsMemoGetPartOfText(memo,cindex,cline,tindex,tline,isDelete)
 	local textTable = dgsElementData[memo].text
 	local textLines = #textTable
 	cindex,cline,tindex,tline = cindex or 0,cline or 1,tindex or utf8Len(textTable[textLines][0]),tline or textLines
-	cline = mathRestrict(cline,1,textLines)
-	tline = mathRestrict(tline,1,textLines)
+	cline = mathClamp(cline,1,textLines)
+	tline = mathClamp(tline,1,textLines)
 	local lineTextFrom = textTable[cline][0]
 	local lineTextTo = textTable[tline][0]
 	local lineTextFromCnt = utf8Len(lineTextFrom)
 	local lineTextToCnt = utf8Len(lineTextTo)
-	cindex = mathRestrict(cindex,0,lineTextFromCnt)
-	tindex = mathRestrict(tindex,0,lineTextToCnt)
+	cindex = mathClamp(cindex,0,lineTextFromCnt)
+	tindex = mathClamp(tindex,0,lineTextToCnt)
 	if cline > tline then
 		tline,cline = cline,tline
 	end

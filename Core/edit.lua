@@ -111,7 +111,7 @@ function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 		redoHistory = {},
 		typingSound = style.typingSound,
 		maxLength = 0x3FFFFFFF,
-		rtl = nil,	--nil: auto; false:disabled; true: enabled
+		--rtl = nil,	--nil: auto; false:disabled; true: enabled
 		editCounts = editsCount, --Tab Switch
 	}
 	editsCount = editsCount+1

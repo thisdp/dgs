@@ -18,6 +18,7 @@ local tonumber = tonumber
 local type = type
 local tableInsert = table.insert
 local tableRemove = table.remove
+local mathClamp = math.restrict
 --[[
 Selector Data Structure:
 {
@@ -105,7 +106,7 @@ function dgsSelectorRemoveItem(selector,i)
 	local iData = dgsElementData[selector].itemData
 	if iData[i] then
 		tableRemove(iData,i)
-		dgsElementData[selector].selectedItem = #iData >= 1 and math.restrict(dgsElementData[selector].selectedItem,1,#iData) or -1
+		dgsElementData[selector].selectedItem = #iData >= 1 and mathClamp(dgsElementData[selector].selectedItem,1,#iData) or -1
 	end
 	return false
 end

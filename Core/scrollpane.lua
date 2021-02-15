@@ -26,7 +26,8 @@ local tonumber = tonumber
 local tostring = tostring
 local tocolor = tocolor
 local type = type
-local lerp = math.lerp
+local mathLerp = math.lerp
+local mathClamp = math.restrict
 
 function dgsCreateScrollPane(x,y,w,h,relative,parent)
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateScrollPane",1,"number")) end
@@ -301,11 +302,11 @@ function dgsScrollPaneSetViewOffset(scrollpane,x,y)
 	local scbThick = eleData.scrollBarThick
 	if type(x) == "number" then
 		local pos1 = x*100/(eleData.maxChildSize[1]-size[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0))
-		dgsScrollBarSetScrollPosition(scrollbar[2],math.restrict(pos1,0,100))
+		dgsScrollBarSetScrollPosition(scrollbar[2],mathClamp(pos1,0,100))
 	end
 	if type(y) == "number" then
 		local pos2 = y*100/(eleData.maxChildSize[2]-size[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0))
-		dgsScrollBarSetScrollPosition(scrollbar[1],math.restrict(pos2,0,100))
+		dgsScrollBarSetScrollPosition(scrollbar[1],mathClamp(pos2,0,100))
 	end
 	return true
 end
@@ -388,8 +389,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local _OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
 	local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
 	local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-	local OffsetX = lerp(xMoveHardness,eleData.horizontalMoveOffsetTemp,_OffsetX)
-	local OffsetY = lerp(yMoveHardness,eleData.verticalMoveOffsetTemp,_OffsetY)
+	local OffsetX = mathLerp(xMoveHardness,eleData.horizontalMoveOffsetTemp,_OffsetX)
+	local OffsetY = mathLerp(yMoveHardness,eleData.verticalMoveOffsetTemp,_OffsetY)
 	eleData.horizontalMoveOffsetTemp = OffsetX
 	eleData.verticalMoveOffsetTemp = OffsetY
 	if OffsetX > 0 then OffsetX = 0 end
