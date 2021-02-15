@@ -8,7 +8,6 @@ function dgsEnablePasteHandler()
 		addEventHandler("onClientBrowserCreated",GlobalPasteHandler,function()
 			loadBrowserURL(GlobalPasteHandler,"http://mta/local/plugin/pasteHandler/pasteHandler.html")
 		end,false)
-		
 		addEventHandler("onClientBrowserDocumentReady",GlobalPasteHandler,function()
 			dgsSetData(GlobalPasteHandler,"isReady",true)
 		--setDevelopmentMode(true,true)

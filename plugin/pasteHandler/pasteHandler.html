@@ -5,29 +5,25 @@
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 	<head>
-		<meta charset="utf-8" />
 		<script type="text/javascript">
-		document.addEventListener("paste", function (e){
-			if ( !(e.clipboardData && e.clipboardData.items) ) {
-				return ;
-			}
-
-			for (var i = 0, len = e.clipboardData.items.length; i < len; i++) {
-				var item = e.clipboardData.items[i];
+		document.addEventListener("paste",function(e){
+			if (!(e.clipboardData&&e.clipboardData.items)){return}
+			for(var i=0,len=e.clipboardData.items.length;i<len;i++) {
+				var item = e.clipboardData.items[i]
 				if (item.kind === "string") {
-					item.getAsString(function (str) {
+					item.getAsString(function(str) {
 						mta.triggerEvent("DGSI_Paste",str,"string")
 					})
-				} else if (item.kind === "file") {
+				}else if (item.kind === "file") {
 					var pasteFile = item.getAsFile()
-					var reader = new FileReader();
-					reader.readAsDataURL(pasteFile);
+					var reader = new FileReader()
+					reader.readAsDataURL(pasteFile)
 					reader.onload = function(){
 						mta.triggerEvent("DGSI_Paste",reader.result,"file")
 					}
 				}
 			}
-		});
+		})
 		</script>
 	</head>
 	 <body>

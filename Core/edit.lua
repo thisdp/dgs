@@ -31,7 +31,6 @@ local tonumber = tonumber
 local tostring = tostring
 local type = type
 local mathFloor = math.floor
-local mathFloor = math.floor
 local utf8Sub = utf8.sub
 local utf8Len = utf8.len
 local utf8Gsub = utf8.gsub
@@ -43,17 +42,7 @@ local tableRemove = table.remove
 local strChar = string.char
 local mathMin = math.min
 local mathMax = math.max
-local acceptedAlignment = {
-	top=2,
-	bottom=2,
-	center=0,
-	right=1,
-	left=1,
-}
-
 ----Initialize
-local VerticalAlign = {top=true,center=true,bottom=true}
-local HorizontalAlign = {left=true,center=true,right=true}
 GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
 GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
 addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
@@ -381,14 +370,10 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 	local showPos = eleData.showPos
 	if showPos > 0 then
 		showPos = showPos - deleted
-		if showPos < 0 then
-			showPos = 0
-		end
+		if showPos < 0 then showPos = 0 end
 	else
 		showPos = showPos + deleted
-		if showPos > 0 then
-			showPos = 0
-		end
+		if showPos > 0 then showPos = 0 end
 	end
 	eleData.showPos = showPos-showPos%1
 	if eleData.masked then
@@ -886,13 +871,6 @@ function dgsEditDoOpposite(edit,isUndo)
 		end
 	end
 	return false
-end
-
-local CodeType = {}
-for i=32,47 do
-	CodeType[strChar(i)] = 1 --
-end
-function dgsEditFindBlock()
 end
 
 addEventHandler("onClientGUIChanged",resourceRoot,function()

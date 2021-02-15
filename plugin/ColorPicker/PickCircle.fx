@@ -3,7 +3,7 @@ float radiusSize = 0.15;
 float borderSoft = 0.01;
 float color = float4(1,1,1,1);
 
-float4 circle(float2 tex : TEXCOORD0, float4 __color : COLOR0) : COLOR0{
+float4 circle(float2 tex:TEXCOORD0,float4 __color:COLOR0):COLOR0{
 	float nBorderSoft = borderSoft*sqrt(length(ddx(tex))*length(ddy(tex)))*100;
 	float4 _color = color;
 	float dis = distance(tex,0.5);
@@ -14,7 +14,7 @@ float4 circle(float2 tex : TEXCOORD0, float4 __color : COLOR0) : COLOR0{
 }
 
 technique RepTexture{
-	pass P0	{
+	pass P0{
 		PixelShader = compile ps_2_a circle();
 	}
 }

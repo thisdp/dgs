@@ -19,9 +19,9 @@ ChildrenTable = {}			--Store Children Element
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
 
 function dgsSetLayer(dgsEle,layer,forceDetatch)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsSetLayer at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetLayer",1,"dgs-dxelement")) end
 	if dgsElementType[dgsEle] == "dgs-dxtab" then return false end
-	assert(layer == "center" or layer == "top" or layer == "bottom","Bad argument @dgsSetLayer at argument 2, expect a string(top/center/bottom) got "..dgsGetType(layer))
+	if not(layerBuiltIn[layer]) then error(dgsGenAsrt(layer,"dgsSetLayer",2,"string","top/center/bottom")) end
 	local hasParent = isElement(FatherTable[dgsEle])
 	if hasParent and not forceDetatch then return false end
 	if hasParent then
@@ -43,13 +43,13 @@ function dgsSetLayer(dgsEle,layer,forceDetatch)
 end
 
 function dgsGetLayer(dgsEle)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsGetLayer at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetLayer",1,"dgs-dxelement")) end
 	return dgsElementData[dgsEle].alwaysOn or "center"
 end
 
 function dgsSetCurrentLayerIndex(dgsEle,index)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsSetCurrentLayerIndex at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
-	assert(type(index) == "number" ,"Bad argument @dgsSetCurrentLayerIndex at argument 2, expect a number got "..dgsGetType(index))
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetCurrentLayerIndex",1,"dgs-dxelement")) end
+	if not(type(index) == "number") then error(dgsGenAsrt(index,"dgsSetCurrentLayerIndex",2,"number")) end
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
 	local hasParent = isElement(FatherTable[dgsEle])
 	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
@@ -63,7 +63,7 @@ function dgsSetCurrentLayerIndex(dgsEle,index)
 end
 
 function dgsGetCurrentLayerIndex(dgsEle)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsGetCurrentLayerIndex at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetCurrentLayerIndex",1,"dgs-dxelement")) end
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
 	local hasParent = isElement(FatherTable[dgsEle])
 	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
@@ -71,7 +71,7 @@ function dgsGetCurrentLayerIndex(dgsEle)
 end
 
 function dgsGetLayerElements(layer)
-	assert(layer == "center" or layer == "top" or layer == "bottom","Bad argument @dgsGetLayerElements at argument 1, expect a string(top/center/bottom) got "..dgsGetType(layer))
+	if not(layerBuiltIn[layer]) then error(dgsGenAsrt(layer,"dgsGetLayerElements",1,"string","top/center/bottom")) end
 	return #LayerCastTable[layer] or false
 end
 
@@ -94,8 +94,8 @@ end
 
 function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 	if parent == resourceRoot then parent = nil end
-	assert(dgsIsType(child),"Bad argument @dgsSetParent at argument 1, expect a dgs-element element got "..dgsGetType(child))
-	assert(not dgsElementData[child] or not dgsElementData[child].attachTo, "Bad argument @dgsSetParent at argument 1, attached dgs element can not have a parent")
+	if not(dgsIsType(child)) then error(dgsGenAsrt(child,"dgsSetParent",1,"dgs-dxelement")) end
+	if not(not dgsElementData[child] or not dgsElementData[child].attachTo) then error(dgsGenAsrt(child,"dgsSetParent",1,_,_,_,"attached dgs element can not have a parent")) end
 	local _parent = FatherTable[child]
 	local parentTable = isElement(_parent) and ChildrenTable[_parent] or CenterFatherTable
 	if isElement(parent) then
@@ -147,7 +147,7 @@ function blurEditMemo()
 end
 
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsBringToFront at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsBringToFront",1,"dgs-dxelement")) end
 	local parent = FatherTable[dgsEle]	--Get Parent
 	local lastFront = MouseData.nowShow
 	if not dontChangeData then
@@ -234,7 +234,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 end
 
 function dgsMoveToBack(dgsEle)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsMoveToBack at argument 1, expect a dgs-element element got "..dgsGetType(dgsEle))
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsMoveToBack",1,"dgs-dxelement")) end
 	if dgsElementData[dgsEle].changeOrder then
 		local parent = FatherTable[dgsEle]	--Get Parent
 		if isElement(parent) then
@@ -606,7 +606,7 @@ end
 
 function dgsSetProperty(dgsEle,key,value,...)
 	local isTable = type(dgsEle) == "table"
-	assert(dgsIsType(dgsEle) or isTable,"Bad argument @dgsSetProperty at argument 1, expect a dgs-element/table got "..dgsGetType(dgsEle))
+	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetProperty",1,"dgs-dxelement/table")) end
 	if isTable then
 		for k,v in ipairs(dgsEle) do
 			dgsSetProperty(v,key,value,...)
@@ -645,15 +645,14 @@ function dgsSetProperty(dgsEle,key,value,...)
 end
 
 function dgsGetProperty(dgsEle,key)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsGetProperty at argument 1, expect a dgs-element got "..dgsGetType(dgsEle))
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetProperty",1,"dgs-dxelement")) end
 	return (dgsElementData[dgsEle] or {})[key] or false
 end
 
-function dgsSetProperties(dgsEle,theTable,additionArg)
+function dgsSetProperties(dgsEle,theTable)
 	local isTable = type(dgsEle) == "table"
-	assert(dgsIsType(dgsEle) or isTable,"Bad argument @dgsSetProperties at argument 1, expect a dgs-element got "..dgsGetType(dgsEle))
-	assert(type(theTable)=="table","Bad argument @dgsSetProperties at argument 2, expect a table got "..type(theTable))
-	assert((additionArg and type(additionArg)=="table") or additionArg == nil,"Bad argument @dgsSetProperties at argument 3, expect a table or nil/none got "..type(additionArg))
+	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetProperties",1,"dgs-dxelement/table")) end
+	if not(type(theTable) == "table") then error(dgsGenAsrt(theTable,"dgsSetProperties",2,"table")) end
 	local dxElements = isTable and dgsEle or {dgsEle}
 	for i=1,#dxElements do
 		local dgsEle = dxElements[i]
@@ -665,8 +664,8 @@ function dgsSetProperties(dgsEle,theTable,additionArg)
 end
 
 function dgsGetProperties(dgsEle,properties)
-	assert(dgsIsType(dgsEle),"Bad argument @dgsGetProperties at argument 1, expect a dgs-element got "..dgsGetType(dgsEle))
-	assert(not properties or type(properties) == "table","Bad argument @dgsGetProperties at argument 2, expect none or table got "..type(properties))
+	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsGetProperties",1,"dgs-dxelement/table")) end
+	if not(not properties or type(properties) == "table") then error(dgsGenAsrt(properties,"dgsGetProperties",2,"table/none")) end
 	if not dgsElementData[dgsEle] then return false end
 	if not properties then return dgsElementData[dgsEle] end
 	local data = {}
@@ -678,7 +677,7 @@ end
 
 function dgsSetPropertyInherit(dxgui,key,value,...)
 	local isTable = type(dxgui) == "table"
-	assert(dgsIsType(dxgui) or isTable,"Bad argument @dgsSetPropertyInherit at argument 1, expect a dgs-element/table got "..dgsGetType(dxgui))
+	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetPropertyInherit",1,"dgs-dxelement/table")) end
 	local dxElements = isTable and dxgui or {dxgui}
 	for i=1,#dxElements do
 		local dgsEle = dxElements[i]

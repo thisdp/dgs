@@ -12,7 +12,6 @@ SamplerState sourceSampler{
 	AddressV = Wrap;
 };
 
-
 SamplerState sourceSamplerPixelated{
 	Texture = sourceTexture;
 	MinFilter = 1;

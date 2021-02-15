@@ -2,8 +2,7 @@
 float borderSoft = 0.01;
 float radius = 0.5;
 
-float HUE2RGB(float v1,float v2,float vH)
-{
+float HUE2RGB(float v1,float v2,float vH){
 	if (vH < 0)
 		vH = vH+1;
 	if (vH > 1)
@@ -30,8 +29,7 @@ float3 HSL2RGB(float3 hsl){
 	return RGB;
 }
 
-float4 myShader(float2 tex : TEXCOORD0, float4 color : COLOR0) : COLOR0
-{
+float4 myShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float nBorderSoft = borderSoft*sqrt(length(ddx(tex))*length(ddy(tex)))*100;
 	float2 newTex = tex-0.5;
 	float _radius = length(newTex);
@@ -41,10 +39,8 @@ float4 myShader(float2 tex : TEXCOORD0, float4 color : COLOR0) : COLOR0
 	return color;
 }
 
-technique RepTexture
-{
-	pass P0
-	{
+technique RepTexture{
+	pass P0{
 		PixelShader = compile ps_2_a myShader();
 	}
 }
