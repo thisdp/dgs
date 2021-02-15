@@ -894,8 +894,8 @@ end
 		-4					-3							-2				-1				0							1																																																														2																																	...
 		columnOffset		bgImage						hoverable		selectable		bgColor						column1																																																													column2																																...
 {
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
+	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
 	{	the same as preview table																																																																																						},
 }
 
@@ -1766,6 +1766,55 @@ function dgsGridListItemIsSelected(gridlist,r,c)
 	return false
 end
 
+
+function dgsGridListSetItemTextOffset(gridlist,r,c,offsetX,offsetY,relative)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetItemTextOffset",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	local cData,rData = eleData.columnData,eleData.rowData
+	local cLen,rLen = #cData,#rData
+	if cLen == 0 or rLen == 0 then return false end
+	local cNInRange,rNInRange = not (c>=1 and c<=cLen or c == -1),not (r>=1 and r<=rLen or r == -1)
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemTextOffset",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemTextOffset",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
+	local c,r = c-c%1,r-r%1
+	--Deal with the color
+	if r == -1 then
+		if c == -1 then
+			for i=1,rLen do
+				for j=1,cLen do
+					rData[i][j][12] = offsetX and {offsetX,offsetY,relative} or nil
+				end
+			end
+		else
+			for i=1,rLen do
+				rData[i][c][12] = offsetX and {offsetX,offsetY,relative} or nil
+			end
+		end
+	else
+		if c == -1 then
+			for j=1,cLen do
+				rData[r][j][12] = offsetX and {offsetX,offsetY,relative} or nil
+			end
+		else
+			rData[r][c][12] = offsetX and {offsetX,offsetY,relative} or nil
+		end
+	end
+	return false
+end
+
+function dgsGridListGetItemTextOffset(gridlist,r,c)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetItemTextOffset",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	local cData,rData = eleData.columnData,eleData.rowData
+	local cLen,rLen = #cData,#rData
+	if cLen == 0 or rLen == 0 then return false end
+	local cNInRange,rNInRange = not (c>=1 and c<=cLen),not (r>=1 and r<=rLen)
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemTextOffset",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemTextOffset",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	local c,r = c-c%1,r-r%1
+	return rData[r][c][12][1],rData[r][c][12][2],rData[r][c][12][3]
+end
+
 function dgsGridListSetItemColor(gridlist,r,c,...)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetItemColor",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
@@ -1796,21 +1845,21 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 		if c == -1 then
 			for i=1,rLen do
 				for j=1,cLen do
-					rData[i][j][2] = colors
+					rData[i][j][2] = {colors[1],colors[2],colors[3]}
 				end
 			end
 		else
 			for i=1,rLen do
-				rData[i][c][2] = colors
+				rData[i][c][2] = {colors[1],colors[2],colors[3]}
 			end
 		end
 	else
 		if c == -1 then
 			for j=1,cLen do
-				rData[r][j][2] = colors
+				rData[r][j][2] = {colors[1],colors[2],colors[3]}
 			end
 		else
-			rData[r][c][2] = colors
+			rData[r][c][2] = {colors[1],colors[2],colors[3]}
 		end
 	end
 	return false
@@ -1863,21 +1912,21 @@ function dgsGridListSetItemBackGroundColor(gridlist,r,c,...)
 		if c == -1 then
 			for i=1,rLen do
 				for j=1,cLen do
-					rData[i][j][12] = {colors[1],colors[2],colors[3]}
+					rData[i][j][13] = {colors[1],colors[2],colors[3]}
 				end
 			end
 		else
 			for i=1,rLen do
-				rData[i][c][12] = {colors[1],colors[2],colors[3]}
+				rData[i][c][13] = {colors[1],colors[2],colors[3]}
 			end
 		end
 	else
 		if c == -1 then
 			for j=1,cLen do
-				rData[r][j][12] = {colors[1],colors[2],colors[3]}
+				rData[r][j][13] = {colors[1],colors[2],colors[3]}
 			end
 		else
-			rData[r][c][12] = {colors[1],colors[2],colors[3]}
+			rData[r][c][13] = {colors[1],colors[2],colors[3]}
 		end
 	end
 	return false
@@ -1893,11 +1942,11 @@ function dgsGridListGetItemBackGroundColor(gridlist,r,c,notSplitColor)
 	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemBackGroundColor",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
 	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemBackGroundColor",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
 	local c,r = c-c%1,r-r%1
-	if rData[r][c][12] then
+	if rData[r][c][13] then
 		if notSplitColor then
-			return rData[r][c][12][1],rData[r][c][12][2],rData[r][c][12][3]
+			return rData[r][c][13][1],rData[r][c][13][2],rData[r][c][13][3]
 		else
-			return fromColor(rData[r][c][12][1]),fromColor(rData[r][c][12][2]),fromColor(rData[r][c][12][3])
+			return fromColor(rData[r][c][13][1]),fromColor(rData[r][c][13][2]),fromColor(rData[r][c][13][3])
 		end
 	elseif rData[r][0] then
 		return rData[r][0][1],rData[r][0][2],rData[r][0][3]
@@ -1932,21 +1981,21 @@ function dgsGridListSetItemBackGroundImage(gridlist,r,c,nImg,sImg,cImg)
 		if c == -1 then
 			for i=1,rLen do
 				for j=1,cLen do
-					rData[i][j][13] = {nImg,sImg,cImg}
+					rData[i][j][14] = {nImg,sImg,cImg}
 				end
 			end
 		else
 			for i=1,rLen do
-				rData[i][c][13] = {nImg,sImg,cImg}
+				rData[i][c][14] = {nImg,sImg,cImg}
 			end
 		end
 	else
 		if c == -1 then
 			for j=1,cLen do
-				rData[r][j][13] = {nImg,sImg,cImg}
+				rData[r][j][14] = {nImg,sImg,cImg}
 			end
 		else
-			rData[r][c][13] = {nImg,sImg,cImg}
+			rData[r][c][14] = {nImg,sImg,cImg}
 		end
 	end
 	return false
@@ -1962,8 +2011,8 @@ function dgsGridListGetItemBackGroundImage(gridlist,r,c)
 	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemBackGroundImage",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
 	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemBackGroundImage",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
 	local c,r = c-c%1,r-r%1
-	if rData[r][c][13] then
-		return rData[r][c][13][1],rData[r][c][13][2],rData[r][c][13][3]
+	if rData[r][c][14] then
+		return rData[r][c][14][1],rData[r][c][14][2],rData[r][c][14][3]
 	elseif rData[r][-3] then
 		return rData[r][-3][1],rData[r][-3][2],rData[r][-3][3]
 	end
@@ -2326,7 +2375,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						local _txtScalex = currentRowData[4] or rowTextSx
 						local _txtScaley = currentRowData[5] or rowTextSy
 						local alignment = currentRowData[11] or columnData[id][4]
-						local itemBGColor,itemBGImage = currentRowData[12] or color,currentRowData[13] or image
+						local itemBGColor,itemBGImage = currentRowData[13] or color,currentRowData[14] or image
 						local rowState = 1
 						if selectionMode == 1 then
 							if i == preSelect[1] then
@@ -2353,12 +2402,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						local offset = cpos[id]
 						local _x = _x+offset
 						local _sx = cend[id]
-						local _backgroundWidth = columnData[id][2]*multiplier
+						local columnWidth = columnData[id][2]*multiplier
 						local _bgX = _x
-						local backgroundWidth = _backgroundWidth
+						local backgroundWidth = columnWidth
 						if id == 1 then
 							_bgX = _x+backgroundOffset
-							backgroundWidth = _backgroundWidth-backgroundOffset
+							backgroundWidth = columnWidth-backgroundOffset
 						elseif backgroundWidth+_x >= w or columnCount == id then
 							backgroundWidth = w-_x
 						end
@@ -2373,9 +2422,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
 							if currentRowData[7] then
 								local imageData = currentRowData[7]
-								local imagex = _x+(imageData[7] and imageData[3]*_backgroundWidth or imageData[3])
+								local imagex = _x+(imageData[7] and imageData[3]*columnWidth or imageData[3])
 								local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])
-								local imagew = imageData[7] and imageData[5]*_backgroundWidth or imageData[5]
+								local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
 								local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]
 								if isElement(imageData[1]) then
 									dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
@@ -2383,13 +2432,19 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 									dxDrawRectangle(imagex,imagey,imagew,imageh,imageData[2])
 								end
 							end
+							local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
+							if currentRowData[12] then
+								local itemTextOffsetX = currentRowData[12][3] and columnWidth*currentRowData[12][1] or currentRowData[12][1]
+								local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]
+								textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
+							end
 							local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
 							textBuffer[textBufferCnt] = {
 								currentRowData[1],	--Text
-								_x-_x%1,			--startX
-								_y-_y%1,			--startY
-								_sx-_sx%1,			--endX
-								_sy-_sy%1,			--endY
+								textXS-textXS%1,			--startX
+								textYS-textYS%1,			--startY
+								textXE-textXE%1,			--endX
+								textYE-textYE%1,			--endY
 								color[rowState],
 								_txtScalex,
 								_txtScaley,
@@ -2547,7 +2602,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local _txtScalex = currentRowData[4] or rowTextSx
 				local _txtScaley = currentRowData[5] or rowTextSy
 				local alignment = currentRowData[11] or columnData[id][4]
-				local itemBGColor,itemBGImage = currentRowData[12] or color,currentRowData[13] or image
+				local itemBGColor,itemBGImage = currentRowData[13] or color,currentRowData[14] or image
 				local rowState = 1
 				if selectionMode == 1 then
 					if i == preSelect[1] then
@@ -2573,20 +2628,20 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 				local offset = cpos[id]
 				local _x = _x+offset
-				local _sx = cpos[id+1] or (columnData[id][2])*multiplier
-				local backgroundWidth = columnData[id][2]*multiplier
+				local _sx = (cpos[id+1] or (columnData[id][2])*multiplier)+_x
+				local columnWidth = columnData[id][2]*multiplier
 				local _bgX = _x
 				if id == 1 then
 					_bgX = _x+backgroundOffset
-					backgroundWidth = backgroundWidth-backgroundOffset
-				elseif backgroundWidth+_x-x >= w or whichColumnToEnd == id then
-					backgroundWidth = w-_x+x-scbThickV
+					columnWidth = columnWidth-backgroundOffset
+				elseif columnWidth+_x-x >= w or whichColumnToEnd == id then
+					columnWidth = w-_x+x-scbThickV
 				end
 				local itemUsingBGColor,itemUsingBGImage = itemBGColor[rowState] or color[rowState],itemBGImage[rowState] or image[rowState]
 				if itemUsingBGImage then
-					dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)
+					dxDrawImage(_bgX,_y,columnWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)
 				else
-					dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGColor,isPostGUI)
+					dxDrawRectangle(_bgX,_y,columnWidth,rowHeight,itemUsingBGColor,isPostGUI)
 				end
 				if text ~= "" then
 					local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
@@ -2598,13 +2653,19 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
 						end
 					end
+					local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
+					if currentRowData[12] then
+						local itemTextOffsetX = currentRowData[12][3] and columnWidth*currentRowData[12][1] or currentRowData[12][1]
+						local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]
+						textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
+					end
 					local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
 					textBuffer[textBufferCnt] = {
 						currentRowData[1],	--Text
-						_x,			--startX
-						_y,			--startY
-						_sx+_x,			--endX
-						_sy,			--endY
+						textXS-textXS%1,			--startX
+						textYS-textYS%1,			--startY
+						textXE-textXE%1,			--endX
+						textYE-textYE%1,			--endY
 						color[rowState],
 						_txtScalex,
 						_txtScaley,

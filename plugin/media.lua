@@ -102,7 +102,7 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 				mta.triggerEvent("onDgsMediaLoaded")
 			]]
 		end
-		local executed = executeBrowserJS(media,str)
+		local executed = executeBrowserJavascript(media,str)
 		dgsMediaSetFullScreen(media,dgsElementData[media].fullscreen)
 		dgsMediaSetFilled(media,dgsElementData[media].filled)
 		dgsMediaSetLooped(media,dgsElementData[media].looped)
@@ -135,7 +135,7 @@ function dgsMediaClearMedia(media)
 	else
 		dgsSetData(media,"sourcePath",false)
 		dgsElementData[media].duration = false
-		return executeBrowserJS(media,JS.clearelement)
+		return executeBrowserJavascript(media,JS.clearelement)
 	end
 end
 
@@ -146,7 +146,7 @@ function dgsMediaPlay(media)
 		table.insert(buffer,{[0]=dgsMediaPlay,media})
 	else
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaPlay",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
-		return executeBrowserJS(media,JS.playelement)
+		return executeBrowserJavascript(media,JS.playelement)
 	end
 end
 
@@ -157,7 +157,7 @@ function dgsMediaPause(media)
 		table.insert(buffer,{[0]=dgsMediaPause,media})
 	else
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaPause",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
-		return executeBrowserJS(media,JS.pauseelement)
+		return executeBrowserJavascript(media,JS.pauseelement)
 	end
 end
 
@@ -168,7 +168,7 @@ function dgsMediaStop(media)
 		table.insert(buffer,{[0]=dgsMediaStop,media})
 	else
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaStop",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
-		return executeBrowserJS(media,JS.stopelement)
+		return executeBrowserJavascript(media,JS.stopelement)
 	end
 end
 
@@ -181,7 +181,7 @@ function dgsMediaSetSpeed(media,speed)
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaSetSpeed",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
 		local str = JS.setSpeed:gsub("REP1",tostring(speed))
 		dgsSetData(media,"speed",speed)
-		return executeBrowserJS(media,str)
+		return executeBrowserJavascript(media,str)
 	end
 end
 
@@ -199,7 +199,7 @@ function dgsMediaSetFullScreen(media,state)
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaSetFullScreen",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
 		local str = JS.setFullScreen:gsub("REP1",tostring(state))
 		dgsSetData(media,"fullscreen",state)
-		return executeBrowserJS(media,str)
+		return executeBrowserJavascript(media,str)
 	end
 end
 
@@ -217,7 +217,7 @@ function dgsMediaSetFilled(media,state)
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaSetFilled",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
 		local str = JS.setFilled:gsub("REP1",tostring(state))
 		dgsSetData(media,"filled",state)
-		return executeBrowserJS(media,str)
+		return executeBrowserJavascript(media,str)
 	end
 end
 
@@ -240,7 +240,7 @@ function dgsMediaSetLooped(media,state)
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaSetLooped",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
 		local str = JS.setLooped:gsub("REP1",tostring(state))
 		dgsSetData(media,"looped",state)
-		return executeBrowserJS(media,str)
+		return executeBrowserJavascript(media,str)
 	end
 end
 
@@ -257,7 +257,7 @@ function dgsMediaSetSize(media,w,h)
 		local str = str:gsub("REP1",w)
 		local str = str:gsub("REP2",h)
 		dgsSetData(media,"size",{w,h})
-		return executeBrowserJS(media,str)
+		return executeBrowserJavascript(media,str)
 	end
 end
 
@@ -281,6 +281,6 @@ function dgsMediaSetCurrentPosition(media,position) --Failed to Set current posi
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaSetCurrentPosition",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
 		local str = JS.setTime
 		local str = str:gsub("REP1",position)
-		return executeBrowserJS(media,str)
+		return executeBrowserJavascript(media,str)
 	end
 end

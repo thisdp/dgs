@@ -716,6 +716,8 @@ class {
 		getRowCount = gObjFnc("dgsGridListGetRowCount"),
 		setItemText = gObjFnc("dgsGridListSetItemText",true),
 		getItemText = gObjFnc("dgsGridListGetItemText"),
+		setItemTextOffset = gObjFnc("dgsGridListSetItemTextOffset",true),
+		getItemTextOffset = gObjFnc("dgsGridListGetItemTextOffset"),
 		getItemAlignment = gObjFnc("dgsGridListGetItemAlignment"),
 		setItemAlignment = gObjFnc("dgsGridListSetItemAlignment",true),
 		getSelectedItem = gObjFnc("dgsGridListGetSelectedItem"),

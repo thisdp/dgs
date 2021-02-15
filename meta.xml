@@ -532,7 +532,7 @@
 	<export function="dgsGridListAutoSizeColumn" type="client" />
 	<export function="dgsGridListGetColumnCount" type="client" />
 	<export function="dgsGridListRemoveColumn" type="client" />
-	<export function="dgsGridListGetColumnAllWidth" type="clb ient" />
+	<export function="dgsGridListGetColumnAllWidth" type="client" />
 	<export function="dgsGridListGetColumnWidth" type="client" />
 	<export function="dgsGridListSetColumnWidth" type="client" />
 	<export function="dgsGridListGetColumnHeight" type="client" />
@@ -568,6 +568,8 @@
 	<export function="dgsGridListSetRowBackGroundImage" type="client" />
 	<export function="dgsGridListSetItemText" type="client" />
 	<export function="dgsGridListGetItemText" type="client" />
+	<export function="dgsGridListSetItemTextOffset" type="client" />
+	<export function="dgsGridListGetItemTextOffset" type="client" />
 	<export function="dgsGridListSetItemAlignment" type="client" />
 	<export function="dgsGridListGetItemAlignment" type="client" />
 	<export function="dgsGridListSetItemColor" type="client" />
