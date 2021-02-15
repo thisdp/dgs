@@ -17,7 +17,27 @@ local tonumber = tonumber
 local assert = assert
 local type = type
 
-function dgsCreateWindow(x,y,w,h,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton)
+function dgsCreateWindow(...)
+	local x,y,w,h,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		text = argTable.txt or argTable.text or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		textColor = argTable.textColor or argTable[7]
+		titleHeight = argTable.titleHeight or argTable[8]
+		titleImage = argTable.titleImage or argTable[9]
+		titleColor = argTable.titleColor or argTable[10]
+		image = argTable.img or argTable.image or argTable[11]
+		color = argTable.color or argTable[12]
+		borderSize = argTable.borderSize or argTable[13]
+		noCloseButton = argTable.noCloseButton or argTable[14]
+	else
+		x,y,w,h,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateWindow",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateWindow",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateWindow",3,"number")) end

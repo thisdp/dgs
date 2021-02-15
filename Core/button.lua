@@ -22,7 +22,29 @@ local assert = assert
 local tonumber = tonumber
 local type = type
 
-function dgsCreateButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,norimg,selimg,cliimg,norcolor,hovcolor,clicolor)
+function dgsCreateButton(...)
+	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,norimg,selimg,cliimg,norcolor,hovcolor,clicolor
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		text = argTable.txt or argTable.text or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[7]
+		textColor = argTable.textColor or argTable[8]
+		scaleX = argTable.scaleX or argTable[9]
+		scaleY = argTable.scaleY or argTable[10]
+		norimg = argTable.norImg or argTable.norimg or argTable[11]
+		selimg = argTable.selImg or argTable.selimg or argTable[12]
+		cliimg = argTable.cliImg or argTable.cliimg or argTable[13]
+		norcolor = argTable.norColor or argTable.norcolor or argTable[14]
+		hovcolor = argTable.hovColor or argTable.hovcolor or argTable[15]
+		clicolor = argTable.cliColor or argTable.clicolor or argTable[16]
+	else
+		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,norimg,selimg,cliimg,norcolor,hovcolor,clicolor = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateButton",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateButton",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateButton",3,"number")) end
@@ -37,7 +59,7 @@ function dgsCreateButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,no
 	local norimg = norimg or dgsCreateTextureFromStyle(style.image[1])
 	local hovimg = selimg or dgsCreateTextureFromStyle(style.image[2])
 	local cliimg = cliimg or dgsCreateTextureFromStyle(style.image[3])
-	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[button] = {
 		alignment = {"center","center"},
 		clickOffset = {0,0},
@@ -129,7 +151,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
 	local alignment = eleData.alignment
-	
+
 	local iconImage = eleData.iconImage
 	if iconImage then
 		local iconColor = eleData.iconColor
@@ -175,7 +197,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
 		end
 	end
-	
+
 	if #text ~= 0 then
 		local clip = eleData.clip
 		local wordbreak = eleData.wordbreak
@@ -203,6 +225,6 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
 	end
-	
+
 	return rndtgt
 end

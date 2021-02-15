@@ -21,7 +21,21 @@ local assert = assert
 local tonumber = tonumber
 local type = type
 
-function dgsCreateImage(x,y,w,h,img,relative,parent,color)
+function dgsCreateImage(...)
+	local x,y,w,h,img,relative,parent,color
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		img = argTable.image or argTable.img or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[7]
+		color = arg.Table.color or argTable[8]
+	else
+		x,y,w,h,img,relative,parent,color = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateImage",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateImage",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateImage",3,"number")) end

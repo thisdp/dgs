@@ -22,7 +22,30 @@ local mathFloor = math.floor
 local mathAbs = math.abs
 local mathClamp = math.restrict
 
-function dgsCreateScrollBar(x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick)
+function dgsCreateScrollBar(...)
+	local x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		isHorizontal = argTable.horizontal or argTable.isHorizontal or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[7]
+		arrowImage = argTable.arrowImage or argTable[8]
+		troughImage = argTable.troughImage or argTable[9]
+		cursorImage = argTable.cursorImage or argTable[10]
+		arrowColorNormal = argTable.arrowColorNormal or argTable[11]
+		troughColor = argTable.troughColor or argTable[12]
+		cursorColorNormal = argTable.cursorColorNormal or argTable[13]
+		arrowColorHover = argTable.arrowColorHover or argTable[14]
+		cursorColorHover = argTable.cursorColorHover or argTable[15]
+		arrowColorClick = argTable.arrowColorClick or argTable[16]
+		cursorColorClick = argTable.cursorColorClick or argTable[17]
+	else
+		x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateScrollBar",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateScrollBar",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateScrollBar",3,"number")) end

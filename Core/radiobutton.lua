@@ -22,7 +22,35 @@ local type = type
 local tostring = tostring
 local tonumber = tonumber
 
-function dgsCreateRadioButton(x,y,w,h,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t)
+function dgsCreateRadioButton(...)
+	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		text = argTable.txt or argTable.text or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[7]
+		textColor = argTable.textColor or argTable[8]
+		scaleX = argTable.scaleX or argTable[9]
+		scaleY = argTable.scaleY or argTable[10]
+		norimg_f = argTable.norimg_f or argTable[11]
+		hovimg_f = argTable.hovimg_f or argTable[12]
+		cliimg_f = argTable.cliimg_f or argTable[13]
+		norcolor_f = argTable.norcolor_f or argTable[14]
+		hovcolor_f = argTable.hovcolor_f or argTable[15]
+		clicolor_f = argTable.clicolor_f or argTable[16]
+		norimg_t = argTable.norimg_t or argTable[17]
+		hovimg_t = argTable.hovimg_t or argTable[18]
+		cliimg_t = argTable.cliimg_t or argTable[19]
+		norcolor_t = argTable.norcolor_t or argTable[20]
+		hovcolor_t = argTable.hovcolor_t or argTable[21]
+		clicolor_t = argTable.clicolor_t or argTable[22]
+	else
+		x,y,w,h,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateRadioButton",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateRadioButton",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateRadioButton",3,"number")) end

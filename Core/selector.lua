@@ -27,7 +27,25 @@ Selector Data Structure:
 	{text,alignment,color,colorcoded,sizex,sizey,font},
 }
 ]]
-function dgsCreateSelector(x,y,w,h,relative,parent,textColor,scalex,scaley,shadowoffsetx,shadowoffsety,shadowcolor)
+function dgsCreateSelector(...)
+	local x,y,w,h,relative,parent,textColor,scaleX,scaleY,shadowoffsetx,shadowoffsety,shadowcolor
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		relative = argTable.rlt or argTable.relative or argTable[5]
+		parent = argTable.p or argTable.parent or argTable[6]
+		textColor = argTable.textColor or argTable[7]
+		scaleX = argTable.scaleX or argTable[8]
+		scaleY = argTable.scaleY or argTable[9]
+		shadowoffsetx = argTable.shadowOffsetX or argTable[10]
+		shadowoffsety = argTable.shadowOffsetY or argTable[11]
+		shadowcolor = argTable.shadowColor or argTable[12]
+	else
+		x,y,w,h,relative,parent,textColor,scaleX,scaleY,shadowoffsetx,shadowoffsety,shadowcolor = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateSelector",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateSelector",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSelector",3,"number")) end
@@ -36,7 +54,7 @@ function dgsCreateSelector(x,y,w,h,relative,parent,textColor,scalex,scaley,shado
 	dgsSetType(selector,"dgs-dxselector")
 	dgsSetParent(selector,parent,true,true)
 	local style = styleSettings.selector
-	local textSizeX,textSizeY = tonumber(scalex),tonumber(scaley)
+	local textSizeX,textSizeY = tonumber(scaleX),tonumber(scaleY)
 	dgsElementData[selector] = {
 		itemTextColor = tonumber(textColor or style.itemTextColor),
 		itemTextSize = {textSizeX,textSizeY or style.itemTextSize[2]},

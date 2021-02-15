@@ -33,7 +33,22 @@ local mathInRange = math.inRange
 local tableInsert = table.insert
 local tableRemove = table.remove
 
-function dgsCreateTabPanel(x,y,w,h,relative,parent,tabHeight,bgImage,bgColor)
+function dgsCreateTabPanel(...)
+	local x,y,w,h,relative,parent,tabHeight,bgImage,bgColor
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		relative = argTable.rlt or argTable.relative or argTable[5]
+		parent = argTable.p or argTable.parent or argTable[6]
+		tabHeight = argTable.tabHeight or argTable[7]
+		bgImage = argTable.bgImage or argTable[8]
+		bgColor = argTable.bgColor or argTable[9]
+	else
+		x,y,w,h,relative,parent,tabHeight,bgImage,bgColor = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateTabPanel",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateTabPanel",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateTabPanel",3,"number")) end
@@ -81,7 +96,26 @@ function dgsCreateTabPanel(x,y,w,h,relative,parent,tabHeight,bgImage,bgColor)
 	return tabpanel
 end
 
-function dgsCreateTab(text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor)
+function dgsCreateTab(...)
+	local text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		text = argTable.txt or argTable.text or argTable[1]
+		tabpanel = argTable.tabPanel or argTable.tabpanel or argTable[2]
+		textSizex = argTable.textSizex or argTable.textSizeX or argTable[3]
+		textSizey = argTable.textSizey or argTable.textSizeY or argTable[4]
+		textColor = argTable.textColor or argTable[5]
+		bgImage = argTable.bgImage or argTable[6]
+		bgColor = argTable.bgColor or argTable[7]
+		tabnorimg = argTable.tabnorimg or argTable.tabnorimg or argTable[8]
+		tabhovimg = argTable.tabhovimg or argTable[9]
+		tabcliimg = argTable.tabcliimg or argTable[10]
+		tabnorcolor = argTable.tabnorcolor or argTable[11]
+		tabhovcolor = argTable.tabhovcolor or argTable[12]
+		tabclicolor = argTable.tabclicolor or argTable[13]
+	else
+		text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor = ...
+	end
 	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsCreateTab",2,"dgs-dxtabpanel")) end
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
@@ -390,7 +424,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
 							end
 						end]]
-						
+
 						dxDrawText(tabData.text,_tabsize,0,_width,height,tabTextColor[selState],textSizeX,textSizeY,tabData.font or font,"center","center",false,false,false,colorcoded,true)
 						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d

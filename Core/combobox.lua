@@ -42,7 +42,30 @@ index:	-3			-2			-1					0					1
 }
 ]]
 
-function dgsCreateComboBox(x,y,w,h,caption,relative,parent,itemheight,textColor,scalex,scaley,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor)
+function dgsCreateComboBox(...)
+	local x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		caption = argTable.caption or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[7]
+		itemHeight = argTable.itemHeight or argTable[8]
+		textColor = argTable.textColor or argTable[9]
+		scaleX = argTable.scaleX or argTable[10]
+		scaleY = argTable.scaleY or argTable[11]
+		defimg = argTable.defimg or argTable[12]
+		hovimg = argTable.hovimg or argTable[13]
+		cliimg = argTable.cliimg or argTable[14]
+		defcolor = argTable.defcolor or argTable[15]
+		hovcolor = argTable.hovcolor or argTable[16]
+		clicolor = argTable.clicolor or argTable[17]
+	else
+		x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateComboBox",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateComboBox",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateComboBox",3,"number")) end
@@ -63,7 +86,7 @@ function dgsCreateComboBox(x,y,w,h,caption,relative,parent,itemheight,textColor,
 	local idefimg = dgsCreateTextureFromStyle(style.itemImage[1])
 	local ihovimg = dgsCreateTextureFromStyle(style.itemImage[2])
 	local icliimage = dgsCreateTextureFromStyle(style.itemImage[3])
-	local textScaleX,textScaleY = tonumber(scalex),tonumber(scaley)
+	local textScaleX,textScaleY = tonumber(scaleX),tonumber(scaleY)
 	local scbThick = style.scrollBarThick
 	dgsElementData[combobox] = {
 		renderBuffer = {},
@@ -84,7 +107,7 @@ function dgsCreateComboBox(x,y,w,h,caption,relative,parent,itemheight,textColor,
 		select = -1,
 		clip = false,
 		wordbreak = false,
-		itemHeight = itemheight or style.itemHeight,
+		itemHeight = itemHeight or style.itemHeight,
 		viewCount = false,
 		colorcoded = false,
 		listState = -1,

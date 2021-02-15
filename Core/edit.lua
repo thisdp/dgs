@@ -51,7 +51,26 @@ local splitChar = "\r\n"
 local splitChar2 = "\n"
 local editsCount = 1
 ----
-function dgsCreateEdit(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor,selectMode)
+function dgsCreateEdit(...)
+	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor,selectMode
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		text = argTable.txt or argTable.text or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[7]
+		textColor = argTable.textColor or argTable[8]
+		scaleX = argTable.scaleX or argTable[9]
+		scaleY = argTable.scaleY or argTable[10]
+		bgImage = argTable.bgImage or argTable[11]
+		bgColor = argTable.bgColor or argTable[12]
+		selectMode = argTable.selectMode or argTable[13]
+	else
+		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor,selectMode = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateEdit",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateEdit",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateEdit",3,"number")) end

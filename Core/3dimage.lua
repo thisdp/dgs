@@ -17,7 +17,21 @@ local assert = assert
 local type = type
 local tableInsert = table.insert
 
-function dgsCreate3DImage(x,y,z,img,color,sizeX,sizeY,maxDistance,colorcoded)
+function dgsCreate3DImage(...)
+	local x,y,z,img,color,sizeX,sizeY,maxDistance
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		z = argTable.z or argTable[3]
+		img = argTable.image or argTable.img or argTable[4]
+		color = argTable.color or argTable[5]
+		sizeX = argTable.sizeX or argTable[6]
+		sizeY = argTable.sizeY or argTable[7]
+		maxDistance = argTable.maxDistance or argTable[8]
+	else
+		x,y,z,img,color,sizeX,sizeY,maxDistance,colorcoded = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",3,"number")) end

@@ -77,7 +77,25 @@ dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 			...
 		}
 ]]
-function dgsCreateMemo(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgImage,bgColor)
+function dgsCreateMemo(...)
+	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		text = argTable.txt or argTable.text or argTable[5]
+		relative = argTable.rlt or argTable.relative or argTable[6]
+		parent = argTable.p or argTable.parent or argTable[7]
+		textColor = argTable.textColor or argTable[8]
+		scaleX = argTable.scaleX or argTable[9]
+		scaleY = argTable.scaleY or argTable[10]
+		bgImage = argTable.bgImage or argTable[11]
+		bgColor = argTable.bgColor or argTable[12]
+	else
+		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateMemo",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateMemo",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateMemo",3,"number")) end
@@ -87,7 +105,7 @@ function dgsCreateMemo(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 	dgsSetType(memo,"dgs-dxmemo")
 	dgsSetParent(memo,parent,true,true)
 	local style = styleSettings.memo
-	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[memo] = {
 		renderBuffer = {},
 		bgColor = bgColor or style.bgColor,
@@ -158,7 +176,7 @@ function dgsCreateMemo(x,y,w,h,text,relative,parent,textColor,scalex,scaley,bgIm
 	dgsElementData[memo].renderTarget = renderTarget
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
-	
+
 	addEventHandler("onDgsMouseMultiClick",memo,function(button,state,x,y,times)
 		if state == "down" then
 			local pos,line,side = searchMemoMousePosition(source,x,y)

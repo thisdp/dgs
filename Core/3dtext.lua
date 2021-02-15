@@ -17,7 +17,23 @@ local assert = assert
 local type = type
 local tableInsert = table.insert
 
-function dgsCreate3DText(x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded)
+function dgsCreate3DText(...)
+	local x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		z = argTable.z or argTable[3]
+		text = argTable.txt or argTable.text or argTable[4]
+		color = argTable.color or argTable[5]
+		font = argTable.font or argTable[6]
+		sizeX = argTable.sizeX or argTable[7]
+		sizeY = argTable.sizeY or argTable[8]
+		maxDistance = argTable.maxDistance or argTable[9]
+		colorcoded = argTable.colorcoded or argTable[10]
+	else
+		x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DText",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DText",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DText",3,"number")) end

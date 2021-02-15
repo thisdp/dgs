@@ -23,7 +23,26 @@ local type = type
 local mathMin = math.min
 local mathMax = math.max
 
-function dgsCreateSwitchButton(x,y,w,h,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scalex,scaley)
+function dgsCreateSwitchButton(...)
+	local x,y,w,h,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scaleX,scaleY
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		textOn = argTable.textOn or argTable[5]
+		textOff = argTable.textOff or argTable[6]
+		state = argTable.state or argTable[7]
+		relative = argTable.rlt or argTable.relative or argTable[8]
+		parent = argTable.p or argTable.parent or argTable[9]
+		textColorOn = argTable.textColorOn or argTable[10]
+		textColorOff = argTable.textColorOff or argTable[11]
+		scaleX = argTable.scaleX or argTable[12]
+		scaleY = argTable.scaleY or argTable[13]
+	else
+		x,y,w,h,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scaleX,scaleY = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateSwitchButton",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateSwitchButton",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSwitchButton",3,"number")) end
@@ -38,7 +57,7 @@ function dgsCreateSwitchButton(x,y,w,h,textOn,textOff,state,relative,parent,text
 	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(imageOff[1]),dgsCreateTextureFromStyle(imageOff[2]),dgsCreateTextureFromStyle(imageOff[3])
 	local cursorImage = style.cursorImage
 	local norimg_c,hovimg_c,cliimg_c = dgsCreateTextureFromStyle(cursorImage[1]),dgsCreateTextureFromStyle(cursorImage[2]),dgsCreateTextureFromStyle(cursorImage[3])
-	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[switchbutton] = {
 		renderBuffer = {};
 		colorOn = style.colorOn,
@@ -186,7 +205,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		else
 			local offColor = applyColorAlpha(color,1-animProgress)
 			local onColor = applyColorAlpha(color,animProgress)
-			
+
 			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
 			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
 		end
@@ -209,7 +228,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			colorOff = applyColorAlpha(colorOff,parentAlpha)
 		end
-		
+
 		local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,cursorX-x+cursorWidth/2,h,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(x,y,cursorX-x+cursorWidth/2,h,colorOff,isPostGUI)
 		local _empty = imageOn[colorImgBgID] and dxDrawImage(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,colorOn,isPostGUI)
 	end

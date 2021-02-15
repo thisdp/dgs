@@ -8,7 +8,26 @@ function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
 	dxSetShaderValue(shader, "sTexColor", tex )
 end
 
-function dgsCreate3DInterface(x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot)
+function dgsCreate3DInterface(...)
+	local x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		z = argTable.z or argTable[3]
+		w = argTable.w or argTable[4]
+		h = argTable.h or argTable[5]
+		resolX = argTable.resolX or argTable.resX or argTable[6]
+		resolY = argTable.resolY or argTable.resY or argTable[7]
+		color = argTable.color or argTable[8]
+		faceX = argTable.faceX or argTable[9]
+		faceY = argTable.faceY or argTable[10]
+		faceZ = argTable.faceZ or argTable[11]
+		distance = argTable.distance or argTable[12]
+		rot = argTable.rot or argTable.rotation or argTable[13]
+	else
+		x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DInterface",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DInterface",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DInterface",3,"number")) end

@@ -22,7 +22,42 @@ local tostring = tostring
 local tonumber = tonumber
 
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
-function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i)
+function dgsCreateCheckBox(...)
+	local x,y,w,h,text,state,relative,parent,textColor,scaleX,scaleY,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i
+	if select("#",...) == 1 and type(select(1,...)) == "table" then
+		local argTable = ...
+		x = argTable.x or argTable[1]
+		y = argTable.y or argTable[2]
+		w = argTable.w or argTable.width or argTable[3]
+		h = argTable.h or argTable.height or argTable[4]
+		text = argTable.txt or argTable.text or argTable[5]
+		state = argTable.state or argTable[6]
+		relative = argTable.rlt or argTable.relative or argTable[7]
+		parent = argTable.p or argTable.parent or argTable[8]
+		textColor = argTable.textColor or argTable[9]
+		scaleX = argTable.scaleX or argTable[10]
+		scaleY = argTable.scaleY or argTable[11]
+		norimg_f = argTable.norimg_f or argTable[12]
+		hovimg_f = argTable.hovimg_f or argTable[13]
+		cliimg_f = argTable.cliimg_f or argTable[14]
+		norcolor_f = argTable.norcolor_f or argTable[15]
+		hovcolor_f = argTable.hovcolor_f or argTable[16]
+		clicolor_f = argTable.clicolor_f or argTable[17]
+		norimg_t = argTable.norimg_t or argTable[18]
+		hovimg_t = argTable.hovimg_t or argTable[19]
+		cliimg_t = argTable.cliimg_t or argTable[20]
+		norcolor_t = argTable.norcolor_t or argTable[21]
+		hovcolor_t = argTable.hovcolor_t or argTable[22]
+		clicolor_t = argTable.clicolor_t or argTable[23]
+		norimg_i = argTable.norimg_i or argTable[24]
+		hovimg_i = argTable.hovimg_i or argTable[25]
+		cliimg_i = argTable.cliimg_i or argTable[26]
+		norcolor_i = argTable.norcolor_i or argTable[27]
+		hovcolor_i = argTable.hovcolor_i or argTable[28]
+		clicolor_i = argTable.clicolor_i or argTable[29]
+	else
+		x,y,w,h,text,state,relative,parent,textColor,scaleX,scaleY,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i = ...
+	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateCheckBox",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateCheckBox",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCheckBox",3,"number")) end
@@ -59,7 +94,7 @@ function dgsCreateCheckBox(x,y,w,h,text,state,relative,parent,textColor,scalex,s
 	norcolor_i = norcolor_i or colorIndeterminate[1]
 	hovcolor_i = hovcolor_i or colorIndeterminate[2]
 	clicolor_i = clicolor_i or colorIndeterminate[3]
-	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[cb] = {
 		image_i = {norimg_i,hovimg_i,cliimg_i},
 		image_t = {norimg_t,hovimg_t,cliimg_t},
