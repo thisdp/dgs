@@ -23,40 +23,40 @@ local tonumber = tonumber
 
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
 function dgsCreateCheckBox(...)
-	local x,y,w,h,text,state,relative,parent,textColor,scaleX,scaleY,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i
+	local x,y,w,h,text,state,relative,parent,textColor,scaleX,scaleY,nImageF,hImageF,cImageF,nColorF,hColorF,cColorF,nImageT,hImageT,cImageT,nColorT,hColorT,cColorT,nImageN,hImageN,cImageN,nColorN,hColorN,cColorN
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
-		text = argTable.txt or argTable.text or argTable[5]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
+		text = argTable.text or argTable.txt or argTable[5]
 		state = argTable.state or argTable[6]
-		relative = argTable.rlt or argTable.relative or argTable[7]
-		parent = argTable.p or argTable.parent or argTable[8]
+		relative = argTable.relative or argTable.rlt or argTable[7]
+		parent = argTable.parent or argTable.p or argTable[8]
 		textColor = argTable.textColor or argTable[9]
 		scaleX = argTable.scaleX or argTable[10]
 		scaleY = argTable.scaleY or argTable[11]
-		norimg_f = argTable.norimg_f or argTable[12]
-		hovimg_f = argTable.hovimg_f or argTable[13]
-		cliimg_f = argTable.cliimg_f or argTable[14]
-		norcolor_f = argTable.norcolor_f or argTable[15]
-		hovcolor_f = argTable.hovcolor_f or argTable[16]
-		clicolor_f = argTable.clicolor_f or argTable[17]
-		norimg_t = argTable.norimg_t or argTable[18]
-		hovimg_t = argTable.hovimg_t or argTable[19]
-		cliimg_t = argTable.cliimg_t or argTable[20]
-		norcolor_t = argTable.norcolor_t or argTable[21]
-		hovcolor_t = argTable.hovcolor_t or argTable[22]
-		clicolor_t = argTable.clicolor_t or argTable[23]
-		norimg_i = argTable.norimg_i or argTable[24]
-		hovimg_i = argTable.hovimg_i or argTable[25]
-		cliimg_i = argTable.cliimg_i or argTable[26]
-		norcolor_i = argTable.norcolor_i or argTable[27]
-		hovcolor_i = argTable.hovcolor_i or argTable[28]
-		clicolor_i = argTable.clicolor_i or argTable[29]
+		nImageF = argTable.normalUncheckedImage or argTable.nImageF or argTable[12]
+		hImageF = argTable.hoveringUncheckedImage or argTable.hImageF or argTable[13]
+		cImageF = argTable.clickedUnCheckedImage or argTable.cImageF or argTable[14]
+		nColorF = argTable.normalUnCheckedColor or argTable.nColorF or argTable[15]
+		hColorF = argTable.hoveringUnCheckedColor or argTable.hColorF or argTable[16]
+		cColorF = argTable.clickedUnCheckedColor or argTable.cColorF or argTable[17]
+		nImageT = argTable.normalCheckedImage or argTable.nImageT or argTable[18]
+		hImageT = argTable.hoveringCheckedImage or argTable.hImageT or argTable[19]
+		cImageT = argTable.clickedCheckedImage or argTable.cImageT or argTable[20]
+		nColorT = argTable.normalCheckedColor or argTable.nColorT or argTable[21]
+		hColorT = argTable.hoveringCheckedColor or argTable.hColorT or argTable[22]
+		cColorT = argTable.clickedCheckedColor or argTable.cColorT or argTable[23]
+		nImageN = argTable.normalIndeterminateImage or argTable.nImageN or argTable[24]
+		hImageN = argTable.hoveringIndeterminateImage or argTable.hImageN or argTable[25]
+		cImageN = argTable.clickedIndeterminateImage or argTable.cImageN or argTable[26]
+		nColorN = argTable.normalIndeterminateColor or argTable.nColorN or argTable[27]
+		hColorN = argTable.hoveringIndeterminateColor or argTable.hColorN or argTable[28]
+		cColorN = argTable.clickedIndeterminateColor or argTable.cColorN or argTable[29]
 	else
-		x,y,w,h,text,state,relative,parent,textColor,scaleX,scaleY,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t,norimg_i,hovimg_i,cliimg_i,norcolor_i,hovcolor_i,clicolor_i = ...
+		x,y,w,h,text,state,relative,parent,textColor,scaleX,scaleY,nImageF,hImageF,cImageF,nColorF,hColorF,cColorF,nImageT,hImageT,cImageT,nColorT,hColorT,cColorT,nImageN,hImageN,cImageN,nColorN,hColorN,cColorN = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateCheckBox",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateCheckBox",2,"number")) end
@@ -69,39 +69,39 @@ function dgsCreateCheckBox(...)
 	local style = styleSettings.checkbox
 
 	local imageUnchecked = style.image_f
-	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
-	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
-	cliimg_f = cliimg_f or dgsCreateTextureFromStyle(imageUnchecked[3])
+	nImageF = nImageF or dgsCreateTextureFromStyle(imageUnchecked[1])
+	hImageF = hImageF or dgsCreateTextureFromStyle(imageUnchecked[2])
+	cImageF = cImageF or dgsCreateTextureFromStyle(imageUnchecked[3])
 	local colorUnchecked = style.color_f
-	norcolor_f = norcolor_f or colorUnchecked[1]
-	hovcolor_f = hovcolor_f or colorUnchecked[2]
-	clicolor_f = clicolor_f or colorUnchecked[3]
+	nColorF = nColorF or colorUnchecked[1]
+	hColorF = hColorF or colorUnchecked[2]
+	cColorF = cColorF or colorUnchecked[3]
 
 	local imageChecked = style.image_t
-	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
-	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
-	cliimg_t = cliimg_t or dgsCreateTextureFromStyle(imageChecked[3])
+	nImageT = nImageT or dgsCreateTextureFromStyle(imageChecked[1])
+	hImageT = hImageT or dgsCreateTextureFromStyle(imageChecked[2])
+	cImageT = cImageT or dgsCreateTextureFromStyle(imageChecked[3])
 	local colorChecked = style.color_t
-	norcolor_t = norcolor_t or colorChecked[1]
-	hovcolor_t = hovcolor_t or colorChecked[2]
-	clicolor_t = clicolor_t or colorChecked[3]
+	nColorT = nColorT or colorChecked[1]
+	hColorT = hColorT or colorChecked[2]
+	cColorT = cColorT or colorChecked[3]
 
 	local imageIndeterminate = style.image_i
-	norimg_i = norimg_i or dgsCreateTextureFromStyle(imageIndeterminate[1])
-	hovimg_i = hovimg_i or dgsCreateTextureFromStyle(imageIndeterminate[2])
-	cliimg_i = cliimg_i or dgsCreateTextureFromStyle(imageIndeterminate[3])
+	nImageN = nImageN or dgsCreateTextureFromStyle(imageIndeterminate[1])
+	hImageN = hImageN or dgsCreateTextureFromStyle(imageIndeterminate[2])
+	cImageN = cImageN or dgsCreateTextureFromStyle(imageIndeterminate[3])
 	local colorIndeterminate = style.color_i
-	norcolor_i = norcolor_i or colorIndeterminate[1]
-	hovcolor_i = hovcolor_i or colorIndeterminate[2]
-	clicolor_i = clicolor_i or colorIndeterminate[3]
+	nColorN = nColorN or colorIndeterminate[1]
+	hColorN = hColorN or colorIndeterminate[2]
+	cColorN = cColorN or colorIndeterminate[3]
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[cb] = {
-		image_i = {norimg_i,hovimg_i,cliimg_i},
-		image_t = {norimg_t,hovimg_t,cliimg_t},
-		image_f = {norimg_f,hovimg_f,cliimg_f},
-		color_i = {norcolor_i,hovcolor_i,clicolor_i},
-		color_t = {norcolor_t,hovcolor_t,clicolor_t},
-		color_f = {norcolor_f,hovcolor_f,clicolor_f},
+		image_i = {nImageN,hImageN,cImageN},
+		image_t = {nImageT,hImageT,cImageT},
+		image_f = {nImageF,hImageF,cImageF},
+		color_i = {nColorN,hColorN,cColorN},
+		color_t = {nColorT,hColorT,cColorT},
+		color_f = {nColorF,hColorF,cColorF},
 		cbParent = dgsIsType(parent) and parent or resourceRoot,
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},

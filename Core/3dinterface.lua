@@ -9,32 +9,32 @@ function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
 end
 
 function dgsCreate3DInterface(...)
-	local x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot
+	local x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,rot
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
 		z = argTable.z or argTable[3]
-		w = argTable.w or argTable[4]
-		h = argTable.h or argTable[5]
-		resolX = argTable.resolX or argTable.resX or argTable[6]
-		resolY = argTable.resolY or argTable.resY or argTable[7]
+		w = argTable.width or argTable.w or argTable[4]
+		h = argTable.height or argTable.h or argTable[5]
+		resX = argTable.resolutionX or argTable.resX or argTable[6]
+		resY = argTable.resolutionY or argTable.resY or argTable[7]
 		color = argTable.color or argTable[8]
 		faceX = argTable.faceX or argTable[9]
 		faceY = argTable.faceY or argTable[10]
 		faceZ = argTable.faceZ or argTable[11]
 		distance = argTable.distance or argTable[12]
-		rot = argTable.rot or argTable.rotation or argTable[13]
+		rot = argTable.rotation or argTable.rot or argTable[13]
 	else
-		x,y,z,w,h,resolX,resolY,color,faceX,faceY,faceZ,distance,rot = ...
+		x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,rot = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DInterface",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DInterface",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DInterface",3,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreate3DInterface",4,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreate3DInterface",5,"number")) end
-	if not(type(resolX) == "number") then error(dgsGenAsrt(resolX,"dgsCreate3DInterface",6,"number")) end
-	if not(type(resolY) == "number") then error(dgsGenAsrt(resolY,"dgsCreate3DInterface",7,"number")) end
+	if not(type(resX) == "number") then error(dgsGenAsrt(resX,"dgsCreate3DInterface",6,"number")) end
+	if not(type(resY) == "number") then error(dgsGenAsrt(resY,"dgsCreate3DInterface",7,"number")) end
 	local interface = createElement("dgs-dx3dinterface")
 	tableInsert(dx3DInterfaceTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
@@ -45,7 +45,7 @@ function dgsCreate3DInterface(...)
 		size = {w,h},
 		faceRelativeTo = "self",
 		color = color or 0xFFFFFFFF,
-		resolution = {resolX,resolY},
+		resolution = {resX,resY},
 		maxDistance = distance or 200,
 		fadeDistance = distance or 180,
 		filterShader = false,
@@ -56,7 +56,7 @@ function dgsCreate3DInterface(...)
 		rotation = rot or 0,
 		--filterShader = dxCreateShader(defaultFilter)
 	}
-	local renderTarget,err = dxCreateRenderTarget(resolX,resolY,true,interface)
+	local renderTarget,err = dxCreateRenderTarget(resX,resY,true,interface)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,interface,-1)
 	else

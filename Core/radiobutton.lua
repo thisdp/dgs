@@ -23,33 +23,34 @@ local tostring = tostring
 local tonumber = tonumber
 
 function dgsCreateRadioButton(...)
-	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t
+	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,nImageF,hImageF,cImageF,nColorF,hColorF,cColorF,nImageT,hImageT,cImageT,nColorT,hColorT,cColorT
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
-		text = argTable.txt or argTable.text or argTable[5]
-		relative = argTable.rlt or argTable.relative or argTable[6]
-		parent = argTable.p or argTable.parent or argTable[7]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
+		text = argTable.text or argTable.txt or argTable[5]
+		relative = argTable.relative or argTable.rlt or argTable[6]
+		parent = argTable.parent or argTable.p or argTable[7]
 		textColor = argTable.textColor or argTable[8]
 		scaleX = argTable.scaleX or argTable[9]
 		scaleY = argTable.scaleY or argTable[10]
-		norimg_f = argTable.norimg_f or argTable[11]
-		hovimg_f = argTable.hovimg_f or argTable[12]
-		cliimg_f = argTable.cliimg_f or argTable[13]
-		norcolor_f = argTable.norcolor_f or argTable[14]
-		hovcolor_f = argTable.hovcolor_f or argTable[15]
-		clicolor_f = argTable.clicolor_f or argTable[16]
-		norimg_t = argTable.norimg_t or argTable[17]
-		hovimg_t = argTable.hovimg_t or argTable[18]
-		cliimg_t = argTable.cliimg_t or argTable[19]
-		norcolor_t = argTable.norcolor_t or argTable[20]
-		hovcolor_t = argTable.hovcolor_t or argTable[21]
-		clicolor_t = argTable.clicolor_t or argTable[22]
+		nImageF = argTable.normalUncheckedImage or argTable.nImageF or argTable[11]
+		hImageF = argTable.hoveringUncheckedImage or argTable.hImageF or argTable[12]
+		cImageF = argTable.clickedUnCheckedImage or argTable.cImageF or argTable[13]
+		nColorF = argTable.normalUnCheckedColor or argTable.nColorF or argTable[14]
+		hColorF = argTable.hoveringUnCheckedColor or argTable.hColorF or argTable[15]
+		cColorF = argTable.clickedUnCheckedColor or argTable.cColorF or argTable[16]
+		nImageT = argTable.normalCheckedImage or argTable.nImageT or argTable[17]
+		hImageT = argTable.hoveringCheckedImage or argTable.hImageT or argTable[18]
+		cImageT = argTable.clickedCheckedImage or argTable.cImageT or argTable[19]
+		nColorT = argTable.normalCheckedColor or argTable.nColorT or argTable[20]
+		hColorT = argTable.hoveringCheckedColor or argTable.hColorT or argTable[21]
+		cColorT = argTable.clickedCheckedColor or argTable.cColorT or argTable[22]
+	
 	else
-		x,y,w,h,text,relative,parent,textColor,scalex,scaley,norimg_f,hovimg_f,cliimg_f,norcolor_f,hovcolor_f,clicolor_f,norimg_t,hovimg_t,cliimg_t,norcolor_t,hovcolor_t,clicolor_t = ...
+		x,y,w,h,text,relative,parent,textColor,scalex,scaley,nImageF,hImageF,cImageF,nColorF,hColorF,cColorF,nImageT,hImageT,cImageT,nColorT,hColorT,cColorT = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateRadioButton",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateRadioButton",2,"number")) end
@@ -60,28 +61,28 @@ function dgsCreateRadioButton(...)
 	dgsSetParent(rb,parent,true,true)
 	local style = styleSettings.radiobutton
 	local imageUnchecked = style.image_f
-	norimg_f = norimg_f or dgsCreateTextureFromStyle(imageUnchecked[1])
-	hovimg_f = hovimg_f or dgsCreateTextureFromStyle(imageUnchecked[2])
-	cliimg_f = cliimg_f or dgsCreateTextureFromStyle(imageUnchecked[3])
+	nImageF = nImageF or dgsCreateTextureFromStyle(imageUnchecked[1])
+	hImageF = hImageF or dgsCreateTextureFromStyle(imageUnchecked[2])
+	cImageF = cImageF or dgsCreateTextureFromStyle(imageUnchecked[3])
 	local colorUnchecked = style.color_f
-	norcolor_f = norcolor_f or colorUnchecked[1]
-	hovcolor_f = hovcolor_f or colorUnchecked[2]
-	clicolor_f = clicolor_f or colorUnchecked[3]
+	nColorF = nColorF or colorUnchecked[1]
+	hColorF = hColorF or colorUnchecked[2]
+	cColorF = cColorF or colorUnchecked[3]
 	local imageChecked = style.image_t
-	norimg_t = norimg_t or dgsCreateTextureFromStyle(imageChecked[1])
-	hovimg_t = hovimg_t or dgsCreateTextureFromStyle(imageChecked[2])
-	cliimg_t = cliimg_t or dgsCreateTextureFromStyle(imageChecked[3])
+	nImageT = nImageT or dgsCreateTextureFromStyle(imageChecked[1])
+	hImageT = hImageT or dgsCreateTextureFromStyle(imageChecked[2])
+	cImageT = cImageT or dgsCreateTextureFromStyle(imageChecked[3])
 	local colorChecked = style.color_t
-	norcolor_t = norcolor_t or colorChecked[1]
-	hovcolor_t = hovcolor_t or colorChecked[2]
-	clicolor_t = clicolor_t or colorChecked[3]
+	nColorT = nColorT or colorChecked[1]
+	hColorT = hColorT or colorChecked[2]
+	cColorT = cColorT or colorChecked[3]
 	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
 	dgsElementData[rb] = {
 		renderBuffer = {},
-		image_f = {norimg_f,hovimg_f,cliimg_f},
-		color_f = {norcolor_f,hovcolor_f,clicolor_f},
-		image_t = {norimg_t,hovimg_t,cliimg_t},
-		color_t = {norcolor_t,hovcolor_t,clicolor_t},
+		image_f = {nImageF,hImageF,cImageF},
+		color_f = {nColorF,hColorF,cColorF},
+		image_t = {nImageT,hImageT,cImageT},
+		color_t = {nColorT,hColorT,cColorT},
 		rbParent = dgsIsType(parent) and parent or resourceRoot,
 		text = tostring(text),
 		textColor = textColor or style.textColor,

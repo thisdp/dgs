@@ -23,7 +23,7 @@ local mathAbs = math.abs
 local mathClamp = math.restrict
 
 function dgsCreateScrollBar(...)
-	local x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick
+	local x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,nColorA,hColorA,cColorA,troughColor,nColorC,hColorC,cColorC
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
@@ -36,15 +36,15 @@ function dgsCreateScrollBar(...)
 		arrowImage = argTable.arrowImage or argTable[8]
 		troughImage = argTable.troughImage or argTable[9]
 		cursorImage = argTable.cursorImage or argTable[10]
-		arrowColorNormal = argTable.arrowColorNormal or argTable[11]
-		troughColor = argTable.troughColor or argTable[12]
-		cursorColorNormal = argTable.cursorColorNormal or argTable[13]
-		arrowColorHover = argTable.arrowColorHover or argTable[14]
-		cursorColorHover = argTable.cursorColorHover or argTable[15]
-		arrowColorClick = argTable.arrowColorClick or argTable[16]
-		cursorColorClick = argTable.cursorColorClick or argTable[17]
+		nColorA = argTable.normalArrowColor or argTable.nColorA or argTable[11]
+		hColorA = argTable.hoveringArrowColor or argTable[12]
+		cColorA = argTable.clickedArrowColor or argTable[13]
+		troughColor = argTable.troughColor or argTable[14]
+		nColorC = argTable.normalCursorColor or argTable[15]
+		hColorC = argTable.hoveringCursorColor or argTable[16]
+		cColorC = argTable.clickedCursorColor or argTable[17]
 	else
-		x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,arrowColorNormal,troughColor,cursorColorNormal,arrowColorHover,cursorColorHover,arrowColorClick,cursorColorClick = ...
+		x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,nColorA,hColorA,cColorA,troughColor,nColorC,hColorC,cColorC = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateScrollBar",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateScrollBar",2,"number")) end
@@ -71,11 +71,11 @@ function dgsCreateScrollBar(...)
 	dgsElementData[scrollbar] = {
 		renderBuffer = {},
 		arrowBgColor = style.arrowBgColor or false,
-		arrowColor = {arrowColorNormal or style.arrowColor[1],arrowColorHover or style.arrowColor[2],arrowColorClick or style.arrowColor[3]},
+		arrowColor = {nColorA or style.arrowColor[1],hColorA or style.arrowColor[2],cColorA or style.arrowColor[3]},
 		arrowImage = arrowImage,
 		arrowWidth = style.arrowWidth or style.cursorWidth or {1,true},
 		currentGrade = 0,
-		cursorColor = {cursorColorNormal or style.cursorColor[1],cursorColorHover or style.cursorColor[2],cursorColorClick or style.cursorColor[3]},
+		cursorColor = {nColorC or style.cursorColor[1],hColorC or style.cursorColor[2],cColorC or style.cursorColor[3]},
 		cursorImage = cursorImage,
 		cursorWidth = style.cursorWidth or {1,true},
 		grades = false,

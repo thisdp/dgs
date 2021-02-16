@@ -43,28 +43,28 @@ index:	-3			-2			-1					0					1
 ]]
 
 function dgsCreateComboBox(...)
-	local x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor
+	local x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,nImage,hImage,cImage,nColor,hColor,cColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
 		caption = argTable.caption or argTable[5]
-		relative = argTable.rlt or argTable.relative or argTable[6]
-		parent = argTable.p or argTable.parent or argTable[7]
+		relative = argTable.relative or argTable.rlt or argTable[6]
+		parent = argTable.parent or argTable.p or argTable[7]
 		itemHeight = argTable.itemHeight or argTable[8]
 		textColor = argTable.textColor or argTable[9]
 		scaleX = argTable.scaleX or argTable[10]
 		scaleY = argTable.scaleY or argTable[11]
-		defimg = argTable.defimg or argTable[12]
-		hovimg = argTable.hovimg or argTable[13]
-		cliimg = argTable.cliimg or argTable[14]
-		defcolor = argTable.defcolor or argTable[15]
-		hovcolor = argTable.hovcolor or argTable[16]
-		clicolor = argTable.clicolor or argTable[17]
+		nImage = argTable.normalImage or argTable[12]
+		hImage = argTable.hoveringImage or argTable[13]
+		cImage = argTable.clickedImage or argTable[14]
+		nColor = argTable.normalColor or argTable[15]
+		hColor = argTable.hoveringColor or argTable[16]
+		cColor = argTable.clickedColor or argTable[17]
 	else
-		x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,defimg,hovimg,cliimg,defcolor,hovcolor,clicolor = ...
+		x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,nImage,hImage,cImage,nColor,hColor,cColor = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateComboBox",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateComboBox",2,"number")) end
@@ -74,26 +74,26 @@ function dgsCreateComboBox(...)
 	dgsSetType(combobox,"dgs-dxcombobox")
 	dgsSetParent(combobox,parent,true,true)
 	local style = styleSettings.combobox
-	local defcolor = defcolor or style.color[1]
-	local hovcolor = hovcolor or style.color[2]
-	local clicolor = clicolor or style.color[3]
-	local defimg = defimg or dgsCreateTextureFromStyle(style.image[1])
-	local hovimg = hovimg or dgsCreateTextureFromStyle(style.image[2])
-	local cliimg = cliimg or dgsCreateTextureFromStyle(style.image[3])
-	local idefcolor = style.itemColor[1]
-	local ihovcolor = style.itemColor[2]
-	local iclicolor = style.itemColor[3]
-	local idefimg = dgsCreateTextureFromStyle(style.itemImage[1])
-	local ihovimg = dgsCreateTextureFromStyle(style.itemImage[2])
+	local nColor = nColor or style.color[1]
+	local hColor = hColor or style.color[2]
+	local cColor = cColor or style.color[3]
+	local nImage = nImage or dgsCreateTextureFromStyle(style.image[1])
+	local hImage = hImage or dgsCreateTextureFromStyle(style.image[2])
+	local cImage = cImage or dgsCreateTextureFromStyle(style.image[3])
+	local inColor = style.itemColor[1]
+	local ihColor = style.itemColor[2]
+	local icColor = style.itemColor[3]
+	local inImage = dgsCreateTextureFromStyle(style.itemImage[1])
+	local ihImage = dgsCreateTextureFromStyle(style.itemImage[2])
 	local icliimage = dgsCreateTextureFromStyle(style.itemImage[3])
 	local textScaleX,textScaleY = tonumber(scaleX),tonumber(scaleY)
 	local scbThick = style.scrollBarThick
 	dgsElementData[combobox] = {
 		renderBuffer = {},
-		color = {defcolor,hovcolor,clicolor},
-		image = {defimg,hovimg,cliimg},
-		itemColor = {idefcolor,ihovcolor,iclicolor},
-		itemImage = {idefimg,ihovimg,icliimage},
+		color = {nColor,hColor,cColor},
+		image = {nImage,hImage,cImage},
+		itemColor = {inColor,ihColor,icColor},
+		itemImage = {inImage,ihImage,icliimage},
 		textColor = textColor or style.textColor,
 		itemTextColor = textColor or style.itemTextColor,
 		textSize = {textScaleX or style.textSize[1],textScaleY or style.textSize[2]},

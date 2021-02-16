@@ -21,42 +21,42 @@ local assert = assert
 local type = type
 
 function dgsCreateBrowser(...)
-	local x,y,w,h,relative,parent,isLocal,transparent,browserw,browserh,color
+	local x,y,w,h,relative,parent,isLocal,isTransparent,resX,resY,color
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
-		relative = argTable.rlt or argTable.relative or argTable[5]
-		parent = argTable.p or argTable.parent or argTable[6]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
+		relative = argTable.relative or argTable.relative or argTable[5]
+		parent = argTable.parent or argTable.p or argTable[6]
 		isLocal = argTable.isLocal or argTable[7]
-		transparent = argTable.transparent or argTable[8]
-		browserw = argTable.browserW or argTable[9]
-		browserh = argTable.browserH or argTable[10]
+		isTransparent = argTable.isTransparent or argTable[8]
+		resX = argTable.resolutionX or argTable.resX or argTable[9]
+		resY = argTable.resolutionY or argTable.resY or argTable[10]
 		color = argTable.color or argTable[11]
 	else
-		x,y,w,h,relative,parent,isLocal,transparent,browserw,browserh,color = ...
+		x,y,w,h,relative,parent,isLocal,isTransparent,resX,resY,color = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateBrowser",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateBrowser",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBrowser",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBrowser",4,"number")) end
-	local browser = createBrowser(1,1,isLocal and true or false,transparent and true or false)
+	local browser = createBrowser(1,1,isLocal and true or false,isTransparent and true or false)
 	if not isElement(browser) then error(dgsGenAsrt(browser,"dgsCreateBrowser",_,_,_,_,"Failed to create browser!")) end
 	dgsSetType(browser,"dgs-dxbrowser")
 	dgsSetParent(browser,parent,true,true)
 	dgsElementData[browser] = {
 		renderBuffer = {},
 		color = color or white,
-		transparent = transparent and true or false,
+		isTransparent = isTransparent and true or false,
 		isLocal = isLocal and true or false,
 		requestCommand = {},
 	}
 	calculateGuiPositionSize(browser,x,y,relative,w,h,relative,true)
 	local size = dgsElementData[browser].absSize
-	resizeBrowser(browser,browserw or size[1],browserh or size[2])
-	dgsElementData[browser].browserSize = {browserw or size[1],browserh or size[2]}
+	resizeBrowser(browser,resX or size[1],resY or size[2])
+	dgsElementData[browser].browserSize = {resX or size[1],resY or size[2]}
 	triggerEvent("onDgsCreate",browser,sourceResource)
 	addEventHandler("onDgsMouseMove",browser,function(x,y)
 		local size = dgsElementData[source].absSize

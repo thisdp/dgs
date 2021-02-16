@@ -18,7 +18,7 @@ local type = type
 local tableInsert = table.insert
 
 function dgsCreate3DImage(...)
-	local x,y,z,img,color,sizeX,sizeY,maxDistance
+	local x,y,z,img,color,width,height,maxDistance
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
@@ -26,11 +26,12 @@ function dgsCreate3DImage(...)
 		z = argTable.z or argTable[3]
 		img = argTable.image or argTable.img or argTable[4]
 		color = argTable.color or argTable[5]
-		sizeX = argTable.sizeX or argTable[6]
-		sizeY = argTable.sizeY or argTable[7]
+		width = argTable.width or argTable[6]
+		height = argTable.height or argTable[7]
 		maxDistance = argTable.maxDistance or argTable[8]
+		colorcoded = argTable.colorcoded or argTable[9]
 	else
-		x,y,z,img,color,sizeX,sizeY,maxDistance,colorcoded = ...
+		x,y,z,img,color,width,height,maxDistance,colorcoded = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
@@ -41,7 +42,7 @@ function dgsCreate3DImage(...)
 	dgsElementData[image3d] = {
 		renderBuffer = {},
 		position = {x,y,z},
-		imageSize = {sizeX or 1,sizeY or 1},
+		imageSize = {width or 1,height or 1},
 		fixImageSize = false,
 		color = color or 0xFFFFFFFF,
 		colorcoded = colorcoded or false,

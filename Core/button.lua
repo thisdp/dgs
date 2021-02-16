@@ -23,27 +23,27 @@ local tonumber = tonumber
 local type = type
 
 function dgsCreateButton(...)
-	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,norimg,selimg,cliimg,norcolor,hovcolor,clicolor
+	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,normalImage,hoveringImage,clickedImage,normalColor,hoveringColor,clickedColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
-		text = argTable.txt or argTable.text or argTable[5]
-		relative = argTable.rlt or argTable.relative or argTable[6]
-		parent = argTable.p or argTable.parent or argTable[7]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
+		text = argTable.text or argTable.txt or argTable[5]
+		relative = argTable.relative or argTable.rlt or argTable[6]
+		parent = argTable.parent or argTable.p or argTable[7]
 		textColor = argTable.textColor or argTable[8]
 		scaleX = argTable.scaleX or argTable[9]
 		scaleY = argTable.scaleY or argTable[10]
-		norimg = argTable.norImg or argTable.norimg or argTable[11]
-		selimg = argTable.selImg or argTable.selimg or argTable[12]
-		cliimg = argTable.cliImg or argTable.cliimg or argTable[13]
-		norcolor = argTable.norColor or argTable.norcolor or argTable[14]
-		hovcolor = argTable.hovColor or argTable.hovcolor or argTable[15]
-		clicolor = argTable.cliColor or argTable.clicolor or argTable[16]
+		normalImage = argTable.normalImage or argTable[11]
+		hoveringImage = argTable.hoveringImage or argTable[12]
+		clickedImage = argTable.clickedImage or argTable[13]
+		normalColor = argTable.normalColor or argTable[14]
+		hoveringColor = argTable.hoveringColor or argTable[15]
+		clickedColor = argTable.clickedColor or argTable[16]
 	else
-		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,norimg,selimg,cliimg,norcolor,hovcolor,clicolor = ...
+		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,normalImage,hoveringImage,clickedImage,normalColor,hoveringColor,clickedColor = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateButton",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateButton",2,"number")) end
@@ -53,19 +53,19 @@ function dgsCreateButton(...)
 	dgsSetType(button,"dgs-dxbutton")
 	dgsSetParent(button,parent,true,true)
 	local style = styleSettings.button
-	local norcolor = norcolor or style.color[1]
-	local hovcolor = hovcolor or style.color[2]
-	local clicolor = clicolor or style.color[3]
-	local norimg = norimg or dgsCreateTextureFromStyle(style.image[1])
-	local hovimg = selimg or dgsCreateTextureFromStyle(style.image[2])
-	local cliimg = cliimg or dgsCreateTextureFromStyle(style.image[3])
+	local normalColor = normalColor or style.color[1]
+	local hoveringColor = hoveringColor or style.color[2]
+	local clickedColor = clickedColor or style.color[3]
+	local normalImage = normalImage or dgsCreateTextureFromStyle(style.image[1])
+	local hoveringImage = hoveringImage or dgsCreateTextureFromStyle(style.image[2])
+	local clickedImage = clickedImage or dgsCreateTextureFromStyle(style.image[3])
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[button] = {
 		alignment = {"center","center"},
 		clickOffset = {0,0},
 		clickType = 1;	--1:LMB;2:Wheel;3:RM,
 		clip = false,
-		color = {norcolor, hovcolor, clicolor},
+		color = {normalColor, hoveringColor, clickedColor},
 		colorcoded = false,
 		font = style.font or systemFont,
 		iconColor = 0xFFFFFFFF,
@@ -73,7 +73,7 @@ function dgsCreateButton(...)
 		iconImage = nil,
 		iconOffset = 5,
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
-		image = {norimg, hovimg, cliimg},
+		image = {normalImage, hoveringImage, clickedImage},
 		shadow = {},
 		textColor = tonumber(textColor) or style.textColor,
 		textOffset = {0,0,false},

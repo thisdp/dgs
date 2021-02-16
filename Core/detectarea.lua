@@ -15,17 +15,17 @@ local type = type
 
 detectAreaBuiltIn = {}
 function dgsCreateDetectArea(...)
-	local x,y,sx,sy,relative,parent
+	local x,y,w,h,relative,parent
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		sx = argTable.w or argTable.width or argTable[3]
-		sy = argTable.h or argTable.height or argTable[4]
-		relative = argTable.rlt or argTable.relative or argTable[5]
-		parent = argTable.p or argTable.parent or argTable[6]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
+		relative = argTable.relative or argTable.rlt or argTable[5]
+		parent = argTable.parent or argTable.p or argTable[6]
 	else
-		x,y,sx,sy,relative,parent = ...
+		x,y,w,h,relative,parent = ...
 	end
 	if not x then
 		local detectarea = createElement("dgs-dxdetectarea")

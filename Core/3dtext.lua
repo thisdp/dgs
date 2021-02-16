@@ -27,12 +27,12 @@ function dgsCreate3DText(...)
 		text = argTable.txt or argTable.text or argTable[4]
 		color = argTable.color or argTable[5]
 		font = argTable.font or argTable[6]
-		sizeX = argTable.sizeX or argTable[7]
-		sizeY = argTable.sizeY or argTable[8]
+		scaleX = argTable.scaleX or argTable[7]
+		scaleX = argTable.scaleY or argTable[8]
 		maxDistance = argTable.maxDistance or argTable[9]
 		colorcoded = argTable.colorcoded or argTable[10]
 	else
-		x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded = ...
+		x,y,z,text,color,font,scaleX,scaleY,maxDistance,colorcoded = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DText",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DText",2,"number")) end
@@ -43,7 +43,7 @@ function dgsCreate3DText(...)
 	dgsElementData[text3d] = {
 		renderBuffer = {},
 		position = {x,y,z},
-		textSize = {sizeX or 1,sizeY or 1},
+		textSize = {scaleX or 1,scaleY or 1},
 		fixTextSize = false,
 		font = font or styleSettings.text3D.font or systemFont,
 		color = color or 0xFFFFFFFF,

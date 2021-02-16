@@ -46,29 +46,29 @@ Selection Mode
 3-> Cell Selection
 ]]
 function dgsCreateGridList(...)
-	local x,y,w,h,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,rownorc,rowhovc,rowselc,bgImage,columnImage,rownori,rowhovi,rowseli
+	local x,y,w,h,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,cColorR,hColorR,sColorR,bgImage,columnImage,nImageR,hImageR,sImageR
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
-		relative = argTable.rlt or argTable.relative or argTable[5]
-		parent = argTable.p or argTable.parent or argTable[6]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
+		relative = argTable.relative or argTable.rlt or argTable[5]
+		parent = argTable.parent or argTable.p or argTable[6]
 		columnHeight = argTable.columnHeight or argTable[7]
 		bgColor = argTable.bgColo or argTable[8]
 		columnTextColor = argTable.columnTextColor or argTable[9]
 		columnColor = argTable.columnColor or argTable[10]
-		rownorc = argTable.rowNormalColor or argTable.rownorc or argTable[11]
-		rowhovc = argTable.rowHoverColor or argTable.rowhovc or argTable[12]
-		rowselc = argTable.rowSelectColor or argTable.rowselc or argTable[13]
+		cColorR = argTable.normalRowColor or argTable.cColorR or argTable[11]
+		hColorR = argTable.hoveringRowColor or argTable.hColorR or argTable[12]
+		sColorR = argTable.selectedRowColor or argTable.sColorR or argTable[13]
 		bgImage = argTable.bgImage or argTable[14]
 		columnImage = argTable.columnImage or argTable[15]
-		rownori = argTable.rowNormalImage or argTable.rownori or argTable[16]
-		rowhovi = argTable.rowHoverImage or argTable.rowhovi or argTable[17]
-		rowseli = argTable.rowSelectImage or argTable.rowseli or argTable[18]
+		nImageR = argTable.normalRowImage or argTable.nImageR or argTable[16]
+		hImageR = argTable.hoveringRowImage or argTable.hImageR or argTable[17]
+		sImageR = argTable.selectedRowImage or argTable.sImageR or argTable[18]
 	else
-		x,y,w,h,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,rownorc,rowhovc,rowselc,bgImage,columnImage,rownori,rowhovi,rowseli = ...
+		x,y,w,h,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,cColorR,hColorR,sColorR,bgImage,columnImage,nImageR,hImageR,sImageR = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateGridList",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
@@ -78,12 +78,12 @@ function dgsCreateGridList(...)
 	local relative = relative or false
 	local scbThick = style.scrollBarThick
 	local columnHeight = tonumber(columnHeight) or style.columnHeight
-	local rownorc = rownorc or style.rowColor[1]
-	local rowhovc = rowhovc or style.rowColor[2]
-	local rowselc = rowselc or style.rowColor[3]
-	local rownori = rownori or dgsCreateTextureFromStyle(style.rowImage[1])
-	local rowhovi = rowhovi or dgsCreateTextureFromStyle(style.rowImage[2])
-	local rowseli = rowseli or dgsCreateTextureFromStyle(style.rowImage[3])
+	local cColorR = cColorR or style.rowColor[1]
+	local hColorR = hColorR or style.rowColor[2]
+	local sColorR = sColorR or style.rowColor[3]
+	local nImageR = nImageR or dgsCreateTextureFromStyle(style.rowImage[1])
+	local hImageR = hImageR or dgsCreateTextureFromStyle(style.rowImage[2])
+	local sImageR = sImageR or dgsCreateTextureFromStyle(style.rowImage[3])
 	local gridlist = createElement("dgs-dxgridlist")
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsSetParent(gridlist,parent,true,true)
@@ -121,10 +121,10 @@ function dgsCreateGridList(...)
 		multiSelection = false,
 		nextRenderSort = false,
 		preSelect = {},
-		rowColor = {rownorc,rowhovc,rowselc},	--Normal/Hover/Selected
+		rowColor = {cColorR,hColorR,sColorR},	--Normal/Hover/Selected
 		rowData = {},
 		rowHeight = style.rowHeight,
-		rowImage = {rownori,rowhovi,rowseli},	--Normal/Hover/Selected
+		rowImage = {nImageR,hImageR,sImageR},	--Normal/Hover/Selected
 		rowMoveOffset = 0,
 		rowMoveOffsetTemp = 0,
 		rowTextSize = style.rowTextSize,

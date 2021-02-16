@@ -39,10 +39,10 @@ function dgsCreateTabPanel(...)
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
-		relative = argTable.rlt or argTable.relative or argTable[5]
-		parent = argTable.p or argTable.parent or argTable[6]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
+		relative = argTable.relative or argTable.rlt or argTable[5]
+		parent = argTable.parent or argTable.p or argTable[6]
 		tabHeight = argTable.tabHeight or argTable[7]
 		bgImage = argTable.bgImage or argTable[8]
 		bgColor = argTable.bgColor or argTable[9]
@@ -97,24 +97,24 @@ function dgsCreateTabPanel(...)
 end
 
 function dgsCreateTab(...)
-	local text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor
+	local text,tabpanel,scaleX,scaleY,textColor,bgImage,bgColor,nImage,hImage,cImage,nColor,hColor,cColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
-		text = argTable.txt or argTable.text or argTable[1]
-		tabpanel = argTable.tabPanel or argTable.tabpanel or argTable[2]
-		textSizex = argTable.textSizex or argTable.textSizeX or argTable[3]
-		textSizey = argTable.textSizey or argTable.textSizeY or argTable[4]
+		text = argTable.text or argTable.txt or argTable[1]
+		tabpanel = argTable.parent or argTable.tabPanel or argTable.tabpanel or argTable[2]
+		scaleX = argTable.scaleX or argTable[3]
+		scaleY = argTable.scaleY or argTable[4]
 		textColor = argTable.textColor or argTable[5]
 		bgImage = argTable.bgImage or argTable[6]
 		bgColor = argTable.bgColor or argTable[7]
-		tabnorimg = argTable.tabnorimg or argTable.tabnorimg or argTable[8]
-		tabhovimg = argTable.tabhovimg or argTable[9]
-		tabcliimg = argTable.tabcliimg or argTable[10]
-		tabnorcolor = argTable.tabnorcolor or argTable[11]
-		tabhovcolor = argTable.tabhovcolor or argTable[12]
-		tabclicolor = argTable.tabclicolor or argTable[13]
+		nImage = argTable.normalImage or argTable.nImage or argTable[8]
+		hImage = argTable.hoveringImage or argTable.hImage or argTable[9]
+		cImage = argTable.clickedImage or argTable.cImage or argTable[10]
+		nColor = argTable.normalColor or argTable.nColor or argTable[11]
+		hColor = argTable.hoveringColor or argTable.hColor or argTable[12]
+		cColor = argTable.clickedColor or argTable.cColor or argTable[13]
 	else
-		text,tabpanel,textSizex,textSizey,textColor,bgImage,bgColor,tabnorimg,tabhovimg,tabcliimg,tabnorcolor,tabhovcolor,tabclicolor = ...
+		text,tabpanel,scaleX,scaleY,textColor,bgImage,bgColor,nImage,hImage,cImage,nColor,hColor,cColor = ...
 	end
 	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsCreateTab",2,"dgs-dxtabpanel")) end
 	local tab = createElement("dgs-dxtab")
@@ -130,18 +130,18 @@ function dgsCreateTab(...)
 	local font = style.font or eleData.font
 	local t_minWid,t_maxWid = eleData.tabMinWidth,eleData.tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-	local wid = mathClamp(dxGetTextWidth(text,textSizex or 1,font),minwidth,maxwidth)
+	local wid = mathClamp(dxGetTextWidth(text,scaleX or 1,font),minwidth,maxwidth)
 	local tabPadding = eleData.tabPadding
 	local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
 	local tabGapSize = eleData.tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
-	local textSizeX,textSizeY = tonumber(textSizex) or style.textSize[1], tonumber(textSizex) or style.textSize[2]
-	local tabnorimg = tabnorimg or dgsCreateTextureFromStyle(style.tabImage[1])
-	local tabhovimg = tabhovimg or dgsCreateTextureFromStyle(style.tabImage[2])
-	local tabcliimg = tabcliimg or dgsCreateTextureFromStyle(style.tabImage[3])
-	local tabnorcolor = tabnorcolor or style.tabColor[1]
-	local tabhovcolor = tabhovcolor or style.tabColor[2]
-	local tabclicolor = tabclicolor or style.tabColor[3]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
+	local nImage = nImage or dgsCreateTextureFromStyle(style.tabImage[1])
+	local hImage = hImage or dgsCreateTextureFromStyle(style.tabImage[2])
+	local cImage = cImage or dgsCreateTextureFromStyle(style.tabImage[3])
+	local nColor = nColor or style.tabColor[1]
+	local hColor = hColor or style.tabColor[2]
+	local cColor = cColor or style.tabColor[3]
 	dgsElementData[tab] = {
 		parent = tabpanel,
 		id = id,
@@ -152,8 +152,8 @@ function dgsCreateTab(...)
 		textSize = {textSizeX,textSizeY},
 		bgColor = tonumber(bgColor) or style.bgColor or eleData.bgColor,
 		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage) or eleData.bgImage,
-		tabImage = {tabnorimg,tabhovimg,tabcliimg},
-		tabColor = {tabnorcolor,tabhovcolor,tabclicolor},
+		tabImage = {nImage,hImage,cImage},
+		tabColor = {nColor,hColor,cColor},
 		iconColor = 0xFFFFFFFF,
 		iconDirection = "left",
 		iconImage = nil,

@@ -27,11 +27,11 @@ function dgsCreateImage(...)
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
-		w = argTable.w or argTable.width or argTable[3]
-		h = argTable.h or argTable.height or argTable[4]
+		w = argTable.width or argTable.w or argTable[3]
+		h = argTable.height or argTable.h or argTable[4]
 		img = argTable.image or argTable.img or argTable[5]
-		relative = argTable.rlt or argTable.relative or argTable[6]
-		parent = argTable.p or argTable.parent or argTable[7]
+		relative = argTable.relative or argTable.rlt or argTable[6]
+		parent = argTable.parent or argTable.p or argTable[7]
 		color = arg.Table.color or argTable[8]
 	else
 		x,y,w,h,img,relative,parent,color = ...
