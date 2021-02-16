@@ -138,10 +138,12 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 	end
 	------------------------------------
-	if imgs[buttonState] then
-		dxDrawImage(x,y,w,h,imgs[buttonState],0,0,0,finalcolor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
+	if finalcolor/0x1000000%256 >= 1 then	--Optimise when alpha = 0
+		if imgs[buttonState] then
+			dxDrawImage(x,y,w,h,imgs[buttonState],0,0,0,finalcolor,isPostGUI,rndtgt)
+		else
+			dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
+		end
 	end
 	local text = eleData.text
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
