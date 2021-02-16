@@ -781,6 +781,8 @@ events = {
 	"onDgsMouseClickDown",
 	"onDgsMouseDoubleClick",
 	"onDgsMouseMultiClick",
+	"onDgsMouseDown",
+	"onDgsMouseUp",
 	"onDgsWindowClose",
 	"onDgsPositionChange",
 	"onDgsSizeChange",
