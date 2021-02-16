@@ -71,7 +71,7 @@ function dgsCreateButton(...)
 		iconColor = 0xFFFFFFFF,
 		iconDirection = "left",
 		iconImage = nil,
-		iconOffset = 5,
+		iconOffset = {0,0},
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
 		image = {normalImage, hoveringImage, clickedImage},
 		shadow = {},
@@ -170,29 +170,58 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		local posX,posY = txtoffsetsX,txtoffsetsY
 		local iconOffset = eleData.iconOffset
-		if eleData.iconDirection == "left" then
-			if alignment[1] == "left" then
-				posX = posX-iconWidth-iconOffset
-			elseif alignment[1] == "right" then
-				posX = posX+w-fontWidth-iconWidth-iconOffset
-			else
-				posX = posX+w/2-fontWidth/2-iconWidth-iconOffset
+		if type(iconOffset == "table") then
+			if eleData.iconDirection == "left" then
+				if alignment[1] == "left" then
+					posX = posX-iconWidth
+				elseif alignment[1] == "right" then
+					posX = posX+w-fontWidth-iconWidth
+				else
+					posX = posX+w/2-fontWidth/2-iconWidth
+				end
+			elseif eleData.iconDirection == "right" then
+				if alignment[1] == "left" then
+					posX = posX+fontWidth
+				elseif alignment[1] == "right" then
+					posX = posX+w
+				else
+					posX = posX+w/2+fontWidth/2
+				end
 			end
-		elseif eleData.iconDirection == "right" then
-			if alignment[1] == "left" then
-				posX = posX+fontWidth+iconOffset
-			elseif alignment[1] == "right" then
-				posX = posX+w+iconOffset
+			if alignment[2] == "top" then
+				posY = posY
+			elseif alignment[2] == "bottom" then
+				posY = posY+h-fontHeight
 			else
-				posX = posX+w/2+fontWidth/2+iconOffset
+				posY = posY+(h-iconHeight)/2
 			end
-		end
-		if alignment[2] == "top" then
-			posY = posY
-		elseif alignment[2] == "bottom" then
-			posY = posY+h-fontHeight
+			posX = posX+iconOffset[1]
+			posY = posY+iconOffset[2]
 		else
-			posY = posY+(h-iconHeight)/2
+			if eleData.iconDirection == "left" then
+				if alignment[1] == "left" then
+					posX = posX-iconWidth-iconOffset
+				elseif alignment[1] == "right" then
+					posX = posX+w-fontWidth-iconWidth-iconOffset
+				else
+					posX = posX+w/2-fontWidth/2-iconWidth-iconOffset
+				end
+			elseif eleData.iconDirection == "right" then
+				if alignment[1] == "left" then
+					posX = posX+fontWidth+iconOffset
+				elseif alignment[1] == "right" then
+					posX = posX+w+iconOffset
+				else
+					posX = posX+w/2+fontWidth/2+iconOffset
+				end
+			end
+			if alignment[2] == "top" then
+				posY = posY-iconOffset
+			elseif alignment[2] == "bottom" then
+				posY = posY+h-fontHeight+iconOffset
+			else
+				posY = posY+(h-iconHeight)/2+iconOffset
+			end
 		end
 		posX,posY = posX+x,posY+y
 		if iconImage[buttonState] then
