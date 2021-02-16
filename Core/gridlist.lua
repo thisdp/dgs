@@ -2713,7 +2713,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 				dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadow[3],tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,false,true)
 			end
-			dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,colorcoded,true)
+			dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,tClrCode,true)
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
