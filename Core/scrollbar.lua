@@ -30,7 +30,7 @@ function dgsCreateScrollBar(...)
 		y = argTable.y or argTable[2]
 		w = argTable.w or argTable.width or argTable[3]
 		h = argTable.h or argTable.height or argTable[4]
-		isHorizontal = argTable.horizontal or argTable.isHorizontal or argTable[5]
+		isHorizontal = argTable.isHorizontal or argTable.horizontal or argTable[5]
 		relative = argTable.rlt or argTable.relative or argTable[6]
 		parent = argTable.p or argTable.parent or argTable[7]
 		arrowImage = argTable.arrowImage or argTable[8]
