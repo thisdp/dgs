@@ -2496,6 +2496,11 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 				dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,false,tClrCode,true)
 			end
+			if not eleData.hitoutofparent then
+				if MouseData.hit ~= source then
+					enabledInherited = false
+				end
+			end
 			for rowIndex,row in pairs(dgsElementBuffer) do
 				for columnIndex,items in pairs(row) do
 					local offx = items[2]
