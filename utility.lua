@@ -775,6 +775,7 @@ events = {
 	"onDgsCursorTypeChange",
 	"onDgsMouseLeave",
 	"onDgsMouseEnter",
+	"onDgsMousePreClick",
 	"onDgsMouseClick",
 	"onDgsMouseWheel",
 	"onDgsMouseClickUp",
