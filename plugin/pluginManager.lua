@@ -6,12 +6,8 @@ addEventHandler("onDgsPluginCreate",resourceRoot,function(theResource)
 	local typ = dgsElementData[source].asPlugin
 	dgsPluginTable[typ] = dgsPluginTable[typ] or {}
 	table.insert(dgsPluginTable[typ],source)
-end)
-
-addEventHandler("onDgsDestroy",resourceRoot,function()
-	local typ = dgsElementData[source].asPlugin
-	if typ then
-		local id = table.find(dgsPluginTable[typ] or {},source)
+	addEventHandler("onDgsDestroy",source,function()
+		local id = table.find(dgsPluginTable[typ],source)
 		if id then
 			table.remove(dgsPluginTable[typ],id)
 		end
@@ -20,5 +16,5 @@ addEventHandler("onDgsDestroy",resourceRoot,function()
 				destroyElement(BlurBoxGlobalScreenSource)
 			end
 		end
-	end
+	end,false)
 end)
