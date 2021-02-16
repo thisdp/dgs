@@ -170,7 +170,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		local posX,posY = txtoffsetsX,txtoffsetsY
 		local iconOffset = eleData.iconOffset
-		if type(iconOffset == "table") then
+		if type(iconOffset) == "table" then
 			if eleData.iconDirection == "left" then
 				if alignment[1] == "left" then
 					posX = posX-iconWidth
