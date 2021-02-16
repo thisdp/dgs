@@ -56,7 +56,7 @@ function dgsCreateGridList(...)
 		relative = argTable.relative or argTable.rlt or argTable[5]
 		parent = argTable.parent or argTable.p or argTable[6]
 		columnHeight = argTable.columnHeight or argTable[7]
-		bgColor = argTable.bgColo or argTable[8]
+		bgColor = argTable.bgColor or argTable[8]
 		columnTextColor = argTable.columnTextColor or argTable[9]
 		columnColor = argTable.columnColor or argTable[10]
 		cColorR = argTable.normalRowColor or argTable.cColorR or argTable[11]
@@ -1988,7 +1988,7 @@ function dgsGridListSetItemBackGroundImage(gridlist,r,c,nImg,sImg,cImg)
 	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemBackGroundImage",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
 	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemBackGroundImage",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
 	local c,r = c-c%1,r-r%1
-	
+
 	if nImg ~= nil then
 		local imgType = dgsGetType(nImg)
 		if not (imgType == "texture" or imgType == "shader") then error(dgsGenAsrt(nImg,"dgsGridListSetItemBackGroundImage",4,"material")) end

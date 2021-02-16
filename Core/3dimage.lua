@@ -29,9 +29,8 @@ function dgsCreate3DImage(...)
 		width = argTable.width or argTable[6]
 		height = argTable.height or argTable[7]
 		maxDistance = argTable.maxDistance or argTable[8]
-		colorcoded = argTable.colorcoded or argTable[9]
 	else
-		x,y,z,img,color,width,height,maxDistance,colorcoded = ...
+		x,y,z,img,color,width,height,maxDistances = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
@@ -45,7 +44,6 @@ function dgsCreate3DImage(...)
 		imageSize = {width or 1,height or 1},
 		fixImageSize = false,
 		color = color or 0xFFFFFFFF,
-		colorcoded = colorcoded or false,
 		maxDistance = maxDistance or 80,
 		fadeDistance = maxDistance or 80,
 		dimension = -1,
