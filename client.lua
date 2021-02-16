@@ -1031,10 +1031,12 @@ function dgsCheckHit(hits,mx,my)
 	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
 		if MouseData.enter ~= hits then
 			if isElement(MouseData.enter) then
-				triggerEvent("onDgsMouseLeave",MouseData.enter,mx,my,hits)
 				if enteredElementType == "dgs-dxgridlist" then
-					dgsSetData(MouseData.enter,"preSelect",{-1,-1})
+					local preSelect = dgsElementData[MouseData.enter]
+					preSelect[1],preSelect[2] = -1,-1
+					dgsSetData(MouseData.enter,"preSelect",preSelect)
 				end
+				triggerEvent("onDgsMouseLeave",MouseData.enter,mx,my,hits)
 			end
 			if isElement(hits) then
 				triggerEvent("onDgsMouseEnter",hits,mx,my,MouseData.enter)

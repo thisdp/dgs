@@ -120,7 +120,8 @@ function dgsCreateGridList(...)
 		moveType = 0,	--0 for wheel, 1 For scroll bar
 		multiSelection = false,
 		nextRenderSort = false,
-		preSelect = {},
+		preSelect = {-1,-1},
+		preSelectLastFrame = {-1,-1},
 		rowColor = {cColorR,hColorR,sColorR},	--Normal/Hover/Selected
 		rowData = {},
 		rowHeight = style.rowHeight,
@@ -2343,7 +2344,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 			end
 		dxSetRenderTarget(renderTarget[2],true)
-			local preSelectLastFrame = eleData.preSelect
+			local preSelectLastFrame = eleData.preSelectLastFrame
+			local preSelect = eleData.preSelect
 			if MouseData.enter == source then		-------PreSelect
 				if mouseInsideRow then
 					local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
@@ -2352,26 +2354,27 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
 						eleData.oPreSelect = sid
 						if rowData[sid][-2] ~= false then
-							eleData.preSelect = {sid,mouseSelectColumn}
+							preSelect[1],preSelect[2] = sid,mouseSelectColumn
 						else
-							eleData.preSelect = {-1,mouseSelectColumn}
+							preSelect[1],preSelect[2] = -1,mouseSelectColumn
 						end
 						MouseData.enterData = true
 					else
-						eleData.preSelect = {-1,mouseSelectColumn}
+						preSelect[1],preSelect[2] = -1,mouseSelectColumn
 					end
 				elseif mouseInsideColumn then
 					eleData.selectedColumn = mouseSelectColumn
-					eleData.preSelect = {}
+					preSelect[1],preSelect[2] = -1,mouseSelectColumn
 				else
-					eleData.preSelect = {-1,-1}
+					preSelect[1],preSelect[2] = -1,-1
 				end
 			else
-				eleData.preSelect = {-1,-1}
+				preSelect[1],preSelect[2] = -1,-1
 			end
 			local preSelect = eleData.preSelect
 			if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
 				triggerEvent("onDgsGridListHover",source,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
+				preSelectLastFrame[1],preSelectLastFrame[2] = preSelect[1],preSelect[2]
 			end
 			local Select = eleData.rowSelect
 			local sectionFont = eleData.sectionFont or font
@@ -2586,6 +2589,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 			end
 		end
+		local preSelectLastFrame = eleData.preSelectLastFrame
+		local preSelect = eleData.preSelect
 		if MouseData.enter == source then		-------PreSelect
 			if mouseInsideRow then
 				local tempID = (my-cy-columnHeight)/rowHeightLeadingTemp-1
@@ -2593,22 +2598,28 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+_rowMoveOffset then
 					eleData.oPreSelect = sid
 					if rowData[sid][-2] ~= false then
-						eleData.preSelect = {sid,mouseSelectColumn}
+						preSelect[1],preSelect[2] = sid,mouseSelectColumn
 					else
-						eleData.preSelect = {-1,mouseSelectColumn}
+						preSelect[1],preSelect[2] = -1,mouseSelectColumn
 					end
 					MouseData.enterData = true
 				else
-					eleData.preSelect = {-1,mouseSelectColumn}
+					preSelect[1],preSelect[2] = -1,mouseSelectColumn
 				end
 			elseif mouseInsideColumn then
 				eleData.selectedColumn = mouseSelectColumn
-				eleData.preSelect = {}
+				preSelect[1],preSelect[2] = -1,mouseSelectColumn
 			else
-				eleData.preSelect = {-1,-1}
+				preSelect[1],preSelect[2] = -1,-1
 			end
+		else
+			preSelect[1],preSelect[2] = -1,-1
 		end
 		local preSelect = eleData.preSelect
+		if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
+			triggerEvent("onDgsGridListHover",source,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
+			preSelectLastFrame[1],preSelectLastFrame[2] = preSelect[1],preSelect[2]
+		end
 		local Select = eleData.rowSelect
 		local sectionFont = eleData.sectionFont or font
 		local textBuffer = {}
