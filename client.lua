@@ -624,7 +624,7 @@ addEventHandler("onClientKey",root,function(button,state)
 		local scroll = button == "mouse_wheel_down" and 1 or -1
 		local enteredElement = MouseData.topScrollable or MouseData.enter
 		local dgsType = dgsGetType(enteredElement)
-		if dgsGetType(scrollbar) == "dgs-dxscrollbar" then
+		if dgsGetType(enteredElement) == "dgs-dxscrollbar" then
 			local scrollbar = enteredElement
 			dgsSetData(scrollbar,"moveType","slow")
 			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
