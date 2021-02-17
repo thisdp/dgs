@@ -1028,6 +1028,10 @@ class {
 		setCloseButtonSize = gObjFnc("dgsWindowSetCloseButtonSize",true),
 		getCloseButtonSize = gObjFnc("dgsWindowGetCloseButtonSize"),
 		getCloseButton = gObjFnc("dgsWindowGetCloseButton"),
+		getHorizontalAlign = gObjFnc("dgsWindowGetHorizontalAlign"),
+		setHorizontalAlign = gObjFnc("dgsWindowSetHorizontalAlign",true),
+		getVerticalAlign = gObjFnc("dgsWindowGetVerticalAlign"),
+		setVerticalAlign = gObjFnc("dgsWindowSetVerticalAlign",true),
 	};
 }
 
