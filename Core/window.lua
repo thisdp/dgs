@@ -94,7 +94,7 @@ function dgsCreateWindow(...)
 		end,false)
 		dgsElementData[window].closeButtonSize = {40,24,false}
 		dgsElementData[window].closeButton = closeBtn
-		dgsSetElementAlignment(closeBtn,"right")
+		dgsSetPositionAlignment(closeBtn,"right")
 		dgsElementData[closeBtn].font = "default-bold"
 		dgsElementData[closeBtn].alignment = {"center","center"}
 		dgsElementData[closeBtn].ignoreParentTitle = true
@@ -116,8 +116,9 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 				end
 			end,false)
 			dgsSetData(window,"closeButton",closeBtn)
+			dgsSetData(closeBtn,"alignment",{"center","center"})
 			dgsSetData(closeBtn,"ignoreParentTitle",true)
-			dgsSetSide(closeBtn,"right",false)
+			dgsSetPositionAlignment(closeBtn,"right")
 			return true
 		end
 	else

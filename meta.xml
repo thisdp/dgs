@@ -149,8 +149,8 @@
 	<export function="dgsSetVisible" type="client" />
 	<export function="dgsGetEnabled" type="client" />
 	<export function="dgsSetEnabled" type="client" />
-	<export function="dgsGetElementAlignment" type="client" />
-	<export function="dgsSetElementAlignment" type="client" />
+	<export function="dgsGetPositionAlignment" type="client" />
+	<export function="dgsSetPositionAlignment" type="client" />
 	
 	<export function="dgsGetSide" type="client" />
 	<export function="dgsSetSide" type="client" />

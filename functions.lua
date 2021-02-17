@@ -87,7 +87,7 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 		if includeSide then
 			local parent = FatherTable[dgsEle]
 			local pEleData = dgsElementData[parent]
-			local eleAlign = eleData.elementAlignment
+			local eleAlign = eleData.positionAlignment
 			if eleAlign[1] == "right" then
 				local pWidth = parent and pEleData.absSize[1] or sW
 				absPosX = pWidth-absPosX
@@ -313,17 +313,17 @@ function dgsGetVisible(dgsEle)
 	end
 end
 
-function dgsSetElementAlignment(dgsEle,horizontal,vertical)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetElementAlignment",1,"dgs-dxelement")) end
-	local eleAlign = dgsElementData[dgsEle].elementAlignment
+function dgsSetPositionAlignment(dgsEle,horizontal,vertical)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPositionAlignment",1,"dgs-dxelement")) end
+	local eleAlign = dgsElementData[dgsEle].positionAlignment
 	eleAlign[1] = horizontal or eleAlign[1] or "left"
 	eleAlign[2] = vertical or eleAlign[2] or "top"
-	return dgsSetData(dgsEle,"elementAlignment",eleAlign)
+	return dgsSetData(dgsEle,"positionAlignment",eleAlign)
 end
 
-function dgsGetElementAlignment(dgsEle)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetElementAlignment",1,"dgs-dxelement")) end
-	return dgsElementData[dgsEle].elementAlignment[1],dgsElementData[dgsEle].elementAlignment[2]
+function dgsGetPositionAlignment(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetPositionAlignment",1,"dgs-dxelement")) end
+	return dgsElementData[dgsEle].positionAlignment[1],dgsElementData[dgsEle].positionAlignment[2]
 end
 
 function configPosSize(dgsEle,pos,size)
@@ -746,7 +746,7 @@ end
 
 -------------------------
 addEventHandler("onDgsCreate",root,function(theResource)
-	dgsSetData(source,"elementAlignment",{"left","top"})
+	dgsSetData(source,"positionAlignment",{"left","top"})
 	dgsSetData(source,"visible",true)
 	dgsSetData(source,"enabled",true)
 	dgsSetData(source,"ignoreParentTitle",false,true)
@@ -989,30 +989,26 @@ end
 
 ----Compatibility
 function dgsSetSide(dgsEle,which,where)
-
 	if not getElementData(localPlayer,"DGS-DEBUG-C") then
-		outputDebugString("Deprecated function @'dgsSetSide', use 'dgsSetElementAlignment' instead. To fix, run it again with command /debugdgs c",2)
+		outputDebugString("Deprecated function @'dgsSetSide', use 'dgsSetPositionAlignment' instead. To fix, run it again with command /debugdgs c",2)
 	else
-		error("Found deprecated function @'dgsSetSide', replace with 'dgsSetElementAlignment'")
+		error("Found deprecated function @'dgsSetSide', replace with 'dgsSetPositionAlignment'")
 	end
-
 	if which == "lor" then
-		dgsSetElementAlignment(dgsEle,where)
+		dgsSetPositionAlignment(dgsEle,where)
 	elseif which == "tob" then
-		dgsSetElementAlignment(dgsEle,_,where)
+		dgsSetPositionAlignment(dgsEle,_,where)
 	end
 	return true
 end
 
 function dgsGetSide(dgsEle,which)
-	
 	if not getElementData(localPlayer,"DGS-DEBUG-C") then
-		outputDebugString("Deprecated function @'dgsGetSide', use 'dgsGetElementAlignment' instead. To fix, run it again with command /debugdgs c",2)
+		outputDebugString("Deprecated function @'dgsGetSide', use 'dgsGetPositionAlignment' instead. To fix, run it again with command /debugdgs c",2)
 	else
-		error("Found deprecated function @'dgsGetSide', replace with 'dgsGetElementAlignment'")
+		error("Found deprecated function @'dgsGetSide', replace with 'dgsGetPositionAlignment'")
 	end
-	
-	local h,v = dgsGetElementAlignment(dgsEle,_,where)
+	local h,v = dgsGetPositionAlignment(dgsEle,_,where)
 	if which == "lor" then
 		return h
 	elseif which == "tob" then
