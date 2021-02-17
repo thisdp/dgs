@@ -85,23 +85,23 @@ function dgsSetRenderSetting(name,value)
 end
 -----------------------------dx-GUI
 MouseData = {}
-MouseData.enter = false
-MouseData.lastEnter = false
+MouseData.focused = false
+MouseData.hit = false
+MouseData.entered = false
+MouseData.left = false
+MouseData.enteredGridList = {}
 MouseData.scbEnterData = false
 MouseData.scbEnterRltPos = false
 MouseData.topScrollable = false
-MouseData.hit = false
-MouseData.nowShow = false
-MouseData.editMemoCursor = false
 MouseData.lastPos = {-1,-1}
 MouseData.interfaceHit = {}
-MouseData.intfaceHitElement = false
 MouseData.lock3DInterface = false
 MouseData.dgsCursorPos = {}
 MouseData.cursorType = false
 MouseData.cursorColor = 0xFFFFFFFF
+MouseData.editMemoCursor = false
 MouseData.EditMemoTimer = setTimer(function()
-	local dgsType = dgsGetType(MouseData.nowShow)
+	local dgsType = dgsGetType(MouseData.focused)
 	if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
 		MouseData.editMemoCursor = not MouseData.editMemoCursor
 	end
@@ -117,37 +117,36 @@ function dgsCoreRender()
 	local dx3DTextTableSize = #dx3DTextTable
 	local dx3DImageTableSize = #dx3DImageTable
 	MouseData.hit = false
+	local _enteredGridList = false
 	DGSShow = 0
 	wX,wY,wZ = nil,nil,nil
 	local mx,my = -1000,-1000
-	MouseData.intfaceHitElement = false
 	if isCursorShowing() then
 		mx,my = getCursorPosition()
 		mx,my = mx*sW,my*sH
 		wX,wY,wZ = getWorldFromScreenPosition(mx,my,1)
 		MouseX,MouseY = mx,my
 	else
-		MouseData.Move = false
 		MouseData.MoveScroll = false
 		MouseData.scbClickData = false
 		MouseData.selectorClickData = false
+		MouseData.lock3DInterface = false
 		MouseData.clickl = false
 		MouseData.clickr = false
 		MouseData.clickm = false
-		MouseData.lock3DInterface = false
 		MouseData.Scale = false
+		MouseData.Move = false
 		MouseData.dgsCursorPos = {false,false}
 	end
 	if isElement(BlurBoxGlobalScreenSource) then
 		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 	end
 	local normalMx,normalMy = mx,my
+	local intfaceHitElement,interfaceClickElementl = false,false
 	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize+dx3DImageTableSize ~= 0 then
 		dxSetRenderTarget()
 		MouseData.interfaceHit = {}
 		MouseData.topScrollable = false
-		local dxInterfaceHitElement = false
-		local intfaceClickElementl = false
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
 		MouseData.WithinElements = {}
@@ -157,14 +156,14 @@ function dgsCoreRender()
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
 				if renderGUI(v,mx,my,eleData.enabled,eleData.enabled,eleData.renderTarget_parent,0,0,0,0,0,0,1,eleData.visible,MouseData.clickl) then
-					intfaceClickElementl = true
+					interfaceClickElementl = true
 				end
 			end
 		end
 		dxSetBlendMode("blend")
 		dxSetRenderTarget()
 		local intfaceMx,intfaceMy = MouseX,MouseY
-		MouseData.intfaceHitElement = MouseData.hit
+		intfaceHitElement = MouseData.hit
 		local mx,my = normalMx,normalMy
 		for i=1,dx3DTextTableSize do
 			local v = dx3DTextTable[i]
@@ -196,12 +195,12 @@ function dgsCoreRender()
 			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
 		end
-		if intfaceClickElementl then
+		if interfaceClickElementl then
 			MouseX,MouseY = intfaceMx,intfaceMy
 		else
 			if MouseData.clickl then
 				MouseX,MouseY = normalMx,normalMy
-			elseif MouseData.hit == MouseData.intfaceHitElement then
+			elseif MouseData.hit == intfaceHitElement then
 				MouseX,MouseY = intfaceMx,intfaceMy
 			else
 				MouseX,MouseY = normalMx,normalMy
@@ -212,18 +211,19 @@ function dgsCoreRender()
 		if not isCursorShowing() then
 			MouseData.hit = false
 			MouseData.Move = false
+			MouseData.Scale = false
 			MouseData.MoveScroll = false
 			MouseData.scbClickData = false
 			MouseData.selectorClickData = false
+			MouseData.lock3DInterface = false
 			MouseData.clickl = false
 			MouseData.clickr = false
 			MouseData.clickm = false
-			MouseData.lock3DInterface = false
-			MouseData.Scale = false
 			MouseX,MouseY = nil,nil
 		end
 		triggerEvent("onDgsRender",resourceRoot)
 		dgsCheckHit(MouseData.hit,MouseX,MouseY)
+		MouseData.enteredGridList[1] = MouseData.enteredGridList[2]
 		if KeyHolder.repeatKey then
 			local tick = getTickCount()
 			if tick-KeyHolder.repeatStartTick >= KeyHolder.repeatDuration then
@@ -329,7 +329,7 @@ function dgsCoreRender()
 			tickColor = red
 		end
 		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-100,_,_,tickColor)
-		local Focused = MouseData.nowShow and dgsGetPluginType(MouseData.nowShow).."("..getElementID(MouseData.nowShow)..")" or "None"
+		local Focused = MouseData.focused and dgsGetPluginType(MouseData.focused).."("..getElementID(MouseData.focused)..")" or "None"
 		local enterStr = MouseData.hit and dgsGetPluginType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
 		local leftStr = MouseData.clickl and dgsGetPluginType(MouseData.clickl).." ("..getElementID(MouseData.clickl)..")" or "None"
 		local rightStr = MouseData.clickr and dgsGetPluginType(MouseData.clickr).." ("..getElementID(MouseData.clickr)..")" or "None"
@@ -507,6 +507,9 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 					if eleType == "dgs-dxgridlist" then
 						_hitElement = MouseData.hit
 					end
+					if MouseData.hit == source then	--For grid list preselect
+						MouseData.enteredGridList[2] = false
+					end
 				end
 				rt,noRender,_mx,_my,offx,offy = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
 				if MouseData.hit then
@@ -617,11 +620,11 @@ addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.rende
 
 addEventHandler("onClientKey",root,function(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
-		if isElement(MouseData.enter) then
-			triggerEvent("onDgsMouseWheel",MouseData.enter,button == "mouse_wheel_down" and -1 or 1)
+		if isElement(MouseData.entered) then
+			triggerEvent("onDgsMouseWheel",MouseData.entered,button == "mouse_wheel_down" and -1 or 1)
 		end
 		local scroll = button == "mouse_wheel_down" and 1 or -1
-		local enteredElement = MouseData.topScrollable or MouseData.enter
+		local enteredElement = MouseData.topScrollable or MouseData.entered
 		local dgsType = dgsGetType(enteredElement)
 		if dgsGetType(enteredElement) == "dgs-dxscrollbar" then
 			local scrollbar = enteredElement
@@ -692,7 +695,7 @@ addEventHandler("onClientKey",root,function(button,state)
 			end
 		elseif dgsType == "dgs-dxselector" then
 			local selector = enteredElement
-			if dgsElementData[selector].enableScroll and MouseData.nowShow == selector then
+			if dgsElementData[selector].enableScroll and MouseData.focused == selector then
 				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
 				local currentItem = dgsElementData[selector].selectedItem
@@ -700,10 +703,10 @@ addEventHandler("onClientKey",root,function(button,state)
 			end
 		end
 	elseif state then
-		local dgsType = dgsGetType(MouseData.nowShow)
+		local dgsType = dgsGetType(MouseData.focused)
 		if dgsType == "dgs-dxmemo" or dgsType == "dgs-dxedit" then
 			if not button:find("mouse") then
-				local typingSound = dgsElementData[MouseData.nowShow].typingSound
+				local typingSound = dgsElementData[MouseData.focused].typingSound
 				if typingSound then
 					playSound(typingSound)
 				end
@@ -714,9 +717,9 @@ end)
 
 function onClientKeyTriggered(button)
 	local makeEventCancelled = false
-	local eleData = dgsElementData[MouseData.nowShow]
-	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-		local edit = MouseData.nowShow
+	local eleData = dgsElementData[MouseData.focused]
+	if dgsGetType(MouseData.focused) == "dgs-dxedit" then
+		local edit = MouseData.focused
 		local text = eleData.text
 		local shift = getKeyState("lshift") or getKeyState("rshift")
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
@@ -822,8 +825,8 @@ function onClientKeyTriggered(button)
 			local text = eleData.text
 			dgsSetData(edit,"selectFrom",utf8Len(text))
 		end
-	elseif dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-		local memo = MouseData.nowShow
+	elseif dgsGetType(MouseData.focused) == "dgs-dxmemo" then
+		local memo = MouseData.focused
 		local shift = getKeyState("lshift") or getKeyState("rshift")
 		local ctrl = getKeyState("lctrl") or getKeyState("rctrl")
 		local isWordWrap = eleData.wordWrap
@@ -943,8 +946,8 @@ function onClientKeyTriggered(button)
 		elseif button == "a" and ctrl then
 			dgsMemoSetSelectedArea(memo,0,1,"all")
 		end
-	elseif dgsGetType(MouseData.nowShow) == "dgs-dxgridlist" then
-		local gridlist = MouseData.nowShow
+	elseif dgsGetType(MouseData.focused) == "dgs-dxgridlist" then
+		local gridlist = MouseData.focused
 		if eleData.enableNavigation then
 			if button == "arrow_u" then
 				if eleData.selectionMode ~= 2 then
@@ -1020,22 +1023,22 @@ end
 addEventHandler("onClientKey",root,onClientKeyCheck)
 
 function dgsCheckHit(hits,mx,my)
-	local enteredElementType = dgsGetType(MouseData.enter)
+	local enteredElementType = dgsGetType(MouseData.entered)
 	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
-		if MouseData.enter ~= hits then
-			if isElement(MouseData.enter) then
+		if MouseData.entered ~= hits then
+			if isElement(MouseData.entered) then
 				if enteredElementType == "dgs-dxgridlist" then
-					local preSelect = dgsElementData[MouseData.enter]
+					local preSelect = dgsElementData[MouseData.entered]
 					preSelect[1],preSelect[2] = -1,-1
-					dgsSetData(MouseData.enter,"preSelect",preSelect)
+					dgsSetData(MouseData.entered,"preSelect",preSelect)
 				end
-				triggerEvent("onDgsMouseLeave",MouseData.enter,mx,my,hits)
+				triggerEvent("onDgsMouseLeave",MouseData.entered,mx,my,hits)
 			end
 			if isElement(hits) then
-				triggerEvent("onDgsMouseEnter",hits,mx,my,MouseData.enter)
+				triggerEvent("onDgsMouseEnter",hits,mx,my,MouseData.entered)
 			end
-			MouseData.lastEnter = MouseData.enter
-			MouseData.enter = hits
+			MouseData.left = MouseData.entered
+			MouseData.entered = hits
 		end
 	end
 	if dgsElementType[hits] == "dgs-dxtab" then
@@ -1156,12 +1159,12 @@ function dgsCheckHit(hits,mx,my)
 	MouseData.lastPos = {mx,my}
 	if not isElement(MouseData.clickl) then
 		local _cursorType = "arrow"
-		if MouseData.enter then
-			local eleData = dgsElementData[MouseData.enter]
+		if MouseData.entered then
+			local eleData = dgsElementData[MouseData.entered]
 			local sizeData = eleData.sizeHandlerData
 			if sizeData or enteredElementType == "dgs-dxwindow" then
 				if eleData.sizable then
-					local x,y = dgsGetPosition(MouseData.enter,false,true)
+					local x,y = dgsGetPosition(MouseData.entered,false,true)
 					local w,h = eleData.absSize[1],eleData.absSize[2]
 					local offsetx,offsety = mx-x,my-y
 					local left,right,top,bottom
@@ -1241,7 +1244,7 @@ function dgsCheckHit(hits,mx,my)
 end
 
 function onClientMouseTriggered()
-	if MouseHolder.element == MouseData.enter then
+	if MouseHolder.element == MouseData.entered then
 		local dgsType = dgsGetType(MouseHolder.element)
 		if dgsType == "dgs-dxscrollbar" then
 			if MouseData.scbEnterData then
@@ -1846,8 +1849,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
 			blurEditMemo()
 		end
-		if isElement(MouseData.nowShow) then
-			triggerEvent("onDgsBlur",MouseData.nowShow,false)
+		if isElement(MouseData.focused) then
+			triggerEvent("onDgsBlur",MouseData.focused,false)
 		end
 	end
 	if state == "up" then

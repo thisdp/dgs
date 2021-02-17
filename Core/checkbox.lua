@@ -195,7 +195,7 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		image,color = image_i,color_i
 	end
 	local colorimgid = 1
-	if MouseData.enter == source then
+	if MouseData.entered == source then
 		colorimgid = 2
 		if eleData.clickType == 1 then
 			if MouseData.clickl == source then

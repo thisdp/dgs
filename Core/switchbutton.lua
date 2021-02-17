@@ -153,7 +153,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local cursorWidth = eleData.cursorWidth[2] and w*eleData.cursorWidth[1] or eleData.cursorWidth[1]
 	local animProgress = (eleData.stateAnim+1)*0.5
 	local cursorX = x+animProgress*(w-cursorWidth)
-	if MouseData.enter == v then
+	if MouseData.entered == v then
 		local isHitCursor = mx >= cursorX and mx <= cursorX+cursorWidth
 		colorImgBgID = 2
 		if isHitCursor then

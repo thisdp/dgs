@@ -474,10 +474,10 @@ function dgsMemoGetReadOnly(memo)
 end
 
 function resetMemo(x,y)
-	if dgsGetType(MouseData.nowShow) == "dgs-dxmemo" then
-		if MouseData.nowShow == MouseData.clickl then
-			local pos,line = searchMemoMousePosition(MouseData.nowShow,MouseX or x*sW, MouseY or y*sH)
-			dgsMemoSetCaretPosition(MouseData.nowShow,pos,line,true)
+	if dgsGetType(MouseData.focused) == "dgs-dxmemo" then
+		if MouseData.focused == MouseData.clickl then
+			local pos,line = searchMemoMousePosition(MouseData.focused,MouseX or x*sW, MouseY or y*sH)
+			dgsMemoSetCaretPosition(MouseData.focused,pos,line,true)
 		end
 	end
 end
@@ -1372,7 +1372,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	if MouseData.hit == source and MouseData.nowShow == source then
+	if MouseData.hit == source and MouseData.focused == source then
 		MouseData.topScrollable = source
 	end
 	if eleData.configNextFrame then
@@ -1381,15 +1381,15 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local bgImage = eleData.bgImage
 	local bgColor = applyColorAlpha(eleData.bgColor,parentAlpha)
 	local caretColor = applyColorAlpha(eleData.caretColor,parentAlpha)
-	if MouseData.nowShow == source then
+	if MouseData.focused == source then
 		if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
-			MouseData.nowShow = false
+			MouseData.focused = false
 		end
 	end
 	local text = eleData.text
 	local caretPos = eleData.caretPos
 	local selectFro = eleData.selectFrom
-	local selectColor = MouseData.nowShow == source and eleData.selectColor or eleData.selectColorBlur
+	local selectColor = MouseData.focused == source and eleData.selectColor or eleData.selectColorBlur
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 	local renderTarget = eleData.renderTarget
@@ -1521,7 +1521,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-			if MouseData.nowShow == source and MouseData.editMemoCursor then
+			if MouseData.focused == source and MouseData.editMemoCursor then
 				local CaretShow = true
 				if eleData.readOnly then
 					CaretShow = eleData.readOnlyCaretShow
@@ -1598,7 +1598,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-			if MouseData.nowShow == source and MouseData.editMemoCursor then
+			if MouseData.focused == source and MouseData.editMemoCursor then
 				local CaretShow = true
 				if eleData.readOnly then
 					CaretShow = eleData.readOnlyCaretShow

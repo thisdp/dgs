@@ -182,7 +182,7 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		image,color = image_f,color_f
 	end
 	local colorimgid = 1
-	if MouseData.enter == source then
+	if MouseData.entered == source then
 		colorimgid = 2
 		if eleData.clickType == 1 then
 			if MouseData.clickl == source then

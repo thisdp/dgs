@@ -279,7 +279,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	if MouseData.hit == source and MouseData.nowShow == source then
+	if MouseData.hit == source and MouseData.focused == source then
 		MouseData.topScrollable = source
 	end
 	local isHorizontal = eleData.isHorizontal
@@ -335,7 +335,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	end
 	local cursorRange = lrlt and length*slotRange or (length <= slotRange and length or 0)
 	local csRange = slotRange-cursorRange
-	if MouseData.enter == source then
+	if MouseData.entered == source then
 		local preEnterData = false
 		local preEnterPos = false
 		if isHorizontal then

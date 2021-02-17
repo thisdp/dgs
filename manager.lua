@@ -141,7 +141,7 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 end
 
 function blurEditMemo()
-	local dgsType = dgsGetType(MouseData.nowShow)
+	local dgsType = dgsGetType(MouseData.focused)
 	if dgsType == "dgs-dxedit" then
 		guiBlur(GlobalEdit)
 	elseif dgsType == "dgs-dxmemo" then
@@ -152,9 +152,9 @@ end
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsBringToFront",1,"dgs-dxelement")) end
 	local parent = FatherTable[dgsEle]	--Get Parent
-	local lastFront = MouseData.nowShow
+	local lastFront = MouseData.focused
 	if not dontChangeData then
-		MouseData.nowShow = dgsEle
+		MouseData.focused = dgsEle
 		if dgsGetType(dgsEle) == "dgs-dxedit" then
 			MouseData.editCursor = true
 			resetTimer(MouseData.EditMemoTimer)

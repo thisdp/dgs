@@ -101,7 +101,7 @@ end
 dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local colors,imgs = eleData.color,eleData.image
 	local buttonState = 1
-	if MouseData.enter == source then
+	if MouseData.entered == source then
 		buttonState = 2
 		if eleData.clickType == 1 then
 			if MouseData.clickl == source then

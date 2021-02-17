@@ -196,7 +196,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	if MouseData.hit == source and MouseData.nowShow == source then
+	if MouseData.hit == source and MouseData.focused == source then
 		MouseData.topScrollable = source
 	end
 	local itemData = eleData.itemData
@@ -223,7 +223,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 
 	local preEnterData = false
 	local selectorTextColors = {1,1,1}
-	if MouseData.enter == source then
+	if MouseData.entered == source then
 		if my >= selectorStartY and my <= selectorEndY then
 			if mx >= cx and mx <= cx+selectorSizeX then				--Left Arrow
 				preEnterData = 1

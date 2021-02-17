@@ -644,7 +644,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local selectState = 1
 	local textBox = eleData.textBox
 	local buttonLen = textBox and (eleData.buttonLen[2] and eleData.buttonLen[1]*h or eleData.buttonLen[1]) or w
-	if MouseData.enter == source then
+	if MouseData.entered == source then
 		selectState = 2
 		if eleData.clickType == 1 then
 			if MouseData.clickl == source then
@@ -738,7 +738,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 end
 
 dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
-	if MouseData.hit == source and MouseData.nowShow == source then
+	if MouseData.hit == source and MouseData.focused == source then
 		MouseData.topScrollable = source
 	end
 	local combo = eleData.myCombo
@@ -763,7 +763,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		dxSetBlendMode("modulate_add")
 		local rb_l = dgsElementData[combo].itemAlignment
 		local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
-		if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h and MouseData.enter == source then
+		if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h and MouseData.entered == source then
 			local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
 			sid = mathFloor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
 			if sid <= itemDataCount then

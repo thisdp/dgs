@@ -115,7 +115,6 @@ function dgsCreateGridList(...)
 		leading = 0,
 		mode = false,
 		mouseSelectButton = {true,false,false},
-		mouseWheelScrollBar = false,--false:vertical; true:horizontal
 		moveHardness = {0.1,0.9},
 		moveType = 0,	--0 for wheel, 1 For scroll bar
 		multiSelection = false,
@@ -2204,21 +2203,17 @@ end)
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
-	if MouseData.hit == source and MouseData.nowShow == source then
-		MouseData.topScrollable = source
-	end
 	if eleData.configNextFrame then configGridList(source) end
+	local scrollbar = eleData.scrollbars
+	if MouseData.hit == source then
+		if MouseData.focused == source then
+			MouseData.topScrollable = source
+		end
+	end
 	local bgColor,bgImage = applyColorAlpha(eleData.bgColor,parentAlpha),eleData.bgImage
 	local columnColor,columnImage = applyColorAlpha(eleData.columnColor,parentAlpha),eleData.columnImage
 	local font = eleData.font or systemFont
 	local columnHeight = eleData.columnHeight
-	if MouseData.enter == source then
-		colorimgid = 2
-		if MouseData.clickl == source then
-			colorimgid = 3
-		end
-		MouseData.enterData = false
-	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	if bgImage then
 		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
@@ -2291,7 +2286,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local sortIcon = eleData.sortFunction == sortFunctions[defaultSortFunctions[1]] and "▼" or (eleData.sortFunction == sortFunctions[defaultSortFunctions[2]] and "▲") or nil
 	local sortColumn = eleData.sortColumn
 	local backgroundOffset = eleData.backgroundOffset
-	local beforeHit = MouseData.hit
 	if not eleData.mode then
 		local renderTarget = eleData.renderTarget
 		local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
@@ -2346,7 +2340,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetRenderTarget(renderTarget[2],true)
 			local preSelectLastFrame = eleData.preSelectLastFrame
 			local preSelect = eleData.preSelect
-			if MouseData.enter == source then		-------PreSelect
+			if MouseData.enteredGridList[1] == source then		-------PreSelect
 				if mouseInsideRow then
 					local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
 					local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp
@@ -2358,7 +2352,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						else
 							preSelect[1],preSelect[2] = -1,mouseSelectColumn
 						end
-						MouseData.enterData = true
 					else
 						preSelect[1],preSelect[2] = -1,mouseSelectColumn
 					end
@@ -2504,6 +2497,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					enabledInherited = false
 				end
 			end
+			local preHitElement = MouseData.hit
 			for rowIndex,row in pairs(dgsElementBuffer) do
 				for columnIndex,items in pairs(row) do
 					local offx = items[2]
@@ -2512,6 +2506,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						renderGUI(items[1][a],mx,my,enabledInherited,enabledSelf,renderTarget[2],0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
 					end
 				end
+			end
+			if preHitElement == source then	--For grid list preselect
+				MouseData.enteredGridList[2] = source
 			end
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode("modulate_add")
@@ -2591,7 +2588,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		local preSelectLastFrame = eleData.preSelectLastFrame
 		local preSelect = eleData.preSelect
-		if MouseData.enter == source then		-------PreSelect
+		if MouseData.entered == source then		-------PreSelect
 			if mouseInsideRow then
 				local tempID = (my-cy-columnHeight)/rowHeightLeadingTemp-1
 				sid = (tempID-tempID%1)+eleData.FromTo[1]+1
@@ -2602,7 +2599,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					else
 						preSelect[1],preSelect[2] = -1,mouseSelectColumn
 					end
-					MouseData.enterData = true
 				else
 					preSelect[1],preSelect[2] = -1,mouseSelectColumn
 				end
@@ -2730,6 +2726,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadow[3],tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,false,true)
 			end
 			dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,tClrCode,true)
+		end
+		if MouseData.hit == source then	--For grid list preselect
+			MouseData.enteredGridList[2] = source
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")

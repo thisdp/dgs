@@ -489,10 +489,10 @@ function configEdit(edit)
 end
 
 function resetEdit(x,y)
-	if dgsGetType(MouseData.nowShow) == "dgs-dxedit" then
-		if MouseData.nowShow == MouseData.clickl then
-			local pos = searchEditMousePosition(MouseData.nowShow,MouseX or x*sW)
-			dgsEditSetCaretPosition(MouseData.nowShow,pos,true)
+	if dgsGetType(MouseData.focused) == "dgs-dxedit" then
+		if MouseData.focused == MouseData.clickl then
+			local pos = searchEditMousePosition(MouseData.focused,MouseX or x*sW)
+			dgsEditSetCaretPosition(MouseData.focused,pos,true)
 		end
 	end
 end
@@ -927,16 +927,16 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
 	bgColor = applyColorAlpha(bgColor,parentAlpha)
 	local caretColor = applyColorAlpha(eleData.caretColor,parentAlpha)
-	if MouseData.nowShow == source then
+	if MouseData.focused == source then
 		if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
-			MouseData.nowShow = false
+			MouseData.focused = false
 		end
 	end
 	local text = eleData.text
 	if eleData.masked then text = strRep(eleData.maskText,utf8Len(text)) end
 	local caretPos = eleData.caretPos
 	local selectFro = eleData.selectFrom
-	local selectColor = MouseData.nowShow == source and eleData.selectColor or eleData.selectColorBlur
+	local selectColor = MouseData.focused == source and eleData.selectColor or eleData.selectColorBlur
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local renderTarget = eleData.renderTarget
@@ -992,7 +992,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		textX_Left = textX_Left-textX_Left%1
 		textX_Right = textX_Right-textX_Right%1
 		if not placeHolderIgnoreRndTgt then
-			if text == "" and MouseData.nowShow ~= source then
+			if text == "" and MouseData.focused ~= source then
 				local pColor = eleData.placeHolderColor
 				local pFont = eleData.placeHolderFont
 				local pColorcoded = eleData.placeHolderColorcoded
@@ -1034,7 +1034,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 		_dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		if placeHolderIgnoreRndTgt then
-			if text == "" and MouseData.nowShow ~= source then
+			if text == "" and MouseData.focused ~= source then
 				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
 				local pFont = eleData.placeHolderFont
 				local pColorcoded = eleData.placeHolderColorcoded
@@ -1042,7 +1042,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,isPostGUI,pColorcoded)
 			end
 		end
-		if MouseData.nowShow == source and MouseData.editMemoCursor then
+		if MouseData.focused == source and MouseData.editMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
 				CaretShow = eleData.readOnlyCaretShow

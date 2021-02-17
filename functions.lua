@@ -555,9 +555,9 @@ function dgsGetMouseClickGUI(button)
 end
 
 function dgsIsMouseWithinGUI(ele) return MouseData.WithinElements[ele] and true or false end
-function dgsGetMouseEnterGUI() return MouseData.enter end
-function dgsGetMouseLeaveGUI() return MouseData.lastEnter end
-function dgsGetFocusedGUI() return MouseData.nowShow end
+function dgsGetMouseEnterGUI() return MouseData.entered end
+function dgsGetMouseLeaveGUI() return MouseData.left end
+function dgsGetFocusedGUI() return MouseData.focused end
 function dgsGetScreenSize() return guiGetScreenSize() end
 function dgsSetInputEnabled(...) return guiSetInputEnabled(...) end
 function dgsGetInputEnabled(...) return guiGetInputEnabled(...) end
@@ -568,15 +568,15 @@ function dgsGetRootElement() return resourceRoot end
 
 function GlobalEditMemoBlurCheck()
 	local dxChild = source == GlobalEdit and dgsElementData[source].linkedDxEdit or dgsElementData[source].linkedDxMemo
-	if isElement(dxChild) and MouseData.nowShow == dxChild then
+	if isElement(dxChild) and MouseData.focused == dxChild then
 		dgsBlur(dxChild)
 	end
 end
 
 function dgsFocus(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsFocus",1,"dgs-dxelement")) end
-	local lastFront = MouseData.nowShow
-	MouseData.nowShow = dgsEle
+	local lastFront = MouseData.focused
+	MouseData.focused = dgsEle
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser(dgsEle)
@@ -592,12 +592,12 @@ function dgsFocus(dgsEle)
 		dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 	end
 	triggerEvent("onDgsFocus",dgsEle,lastFront)
-	MouseData.nowShow = dgsEle
+	MouseData.focused = dgsEle
 	return true
 end
 
 function dgsBlur(dgsEle)
-	if not dgsEle or not isElement(MouseData.nowShow) or dgsEle ~= MouseData.nowShow then return end
+	if not dgsEle or not isElement(MouseData.focused) or dgsEle ~= MouseData.focused then return end
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser()
@@ -609,7 +609,7 @@ function dgsBlur(dgsEle)
 		dgsElementData[GlobalEdit].linkedDxMemo = nil
 	end
 	triggerEvent("onDgsBlur",dgsEle)
-	MouseData.nowShow = nil
+	MouseData.focused = nil
 	return true
 end
 
