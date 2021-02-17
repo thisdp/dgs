@@ -371,7 +371,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		end
 		if not MouseData.scbClickData then
 			MouseData.scbEnterData = preEnterData
-			scbEnterRltPos = preEnterPos
+			MouseData.scbEnterRltPos = preEnterPos
 			if MouseData.scbEnterData then
 				colorImageIndex[MouseData.scbEnterData] = 2
 			end

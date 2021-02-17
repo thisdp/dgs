@@ -93,7 +93,6 @@ MouseData.topScrollable = false
 MouseData.hit = false
 MouseData.nowShow = false
 MouseData.editMemoCursor = false
-MouseData.gridlistMultiSelection = false
 MouseData.lastPos = {-1,-1}
 MouseData.interfaceHit = {}
 MouseData.intfaceHitElement = false
@@ -436,7 +435,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			PosX,PosY = PosX+absX,PosY+absY
 			w,h = absW,absH
 		end
-		local eleAlign = eleData.elementAlignment
+		local eleAlign = eleData.positionAlignment
 		if eleAlign[1] == "right" then	--Horizontal
 			local pWidth = parent and eleDataP.absSize[1] or sW
 			PosX = pWidth-PosX-eleData.absSize[1]
@@ -1260,7 +1259,7 @@ function onClientMouseTriggered()
 				if troughClickAction == "step" then
 					scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
 				elseif troughClickAction == "jump" then
-					dgsSetProperty(scrollbar,"position",mathClamp(scbEnterRltPos,0,1)*100)
+					dgsSetProperty(scrollbar,"position",mathClamp(MouseData.scbEnterRltPos,0,1)*100)
 				end
 			end
 		elseif dgsType == "dgs-dxselector" then
