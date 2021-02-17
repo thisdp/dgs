@@ -551,20 +551,21 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 					sideColor = applyColorAlpha(sideColor,parentAlpha)
 					local side = outlineData[1]
 					if side == "in" then
-						dxDrawLine(xRT,yNRT+hSideSize,xRT+w,yNRT+hSideSize,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT+hSideSize,yNRT,xRT+hSideSize,yNRT+h,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT+w-hSideSize,yNRT,xRT+w-hSideSize,yNRT+h,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT,yNRT+h-hSideSize,xRT+w,yNRT+h-hSideSize,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT,yRT+hSideSize,xRT+w,yRT+hSideSize,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT+hSideSize,yRT,xRT+hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT+w-hSideSize,yRT,xRT+w-hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT,yRT+h-hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI)
 					elseif side == "center" then
-						dxDrawLine(xRT-hSideSize,yNRT,xRT+w+hSideSize,yNRT,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT,yNRT+hSideSize,xRT,yNRT+h-hSideSize,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT+w,yNRT+hSideSize,xRT+w,yNRT+h-hSideSize,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT-hSideSize,yNRT+h,xRT+w+hSideSize,yNRT+h,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT-hSideSize,yRT,xRT+w+hSideSize,yRT,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT,yRT+hSideSize,xRT,yRT+h-hSideSize,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT+w,yRT+hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT-hSideSize,yRT+h,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
 					elseif side == "out" then
-						dxDrawLine(xRT-sideSize,yNRT-hSideSize,xRT+w+sideSize,yNRT-hSideSize,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT-hSideSize,yNRT,xRT-hSideSize,yNRT+h,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT+w+hSideSize,yNRT,xRT+w+hSideSize,yNRT+h,sideColor,sideSize,isPostGUI)
-						dxDrawLine(xRT-sideSize,yNRT+h+hSideSize,xRT+w+sideSize,yNRT+h+hSideSize,sideColor,sideSize,isPostGUI)
+						print(xRT)
+						dxDrawLine(xRT-sideSize,yRT-hSideSize,xRT+w+sideSize,yRT-hSideSize,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT-hSideSize,yRT,xRT-hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT+w+hSideSize,yRT,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
+						dxDrawLine(xRT-sideSize,yRT+h+hSideSize,xRT+w+sideSize,yRT+h+hSideSize,sideColor,sideSize,isPostGUI)
 					end
 				end
 			else
