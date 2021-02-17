@@ -51,6 +51,7 @@ function dgsCreateImage(...)
 		color = color or 0xFFFFFFFF,
 		rotationCenter = {0,0}, -- 0~1
 		rotation = 0, -- 0~360
+		shadow = {},
 	}
 	dgsElementData[image].image = type(img) == "string" and dgsImageCreateTextureExternal(image,sourceResource,img) or img
 	calculateGuiPositionSize(image,x,y,relative or false,w,h,relative or false,true)
@@ -159,9 +160,32 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		local sx,sy,px,py = uvSize[1],uvSize[2],uvPos[1],uvPos[2]
 		local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
 		local rot = eleData.rotation or 0
+		local shadow = eleData.shadow
+		local shadowoffx,shadowoffy,shadowc,shadowIsOutline
+		if shadow then
+			shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
+		end
 		if not sx or not sy or not px or not py then
+			if shadowoffx and shadowoffy and shadowc then
+				local shadowc = applyColorAlpha(shadowc,parentAlpha)
+				dxDrawImage(x+shadowoffx,y+shadowoffy,w,h,imgs,0,0,0,shadowc,isPostGUI,rndtgt)
+				if shadowIsOutline then
+					dxDrawImage(x-shadowoffx,y+shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(x-shadowoffx,y-shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(x+shadowoffx,y-shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+				end
+			end
 			dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,isPostGUI,rndtgt)
 		else
+			if shadowoffx and shadowoffy and shadowc then
+				local shadowc = applyColorAlpha(shadowc,parentAlpha)
+				dxDrawImageSection(x+shadowoffx,y+shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+				if shadowIsOutline then
+					dxDrawImageSection(x-shadowoffx,y+shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImageSection(x-shadowoffx,y-shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImageSection(x+shadowoffx,y-shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+				end
+			end
 			dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,rot,rotOffy,rotOffy,colors,isPostGUI,rndtgt)
 		end
 	else
