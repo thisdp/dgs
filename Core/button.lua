@@ -73,6 +73,7 @@ function dgsCreateButton(...)
 		iconImage = nil,
 		iconOffset = {0,0},
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
+		iconShadow = {},
 		image = {normalImage, hoveringImage, clickedImage},
 		shadow = {},
 		textColor = tonumber(textColor) or style.textColor,
@@ -157,6 +158,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local iconImage = eleData.iconImage
 	if iconImage then
 		local iconColor = eleData.iconColor
+		local iconShadow = eleData.iconShadow
 		iconImage = type(iconImage) == "table" and iconImage or {iconImage,iconImage,iconImage}
 		iconColor = type(iconColor) == "table" and iconColor or {iconColor,iconColor,iconColor}
 		local iconSize = eleData.iconSize
@@ -225,6 +227,16 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		posX,posY = posX+x,posY+y
 		if iconImage[buttonState] then
+			local shadowoffx,shadowoffy,shadowc,shadowIsOutline = iconShadow[1],iconShadow[2],iconShadow[3],iconShadow[4]
+			if shadowoffx and shadowoffy and shadowc then
+				local shadowc = applyColorAlpha(shadowc,parentAlpha)
+				dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+				if shadowIsOutline then
+					dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(posX+shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+				end
+			end
 			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
 		end
 	end
