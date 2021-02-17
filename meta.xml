@@ -240,6 +240,10 @@
 	<export function="dgsWindowSetCloseButtonSize" type="client" />
 	<export function="dgsWindowGetCloseButtonSize" type="client" />
 	<export function="dgsWindowGetCloseButton" type="client" />
+	<export function="dgsWindowSetHorizontalAlign" type="client" />
+	<export function="dgsWindowSetVerticalAlign" type="client" />
+	<export function="dgsWindowGetHorizontalAlign" type="client" />
+	<export function="dgsWindowGetVerticalAlign" type="client" />
 
 	<export function="dgsCreateCustomRenderer" type="client" />
 	<export function="dgsCustomRendererSetFunction" type="client" />
