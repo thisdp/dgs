@@ -633,13 +633,10 @@ addEventHandler("onClientKey",root,function(button,state)
 			local gridlist = enteredElement
 			local scrollbar1,scrollbar2 = dgsElementData[gridlist].scrollbars[1],dgsElementData[gridlist].scrollbars[2]
 			local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
-			if visibleScb1 and not visibleScb2 then
+			if visibleScb1 then
 				scrollbar = scrollbar1
 			elseif visibleScb2 and not visibleScb1 then
 				scrollbar = scrollbar2
-			elseif visibleScb1 and visibleScb2 then
-				local whichScrollBar = dgsElementData[gridlist].mouseWheelScrollBar and 2 or 1
-				scrollbar = dgsElementData[gridlist].scrollbars[whichScrollBar]
 			end
 			if scrollbar then
 				dgsSetData(scrollbar,"moveType","slow")
@@ -657,13 +654,10 @@ addEventHandler("onClientKey",root,function(button,state)
 			local scrollbar
 			local scrollbar1,scrollbar2 = dgsElementData[scrollPane].scrollbars[1],dgsElementData[scrollPane].scrollbars[2]
 			local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
-			if visibleScb1 and not visibleScb2 then
+			if visibleScb1 then
 				scrollbar = scrollbar1
 			elseif visibleScb2 and not visibleScb1 then
 				scrollbar = scrollbar2
-			elseif visibleScb1 and visibleScb2 then
-				local whichScrollBar = dgsElementData[scrollPane].mouseWheelScrollBar and 2 or 1
-				scrollbar = dgsElementData[scrollPane].scrollbars[whichScrollBar]
 			end
 			if scrollbar then
 				dgsSetData(scrollbar,"moveType","slow")
@@ -1470,7 +1464,7 @@ function checkMove(source)
 		local moveData = eleData.moveHandlerData
 		local movable = eleData.movable
 		if not movable then return end
-		local titsize = eleData.movetyp and h or eleData.titleHeight
+		local titsize = eleData.moveType and h or eleData.titleHeight
 		if offsety > titsize then return end
 		MouseData.Move = {offsetx,offsety}
 		triggerEvent("onDgsElementMove",source,offsetx,offsety)
@@ -1634,14 +1628,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
 					checkScrollBar(guiele,eleData.position*0.01*(slotRange-cursorRange),isHorizontal)
-					local parent = eleData.attachedToParent
-					if isElement(parent) then
-						if guiele == dgsElementData[parent].scrollbars[1] then
-							dgsSetData(parent,"mouseWheelScrollBar",false)
-						elseif guiele == dgsElementData[parent].scrollbars[2] then
-							dgsSetData(parent,"mouseWheelScrollBar",true)
-						end
-					end
 				elseif guitype == "dgs-dxradiobutton" then
 					dgsRadioButtonSetSelected(guiele,true)
 				elseif guitype == "dgs-dxcheckbox" then
