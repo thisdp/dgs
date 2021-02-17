@@ -168,7 +168,7 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		if not sx or not sy or not px or not py then
 			if shadowoffx and shadowoffy and shadowc then
 				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawImage(x+shadowoffx,y+shadowoffy,w,h,imgs,0,0,0,shadowc,isPostGUI,rndtgt)
+				dxDrawImage(x+shadowoffx,y+shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 				if shadowIsOutline then
 					dxDrawImage(x-shadowoffx,y+shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 					dxDrawImage(x-shadowoffx,y-shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
