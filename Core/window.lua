@@ -194,6 +194,32 @@ function dgsCloseWindow(window)
 	return false
 end
 
+function dgsWindowSetHorizontalAlign(window,align)
+	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetColor",1,"dgs-dxwindow")) end
+	if not HorizontalAlign[align] then error(dgsGenAsrt(align,"dgsWindowSetHorizontalAlign",2,"string","left/center/right")) end
+	local alignment = dgsElementData[window].alignment
+	return dgsSetData(window,"alignment",{align,alignment[2]})
+end
+
+function dgsWindowSetVerticalAlign(window,align)
+	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowSetVerticalAlign",1,"dgs-dxwindow")) end
+	if not VerticalAlign[align] then error(dgsGenAsrt(align,"dgsWindowSetVerticalAlign",2,"string","top/center/bottom")) end
+	local alignment = dgsElementData[window].alignment
+	return dgsSetData(window,"alignment",{alignment[1],align})
+end
+
+function dgsWindowGetHorizontalAlign(window)
+	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetHorizontalAlign",1,"dgs-dxwindow")) end
+	local alignment = dgsElementData[window].alignment
+	return alignment[1]
+end
+
+function dgsWindowGetVerticalAlign(window)
+	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetVerticalAlign",1,"dgs-dxwindow")) end
+	local alignment = dgsElementData[window].alignment
+	return alignment[2]
+end
+
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
