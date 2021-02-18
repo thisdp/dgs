@@ -525,12 +525,12 @@ function dgsSimulateClick(dgsGUI,button)
 	triggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
-addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y)
+addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y,isCoolingDown)
 	if not isElement(source) then return end
 	if state == "down" then
-		triggerEvent("onDgsMouseClickDown",source,button,state,x,y)
+		triggerEvent("onDgsMouseClickDown",source,button,state,x,y,isCoolingDown)
 	elseif state == "up" then
-		triggerEvent("onDgsMouseClickUp",source,button,state,x,y)
+		triggerEvent("onDgsMouseClickUp",source,button,state,x,y,isCoolingDown)
 	end
 end)
 
