@@ -558,6 +558,7 @@
 	<export function="dgsGridListClear" type="client" />
 	<export function="dgsGridListGetRowCount" type="client" />
 	<export function="dgsGridListGetSelectedItem" type="client" />
+	<export function="dgsGridListGetPreselectedItem" type="client" />
 	<export function="dgsGridListSetSelectedItem" type="client" />
 	<export function="dgsGridListGetSelectedItems" type="client" />
 	<export function="dgsGridListSetSelectedItems" type="client" />

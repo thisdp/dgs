@@ -1559,6 +1559,12 @@ function dgsGridListGetSelectedItem(gridlist)
 	return r or -1,c or -1
 end
 
+function dgsGridListGetPreselectedItem(gridlist)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetPreselectedItem",1,"dgs-dxgridlist")) end
+	local preSelect = dgsElementData[gridlist].preSelect or {}
+	return preSelect[1] or -1,preSelect[2] or -1
+end
+
 function dgsGridListGetSelectedItems(gridlist,isOrigin)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetSelectedItems",1,"dgs-dxgridlist")) end
 	local items = dgsElementData[gridlist].rowSelect
