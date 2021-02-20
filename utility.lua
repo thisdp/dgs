@@ -567,7 +567,15 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 				blendMode = dxGetBlendMode()
 				dxSetBlendMode("blend")
 			end
-			__dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+			if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
+				if debugMode then
+					local debugTrace = dgsElementData[self].debugTrace
+					if debugTrace then
+						local line,file = debugTrace.line,debugTrace.file
+						outputDebugString("dxDrawImage failed at element created at "..file..":"..line,2)
+					end
+				end
+			end
 			if blendMode then dxSetBlendMode(blendMode) end
 		end
 	end
