@@ -23,10 +23,10 @@ function dgsImportFunction(name,nameAs)
 			dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
 			addEventHandler("onClientResourceStop",dgsRoot,function()
 				outputDebugString("[DGS] Alert! DGS has stopped. Everything keeps disconnected from DGS till the next time DGS starts!",2)
-				dgsRoot = nil
 				function onDgsStart(dResN)
 					outputDebugString("[DGS] DGS has started, reconnecting to DGS...",3)
 					dgsImportHead = nil
+					dgsRoot = nil
 					loadstring(exports[dResN]:dgsImportFunction())()
 					removeEventHandler("onDgsStart",root,onDgsStart)
 				end
@@ -39,6 +39,7 @@ function dgsImportFunction(name,nameAs)
 				end
 			end,false)
 			function DGSCallMT:__index(k)
+				if type(k) ~= 'string' then k = tostring(k) end
 				self[k] = function(...)
 					if not dgsImportHead then error("DGS import data is missing or DGS is not running, please reimport dgs functions("..getResourceName(getThisResource())..")") end
 					if isElement(dgsRoot) then
