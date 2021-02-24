@@ -11,12 +11,19 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 		if isUpdateScrSource then
 			dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 		end
-		dxSetRenderTarget(rt)
+		--[[dxSetRenderTarget(rt)
 		dxSetShaderValue(shader[1],"screenSource",BlurBoxGlobalScreenSource)
 		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
 		dxSetRenderTarget()
 		dxSetShaderValue(shader[2],"screenSource",rt)
-		dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
+		dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,dgsElementData[self].color,postGUI or false)]]
+		
+		dxSetRenderTarget(rt)
+		dxSetShaderValue(shader[1],"screenSource",BlurBoxGlobalScreenSource)
+		dxDrawImageSection(0,0,resolution[1],resolution[2],0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
+		dxSetRenderTarget()
+		dxSetShaderValue(shader[2],"screenSource",rt)
+		dxDrawImageSection(x,y,w,h,x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
 	else
 		local firstRT = dgsElementData[self].rt0
 		if not isElement(firstRT) then
@@ -34,17 +41,17 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 		end
 		dxSetRenderTarget(rt)
 		dxSetShaderValue(shader[1],"screenSource",firstRT)
-		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
+		dxDrawImageSection(0,0,resolution[1],resolution[2],0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
 		dxSetRenderTarget()
 		dxSetShaderValue(shader[2],"screenSource",rt)
-		dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
+		dxDrawImageSection(x,y,w,h,x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
 		if dgsElementData[self].drawSource ~= false then
 			dxDrawImage(x,y,w,h,firstRT,0,0,0,0xFFFFFFFF,postGUI or false)
 		end
 	end
 end
 
-function dgsCreateBlurBox(w,h,blursource)
+function dgsCreateBlurBox(w,h,blursource,distributionType,distributionData)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBlurBox",1,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBlurBox",2,"number")) end
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
@@ -56,7 +63,7 @@ function dgsCreateBlurBox(w,h,blursource)
 			BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
 		end
 	end
-	local horz,vert = getBlurBoxShader(5)
+	local horz,vert = getBlurBoxShader(5,distributionType,distributionData)
 	local shaderH = dxCreateShader(horz)
 	local shaderV = dxCreateShader(vert)
 	dgsAttachToAutoDestroy(shaderH,bb,1)
@@ -66,6 +73,9 @@ function dgsCreateBlurBox(w,h,blursource)
 	local rt = dxCreateRenderTarget(w,h,true,bb)
 	dgsAttachToAutoDestroy(rt,bb,3)
 	dgsSetData(bb,"rt",rt)
+	dgsSetData(bb,"intensity",1)
+	dgsSetData(bb,"distributionType",distributionType)
+	dgsSetData(bb,"distributionData",distributionData)
 	dgsSetData(bb,"intensity",1)
 	dgsSetData(bb,"resolution",{w,h})
 	dgsSetData(bb,"level",5)
@@ -107,7 +117,9 @@ function dgsBlurBoxSetLevel(bb,level)
 	local shaders = dgsElementData[bb].shaders
 	destroyElement(shaders[1])
 	destroyElement(shaders[2])
-	local horz,vert = getBlurBoxShader(level)
+	local distributionType = dgsElementData[bb].distributionType
+	local distributionData = dgsElementData[bb].distributionData
+	local horz,vert = getBlurBoxShader(level,distributionType,distributionData)
 	local shaderH = dxCreateShader(horz)
 	local shaderV = dxCreateShader(vert)
 	dgsAttachToAutoDestroy(shaderH,bb,1)
@@ -136,8 +148,20 @@ function dgsBlurBoxGetLevel(bb,level)
 end
 
 ----------------Shader
-function getBlurBoxShader(level)
+function getBlurBoxShader(level,distributionType,distributionData)
+	local distributionStr = [[
+	#define distribution(x) (1-x)
+	]]
+	if distributionType and distributionData then
+		if distributionType == "gauss" then
+			distributionStr = [[
+				float sigma = ]]..(distributionData[1] or 1)..[[;
+				#define distribution(x) 1/2.506628274631/sigma*pow(2.718281828459,-x*x/(2*sigma*sigma))
+			]]
+		end
+	end
 	local blurBoxShaderHorizontal = [[
+	]]..distributionStr..[[
 	texture screenSource;
 	float intensity = 1;
 	#define Level ]]..level..[[
@@ -150,13 +174,18 @@ function getBlurBoxShader(level)
 	};
 
 	float blur(float i){
-		return (1-abs(i/Level))/Level;
+		return distribution(abs(i/Level))/Level;
 	}
 
-	float4 HorizontalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
+	float4 HorizontalBlur( float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
-		for(int i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y))*blur(i);
+		float resultValue = 0;
+		for(int i = -Level; i <= Level; i++){
+			float blurValue = blur(i);
+			resultValue = resultValue+blurValue;
+			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y))*blurValue;
+		}
+		Color /= resultValue;
 		return Color*diffuse;
 	}
 
@@ -166,8 +195,9 @@ function getBlurBoxShader(level)
 		}
 	}
 	]]
-
+	setClipboard(blurBoxShaderHorizontal)
 	local blurBoxShaderVertical = [[
+	]]..distributionStr..[[
 	texture screenSource;
 	float intensity = 1;
 	#define Level ]]..level..[[
@@ -180,13 +210,18 @@ function getBlurBoxShader(level)
 	};
 
 	float blur(float i){
-		return (1-abs(i/Level))/Level;
+		return distribution(abs(i/Level))/Level;
 	}
 
 	float4 VerticalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
-		for(int i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)))*blur(i);
+		float resultValue = 0;
+		for(int i = -Level; i <= Level; i++){
+			float blurValue = blur(i);
+			resultValue = resultValue+blurValue;
+			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)))*blurValue;
+		}
+		Color /= resultValue;
 		return Color*diffuse;
 	}
 
