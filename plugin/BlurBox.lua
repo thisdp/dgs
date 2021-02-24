@@ -53,7 +53,7 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	end
 end
 
-function dgsCreateBlurBox(w,h,blursource,distributionType,distributionData)
+function dgsCreateBlurBox(w,h,blursource)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBlurBox",1,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBlurBox",2,"number")) end
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
@@ -65,7 +65,7 @@ function dgsCreateBlurBox(w,h,blursource,distributionType,distributionData)
 			BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
 		end
 	end
-	local horz,vert = getBlurBoxShader(5,distributionType,distributionData)
+	local horz,vert = getBlurBoxShader(5)
 	local shaderH = dxCreateShader(horz)
 	local shaderV = dxCreateShader(vert)
 	dgsAttachToAutoDestroy(shaderH,bb,1)
@@ -76,8 +76,6 @@ function dgsCreateBlurBox(w,h,blursource,distributionType,distributionData)
 	dgsAttachToAutoDestroy(rt,bb,3)
 	dgsSetData(bb,"rt",rt)
 	dgsSetData(bb,"intensity",1)
-	dgsSetData(bb,"distributionType",distributionType)
-	dgsSetData(bb,"distributionData",distributionData)
 	dgsSetData(bb,"intensity",1)
 	dgsSetData(bb,"resolution",{w,h})
 	dgsSetData(bb,"level",5)
@@ -119,9 +117,7 @@ function dgsBlurBoxSetLevel(bb,level)
 	local shaders = dgsElementData[bb].shaders
 	destroyElement(shaders[1])
 	destroyElement(shaders[2])
-	local distributionType = dgsElementData[bb].distributionType
-	local distributionData = dgsElementData[bb].distributionData
-	local horz,vert = getBlurBoxShader(level,distributionType,distributionData)
+	local horz,vert = getBlurBoxShader(level)
 	local shaderH = dxCreateShader(horz)
 	local shaderV = dxCreateShader(vert)
 	dgsAttachToAutoDestroy(shaderH,bb,1)
@@ -150,44 +146,22 @@ function dgsBlurBoxGetLevel(bb,level)
 end
 
 ----------------Shader
-function getBlurBoxShader(level,distributionType,distributionData)
-	local distributionStr = [[
-	#define distribution(x) (1-x)
-	]]
-	if distributionType and distributionData then
-		if distributionType == "gauss" then
-			distributionStr = [[
-				float sigma = ]]..(distributionData[1] or 1)..[[;
-				#define distribution(x) 1/2.506628274631/sigma*pow(2.718281828459,-x*x/(2*sigma*sigma))
-			]]
-		end
-	end
+function getBlurBoxShader(level)
 	local blurBoxShaderHorizontal = [[
-	]]..distributionStr..[[
 	texture screenSource;
 	float intensity = 1;
 	#define Level ]]..level..[[
 
-	#define Brightness 1.0/(Level*2+1)
 	sampler2D Sampler0 = sampler_state{
-		Texture         = screenSource;
-		AddressU        = Mirror;
-		AddressV        = Mirror;
+		Texture  = screenSource;
+		AddressU = Mirror;
+		AddressV  = Mirror;
 	};
-
-	float blur(float i){
-		return distribution(abs(i/Level))/Level;
-	}
 
 	float4 HorizontalBlur( float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
-		float resultValue = 0;
-		for(int i = -Level; i <= Level; i++){
-			float blurValue = blur(i);
-			resultValue = resultValue+blurValue;
-			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y))*blurValue;
-		}
-		Color /= resultValue;
+		for(float i = -Level; i <= Level; i++)
+			Color += tex2D(Sampler0,float2(tex.x+i*intensity*ddx(tex.x),tex.y))*(1-abs(i/Level))/Level;
 		return Color*diffuse;
 	}
 
@@ -199,31 +173,20 @@ function getBlurBoxShader(level,distributionType,distributionData)
 	]]
 	setClipboard(blurBoxShaderHorizontal)
 	local blurBoxShaderVertical = [[
-	]]..distributionStr..[[
 	texture screenSource;
 	float intensity = 1;
 	#define Level ]]..level..[[
 
-	#define Brightness 1.0/(Level*2+1)
 	sampler2D Sampler0 = sampler_state{
-		Texture         = screenSource;
-		AddressU        = Mirror;
-		AddressV        = Mirror;
+		Texture  = screenSource;
+		AddressU = Mirror;
+		AddressV  = Mirror;
 	};
-
-	float blur(float i){
-		return distribution(abs(i/Level))/Level;
-	}
 
 	float4 VerticalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
 		float4 Color = 0;
-		float resultValue = 0;
-		for(int i = -Level; i <= Level; i++){
-			float blurValue = blur(i);
-			resultValue = resultValue+blurValue;
-			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)))*blurValue;
-		}
-		Color /= resultValue;
+		for(float i = -Level; i <= Level; i++)
+			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*ddy(tex.y)))*(1-abs(i/Level))/Level;
 		return Color*diffuse;
 	}
 
