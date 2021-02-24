@@ -2212,9 +2212,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if eleData.configNextFrame then configGridList(source) end
 	local scrollbar = eleData.scrollbars
 	if MouseData.hit == source then
-		if MouseData.focused == source then
-			MouseData.topScrollable = source
-		end
+		MouseData.topScrollable = source
 	end
 	local bgColor,bgImage = applyColorAlpha(eleData.bgColor,parentAlpha),eleData.bgImage
 	local columnColor,columnImage = applyColorAlpha(eleData.columnColor,parentAlpha),eleData.columnImage
