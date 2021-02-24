@@ -41,10 +41,12 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 		end
 		dxSetRenderTarget(rt)
 		dxSetShaderValue(shader[1],"screenSource",firstRT)
-		dxDrawImageSection(0,0,resolution[1],resolution[2],0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
+		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
+		--dxDrawImageSection(0,0,resolution[1],resolution[2],0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
 		dxSetRenderTarget()
 		dxSetShaderValue(shader[2],"screenSource",rt)
-		dxDrawImageSection(x,y,w,h,x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
+		dxDrawImageSection(x,y,w,h,0,0,resolution[1],resolution[2],shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
+		--dxDrawImageSection(x,y,w,h,x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
 		if dgsElementData[self].drawSource ~= false then
 			dxDrawImage(x,y,w,h,firstRT,0,0,0,0xFFFFFFFF,postGUI or false)
 		end
