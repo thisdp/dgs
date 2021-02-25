@@ -144,6 +144,12 @@ function dgsCreateGridList(...)
 		sortColumn = false,
 		sortEnabled = true,
 		defaultSortFunctions = {"greaterUpper","greaterLower"},
+		
+		renderBuffer = {
+			columnEndPos = {},
+			columnPos = {},
+			textBuffer = {[0]=0},
+		},
 	}
 	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or resource])
@@ -2290,13 +2296,16 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local sortIcon = eleData.sortFunction == sortFunctions[defaultSortFunctions[1]] and "▼" or (eleData.sortFunction == sortFunctions[defaultSortFunctions[2]] and "▲") or nil
 	local sortColumn = eleData.sortColumn
 	local backgroundOffset = eleData.backgroundOffset
+	
+	local renderBuffer = eleData.renderBuffer
+	local columnPos = renderBuffer.columnPos
+	local columnEndPos = renderBuffer.columnEndPos
+	
 	if not eleData.mode then
 		local renderTarget = eleData.renderTarget
 		local isDraw1,isDraw2 = isElement(renderTarget[1]),isElement(renderTarget[2])
 		dxSetRenderTarget(renderTarget[1],true)
 			dxSetBlendMode("modulate_add")
-			local cpos = {}
-			local cend = {}
 			local multiplier = columnRelt and (w-scbThickV) or 1
 			local tempColumnOffset = columnMoveOffset+columnOffset
 			local mouseColumnPos = mx-cx
@@ -2312,7 +2321,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local _tempStartx = tempCpos+tempColumnOffset
 				local _tempEndx = _tempStartx+data[2]*multiplier
 				if _tempStartx <= w and _tempEndx >= 0 then
-					cpos[id],cend[id] = tempCpos,_tempEndx
+					columnPos[id],columnEndPos[id] = tempCpos,_tempEndx
 					cPosStart,cPosEnd = cPosStart or id,id
 					if isDraw1 then
 						local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
@@ -2376,8 +2385,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local Select = eleData.rowSelect
 			local sectionFont = eleData.sectionFont or font
 			local dgsElementBuffer = {}
-			local textBufferCnt = 1
-			local textBuffer = {}
+			local textBufferCnt = 0
+			local textBuffer = renderBuffer.textBuffer
 			for i=eleData.FromTo[1],eleData.FromTo[2] do
 				dgsElementBuffer[i] = {}
 				local lc_rowData = rowData[i]
@@ -2423,9 +2432,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								rowState = 3
 							end
 						end
-						local offset = cpos[id]
+						local offset = columnPos[id]
 						local _x = _x+offset
-						local _sx = cend[id]
+						local _sx = columnEndPos[id]
 						local columnWidth = columnData[id][2]*multiplier
 						local _bgX = _x
 						local backgroundWidth = columnWidth
@@ -2463,6 +2472,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
 							end
 							local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
+							textBufferCnt = textBufferCnt+1
 							textBuffer[textBufferCnt] = {
 								currentRowData[1],	--Text
 								textXS-textXS%1,			--startX
@@ -2477,13 +2487,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								colorcoded,
 								alignment,
 							}
-							textBufferCnt = textBufferCnt + 1
 						end
 					end
 				end
 			end
-			local textBuffers = #textBuffer
-			for a=1,textBuffers do
+			textBuffer[0] = textBufferCnt
+			for a=1,textBufferCnt do
 				local line = textBuffer[a]
 				local text = line[1]
 				local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
@@ -2504,8 +2513,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local preHitElement = MouseData.hit
 			for rowIndex,row in pairs(dgsElementBuffer) do
 				for columnIndex,items in pairs(row) do
-					local offx = items[2]
-					local offy = items[3]
+					local offx,offy = items[2],items[3]
 					for a=1,#(items[1] or {}) do
 						renderGUI(items[1][a],mx,my,enabledInherited,enabledSelf,renderTarget[2],0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
 					end
