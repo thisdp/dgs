@@ -396,10 +396,8 @@ function getColorAlpha(color)
 	if color < 0 then
 		color = 0x100000000+color
 	end
-	local rgb = color%0x1000000
-	local a = (color-rgb)/0x1000000*alpha
-	a = a-a%1
-	return a
+	local a = (color-color%0x1000000)/0x1000000
+	return a-a%1
 end
 
 function setColorAlpha(color,alpha)
@@ -859,3 +857,4 @@ local addEvent = addEvent
 for i=1,#events do
 	addEvent(events[i],true)
 end
+

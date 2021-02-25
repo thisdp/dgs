@@ -128,6 +128,7 @@ function dgsColorPickerCreateComponentSelector(x,y,w,h,voh,relative,parent,thick
 	dgsSetData(cs,"voh",voh)
 	dgsSetData(cs,"cp_images",{cs,selector})
 	dgsSetData(cs,"value",0)	--0~100
+	dgsSetData(cs,"isReversed",false)
 	addEventHandler("onDgsMouseDrag",cs,ComponentChange,false)
 	addEventHandler("onDgsMouseClickDown",cs,ComponentChange,false)
 	addEventHandler("onDgsSizeChange",cs,ComponentResize,false)

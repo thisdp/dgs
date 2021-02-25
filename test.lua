@@ -3,14 +3,32 @@ function createFullDemo()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
 	DGSOOPFnc()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
-	local scb = window
-		:dgsScrollBar(320,50,260,20,true,false)
-		:setAlpha(0.5)
-		:setScrollPosition(50)
-		:setGrades(10)
-		:setProperty("length",{0.8,true})
 	window.position.relative = false
 	window.position.x = 400
+	
+	--Color Picker
+	local cp = window:
+		dgsColorPicker("HSVRing",300,0,200,200)
+	local rSel = window
+		:dgsComponentSelector(515,10,10,90,false)
+		:bindToColorPicker(cp,"RGB","R",true,true)
+	local gSel = window
+		:dgsComponentSelector(545,10,10,90,false)
+		:bindToColorPicker(cp,"RGB","G",true,true)
+	local bSel = window
+		:dgsComponentSelector(575,10,10,90,false)
+		:bindToColorPicker(cp,"RGB","B",true,true)
+
+	local hSel = window
+		:dgsComponentSelector(515,110,10,90,false)
+		:bindToColorPicker(cp,"HSV","H",true,true)
+	local sSel = window
+		:dgsComponentSelector(545,110,10,90,false)
+		:bindToColorPicker(cp,"HSV","S",true,true)
+	local vSel = window
+		:dgsComponentSelector(575,110,10,90,false)
+		:bindToColorPicker(cp,"HSV","V",true,true)
+
 	local button = window:dgsButton(10,210,80,50,"Test Button",false)
 	button.textColor = {tocolor(255,0,0,255),tocolor(255,255,0,255),tocolor(255,0,255,255)}
 	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"","",false)
@@ -91,7 +109,9 @@ function createFullDemo()
 
 	--dgsSetCursorImage()
 	--dgsSetCustomCursorEnabled(true)
+	
 end
+--createFullDemo()
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)

@@ -135,9 +135,26 @@ local function class(tab)
 	}
 	if tab.extends then
 		tab.public = tab.public or {}
-		local extendsClass = dgsOOP[tab.extends]
-		for k,v in pairs(extendsClass.public or {}) do
-			tab.public[k] = v
+		if type(tab.extends) ~= "table" then
+			local extendsClass = dgsOOP[tab.extends]
+			for k,v in pairs(extendsClass.public or {}) do
+				tab.public[k] = v
+			end
+		else
+			for key,extend in ipairs(tab.extends) do
+				local extendsClass = dgsOOP[extend]
+				for k,v in pairs(extendsClass.public or {}) do
+					tab.public[k] = v
+				end
+			end
+		end
+	end
+	if tab.inject then
+		for theType,space in pairs(tab.inject) do
+			local classData = dgsOOP[theType]
+			for name,fnc in pairs(space.default) do
+				classData.public[name] = fnc
+			end
 		end
 	end
 	setmetatable(tab,meta)
@@ -392,6 +409,10 @@ class {
 		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(...) end,
 		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(...) end,
 		dgsWindow = function(...) return dgsOOP.dgsWindow(...) end,
+		
+		----------Plugins
+		dgsColorPicker = function(...) return dgsOOP.dgsColorPicker(...) end,
+		dgsComponentSelector = function(...) return dgsOOP.dgsComponentSelector(...) end,
 	};
 }
 
@@ -1253,7 +1274,75 @@ class {
 		getRotation = gObjFnc("dgs3DLineGetRotation"),
 	};
 }
---------------------DGS Built-in Plugins
+----------------------------------------------------------
+--------------------------------------DGS Built-in Plugins
+----------------------------------------------------------
+----------------DGS Plugins
 
+class {
+	extends = "dgsRoot";
+	type = "dgsPlugin";
+	public = {
+		__index=function(self,key)
+			return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
+		end,
+		__newindex=function(self,key,value)
+			return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,key,value) and self or false
+		end,
+		getPluginType = gObjFnc("dgsGetPluginType"),
+		getProperty = gObjFnc("dgsGetProperty"),
+		setProperty = gObjFnc("dgsSetProperty",true),
+		getProperties = function(self,...) return call(dgsOOP.dgsRes,"dgsGetProperties",self.dgsElement,...) end,
+		setProperties = gObjFnc("dgsSetProperties",true),
+		destroy = function(self) return destroyElement(self.dgsElement) end;
+		isElement = gObjFnc("isElement",true);
+		getElement = function(self) return self.dgsElement end,
+	};
+}
+
+--------------------------Color Picker
+class {
+	extends = {"dgsPlugin","dgsImage"};
+	type = "dgsColorPicker";
+	dgsType = "dgs-dxcolorpicker";
+	preInstantiate = function(parent,style,x,y,w,h,rlt,...)
+		return call(dgsOOP.dgsRes,"dgsCreateColorPicker",style,x,y,w,h,rlt,parent.dgsElement,...)
+	end;
+	public = {
+		getColor = gObjFnc("dgsColorPickerGetColor"),
+		setColor = gObjFnc("dgsColorPickerSetColor",true),
+	};
+}
+
+class {
+	extends = {"dgsPlugin","dgsImage"};
+	type = "dgsComponentSelector";
+	dgsType = "dgs-dxcomponentselector";
+	preInstantiate = function(parent,x,y,w,h,voh,rlt,...)
+		return call(dgsOOP.dgsRes,"dgsColorPickerCreateComponentSelector",x,y,w,h,voh,rlt,parent.dgsElement,...)
+	end;
+	public = {
+		getCursorThickness = gObjFnc("dgsComponentSelectorGetCursorThickness"),
+		setCursorThickness = gObjFnc("dgsComponentSelectorSetCursorThickness",true),
+		getValue = gObjFnc("dgsColorPickerGetComponentSelectorValue"),
+		setValue = gObjFnc("dgsColorPickerSetComponentSelectorValue",true),
+		bindToColorPicker = function(self,colorPicker,...)
+			return call(dgsOOP.dgsRes,"dgsBindToColorPicker",self.dgsElement,colorPicker.dgsElement,...)
+		end,
+		unbindFromColorPicker = gObjFnc("dgsUnbindFromColorPicker",true),
+	};
+	inject = {
+		dgsScrollBar = {
+			default = {
+				bindToColorPicker = function(self,colorPicker,...)
+					return call(dgsOOP.dgsRes,"dgsBindToColorPicker",self.dgsElement,colorPicker.dgsElement,...)
+				end,
+				unbindFromColorPicker = gObjFnc("dgsUnbindFromColorPicker",true),
+			}
+		}
+	}
+}
+
+------------------------------------------------
 dgsRootInstance = dgsOOP.dgsRoot()
 end
