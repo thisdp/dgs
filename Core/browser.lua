@@ -43,7 +43,7 @@ function dgsCreateBrowser(...)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBrowser",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBrowser",4,"number")) end
 	local browser = createBrowser(1,1,isLocal and true or false,isTransparent and true or false)
-	if not isElement(browser) then error(dgsGenAsrt(browser,"dgsCreateBrowser",_,_,_,_,"Failed to create browser!")) end
+	if not isElement(browser) then error(dgsGenAsrt(browser,"dgsCreateBrowser",_,_,_,_,"Failed to create remote browser (createBrowser returns false)!")) end
 	dgsSetType(browser,"dgs-dxbrowser")
 	dgsSetParent(browser,parent,true,true)
 	dgsElementData[browser] = {

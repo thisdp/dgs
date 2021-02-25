@@ -36,7 +36,7 @@ function dgsCreate3DImage(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",3,"number")) end
 	local image3d = createElement("dgs-dx3dimage")
-	tableInsert(dx3DImageTable,image3d)
+	tableInsert(dgsScreen3DTable,image3d)
 	dgsSetType(image3d,"dgs-dx3dimage")
 	dgsElementData[image3d] = {
 		renderBuffer = {},
@@ -142,9 +142,9 @@ end
 
 function dgs3DImageSetPosition(image,x,y,z)
 	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetPosition",1,"dgs-dx3dimage")) end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",2,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",3,"number")) end
-	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",4,"number")) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DImageSetPosition",2,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DImageSetPosition",3,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DImageSetPosition",4,"number")) end
 	return dgsSetData(image,"position",{x,y,z})
 end
 

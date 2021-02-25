@@ -38,7 +38,7 @@ function dgsCreate3DText(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DText",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DText",3,"number")) end
 	local text3d = createElement("dgs-dx3dtext")
-	tableInsert(dx3DTextTable,text3d)
+	tableInsert(dgsScreen3DTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
 	dgsElementData[text3d] = {
 		renderBuffer = {},
@@ -129,9 +129,9 @@ end
 
 function dgs3DTextSetPosition(text,x,y,z)
 	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetPosition",1,"dgs-dx3dtext")) end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DText",2,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DText",3,"number")) end
-	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DText",4,"number")) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DTextSetPosition",2,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DTextSetPosition",3,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DTextSetPosition",4,"number")) end
 	return dgsSetData(text,"position",{x,y,z})
 end
 

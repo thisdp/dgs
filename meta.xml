@@ -1,8 +1,9 @@
 ﻿<meta>
-	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="thisdp ft. xLive" version="3.506" />
+	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="DGS Community" version="3.506" />
 	<file src="html/media.html" />
 	<file src="styleManager/styleMapper.lua"/>
 
+	<script src="lua.lua" type="shared" />
 	<script src="server.lua" type="server" />
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
@@ -10,6 +11,7 @@
 	<script src="functions.lua" type="client" />
 	<script src="styleManager/styleManager.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
+	<script src="Core/3dline.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
 	<script src="Core/3dimage.lua" type="client" />
 	<script src="Core/browser.lua" type="client" />
@@ -78,7 +80,6 @@
 	<file src="plugin/mask/maskTexture.fx" type="client" />
 	<file src="plugin/mask/mask-Circle.fx" type="client" />
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
-
 
 	<script src="dxCmdEvent.lua" type="client" />
 	<script src="update.lua" type="server" />
@@ -270,6 +271,29 @@
 	<export function="dgs3DInterfaceGetInterior" type="client" />
 	<export function="dgs3DInterfaceSetRotation" type="client" />
 	<export function="dgs3DInterfaceGetRotation" type="client" />
+	
+	<export function="dgsCreate3DLine" type="client" />
+	<export function="dgs3DLineAddLine" type="client" />
+	<export function="dgs3DLineRemoveLine" type="client" />
+	<export function="dgs3DLineSetItemPosition" type="client" />
+	<export function="dgs3DLineGetItemPosition" type="client" />
+	<export function="dgs3DLineSetItemWidth" type="client" />
+	<export function="dgs3DLineGetItemWidth" type="client" />
+	<export function="dgs3DLineSetItemColor" type="client" />
+	<export function="dgs3DLineGetItemColor" type="client" />
+	<export function="dgs3DLineGetDimension" type="client" />
+	<export function="dgs3DLineSetDimension" type="client" />
+	<export function="dgs3DLineGetInterior" type="client" />
+	<export function="dgs3DLineSetInterior" type="client" />
+	<export function="dgs3DLineAttachToElement" type="client" />
+	<export function="dgs3DLineIsAttached" type="client" />
+	<export function="dgs3DLineDetachFromElement" type="client" />
+	<export function="dgs3DLineSetAttachedOffsets" type="client" />
+	<export function="dgs3DLineGetAttachedOffsets" type="client" />
+	<export function="dgs3DLineSetPosition" type="client" />
+	<export function="dgs3DLineGetPosition" type="client" />
+	<export function="dgs3DLineSetRotation" type="client" />
+	<export function="dgs3DLineGetRotation" type="client" />
 
 	<export function="dgsCreate3DText" type="client" />
 	<export function="dgs3DTextGetPosition" type="client" />

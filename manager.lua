@@ -14,9 +14,8 @@ local mathClamp = math.restrict
 BottomFatherTable = {}		--Store Bottom Father Element
 CenterFatherTable = {}		--Store Center Father Element (Default)
 TopFatherTable = {}			--Store Top Father Element
-dx3DInterfaceTable = {}
-dx3DTextTable = {}
-dx3DImageTable = {}
+dgsWorld3DTable = {}
+dgsScreen3DTable = {}
 FatherTable = {}			--Store Father Element
 ChildrenTable = {}			--Store Children Element
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
@@ -267,6 +266,7 @@ end
 dgsElementType = {}
 dgsType = {
 	"dgs-dx3dinterface",
+	"dgs-dx3dline",
 	"dgs-dx3dtext",
 	"dgs-dx3dimage",
 	"dgs-dxbutton",
@@ -291,6 +291,24 @@ dgsType = {
 	"dgs-dxcustomrenderer",
 	"dgs-dxbrowser",
 }
+
+dgsScreen3DType = {
+	"dgs-dx3dimage",
+	"dgs-dx3dtext",
+}
+
+dgsWorld3DType = {
+	"dgs-dx3dinterface",
+	"dgs-dx3dline",
+}
+
+for i=1,#dgsType do
+	dgsType[dgsType[i]] = dgsType[i]
+end
+
+for i=1,#dgsWorld3DType do
+	dgsWorld3DType[dgsWorld3DType[i]] = dgsWorld3DType[i]
+end
 
 function dgsGetType(dgsEle)
 	if isElement(dgsEle) then return tostring(dgsElementType[dgsEle] or getElementType(dgsEle)) end

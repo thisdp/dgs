@@ -39,11 +39,13 @@ local getElementID = function(ele) return isElement(ele) and _getElementID(ele) 
 sW,sH = guiGetScreenSize()
 fontSize = {}
 self,renderArguments = false,false
+local dgsRenderInfo = {}
 dgsRenderSetting = {
 	postGUI = nil,
 	renderPriority = "normal",
 }
 dgsRenderer = {}
+dgs3DRenderer = {}
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)
 		if mx >= x and mx <= x+w and my >= y and my <= y+h then
@@ -108,17 +110,16 @@ MouseData.EditMemoTimer = setTimer(function()
 end,500,0)
 
 function dgsCoreRender()
-	local tk = getTickCount()
+	dgsRenderInfo.frameStartScreen = getTickCount()
+	dgsRenderInfo.rendering = 0
 	triggerEvent("onDgsPreRender",resourceRoot)
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
 	local topTableSize = #TopFatherTable
-	local dx3DInterfaceTableSize = #dx3DInterfaceTable
-	local dx3DTextTableSize = #dx3DTextTable
-	local dx3DImageTableSize = #dx3DImageTable
+	local dgsWorld3DTableSize = #dgsWorld3DTable
+	local dgsScreen3DTableSize = #dgsScreen3DTable
 	MouseData.hit = false
 	local _enteredGridList = false
-	DGSShow = 0
 	wX,wY,wZ = nil,nil,nil
 	local mx,my = -1000,-1000
 	if isCursorShowing() then
@@ -143,15 +144,15 @@ function dgsCoreRender()
 	end
 	local normalMx,normalMy = mx,my
 	local intfaceHitElement,interfaceClickElementl = false,false
-	if bottomTableSize+centerTableSize+topTableSize+dx3DInterfaceTableSize+dx3DTextTableSize+dx3DImageTableSize ~= 0 then
+	if bottomTableSize+centerTableSize+topTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
 		dxSetRenderTarget()
 		MouseData.interfaceHit = {}
 		MouseData.topScrollable = false
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
 		MouseData.WithinElements = {}
-		for i=1,dx3DInterfaceTableSize do
-			local v = dx3DInterfaceTable[i]
+		for i=1,dgsWorld3DTableSize do
+			local v = dgsWorld3DTable[i]
 			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
@@ -165,15 +166,8 @@ function dgsCoreRender()
 		local intfaceMx,intfaceMy = MouseX,MouseY
 		intfaceHitElement = MouseData.hit
 		local mx,my = normalMx,normalMy
-		for i=1,dx3DTextTableSize do
-			local v = dx3DTextTable[i]
-			local eleData = dgsElementData[v]
-			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
-				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
-			end
-		end
-		for i=1,dx3DImageTableSize do
-			local v = dx3DImageTable[i]
+		for i=1,dgsScreen3DTableSize do
+			local v = dgsScreen3DTable[i]
 			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
@@ -247,8 +241,11 @@ function dgsCoreRender()
 			end
 		end
 	end
-	local ticks = getTickCount()-tk
+	dgsRenderInfo.frameEndScreen = getTickCount()
 	if debugMode then
+		dgsRenderInfo.frameRenderTimeScreen = dgsRenderInfo.frameEndScreen-dgsRenderInfo.frameStartScreen
+		dgsRenderInfo.frameRenderTime3D = dgsRenderInfo.frameEnd3D-dgsRenderInfo.frameStart3D
+		dgsRenderInfo.frameRenderTimeTotal = dgsRenderInfo.frameRenderTimeScreen+dgsRenderInfo.frameRenderTime3D
 		if isElement(MouseData.hit) and debugMode >= 2 then
 			local highlight = MouseData.hit
 			if dgsElementType[MouseData.hit] == "dgs-dxtab" then
@@ -319,16 +316,17 @@ function dgsCoreRender()
 		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-130)
 		dxDrawText("Version: "..version..freeMemory,6,sH*0.4-114,sW,sH,black)
 		dxDrawText("Version: "..version..freeMemory,5,sH*0.4-115)
-		dxDrawText("Render Time: "..ticks.." ms",11,sH*0.4-99,sW,sH,black)
+		local renderTimeStr = dgsRenderInfo.frameRenderTimeTotal.."ms-"..dgsRenderInfo.frameRenderTimeScreen.."ms-"..dgsRenderInfo.frameRenderTime3D.."ms"
+		dxDrawText("Render Time(All-2D-3D): "..renderTimeStr,11,sH*0.4-99,sW,sH,black)
 		local tickColor
-		if ticks <= 8 then
+		if dgsRenderInfo.frameRenderTimeTotal <= 8 then
 			tickColor = green
-		elseif ticks <= 20 then
+		elseif dgsRenderInfo.frameRenderTimeTotal <= 20 then
 			tickColor = yellow
 		else
 			tickColor = red
 		end
-		dxDrawText("Render Time: "..ticks.." ms",10,sH*0.4-100,_,_,tickColor)
+		dxDrawText("Render Time(All-2D-3D): "..renderTimeStr,10,sH*0.4-100,_,_,tickColor)
 		local Focused = MouseData.focused and dgsGetPluginType(MouseData.focused).."("..getElementID(MouseData.focused)..")" or "None"
 		local enterStr = MouseData.hit and dgsGetPluginType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
 		local leftStr = MouseData.clickl and dgsGetPluginType(MouseData.clickl).." ("..getElementID(MouseData.clickl)..")" or "None"
@@ -343,11 +341,11 @@ function dgsCoreRender()
 		dxDrawText("  Left: "..leftStr,10,sH*0.4-40)
 		dxDrawText("  Right: "..rightStr,11,sH*0.4-24,sW,sH,black)
 		dxDrawText("  Right: "..rightStr,10,sH*0.4-25)
-		DGSCount = 0
+		dgsRenderInfo.created = 0
 		for i=1,#dgsType do
 			local value = dgsType[i]
 			local elements = #getElementsByType(value)
-			DGSCount = DGSCount+elements
+			dgsRenderInfo.created = dgsRenderInfo.created+elements
 			local x = 15
 			if value == "dgs-dxtab" or value == "dgs-dxcombobox-Box" then
 				x = 30
@@ -355,17 +353,17 @@ function dgsCoreRender()
 			dxDrawText(value.." : "..elements,x+1,sH*0.4+15*i+6,sW,sH,black)
 			dxDrawText(value.." : "..elements,x,sH*0.4+15*i+5)
 		end
-		dxDrawText("Rendering: "..DGSShow,11,sH*0.4-9,sW,sH,black)
-		dxDrawText("Rendering: "..DGSShow,10,sH*0.4-10,sW,sH,green)
-		dxDrawText("Created: "..DGSCount,11,sH*0.4+6,sW,sH,black)
-		dxDrawText("Created: "..DGSCount,10,sH*0.4+5,sW,sH,yellow)
+		dxDrawText("Rendering: "..dgsRenderInfo.rendering,11,sH*0.4-9,sW,sH,black)
+		dxDrawText("Rendering: "..dgsRenderInfo.rendering,10,sH*0.4-10,sW,sH,green)
+		dxDrawText("Created: "..dgsRenderInfo.created,11,sH*0.4+6,sW,sH,black)
+		dxDrawText("Created: "..dgsRenderInfo.created,10,sH*0.4+5,sW,sH,yellow)
 		local anim = tableCount(animGUIList)
 		local move = tableCount(moveGUIList)
 		local size = tableCount(sizeGUIList)
 		local alp = tableCount(alphaGUIList)
-		local all = anim+move+size+alp
-		dxDrawText("Running Animation("..all.."):",301,sH*0.4-114,sW,sH,black)
-		dxDrawText("Running Animation("..all.."):",300,sH*0.4-115)
+		dgsRenderInfo.runningAnimation = anim+move+size+alp
+		dxDrawText("Running Animation("..dgsRenderInfo.runningAnimation.."):",301,sH*0.4-114,sW,sH,black)
+		dxDrawText("Running Animation("..dgsRenderInfo.runningAnimation.."):",300,sH*0.4-115)
 
 		dxDrawText("Anim:"..anim,301,sH*0.4-99,sW,sH,black)
 		dxDrawText("Anim:"..anim,300,sH*0.4-100)
@@ -408,7 +406,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		local rndtgt = isElement(rndtgt) and rndtgt or false
 		local globalBlendMode = rndtgt and "modulate_add" or "blend"
 		dxSetBlendMode(globalBlendMode)
-		if debugMode then DGSShow = DGSShow+1 end
+		if debugMode then dgsRenderInfo.rendering = dgsRenderInfo.rendering+1 end
 		local parent,children,parentAlpha = FatherTable[source],ChildrenTable[source],(eleData.alpha or 1)*parentAlpha
 		local eleTypeP,eleDataP
 		if parent then
@@ -617,6 +615,26 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 	return isElementInside or source == checkElement
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
+
+
+function dgsCore3DRender()
+	dgsRenderInfo.frameStart3D = getTickCount()
+	local rendering3D = 0
+	local created3D = #dgsWorld3DTable
+	for i=1,created3D do
+		local ele = dgsWorld3DTable[i]
+		local dgsType = dgsElementType[ele]
+		if dgs3DRenderer[dgsType] then
+			if dgs3DRenderer[dgsType](ele) then
+				rendering3D = rendering3D+1
+			end
+		end
+	end
+	dgsRenderInfo.rendering3D = rendering3D
+	dgsRenderInfo.created3D = created3D
+	dgsRenderInfo.frameEnd3D = getTickCount()
+end
+addEventHandler("onClientPreRender",root,dgsCore3DRender)
 
 addEventHandler("onClientKey",root,function(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
@@ -1410,12 +1428,10 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		if moveGUIList[source] then dgsStopMoving(source) end
 		if sizeGUIList[source] then dgsStopSizing(source) end
 		if alphaGUIList[source] then dgsStopAlphaing(source) end
-		if dgsType == "dgs-dx3dinterface" then
-			tableRemoveItemFromArray(dx3DInterfaceTable,source)
-		elseif dgsType == "dgs-dx3dtext" then
-			tableRemoveItemFromArray(dx3DTextTable,source)
-		elseif dgsType == "dgs-dx3dimage" then
-			tableRemoveItemFromArray(dx3DImageTable,source)
+		if dgsWorld3DType[dgsType] then
+			tableRemoveItemFromArray(dgsWorld3DTable,source)
+		elseif dgsScreen3DType[dgsType] then
+			tableRemoveItemFromArray(dgsScreen3DTable,source)
 		else
 			local parent = dgsGetParent(source)
 			if not isElement(parent) then

@@ -36,7 +36,7 @@ function dgsCreate3DInterface(...)
 	if not(type(resX) == "number") then error(dgsGenAsrt(resX,"dgsCreate3DInterface",6,"number")) end
 	if not(type(resY) == "number") then error(dgsGenAsrt(resY,"dgsCreate3DInterface",7,"number")) end
 	local interface = createElement("dgs-dx3dinterface")
-	tableInsert(dx3DInterfaceTable,interface)
+	tableInsert(dgsWorld3DTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
 	dgsElementData[interface] = {
 		renderBuffer = {},
@@ -163,7 +163,7 @@ function dgs3DInterfaceGetBlendMode(interface)
 end
 
 function dgs3DInterfaceSetPosition(interface,x,y,z)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetBlendMode",1,"dgs-dx3dinterface")) end
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetPosition",1,"dgs-dx3dinterface")) end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DInterfaceSetPosition",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DInterfaceSetPosition",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DInterfaceSetPosition",3,"number")) end
@@ -328,57 +328,54 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	return rndtgt,true
 end
 
-function interfaceRender()
-	for i=1,#dx3DInterfaceTable do
-		local v = dx3DInterfaceTable[i]
-		local eleData = dgsElementData[v]
-		local dimension = eleData.dimension
-		if eleData.visible then
-			local attachTable = eleData.attachTo
-			if attachTable then
-				local element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ = attachTable[1],attachTable[2],attachTable[3],attachTable[4],attachTable[5],attachTable[6],attachTable[7]
-				if not isElement(element) then
-					eleData.attachTo = false
-				else
-					local ex,ey,ez = getElementPosition(element)
-					local tmpX,tmpY,tmpZ = getPositionFromElementOffset(element,offFaceX,offFaceY,offFaceZ)
-					eleData.position = {getPositionFromElementOffset(element,offX,offY,offZ)}
-					eleData.faceTo = {tmpX-ex,tmpY-ey,tmpZ-ez}
-				end
+dgs3DRenderer["dgs-dx3dinterface"] = function(source)
+	local eleData = dgsElementData[source]
+	local dimension = eleData.dimension
+	if eleData.visible then
+		local attachTable = eleData.attachTo
+		if attachTable then
+			local element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ = attachTable[1],attachTable[2],attachTable[3],attachTable[4],attachTable[5],attachTable[6],attachTable[7]
+			if not isElement(element) then
+				eleData.attachTo = false
+			else
+				local ex,ey,ez = getElementPosition(element)
+				local tmpX,tmpY,tmpZ = getPositionFromElementOffset(element,offFaceX,offFaceY,offFaceZ)
+				eleData.position = {getPositionFromElementOffset(element,offX,offY,offZ)}
+				eleData.faceTo = {tmpX-ex,tmpY-ey,tmpZ-ez}
 			end
-			local pos = eleData.position
-			local size = eleData.size
-			local faceTo = eleData.faceTo or {}
-			local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
-			eleData.hit = false
-			if x and y and z and w and h then
-				self = v
-				local camX,camY,camZ = getCameraMatrix()
-				local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
-				eleData.cameraDistance = cameraDistance
-				if cameraDistance <= eleData.maxDistance then
-					local renderThing = eleData.renderTarget_parent
-					local addalp = 1
-					if cameraDistance >= eleData.fadeDistance then
-						addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)
-					end
-					local colors = applyColorAlpha(eleData.color,eleData.alpha*addalp)
-					if not fx or not fy or not fz then
-						fx,fy,fz = camX-x,camY-y,camZ-z
-					end
-					if eleData.faceRelativeTo == "world" then
-						fx,fy,fz = fx-x,fy-y,fz-z
-					end
-					local filter = eleData.filterShader
-					if isElement(filter) then
-						dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing,fromcolor(colors))
-						renderThing = filter
-						colors = white
-					end
-					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
+		end
+		local pos = eleData.position
+		local size = eleData.size
+		local faceTo = eleData.faceTo or {}
+		local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
+		eleData.hit = false
+		if x and y and z and w and h then
+			self = source
+			local camX,camY,camZ = getCameraMatrix()
+			local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
+			eleData.cameraDistance = cameraDistance
+			if cameraDistance <= eleData.maxDistance then
+				local renderThing = eleData.renderTarget_parent
+				local addalp = 1
+				if cameraDistance >= eleData.fadeDistance then
+					addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)
 				end
+				local colors = applyColorAlpha(eleData.color,eleData.alpha*addalp)
+				if not fx or not fy or not fz then
+					fx,fy,fz = camX-x,camY-y,camZ-z
+				end
+				if eleData.faceRelativeTo == "world" then
+					fx,fy,fz = fx-x,fy-y,fz-z
+				end
+				local filter = eleData.filterShader
+				if isElement(filter) then
+					dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing,fromcolor(colors))
+					renderThing = filter
+					colors = white
+				end
+				dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
+				return true
 			end
 		end
 	end
 end
-addEventHandler("onClientPreRender",root,interfaceRender)

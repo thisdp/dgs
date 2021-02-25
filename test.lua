@@ -93,6 +93,7 @@ function createFullDemo()
 	--dgsSetCustomCursorEnabled(true)
 end
 --createFullDemo()
+
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
@@ -270,6 +271,14 @@ function _3DInterfaceAttachTest()
 	dgsSetParent(window,material)
 end
 
+function _3DLineTest()
+	line = dgsCreate3DLine(0,0,4,0,0,45,tocolor(255,255,255,255),2,100)
+	for i=1,1000 do
+		dgs3DLineAddLine(line,_,_,_,i,0,3,1,tocolor(255,0,0,255),true)
+	end
+	dgs3DLineAttachToElement(line,localPlayer)
+end
+
 function DetectAreaApplyingTest()
 	local da = dgsCreateDetectArea()
 	dgsDetectAreaSetDebugModeEnabled(da,true)
@@ -434,10 +443,11 @@ function QRCodeTest()
 end
 ---------------Blur Box
 function BlurBoxTest()
-	local blurbox = dgsCreateBlurBox(sW,sH)
-	dgsCreateImage(0,0,800,800,blurbox,false)
-	dgsBlurBoxSetIntensity(blurbox,5)
+	local blurbox = dgsCreateBlurBox(400,400)
+	img = dgsCreateImage(200,200,400,200,blurbox,false)
+	dgsBlurBoxSetIntensity(blurbox,1)
 	dgsBlurBoxSetLevel(blurbox,15)
+	local text = dgsCreate3DImage(0,0,4,blurbox,tocolor(0,128,255,128),128,128)
 end
 ---------------Color Picker
 function testColorPicker()
@@ -538,8 +548,8 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
 end
-
 ---------------------StressTest
+
 function buttonStress()
 	for i=1,5000 do
 		dgsCreateButton(500,500,200,200,"test",false)

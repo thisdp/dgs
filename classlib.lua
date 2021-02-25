@@ -242,8 +242,8 @@ dgsOOP.size2D = {
 }
 
 --2 Types:
---default
---public
+--default: Will not inherit
+--public: Will inherit
 
 class {
 	type = "dgsRoot";
@@ -297,6 +297,7 @@ class {
 		HSLToHSV = gNObjFnc("dgsHSLToHSV"),
 		dgs3DImage = function(...) return dgsOOP.dgs3DImage(dgsRootInstance,...) end,
 		dgs3DInterface = function(...) return dgsOOP.dgs3DInterface(dgsRootInstance,...) end,
+		dgs3DLine = function(...) return dgsOOP.dgs3DLine(dgsRootInstance,...) end,
 		dgs3DText = function(...) return dgsOOP.dgs3DText(dgsRootInstance,...) end,
 		dgsBrowser = function(...) return dgsOOP.dgsBrowser(dgsRootInstance,...) end,
 		dgsButton = function(...) return dgsOOP.dgsButton(dgsRootInstance,...) end,
@@ -1204,10 +1205,10 @@ class {
 		return call(dgsOOP.dgsRes,"dgsCreate3DImage",...)
 	end;
 	public = {
-		setSize = gObjFnc("dgs3DImageGetSize"),
-		getSize = gObjFnc("dgs3DImageSetSize",true),
-		setImage = gObjFnc("dgs3DImageGetImage"),
-		getImage = gObjFnc("dgs3DImageSetImage",true),
+		getSize = gObjFnc("dgs3DImageGetSize"),
+		setSize = gObjFnc("dgs3DImageSetSize",true),
+		getImage = gObjFnc("dgs3DImageGetImage"),
+		setImage = gObjFnc("dgs3DImageSetImage",true),
 		getDimension = gObjFnc("dgs3DImageGetDimension"),
 		setDimension = gObjFnc("dgs3DImageSetDimension",true),
 		getInterior = gObjFnc("dgs3DImageGetInterior"),
@@ -1219,6 +1220,37 @@ class {
 		getAttachedOffsets = gObjFnc("dgs3DImageGetAttachedOffsets"),
 		setPosition = gObjFnc("dgs3DImageSetPosition",true),
 		getPosition = gObjFnc("dgs3DImageGetPosition"),
+	};
+}
+
+
+class {
+	extends = "dgs3D";
+	type = "dgs3DLine";
+	dgsType="dgs-dx3dline";
+	preInstantiate = function(parent,...)
+		return call(dgsOOP.dgsRes,"dgsCreate3DLine",...)
+	end;
+	public = {
+		addLine = gObjFnc("dgs3DLineAddLine"),
+		removeLine = gObjFnc("dgs3DLineRemoveLine",true),
+		getItemWidth = gObjFnc("dgs3DLineGetItemWidth"),
+		setItemWidth = gObjFnc("dgs3DLineSetItemWidth",true),
+		getItemColor = gObjFnc("dgs3DLineGetItemColor"),
+		setItemColor = gObjFnc("dgs3DLineSetItemColor",true),
+		getDimension = gObjFnc("dgs3DLineGetDimension"),
+		setDimension = gObjFnc("dgs3DLineSetDimension",true),
+		getInterior = gObjFnc("dgs3DLineGetInterior"),
+		setInterior = gObjFnc("dgs3DLineSetInterior",true),
+		attachToElement = gObjFnc("dgs3DLineAttachToElement",true),
+		detachFromElement = gObjFnc("dgs3DLineDetachFromElement",true),
+		isAttached = gObjFnc("dgs3DLineIsAttached"),
+		setAttachedOffsets = gObjFnc("dgs3DLineSetAttachedOffsets",true),
+		getAttachedOffsets = gObjFnc("dgs3DLineGetAttachedOffsets"),
+		setPosition = gObjFnc("dgs3DLineSetPosition",true),
+		getPosition = gObjFnc("dgs3DLineGetPosition"),
+		setRotation = gObjFnc("dgs3DLineSetRotation",true),
+		getRotation = gObjFnc("dgs3DLineGetRotation"),
 	};
 }
 --------------------DGS Built-in Plugins

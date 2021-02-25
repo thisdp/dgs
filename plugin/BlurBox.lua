@@ -7,44 +7,24 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	local bufferRTV = dgsElementData[self].bufferRTV
 	local shader = dgsElementData[self].shaders
 	local resolution = dgsElementData[self].resolution
+	local renderSource
 	if not dgsElementData[self].blursource then
 		local isUpdateScrSource = dgsElementData[self].updateScreenSource
 		if isUpdateScrSource then
 			dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 		end
-		dxSetShaderValue(shader[1],"screenSource",BlurBoxGlobalScreenSource)
-		dxSetRenderTarget(bufferRTH)
-		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
-		dxSetShaderValue(shader[2],"screenSource",bufferRTH)
-		dxSetRenderTarget(bufferRTV)
-		dxDrawImage(0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF)
-		dxSetRenderTarget()
-		dxDrawImage(x,y,w,h,bufferRTV,0,0,0,dgsElementData[self].color,postGUI or false)
+		renderSource = BlurBoxGlobalScreenSource
 	else
-		local firstRT = dgsElementData[self].rt0
-		if not isElement(firstRT) then
-			firstRT = dxCreateRenderTarget(resolution[1],resolution[2],true,self)
-			dgsAttachToAutoDestroy(firstRT,self,0)
-			dgsElementData[self].rt0 = firstRT
-		else
-			local fRTW,fRTH = dxGetMaterialSize(firstRT)
-			if resolution[1] ~= fRTW or resolution[2] ~= fRTH then
-				destroyElement(firstRT)
-				firstRT = dxCreateRenderTarget(resolution[1],resolution[2],true,self)
-				dgsAttachToAutoDestroy(firstRT,self,0)
-				dgsElementData[self].rt0 = firstRT
-			end
-		end
-		dxSetRenderTarget(bufferRTH)
-		dxSetShaderValue(shader[1],"screenSource",firstRT)
-		dxDrawImageSection(0,0,resolution[1],resolution[2],0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
-		dxSetRenderTarget()
-		dxSetShaderValue(shader[2],"screenSource",bufferRTH)
-		dxDrawImageSection(x,y,w,h,x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[2],0,0,0,dgsElementData[self].color,postGUI or false)
-		if dgsElementData[self].drawSource ~= false then
-			dxDrawImage(x,y,w,h,firstRT,0,0,0,0xFFFFFFFF,postGUI or false)
-		end
+		renderSource = dgsElementData[self].blursource
 	end
+	dxSetShaderValue(shader[1],"screenSource",renderSource)
+	dxSetRenderTarget(bufferRTH)
+	dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
+	dxSetShaderValue(shader[2],"screenSource",bufferRTH)
+	dxSetRenderTarget(bufferRTV)
+	dxDrawImage(0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF)
+	dxSetRenderTarget()
+	dxDrawImage(x,y,w,h,bufferRTV,0,0,0,dgsElementData[self].color,postGUI or false)
 end
 
 function dgsCreateBlurBox(w,h,blursource)
