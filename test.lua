@@ -92,7 +92,6 @@ function createFullDemo()
 	--dgsSetCursorImage()
 	--dgsSetCustomCursorEnabled(true)
 end
---createFullDemo()
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
