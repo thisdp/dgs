@@ -523,18 +523,12 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 			dgsGridListSetSortEnabled(performanceBrowser[k],false)
 			dgsSetProperty(performanceBrowser[k],"rowHeight",25)
 			dgsSetProperty(performanceBrowser[k],"columnHeight",25)
-			dgsSetProperty(performanceBrowser[k],"columnTextSize",{1.5,1.5})
-			dgsSetProperty(performanceBrowser[k],"rowTextSize",{1.5,1.5})
+			dgsSetProperty(performanceBrowser[k],"columnTextSize",{1.3,1.3})
+			dgsSetProperty(performanceBrowser[k],"rowTextSize",{1.3,1.3})
 			for index,name in ipairs(t) do
 				dgsGridListAddColumn(performanceBrowser[k],name,0.3)
 			end
 			addEventHandler("onDgsElementRender",performanceBrowser[k],function()
-				--[[local tick = getTickCount()
-				if dgsElementData[source].myType == "Lua timing" then
-					if tick - dgsElementData[source].startTick <= 5000 then
-						return
-					end
-				end]]
 				dgsElementData[source].startTick = tick
 				local columns,rows = getPerformanceStats(dgsGetProperty(source,"myType"),"d")
 				local rowData = dgsGetProperty(source,"rowData")
@@ -550,7 +544,9 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 				end
 				for row,value in ipairs(rows) do
 					for k,v in pairs(value) do
-						rowData[row][k] = {v,white}
+						rowData[row][k] = rowData[row][k] or {}
+						rowData[row][k][1] = v
+						rowData[row][k][2] = white
 					end
 				end
 				dgsSetProperty(source,"rowData",rowData)

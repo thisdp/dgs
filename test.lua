@@ -84,13 +84,36 @@ function createFullDemo()
 	local edit3 = scp
 		:dgsEdit(10,120,2600,30,"",false)
 		:setPlaceHolder("I am the place holder, and this edit is for demo")
-	local progressBar = window:dgsProgressBar(10,440,580,50,false)
-	progressBar:setStyle("normal-vertical")
-	progressBar:setProperty("functions",[[
-		local progress = dgsGetProperty(self,"progress")
-		dgsSetProperty(self,"progress",(progress+0.5)%100)
-		return true
-	]])
+		
+	-------------Progress Bar
+	local progressBar_V = window
+		:dgsProgressBar(10,440,20,125,false)
+		:setStyle("normal-vertical")
+		:setProperty("functions",[[
+			local progress = dgsGetProperty(self,"progress")
+			dgsSetProperty(self,"progress",(progress+0.5)%100)
+			return true
+		]])
+	local progressBar_H = window
+		:dgsProgressBar(35,545,125,20,false)
+		:setStyle("normal-horizontal")
+		:setProperty("functions",[[
+			local progress = dgsGetProperty(self,"progress")
+			dgsSetProperty(self,"progress",(progress+0.5)%100)
+			return true
+		]])
+		
+	local progressBar_R = window
+		:dgsProgressBar(45,440,100,100,false)
+		:setStyle("ring-round")
+		:setProperty("functions",[[
+			local progress = dgsGetProperty(self,"progress")
+			dgsSetProperty(self,"progress",(progress+0.5)%100)
+			return true
+		]])
+		:setStyleProperty("radius",0.4)
+		:setStyleProperty("thickness",0.05)
+	---------------------
 	local RadioButton1 = window:dgsRadioButton(10,380,180,30,"This is a radio button for demo",false)
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
 	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
@@ -292,8 +315,9 @@ end
 
 function _3DLineTest()
 	line = dgsCreate3DLine(0,0,4,0,0,45,tocolor(255,255,255,255),2,100)
-	for i=1,1000 do
-		dgs3DLineAddLine(line,_,_,_,i,0,3,1,tocolor(255,0,0,255),true)
+	dgs3DLineAddLine(line,_,_,_,0,0,2,1,tocolor(255,255,255,255),true)
+	for i=1,20 do
+		dgs3DLineAddLine(line,_,_,_,math.cos(i/20*math.pi*2),math.sin(i/20*math.pi*2),2,1,tocolor(i/20*255,255-i/20*255,0,255),true)
 	end
 	dgs3DLineAttachToElement(line,localPlayer)
 end

@@ -82,8 +82,11 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 	local startEle = dgsEle
 	repeat
 		eleData = dgsElementData[dgsEle]
-		local absPos = eleData.absPos or {0,0}
-		local absPosX,absPosY = absPos[1],absPos[2]
+		local absPos = eleData.absPos
+		local absPosX,absPosY = 0,0
+		if absPos then
+			absPosX,absPosY = absPos[1],absPos[2]
+		end
 		if includeSide then
 			local parent = FatherTable[dgsEle]
 			local pEleData = dgsElementData[parent]
@@ -154,8 +157,13 @@ end
 function dgsGetPosition(dgsEle,bool,includeParent,rndSuspend,includeSide)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetPosition",1,"dgs-dxelement")) end
 	if includeParent then
-		local absPos = dgsElementData[dgsEle].absPos or {0,0}
-		guielex,guieley,startElement,brokenElement = getParentLocation(dgsEle,rndSuspend,absPos[1],absPos[2],includeSide)
+	
+		local absPos = dgsElementData[dgsEle].absPos
+		local absPosX,absPosY = 0,0
+		if absPos then
+			absPosX,absPosY = absPos[1],absPos[2]
+		end
+		guielex,guieley,startElement,brokenElement = getParentLocation(dgsEle,rndSuspend,absPosX,absPosY,includeSide)
 		assert(not brokenElement,"Bad argument @'dgsGetPosition', Found an infinite loop under "..tostring(brokenElement).."("..dgsGetType(brokenElement).."), start from element "..tostring(startElement).."("..dgsGetType(startElement)..")")
 		if relative then
 			return guielex/sW,guieley/sH
@@ -345,8 +353,13 @@ function calculateGuiPositionSize(dgsEle,x,y,relativep,sx,sy,relatives,notrigger
 	local eleData = dgsElementData[dgsEle] or {}
 	local parent = dgsGetParent(dgsEle)
 	local psx,psy = sW,sH
-	local relt = eleData.relative or {relativep,relatives}
-	local oldRelativePos,oldRelativeSize = relt[1],relt[2]
+	local relt = eleData.relative
+	local oldRelativePos,oldRelativeSize
+	if relt then
+		oldRelativePos,oldRelativeSize = relt[1],relt[2]
+	else
+		oldRelativePos,oldRelativeSize = relativep,relatives
+	end
 	local titleOffset = 0
 	if isElement(parent) then
 		local parentData = dgsElementData[parent]

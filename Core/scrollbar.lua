@@ -69,7 +69,6 @@ function dgsCreateScrollBar(...)
 		end
 	end
 	dgsElementData[scrollbar] = {
-		renderBuffer = {},
 		arrowBgColor = style.arrowBgColor or false,
 		arrowColor = {nColorA or style.arrowColor[1],hColorA or style.arrowColor[2],cColorA or style.arrowColor[3]},
 		arrowImage = arrowImage,
@@ -93,6 +92,15 @@ function dgsCreateScrollBar(...)
 		troughClickAction = "none",
 		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
 		wheelReversed = false,
+		
+		
+		renderBuffer = {
+			tempCursorColor = {},
+			tempArrowColor = {},
+			tempArrowBgColor = {},
+			tempTroughColor = {},
+			colorImageIndex = {},
+		}
 	}
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar,sourceResource)
@@ -287,20 +295,51 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	local arrowImage = eleData.arrowImage or image[1]
 	local cursorImage = eleData.cursorImage or image[2]
 	local troughImage = eleData.troughImage or image[3]
-	if type(troughImage) ~= "table" then
-		troughImage = {troughImage,troughImage}
+	local tempTroughImage_1,tempTroughImage_2
+	if type(troughImage) == "table" then
+		tempTroughImage_1,tempTroughImage_2 = troughImage[1],troughImage[2]
+	else
+		tempTroughImage_1,tempTroughImage_2 = troughImage,troughImage
 	end
+	
 	local pos = eleData.position
 	local length,lrlt = eleData.length[1],eleData.length[2]
 	local cursorColor = eleData.cursorColor
 	local arrowColor = eleData.arrowColor
-	local troughColor = type(eleData.troughColor) == "table" and eleData.troughColor or {eleData.troughColor,eleData.troughColor}
 	local arrowBgColor = eleData.arrowBgColor
-	local tempCursorColor = {applyColorAlpha(cursorColor[1],parentAlpha),applyColorAlpha(cursorColor[2],parentAlpha),applyColorAlpha(cursorColor[3],parentAlpha)}
-	local tempArrowColor = {applyColorAlpha(arrowColor[1],parentAlpha),applyColorAlpha(arrowColor[2],parentAlpha),applyColorAlpha(arrowColor[3],parentAlpha)}
-	local tempArrowBgColor = {applyColorAlpha(arrowBgColor[1],parentAlpha),applyColorAlpha(arrowBgColor[2],parentAlpha),applyColorAlpha(arrowBgColor[3],parentAlpha)}
-	local tempTroughColor = {applyColorAlpha(troughColor[1],parentAlpha),applyColorAlpha(troughColor[2],parentAlpha)}
-	local colorImageIndex = {1,1,1,1,1}
+	local renderBuffer = eleData.renderBuffer
+	local tempCursorColor = renderBuffer.tempCursorColor
+	tempCursorColor[1] = applyColorAlpha(cursorColor[1],parentAlpha)
+	tempCursorColor[2] = applyColorAlpha(cursorColor[2],parentAlpha)
+	tempCursorColor[3] = applyColorAlpha(cursorColor[3],parentAlpha)
+	
+	local tempArrowColor = renderBuffer.tempArrowColor
+	tempArrowColor[1] = applyColorAlpha(arrowColor[1],parentAlpha)
+	tempArrowColor[2] = applyColorAlpha(arrowColor[2],parentAlpha)
+	tempArrowColor[3] = applyColorAlpha(arrowColor[3],parentAlpha)
+	
+	
+	local tempArrowBgColor = renderBuffer.tempArrowBgColor
+	tempArrowBgColor[1] = applyColorAlpha(arrowBgColor[1],parentAlpha)
+	tempArrowBgColor[2] = applyColorAlpha(arrowBgColor[2],parentAlpha)
+	tempArrowBgColor[3] = applyColorAlpha(arrowBgColor[3],parentAlpha)
+	
+	local tempTroughColor = renderBuffer.tempTroughColor
+	if type(eleData.troughColor) == "table" then
+		tempTroughColor[1] = applyColorAlpha(eleData.troughColor[1],parentAlpha)
+		tempTroughColor[2] = applyColorAlpha(eleData.troughColor[2],parentAlpha)
+	else
+		tempTroughColor[1] = applyColorAlpha(eleData.troughColor,parentAlpha)
+		tempTroughColor[2] = applyColorAlpha(eleData.troughColor,parentAlpha)
+	end
+	
+	local colorImageIndex = renderBuffer.colorImageIndex
+	colorImageIndex[1] = 1
+	colorImageIndex[2] = 1
+	colorImageIndex[3] = 1
+	colorImageIndex[4] = 1
+	colorImageIndex[5] = 1
+	
 	local slotRange
 	local scrollArrow =  eleData.scrollArrow
 	local cursorWidth,troughWidth,arrowWidth = eleData.cursorWidth,eleData.troughWidth,eleData.arrowWidth
@@ -401,11 +440,11 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	end
 	if isHorizontal then
 		local cursorCenter = pos*0.01*csRange+cursorRange/2
-		local troughPart1 = {x+arrowWidth,cursorCenter}
-		local troughPart2 = {x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter}
+		local troughPart1_1,troughPart1_2 = x+arrowWidth,cursorCenter
+		local troughPart2_1,troughPart2_2 = x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter
 		local imgRotVert = imgRot[2]
-		local __ = troughImage[1] and dxDrawImage(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,troughImage[1],imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) or dxDrawRectangle(troughPart1[1],y+troughPadding,troughPart1[2],troughWidth,tempTroughColor[1],isPostGUI)
-		local __ = troughImage[2] and dxDrawImage(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,troughImage[2],imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(troughPart2[1],y+troughPadding,troughPart2[2],troughWidth,tempTroughColor[2],isPostGUI)
+		local __ = tempTroughImage_1 and dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) or dxDrawRectangle(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughColor[1],isPostGUI)
+		local __ = tempTroughImage_2 and dxDrawImage(troughPart2_2,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI)
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
@@ -421,11 +460,11 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		end
 	else
 		local cursorCenter = pos*0.01*csRange+cursorRange/2
-		local troughPart1 = {y+arrowWidth,cursorCenter}
-		local troughPart2 = {y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter}
+		local troughPart1_1,troughPart1_2 = y+arrowWidth,cursorCenter
+		local troughPart2_1,troughPart2_2 = y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter
 		local imgRotHorz = imgRot[1]
-		local __ = troughImage[1] and dxDrawImage(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],troughImage[1],imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) or dxDrawRectangle(x+troughPadding,troughPart1[1],troughWidth,troughPart1[2],tempTroughColor[1],isPostGUI)
-		local __ = troughImage[2] and dxDrawImage(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],troughImage[2],imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(x+troughPadding,troughPart2[1],troughWidth,troughPart2[2],tempTroughColor[2],isPostGUI)
+		local __ = tempTroughImage_1 and dxDrawImage(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) or dxDrawRectangle(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughColor[1],isPostGUI)
+		local __ = tempTroughImage_2 and dxDrawImage(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughColor[2],isPostGUI)
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)

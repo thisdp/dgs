@@ -132,7 +132,7 @@ local ProgressBarStyle = {
 			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor,rendSet)
 		end
 	end,
-	["ring-round"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent)
+	["ring-round"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 		local eleData = dgsElementData[source]
 		local styleData = eleData.styleData
 		local circle = styleData.elements.circleShader
