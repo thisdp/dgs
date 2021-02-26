@@ -206,16 +206,18 @@ function dgsStopAlphaing(gui)
 	return false
 end
 
+local animGarbage = {}
+local moveGarbage = {[0]=0}
+local sizeGarbage = {[0]=0}
+local alphaGarbage = {[0]=0}
 tickCount = getTickCount()
 addEventHandler("onClientRender",root,function()
 	local tick = getTickCount()
 	local diff = tick-tickCount
 	tickCount = tick
-	local animGarbage = {[0]=0}
 	for v,value in pairs(animGUIList) do
 		if not dgsIsType(v) or not value then
-			animGarbage[0] = animGarbage[0]+1
-			animGarbage[animGarbage[0]] = v
+			--animGarbage[#animGarbage+1] = v
 		else
 			local animList = dgsElementData[v].anim
 			if animGUIList[v] then
@@ -246,7 +248,6 @@ addEventHandler("onClientRender",root,function()
 			end
 		end
 	end
-	local moveGarbage = {[0]=0}
 	for v,value in pairs(moveGUIList) do
 		if not dgsIsType(v) or not value then
 			moveGarbage[0] = moveGarbage[0]+1
@@ -324,11 +325,9 @@ addEventHandler("onClientRender",root,function()
 			end
 		end
 	end
-	local sizeGarbage = {[0]=0}
 	for v,value in pairs(sizeGUIList) do
 		if not dgsIsType(v) or not value then
-			sizeGarbage[0] = sizeGarbage[0]+1
-			sizeGarbage[sizeGarbage[0]] = v
+			sizeGarbage[#sizeGarbage+1] = v
 		else
 			local data = dgsElementData[v].size
 			if not data then sizeGUIList[v] = nil end
@@ -402,11 +401,9 @@ addEventHandler("onClientRender",root,function()
 			end
 		end
 	end
-	local alphaGarbage = {[0]=0}
 	for v,value in pairs(alphaGUIList) do
 		if not dgsIsType(v) or not value then
-			alphaGarbage[0] = alphaGarbage[0]+1
-			alphaGarbage[alphaGarbage[0]] = v
+			alphaGarbage[#alphaGarbage+1] = v
 		else
 			local data = dgsElementData[v].calpha
 			if not data then alphaGUIList[v] = nil end
@@ -478,6 +475,9 @@ addEventHandler("onClientRender",root,function()
 		alphaGUIList[alphaGarbage[i]] = nil
 		triggerEvent("onDgsStopAlphaing",alphaGarbage[i],true)
 	end
+	moveGarbage[0] = 0
+	sizeGarbage[0] = 0
+	alphaGarbage[0] = 0
 end)
 
 function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings,self)

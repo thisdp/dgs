@@ -38,7 +38,7 @@ local getElementID = function(ele) return isElement(ele) and _getElementID(ele) 
 ----
 sW,sH = guiGetScreenSize()
 fontSize = {}
-self,renderArguments = false,false
+self,renderArguments = false,{}
 local dgsRenderInfo = {}
 dgsRenderSetting = {
 	postGUI = nil,
@@ -96,7 +96,7 @@ MouseData.scbEnterData = false
 MouseData.scbEnterRltPos = false
 MouseData.topScrollable = false
 MouseData.lastPos = {-1,-1}
-MouseData.interfaceHit = {}
+MouseData.interfaceHit = {[0]=false}
 MouseData.lock3DInterface = false
 MouseData.dgsCursorPos = {}
 MouseData.cursorType = false
@@ -151,7 +151,7 @@ function dgsCoreRender()
 	local intfaceHitElement,interfaceClickElementl = false,false
 	if bottomTableSize+centerTableSize+topTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
 		dxSetRenderTarget()
-		MouseData.interfaceHit = {}
+		MouseData.interfaceHit[0] = false
 		MouseData.topScrollable = false
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
@@ -460,7 +460,12 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		local isPostGUI = not debugMode and (not rndtgt) and (dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI
 		if eleDataP and eleDataP.renderTarget_parent == rndtgt and rndtgt then xRT,yRT = x,y end
 		self = source
-		renderArguments = {xRT,yRT,w,h,xNRT,yNRT}
+		renderArguments[1] = xRT
+		renderArguments[2] = yRT
+		renderArguments[3] = w
+		renderArguments[4] = h
+		renderArguments[5] = xNRT
+		renderArguments[6] = yNRT
 		if xRT and yRT then
 			------------------------------------
 			if eleData.functionRunBefore then
@@ -1122,8 +1127,8 @@ function dgsCheckHit(hits,mx,my)
 			local sizeW,sizeH = absSize[1],absSize[2]
 			local endr = posX + sizeW
 			local endd = posY + sizeH
-			local minSize = dgsElementData[MouseData.clickl].minSize or {10,10}
-			local minSizeX,minSizeY = minSize[1] or 10,minSize[2] or 10
+			local minSize = dgsElementData[MouseData.clickl].minSize
+			local minSizeX,minSizeY = minSize and minSize[1] or 10,minSize and minSize[2] or 10
 			if MouseData.Scale[5] == 1 then
 				local old = posX
 				sizeW = sizeW-(mx-MouseData.Scale[1]-old)

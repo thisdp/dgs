@@ -312,13 +312,23 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 					MouseData.hit = source
 					mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
 					MouseX,MouseY = mx,my
-					MouseData.interfaceHit = {hx,hy,hz,distance,source}
+					MouseData.interfaceHit[0] = true
+					MouseData.interfaceHit[1] = hx
+					MouseData.interfaceHit[2] = hy
+					MouseData.interfaceHit[3] = hz
+					MouseData.interfaceHit[4] = distance
+					MouseData.interfaceHit[5] = source
 				end
-			elseif (not oldPos[4] or distance <= oldPos[4]) and hit then
+			elseif (not oldPos[0] or distance <= oldPos[4]) and hit then
 				MouseData.hit = source
 				mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
 				MouseX,MouseY = mx,my
-				MouseData.interfaceHit = {hx,hy,hz,distance,source}
+				MouseData.interfaceHit[0] = true
+				MouseData.interfaceHit[1] = hx
+				MouseData.interfaceHit[2] = hy
+				MouseData.interfaceHit[3] = hz
+				MouseData.interfaceHit[4] = distance
+				MouseData.interfaceHit[5] = source
 			end
 		end
 		dxSetRenderTarget(rndtgt,true)
