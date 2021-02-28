@@ -80,8 +80,8 @@ DGSBuiltInTex = {
 
 -------DEBUG
 addCommandHandler("debugdgs",function(command,arg)
-	if not arg then
-		debugMode = (not getElementData(localPlayer,"DGS-DEBUG")) and 1 or false
+	if not arg or arg == "1" then
+		debugMode = (not getElementData(localPlayer,"DGS-DEBUG") or arg == "1") and 1 or false
 		setElementData(localPlayer,"DGS-DEBUG",debugMode,false)
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
 	elseif arg == "2" then
