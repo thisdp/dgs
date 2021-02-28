@@ -57,7 +57,7 @@ function dgsCreateSelector(...)
 	local textSizeX,textSizeY = tonumber(scaleX),tonumber(scaleY)
 	dgsElementData[selector] = {
 		itemTextColor = tonumber(textColor or style.itemTextColor),
-		itemTextSize = {textSizeX,textSizeY or style.itemTextSize[2]},
+		itemTextSize = {textSizeX or style.itemTextSize[1],textSizeY or textSizeX or style.itemTextSize[2]},
 		clip = false,
 		selectorText = {textSizeX or style.selectorText[1],textSizeY or style.selectorText[2]},
 		selectorTextSize = style.selectorTextSize,
@@ -111,6 +111,7 @@ function dgsSelectorAddItem(selector,text,pos)
 		font,
 		_translationText=_text,
 		{}, --item data
+		nil, -- item image
 	})
 	if eleData.selectedItem == -1 then
 		eleData.selectedItem = 1
@@ -120,13 +121,15 @@ end
 
 function dgsSelectorRemoveItem(selector,i)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorRemoveItem",1,"dgs-dxselector")) end
-	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorRemoveItem",2,"number")) end
 	local iData = dgsElementData[selector].itemData
-	if iData[i] then
-		tableRemove(iData,i)
-		dgsElementData[selector].selectedItem = #iData >= 1 and mathClamp(dgsElementData[selector].selectedItem,1,#iData) or -1
-	end
-	return false
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	tableRemove(iData,i)
+	dgsElementData[selector].selectedItem = #iData >= 1 and mathClamp(dgsElementData[selector].selectedItem,1,#iData) or -1
+	return true
 end
 
 function dgsSelectorSetSelectedItem(selector,i)
@@ -145,51 +148,195 @@ end
 
 function dgsSelectorGetItemText(selector,i,retTransOrig)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemText",1,"dgs-dxselector")) end
-	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorGetItemText",2,"number")) end
 	local iData = dgsElementData[selector].itemData
-	if iData[i] then
-		return retTransOrig and iData[8] or iData[1]
-	end
-	return false
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return retTransOrig and iData[8] or iData[1]
 end
 
 function dgsSelectorSetItemText(selector,i,text)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemText",1,"dgs-dxselector")) end
-	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetItemText",2,"number")) end
 	local iData = dgsElementData[selector].itemData
-	if iData[i] then
-		if type(text) == "table" then
-			_text = text
-			text = dgsTranslate(selector,text,sourceResource)
-		end
-		iData[i][1] = tostring(text)
-		iData[i][8] = _text
-		return true
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	if type(text) == "table" then
+		_text = text
+		text = dgsTranslate(selector,text,sourceResource)
 	end
-	return false
+	iData[i][1] = tostring(text)
+	iData[i][8] = _text
+	return true
 end
 
 function dgsSelectorSetItemData(selector,i,key,data)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemData",1,"dgs-dxselector")) end
-	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetItemData",2,"number")) end
 	local iData = dgsElementData[selector].itemData
-	if iData[i] then
-		iData[i][9] = iData[i][9] or {}
-		iData[i][9][key] = data
-		return true
-	end
-	return false
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	iData[i][9] = iData[i][9] or {}
+	iData[i][9][key] = data
+	return true
 end
 
 function dgsSelectorGetItemData(selector,i,key)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemData",1,"dgs-dxselector")) end
-	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number")) end
 	local iData = dgsElementData[selector].itemData
-	if iData[i] then
-		iData[i][9] = iData[i][9] or {}
-		return iData[i][9][key]
-	end
-	return false
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	iData[i][9] = iData[i][9] or {}
+	return iData[i][9][key]
+end
+
+function dgsSelectorSetItemColor(selector,i,color)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemText",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	if not (type(color) == "number") then error(dgsGenAsrt(args[3],"dgsSelectorSetItemColor",3,"number")) end
+	local i = i-i%1
+	iData[i][3] = color
+	return true
+end
+
+function dgsSelectorGetItemColor(selector,i,color)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemColor",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return iData[i][3]
+end
+
+function dgsSelectorSetItemFont(selector,i,font)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemFont",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	if not (fontBuiltIn[font] or dgsGetType(font) == "dx-font") then error(dgsGenAsrt(font,"dgsSelectorSetItemFont",3,"dx-font/string",_,"invalid font")) end
+	local i = i-i%1
+	iData[i][7] = font
+	return true
+end
+
+function dgsSelectorGetItemFont(selector,i,font)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemFont",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return iData[i][7]
+end
+
+function dgsSelectorSetItemTextSize(selector,i,sizeX,sizeY)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemTextSize",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemTextSize",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	if not (type(sizeX) == "number") then error(dgsGenAsrt(sizeX,"dgsSelectorSetItemTextSize",3,"number")) end
+	local i = i-i%1
+	iData[i][5] = sizeX
+	iData[i][6] = sizeY or sizeX
+	return true
+end
+
+function dgsSelectorGetItemTextSize(selector,i)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemTextSize",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemTextSize",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return iData[i][5],iData[i][6]
+end
+
+function dgsSelectorSetItemAlignment(selector,i,alignX,alignY)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemAlignment",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemAlignment",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	if not (alignX == nil or HorizontalAlign[alignX]) then error(dgsGenAsrt(alignX,"dgsSelectorSetItemAlignment",3,"string","left/center/right")) end
+	if not (alignY == nil or VerticalAlign[alignY]) then error(dgsGenAsrt(alignY,"dgsSelectorSetItemAlignment",4,"string","top/center/bottom")) end
+	local i = i-i%1
+	iData[i][2] = {alignX,alignY}
+	return true
+end
+
+function dgsSelectorGetItemAlignment(selector,i)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemAlignment",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemAlignment",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return unpack(iData[i][2])
+end
+
+function dgsSelectorSetItemImage(selector,i,image,color,offx,offy,w,h,relative)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemImage",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	local imageData,size = iData[i][9] or {},dgsElementData[selector].absSize
+	imageData[1] = image or imageData[1]
+	imageData[2] = color or imageData[2] or white
+	imageData[3] = offx or imageData[3] or 0
+	imageData[4] = offy or imageData[4] or 0
+	imageData[5] = w or imageData[5] or relative and 1 or size[1]
+	imageData[6] = h or imageData[6] or relative and 1 or size[2]
+	imageData[7] = relative or false
+	iData[i][9] = imageData
+end
+
+function dgsSelectorGetItemImage(selector,i)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemImage",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	return unpack(iData[i][9] or {})
+end
+
+function dgsSelectorRemoveItemImage(selector,i)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorRemoveItemImage",1,"dgs-dxselector")) end
+	local iData = dgsElementData[selector].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorRemoveItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	local i = i-i%1
+	iData[i][9] = nil
+	return true
 end
 
 ----------------------------------------------------------------
@@ -256,27 +403,39 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 
 	if selectorImageColorLeft then
 		if selectorImageLeft then
-			dxDrawImage(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageLeft,0,0,0,selectorImageColorLeft,isPostGUI,rndtgt)
+			dxDrawImage(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageLeft,0,0,0,applyColorAlpha(selectorImageColorLeft,parentAlpha),isPostGUI,rndtgt)
 		else
-			dxDrawRectangle(x,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorLeft,isPostGUI)
+			dxDrawRectangle(x,selectorStartY,selectorSizeX,selectorSizeY,applyColorAlpha(selectorImageColorLeft,parentAlpha),isPostGUI)
 		end
 	end
 	if selectorImageColorRight then
 		if selectorImageRight then
-			dxDrawImage(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageRight,0,0,0,selectorImageColorRight,isPostGUI,rndtgt)
+			dxDrawImage(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageRight,0,0,0,applyColorAlpha(selectorImageColorRight,parentAlpha),isPostGUI,rndtgt)
 		else
-			dxDrawRectangle(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,selectorImageColorRight,isPostGUI)
+			dxDrawRectangle(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,applyColorAlpha(selectorImageColorRight,parentAlpha),isPostGUI)
 		end
 	end
 	local renderItem = itemData[eleData.selectedItem]
 	if eleData.selectedItem ~= -1 and renderItem then
+		local imageData = renderItem[9]
+		if imageData then
+			local imageX = x+(imageData[7] and imageData[3]*w or imageData[3])
+			local imageY = y+(imageData[7] and imageData[4]*h or imageData[4])
+			local imageW = imageData[7] and imageData[5]*w or imageData[5]
+			local imageH = imageData[7] and imageData[6]*h or imageData[6]
+			if isElement(imageData[1]) then
+				dxDrawImage(imageX,imageY,imageW,imageH,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha),isPostGUI)
+			else
+				dxDrawRectangle(imageX,imageY,imageW,imageH,applyColorAlpha(imageData[2],parentAlpha),isPostGUI)
+			end
+		end
 		local itemTextColor = type(renderItem[3]) == "table" and renderItem[3][selectorTextColors[2]] or renderItem[3]
-		dxDrawText(renderItem[1],x+selectorSizeX,y,x+w-selectorSizeX,y+h,itemTextColor,renderItem[5],renderItem[6],renderItem[7],renderItem[2][1],renderItem[2][2],false,false,isPostGUI,renderItem[4])
+		dxDrawText(renderItem[1],x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),renderItem[5],renderItem[6],renderItem[7],renderItem[2][1],renderItem[2][2],false,false,isPostGUI,renderItem[4])
 	else
 		local itemTextColor = type(itemTextColorDef) == "table" and itemTextColorDef[selectorTextColors[2]] or itemTextColorDef
-		dxDrawText(defaultText,x+selectorSizeX,y,x+w-selectorSizeX,y+h,itemTextColor,itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+		dxDrawText(defaultText,x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
 	end
-	dxDrawText(selector[1],x,selectorStartY,x+selectorSizeX,selectorEndY,selectorTextColorLeft,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-	dxDrawText(selector[2],x+w-selectorSizeX,selectorStartY,x+w,selectorEndY,selectorTextColorRight,selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+	dxDrawText(selector[1],x,selectorStartY,x+selectorSizeX,selectorEndY,applyColorAlpha(selectorTextColorLeft,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+	dxDrawText(selector[2],x+w-selectorSizeX,selectorStartY,x+w,selectorEndY,applyColorAlpha(selectorTextColorRight,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
 	return rndtgt
 end

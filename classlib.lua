@@ -983,6 +983,17 @@ class {
 		getItemText = gObjFnc("dgsSelectorGetItemText"),
 		setItemData = gObjFnc("dgsSelectorSetItemData",true),
 		getItemData = gObjFnc("dgsSelectorGetItemData"),
+		setItemColor = gObjFnc("dgsSelectorSetItemColor"),
+		getItemColor = gObjFnc("dgsSelectorGetItemColor"),
+		setItemFont = gObjFnc("dgsSelectorSetItemFont"),
+		getItemFont = gObjFnc("dgsSelectorGetItemFont"),
+		setItemTextSize = gObjFnc("dgsSelectorSetItemTextSize"),
+		getItemTextSize = gObjFnc("dgsSelectorGetItemTextSize"),
+		setItemAlignment = gObjFnc("dgsSelectorSetItemAlignment"),
+		getItemAlignment = gObjFnc("dgsSelectorGetItemAlignment"),
+		setItemImage = gObjFnc("dgsSelectorSetItemImage"),
+		getItemImage = gObjFnc("dgsSelectorGetItemImage"),
+		removeItemImage = gObjFnc("dgsSelectorRemoveItemImage"),
 	};
 }
 

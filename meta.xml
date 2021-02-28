@@ -545,6 +545,17 @@
 	<export function="dgsSelectorSetItemText" type="client" />
 	<export function="dgsSelectorSetItemData" type="client" />
 	<export function="dgsSelectorGetItemData" type="client" />
+	<export function="dgsSelectorSetItemColor" type="client" />
+	<export function="dgsSelectorGetItemColor" type="client" />
+	<export function="dgsSelectorSetItemFont" type="client" />
+	<export function="dgsSelectorGetItemFont" type="client" />
+	<export function="dgsSelectorSetItemTextSize" type="client" />
+	<export function="dgsSelectorGetItemTextSize" type="client" />
+	<export function="dgsSelectorSetItemAlignment" type="client" />
+	<export function="dgsSelectorGetItemAlignment" type="client" />
+	<export function="dgsSelectorSetItemImage" type="client" />
+	<export function="dgsSelectorGetItemImage" type="client" />
+	<export function="dgsSelectorRemoveItemImage" type="client" />
 
 	<export function="dgsCreateSwitchButton" type="client" />
 	<export function="dgsSwitchButtonGetState" type="client" />

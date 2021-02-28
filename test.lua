@@ -134,7 +134,6 @@ function createFullDemo()
 	--dgsSetCustomCursorEnabled(true)
 
 end
---createFullDemo()
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
@@ -361,8 +360,8 @@ end
 
 function SelectorTest()
 	selector = dgsCreateSelector(400,500,100,20,false)
-	dgsSetProperty(selector,"selectorImageColorLeft",{0x9900FF00,0x9900FF00,0x9900FF00})
-	dgsSetProperty(selector,"selectorImageColorRight",{0x99FF0000,0x99FF0000,0x99FF0000})
+	dgsSetProperty(selector,"selectorImageColorLeft",{0x99FF0000,0x99FF0000,0x99FF0000})
+	dgsSetProperty(selector,"selectorImageColorRight",{0x9900FF00,0x9900FF00,0x9900FF00})
 	dgsSetProperty(selector,"selectorText",{"-","+"})
 	for i=1,5000 do
 		dgsSelectorAddItem(selector,i)
