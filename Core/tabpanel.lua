@@ -425,7 +425,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							end
 						end]]
 
-						dxDrawText(tabData.text,_tabsize,0,_width,height,tabTextColor[selState],textSizeX,textSizeY,tabData.font or font,"center","center",false,false,false,colorcoded,true)
+						dxDrawText(tabData.text,_tabsize,0,_width,height,applyColorAlpha(tabTextColor[selState],parentAlpha),textSizeX,textSizeY,tabData.font or font,"center","center",false,false,false,colorcoded,true)
 						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
 							MouseData.hit = t

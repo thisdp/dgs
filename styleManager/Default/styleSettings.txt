@@ -498,7 +498,7 @@
 -----------------------------------------------------------------------------------DGS Tab
 	tab = {
 	---Color
-		textColor = nil,		--Use Tab Panel's
+		textColor = tocolor(255,255,255,255),		--Use Tab Panel's
 		bgColor = nil,			--Background color of tab panel when selected(This will overwrite the background color of tab panel when selected). nil for using tab panel's bgColor
 		tabColor = {	--Background color of tab
 			tocolor(50,50,50,180),	--Normal
