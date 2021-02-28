@@ -250,7 +250,7 @@ function dgsCoreRender()
 	dgsRenderInfo.frameEndScreen = getTickCount()
 	if debugMode then
 		dgsRenderInfo.frameRenderTimeScreen = dgsRenderInfo.frameEndScreen-dgsRenderInfo.frameStartScreen
-		dgsRenderInfo.frameRenderTime3D = (dgsRenderInfo.frameEnd3D or getTickCount())-dgsRenderInfo.frameStart3D
+		dgsRenderInfo.frameRenderTime3D = (dgsRenderInfo.frameEnd3D or getTickCount())-(dgsRenderInfo.frameStart3D or getTickCount())
 		dgsRenderInfo.frameRenderTimeTotal = dgsRenderInfo.frameRenderTimeScreen+dgsRenderInfo.frameRenderTime3D
 		if isElement(MouseData.hit) and debugMode >= 2 then
 			local highlight = MouseData.hit
