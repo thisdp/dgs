@@ -92,8 +92,8 @@ function dgsCreateScrollBar(...)
 		troughClickAction = "none",
 		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
 		wheelReversed = false,
-		
-		
+
+
 		renderBuffer = {
 			tempCursorColor = {},
 			tempArrowColor = {},
@@ -301,7 +301,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	else
 		tempTroughImage_1,tempTroughImage_2 = troughImage,troughImage
 	end
-	
+
 	local pos = eleData.position
 	local length,lrlt = eleData.length[1],eleData.length[2]
 	local cursorColor = eleData.cursorColor
@@ -312,18 +312,18 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	tempCursorColor[1] = applyColorAlpha(cursorColor[1],parentAlpha)
 	tempCursorColor[2] = applyColorAlpha(cursorColor[2],parentAlpha)
 	tempCursorColor[3] = applyColorAlpha(cursorColor[3],parentAlpha)
-	
+
 	local tempArrowColor = renderBuffer.tempArrowColor
 	tempArrowColor[1] = applyColorAlpha(arrowColor[1],parentAlpha)
 	tempArrowColor[2] = applyColorAlpha(arrowColor[2],parentAlpha)
 	tempArrowColor[3] = applyColorAlpha(arrowColor[3],parentAlpha)
-	
-	
+
+
 	local tempArrowBgColor = renderBuffer.tempArrowBgColor
 	tempArrowBgColor[1] = applyColorAlpha(arrowBgColor[1],parentAlpha)
 	tempArrowBgColor[2] = applyColorAlpha(arrowBgColor[2],parentAlpha)
 	tempArrowBgColor[3] = applyColorAlpha(arrowBgColor[3],parentAlpha)
-	
+
 	local tempTroughColor = renderBuffer.tempTroughColor
 	if type(eleData.troughColor) == "table" then
 		tempTroughColor[1] = applyColorAlpha(eleData.troughColor[1],parentAlpha)
@@ -332,14 +332,14 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		tempTroughColor[1] = applyColorAlpha(eleData.troughColor,parentAlpha)
 		tempTroughColor[2] = applyColorAlpha(eleData.troughColor,parentAlpha)
 	end
-	
+
 	local colorImageIndex = renderBuffer.colorImageIndex
 	colorImageIndex[1] = 1
 	colorImageIndex[2] = 1
 	colorImageIndex[3] = 1
 	colorImageIndex[4] = 1
 	colorImageIndex[5] = 1
-	
+
 	local slotRange
 	local scrollArrow =  eleData.scrollArrow
 	local cursorWidth,troughWidth,arrowWidth = eleData.cursorWidth,eleData.troughWidth,eleData.arrowWidth

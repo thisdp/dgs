@@ -429,7 +429,7 @@ function createLuaLexer(luaVer,onThrow)
 			end
 		end}
 	else
-	
+
 	end
 end
 

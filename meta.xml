@@ -153,10 +153,10 @@
 	<export function="dgsSetEnabled" type="client" />
 	<export function="dgsGetPositionAlignment" type="client" />
 	<export function="dgsSetPositionAlignment" type="client" />
-	
+
 	<export function="dgsGetSide" type="client" />
 	<export function="dgsSetSide" type="client" />
-	
+
 	<export function="dgsGetAlpha" type="client" />
 	<export function="dgsSetAlpha" type="client" />
 	<export function="dgsSetLayer" type="client" />
@@ -212,7 +212,7 @@
 	<export function="dgsGetDetectArea" type="client" />
 	<export function="dgsApplyDetectArea" type="client" />
 	<export function="dgsRemoveDetectArea" type="client" />
-	
+
 	<export function="dgsSetCustomCursorImage" type="client" />
 	<export function="dgsGetCustomCursorImage" type="client" />
 	<export function="dgsSetCustomCursorEnabled" type="client" />
@@ -272,7 +272,7 @@
 	<export function="dgs3DInterfaceGetInterior" type="client" />
 	<export function="dgs3DInterfaceSetRotation" type="client" />
 	<export function="dgs3DInterfaceGetRotation" type="client" />
-	
+
 	<export function="dgsCreate3DLine" type="client" />
 	<export function="dgs3DLineAddLine" type="client" />
 	<export function="dgs3DLineRemoveLine" type="client" />

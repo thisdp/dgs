@@ -251,14 +251,14 @@ function dgsSearchFullWordType(text,index,side)
 		frontPos = frontPos-1
 		if frontPos < 0 then break end
 		local searchChar = utf8Sub(text,frontPos,frontPos)
-		if not searchChar or searchChar == "" then break end 
+		if not searchChar or searchChar == "" then break end
 		if utf8GetCharType(searchChar) ~= startType then break end
 	end
 	while true do
 		backPos = backPos+1
 		if backPos > textLen then break end
 		local searchChar = utf8Sub(text,backPos,backPos)
-		if not searchChar or searchChar == "" then break end 
+		if not searchChar or searchChar == "" then break end
 		if utf8GetCharType(searchChar) ~= startType then break end
 	end
 	return frontPos,backPos-1,startType

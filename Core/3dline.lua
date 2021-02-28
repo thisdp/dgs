@@ -270,15 +270,15 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 				local offrx,offry,offrz = attachTable[5] or 0,attachTable[6] or 0,attachTable[7] or 0
 				wrx,wry,wrz = getElementRotation(attachTable[1])
 				wrx,wry,wrz = wrx+offrx,wry+offry,wrz+offrz
-				
+
 				eleData.position[1] = wx
 				eleData.position[2] = wy
 				eleData.position[3] = wz
-				
+
 				eleData.rotation[1] = wrx
 				eleData.rotation[2] = wry
 				eleData.rotation[3] = wrz
-				
+
 			else
 				isRender = false
 			end

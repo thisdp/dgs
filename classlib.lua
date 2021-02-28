@@ -409,7 +409,7 @@ class {
 		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(...) end,
 		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(...) end,
 		dgsWindow = function(...) return dgsOOP.dgsWindow(...) end,
-		
+
 		----------Plugins
 		dgsColorPicker = function(...) return dgsOOP.dgsColorPicker(...) end,
 		dgsComponentSelector = function(...) return dgsOOP.dgsComponentSelector(...) end,

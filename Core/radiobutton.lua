@@ -48,7 +48,7 @@ function dgsCreateRadioButton(...)
 		nColorT = argTable.normalCheckedColor or argTable.nColorT or argTable[20]
 		hColorT = argTable.hoveringCheckedColor or argTable.hColorT or argTable[21]
 		cColorT = argTable.clickedCheckedColor or argTable.cColorT or argTable[22]
-	
+
 	else
 		x,y,w,h,text,relative,parent,textColor,scalex,scaley,nImageF,hImageF,cImageF,nColorF,hColorF,cColorF,nImageT,hImageT,cImageT,nColorT,hColorT,cColorT = ...
 	end

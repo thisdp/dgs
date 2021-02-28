@@ -157,7 +157,6 @@ end
 function dgsGetPosition(dgsEle,bool,includeParent,rndSuspend,includeSide)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetPosition",1,"dgs-dxelement")) end
 	if includeParent then
-	
 		local absPos = dgsElementData[dgsEle].absPos
 		local absPosX,absPosY = 0,0
 		if absPos then

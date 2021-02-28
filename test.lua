@@ -5,7 +5,7 @@ function createFullDemo()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
 	window.position.relative = false
 	window.position.x = 400
-	
+
 	--Color Picker
 	local cp = window:
 		dgsColorPicker("HSVRing",300,0,200,200)
@@ -56,12 +56,12 @@ function createFullDemo()
 	dgsGridListScrollTo(gridlist.dgsElement,50,1)
 	dgsGridListSetItemAlignment(gridlist.dgsElement,1,1,"center")
 	dgsGridListSetColumnAlignment(gridlist.dgsElement,1,"left")
-	
+
 	local selector = window:dgsSelector(180,210,100,20,false)
 	for i=1,100 do
 		selector:addItem(i)
 	end
-	
+
 	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
 	combobox:setEditEnabled(true)
 	for i=1,100 do
@@ -84,7 +84,7 @@ function createFullDemo()
 	local edit3 = scp
 		:dgsEdit(10,120,2600,30,"",false)
 		:setPlaceHolder("I am the place holder, and this edit is for demo")
-		
+
 	-------------Progress Bar
 	local progressBar_V = window
 		:dgsProgressBar(10,440,20,125,false)
@@ -102,7 +102,7 @@ function createFullDemo()
 			dgsSetProperty(self,"progress",(progress+0.5)%100)
 			return true
 		]])
-		
+
 	local progressBar_R = window
 		:dgsProgressBar(45,440,100,100,false)
 		:setStyle("ring-round")
@@ -132,7 +132,7 @@ function createFullDemo()
 
 	--dgsSetCursorImage()
 	--dgsSetCustomCursorEnabled(true)
-	
+
 end
 --createFullDemo()
 

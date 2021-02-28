@@ -1253,7 +1253,7 @@ function dgsCheckHit(hits,mx,my)
 			if not isMainMenuActive() then
 				local color = CursorData.color
 				local cursorSize = CursorData.size
-					
+
 				local rotation = cData[2]
 				local rotCenter = cData[3]
 				local offset = cData[4]
@@ -1534,7 +1534,7 @@ function checkScale(source)
 		local right = rightRel and sizeData[2]*h or sizeData[2]
 		local top = topRel and sizeData[3]*w or sizeData[3]
 		local bottom = bottomRel and sizeData[4]*h or sizeData[4]
-		
+
 		local offL,offT,offR,offB,horzState,vertState = mx-x,my-y,mx-x-w,my-y-h
 		if mathAbs(offL) < left then
 			horzState = 1
@@ -1567,7 +1567,7 @@ function checkScale(source)
 		local sizable = eleData.sizable
 		if not sizable then return false end
 		local borderSize = eleData.borderSize
-		
+
 		local offL,offT,offR,offB,horzState,vertState = mx-x,my-y,mx-x-w,my-y-h
 		if mathAbs(offL) < borderSize then
 			horzState = 1
@@ -1625,7 +1625,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			end
 			eleData.lastClickTick = lastClickTick
 		end
-		
+
 		if not isElement(guiele) then return end
 		if state == "up" then
 			if button == "left" then
@@ -1644,7 +1644,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		if not isElement(guiele) then return end
 		if wasEventCancelled() then return end
-		
+
 		local guitype = dgsGetType(guiele)
 		if guitype == "dgs-dxbrowser" then
 			focusBrowser(guiele)
@@ -1858,7 +1858,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				end
 			end
 		end
-		
+
 		if not isElement(guiele) then return end
 		if state == "up" then
 			if button == "left" then
@@ -1897,7 +1897,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			multiClick[button][state] = {0,false,false}
 		end
 		if not isElement(guiele) then return end
-		
+
 	elseif state == "down" then
 		if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
 			blurEditMemo()

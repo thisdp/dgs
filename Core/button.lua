@@ -80,7 +80,7 @@ function dgsCreateButton(...)
 		textOffset = {0,0,false},
 		textSize = {textSizeX, textSizeY},
 		wordbreak = false,
-		
+
 		renderBuffer = {},
 	}
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or resource])

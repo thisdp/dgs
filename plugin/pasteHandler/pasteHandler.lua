@@ -14,9 +14,9 @@ function dgsEnablePasteHandler()
 		--toggleBrowserDevTools(GlobalPasteHandler,true)
 		--focusBrowser(GlobalPasteHandler)
 		end,false)
-		
+
 		triggerEvent("onDgsPluginCreate",GlobalPasteHandler,sourceResource)
-		
+
 		addEventHandler("DGSI_Paste",GlobalPasteHandler,function(data,theType)
 			if theType == "file" then
 				local result = base64Decode(split(data,",")[2])

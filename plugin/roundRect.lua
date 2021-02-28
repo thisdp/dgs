@@ -1,6 +1,6 @@
 function requestRoundRectangleShader(withoutFilled)
 	local woF = not withoutFilled and ""
-	return 
+	return
 [[
 texture sourceTexture;
 float4 color = float4(1,1,1,1);
