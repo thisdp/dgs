@@ -1,6 +1,7 @@
 masks = {
 	circle="plugin/mask/mask-Circle.fx",
 	backgroundFilter="plugin/mask/mask-BackGroundFilter.fx",
+	colorInverter="plugin/mask/mask-ColorInverter.fx",
 }
 
 function dgsCreateMask(texture1,texture2,settings)
