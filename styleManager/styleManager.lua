@@ -236,4 +236,6 @@ function loadStyleConfig()
 	end
 end
 
-loadStyleConfig()
+addEventHandler("onClientResourceStart",resourceRoot,function()
+	loadStyleConfig()
+end)
