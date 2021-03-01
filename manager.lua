@@ -307,7 +307,7 @@ for i=1,#dgsType do
 end
 
 for i=1,#dgsScreen3DType do
-	dgsWorld3DType[dgsScreen3DType[i]] = dgsScreen3DType[i]
+	dgsScreen3DType[dgsScreen3DType[i]] = dgsScreen3DType[i]
 end
 
 for i=1,#dgsWorld3DType do
