@@ -306,6 +306,10 @@ for i=1,#dgsType do
 	dgsType[dgsType[i]] = dgsType[i]
 end
 
+for i=1,#dgsScreen3DType do
+	dgsWorld3DType[dgsScreen3DType[i]] = dgsScreen3DType[i]
+end
+
 for i=1,#dgsWorld3DType do
 	dgsWorld3DType[dgsWorld3DType[i]] = dgsWorld3DType[i]
 end
