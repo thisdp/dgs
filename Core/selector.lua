@@ -154,7 +154,7 @@ function dgsSelectorGetItemText(selector,i,retTransOrig)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
-	return retTransOrig and iData[8] or iData[1]
+	return retTransOrig and iData[i][8] or iData[i][1]
 end
 
 function dgsSelectorSetItemText(selector,i,text)
