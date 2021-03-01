@@ -50,32 +50,30 @@ addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
 dgsSetData(GlobalMemo,"linkedDxMemo",nil)
 --[[
 ---------------In Normal Mode------------------
-	Text Table Structure:
-			Text Width(Int),	Original Text(Str)
-		{
-			{[-1] = text Width,	[0] = text},
-			{[-1] = text Width,	[0] = text},
-			{[-1] = text Width,	[0] = text},
-			...
-		}
+Text Table Structure:
+	text width no color code,			text no color code,				Text Width(Int),	Original Text(Str),	TextBlock1,						TextBlock2,...
+{
+	{[-3] = textWidthWithoutColorCode,	[-2] = textWithoutColorCode,	[-1] = text Width,	[0] = text,			{textBlock1,color,styleType},	{textBlock2,color,styleType},	...	},
+	{[-3] = textWidthWithoutColorCode,	[-2] = textWithoutColorCode,	[-1] = text Width,	[0] = text,			{textBlock1,color,styleType},	{textBlock2,color,styleType},	...	},
+	...
+}
 --------------In Word Wrap Mode----------------
-	Text Table Structure:
-			Text Width(Int),	Text(Str),	Map Tables For Weak Line(Table),
-		{
-			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 1
-			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 2
-			{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 3
-			...
-		}
+Text Table Structure:
+	Text Width(Int),	Text(Str),	Map Tables For Weak Line(Table),
+{
+	{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 1
+	{[-1] = text Width,	[0] = text,	[1] = { table1, table2, table3, ... }},	--Strong Line 2
+	...
+}
 
-	Map Table Structure:
-			Text Of Weak Line(Str),	Row In Text Table(Table),	Weak Line Index In Text Table(Int),	Length Of Text(Int),
-		{
-			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
-			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
-			{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
-			...
-		}
+Map Table Structure:
+	Text Of Weak Line(Str),	Row In Text Table(Table),	Weak Line Index In Text Table(Int),	Length Of Text(Int),
+{
+	{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
+	{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
+	{[0] = SplitedText,		[1] = LineInTextTable,		[2] = WeakIndex,					[3] = utf8Len(SplitedText)},
+	...
+}
 ]]
 function dgsCreateMemo(...)
 	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor
@@ -150,6 +148,7 @@ function dgsCreateMemo(...)
 		maxLength = 0x3FFFFFFF,
 		scrollBarLength = {},
 		multiClickCounter = {false,false,0},
+		colorcoded = true,
 	}
 	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
