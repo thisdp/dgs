@@ -998,6 +998,28 @@ function dgsApplyLanguageChange(name,translation,attach)
 	end
 end
 
+function dgsTranslateText(textTable)
+	if type(textTable) == "table" then
+		local translation = resourceTranslation[sourceResource or getThisResource()]
+		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
+		local count = 2
+		while true do
+			local textArg = textTable[count]
+			if not textArg then break end
+			if type(textArg) == "table" then
+				textArg = dgsTranslateText(textArg,sourceResource)
+			end
+			local _value = value:gsub("%%rep%%",textArg,1)
+			if _value == value then break end
+			count = count+1
+			value = _value
+		end
+		value = value:gsub("%%rep%%","")
+		return value
+	end
+	return false
+end
+
 
 ----Compatibility
 function dgsSetSide(dgsEle,which,where)
@@ -1025,5 +1047,28 @@ function dgsGetSide(dgsEle,which)
 		return h
 	elseif which == "tob" then
 		return v
+	end
+end
+
+---------------------------------------------Element Proxy
+externalElementPool = {}
+function dgsPushIntoElementPool(element,eleType)
+	if not sourceResource then return false end
+	externalElementPool[sourceResource] = externalElementPool[sourceResource] or {}
+	externalElementPool[sourceResource][eleType] = externalElementPool[sourceResource][eleType] or {}
+	local elePool = externalElementPool[sourceResource][eleType]
+	elePool[#elePool+1] = element
+	return true
+end
+
+function dgsPopFromElementPool(eleType)
+	if not sourceResource then return false end
+	externalElementPool[sourceResource] = externalElementPool[sourceResource] or {}
+	externalElementPool[sourceResource][eleType] = externalElementPool[sourceResource][eleType] or {}
+	local elePool = externalElementPool[sourceResource][eleType]
+	local ele = elePool[#elePool]
+	if ele then
+		elePool[#elePool] = nil
+		return ele
 	end
 end
