@@ -170,7 +170,7 @@ dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
-			elseif shadowIsOutline = 2 then
+			elseif shadowIsOutline == 2 then
 				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
