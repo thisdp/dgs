@@ -365,7 +365,7 @@ class {
 			removeEventHandler(eventName,self.dgsElement,theFnc)
 			dgsOOP.eventHandler[eventName] = dgsOOP.eventHandler[eventName] or {}
 			dgsOOP.eventHandler[eventName][self.dgsElement] = dgsOOP.eventHandler[eventName][self.dgsElement] or {}
-			local eventFncEnv = {}
+			local eventFncEnv = {source=false}
 			setmetatable(eventFncEnv,{__index = _G,__newindex = _G})
 			setfenv(theFnc,eventFncEnv)
 			local function callBack(...)
@@ -596,7 +596,6 @@ class {
 		getItemText = gObjFnc("dgsComboBoxGetItemText"),
 		clear = gObjFnc("dgsComboBoxClear",true),
 		setSelectedItem = gObjFnc("dgsComboBoxSetSelectedItem",true),
-		getSelectedItem = gObjFnc("dgsComboBoxGetSelectedItem"),
 		getSelectedItem = gObjFnc("dgsComboBoxGetSelectedItem"),
 		setItemColor = gObjFnc("dgsComboBoxSetItemColor",true),
 		getItemColor = gObjFnc("dgsComboBoxGetItemColor"),

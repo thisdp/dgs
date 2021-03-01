@@ -1720,14 +1720,16 @@ function dgsGridListSetSelectedItem(gridlist,r,c,scrollTo,isOrigin)
 		tab[1] = {[c]=true}
 		dgsSetData(gridlist,"rowSelect",tab)
 	elseif selectionMode == 3 then
+		if r == -1 then r = old1 or r end
+		if c == -1 then c = old2 or c end
 		dgsSetData(gridlist,"rowSelect",{[r]={[c]=true}})
 	end
+	eleData.itemClick = {r,c}
 	if eleData.multiSelection then
 		triggerEvent("onDgsGridListSelect",gridlist,r,c,old1)
 	else
-		triggerEvent("onDgsGridListSelect",gridlist,r or -1,c or -1,old1 or -1,old2 or -1)
+		triggerEvent("onDgsGridListSelect",gridlist,r,c,old1 or -1,old2 or -1)
 	end
-	eleData.itemClick = {r,c}
 	if scrollTo then
 		dgsGridListScrollTo(gridlist,r,c)
 	end
