@@ -2520,9 +2520,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				for id = cPosStart,cPosEnd do
 					local item = elementBuffer[i][id]
 					if item and item[1] then
-						local offx,offy = items[2],items[3]
-						for a=1,#items[1] do
-							renderGUI(items[1][a],mx,my,enabledInherited,enabledSelf,renderTarget[2],0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
+						local offx,offy = item[2],item[3]
+						for a=1,#item[1] do
+							renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,renderTarget[2],0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
 						end
 					end
 				end
