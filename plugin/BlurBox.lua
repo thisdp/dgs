@@ -159,7 +159,6 @@ function getBlurBoxShader(level)
 		}
 	}
 	]]
-	setClipboard(blurBoxShaderHorizontal)
 	local blurBoxShaderVertical = [[
 	texture screenSource;
 	float intensity = 1;
