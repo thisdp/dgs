@@ -120,9 +120,9 @@ local ProgressBarStyle = {
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
-					dxDrawImageSection(iPosX,iPosY,iSizX,iSizYPercent,0,0,sx,sy*percent,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
+					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,0,sx,sy*percent,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
 				else
-					dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
+					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor,rendSet,rndtgt)
 				end
 			end
 		elseif type(indicatorColor) == "table" then
