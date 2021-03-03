@@ -365,7 +365,7 @@ class {
 			removeEventHandler(eventName,self.dgsElement,theFnc)
 			dgsOOP.eventHandler[eventName] = dgsOOP.eventHandler[eventName] or {}
 			dgsOOP.eventHandler[eventName][self.dgsElement] = dgsOOP.eventHandler[eventName][self.dgsElement] or {}
-			local eventFncEnv = {source=false}
+			local eventFncEnv = {}
 			setmetatable(eventFncEnv,{__index = _G,__newindex = _G})
 			setfenv(theFnc,eventFncEnv)
 			local function callBack(...)
