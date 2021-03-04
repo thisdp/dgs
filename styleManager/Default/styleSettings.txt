@@ -473,7 +473,9 @@
 		font = nil,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 		textOffset = {0.25,true},
-		cursorWidth = {0.5,true},
+		troughWidth = {1,true},
+		cursorWidth = {1,true},
+		cursorLength = {0.5,true},
 	},
 
 -----------------------------------------------------------------------------------DGS Tab Panel
