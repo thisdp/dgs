@@ -201,15 +201,15 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			color = applyColorAlpha(color,parentAlpha)
 		end
 		if animProgress == 0 then
-			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,colorOn[colorImgID],isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,colorOn[colorImgID],isPostGUI)
+			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,color,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
 		elseif animProgress == 1 then
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,colorOff[colorImgID],isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,colorOff[colorImgID],isPostGUI)
+			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,color,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
 		else
-			local offColor = applyColorAlpha(colorOff[colorImgID],animProgress)
-			local onColor = applyColorAlpha(colorOn[colorImgID],1-animProgress)
+			local offColor = applyColorAlpha(color,1-animProgress)
+			local onColor = applyColorAlpha(color,animProgress)
 
-			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
+			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
+			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
 		end
 	elseif style == 1 then
 		local colorOff = colorOff[colorImgID]
