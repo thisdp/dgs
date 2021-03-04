@@ -56,6 +56,7 @@ if dgsConfig.updateCheckAuto then
 end
 
 addCommandHandler("updatedgs",function(player)
+	if getVersion().sortable < "1.5.7-9.19626" then return outputChatBox("[DGS]Your server version is outdated upgrade to 1.5.7-9.19626 or higher",player,255,255,0) end
 	local account = getPlayerAccount(player)
 	local isPermit = hasObjectPermissionTo(player,"command.updatedgs")
 	if not isPermit then

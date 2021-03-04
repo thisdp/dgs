@@ -68,6 +68,7 @@ setElementData(root,"DGS-ResName",getResourceName(getThisResource()))
 
 -----------About DGS
 addEventHandler("DGSI_RequestAboutData",resourceRoot,function()
+	if getVersion().sortable < "1.5.7-9.19626" then return outputChatBox("[DGS]Your server version is outdated upgrade to 1.5.7-9.19626 or higher",player,255,255,0) end
     fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/README.md",{},function(data,info,player)
 		triggerClientEvent(player,"DGSI_SendAboutData",resourceRoot,data)
 	end,{client})
