@@ -128,7 +128,7 @@ function dgsColorPickerCreateComponentSelector(x,y,w,h,voh,relative,parent,thick
 	dgsSetData(cs,"voh",voh)
 	dgsSetData(cs,"cp_images",{cs,selector})
 	dgsSetData(cs,"value",0)	--0~100
-	dgsSetData(cs,"isReversed",false)
+	dgsSetData(cs,"isReverse",false)
 	addEventHandler("onDgsMouseDrag",cs,ComponentChange,false)
 	addEventHandler("onDgsMouseClickDown",cs,ComponentChange,false)
 	addEventHandler("onDgsSizeChange",cs,ComponentResize,false)
@@ -178,8 +178,8 @@ function ComponentChange()
 	else
 		position = cy/absSize[2]*100
 	end
-	local isReversed = dgsElementData[source].isReversed
-	position = isReversed and 100-position or position
+	local isReverse = dgsElementData[source].isReverse
+	position = isReverse and 100-position or position
 	dgsColorPickerSetComponentSelectorValue(source,position)
 end
 
@@ -200,8 +200,8 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	dgsSetData(cs,"value",value)
 	local absSize = dgsElementData[cs].absSize
 	local images = dgsElementData[cs].cp_images
-	local isReversed = dgsElementData[cs].isReversed
-	value = isReversed and 100-value or value
+	local isReverse = dgsElementData[cs].isReverse
+	value = isReverse and 100-value or value
 	if voh then
 		dgsSetPosition(images[2],value*absSize[1]/100-thickness/2,-offset,false)
 	else
@@ -221,7 +221,7 @@ ColorAttributeOrder = {
 	HSL={"H","S","L"},
 	HSV={"H","S","V"},
 }
-function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMode,isReversed)
+function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMode,isReverse)
 	if not(dgsIsType(show)) then error(dgsGenAsrt(show,"dgsBindToColorPicker",1,"dgs-dxgui")) end
 	if not(dgsGetPluginType(colorPicker) == "dgs-dxcolorpicker") then error(dgsGenAsrt(colorPicker,"dgsBindToColorPicker",2,"plugin dgs-dxcolorpicker")) end
 	if colorAttribute ~= "A" then
@@ -231,7 +231,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 	local targetType = dgsGetType(show)
 	local targetPlugin = dgsGetPluginType(show)
 	dgsSetData(show,"bindColorPicker",colorPicker)
-	dgsSetData(show,"isReversed",isReversed)
+	dgsSetData(show,"isReverse",isReverse)
 	if targetPlugin == "dgs-dxcomponentselector" then
 		local shader = dgsElementData[show].shader
 		if isElement(shader) then destroyElement(shader) return end
@@ -240,7 +240,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			dgsSetData(show,"shader",ALPComponent)
 			dgsImageSetImage(show,ALPComponent)
 			dxSetShaderValue(ALPComponent,"vertical",dgsElementData[show].voh)
-			dxSetShaderValue(ALPComponent,"isReversed",isReversed and true or false)
+			dxSetShaderValue(ALPComponent,"isReverse",isReverse and true or false)
 		elseif colorType == "RGB" then
 			local RGBComponent = dxCreateShader("plugin/ColorPicker/RGBComponent.fx")
 			dgsSetData(show,"shader",RGBComponent)
@@ -250,7 +250,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			dgsImageSetImage(show,RGBComponent)
 			dxSetShaderValue(RGBComponent,"RGB_Chg",RGBCHG)
 			dxSetShaderValue(RGBComponent,"vertical",dgsElementData[show].voh)
-			dxSetShaderValue(RGBComponent,"isReversed",isReversed and true or false)
+			dxSetShaderValue(RGBComponent,"isReverse",isReverse and true or false)
 			if staticMode then
 				dxSetShaderValue(RGBComponent,"StaticMode",{0,0,0})
 			else
@@ -265,7 +265,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			HSLCHG[colorID] = 1
 			dxSetShaderValue(HSLComponent,"HSL_Chg",HSLCHG)
 			dxSetShaderValue(HSLComponent,"vertical",dgsElementData[show].voh)
-			dxSetShaderValue(HSLComponent,"isReversed",isReversed and true or false)
+			dxSetShaderValue(HSLComponent,"isReverse",isReverse and true or false)
 			if staticMode then
 				dxSetShaderValue(HSLComponent,"StaticMode",{1,0,0})
 			else
@@ -280,7 +280,7 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			HSVCHG[colorID] = 1
 			dxSetShaderValue(HSVComponent,"HSV_Chg",HSVCHG)
 			dxSetShaderValue(HSVComponent,"vertical",dgsElementData[show].voh)
-			dxSetShaderValue(HSVComponent,"isReversed",isReversed and true or false)
+			dxSetShaderValue(HSVComponent,"isReverse",isReverse and true or false)
 			if staticMode then
 				dxSetShaderValue(HSVComponent,"StaticMode",{1,0,0})
 			else

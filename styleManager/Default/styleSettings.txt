@@ -438,15 +438,15 @@
 	---Color
 		textColorOn = tocolor(250,250,250,255),	--Text Color
 		textColorOff = tocolor(250,250,250,255),	--Text Color
-		colorOn = {	--Default image color when state is false ( unselected )
-			tocolor(60,60,60,255),	--Normal
-			tocolor(60,60,60,255),	--Hover
-			tocolor(60,60,60,255),	--Click
-		},
-		colorOff = {	--Default image color when state is true ( selected )
+		colorOn = {	--Default image color when state is true (On)
 			tocolor(90,160,230,255),	--Normal
 			tocolor(90,160,230,255),	--Hover
 			tocolor(90,160,230,255),	--Click
+		},
+		colorOff = {	--Default image color when state is false (Off)
+			tocolor(60,60,60,255),	--Normal
+			tocolor(60,60,60,255),	--Hover
+			tocolor(60,60,60,255),	--Click
 		},
 		cursorColor = {	--Default image color when state is true ( selected )
 			tocolor(220,220,220,255),	--Normal

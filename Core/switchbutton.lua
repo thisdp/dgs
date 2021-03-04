@@ -51,20 +51,20 @@ function dgsCreateSwitchButton(...)
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
 	dgsSetParent(switchbutton,parent,true,true)
 	local style = styleSettings.switchbutton
-	local imageOn = style.imageOn
-	local norimg_o,hovimg_o,cliimg_o = dgsCreateTextureFromStyle(imageOn[1]),dgsCreateTextureFromStyle(imageOn[2]),dgsCreateTextureFromStyle(imageOn[3])
 	local imageOff = style.imageOff
-	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(imageOff[1]),dgsCreateTextureFromStyle(imageOff[2]),dgsCreateTextureFromStyle(imageOff[3])
+	local norimg_o,hovimg_o,cliimg_o = dgsCreateTextureFromStyle(imageOff[1]),dgsCreateTextureFromStyle(imageOff[2]),dgsCreateTextureFromStyle(imageOff[3])
+	local imageOn = style.imageOn
+	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(imageOn[1]),dgsCreateTextureFromStyle(imageOn[2]),dgsCreateTextureFromStyle(imageOn[3])
 	local cursorImage = style.cursorImage
 	local norimg_c,hovimg_c,cliimg_c = dgsCreateTextureFromStyle(cursorImage[1]),dgsCreateTextureFromStyle(cursorImage[2]),dgsCreateTextureFromStyle(cursorImage[3])
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[switchbutton] = {
 		renderBuffer = {};
-		colorOn = style.colorOn,
 		colorOff = style.colorOff,
+		colorOn = style.colorOn,
 		cursorColor = style.cursorColor,
-		imageOn = {norimg_o,hovimg_o,cliimg_o},
-		imageOff = {norimg_f,hovimg_f,cliimg_f},
+		imageOff = {norimg_o,hovimg_o,cliimg_o},
+		imageOn = {norimg_f,hovimg_f,cliimg_f},
 		cursorImage = {norimg_c,hovimg_c,cliimg_c},
 		textColorOn = tonumber(textColorOn) or style.textColorOn,
 		textColorOff = tonumber(textColorOff) or style.textColorOff,
@@ -82,6 +82,7 @@ function dgsCreateSwitchButton(...)
 		wordbreak = false,
 		colorcoded = false,
 		style = 1,
+		isReverse = false,
 	}
 	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or resource])
 	if type(textOn) == "table" then
@@ -138,20 +139,21 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	local imageOff,imageOn = eleData.imageOff,eleData.imageOn
-	local colorOff,colorOn = eleData.colorOff,eleData.colorOn
+	local imageOn,imageOff = eleData.imageOn,eleData.imageOff
+	local colorOn,colorOff = eleData.colorOn,eleData.colorOff
+	local isReverse = eleData.isReverse
 	local textColor,text
 	local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
-	if eleData.state then
-		textColor,text,xAdd = eleData.textColorOn,eleData.textOn,-xAdd
+	if eleData.state ~= isReverse then
+		textColor,text,xAdd = eleData.textColorOn,eleData.textOn,(isReverse and -1 or 1)*xAdd
 	else
-		textColor,text = eleData.textColorOff,eleData.textOff
+		textColor,text,xAdd = eleData.textColorOff,eleData.textOff,(isReverse and 1 or -1)*xAdd
 	end
 	local style = eleData.style
 	local colorImgBgID = 1
 	local colorImgID = 1
 	local cursorWidth = eleData.cursorWidth[2] and w*eleData.cursorWidth[1] or eleData.cursorWidth[1]
-	local animProgress = (eleData.stateAnim+1)*0.5
+	local animProgress = (-eleData.stateAnim+1)*0.5
 	local cursorX = x+animProgress*(w-cursorWidth)
 	if MouseData.entered == v then
 		local isHitCursor = mx >= cursorX and mx <= cursorX+cursorWidth
@@ -186,7 +188,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		cursorColor = applyColorAlpha(cursorColor,parentAlpha)
 	end
 	if not style then
-		local color = colorOff[colorImgID]+(colorOn[colorImgID]-colorOff[colorImgID])*animProgress
+		local color = colorOn[colorImgID]+(colorOff[colorImgID]-colorOn[colorImgID])*animProgress
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				color = applyColorAlpha(eleData.disabledColor,parentAlpha)
@@ -199,38 +201,46 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			color = applyColorAlpha(color,parentAlpha)
 		end
 		if animProgress == 0 then
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,color,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
-		elseif animProgress == 1 then
 			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,color,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
+		elseif animProgress == 1 then
+			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,color,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,color,isPostGUI)
 		else
 			local offColor = applyColorAlpha(color,1-animProgress)
 			local onColor = applyColorAlpha(color,animProgress)
 
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
-			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
+			local _empty = imageOn[colorImgBgID] and dxDrawImage(x,y,w,h,imageOn[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,offColor,isPostGUI)
+			local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,w,h,imageOff[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(x,y,w,h,onColor,isPostGUI)
 		end
 	elseif style == 1 then
-		local colorOn = colorOn[colorImgID]
 		local colorOff = colorOff[colorImgID]
+		local colorOn = colorOn[colorImgID]
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
-				colorOn = applyColorAlpha(eleData.disabledColor,parentAlpha)
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
+				colorOn = applyColorAlpha(eleData.disabledColor,parentAlpha)
 			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(colorOn,true)
-				local average = (r+g+b)/3*eleData.disabledColorPercent
-				colorOn = tocolor(average,average,average,a*parentAlpha)
 				local r,g,b,a = fromcolor(colorOff,true)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOff = tocolor(average,average,average,a*parentAlpha)
+				local r,g,b,a = fromcolor(colorOn,true)
+				local average = (r+g+b)/3*eleData.disabledColorPercent
+				colorOn = tocolor(average,average,average,a*parentAlpha)
 			end
 		else
-			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			colorOff = applyColorAlpha(colorOff,parentAlpha)
+			colorOn = applyColorAlpha(colorOn,parentAlpha)
 		end
-
-		local _empty = imageOff[colorImgBgID] and dxDrawImage(x,y,cursorX-x+cursorWidth/2,h,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(x,y,cursorX-x+cursorWidth/2,h,colorOff,isPostGUI)
-		local _empty = imageOn[colorImgBgID] and dxDrawImage(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h,colorOn,isPostGUI)
+		
+		local xOff,yOff,wOff,hOff,xOn,yOn,wOh,hOn
+		if isReverse then
+			xOff,yOff,wOff,hOff = cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h
+			xOn,yOn,wOh,hOn = x,y,cursorX-x+cursorWidth/2,h
+		else
+			xOn,yOn,wOh,hOn = cursorX+cursorWidth/2,y,w-(cursorX-x+cursorWidth/2),h
+			xOff,yOff,wOff,hOff = x,y,cursorX-x+cursorWidth/2,h
+		end
+		local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOh,hOn,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOh,hOn,colorOn,isPostGUI)
+		local _empty = imageOff[colorImgBgID] and dxDrawImage(xOff,yOff,wOff,hOff,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(xOff,yOff,wOff,hOff,colorOff,isPostGUI)
 	end
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
