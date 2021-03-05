@@ -50,13 +50,32 @@ function checkUpdate()
 	end)
 end
 
+function checkServerVersion(player)
+	if getVersion().sortable < "1.5.9-9.11342" then
+		if player then
+			local acc = getPlayerAccount(player)
+			if acc and getAccountName(acc) == "Console" then 
+				outputDebugString("[DGS]Your server version is outdated upgrade to 1.5.4-9.11342 or higher",2)
+			else
+				outputChatBox("[DGS]Your server version is outdated upgrade to 1.5.4-9.11342 or higher",player,255,255,0)
+			end
+			return false
+		else
+			outputDebugString("[DGS]Your server version is outdated upgrade to 1.5.4-9.11342 or higher",2)
+			return false
+		end
+	end
+	return true
+end
+
 if dgsConfig.updateCheckAuto then
+	if not checkServerVersion() then return end
 	checkUpdate()
 	updatePeriodTimer = setTimer(checkUpdate,dgsConfig.updateCheckInterval*3600000,0)
 end
 
 addCommandHandler("updatedgs",function(player)
-	if getVersion().sortable < "1.5.7-9.19626" then return outputChatBox("[DGS]Your server version is outdated upgrade to 1.5.7-9.19626 or higher",player,255,255,0) end
+	if not checkServerVersion(player) then return end
 	local account = getPlayerAccount(player)
 	local isPermit = hasObjectPermissionTo(player,"command.updatedgs")
 	if not isPermit then

@@ -1,4 +1,26 @@
-
+xmlLoadStr = _G["xmlLoad".."String"]
+if not xmlLoadStr then
+	tempXmlLogger = {count=0}
+	xmlLoadStr = function(str)
+		local tick = tempXmlLogger.count
+		tempXmlLogger.count = tempXmlLogger.count+1
+		local xmlFile = fileCreate("g2dCrawlTmp_"..tick..".xml")
+		fileWrite(xmlFile,str)
+		fileClose(xmlFile)
+		local xml = xmlLoadFile("g2dCrawlTmp_"..tick..".xml")
+		tempXmlLogger[xml] = {path="g2dCrawlTmp_"..tick..".xml"}
+		return xml
+	end
+	xmlReleaseTempFiles = function(xml)
+		if tempXmlLogger[xml] then
+			xmlUnloadFile(xml)
+			fileDelete(tempXmlLogger[xml].path)
+			tempXmlLogger[xml] = nil
+		end
+	end
+else
+	xmlReleaseTempFiles = function() end
+end
 
 local function tableCount(tabl)
 	local cnt = 0
@@ -498,7 +520,7 @@ function CrawlWikiFromMTA(t)
 				liEnd_1,liEnd_2 = string.find(data,"%<%/li%>",startPos)
 				if not liStart_1 or not liEnd_1 then break end
 				local str = string.sub(data,liStart_2+1,liEnd_1-1)
-				local xmlNode = xmlLoadString(str)
+				local xmlNode = xmlLoadStr(str)
 				local fncName = xmlNodeGetValue(xmlNode)
 				local nTable = {
 					href=xmlNodeGetAttribute(xmlNode,"href"),
@@ -508,6 +530,7 @@ function CrawlWikiFromMTA(t)
 				}
 				table.insert(fncList,nTable)
 				startPos = liEnd_2
+				xmlReleaseTempFiles(xmlNode)
 			end
 			print("[DGS]Function list("..#fncList..") is ready, Crawling...")
 			local fRProg = {thread=0,index=0,valid=0,progress=0,total=#fncList}
@@ -537,8 +560,9 @@ function CrawlWikiFromMTA(t)
 											local startPos = data:find("%<textarea")
 											local _,endPos = data:find("%<%/textarea>",startPos)
 											local line = data:sub(startPos,endPos)
-											local xmlNode = xmlLoadString(line)
+											local xmlNode = xmlLoadStr(line)
 											local pageSource = xmlNodeGetValue(xmlNode)
+											xmlReleaseTempFiles(xmlNode)
 											local _,rangeStart = pageSource:find("==Syntax==")
 											local _,syntaxStart = pageSource:find("%<syntaxhighlight lang%=\"lua\"%>",rangeStart+1)
 											local syntaxEnd = pageSource:find("%<%/syntaxhighlight%>",syntaxStart+1)
