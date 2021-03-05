@@ -13,47 +13,12 @@ end
 
 local guiFocus = guiBringToFront
 
-resourceTranslation = {}
-LanguageTranslation = {}
-LanguageTranslationAttach = {}
-boundResource = {}
-SelfEasing = {}
-SEInterface = [[
-local args = {...};
-local progress,setting,self = args[1],args[2],args[3];
-local propertyTable = dgsElementData[self];
-]]
-function dgsAddEasingFunction(name,str)
-	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,"string")) end
-	if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsAddEasingFunction",2,"string")) end
-	if easingBuiltIn[name] then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,_,_,"duplicated name with built-in easing function ("..name..")")) end
-	if SelfEasing[name] then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,_,_,"this name has been used ("..name..")")) end
-	local str = SEInterface..str
-	local fnc,err = loadstring(str)
-	if not fnc then error(dgsGenAsrt(fnc,"dgsAddEasingFunction",2,_,_,_,"Failed to load function:"..err)) end
-	SelfEasing[name] = fnc
-	return true
-end
-
-function dgsRemoveEasingFunction(name)
-	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsRemoveEasingFunction",1,"string")) end
-	if SelfEasing[name] then
-		SelfEasing[name] = nil
-		return true
-	end
-	return false
-end
-
-function dgsEasingFunctionExists(name)
-	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsEasingFunctionExists",1,"string")) end
-	return easingBuiltIn[name] or (SelfEasing[name] and true)
-end
-
 function insertResource(res,dgsEle)
 	if res and isElement(dgsEle) then
 		boundResource[res] = boundResource[res] or {}
 		boundResource[res][dgsEle] = true
 		setElementData(dgsEle,"resource",res)
+		dgsSetProperty(dgsEle,"resource",res)
 	end
 end
 
@@ -1047,28 +1012,5 @@ function dgsGetSide(dgsEle,which)
 		return h
 	elseif which == "tob" then
 		return v
-	end
-end
-
----------------------------------------------Element Proxy
-externalElementPool = {}
-function dgsPushIntoElementPool(element,eleType)
-	if not sourceResource then return false end
-	externalElementPool[sourceResource] = externalElementPool[sourceResource] or {}
-	externalElementPool[sourceResource][eleType] = externalElementPool[sourceResource][eleType] or {}
-	local elePool = externalElementPool[sourceResource][eleType]
-	elePool[#elePool+1] = element
-	return true
-end
-
-function dgsPopFromElementPool(eleType)
-	if not sourceResource then return false end
-	externalElementPool[sourceResource] = externalElementPool[sourceResource] or {}
-	externalElementPool[sourceResource][eleType] = externalElementPool[sourceResource][eleType] or {}
-	local elePool = externalElementPool[sourceResource][eleType]
-	local ele = elePool[#elePool]
-	if ele then
-		elePool[#elePool] = nil
-		return ele
 	end
 end

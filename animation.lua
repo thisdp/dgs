@@ -4,7 +4,6 @@ local type = type
 local tonumber = tonumber
 local triggerEvent = triggerEvent
 
-animGUIList,moveGUIList,sizeGUIList,alphaGUIList = {},{},{},{}
 function dgsIsAniming(gui)
 	assert(dgsIsType(gui),"Bad argument @dgsIsAniming at argument 1, expect dgs-dxgui got "..dgsGetType(gui))
 	return animGUIList[gui] or false
@@ -233,8 +232,8 @@ addEventHandler("onClientRender",root,function()
 						local percent = oldValue+getEasingValue(linearProgress,easing)*(targetValue-oldValue)
 						dgsSetProperty(v,propertyName,percent)
 					else
-						if SelfEasing[easing] then
-							local value = SelfEasing[easing](linearProgress,{propertyName,targetValue,oldValue},v)
+						if dgsEasingFunction[easing] then
+							local value = dgsEasingFunction[easing](linearProgress,{propertyName,targetValue,oldValue},v)
 							dgsSetProperty(v,propertyName,value)
 						else
 							dgsStopAniming(v,propertyName)
@@ -481,9 +480,9 @@ addEventHandler("onClientRender",root,function()
 end)
 
 function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings,self)
-	if SelfEasing[easing] then
+	if dgsEasingFunction[easing] then
 		local nx,ny,nz = x,y,z
-		local temp = SelfEasing[easing](percent,settings,self)
+		local temp = dgsEasingFunction[easing](percent,settings,self)
 		local diff = {tx-x,ty-y,tz-z}
 		if diff[1] ~= 0 then nx = temp*diff[1]+x end
 		if diff[2] ~= 0 then ny = temp*diff[2]+y end
@@ -494,7 +493,7 @@ function interpolateBetween2(x,y,z,tx,ty,tz,percent,easing,settings,self)
 end
 
 function getEasingValue2(percent,easing,settings,self)
-	if SelfEasing[easing] then
-		return SelfEasing[easing](percent,settings,self)
+	if dgsEasingFunction[easing] then
+		return dgsEasingFunction[easing](percent,settings,self)
 	end
 end

@@ -314,6 +314,8 @@ for i=1,#dgsWorld3DType do
 	dgsWorld3DType[dgsWorld3DType[i]] = dgsWorld3DType[i]
 end
 
+setElementData(resourceRoot,"DGSType",dgsType,false)
+
 function dgsGetType(dgsEle)
 	if isElement(dgsEle) then return tostring(dgsElementType[dgsEle] or getElementType(dgsEle)) end
 	local theType = type(dgsEle)
@@ -334,7 +336,7 @@ function dgsIsType(dgsEle,isType)
 			return type(dgsEle) == isType
 		end
 	else
-		return isElement(dgsEle) and ((dgsElementType[dgsEle] or (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin) or ""):sub(1,6) == "dgs-dx")
+		return isElement(dgsEle) and ((dgsElementType[dgsEle] or (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin) or getElementType(dgsEle)):sub(1,6) == "dgs-dx")
 	end
 end
 
@@ -646,6 +648,7 @@ function dgsSetProperty(dgsEle,key,value,...)
 					fnc = value
 				else
 					fnc = loadstring(value)
+					dgsElementData[dgsEle].functions_string = {value,{...}}
 				end
 				assert(fnc,"Bad argument @dgsSetProperty at argument 2, failed to load function")
 				value = {fnc,{...}}
@@ -713,3 +716,156 @@ function dgsSetPropertyInherit(dxgui,key,value,...)
 	end
 	return true
 end
+------------------------Custom Easing Function
+resourceTranslation = {}
+LanguageTranslation = {}
+LanguageTranslationAttach = {}
+boundResource = {}
+dgsEasingFunction = {}
+dgsEasingFunctionOrg = {}
+SEInterface = [[
+local args = {...};
+local progress,setting,self = args[1],args[2],args[3];
+local propertyTable = dgsElementData[self];
+]]
+function dgsAddEasingFunction(name,str)
+	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,"string")) end
+	if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsAddEasingFunction",2,"string")) end
+	if easingBuiltIn[name] then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,_,_,"duplicated name with built-in easing function ("..name..")")) end
+	if dgsEasingFunction[name] then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,_,_,"this name has been used ("..name..")")) end
+	local str = SEInterface..str
+	local fnc,err = loadstring(str)
+	if not fnc then error(dgsGenAsrt(fnc,"dgsAddEasingFunction",2,_,_,_,"Failed to load function:"..err)) end
+	dgsEasingFunction[name] = fnc
+	dgsEasingFunctionOrg[name] = str
+	return true
+end
+
+function dgsRemoveEasingFunction(name)
+	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsRemoveEasingFunction",1,"string")) end
+	if dgsEasingFunction[name] then
+		dgsEasingFunction[name] = nil
+		dgsEasingFunctionOrg[name] = nil
+		return true
+	end
+	return false
+end
+
+function dgsEasingFunctionExists(name)
+	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsEasingFunctionExists",1,"string")) end
+	return easingBuiltIn[name] or (dgsEasingFunction[name] and true)
+end
+
+------------------------Animations Define
+animGUIList,moveGUIList,sizeGUIList,alphaGUIList = {},{},{},{}
+
+------------------------DGS Property Saver
+function DGSI_SaveData()
+	--Properties
+	setElementData(root,"DGSI_Properties",dgsElementData,false)
+	--Types
+	setElementData(root,"DGSI_ElementType",dgsElementType,false)
+	--Bound Resource
+	setElementData(root,"DGSI_BoundResource",boundResource,false)
+	--Translations
+	setElementData(root,"DGSI_TranslationResRegister",resourceTranslation,false)
+	setElementData(root,"DGSI_TranslationLanguage",LanguageTranslation,false)
+	setElementData(root,"DGSI_TranslationLanguageAttach",LanguageTranslationAttach,false)
+	--Easing Functions
+	setElementData(root,"DGSI_EasingFunctions",dgsEasingFunctionOrg,false)
+	--Layer Data
+	setElementData(root,"DGSI_LayerData",{
+		bottom=BottomFatherTable,
+		center=CenterFatherTable,
+		top=TopFatherTable,
+		world3d=dgsWorld3DTable,
+		screen3d=dgsScreen3DTable,
+	},false)
+	setElementData(root,"DGSI_ParentChildData",{
+		parent=FatherTable,
+		child=ChildrenTable,
+	},false)
+	--Animations
+	setElementData(root,"DGSI_Animations",{
+		anim=animGUIList,
+		move=moveGUIList,
+		size=sizeGUIList,
+		alpha=alphaGUIList,
+	},false)
+	--Others
+	setElementData(root,"DGSI_SaveData",true,false)
+end
+
+function DGSI_ReadData()
+	local SaveData = getElementData(root,"DGSI_SaveData")
+	if SaveData == true then
+		--Properties
+		dgsElementData = getElementData(root,"DGSI_Properties")
+		for dgsElement,data in pairs(dgsElementData) do
+			if not isElement(dgsElement) then dgsElementData[dgsElement] = nil end
+			if data.functions_string then
+				local fnc = loadstring(data.functions_string[1])
+				data.functions = {fnc,data.functions_string[2]}
+			end
+		end
+		removeElementData(root,"DGSI_Properties")
+		--Types
+		dgsElementType = getElementData(root,"DGSI_ElementType")
+		removeElementData(root,"DGSI_ElementType")
+		--Bound Resource
+		boundResource = getElementData(root,"DGSI_BoundResource")
+		removeElementData(root,"DGSI_BoundResource")
+		--Translations
+		resourceTranslation = getElementData(root,"DGSI_TranslationResRegister")
+		removeElementData(root,"DGSI_TranslationResRegister")
+		
+		LanguageTranslation = getElementData(root,"DGSI_TranslationLanguage")
+		removeElementData(root,"DGSI_TranslationLanguage")
+		
+		LanguageTranslationAttach = getElementData(root,"DGSI_TranslationLanguageAttach")
+		removeElementData(root,"DGSI_TranslationLanguageAttach")
+		--Easing Functions
+		local easingOrg = getElementData(root,"DGSI_EasingFunctions")
+		for name,data in pairs(easingOrg) do
+			local fnc = loadstring(data)
+			dgsEasingFunction[name] = fnc
+		end
+		removeElementData(root,"DGSI_EasingFunctions")
+		--Layer Data
+		local layerData = getElementData(root,"DGSI_LayerData")
+		BottomFatherTable = layerData.bottom
+		CenterFatherTable = layerData.center
+		TopFatherTable = layerData.top
+		LayerCastTable = {bottom=BottomFatherTable,center=CenterFatherTable,top=TopFatherTable}
+		dgsWorld3DTable = layerData.world3d
+		dgsScreen3DTable = layerData.screen3d
+		removeElementData(root,"DGSI_LayerData")
+		
+		local pcData = getElementData(root,"DGSI_ParentChildData")
+		FatherTable = pcData.parent
+		ChildrenTable = pcData.child
+		removeElementData(root,"DGSI_ParentChildData")
+		
+		--Animations
+		local animData = getElementData(root,"DGSI_Animations")
+		animGUIList = animData.anim
+		moveGUIList = animData.move
+		sizeGUIList = animData.size
+		alphaGUIList = animData.alpha
+		removeElementData(root,"DGSI_Animations")
+	end
+	--Others
+
+	setElementData(root,"DGSI_SaveData",false,false)
+end
+
+addEventHandler("onClientResourceStop",resourceRoot,function()
+	destroyElement(GlobalEdit)
+	destroyElement(GlobalMemo)
+	local terminator = createElement("dgs-dxterminator")
+	addEventHandler("onClientElementDestroy",terminator,function()
+		DGSI_SaveData()
+	end,false)
+end,false)
+
+DGSI_ReadData()

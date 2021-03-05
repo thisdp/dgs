@@ -1366,13 +1366,15 @@ function onDGSMouseCheck(button,state)
 end
 addEventHandler("onDgsMouseClick",root,onDGSMouseCheck)
 
-addEventHandler("onClientElementDestroy",resourceRoot,function()
-	local parent = dgsGetParent(source) or root
-	if dgsIsType(source) then
+function dgsCleanElement(source)
+	local isAlive = isElement(source)
+	local parent = FatherTable[source] or root
+	local dgsType = dgsElementType[source]
+	if dgsType then
 		local eleData = dgsElementData[source] or {}
-		triggerEvent("onDgsDestroy",source)
+		if isAlive then triggerEvent("onDgsDestroy",source) end
 		local isAttachedToGridList = eleData.attachedToGridList
-		if isAttachedToGridList then dgsDetachFromGridList(source) end
+		if isAttachedToGridList and isAlive then dgsDetachFromGridList(source) end
 		local child = ChildrenTable[source] or {}
 		for i=1,#child do
 			if isElement(child[1]) then destroyElement(child[1]) end
@@ -1386,7 +1388,6 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 				end
 			end
 		end
-		local dgsType = dgsGetType(source)
 		if dgsType == "dgs-dxedit" then
 			blurEditMemo()
 		elseif dgsType == "dgs-dxmemo" then
@@ -1435,21 +1436,21 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 			end
 		end
 		ChildrenTable[source] = nil
-		local tresource = getElementData(source,"resource")
+		local tresource = dgsElementData[source].resource
 		if tresource and boundResource[tresource] then
 			boundResource[tresource][source] = nil
 		end
-		if animGUIList[source] then dgsStopAniming(source) end
-		if moveGUIList[source] then dgsStopMoving(source) end
-		if sizeGUIList[source] then dgsStopSizing(source) end
-		if alphaGUIList[source] then dgsStopAlphaing(source) end
+		if animGUIList[source] then if isAlive then dgsStopAniming(source) else animGUIList[source] = nil end end
+		if moveGUIList[source] then if isAlive then dgsStopMoving(source) else moveGUIList[source] = nil end end
+		if sizeGUIList[source] then if isAlive then dgsStopSizing(source) else sizeGUIList[source] = nil end end
+		if alphaGUIList[source] then if isAlive then dgsStopAlphaing(source) else alphaGUIList[source] = nil end end
 		if dgsWorld3DType[dgsType] then
 			tableRemoveItemFromArray(dgsWorld3DTable,source)
 		elseif dgsScreen3DType[dgsType] then
 			tableRemoveItemFromArray(dgsScreen3DTable,source)
 		else
-			local parent = dgsGetParent(source)
-			if not isElement(parent) then
+			local parent = FatherTable[source]
+			if not parent then
 				local layer = eleData.alwaysOn or "center"
 				if layer == "bottom" then
 					tableRemoveItemFromArray(BottomFatherTable,source)
@@ -1469,6 +1470,13 @@ addEventHandler("onClientElementDestroy",resourceRoot,function()
 		end
 	end
 	dgsElementData[source] = nil
+	dgsElementType[source] = nil
+end
+
+addEventHandler("onClientElementDestroy",root,function()
+	if dgsElementData[source] then
+		dgsCleanElement(source)
+	end
 end)
 
 function checkMove(source)

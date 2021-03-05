@@ -7,6 +7,7 @@ local tableRemove = table.remove
 local pi180 = math.pi/180
 _dxDrawImageSection = dxDrawImageSection
 _dxDrawImage = dxDrawImage
+_createElement = createElement
 local __dxDrawImageSection = dxDrawImageSection
 local __dxDrawImage = dxDrawImage
 ClientInfo = {
@@ -101,11 +102,46 @@ end)
 
 debugMode = getElementData(localPlayer,"DGS-DEBUG")
 --------------------------------Element Utility
+--------Element Pool
+externalElementPool = {}
+function dgsPushElement(element,eleType,sRes)
+	eleType = eleType or dgsGetType(element)
+	local sourceRes = sRes or sourceResource or resource
+	externalElementPool[sourceRes] = externalElementPool[sourceRes] or {}
+	externalElementPool[sourceRes][eleType] = externalElementPool[sourceRes][eleType] or {}
+	local elePool = externalElementPool[sourceRes][eleType]
+	elePool[#elePool+1] = element
+	return true
+end
+
+function dgsPopElement(eleType,sRes)
+	eleType = eleType or dgsGetType(element)
+	local sourceRes = sRes or sourceResource or resource
+	externalElementPool[sourceRes] = externalElementPool[sourceRes] or {}
+	externalElementPool[sourceRes][eleType] = externalElementPool[sourceRes][eleType] or {}
+	local elePool = externalElementPool[sourceRes][eleType]
+	local ele = elePool[#elePool]
+	if ele then
+		elePool[#elePool] = nil
+		return ele
+	else
+		return false
+	end
+end
+
 function isMaterial(ele)
 	local eleType = dgsGetType(ele)
 	return eleType=="shader" or eleType=="texture" or eleType=="render-target-texture"
 end
 
+function createElement(eleType,sRes)
+	local sourceRes = sRes or sourceResource or resource
+	return dgsPopElement(eleType,sourceRes) or _createElement(eleType)
+end
+
+function removeElementData(element,key)
+	setElementData(element,key,nil)
+end
 --------------------------------Table Utility
 function table.find(tab,ke,num)
 	if num then

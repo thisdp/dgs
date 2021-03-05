@@ -5,9 +5,18 @@ addEventHandler("onClientResourceStart",resourceRoot,function()
 	triggerEvent("onDgsStart",resourceRoot,dgsResName)
 end)
 
-function dgsImportFunction(name,nameAs)
+function dgsImportFunction(name,nameAs,keepElements)
 	if not sourceResource or sourceResource == getThisResource() then return "return true" end
 	if not name then
+		local keepElementsStr = keepElements and [[
+			if isCreateFunction then
+				local targetDGSType = "dgs-dx"..fncName:sub(10):lower()
+				if dgsImportHead.dgsTypes[targetDGSType] then
+					local ele = createElement(targetDGSType)
+					call(dgsImportHead.dgsResource, "dgsPushElement", ele)
+				end
+			end
+		]] or ""
 		local allCode = [[
 		--Check Error Message Above
 		if not dgsImportHead then
@@ -15,12 +24,14 @@ function dgsImportFunction(name,nameAs)
 			local call = call
 			local getResourceFromName = getResourceFromName
 			local tostring = tostring
+			local unpack = unpack
 			local outputDebugString = outputDebugString
 			local DGSCallMT = {}
 			dgsImportHead = {}
 			dgsImportHead.dgsName = "]]..dgsResName..[["
 			dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
 			dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
+			dgsImportHead.dgsTypes = getElementData(dgsRoot,"DGSType")
 			addEventHandler("onClientResourceStop",dgsRoot,function()
 				outputDebugString("[DGS] Alert! DGS has stopped. Everything keeps disconnected from DGS till the next time DGS starts!",2)
 				function onDgsStart(dResN)
@@ -38,22 +49,22 @@ function dgsImportFunction(name,nameAs)
 					isTraceDebug = v == 3
 				end
 			end,false)
-			function DGSCallMT:__index(k)
-				if type(k) ~= 'string' then k = tostring(k) end
-				self[k] = function(...)
+			function DGSCallMT:__index(fncName)
+				if type(fncName) ~= 'string' then fncName = tostring(fncName) end
+				self[fncName] = function(...)
 					if not dgsImportHead then error("DGS import data is missing or DGS is not running, please reimport dgs functions("..getResourceName(getThisResource())..")") end
 					if isElement(dgsRoot) then
+						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
+						]]..keepElementsStr..[[
 						if isTraceDebug then
 							local data = debug.getinfo(2)
-							local retValue = {call(dgsImportHead.dgsResource, k, ...)}
-							if k:lower():find("create") then
-								if isElement(retValue[1]) then
-									call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",{line=data.currentline,file=data.source:gsub("\\","/"):gsub("@",":"),fncName=k})
-								end
+							local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
+							if isCreateFunction and isElement(retValue[1]) then
+								call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",{line=data.currentline,file=data.source:gsub("\\","/"):gsub("@",":"),fncName=fncName})
 							end
 							return unpack(retValue)
 						else
-							return call(dgsImportHead.dgsResource, k, ...)
+							return call(dgsImportHead.dgsResource, fncName, ...)
 						end
 					else
 						dgsImportHead = nil
@@ -61,13 +72,9 @@ function dgsImportFunction(name,nameAs)
 						return nil
 					end
 				end
-				return self[k]
+				return self[fncName]
 			end
 			DGS = setmetatable({}, DGSCallMT)
-
-			function unloadDGSFunction()
-
-			end
 		end
 		]]
 		for i,name in ipairs(getResourceExportedFunctions()) do

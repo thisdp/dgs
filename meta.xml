@@ -212,6 +212,8 @@
 	<export function="dgsGetDetectArea" type="client" />
 	<export function="dgsApplyDetectArea" type="client" />
 	<export function="dgsRemoveDetectArea" type="client" />
+	<export function="dgsPushElement" type="client" />
+	<export function="dgsPopElement" type="client" />
 
 	<export function="dgsSetCustomCursorImage" type="client" />
 	<export function="dgsGetCustomCursorImage" type="client" />
