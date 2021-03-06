@@ -1,3 +1,4 @@
+local loadstring = loadstring
 dgsExportedFunctionName = {}
 dgsResName = getResourceName(getThisResource())
 

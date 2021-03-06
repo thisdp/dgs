@@ -1,3 +1,4 @@
+local loadstring = loadstring
 ---Speed UP
 local utf8Sub = utf8.sub
 local utf8Find = utf8.find

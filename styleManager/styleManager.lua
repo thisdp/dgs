@@ -1,3 +1,4 @@
+local loadstring = loadstring
 styleSettings = {}
 styleManager = {
 	customStyle = "Default",
@@ -9,6 +10,20 @@ styleManager = {
 	styleHistory = {"Default"},
 }
 
+styleSecEnv = {
+	tocolor = tocolor,
+	dgsCreateRoundRect = dgsCreateRoundRect,
+	dgsCreateEffect3D = dgsCreateEffect3D,
+	dgsCreateBlurBox = dgsCreateBlurBox,
+	dgsCreateNineSlice = dgsCreateNineSlice,
+	dgsCreateMask = dgsCreateMask,
+	dxCreateFont = dxCreateFont,
+	dxCreateTexture = dxCreateTexture,
+	dxCreateScreenSource = dxCreateScreenSource,
+	dxCreateShader = dxCreateShader,
+	dxCreateRenderTarget = dxCreateRenderTarget,
+}
+
 function scanCustomStyle()
 	local styleMapper = fileOpen("styleManager/styleMapper.lua")
 	local str = fileRead(styleMapper,fileGetSize(styleMapper))
@@ -16,6 +31,7 @@ function scanCustomStyle()
 	local str = "return {\n"..str.."\n}"
 	local fnc = loadstring(str)
 	assert(fnc,"Failed to load styleMapper")
+	setfenv(fnc,{})
 	local customStyleTable = fnc()
 	local customUsing = "Default"
 	for k,v in pairs(customStyleTable) do
@@ -183,6 +199,7 @@ function dgsSetCurrentStyle(styleName)
 	fileClose(styleFile)
 	local fnc = loadstring("return {\n"..str.."\n}")
 	assert(fnc,"Error when loading "..path.."styleSettings.txt")
+	setfenv(fnc,styleSecEnv)
 	local customStyleSettings = fnc()
 	if not next(styleSettings) then
 		styleSettings = customStyleSettings

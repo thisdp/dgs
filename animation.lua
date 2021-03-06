@@ -1,3 +1,4 @@
+local loadstring = loadstring
 ---------------Speed Up
 local assert = assert
 local type = type

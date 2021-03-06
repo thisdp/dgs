@@ -1,3 +1,4 @@
+local loadstring = loadstring
 -------OOP
 if not getElementData(root,"__DGSRes") then assert(false,"Invalid DGS Resource! Please check whether your dgs resource is started") end
 if not dgsImportHead then loadstring(exports[getElementData(root,"__DGSRes")]:dgsImportFunction())() end

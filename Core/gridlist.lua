@@ -1,3 +1,4 @@
+local loadstring = loadstring
 --Dx Functions
 local dxDrawImage = dxDrawImageExt
 local dxDrawText = dxDrawText

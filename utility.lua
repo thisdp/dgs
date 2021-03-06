@@ -234,6 +234,15 @@ function table.shallowCopy(obj)
 	return InTable
 end
 
+--------------------------------File Utility
+function hashFile(fName)
+	local f = fileOpen(fName)
+	local fSize = fileGetSize(f)
+	local fContent = fileRead(f,fSize)
+	fileClose(f)
+	return hash("sha256",fContent),fSize
+end
+
 --------------------------------String Utility
 function string.split(s,delim)
 	local delimLen = len(delim)
@@ -299,6 +308,7 @@ function dgsSearchFullWordType(text,index,side)
 	end
 	return frontPos,backPos-1,startType
 end
+
 --------------------------------Math Utility
 function findRotation(x1,y1,x2,y2,offsetFix)
 	local t = -deg(atan2(x2-x1,y2-y1))+offsetFix
@@ -696,12 +706,6 @@ function getProperUnit(value,unit)
 	end
 end
 
-function dgsRunString(func,...)
-	local fnc = loadstring(func)
-	assert(type(fnc) == "function","[DGS]Can't Load Bad Function By dgsRunString")
-	return fnc(...)
-end
-
 keyStateMap = {
 	lctrl=getKeyState("lctrl"),
 	rctrl=getKeyState("rctrl"),
@@ -894,3 +898,27 @@ for i=1,#events do
 	addEvent(events[i],true)
 end
 
+------------------Security
+DGSFileVerify = false
+addEventHandler("onDgsStart",resourceRoot,function()
+	triggerServerEvent("DGSI_RequestFileInfo",localPlayer)
+end)
+
+function verifyFiles()
+	local mismatched = {}
+	for fName,fData in pairs(DGSFileVerify) do
+		local fileInfo = {hashFile(fName)}
+		if fileInfo[1] ~= fData[1] or fileInfo[2] ~= fData[2] then
+			mismatched[fName] = fData
+		end
+	end
+	if table.count(mismatched) > 0 then
+		triggerServerEvent("DGSI_AbnormalDetected",localPlayer,mismatched)
+	end
+end
+
+addEvent("DGSI_ReceiveFileInfo",true)
+addEventHandler("DGSI_ReceiveFileInfo",root,function(data)
+	DGSFileVerify = data
+	verifyFiles()
+end)

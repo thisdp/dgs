@@ -1,3 +1,4 @@
+local loadstring = loadstring
 ---------------Speed Up
 local tableInsert = table.insert
 local tableRemove = table.remove

@@ -1,3 +1,4 @@
+local loadstring = loadstring
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImageExt
@@ -17,7 +18,6 @@ local dgsSetData = dgsSetData
 --Utilities
 local triggerEvent = triggerEvent
 local createElement = createElement
-local loadstring = loadstring
 --
 --This is a special dgs element that won't be rendered itself.
 --This dgs element is usually used for plugins

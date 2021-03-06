@@ -1,3 +1,4 @@
+local loadstring = loadstring
 focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 --Speed Up

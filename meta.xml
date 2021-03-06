@@ -86,6 +86,7 @@
 	<script src="update.lua" type="server" />
 	<script src="G2DManager_s.lua" type="server" />
 	<script src="test.lua" type="client" />
+
 	<file src="classlib.lua" type="client" />
 
 	<!--(Default Style)-->
@@ -116,6 +117,8 @@
 	<!--(Custom Style 2) -->
 
 	<!--&Add Your Styles Here-->
+	<script src="lastExecution.lua" type="client" />
+	
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
 	<export function="dgsRemoveEasingFunction" type="client" />

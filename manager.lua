@@ -1,3 +1,4 @@
+local loadstring = loadstring
 -------------------------------------------------Parent/Layer Manager
 --Speed Up
 local tableInsert = table.insert

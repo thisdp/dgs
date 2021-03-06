@@ -73,3 +73,40 @@ addEventHandler("DGSI_RequestAboutData",resourceRoot,function()
 		triggerClientEvent(player,"DGSI_SendAboutData",resourceRoot,data)
 	end,{client})
 end)
+
+function hashFile(fName)
+	local f = fileOpen(fName)
+	local fSize = fileGetSize(f)
+	local fContent = fileRead(f,fSize)
+	fileClose(f)
+	return hash("sha256",fContent),fSize
+end
+
+addEvent("DGSI_AbnormalDetected",true)
+addEvent("DGSI_RequestFileInfo",true)
+DGSRecordedFiles = {}
+function verifyFile()
+	local xml = xmlLoadFile("meta.xml")
+	local children = xmlNodeGetChildren(xml)
+	for index,child in ipairs(children) do
+		if xmlNodeGetName(child) == "script" then
+			local typ = xmlNodeGetAttribute(child,"type") or "server"
+			if typ == "client" then
+				local src = xmlNodeGetAttribute(child,"src")
+				DGSRecordedFiles[src] = {hashFile(src)}
+			end
+		end
+	end
+end
+verifyFile()
+
+addEventHandler("DGSI_RequestFileInfo",root,function()
+	triggerClientEvent(client,"DGSI_ReceiveFileInfo",client,DGSRecordedFiles)
+end)
+
+addEventHandler("DGSI_AbnormalDetected",root,function(fData)
+	local pName = getPlayerName(client)
+	for fName,fData in pairs(fData) do
+		outputDebugString("[DGS-Security]Abnormal Detected at '"..fName.."' of player '"..pName.."'")
+	end
+end)
