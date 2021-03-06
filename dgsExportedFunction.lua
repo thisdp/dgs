@@ -546,7 +546,8 @@ end
 setElementData(root,"__DGSRes",getThisResource(),false)
 addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)
 
-function dgsImportOOPClass()
+OOPClassString = ""
+function loadOOPClass()
 	local OOPFile = fileOpen("classlib.lua")
 	local str = fileRead(OOPFile,fileGetSize(OOPFile))
 	fileClose(OOPFile)
@@ -571,5 +572,10 @@ function dgsImportOOPClass()
 		end
 		fileClose(customOOPFileList)
 	end
-	return str
+	OOPClassString = str
+end
+loadOOPClass()
+
+function dgsImportOOPClass()
+	return OOPClassString
 end
