@@ -24,7 +24,7 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	dxSetRenderTarget(bufferRTV)
 	dxDrawImage(0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF)
 	dxSetRenderTarget()
-	dxDrawImage(x,y,w,h,bufferRTV,0,0,0,dgsElementData[self].color,postGUI or false)
+	dxDrawImage(x,y,w,h,bufferRTV,0,0,0,color,postGUI or false)
 end
 
 function dgsCreateBlurBox(w,h,blursource)
@@ -57,7 +57,6 @@ function dgsCreateBlurBox(w,h,blursource)
 	dgsSetData(bb,"intensity",1)
 	dgsSetData(bb,"resolution",{w,h})
 	dgsSetData(bb,"level",5)
-	dgsSetData(bb,"color",0xFFFFFFFF)
 	blurboxShaders = blurboxShaders+1
 	triggerEvent("onDgsPluginCreate",bb,sourceResource)
 	return bb
