@@ -1464,6 +1464,7 @@ function dgsCleanElement(source)
 				if ChildrenTable[parent] then
 					tableRemoveItemFromArray(ChildrenTable[parent],source)
 				end
+				FatherTable[source] = nil
 			end
 		end
 		if eleData._translationText then
