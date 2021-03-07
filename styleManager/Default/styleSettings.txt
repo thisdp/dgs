@@ -263,6 +263,7 @@
 		placeHolder = "",
 		placeHolderColorcoded = false,
 		placeHolderOffset = {0,0},
+		placeHolderTextSize = nil,	---Use textSize
 		placeHolderIgnoreRenderTarget = false,
 	},
 

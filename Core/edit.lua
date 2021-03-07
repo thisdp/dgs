@@ -100,6 +100,7 @@ function dgsCreateEdit(...)
 		placeHolderColor = style.placeHolderColor,
 		placeHolderColorcoded = style.placeHolderColorcoded,
 		placeHolderOffset = style.placeHolderOffset,
+		placeHolderTextSize = style.placeHolderTextSize,
 		placeHolderIgnoreRenderTarget = style.placeHolderIgnoreRenderTarget,
 		padding = style.padding,
 		alignment = {"left","center"},
@@ -996,7 +997,15 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				local pColor = eleData.placeHolderColor
 				local pFont = eleData.placeHolderFont
 				local pColorcoded = eleData.placeHolderColorcoded
-				dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,false,pColorcoded)
+				local pHolderTextSizeX,pHolderTextSizeY
+				local placeHolderTextSize = eleData.placeHolderTextSize
+				if placeHolderTextSize then
+					pHolderTextSizeX,pHolderTextSizeY = placeHolderTextSize[1],placeHolderTextSize[2]
+				else
+					pHolderTextSizeX,pHolderTextSizeY = txtSizX,txtSizY
+				end
+				
+				dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,alignment[1],alignment[2],false,false,false,pColorcoded)
 			end
 		end
 		if eleData.autoCompleteShow then

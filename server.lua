@@ -89,12 +89,16 @@ function verifyFile()
 	local xml = xmlLoadFile("meta.xml")
 	local children = xmlNodeGetChildren(xml)
 	for index,child in ipairs(children) do
-		if xmlNodeGetName(child) == "script" then
+		local nodeName = xmlNodeGetName(child)
+		if nodeName == "script" then
 			local typ = xmlNodeGetAttribute(child,"type") or "server"
 			if typ == "client" then
 				local src = xmlNodeGetAttribute(child,"src")
 				DGSRecordedFiles[src] = {hashFile(src)}
 			end
+		elseif nodeName == "file" then
+			local src = xmlNodeGetAttribute(child,"src")
+			DGSRecordedFiles[src] = {hashFile(src)}
 		end
 	end
 end
