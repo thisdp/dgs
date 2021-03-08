@@ -8,18 +8,21 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	local shader = dgsElementData[self].shaders
 	local resolution = dgsElementData[self].resolution
 	local renderSource
-	if not dgsElementData[self].blursource then
+	if not dgsElementData[self].blurSource then
 		local isUpdateScrSource = dgsElementData[self].updateScreenSource
 		if isUpdateScrSource then
 			dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 		end
 		renderSource = BlurBoxGlobalScreenSource
+		dxSetShaderValue(shader[1],"screenSource",renderSource)
+		dxSetRenderTarget(bufferRTH)
+		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
 	else
-		renderSource = dgsElementData[self].blursource
+		renderSource = dgsElementData[self].blurSource
+		dxSetShaderValue(shader[1],"screenSource",renderSource)
+		dxSetRenderTarget(bufferRTH)
+		dxDrawImage(0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
 	end
-	dxSetShaderValue(shader[1],"screenSource",renderSource)
-	dxSetRenderTarget(bufferRTH)
-	dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
 	dxSetShaderValue(shader[2],"screenSource",bufferRTH)
 	dxSetRenderTarget(bufferRTV)
 	dxDrawImage(0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF)
