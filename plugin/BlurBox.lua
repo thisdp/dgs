@@ -8,7 +8,7 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	local shader = dgsElementData[self].shaders
 	local resolution = dgsElementData[self].resolution
 	local renderSource
-	if not dgsElementData[self].blurSource then
+	if not dgsElementData[self].sourceTexture then
 		local isUpdateScrSource = dgsElementData[self].updateScreenSource
 		if isUpdateScrSource then
 			dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
@@ -18,7 +18,7 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 		dxSetRenderTarget(bufferRTH)
 		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
 	else
-		renderSource = dgsElementData[self].blurSource
+		renderSource = dgsElementData[self].sourceTexture
 		dxSetShaderValue(shader[1],"screenSource",renderSource)
 		dxSetRenderTarget(bufferRTH)
 		dxDrawImage(0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
@@ -30,13 +30,13 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	dxDrawImage(x,y,w,h,bufferRTV,0,0,0,color,postGUI or false)
 end
 
-function dgsCreateBlurBox(w,h,blursource)
+function dgsCreateBlurBox(w,h,sourceTexture)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBlurBox",1,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBlurBox",2,"number")) end
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
-	if isElement(blursource) then
-		dgsSetData(bb,"blurSource",blursource)
-		dgsSetData(blurSource,"blurBox",bb)
+	if isElement(sourceTexture) then
+		dgsSetData(bb,"sourceTexture",sourceTexture)
+		dgsSetData(sourceTexture,"blurBox",bb)
 	else
 		if not isElement(BlurBoxGlobalScreenSource) then
 			BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
@@ -130,6 +130,16 @@ end
 function dgsBlurBoxGetLevel(bb,level)
 	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxGetLevel",1,"dgs-dxblurbox")) end
 	return dgsElementData[bb].level
+end
+
+function dgsBlurBoxSetTexture(bb,texture)
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxSetTexture",1,"plugin dgs-dxblurbox")) end
+	return dgsSetData(bb,"sourceTexture",texture)
+end
+
+function dgsBlurBoxGetTexture(bb)
+	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxGetTexture",1,"plugin dgs-dxblurbox")) end
+	return dgsElementData[bb].sourceTexture
 end
 
 ----------------Shader

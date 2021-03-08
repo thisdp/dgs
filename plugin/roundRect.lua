@@ -203,11 +203,18 @@ function dgsRoundRectSetTexture(rectShader,texture)
 	if isElement(texture) then
 		dxSetShaderValue(rectShader,"textureLoad",true)
 		dxSetShaderValue(rectShader,"sourceTexture",texture)
+		dgsSetData(rectShader,"sourceTexture",texture)
 	else
 		dxSetShaderValue(rectShader,"textureLoad",false)
 		dxSetShaderValue(rectShader,"sourceTexture",0)
+		dgsSetData(rectShader,"sourceTexture",nil)
 	end
 	return true
+end
+
+function dgsRoundRectGetTexture(rectShader)
+	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetTexture",1,"plugin dgs-dxroundrectangle")) end
+	return dgsElementData[rectShader].sourceTexture
 end
 
 function dgsRoundRectSetRadius(rectShader,radius,relative)
