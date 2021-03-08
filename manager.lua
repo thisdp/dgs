@@ -761,6 +761,10 @@ end
 animGUIList,moveGUIList,sizeGUIList,alphaGUIList = {},{},{},{}
 
 ------------------------DGS Property Saver
+function dgsKeepElements()
+	
+end
+
 function DGSI_SaveData()
 	--Properties
 	setElementData(root,"DGSI_Properties",dgsElementData,false)
@@ -812,6 +816,9 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_Properties")
 		--Types
 		dgsElementType = getElementData(root,"DGSI_ElementType")
+		for dgsElement,data in pairs(dgsElementType) do
+			if not isElement(dgsElement) then dgsElementType[dgsElement] = nil end
+		end
 		removeElementData(root,"DGSI_ElementType")
 		--Bound Resource
 		boundResource = getElementData(root,"DGSI_BoundResource")
@@ -845,6 +852,12 @@ function DGSI_ReadData()
 		local pcData = getElementData(root,"DGSI_ParentChildData")
 		FatherTable = pcData.parent
 		ChildrenTable = pcData.child
+		for dgsElement,data in pairs(FatherTable) do
+			if not isElement(dgsElement) then FatherTable[dgsElement] = nil end
+		end
+		for dgsElement,data in pairs(ChildrenTable) do
+			if not isElement(dgsElement) then ChildrenTable[dgsElement] = nil end
+		end
 		removeElementData(root,"DGSI_ParentChildData")
 		
 		--Animations
