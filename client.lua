@@ -127,9 +127,9 @@ function dgsCoreRender()
 	local _enteredGridList = false
 	wX,wY,wZ = nil,nil,nil
 	local mx,my = -1000,-1000
-	if isCursorShowing() then
-		mx,my = getCursorPosition()
-		mx,my = mx*sW,my*sH
+	local cursorShowing = dgsGetCursorVisible()
+	if cursorShowing then
+		mx,my = dgsGetCursorPosition()
 		wX,wY,wZ = getWorldFromScreenPosition(mx,my,1)
 		MouseX,MouseY = mx,my
 	else
@@ -209,7 +209,7 @@ function dgsCoreRender()
 		MouseData.dgsCursorPos[1] = MouseX
 		MouseData.dgsCursorPos[2] = MouseY
 		dxSetRenderTarget()
-		if not isCursorShowing() then
+		if not cursorShowing then
 			MouseData.hit = false
 			MouseData.Move[0] = false
 			MouseData.Scale[0] = false
@@ -223,7 +223,6 @@ function dgsCoreRender()
 			MouseX,MouseY = nil,nil
 		end
 		triggerEvent("onDgsRender",resourceRoot)
-		dgsCheckHit(MouseData.hit,MouseX,MouseY)
 		MouseData.enteredGridList[1] = MouseData.enteredGridList[2]
 		if KeyHolder.repeatKey then
 			local tick = getTickCount()
@@ -248,6 +247,7 @@ function dgsCoreRender()
 			end
 		end
 	end
+	dgsCheckHit(MouseData.hit,MouseX,MouseY,cursorShowing)
 	dgsRenderInfo.frameEndScreen = getTickCount()
 	if debugMode then
 		dgsRenderInfo.frameRenderTimeScreen = dgsRenderInfo.frameEndScreen-dgsRenderInfo.frameStartScreen
@@ -704,7 +704,7 @@ addEventHandler("onClientKey",root,function(button,state)
 			local eleData = dgsElementData[tabpanel]
 			local w,h = eleData.absSize[1],eleData.absSize[2]
 			if width > w then
-				local mx,my = getCursorPosition()
+				local mx,my = dgsGetCursorPosition()
 				mx,my = (mx or -1)*sW,(my or -1)*sH
 				local _,y = dgsGetPosition(tabpanel,false,true)
 				local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
@@ -1052,7 +1052,7 @@ function onClientKeyCheck(button,state)
 end
 addEventHandler("onClientKey",root,onClientKeyCheck)
 
-function dgsCheckHit(hits,mx,my)
+function dgsCheckHit(hits,mx,my,cursorShowing)
 	local enteredElementType = dgsGetType(MouseData.entered)
 	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
 		if MouseData.entered ~= hits then
@@ -1251,7 +1251,7 @@ function dgsCheckHit(hits,mx,my)
 				CursorData[MouseData.cursorType] = nil
 				cData = nil
 			end
-			if not isMainMenuActive() and mx then
+			if cursorShowing then
 				local color = CursorData.color
 				local cursorSize = CursorData.size
 
@@ -1485,7 +1485,7 @@ function checkMove(source)
 	local eleData = dgsElementData[source]
 	local moveData = eleData.moveHandlerData
 	if moveData then
-		local mx,my = getCursorPosition()
+		local mx,my = dgsGetCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
 		local w,h = eleData.absSize[1],eleData.absSize[2]
@@ -1503,7 +1503,7 @@ function checkMove(source)
 		MouseData.Move[2] = offsety
 		triggerEvent("onDgsElementMove",source,offsetx,offsety)
 	elseif dgsGetType(source) == "dgs-dxwindow" then
-		local mx,my = getCursorPosition()
+		local mx,my = dgsGetCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
 		local w,h = eleData.absSize[1],eleData.absSize[2]
@@ -1521,7 +1521,7 @@ function checkMove(source)
 end
 
 function checkScrollBar(source,py,sd)
-	local mx,my = getCursorPosition()
+	local mx,my = dgsGetCursorPosition()
 	mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 	local x,y = dgsElementData[source].absPos[1],dgsElementData[source].absPos[2]
 	local offsetx,offsety = mx-x,my-y
@@ -1534,7 +1534,7 @@ function checkScale(source)
 	local eleData = dgsElementData[source]
 	local sizeData = eleData.sizeHandlerData
 	if sizeData then
-		local mx,my = getCursorPosition()
+		local mx,my = dgsGetCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
 		local w,h = eleData.absSize[1],eleData.absSize[2]
@@ -1570,7 +1570,7 @@ function checkScale(source)
 		triggerEvent("onDgsElementSize",source,offL,offT)
 		return true
 	elseif dgsGetType(source) == "dgs-dxwindow" then
-		local mx,my = getCursorPosition()
+		local mx,my = dgsGetCursorPosition()
 		mx,my = MouseX or (mx or -1)*sW,MouseY or (my or -1)*sH
 		local x,y = dgsGetPosition(source,false,true)
 		local w,h = eleData.absSize[1],eleData.absSize[2]

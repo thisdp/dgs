@@ -591,8 +591,22 @@ function dgsBlur(dgsEle)
 	return true
 end
 
+
+------------------Cursor Management
+local CursorPosX,CursorPosY = sW/2,sH/2
+local CursorPosXVisible,CursorPosYVisible = CursorPosX,CursorPosY
+if isCursorShowing() then
+	local cx,cy = getCursorPosition()
+	CursorPosX,CursorPosY = cx*sW,cy*sH
+	CursorPosXVisible,CursorPosYVisible = CursorPosX,CursorPosY
+end
+
+function dgsGetCursorVisible()
+	return (isCursorShowing() or isChatBoxInputActive() or isConsoleActive()) and not isMainMenuActive() --Is visible in game
+end
+
 function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
-	if isCursorShowing() then
+	if dgsGetCursorVisible() then
 		if MouseData.intfaceHitElement and not forceOnScreen then
 			local absX,absY = MouseData.dgsCursorPos[1],MouseData.dgsCursorPos[2]
 			local resolution = dgsElementData[MouseData.intfaceHitElement].resolution
@@ -613,10 +627,9 @@ function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
 				end
 			end
 		else
-			local rltX,rltY = getCursorPosition()
+			local absX,absY = CursorPosXVisible,CursorPosYVisible
 			if dgsIsType(relativeElement) then
 				local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
-				local absX,absY = rltX*sW,rltY*sH
 				local curX,curY = absX-xPos,absY-yPos
 				local eleSize = dgsElementData[relativeElement].absSize
 				if rlt then
@@ -626,14 +639,22 @@ function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
 				end
 			else
 				if rlt then
-					return rltX,rltY
+					return absX/sW,absY/sH
 				else
-					return rltX*sW,rltY*sH
+					return absX,absY
 				end
 			end
 		end
 	end
 end
+
+addEventHandler("onClientCursorMove",root,function (_,_,x,y)
+	CursorPosX,CursorPosY = x,y
+	if dgsGetCursorVisible() then
+		CursorPosXVisible,CursorPosYVisible = CursorPosX,CursorPosY
+	end
+end)
+
 
 function dgsGetMultiClickInterval() return multiClick.Interval end
 
