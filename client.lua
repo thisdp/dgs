@@ -1251,7 +1251,7 @@ function dgsCheckHit(hits,mx,my)
 				CursorData[MouseData.cursorType] = nil
 				cData = nil
 			end
-			if not isMainMenuActive() then
+			if not isMainMenuActive() and mx then
 				local color = CursorData.color
 				local cursorSize = CursorData.size
 

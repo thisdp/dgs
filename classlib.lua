@@ -372,6 +372,7 @@ class {
 			local function callBack(...)
 				local s = dgsGetInstance(source)
 				eventFncEnv.source = s
+				eventFncEnv.this = s
 				attachedFnc(...)
 			end
 			local newfenv = {attachedFnc=theFnc}
