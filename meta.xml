@@ -679,6 +679,7 @@
 
 	<export function="dgsCreateRoundRect" type="client" />
 	<export function="dgsRoundRectSetTexture" type="client" />
+	<export function="dgsRoundRectGetTexture" type="client" />
 	<export function="dgsRoundRectSetRadius" type="client" />
 	<export function="dgsRoundRectGetRadius" type="client" />
 	<export function="dgsRoundRectSetColor" type="client" />
@@ -705,6 +706,8 @@
 	<export function="dgsBlurBoxGetIntensity" type="client" />
 	<export function="dgsBlurBoxSetLevel" type="client" />
 	<export function="dgsBlurBoxGetLevel" type="client" />
+	<export function="dgsBlurBoxSetTexture" type="client" />
+	<export function="dgsBlurBoxGetTexture" type="client" />
 
 	<export function="dgsCreateEffect3D" type="client" />
 	<export function="dgsEffect3DApplyToScrollPane" type="client" />
