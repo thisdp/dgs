@@ -30,6 +30,9 @@ end
 
 function dgsSetCustomCursorEnabled(state)
 	CursorData.enabled = state and true or false
+	if not CursorData.enabled then
+		setCursorAlpha(255)
+	end
 	return true
 end
 
