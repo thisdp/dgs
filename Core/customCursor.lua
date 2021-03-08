@@ -15,9 +15,9 @@ function dgsSetCustomCursorImage(cursorType,image,rotation,rotationCenter,offset
 		if not(type(cursorType) == "string" and cursorTypesBuiltIn[cursorType]) then error(dgsGenAsrt(cursorType,"dgsSetCustomCursorImage",1,"string",_,_,"unsupported type")) end
 		if image then
 			if not(isMaterial(image)) then error(dgsGenAsrt(image,"dgsSetCustomCursorImage",2,"material")) end
-			CursorData[k] = {image,rotation or style[k].rotation or 0,rotationCenter or style[k].rotationCenter or {0,0},offset or style[k].offset or {0,0},scale or style[k].scale,{dxGetMaterialSize(image)}}
+			CursorData[cursorType] = {image,rotation or style[k].rotation or 0,rotationCenter or style[k].rotationCenter or {0,0},offset or style[k].offset or {0,0},scale or style[k].scale,{dxGetMaterialSize(image)}}
 		else
-			CursorData[k] = nil
+			CursorData[cursorType] = nil
 		end
 	end
 	return true
