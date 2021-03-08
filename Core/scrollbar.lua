@@ -444,7 +444,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart2_1,troughPart2_2 = x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter
 		local imgRotVert = imgRot[2]
 		local __ = tempTroughImage_1 and dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) or dxDrawRectangle(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughColor[1],isPostGUI)
-		local __ = tempTroughImage_2 and dxDrawImage(troughPart2_2,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI)
+		local __ = tempTroughImage_2 and dxDrawImage(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI)
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
