@@ -16,7 +16,6 @@ dgsOOP = {
 	dgsRes = getElementData(root,"__DGSRes"),
 	dgsRoot = getResourceRootElement(getElementData(root,"__DGSRes")),
 	transfromEventName = function(eventName,isReverse)
-		--local isFindDGS = eventName:lower():find("dgs") and true or false
 		return isReverse and (eventName:sub(3,3):lower()..eventName:sub(4)) or ("on"..eventName:sub(1,1):upper()..eventName:sub(2))
 	end,
 	getVectorType = function(vec)
@@ -75,6 +74,9 @@ local function class(tab)
 			if newMeta.preInstantiate then
 				newInstance.dgsElement = newMeta.preInstantiate(...)	--Pre Instantiate function doesn't include meta table
 				dgsOOP.dgsInstances[newInstance.dgsElement] = newInstance
+				addEventHandler("onClientElementDestroy",newInstance.dgsElement,function()
+					dgsOOP.dgsInstances[newInstance.dgsElement] = nil
+				end,false)
 			end
 			newInstance.extends = nil
 			newMeta.extends = nil
@@ -110,6 +112,9 @@ local function class(tab)
 			if newMeta.preInstantiate then
 				newInstance.dgsElement = dgsElement	--For converting dgs pop element to oop instance
 				dgsOOP.dgsInstances[newInstance.dgsElement] = newInstance
+				addEventHandler("onClientElementDestroy",newInstance.dgsElement,function()
+					dgsOOP.dgsInstances[newInstance.dgsElement] = nil
+				end,false)
 			end
 			newInstance.extends = nil
 			newMeta.extends = nil
@@ -159,6 +164,7 @@ local function class(tab)
 		end
 	end
 	setmetatable(tab,meta)
+	dgsOOP[tab.dgsType] = tab
 	dgsOOP[tab.type] = tab
 end
 dgsOOP.class = class
@@ -1181,6 +1187,7 @@ class {
 	type = "dgs3DInterface";
 	dgsType="dgs-dx3dinterface";
 	preInstantiate = function(parent,...)
+		print("Create 3dinterface")
 		return call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)
 	end;
 	public = {
