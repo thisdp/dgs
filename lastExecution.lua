@@ -1,5 +1,3 @@
-_G.loadstring = nil
-
 ------------------Security
 DGSFileVerify = false
 addEventHandler("onDgsStart",resourceRoot,function()
