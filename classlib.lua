@@ -1187,7 +1187,6 @@ class {
 	type = "dgs3DInterface";
 	dgsType="dgs-dx3dinterface";
 	preInstantiate = function(parent,...)
-		print("Create 3dinterface")
 		return call(dgsOOP.dgsRes,"dgsCreate3DInterface",...)
 	end;
 	public = {
