@@ -761,8 +761,20 @@ end
 animGUIList,moveGUIList,sizeGUIList,alphaGUIList = {},{},{},{}
 
 ------------------------DGS Property Saver
-function dgsKeepElements()
-	
+dgsElementKeeper = {}
+function dgsSetElementKeeperEnabled(state)
+	if sourceResource then
+		dgsElementKeeper[sourceResource] = state and true or nil
+		return true
+	end
+	return false
+end
+
+function dgsGetElementKeeperEnabled()
+	if sourceResource then
+		return dgsElementKeeper[sourceResource]
+	end
+	return false
 end
 
 function DGSI_SaveData()
@@ -778,6 +790,8 @@ function DGSI_SaveData()
 	setElementData(root,"DGSI_TranslationLanguageAttach",LanguageTranslationAttach,false)
 	--Easing Functions
 	setElementData(root,"DGSI_EasingFunctions",dgsEasingFunctionOrg,false)
+	--Element Keeper
+	setElementData(root,"DGSI_ElementKeeper",dgsElementKeeper,false)
 	--Layer Data
 	setElementData(root,"DGSI_LayerData",{
 		bottom=BottomFatherTable,
@@ -839,11 +853,23 @@ function DGSI_ReadData()
 			dgsEasingFunction[name] = fnc
 		end
 		removeElementData(root,"DGSI_EasingFunctions")
+		--Element Keeper
+		dgsElementKeeper = getElementData(root,"DGSI_ElementKeeper")
+		removeElementData(root,"DGSI_ElementKeeper")
 		--Layer Data
 		local layerData = getElementData(root,"DGSI_LayerData")
 		BottomFatherTable = layerData.bottom
 		CenterFatherTable = layerData.center
 		TopFatherTable = layerData.top
+		for dgsElement,data in pairs(BottomFatherTable) do
+			if not isElement(dgsElement) then BottomFatherTable[dgsElement] = nil end
+		end
+		for dgsElement,data in pairs(CenterFatherTable) do
+			if not isElement(dgsElement) then CenterFatherTable[dgsElement] = nil end
+		end
+		for dgsElement,data in pairs(TopFatherTable) do
+			if not isElement(dgsElement) then TopFatherTable[dgsElement] = nil end
+		end
 		LayerCastTable = {bottom=BottomFatherTable,center=CenterFatherTable,top=TopFatherTable}
 		dgsWorld3DTable = layerData.world3d
 		dgsScreen3DTable = layerData.screen3d
@@ -881,5 +907,15 @@ addEventHandler("onClientResourceStop",resourceRoot,function()
 		DGSI_SaveData()
 	end,false)
 end,false)
-
 DGSI_ReadData()
+
+addEventHandler("onClientResourceStop",root,function(res)
+	if boundResource[res] then
+		dgsClear(_,res)
+		resourceTranslation[res] = nil
+	end
+	if dgsElementKeeper[res] then dgsElementKeeper[res] = nil end
+	if res == getThisResource() then	--Recover Cursor Alpha
+		setCursorAlpha(255)
+	end
+end)
