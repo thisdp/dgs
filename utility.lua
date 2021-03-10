@@ -7,7 +7,10 @@ local tableRemove = table.remove
 local pi180 = math.pi/180
 _dxDrawImageSection = dxDrawImageSection
 _dxDrawImage = dxDrawImage
+_dxCreateTexture = dxCreateTexture
+_dxCreateShader = dxCreateShader
 _createElement = createElement
+_dxCreateRenderTarget = dxCreateRenderTarget
 local __dxDrawImageSection = dxDrawImageSection
 local __dxDrawImage = dxDrawImage
 ClientInfo = {
@@ -134,9 +137,66 @@ function isMaterial(ele)
 	return eleType=="shader" or eleType=="texture" or eleType=="render-target-texture"
 end
 
+function dxCreateShader(pathOrData,sRes)
+	local shader
+	sourceResource = sRes or sourceResource
+	if sourceResource then
+		if dgsElementKeeper[sourceResource] then
+			local shaderData
+			if fileExists(pathOrData) then
+				local f = fileOpen(pathOrData,true)
+				shaderData = fileRead(f,fileGetSize(f))
+				fileClose(f)
+			else
+				shaderData = pathOrData
+			end
+			local sourceResRoot = getResourceRootElement(sourceResource)
+			local _sourceResource = sourceResource
+			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"shader",shaderData)
+			sourceResource = _sourceResource
+			shader = dgsPopElement("shader",sourceResource)
+		end
+	end
+	return shader or _dxCreateShader(pathOrData)
+end
+
+function dxCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
+	local rt
+	sourceResource = sRes or sourceResource
+	if sourceResource then
+		if dgsElementKeeper[sourceResource] then
+			local sourceResRoot = getResourceRootElement(sourceResource)
+			local _sourceResource = sourceResource
+			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"rendertarget",w,h,isTransparent)
+			sourceResource = _sourceResource
+			rt = dgsPopElement("rendertarget",sourceResource)
+		end
+	end
+	local rendertarget = rt or _dxCreateRenderTarget(w,h,isTransparent)
+	if not isElement(rendertarget) then
+		if w < 1 or h < 1 then return nil end	--Pass
+		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
+		local reqSize,reqUnit = getProperUnit(0.0000076*w*h,"MB")
+		local freeSize,freeUnit = getProperUnit(videoMemory,"MB")
+		local forWhat = dgsElement and (" for "..dgsGetPluginType(dgsElement)) or ""
+		return false,"Failed to create render target"..forWhat.." ("..w.."x"..h..") [Expected:"..reqSize..reqUnit.."/Free:"..freeSize..freeUnit.."]"
+	end
+	return rendertarget
+end
+
 function createElement(eleType,sRes)
-	local sourceRes = sRes or sourceResource or resource
-	return dgsPopElement(eleType,sourceRes) or _createElement(eleType)
+	local ele
+	sourceResource = sRes or sourceResource
+	if sourceResource then
+		if dgsElementKeeper[sourceResource] then
+			local sourceResRoot = getResourceRootElement(sourceResource)
+			local _sourceResource = sourceResource
+			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,eleType)
+			sourceResource = _sourceResource
+			ele = dgsPopElement(eleType,sourceResource)
+		end
+	end
+	return ele or _createElement(eleType)
 end
 
 function removeElementData(element,key)
@@ -175,6 +235,17 @@ function table.count(tabl)
 	local cnt = 0
 	for k,v in pairs(tabl) do
 		cnt = cnt + 1
+	end
+	return cnt
+end
+
+function table.deepcount(tabl)
+	local cnt = 0
+	for k,v in pairs(tabl) do
+		cnt = cnt+1
+		if type(v) == "table" then
+			cnt = cnt+table.deepcount(v)
+		end
 	end
 	return cnt
 end
@@ -236,7 +307,7 @@ end
 
 --------------------------------File Utility
 function hashFile(fName)
-	local f = fileOpen(fName)
+	local f = fileOpen(fName,true)
 	local fSize = fileGetSize(f)
 	local fContent = fileRead(f,fSize)
 	fileClose(f)
@@ -650,23 +721,10 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 	end
 end
 
-_dxCreateRenderTarget = dxCreateRenderTarget
-function dxCreateRenderTarget(w,h,isTransparent,dgsElement)
-	local rt = _dxCreateRenderTarget(w,h,isTransparent)
-	if not isElement(rt) then
-		if w < 1 or h < 1 then return nil end	--Pass
-		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
-		local reqSize,reqUnit = getProperUnit(0.0000076*w*h,"MB")
-		local freeSize,freeUnit = getProperUnit(videoMemory,"MB")
-		local forWhat = dgsElement and (" for "..dgsGetPluginType(dgsElement)) or ""
-		return false,"Failed to create render target"..forWhat.." ("..w.."x"..h..") [Expected:"..reqSize..reqUnit.."/Free:"..freeSize..freeUnit.."]"
-	end
-	return rt
-end
 --------------------------------Other Utility
 function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)
-		return format("%%%02X",byte(c))
+		return format("%%%02X",c:byte())
 	end)
     return gsub(s," ","+")
 end

@@ -64,7 +64,7 @@ function dgsCreateWindow(...)
 		clip = true,
 		wordbreak = false,
 		alignment = {"center","center"},
-		moveType = false; --false only title;true are al,
+		moveType = false; --false only title;true are all
 		font = style.font or systemFont,
 		minSize = {60,60},
 		maxSize = {20000,20000},

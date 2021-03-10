@@ -161,7 +161,7 @@ function dgsCreateGridList(...)
 	local abx,aby = aSize[1],aSize[2]
 	local columnRender,rowRender
 	if abx*columnHeight ~= 0 then
-		columnRender,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist)
+		columnRender,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist,sourceResource)
 		if columnRender ~= false then
 			dgsAttachToAutoDestroy(columnRender,gridlist,-1)
 		else
@@ -169,7 +169,7 @@ function dgsCreateGridList(...)
 		end
 	end
 	if abx*(aby-columnHeight-scbThick) ~= 0 then
-		rowRender,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist)
+		rowRender,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist,sourceResource)
 		if rowRender ~= false then
 			dgsAttachToAutoDestroy(rowRender,gridlist,-2)
 		else
@@ -2175,13 +2175,14 @@ function configGridList(gridlist)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 
 	local rentarg = eleData.renderTarget
+	local res = eleData.resource
 	if rentarg then
 		if isElement(rentarg[1]) then destroyElement(rentarg[1]) end
 		if isElement(rentarg[2]) then destroyElement(rentarg[2]) end
 		if not eleData.mode then
 			local columnRender,rowRender
 			if relSizX*columnHeight ~= 0 then
-				columnRender,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist)
+				columnRender,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
 				if columnRender ~= false then
 					dgsAttachToAutoDestroy(columnRender,gridlist,-1)
 				else
@@ -2189,7 +2190,7 @@ function configGridList(gridlist)
 				end
 			end
 			if relSizX*rowShowRange ~= 0 then
-				rowRender,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist)
+				rowRender,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
 				if rowRender ~= false then
 					dgsAttachToAutoDestroy(rowRender,gridlist,-2)
 				else

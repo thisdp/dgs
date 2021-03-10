@@ -863,19 +863,27 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_EasingFunctions")
 		--Element Keeper
 		dgsElementKeeper = getElementData(root,"DGSI_ElementKeeper") or {}
+		for res,t in pairs(dgsElementKeeper) do
+			local resType = type(res)
+			if resType ~= "userdata" then
+				dgsElementKeeper[res] = nil
+			elseif getUserdataType(res) ~= "resource-data" then
+				dgsElementKeeper[res] = nil
+			end
+		end
 		removeElementData(root,"DGSI_ElementKeeper")
 		--Layer Data
 		local layerData = getElementData(root,"DGSI_LayerData") or {}
 		BottomFatherTable = layerData.bottom
 		CenterFatherTable = layerData.center
 		TopFatherTable = layerData.top
-		for dgsElement,data in pairs(BottomFatherTable) do
+		for index,dgsElement in pairs(BottomFatherTable) do
 			if not isElement(dgsElement) then BottomFatherTable[dgsElement] = nil end
 		end
-		for dgsElement,data in pairs(CenterFatherTable) do
+		for index,dgsElement in pairs(CenterFatherTable) do
 			if not isElement(dgsElement) then CenterFatherTable[dgsElement] = nil end
 		end
-		for dgsElement,data in pairs(TopFatherTable) do
+		for index,dgsElement in pairs(TopFatherTable) do
 			if not isElement(dgsElement) then TopFatherTable[dgsElement] = nil end
 		end
 		LayerCastTable = {bottom=BottomFatherTable,center=CenterFatherTable,top=TopFatherTable}

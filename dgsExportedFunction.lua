@@ -6,18 +6,9 @@ addEventHandler("onClientResourceStart",resourceRoot,function()
 	triggerEvent("onDgsStart",resourceRoot,dgsResName)
 end)
 
-function dgsImportFunction(name,nameAs,keepElements)
+function dgsImportFunction(name,nameAs)
 	if not sourceResource or sourceResource == getThisResource() then return "return true" end
 	if not name then
-		local keepElementsStr = keepElements and [[
-			if isCreateFunction then
-				local targetDGSType = "dgs-dx"..fncName:sub(10):lower()
-				if dgsImportHead.dgsTypes[targetDGSType] then
-					local ele = createElement(targetDGSType)
-					call(dgsImportHead.dgsResource, "dgsPushElement", ele)
-				end
-			end
-		]] or ""
 		local allCode = [[
 		--Check Error Message Above
 		if not dgsImportHead then
@@ -33,6 +24,22 @@ function dgsImportFunction(name,nameAs,keepElements)
 			dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
 			dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
 			dgsImportHead.dgsTypes = getElementData(dgsRoot,"DGSType")
+			addEvent("onDgsRequestCreateRemoteElement",true)
+			addEventHandler("onDgsRequestCreateRemoteElement",resourceRoot,function(createType,...)
+				if createType == "shader" then
+					local shader = dxCreateShader(...)
+					call(dgsImportHead.dgsResource, "dgsPushElement",shader,createType)
+				elseif createType == "rendertarget" then
+					local RT = dxCreateRenderTarget(...)
+					call(dgsImportHead.dgsResource, "dgsPushElement",RT,createType)
+				elseif createType == "texture" then
+					local tex = dxCreateTexture(createType)
+					call(dgsImportHead.dgsResource, "dgsPushElement",tex,createType)
+				elseif createType:sub(1,6) == "dgs-dx" then
+					local dgsElement = createElement(createType)
+					call(dgsImportHead.dgsResource, "dgsPushElement",dgsElement,createType)
+				end
+			end)
 			addEventHandler("onClientResourceStop",dgsRoot,function()
 				outputDebugString("[DGS] Alert! DGS has stopped. Everything keeps disconnected from DGS till the next time DGS starts!",2)
 				function onDgsStart(dResN)
@@ -56,7 +63,6 @@ function dgsImportFunction(name,nameAs,keepElements)
 					if not dgsImportHead then error("DGS import data is missing or DGS is not running, please reimport dgs functions("..getResourceName(getThisResource())..")") end
 					if isElement(dgsRoot) then
 						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
-						]]..keepElementsStr..[[
 						if isTraceDebug then
 							local data = debug.getinfo(2)
 							local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
@@ -85,7 +91,7 @@ function dgsImportFunction(name,nameAs,keepElements)
 	else
 		assert(dgsExportedFunctionName[name],"Bad Argument @dgsImportFunction at argument 1, the function is undefined")
 		nameAs = nameAs or name
-		return nameAs.." = DGS."..name..";"
+		return nameAs.." = DGS['"..name.."'];"
 	end
 end
 
