@@ -157,11 +157,11 @@ function dxCreateShader(pathOrData,sRes)
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"shader",shaderData)
-			sourceResource = __sourceResource
+			sourceResource = _sourceResource
 			shader = dgsPopElement("shader",sourceResource)
 		end
 	end
-	return shader or _dxCreateShader(pathOrData)
+	return shader or __dxCreateShader(pathOrData)
 end
 
 function dxCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
