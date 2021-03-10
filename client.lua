@@ -1437,10 +1437,6 @@ function dgsCleanElement(source)
 			end
 		end
 		ChildrenTable[source] = nil
-		local tresource = dgsElementData[source].resource
-		if tresource and boundResource[tresource] then
-			boundResource[tresource][source] = nil
-		end
 		if animGUIList[source] then if isAlive then dgsStopAniming(source) else animGUIList[source] = nil end end
 		if moveGUIList[source] then if isAlive then dgsStopMoving(source) else moveGUIList[source] = nil end end
 		if sizeGUIList[source] then if isAlive then dgsStopSizing(source) else sizeGUIList[source] = nil end end
@@ -1470,6 +1466,10 @@ function dgsCleanElement(source)
 		if eleData._translationText then
 			tableRemoveItemFromArray(LanguageTranslationAttach,source)
 		end
+	end
+	local tresource = dgsElementData[source].resource
+	if tresource and boundResource[tresource] then
+		boundResource[tresource][source] = nil
 	end
 	dgsElementData[source] = nil
 	dgsElementType[source] = nil
