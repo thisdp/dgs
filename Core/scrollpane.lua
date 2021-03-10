@@ -63,6 +63,7 @@ function dgsCreateScrollPane(...)
 		configNextFrame = false,
 		mouseWheelScrollBar = false, --false:vertical; true:horizontal
 		scrollBarLength = {},
+		childBlock = {},
 		bgColor = false,
 		bgImage = false,
 		sourceTexture = false,

@@ -143,7 +143,7 @@ end
 dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local imageOn,imageOff = eleData.imageOn,eleData.imageOff
 	local colorOn,colorOff = eleData.colorOn,eleData.colorOff
-	local isReverse = eleData.isReverse
+	local isReverse = eleData.isReverse and true or false
 	local textColor,text
 	local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
 	if eleData.state ~= isReverse then

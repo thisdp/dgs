@@ -732,29 +732,28 @@ function dgsDetachFromAutoDestroy(element,dgsEle)
 	end
 	return true
 end
-
 -------------------------
 addEventHandler("onDgsCreate",root,function(theResource)
-	dgsSetData(source,"positionAlignment",{"left","top"})
-	dgsSetData(source,"visible",true)
-	dgsSetData(source,"enabled",true)
-	dgsSetData(source,"ignoreParentTitle",false,true)
-	dgsSetData(source,"textRelative",false)
-	dgsSetData(source,"alpha",1)
-	dgsSetData(source,"hitoutofparent",false)
-	dgsSetData(source,"PixelInt",true)
-	dgsSetData(source,"functionRunBefore",true) --true : after render; false : before render
-	dgsSetData(source,"disabledColor",styleSettings.disabledColor)
-	dgsSetData(source,"disabledColorPercent",styleSettings.disabledColorPercent)
-	dgsSetData(source,"postGUI",dgsRenderSetting.postGUI == nil and true or false)
-	dgsSetData(source,"outline",false) --{side,width,color}
-	dgsSetData(source,"changeOrder",styleSettings.changeOrder) --Change the order when "bring to front" or clicked
-	dgsSetData(source,"attachedTo",false) --Attached To
-	dgsSetData(source,"attachedBy",{}) --Attached By
-	dgsSetData(source,"rndTmpData",{}) --Stop edit this property!
-	dgsSetData(source,"enableFullEnterLeaveCheck",false)
-	dgsSetData(source,"clickCoolDown",false)
-	dgsSetData(source,"settingListener",{})
+	local eleData = dgsElementData[source]
+	eleData.positionAlignment = {"left","top"}
+	eleData.visible = true
+	eleData.enabled = true
+	eleData.ignoreParentTitle = false
+	eleData.textRelative = false
+	eleData.alpha = 1
+	eleData.hitoutofparent = false
+	eleData.PixelInt = true
+	eleData.functionRunBefore = true --true : after render; false : before render
+	eleData.disabledColor = styleSettings.disabledColor
+	eleData.disabledColorPercent = styleSettings.disabledColorPercent
+	eleData.postGUI = dgsRenderSetting.postGUI == nil and true or false
+	eleData.outline = false
+	eleData.changeOrder = styleSettings.changeOrder --Change the order when "bring to front" or clicked
+	eleData.attachedTo = false
+	eleData.attachedBy = false
+	eleData.enableFullEnterLeaveCheck = false
+	eleData.clickCoolDown = false
+	eleData.settingListener = {}
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"

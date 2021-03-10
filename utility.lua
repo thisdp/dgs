@@ -11,6 +11,10 @@ _dxCreateTexture = dxCreateTexture
 _dxCreateShader = dxCreateShader
 _createElement = createElement
 _dxCreateRenderTarget = dxCreateRenderTarget
+local __createElement = _createElement
+local __dxCreateShader = _dxCreateShader
+local __dxCreateTexture = _dxCreateTexture
+local __dxCreateRenderTarget = _dxCreateRenderTarget
 local __dxDrawImageSection = dxDrawImageSection
 local __dxDrawImage = dxDrawImage
 ClientInfo = {
@@ -153,7 +157,7 @@ function dxCreateShader(pathOrData,sRes)
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"shader",shaderData)
-			sourceResource = _sourceResource
+			sourceResource = __sourceResource
 			shader = dgsPopElement("shader",sourceResource)
 		end
 	end
@@ -172,7 +176,7 @@ function dxCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
 			rt = dgsPopElement("rendertarget",sourceResource)
 		end
 	end
-	local rendertarget = rt or _dxCreateRenderTarget(w,h,isTransparent)
+	local rendertarget = rt or __dxCreateRenderTarget(w,h,isTransparent)
 	if not isElement(rendertarget) then
 		if w < 1 or h < 1 then return nil end	--Pass
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
@@ -196,7 +200,7 @@ function createElement(eleType,sRes)
 			ele = dgsPopElement(eleType,sourceResource)
 		end
 	end
-	return ele or _createElement(eleType)
+	return ele or __createElement(eleType)
 end
 
 function removeElementData(element,key)

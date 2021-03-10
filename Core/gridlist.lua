@@ -145,7 +145,6 @@ function dgsCreateGridList(...)
 		sortColumn = false,
 		sortEnabled = true,
 		defaultSortFunctions = {"greaterUpper","greaterLower"},
-
 		renderBuffer = {
 			columnEndPos = {},
 			columnPos = {},
