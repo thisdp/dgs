@@ -383,8 +383,8 @@
 		troughWidth = false,	--False for using cursorWidth
 		arrowWidth = false,	--False for using cursorWidth
 		imageRotation = {
-			{0,270,270},--{Horizontal}, (arrows,cursor,trough)
-			{270,0,0},--{Vertical}, (arrows,cursor,trough)
+			{270,270,0},--{Horizontal}, (arrows,cursor,trough)
+			{0,0,270},--{Vertical}, (arrows,cursor,trough)
 		}
 	},
 
