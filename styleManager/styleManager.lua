@@ -225,6 +225,15 @@ function dgsSetCurrentStyle(styleName)
 	end
 end
 
+function dgsGetValueFromStyle(eType,key)
+	assert(type(eType) == "string","Bad argument @dgsGetValueFromStyle at argument 1, expect a string got "..type(eType))
+	assert(type(key) == "string","Bad argument @dgsGetValueFromStyle at argument 2, expect a string got "..type(key))
+	if styleSettings[eType] then
+		return styleSettings[eType][key]
+	end
+	return false
+end
+
 function dgsGetCurrentStyle() return styleManager.styleHistory[1] or "Default" end
 function dgsGetLoadedStyleList() return styleManager.styles end
 

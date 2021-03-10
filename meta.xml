@@ -195,6 +195,7 @@
 	<export function="dgsSetInputEnabled" type="client" />
 	<export function="dgsGetCurrentStyle" type="client" />
 	<export function="dgsSetCurrentStyle" type="client" />
+	<export function="dgsGetValueFromStyle" type="client" />
 	<export function="dgsIsStyleAvailable" type="client" />
 	<export function="dgsGetLoadedStyleList" type="client" />
 	<export function="dgsAddMoveHandler" type="client" />
@@ -217,6 +218,8 @@
 	<export function="dgsRemoveDetectArea" type="client" />
 	<export function="dgsPushElement" type="client" />
 	<export function="dgsPopElement" type="client" />
+	<export function="dgsSetElementKeeperEnabled" type="client" />
+	<export function="dgsGetElementKeeperEnabled" type="client" />
 
 	<export function="dgsSetCustomCursorImage" type="client" />
 	<export function="dgsGetCustomCursorImage" type="client" />
