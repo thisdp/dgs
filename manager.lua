@@ -836,6 +836,14 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_ElementType")
 		--Bound Resource
 		boundResource = getElementData(root,"DGSI_BoundResource")
+		for res,t in pairs(boundResource) do
+			local resType = type(res)
+			if resType ~= "userdata" then
+				boundResource[res] = nil
+			elseif getUserdataType(res) ~= "resource-data" then
+				boundResource[res] = nil
+			end
+		end
 		removeElementData(root,"DGSI_BoundResource")
 		--Translations
 		resourceTranslation = getElementData(root,"DGSI_TranslationResRegister")
