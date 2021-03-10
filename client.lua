@@ -1479,7 +1479,7 @@ addEventHandler("onClientElementDestroy",root,function()
 	if dgsElementData[source] then
 		dgsCleanElement(source)
 	end
-end,false,"low")
+end,true,"low")
 
 function checkMove(source)
 	local eleData = dgsElementData[source]

@@ -819,7 +819,7 @@ function DGSI_ReadData()
 	local SaveData = getElementData(root,"DGSI_SaveData")
 	if SaveData == true then
 		--Properties
-		dgsElementData = getElementData(root,"DGSI_Properties")
+		dgsElementData = getElementData(root,"DGSI_Properties") or {}
 		for dgsElement,data in pairs(dgsElementData) do
 			if not isElement(dgsElement) then dgsElementData[dgsElement] = nil end
 			if data.functions_string then
@@ -829,13 +829,13 @@ function DGSI_ReadData()
 		end
 		removeElementData(root,"DGSI_Properties")
 		--Types
-		dgsElementType = getElementData(root,"DGSI_ElementType")
+		dgsElementType = getElementData(root,"DGSI_ElementType") or {}
 		for dgsElement,data in pairs(dgsElementType) do
 			if not isElement(dgsElement) then dgsElementType[dgsElement] = nil end
 		end
 		removeElementData(root,"DGSI_ElementType")
 		--Bound Resource
-		boundResource = getElementData(root,"DGSI_BoundResource")
+		boundResource = getElementData(root,"DGSI_BoundResource") or {}
 		for res,t in pairs(boundResource) do
 			local resType = type(res)
 			if resType ~= "userdata" then
@@ -846,26 +846,26 @@ function DGSI_ReadData()
 		end
 		removeElementData(root,"DGSI_BoundResource")
 		--Translations
-		resourceTranslation = getElementData(root,"DGSI_TranslationResRegister")
+		resourceTranslation = getElementData(root,"DGSI_TranslationResRegister") or {}
 		removeElementData(root,"DGSI_TranslationResRegister")
 		
-		LanguageTranslation = getElementData(root,"DGSI_TranslationLanguage")
+		LanguageTranslation = getElementData(root,"DGSI_TranslationLanguage") or {}
 		removeElementData(root,"DGSI_TranslationLanguage")
 		
-		LanguageTranslationAttach = getElementData(root,"DGSI_TranslationLanguageAttach")
+		LanguageTranslationAttach = getElementData(root,"DGSI_TranslationLanguageAttach") or {}
 		removeElementData(root,"DGSI_TranslationLanguageAttach")
 		--Easing Functions
-		local easingOrg = getElementData(root,"DGSI_EasingFunctions")
+		local easingOrg = getElementData(root,"DGSI_EasingFunctions") or {}
 		for name,data in pairs(easingOrg) do
 			local fnc = loadstring(data)
 			dgsEasingFunction[name] = fnc
 		end
 		removeElementData(root,"DGSI_EasingFunctions")
 		--Element Keeper
-		dgsElementKeeper = getElementData(root,"DGSI_ElementKeeper")
+		dgsElementKeeper = getElementData(root,"DGSI_ElementKeeper") or {}
 		removeElementData(root,"DGSI_ElementKeeper")
 		--Layer Data
-		local layerData = getElementData(root,"DGSI_LayerData")
+		local layerData = getElementData(root,"DGSI_LayerData") or {}
 		BottomFatherTable = layerData.bottom
 		CenterFatherTable = layerData.center
 		TopFatherTable = layerData.top
@@ -883,7 +883,7 @@ function DGSI_ReadData()
 		dgsScreen3DTable = layerData.screen3d
 		removeElementData(root,"DGSI_LayerData")
 		
-		local pcData = getElementData(root,"DGSI_ParentChildData")
+		local pcData = getElementData(root,"DGSI_ParentChildData") or {}
 		FatherTable = pcData.parent
 		ChildrenTable = pcData.child
 		for dgsElement,data in pairs(FatherTable) do
@@ -895,7 +895,7 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_ParentChildData")
 		
 		--Animations
-		local animData = getElementData(root,"DGSI_Animations")
+		local animData = getElementData(root,"DGSI_Animations") or {}
 		animGUIList = animData.anim
 		moveGUIList = animData.move
 		sizeGUIList = animData.size
@@ -922,7 +922,6 @@ addEventHandler("onClientResourceStop",root,function(res)
 		dgsClear(_,res)
 		resourceTranslation[res] = nil
 	end
-	boundResource[res] = nil
 	if dgsElementKeeper[res] then dgsElementKeeper[res] = nil end
 	if res == getThisResource() then	--Recover Cursor Alpha
 		setCursorAlpha(255)
