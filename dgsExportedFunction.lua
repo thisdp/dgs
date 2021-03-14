@@ -33,7 +33,7 @@ function dgsImportFunction(name,nameAs)
 					local RT = dxCreateRenderTarget(...)
 					call(dgsImportHead.dgsResource, "dgsPushElement",RT,createType)
 				elseif createType == "texture" then
-					local tex = dxCreateTexture(createType)
+					local tex = dxCreateTexture(...)
 					call(dgsImportHead.dgsResource, "dgsPushElement",tex,createType)
 				elseif createType:sub(1,6) == "dgs-dx" then
 					local dgsElement = createElement(createType)

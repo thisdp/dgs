@@ -141,8 +141,32 @@ function isMaterial(ele)
 	return eleType == "shader" or eleType == "texture" or eleType == "render-target-texture"
 end
 
-dgsElementLogger = {}	--1:texture; 2:shader
+dgsElementLogger = {}	--0:Empty texture 1:texture; 2:shader
 dgsElementKeeper = {}
+function dxCreateEmptyTexture(width,height,sRes)
+	local texture
+	if sRes ~= false then	--Read the data instead of create from path, and create remotely
+		sourceResource = sRes or sourceResource
+		if dgsElementKeeper[sourceResource] then
+			local sourceResRoot = getResourceRootElement(sourceResource)
+			local _sourceResource = sourceResource
+			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",width,height)
+			sourceResource = _sourceResource
+			texture = dgsPopElement("texture",sourceResource)
+		end
+	end
+	if not texture then
+		texture = __dxCreateTexture(width,height)
+		dgsElementLogger[texture] = {0,false,texture}	--Log internally created texture
+		addEventHandler("onClientElementDestroy",texture,function()
+			dgsElementLogger[texture] = nil	--Clear logging
+		end,false)
+		return texture
+	else
+		return texture
+	end
+end
+
 function dxCreateTexture(pathOrData,sRes)
 	local texture
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
@@ -165,6 +189,7 @@ function dxCreateTexture(pathOrData,sRes)
 	end
 	if not texture then
 		texture = __dxCreateTexture(pathOrData)
+		if not texture then return false end
 		dgsElementLogger[texture] = {1,pathOrData,texture}	--Log internally created texture
 		addEventHandler("onClientElementDestroy",texture,function()
 			dgsElementLogger[texture] = nil	--Clear logging
@@ -197,6 +222,7 @@ function dxCreateShader(pathOrData,sRes)
 	end
 	if not shader then
 		shader = __dxCreateShader(pathOrData)
+		if not shader then return false end
 		dgsElementLogger[shader] = {2,pathOrData,shader}	--Log internally created shader
 		addEventHandler("onClientElementDestroy",shader,function()
 			dgsElementLogger[shader] = nil	--Clear logging

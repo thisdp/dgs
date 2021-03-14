@@ -876,21 +876,23 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_Properties")
 		dgsElementData = table.merger(dgsElementData,_dgsElementData)
 		--Types
-		dgsElementType = getElementData(root,"DGSI_ElementType") or {}
-		for dgsElement,data in pairs(dgsElementType) do
-			if not isElement(dgsElement) then dgsElementType[dgsElement] = nil end
+		local _dgsElementType = getElementData(root,"DGSI_ElementType") or {}
+		for dgsElement,data in pairs(_dgsElementType) do
+			if not isElement(dgsElement) then _dgsElementType[dgsElement] = nil end
 		end
+		dgsElementType = table.merger(dgsElementType,_dgsElementData)
 		removeElementData(root,"DGSI_ElementType")
 		--Bound Resource
-		boundResource = getElementData(root,"DGSI_BoundResource") or {}
-		for res,t in pairs(boundResource) do
+		local _boundResource = getElementData(root,"DGSI_BoundResource") or {}
+		for res,t in pairs(_boundResource) do
 			local resType = type(res)
 			if resType ~= "userdata" then
-				boundResource[res] = nil
+				_boundResource[res] = nil
 			elseif getUserdataType(res) ~= "resource-data" then
-				boundResource[res] = nil
+				_boundResource[res] = nil
 			end
 		end
+		boundResource = table.merger(boundResource,_boundResource)
 		removeElementData(root,"DGSI_BoundResource")
 		--Translations
 		resourceTranslation = getElementData(root,"DGSI_TranslationResRegister") or {}
@@ -921,27 +923,32 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_ElementKeeper")
 		--Layer Data
 		local layerData = getElementData(root,"DGSI_LayerData") or {}
-		BottomFatherTable = layerData.bottom
-		CenterFatherTable = layerData.center
-		TopFatherTable = layerData.top
-		for index,dgsElement in pairs(BottomFatherTable) do
-			if not isElement(dgsElement) then BottomFatherTable[index] = nil end
+		local _BottomFatherTable = layerData.bottom
+		local _CenterFatherTable = layerData.center
+		local _TopFatherTable = layerData.top
+		for index,dgsElement in pairs(_BottomFatherTable) do
+			if not isElement(dgsElement) then _BottomFatherTable[index] = nil end
 		end
-		for index,dgsElement in pairs(CenterFatherTable) do
-			if not isElement(dgsElement) then CenterFatherTable[index] = nil end
+		for index,dgsElement in pairs(_CenterFatherTable) do
+			if not isElement(dgsElement) then _CenterFatherTable[index] = nil end
 		end
-		for index,dgsElement in pairs(TopFatherTable) do
-			if not isElement(dgsElement) then TopFatherTable[index] = nil end
+		for index,dgsElement in pairs(_TopFatherTable) do
+			if not isElement(dgsElement) then _TopFatherTable[index] = nil end
 		end
+		BottomFatherTable = table.merger(BottomFatherTable,_BottomFatherTable)
+		CenterFatherTable = table.merger(CenterFatherTable,_CenterFatherTable)
+		TopFatherTable = table.merger(TopFatherTable,_TopFatherTable)
 		LayerCastTable = {bottom=BottomFatherTable,center=CenterFatherTable,top=TopFatherTable}
-		dgsWorld3DTable = layerData.world3d
-		for index,dgsElement in pairs(dgsWorld3DTable) do
-			if not isElement(dgsElement) then dgsWorld3DTable[index] = nil end
+		local _dgsWorld3DTable = layerData.world3d
+		for index,dgsElement in pairs(_dgsWorld3DTable) do
+			if not isElement(dgsElement) then _dgsWorld3DTable[index] = nil end
 		end
-		dgsScreen3DTable = layerData.screen3d
-		for index,dgsElement in pairs(dgsScreen3DTable) do
-			if not isElement(dgsElement) then dgsScreen3DTable[index] = nil end
+		local _dgsScreen3DTable = layerData.screen3d
+		for index,dgsElement in pairs(_dgsScreen3DTable) do
+			if not isElement(dgsElement) then _dgsScreen3DTable[index] = nil end
 		end
+		dgsWorld3DTable = table.merger(dgsWorld3DTable,_dgsWorld3DTable)
+		dgsScreen3DTable = table.merger(dgsScreen3DTable,_dgsScreen3DTable)
 		removeElementData(root,"DGSI_LayerData")
 		
 		local pcData = getElementData(root,"DGSI_ParentChildData") or {}
