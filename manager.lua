@@ -165,7 +165,6 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 			resetTimer(MouseData.EditMemoTimer)
 			guiFocus(GlobalMemo)
 			dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
-			print(GlobalMemo)
 		elseif dgsEle ~= lastFront then
 			local dgsType = dgsGetType(lastFront)
 			if dgsType == "dgs-dxedit" then
