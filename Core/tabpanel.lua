@@ -89,11 +89,13 @@ function dgsCreateTabPanel(...)
 		outputDebugString(err,2)
 	end
 	dgsElementData[tabpanel].renderTarget = renderTarget
-	addEventHandler("onDgsSizeChange",tabpanel,function()
-		dgsElementData[source].configNextFrame = true
-	end,false)
+	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
+end
+
+function configTabPanelWhenResize()
+	dgsElementData[source].configNextFrame = true
 end
 
 function dgsCreateTab(...)

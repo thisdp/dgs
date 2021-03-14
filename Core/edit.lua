@@ -149,56 +149,95 @@ function dgsCreateEdit(...)
 	dgsElementData[edit].renderTarget = renderTarget
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
-	addEventHandler("onDgsTextChange",edit,function()
-		if not dgsElementData[source].autoCompleteSkip then
-			local text = dgsElementData[source].text
-			dgsSetData(source,"autoCompleteShow",false)
-			if text ~= "" then
-				local lowertxt = utf8Lower(text)
-				local textLen = utf8Len(text)
-				local acTable = dgsElementData[source].autoComplete
-				for k,v in pairs(acTable) do
-					if v == true then
-						if utf8Sub(k,1,textLen) == text then
-							dgsSetData(source,"autoCompleteShow",{k,k})
-							break
-						end
-					elseif v == false then
-						if utf8Lower(utf8Sub(k,1,textLen)) == lowertxt then
-							dgsSetData(source,"autoCompleteShow",{k,text..utf8Sub(k,textLen+1)})
-							break
-						end
+	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)
+	dgsAddEventHandler("onDgsMouseMultiClick",edit,"dgsEditCheckMultiClick",false)
+	dgsAddEventHandler("onDgsEditPreSwitch",edit,"dgsEditCheckPreSwitch",false)
+	triggerEvent("onDgsCreate",edit,sourceResource)
+	return edit
+end
+
+function dgsEditCheckMultiClick(button,state,x,y,times)
+	if state == "down" then
+		if times== 1 then
+			if button ~= "middle" then
+				local shift = getKeyState("lshift") or getKeyState("rshift")
+				local pos,side = searchEditMousePosition(source,x)
+				dgsEditSetCaretPosition(source,pos,shift)
+			end
+		elseif times == 2 then
+			if button == "left" then
+				local pos,side = searchEditMousePosition(source,x)
+				local text = dgsElementData[source].text
+				local s,e = dgsSearchFullWordType(text,pos,side)
+				dgsEditSetCaretPosition(source,s)
+				dgsEditSetCaretPosition(source,e,true)
+			end
+		elseif times == 3 then
+			if button == "left" then
+				dgsEditSetCaretPosition(source,_)
+				dgsEditSetCaretPosition(source,0,true)
+			end
+		end
+	end
+end
+
+function dgsEditCheckAutoComplete()
+	if not dgsElementData[source].autoCompleteSkip then
+		local text = dgsElementData[source].text
+		dgsSetData(source,"autoCompleteShow",false)
+		if text ~= "" then
+			local lowertxt = utf8Lower(text)
+			local textLen = utf8Len(text)
+			local acTable = dgsElementData[source].autoComplete
+			for k,v in pairs(acTable) do
+				if v == true then
+					if utf8Sub(k,1,textLen) == text then
+						dgsSetData(source,"autoCompleteShow",{k,k})
+						break
+					end
+				elseif v == false then
+					if utf8Lower(utf8Sub(k,1,textLen)) == lowertxt then
+						dgsSetData(source,"autoCompleteShow",{k,text..utf8Sub(k,textLen+1)})
+						break
 					end
 				end
 			end
 		end
-	end,false)
-	addEventHandler("onDgsMouseMultiClick",edit,function(button,state,x,y,times)
-		if state == "down" then
-			if times== 1 then
-				if button ~= "middle" then
-					local shift = getKeyState("lshift") or getKeyState("rshift")
-					local pos,side = searchEditMousePosition(source,x)
-					dgsEditSetCaretPosition(source,pos,shift)
-				end
-			elseif times == 2 then
-				if button == "left" then
-					local pos,side = searchEditMousePosition(source,x)
-					local text = dgsElementData[source].text
-					local s,e = dgsSearchFullWordType(text,pos,side)
-					dgsEditSetCaretPosition(source,s)
-					dgsEditSetCaretPosition(source,e,true)
-				end
-			elseif times == 3 then
-				if button == "left" then
-					dgsEditSetCaretPosition(source,_)
-					dgsEditSetCaretPosition(source,0,true)
+	end
+end
+
+function dgsEditCheckPreSwitch()
+	if not wasEventCancelled() then
+		if not dgsElementData[source].enableTabSwitch then return end
+		local parent = FatherTable[source]
+		local theTable = isElement(parent) and ChildrenTable[parent] or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or CenterFatherTable)
+		local id = dgsElementData[source].editCounts
+		if id then
+			local Next,theFirst
+			for i=1,#theTable do
+				local edit = theTable[i]
+				local eleData = dgsElementData[edit]
+				local editCounts = eleData.editCounts
+				if editCounts and eleData.enabled and eleData.visible and not eleData.readOnly then
+					if id ~= editCounts and dgsGetType(edit) == "dgs-dxedit" and eleData.enableTabSwitch then
+						if editCounts < id then
+							theFirst = theFirst and (dgsElementData[theFirst].editCounts > editCounts and edit or theFirst) or edit
+						else
+							Next = Next and (dgsElementData[Next].editCounts > editCounts and edit or Next) or edit
+						end
+					end
 				end
 			end
+			local theResult = Next or theFirst
+			if theResult then
+				if dgsElementData[theResult].clearSwitchPos then
+					dgsEditSetCaretPosition(theResult,utf8Len(dgsElementData[theResult].text or ""))
+				end
+				dgsBringToFront(theResult)
+				triggerEvent("onDgsEditSwitched",theResult,source)
+			end
 		end
-	end,false)
-	triggerEvent("onDgsCreate",edit,sourceResource)
-	return edit
+	end
 end
 
 function dgsEditSetMasked(edit,masked)
@@ -571,46 +610,12 @@ function searchEditMousePosition(edit,posx)
 	return -1,0
 end
 
-addEventHandler("onClientGUIAccepted",resourceRoot,function()
+addEventHandler("onClientGUIAccepted",GlobalEdit,function()
 	local dgsEdit = dgsElementData[source].linkedDxEdit
 	if dgsGetType(dgsEdit) == "dgs-dxedit" then
 		triggerEvent("onDgsEditAccepted",dgsEdit)
 	end
-end)
-
-addEventHandler("onDgsEditPreSwitch",resourceRoot,function()
-	if not wasEventCancelled() then
-		if not dgsElementData[source].enableTabSwitch then return end
-		local parent = FatherTable[source]
-		local theTable = isElement(parent) and ChildrenTable[parent] or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or CenterFatherTable)
-		local id = dgsElementData[source].editCounts
-		if id then
-			local Next,theFirst
-			for i=1,#theTable do
-				local edit = theTable[i]
-				local eleData = dgsElementData[edit]
-				local editCounts = eleData.editCounts
-				if editCounts and eleData.enabled and eleData.visible and not eleData.readOnly then
-					if id ~= editCounts and dgsGetType(edit) == "dgs-dxedit" and eleData.enableTabSwitch then
-						if editCounts < id then
-							theFirst = theFirst and (dgsElementData[theFirst].editCounts > editCounts and edit or theFirst) or edit
-						else
-							Next = Next and (dgsElementData[Next].editCounts > editCounts and edit or Next) or edit
-						end
-					end
-				end
-			end
-			local theResult = Next or theFirst
-			if theResult then
-				if dgsElementData[theResult].clearSwitchPos then
-					dgsEditSetCaretPosition(theResult,utf8Len(dgsElementData[theResult].text or ""))
-				end
-				dgsBringToFront(theResult)
-				triggerEvent("onDgsEditSwitched",theResult,source)
-			end
-		end
-	end
-end)
+end,true)
 
 function dgsEditAlignmentShowPosition(edit,text)
 	local eleData = dgsElementData[edit]
@@ -893,7 +898,7 @@ function dgsEditDoOpposite(edit,isUndo)
 	return false
 end
 
-addEventHandler("onClientGUIChanged",resourceRoot,function()
+addEventHandler("onClientGUIChanged",GlobalEdit,function()
 	if getElementType(source) == "gui-edit" then
 		local dgsEdit = dgsElementData[source].linkedDxEdit
 		if isElement(dgsEdit) then
@@ -918,7 +923,7 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 			end
 		end
 	end
-end)
+end,true)
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------

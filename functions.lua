@@ -493,7 +493,7 @@ function dgsSimulateClick(dgsGUI,button)
 	triggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
-addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y,isCoolingDown)
+addEventHandler("onDgsMouseClick",root,function(button,state,x,y,isCoolingDown)
 	if not isElement(source) then return end
 	if state == "down" then
 		triggerEvent("onDgsMouseClickDown",source,button,state,x,y,isCoolingDown)
@@ -503,14 +503,14 @@ addEventHandler("onDgsMouseClick",resourceRoot,function(button,state,x,y,isCooli
 end)
 
 addEvent("onDgsScrollBarScrollPositionChange",true)
-addEventHandler("onDgsElementScroll",resourceRoot,function(scb,new,old)
+addEventHandler("onDgsElementScroll",root,function(scb,new,old)
 	if dgsGetType(source) == "scrollbar" then
 		triggerEvent("onDgsScrollBarScrollPositionChange",source,new,old)
 	end
 end)
 
 addEvent("onDgsCursorMove",true)
-addEventHandler("onDgsMouseMove",resourceRoot,function(...) triggerEvent("onDgsCursorMove",source,...) end)
+addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)
 
 function dgsGetMouseClickGUI(button)
 	if button == "left" then

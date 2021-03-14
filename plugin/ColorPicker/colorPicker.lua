@@ -19,17 +19,11 @@ function dgsCreateColorPicker(style,...)
 		dgsAddMoveHandler(PickCircleImg)
 		dgsSetData(HSVRingImg,"cp_shaders",{HSVRing,HSVRingSel,PickCircle})
 		dgsSetData(HSVRingImg,"cp_images",{HSVRingImg,HSVRingSelImg,PickCircleImg})
-		addEventHandler("onDgsMouseDrag",HSVRingImg,HSVRingChange,false)
-		addEventHandler("onDgsMouseClickDown",HSVRingImg,HSVRingChange,false)
-		dgsSetData(HSVRingImg,"style",style)
-		dgsColorPickerSetColor(HSVRingImg,0,0,255,255)
-		addEventHandler("onDgsDestroy",HSVRingImg,function()
-			for k,v in ipairs(dgsElementData[source].cp_shaders) do
-				if isElement(v) then
-					destroyElement(v)
-				end
-			end
-		end,false)
+		dgsAddEventHandler("onDgsMouseDrag",HSVRingImg,"HSVRingChange",false)
+		dgsAddEventHandler("onDgsMouseClickDown",HSVRingImg,"HSVRingChange",false)
+		dgsAttachToAutoDestroy(HSVRing,HSVRingImg,-1)
+		dgsAttachToAutoDestroy(HSVRingSel,HSVRingImg,-2)
+		dgsAttachToAutoDestroy(PickCircle,HSVRingImg,-3)
 		mainElement = HSVRingImg
 	elseif style == "HSLSquare" then
 		local x,y,w,h,relative,parent = args[1],args[2],args[3],args[4],args[5],args[6]
@@ -42,17 +36,10 @@ function dgsCreateColorPicker(style,...)
 		dgsAddMoveHandler(PickCircleImg)
 		dgsSetData(HSLSquareImg,"cp_shaders",{HSLSquare,PickCircle})
 		dgsSetData(HSLSquareImg,"cp_images",{HSLSquareImg,PickCircleImg})
-		addEventHandler("onDgsMouseDrag",HSLSquareImg,HSLSquareChange,false)
-		addEventHandler("onDgsMouseClickDown",HSLSquareImg,HSLSquareChange,false)
-		dgsSetData(HSLSquareImg,"style",style)
-		dgsColorPickerSetColor(HSLSquareImg,0,0,255,255)
-		addEventHandler("onDgsDestroy",HSLSquareImg,function()
-			for k,v in ipairs(dgsElementData[source].cp_shaders) do
-				if isElement(v) then
-					destroyElement(v)
-				end
-			end
-		end,false)
+		dgsAddEventHandler("onDgsMouseDrag",HSLSquareImg,"HSLSquareChange",false)
+		dgsAddEventHandler("onDgsMouseClickDown",HSLSquareImg,"HSLSquareChange",false)
+		dgsAttachToAutoDestroy(HSLSquare,HSLSquareImg,-1)
+		dgsAttachToAutoDestroy(PickCircle,HSLSquareImg,-2)
 		mainElement = HSLSquareImg
 	elseif style == "HSDisk" then
 		local x,y,w,h,relative,parent = args[1],args[2],args[3],args[4],args[5],args[6]
@@ -65,17 +52,10 @@ function dgsCreateColorPicker(style,...)
 		dgsAddMoveHandler(PickCircleImg)
 		dgsSetData(HSDiskImg,"cp_shaders",{HSDisk,PickCircle})
 		dgsSetData(HSDiskImg,"cp_images",{HSDiskImg,PickCircleImg})
-		addEventHandler("onDgsMouseDrag",HSDiskImg,HSDiskChange,false)
-		addEventHandler("onDgsMouseClickDown",HSDiskImg,HSDiskChange,false)
-		dgsSetData(HSDiskImg,"style",style)
-		dgsColorPickerSetColor(HSDiskImg,0,0,255,255)
-		addEventHandler("onDgsDestroy",HSDiskImg,function()
-			for k,v in ipairs(dgsElementData[source].cp_shaders) do
-				if isElement(v) then
-					destroyElement(v)
-				end
-			end
-		end,false)
+		dgsAddEventHandler("onDgsMouseDrag",HSDiskImg,"HSDiskChange",false)
+		dgsAddEventHandler("onDgsMouseClickDown",HSDiskImg,"HSDiskChange",false)
+		dgsAttachToAutoDestroy(HSDisk,HSDiskImg,-1)
+		dgsAttachToAutoDestroy(PickCircle,HSDiskImg,-2)
 		mainElement = HSDiskImg
 	elseif style == "HLDisk" then
 		local x,y,w,h,relative,parent = args[1],args[2],args[3],args[4],args[5],args[6]
@@ -88,22 +68,18 @@ function dgsCreateColorPicker(style,...)
 		dgsAddMoveHandler(PickCircleImg)
 		dgsSetData(HLDiskImg,"cp_shaders",{HLDisk,PickCircle})
 		dgsSetData(HLDiskImg,"cp_images",{HLDiskImg,PickCircleImg})
-		addEventHandler("onDgsMouseDrag",HLDiskImg,HLDiskChange,false)
-		addEventHandler("onDgsMouseClickDown",HLDiskImg,HLDiskChange,false)
-		dgsSetData(HLDiskImg,"style",style)
-		dgsColorPickerSetColor(HLDiskImg,0,0,255,255)
-		addEventHandler("onDgsDestroy",HLDiskImg,function()
-			for k,v in ipairs(dgsElementData[source].cp_shaders) do
-				if isElement(v) then
-					destroyElement(v)
-				end
-			end
-		end,false)
+		dgsAddEventHandler("onDgsMouseDrag",HLDiskImg,"HLDiskChange",false)
+		dgsAddEventHandler("onDgsMouseClickDown",HLDiskImg,"HLDiskChange",false)
+		dgsAttachToAutoDestroy(HLDisk,HLDiskImg,-1)
+		dgsAttachToAutoDestroy(PickCircle,HLDiskImg,-2)
 		mainElement = HLDiskImg
 	else
 		assert(false,"Bad argument @dgsCreateColorPicker at argument 1, unsupported type "..style)
 	end
 	if mainElement then
+		dgsSetData(mainElement,"componentSelectors",{})
+		dgsSetData(mainElement,"style",style)
+		dgsColorPickerSetColor(mainElement,0,0,255,255)
 		triggerEvent("onDgsPluginCreate",mainElement,sourceResource)
 		return mainElement
 	end
@@ -111,7 +87,7 @@ function dgsCreateColorPicker(style,...)
 end
 
 function dgsColorPickerCreateComponentSelector(x,y,w,h,voh,relative,parent,thickness,offset)
-	local shader,selector,cs
+	local selector,cs
 	thickness = thickness or 2
 	offset = offset or 4
 	if voh then
@@ -129,14 +105,9 @@ function dgsColorPickerCreateComponentSelector(x,y,w,h,voh,relative,parent,thick
 	dgsSetData(cs,"cp_images",{cs,selector})
 	dgsSetData(cs,"value",0)	--0~100
 	dgsSetData(cs,"isReverse",false)
-	addEventHandler("onDgsMouseDrag",cs,ComponentChange,false)
-	addEventHandler("onDgsMouseClickDown",cs,ComponentChange,false)
-	addEventHandler("onDgsSizeChange",cs,ComponentResize,false)
-	addEventHandler("onDgsDestroy",cs,function()
-		if isElement(dgsElementData[source].cp_shader) then
-			destroyElement(dgsElementData[source].cp_shader)
-		end
-	end,false)
+	dgsAddEventHandler("onDgsMouseDrag",cs,"dgsColorPickerComponentChange",false)
+	dgsAddEventHandler("onDgsMouseClickDown",cs,"dgsColorPickerComponentChange",false)
+	dgsAddEventHandler("onDgsSizeChange",cs,"ComponentResize",false)
 	return cs
 end
 
@@ -167,7 +138,7 @@ function ComponentResize()
 	end
 end
 
-function ComponentChange()
+function dgsColorPickerComponentChange()
 	local cx,cy = dgsGetCursorPosition(source)
 	local absSize = dgsElementData[source].absSize
 	local voh = dgsElementData[source].voh
@@ -207,7 +178,6 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	else
 		dgsSetPosition(images[2],-offset,value*absSize[2]/100-thickness/2,false)
 	end
-
 	triggerEvent("onDgsColorPickerComponentSelectorChange",cs,value,oldV)
 end
 
@@ -221,35 +191,212 @@ ColorAttributeOrder = {
 	HSL={"H","S","L"},
 	HSV={"H","S","V"},
 }
-function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMode,isReverse)
-	if not(dgsIsType(show)) then error(dgsGenAsrt(show,"dgsBindToColorPicker",1,"dgs-dxgui")) end
+
+updateSelectorOnColorChange_ComponentSelector = function()
+	local source = source
+	if dgsElementData[source].setCool then return end
+	local cp = dgsElementData[source].bindColorPicker
+	if not isElement(cp) then return dgsUnbindFromColorPicker(source) end
+	local colorType = dgsElementData[source].colorType
+	local colorAttribute = dgsElementData[source].colorAttribute
+	if colorAttribute == "A" then
+		dgsElementData[source].setCool = true
+		dgsColorPickerSetComponentSelectorValue(source,dgsElementData[cp].A/255*100)
+		local shader = dgsElementData[source].shader
+		local R,G,B = dgsColorPickerGetColor(cp,"RGB")
+		dxSetShaderValue(shader,"currentColor",{R/255,G/255,B/255,1})
+		dgsElementData[source].setCool = false
+		return
+	end
+	local attrID = AvailableColorType[colorType][colorAttribute][1]
+	dgsElementData[source].setCool = true
+	local val = dgsElementData[cp][colorType][attrID]/AvailableColorType[colorType][colorAttribute][2]*100
+	dgsColorPickerSetComponentSelectorValue(source,val)
+	dgsElementData[source].setCool = false
+	local shader = dgsElementData[source].shader
+	local X,Y,Z = dgsColorPickerGetColor(cp,colorType)
+	local ScaleX = AvailableColorType[colorType][ColorAttributeOrder[colorType][1]][2]
+	local ScaleY = AvailableColorType[colorType][ColorAttributeOrder[colorType][2]][2]
+	local ScaleZ = AvailableColorType[colorType][ColorAttributeOrder[colorType][3]][2]
+	dxSetShaderValue(shader,colorType,{X/ScaleX,Y/ScaleY,Z/ScaleZ,1})
+end
+
+updateColorOnSelectorChange_ComponentSelector = function()
+	local source = source
+	if dgsElementData[source].setCool then return end
+	local cp = dgsElementData[source].bindColorPicker
+	if not isElement(cp) then return dgsUnbindFromColorPicker(source) end
+	local colorType = dgsElementData[source].colorType
+	local colorAttribute = dgsElementData[source].colorAttribute
+	local value = dgsColorPickerGetComponentSelectorValue(source)/100
+	if value then
+		if colorAttribute == "A" then
+			dgsElementData[source].setCool = true
+			dgsColorPickerSetColor(cp,_,_,_,value*255,colorType)
+			dgsElementData[source].setCool = false
+			return
+		end
+		value = AvailableColorType[colorType][colorAttribute][2]*value
+		dgsElementData[source].setCool = true
+		if colorType == "RGB" then
+			local RGB = {R=nil,G=nil,B=nil}
+			RGB[colorAttribute] = value
+			dgsColorPickerSetColor(cp,RGB.R,RGB.G,RGB.B,_,colorType)
+		elseif colorType == "HSL" then
+			local HSL = {H=nil,S=nil,L=nil}
+			HSL[colorAttribute] = value
+			dgsColorPickerSetColor(cp,HSL.H,HSL.S,HSL.L,_,colorType)
+		elseif colorType == "HSV" then
+			local HSV = {H=nil,S=nil,V=nil}
+			HSV[colorAttribute] = value
+			dgsColorPickerSetColor(cp,HSV.H,HSV.S,HSV.V,_,colorType)
+		end
+		dgsElementData[source].setCool = false
+	end
+end
+
+updateSelectorOnColorChange_ScrollBar = function()
+	local source = source
+	if dgsElementData[source].setCool then return end
+	local cp = dgsElementData[source].bindColorPicker
+	if not isElement(cp) then return dgsUnbindFromColorPicker(source) end
+	local colorType = dgsElementData[source].colorType
+	local colorAttribute = dgsElementData[source].colorAttribute
+	if colorAttribute == "A" then
+		dgsElementData[source].setCool = true
+		dgsScrollBarSetScrollPosition(source,dgsElementData[cp].A/255*100)
+		dgsElementData[source].setCool = false
+		return
+	end
+	local attrID = AvailableColorType[colorType][colorAttribute][1]
+	dgsElementData[source].setCool = true
+	local val = dgsElementData[cp][colorType][attrID]/AvailableColorType[colorType][colorAttribute][2]*100
+	dgsScrollBarSetScrollPosition(source,val)
+	dgsElementData[source].setCool = false
+end
+
+updateColorOnSelectorChange_ScrollBar = function()
+	local source = source
+	if dgsElementData[source].setCool then return end
+	local cp = dgsElementData[source].bindColorPicker
+	if not isElement(cp) then return dgsUnbindFromColorPicker(source) end
+	local colorType = dgsElementData[source].colorType
+	local colorAttribute = dgsElementData[source].colorAttribute
+	local value = dgsScrollBarGetScrollPosition(source)/100
+	if value then
+		if colorAttribute == "A" then
+			dgsElementData[source].setCool = true
+			dgsColorPickerSetColor(cp,_,_,_,value,colorType)
+			dgsElementData[source].setCool = false
+			return
+		end
+		dgsElementData[source].setCool = true
+		value = AvailableColorType[colorType][colorAttribute][2]*value
+		if colorType == "RGB" then
+			local RGB = {R=nil,G=nil,B=nil}
+			RGB[colorAttribute] = value
+			dgsColorPickerSetColor(cp,RGB.R,RGB.G,RGB.B,_,colorType)
+		elseif colorType == "HSL" then
+			local HSL = {H=nil,S=nil,L=nil}
+			HSL[colorAttribute] = value
+			dgsColorPickerSetColor(cp,HSL.H,HSL.S,HSL.L,_,colorType)
+		elseif colorType == "HSV" then
+			local HSV = {H=nil,S=nil,V=nil}
+			HSV[colorAttribute] = value
+			dgsColorPickerSetColor(cp,HSV.H,HSV.S,HSV.V,_,colorType)
+		end
+		dgsElementData[source].setCool = false
+	end
+end
+
+updateSelectorOnColorChange_EditLabel = function()
+	local source = source
+	if dgsElementData[source].setCool then return end
+	local cp = dgsElementData[source].bindColorPicker
+	if not isElement(cp) then return dgsUnbindFromColorPicker(source) end
+	local colorType = dgsElementData[source].colorType
+	local colorAttribute = dgsElementData[source].colorAttribute
+	if colorAttribute == "A" then
+		dgsElementData[source].setCool = true
+		dgsSetText(source,tostring(math.floor(dgsElementData[cp].A)))
+		dgsElementData[source].setCool = false
+		return
+	end
+	local attrID = AvailableColorType[colorType][colorAttribute][1]
+	dgsElementData[source].setCool = true
+	dgsSetText(source,tostring(math.floor(dgsElementData[cp][colorType][attrID])))
+	dgsElementData[source].setCool = false
+end
+		
+updateColorOnSelectorChange_EditLabel = function()
+	local source = source
+	if dgsElementData[source].setCool then return end
+	local cp = dgsElementData[source].bindColorPicker
+	if not isElement(cp) then return dgsUnbindFromColorPicker(source) end
+	local colorType = dgsElementData[source].colorType
+	local colorAttribute = dgsElementData[source].colorAttribute
+	local value = tonumber(dgsGetProperty(source,changeProperty or "text"))
+	if value then
+		if colorAttribute == "A" then
+			dgsElementData[source].setCool = true
+			dgsColorPickerSetColor(cp,_,_,_,value,colorType)
+			dgsElementData[source].setCool = false
+			return
+		end
+		dgsElementData[source].setCool = true
+		if colorType == "RGB" then
+			local RGB = {R=nil,G=nil,B=nil}
+			RGB[colorAttribute] = value
+			dgsColorPickerSetColor(cp,RGB.R,RGB.G,RGB.B,_,colorType)
+		elseif colorType == "HSL" then
+			local HSL = {H=nil,S=nil,L=nil}
+			HSL[colorAttribute] = value
+			dgsColorPickerSetColor(cp,HSL.H,HSL.S,HSL.L,_,colorType)
+		elseif colorType == "HSV" then
+			local HSV = {H=nil,S=nil,V=nil}
+			HSV[colorAttribute] = value
+			dgsColorPickerSetColor(cp,HSV.H,HSV.S,HSV.V,_,colorType)
+		end
+		dgsElementData[source].setCool = false
+	end
+end
+
+function dgsBindToColorPicker(cs,colorPicker,colorType,colorAttribute,staticMode,isReverse)
+	if not(dgsIsType(cs)) then error(dgsGenAsrt(cs,"dgsBindToColorPicker",1,"dgs-dxgui")) end
 	if not(dgsGetPluginType(colorPicker) == "dgs-dxcolorpicker") then error(dgsGenAsrt(colorPicker,"dgsBindToColorPicker",2,"plugin dgs-dxcolorpicker")) end
 	if colorAttribute ~= "A" then
 		if not(AvailableColorType[colorType]) then error(dgsGenAsrt(colorType,"dgsBindToColorPicker",3,"string","RGB/HSL/HSV")) end
 		if not(AvailableColorType[colorType][colorAttribute]) then error(dgsGenAsrt(colorAttribute,"dgsBindToColorPicker",4,"string",table.concat(ColorAttributeOrder[colorType],"/"))) end
 	end
-	local targetType = dgsGetType(show)
-	local targetPlugin = dgsGetPluginType(show)
-	dgsSetData(show,"bindColorPicker",colorPicker)
-	dgsSetData(show,"isReverse",isReverse)
+	local targetPlugin = dgsGetPluginType(cs)
+	local lastColorPicker = dgsElementData[cs].bindColorPicker
+	if lastColorPicker then
+		dgsUnbindFromColorPicker(cs)
+	end
+	local componentSelectors = dgsElementData[colorPicker].componentSelectors
+	componentSelectors[cs] = true
+	dgsSetData(cs,"bindColorPicker",colorPicker)
+	dgsSetData(cs,"isReverse",isReverse)
+	dgsSetData(cs,"colorType",colorType)
+	dgsSetData(cs,"colorAttribute",colorAttribute)
 	if targetPlugin == "dgs-dxcomponentselector" then
-		local shader = dgsElementData[show].shader
-		if isElement(shader) then destroyElement(shader) return end
+		local shader = dgsElementData[cs].shader
+		if isElement(shader) then destroyElement(shader) end
 		if colorAttribute == "A" then
 			local ALPComponent = dxCreateShader("plugin/ColorPicker/ALPComponent.fx")
-			dgsSetData(show,"shader",ALPComponent)
-			dgsImageSetImage(show,ALPComponent)
-			dxSetShaderValue(ALPComponent,"vertical",dgsElementData[show].voh)
+			dgsSetData(cs,"shader",ALPComponent)
+			dgsImageSetImage(cs,ALPComponent)
+			dxSetShaderValue(ALPComponent,"vertical",dgsElementData[cs].voh)
 			dxSetShaderValue(ALPComponent,"isReverse",isReverse and true or false)
 		elseif colorType == "RGB" then
 			local RGBComponent = dxCreateShader("plugin/ColorPicker/RGBComponent.fx")
-			dgsSetData(show,"shader",RGBComponent)
+			dgsSetData(cs,"shader",RGBComponent)
 			local colorID = AvailableColorType[colorType][colorAttribute][1]
 			local RGBCHG = {0,0,0}
 			RGBCHG[colorID] = 1
-			dgsImageSetImage(show,RGBComponent)
+			dgsImageSetImage(cs,RGBComponent)
 			dxSetShaderValue(RGBComponent,"RGB_Chg",RGBCHG)
-			dxSetShaderValue(RGBComponent,"vertical",dgsElementData[show].voh)
+			dxSetShaderValue(RGBComponent,"vertical",dgsElementData[cs].voh)
 			dxSetShaderValue(RGBComponent,"isReverse",isReverse and true or false)
 			if staticMode then
 				dxSetShaderValue(RGBComponent,"StaticMode",{0,0,0})
@@ -258,13 +405,13 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			end
 		elseif colorType == "HSL" then
 			local HSLComponent = dxCreateShader("plugin/ColorPicker/HSLComponent.fx")
-			dgsSetData(show,"shader",HSLComponent)
-			dgsImageSetImage(show,HSLComponent)
+			dgsSetData(cs,"shader",HSLComponent)
+			dgsImageSetImage(cs,HSLComponent)
 			local colorID = AvailableColorType[colorType][colorAttribute][1]
 			local HSLCHG = {0,0,0}
 			HSLCHG[colorID] = 1
 			dxSetShaderValue(HSLComponent,"HSL_Chg",HSLCHG)
-			dxSetShaderValue(HSLComponent,"vertical",dgsElementData[show].voh)
+			dxSetShaderValue(HSLComponent,"vertical",dgsElementData[cs].voh)
 			dxSetShaderValue(HSLComponent,"isReverse",isReverse and true or false)
 			if staticMode then
 				dxSetShaderValue(HSLComponent,"StaticMode",{1,0,0})
@@ -273,13 +420,13 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 			end
 		elseif colorType == "HSV" then
 			local HSVComponent = dxCreateShader("plugin/ColorPicker/HSVComponent.fx")
-			dgsSetData(show,"shader",HSVComponent)
-			dgsImageSetImage(show,HSVComponent)
+			dgsSetData(cs,"shader",HSVComponent)
+			dgsImageSetImage(cs,HSVComponent)
 			local colorID = AvailableColorType[colorType][colorAttribute][1]
 			local HSVCHG = {0,0,0}
 			HSVCHG[colorID] = 1
 			dxSetShaderValue(HSVComponent,"HSV_Chg",HSVCHG)
-			dxSetShaderValue(HSVComponent,"vertical",dgsElementData[show].voh)
+			dxSetShaderValue(HSVComponent,"vertical",dgsElementData[cs].voh)
 			dxSetShaderValue(HSVComponent,"isReverse",isReverse and true or false)
 			if staticMode then
 				dxSetShaderValue(HSVComponent,"StaticMode",{1,0,0})
@@ -287,226 +434,45 @@ function dgsBindToColorPicker(show,colorPicker,colorType,colorAttribute,staticMo
 				dxSetShaderValue(HSVComponent,"StaticMode",{1,1,1})
 			end
 		end
-		local function tempColorChange()
-			if not setCool then
-				local cp = _DGSColorPicker
-				local show = _DGSShowElement
-				if not isElement(cp) then return dgsUnbindFromColorPicker(show) end
-				local colorType = _colorType
-				local colorAttribute = _colorAttribute
-				if colorAttribute == "A" then
-					setCool = true
-					dgsColorPickerSetComponentSelectorValue(show,dgsElementData[cp].A/255*100)
-					local shader = dgsElementData[show].shader
-					local R,G,B = dgsColorPickerGetColor(cp,"RGB")
-					dxSetShaderValue(shader,"currentColor",{R/255,G/255,B/255,1})
-					setCool = false
-					return
-				end
-				local attrID = AvailableColorType[colorType][colorAttribute][1]
-				setCool = true
-				local val = dgsElementData[cp][colorType][attrID]/AvailableColorType[colorType][colorAttribute][2]*100
-				dgsColorPickerSetComponentSelectorValue(show,val)
-				setCool = false
-			end
-			local shader = dgsElementData[show].shader
-			local X,Y,Z = dgsColorPickerGetColor(colorPicker,colorType)
-			local ScaleX = AvailableColorType[colorType][ColorAttributeOrder[colorType][1]][2]
-			local ScaleY = AvailableColorType[colorType][ColorAttributeOrder[colorType][2]][2]
-			local ScaleZ = AvailableColorType[colorType][ColorAttributeOrder[colorType][3]][2]
-			dxSetShaderValue(shader,colorType,{X/ScaleX,Y/ScaleY,Z/ScaleZ,1})
-		end
-		local function tempScPosChange()
-			if setCool then return end
-			local cp = _DGSColorPicker
-			local show = _DGSShowElement
-			if not isElement(cp) then return dgsUnbindFromColorPicker(show) end
-			local colorType = _colorType
-			local colorAttribute = _colorAttribute
-			local value = dgsColorPickerGetComponentSelectorValue(show)/100
-			if value then
-				if colorAttribute == "A" then
-					setCool = true
-					dgsColorPickerSetColor(cp,_,_,_,value*255,colorType)
-					setCool = false
-					return
-				end
-				value = AvailableColorType[colorType][colorAttribute][2]*value
-				if colorType == "RGB" then
-					local RGB = {R=nil,G=nil,B=nil}
-					RGB[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,RGB.R,RGB.G,RGB.B,_,colorType)
-					setCool = false
-				elseif colorType == "HSL" then
-					local HSL = {H=nil,S=nil,L=nil}
-					HSL[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,HSL.H,HSL.S,HSL.L,_,colorType)
-					setCool = false
-				elseif colorType == "HSV" then
-					local HSV = {H=nil,S=nil,V=nil}
-					HSV[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,HSV.H,HSV.S,HSV.V,_,colorType)
-					setCool = false
-				end
-			end
-		end
-		local newEnv = {_DGSShowElement=show,_DGSColorPicker=colorPicker,_colorType=colorType,_colorAttribute=colorAttribute}
-		setmetatable(newEnv,{__index=_G})
-		setfenv(tempColorChange,newEnv)
-		setfenv(tempScPosChange,newEnv)
-		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange,false)
-		addEventHandler("onDgsColorPickerComponentSelectorChange",show,tempScPosChange,false)
-		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
-		dgsElementData[show].bindColorPicker_Fnc2 = tempScPosChange
-		tempColorChange()
-	elseif targetType == "dgs-dxscrollbar" then
-		local function tempColorChange()
-			if setCool then return end
-			local cp = _DGSColorPicker
-			local show = _DGSShowElement
-			local colorType = _colorType
-			local colorAttribute = _colorAttribute
-			if colorAttribute == "A" then
-				setCool = true
-				dgsScrollBarSetScrollPosition(show,dgsElementData[cp].A/255*100)
-				setCool = false
-				return
-			end
-			local attrID = AvailableColorType[colorType][colorAttribute][1]
-			setCool = true
-			local val = dgsElementData[cp][colorType][attrID]/AvailableColorType[colorType][colorAttribute][2]*100
-			dgsScrollBarSetScrollPosition(show,val)
-			setCool = false
-		end
-		local function tempScPosChange()
-			if setCool then return end
-			local cp = _DGSColorPicker
-			local show = _DGSShowElement
-			local colorType = _colorType
-			local colorAttribute = _colorAttribute
-			local value = dgsScrollBarGetScrollPosition(show)/100
-			if value then
-				if colorAttribute == "A" then
-					setCool = true
-					dgsColorPickerSetColor(cp,_,_,_,value,colorType)
-					setCool = false
-					return
-				end
-				value = AvailableColorType[colorType][colorAttribute][2]*value
-				if colorType == "RGB" then
-					local RGB = {R=nil,G=nil,B=nil}
-					RGB[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,RGB.R,RGB.G,RGB.B,_,colorType)
-					setCool = false
-				elseif colorType == "HSL" then
-					local HSL = {H=nil,S=nil,L=nil}
-					HSL[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,HSL.H,HSL.S,HSL.L,_,colorType)
-					setCool = false
-				elseif colorType == "HSV" then
-					local HSV = {H=nil,S=nil,V=nil}
-					HSV[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,HSV.H,HSV.S,HSV.V,_,colorType)
-					setCool = false
-				end
-			end
-		end
-		local newEnv = {_DGSShowElement=show,_DGSColorPicker=colorPicker,_colorType=colorType,_colorAttribute=colorAttribute}
-		setmetatable(newEnv,{__index=_G})
-		setfenv(tempColorChange,newEnv)
-		setfenv(tempScPosChange,newEnv)
-		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange,false)
-		addEventHandler("onDgsElementScroll",show,tempScPosChange,false)
-		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
-		dgsElementData[show].bindColorPicker_Fnc2 = tempScPosChange
-		tempColorChange()
-	elseif targetType == "dgs-dxlabel" or targetType == "dgs-dxedit" then
-		local function tempColorChange()
-			if setCool then return end
-			local cp = _DGSColorPicker
-			local show = _DGSShowElement
-			local colorType = _colorType
-			local colorAttribute = _colorAttribute
-			if colorAttribute == "A" then
-				setCool = true
-				dgsSetText(show,tostring(math.floor(dgsElementData[cp].A)))
-				setCool = false
-				return
-			end
-			local attrID = AvailableColorType[colorType][colorAttribute][1]
-			setCool = true
-			dgsSetText(show,tostring(math.floor(dgsElementData[cp][colorType][attrID])))
-			setCool = false
-		end
-		local function tempTextChange()
-			if setCool then return end
-			local cp = _DGSColorPicker
-			local show = _DGSShowElement
-			local colorType = _colorType
-			local colorAttribute = _colorAttribute
-			local value = tonumber(dgsGetProperty(show,changeProperty or "text"))
-			if value then
-				if colorAttribute == "A" then
-					setCool = true
-					dgsColorPickerSetColor(cp,_,_,_,value,colorType)
-					setCool = false
-					return
-				end
-				if colorType == "RGB" then
-					local RGB = {R=nil,G=nil,B=nil}
-					RGB[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,RGB.R,RGB.G,RGB.B,_,colorType)
-					setCool = false
-				elseif colorType == "HSL" then
-					local HSL = {H=nil,S=nil,L=nil}
-					HSL[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,HSL.H,HSL.S,HSL.L,_,colorType)
-					setCool = false
-				elseif colorType == "HSV" then
-					local HSV = {H=nil,S=nil,V=nil}
-					HSV[colorAttribute] = value
-					setCool = true
-					dgsColorPickerSetColor(cp,HSV.H,HSV.S,HSV.V,_,colorType)
-					setCool = false
-				end
-			end
-		end
-		local newEnv = {_DGSShowElement=show,_DGSColorPicker=colorPicker,_colorType=colorType,_colorAttribute=colorAttribute}
-		setmetatable(newEnv,{__index=_G})
-		setfenv(tempColorChange,newEnv)
-		setfenv(tempTextChange,newEnv)
-		addEventHandler("onDgsColorPickerChange",colorPicker,tempColorChange,false)
-		addEventHandler("onDgsTextChange",show,tempTextChange,false)
-		dgsElementData[show].bindColorPicker_Fnc1 = tempColorChange
-		dgsElementData[show].bindColorPicker_Fnc2 = tempTextChange
-		tempColorChange()
+		dgsAddEventHandler("onDgsColorPickerComponentSelectorChange",cs,"updateColorOnSelectorChange_ComponentSelector",false)
+		source = cs
+		updateSelectorOnColorChange_ComponentSelector()
+	elseif targetPlugin == "dgs-dxscrollbar" then
+		dgsAddEventHandler("onDgsElementScroll",cs,"updateColorOnSelectorChange_ScrollBar",false)
+		source = cs
+		updateSelectorOnColorChange_ScrollBar()
+	elseif targetPlugin == "dgs-dxlabel" or targetPlugin == "dgs-dxedit" then
+		dgsAddEventHandler("onDgsTextChange",cs,"updateColorOnSelectorChange_EditLabel",false)
+		source = cs
+		updateSelectorOnColorChange_EditLabel()
 	else
-		assert(false,"Bad argument at argument 1, unsupported type "..targetType)
+		assert(false,"Bad argument at argument 1, unsupported type "..targetPlugin)
 	end
 	return true
 end
 
-function dgsUnbindFromColorPicker(show)
-	if not(dgsIsType(show)) then error(dgsGenAsrt(show,"dgsUnbindFromColorPicker",1,"dgs-dxgui")) end
-	local bound = dgsElementData[show].bindColorPicker
+function dgsUnbindFromColorPicker(cs)
+	if not(dgsIsType(cs)) then error(dgsGenAsrt(cs,"dgsUnbindFromColorPicker",1,"dgs-dxgui")) end
+	local bound = dgsElementData[cs].bindColorPicker
+	local shader = dgsElementData[cs].shader
+	if isElement(shader) then
+		destroyElement(shader)
+		dgsElementData[cs].shader = nil
+	end
+	dgsSetData(cs,"colorType",nil)
+	dgsSetData(cs,"colorAttribute",nil)
 	if bound then
-		local tempColorChange = dgsElementData[show].bindColorPicker_Fnc1
-		local tempTextChange = dgsElementData[show].bindColorPicker_Fnc2
-		if isElement(bound) then
-			removeEventHandler("onDgsColorPickerChange",bound,tempColorChange)
+		local targetPlugin = dgsGetPluginType(cs)
+		if targetPlugin == "dgs-dxcomponentselector" then
+			dgsRemoveEventHandler("onDgsColorPickerComponentSelectorChange",cs,"updateColorOnSelectorChange_ComponentSelector")
+		elseif targetPlugin == "dgs-dxscrollbar" then
+			dgsRemoveEventHandler("onDgsElementScroll",cs,"updateColorOnSelectorChange_ScrollBar")
+		elseif targetPlugin == "dgs-dxlabel" or targetPlugin == "dgs-dxedit" then
+			dgsRemoveEventHandler("onDgsTextChange",cs,"updateColorOnSelectorChange_EditLabel")
 		end
-		removeEventHandler("onDgsTextChange",show,tempTextChange)
-		dgsElementData[show].bindColorPicker = nil
-		dgsElementData[show].bindColorPicker_Fnc1 = nil
-		dgsElementData[show].bindColorPicker_Fnc2 = nil
+		dgsElementData[cs].bindColorPicker = nil
+		local componentSelectors = dgsElementData[bound].componentSelectors
+		componentSelectors[cs] = nil
 		return true
 	end
 	return false
@@ -579,6 +545,7 @@ function dgsColorPickerSetColor(cp,...)
 		newColorHSL = {RGB2HSL(r,g,b)}
 		newColorHSV = {HSL2HSV(newColorHSL[1],newColorHSL[2],newColorHSL[3])}
 	end
+	local componentSelectors = dgsElementData[cp].componentSelectors
 	local oldRGB = dgsElementData[cp].RGB
 	local oldHSL = dgsElementData[cp].HSL
 	local oldHSV = dgsElementData[cp].HSV
@@ -589,6 +556,20 @@ function dgsColorPickerSetColor(cp,...)
 	dgsSetData(cp,"RGB",newColorRGB)
 	dgsSetData(cp,"A",newA)
 	triggerEvent("onDgsColorPickerChange",cp,oldRGB,oldHSL,oldHSV,oldAlp)
+	for cs,_ in pairs(componentSelectors) do
+		if not isElement(cs) then componentSelectors[cs] = nil end
+		local csType = dgsGetPluginType(cs)
+		if csType == "dgs-dxcomponentselector" then
+			source = cs
+			updateSelectorOnColorChange_ComponentSelector()
+		elseif csType == "dgs-dxscrollbar" then
+			source = cs
+			updateSelectorOnColorChange_ScrollBar()
+		elseif csType == "dgs-dxedit" or csType == "dgs-dxlabel" then
+			source = cs
+			updateSelectorOnColorChange_EditLabel()
+		end
+	end
 	dgsColorPickerUpdate(cp)
 end
 

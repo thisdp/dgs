@@ -628,7 +628,6 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 
-
 function dgsCore3DRender()
 	dgsRenderInfo.frameStart3D = getTickCount()
 	local rendering3D = 0
@@ -743,7 +742,29 @@ addEventHandler("onClientKey",root,function(button,state)
 			end
 		end
 	end
+	onClientKeyCheck(button,state)
 end)
+
+KeyHolder = {}
+function onClientKeyCheck(button,state)
+	if state and button:sub(1,5) ~= "mouse" then
+		if isTimer(KeyHolder.Timer) then killTimer(KeyHolder.Timer) end
+		KeyHolder = {}
+		KeyHolder.lastKey = button
+		KeyHolder.Timer = setTimer(function()
+			if not getKeyState(KeyHolder.lastKey) then
+				KeyHolder = {}
+				return
+			end
+			KeyHolder.repeatKey = true
+			KeyHolder.repeatStartTick = getTickCount()
+			KeyHolder.repeatDuration = 25
+		end,400,1)
+		if onClientKeyTriggered(button) then
+			cancelEvent()
+		end
+	end
+end
 
 function onClientKeyTriggered(button)
 	local makeEventCancelled = false
@@ -1029,28 +1050,6 @@ function onClientKeyTriggered(button)
 	end
 	return makeEventCancelled
 end
-
-KeyHolder = {}
-function onClientKeyCheck(button,state)
-	if state and button:sub(1,5) ~= "mouse" then
-		if isTimer(KeyHolder.Timer) then killTimer(KeyHolder.Timer) end
-		KeyHolder = {}
-		KeyHolder.lastKey = button
-		KeyHolder.Timer = setTimer(function()
-			if not getKeyState(KeyHolder.lastKey) then
-				KeyHolder = {}
-				return
-			end
-			KeyHolder.repeatKey = true
-			KeyHolder.repeatStartTick = getTickCount()
-			KeyHolder.repeatDuration = 25
-		end,400,1)
-		if onClientKeyTriggered(button) then
-			cancelEvent()
-		end
-	end
-end
-addEventHandler("onClientKey",root,onClientKeyCheck)
 
 function dgsCheckHit(hits,mx,my,cursorShowing)
 	local enteredElementType = dgsGetType(MouseData.entered)

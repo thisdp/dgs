@@ -144,7 +144,7 @@ function dgsCreateComboBox(...)
 	dgsElementData[combobox].myBox = box
 	dgsElementData[box].myCombo = combobox
 	local boxsiz = dgsElementData[box].absSize
-	local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox)
+	local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sourceResource)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,combobox,-1)
 	else
@@ -158,37 +158,74 @@ function dgsCreateComboBox(...)
 	dgsSetData(scrollbar,"minLength",10)
 	dgsSetVisible(scrollbar,false)
 	dgsSetVisible(box,false)
-	addEventHandler("onDgsElementScroll",scrollbar,checkCBScrollBar,false)
+	dgsAddEventHandler("onDgsElementScroll",scrollbar,"checkComboBoxScrollBar",false)
+	dgsAddEventHandler("onDgsComboBoxStateChange",combobox,"dgsComboBoxCheckState",false)
+	dgsAddEventHandler("onDgsBlur",box,"closeComboBoxWhenBoxBlur",false)
+	dgsAddEventHandler("onDgsBlur",scrollbar,"closeComboBoxWhenScrolBarBlur",false)
+	dgsAddEventHandler("onDgsSizeChange",combobox,"updateBoxSizeWhenComboBoxResize",false)
+	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
-	addEventHandler("onDgsBlur",box,function(nextFocused)
-		local combobox = dgsElementData[source].myCombo
-		local scb = dgsElementData[combobox].scrollbar
-		if nextFocused ~= combobox and nextFocused ~= scb then
-			dgsComboBoxSetState(combobox,false)
-		end
-	end,false)
-	addEventHandler("onDgsBlur",scrollbar,function(nextFocused)
-		local combobox = dgsElementData[source].myCombo
-		local box = dgsElementData[combobox].myBox
-		if nextFocused ~= combobox and nextFocused ~= box then
-			dgsComboBoxSetState(combobox,false)
-		end
-	end,false)
-	addEventHandler("onDgsSizeChange",combobox,function()
-		local box = dgsElementData[combobox].myBox
-		if not dgsElementData[box].relative[2] then
-			local size = dgsElementData[source].absSize
-			local bsize = dgsElementData[box].absSize
-			dgsSetSize(box,size[1],bsize[2],false)
-		end
-	end,false)
-	addEventHandler("onDgsSizeChange",box,function()
-		local combobox = dgsElementData[source].myCombo
-		dgsSetData(combobox,"configNextFrame",true)
-	end,false)
 	triggerEvent("onDgsCreate",combobox,sourceResource)
 	dgsSetData(combobox,"hitoutofparent",true)
 	return combobox
+end
+
+function checkComboBoxScrollBar(scb,new,old)
+	local parent = dgsGetParent(source)
+	if dgsGetType(parent) == "dgs-dxcombobox-Box" then
+		local combobox = dgsElementData[parent].myCombo
+		local scrollBar = dgsElementData[combobox].scrollbar
+		local sx,sy = dgsElementData[parent].absSize[1],dgsElementData[parent].absSize[2]
+		if source == scrollBar then
+			local itemLength = #dgsElementData[combobox].itemData*dgsElementData[combobox].itemHeight
+			local temp = -new*(itemLength-sy)/100
+			local temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp
+			dgsSetData(combobox,"itemMoveOffset",temp)
+			triggerEvent("onDgsElementScroll",combobox,source,new,old)
+		end
+	end
+end
+
+function dgsComboBoxCheckState(state)
+	if not wasEventCancelled() then
+		local box = dgsElementData[source].myBox
+		if state then
+			dgsSetVisible(box,true)
+			dgsFocus(box)
+		else
+			dgsSetVisible(box,false)
+		end
+	end
+end
+
+function closeComboBoxWhenBoxBlur(nextFocused)
+	local combobox = dgsElementData[source].myCombo
+	local scb = dgsElementData[combobox].scrollbar
+	if nextFocused ~= combobox and nextFocused ~= scb then
+		dgsComboBoxSetState(combobox,false)
+	end
+end
+
+function closeComboBoxWhenScrolBarBlur(nextFocused)
+	local combobox = dgsElementData[source].myCombo
+	local box = dgsElementData[combobox].myBox
+	if nextFocused ~= combobox and nextFocused ~= box then
+		dgsComboBoxSetState(combobox,false)
+	end
+end
+
+function updateBoxSizeWhenComboBoxResize()
+	local box = dgsElementData[source].myBox
+	if not dgsElementData[box].relative[2] then
+		local size = dgsElementData[source].absSize
+		local bsize = dgsElementData[box].absSize
+		dgsSetSize(box,size[1],bsize[2],false)
+	end
+end
+
+function updateBoxContentWhenBoxResize()
+	local combobox = dgsElementData[source].myCombo
+	dgsSetData(combobox,"configNextFrame",true)
 end
 
 function dgsComboBoxSetCaptionText(combobox,caption)
@@ -536,12 +573,13 @@ function configComboBox(combobox,remainBox)
 	local itemHeight = eleData.itemHeight
 	local allHeight = iLen*itemHeight
 	dgsSetVisible(scrollbar,allHeight > size[2])
+	local res = eleData.resource
 	if not remainBox then
 		local boxsiz = dgsElementData[box].absSize
 		local renderTarget = eleData.renderTarget
 		if isElement(renderTarget) then destroyElement(renderTarget) end
 		local sbt = eleData.scrollBarThick
-		local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox)
+		local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,res)
 		if renderTarget ~= false then
 			dgsAttachToAutoDestroy(renderTarget,combobox,-1)
 		else
@@ -572,33 +610,6 @@ function configComboBox(combobox,remainBox)
 	end
 end
 
-function checkCBScrollBar(scb,new,old)
-	local parent = dgsGetParent(source)
-	if dgsGetType(parent) == "dgs-dxcombobox-Box" then
-		local combobox = dgsElementData[parent].myCombo
-		local scrollBar = dgsElementData[combobox].scrollbar
-		local sx,sy = dgsElementData[parent].absSize[1],dgsElementData[parent].absSize[2]
-		if source == scrollBar then
-			local itemLength = #dgsElementData[combobox].itemData*dgsElementData[combobox].itemHeight
-			local temp = -new*(itemLength-sy)/100
-			local temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp
-			dgsSetData(combobox,"itemMoveOffset",temp)
-			triggerEvent("onDgsElementScroll",combobox,source,new,old)
-		end
-	end
-end
-
-addEventHandler("onDgsComboBoxStateChange",resourceRoot,function(state)
-	if not wasEventCancelled() then
-		local box = dgsElementData[source].myBox
-		if state then
-			dgsSetVisible(box,true)
-			dgsFocus(box)
-		else
-			dgsSetVisible(box,false)
-		end
-	end
-end)
 
 function dgsComboBoxSetScrollPosition(combobox,vertical)
 	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetScrollPosition",1,"dgs-dxcombobox")) end

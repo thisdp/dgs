@@ -86,12 +86,7 @@ function dgsCreateWindow(...)
 	end
 	if createCloseButton then
 		local closeBtn = dgsCreateButton(0,0,40,24,style.closeButtonText,false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
-		addEventHandler("onDgsMouseClickUp",closeBtn,function(button)
-			if button == "left" then
-				local window = dgsGetParent(source)
-				if isElement(window) then dgsCloseWindow(window) end
-			end
-		end,false)
+		dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
 		dgsElementData[window].closeButtonSize = {40,24,false}
 		dgsElementData[window].closeButton = closeBtn
 		dgsSetPositionAlignment(closeBtn,"right")
@@ -102,6 +97,13 @@ function dgsCreateWindow(...)
 	return window
 end
 
+function closeWindowWhenCloseButtonClicked(button)
+	if button == "left" then
+		local window = dgsGetParent(source)
+		if isElement(window) then dgsCloseWindow(window) end
+	end
+end
+
 function dgsWindowSetCloseButtonEnabled(window,bool)
 	if not(dgsGetType(window) == "dgs-dxwindow") then error(dgsGenAsrt(window,"dgsWindowSetCloseButtonEnabled",1,"dgs-dxwindow")) end
 	local closeButton = dgsElementData[window].closeButton
@@ -109,12 +111,7 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 		if not isElement(closeButton) then
 			local cbSize = dgsElementData[window].closeButtonSize
 			local closeBtn = dgsCreateButton(0,0,cbSize[1],cbSize[2],"×",cbSize[3],window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
-			addEventHandler("onDgsMouseClickUp",closeBtn,function(button)
-				if button == "left" then
-					local window = dgsGetParent(source)
-					if isElement(window) then dgsCloseWindow(window) end
-				end
-			end,false)
+			dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
 			dgsSetData(window,"closeButton",closeBtn)
 			dgsSetData(closeBtn,"alignment",{"center","center"})
 			dgsSetData(closeBtn,"ignoreParentTitle",true)

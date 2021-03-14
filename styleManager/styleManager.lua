@@ -18,9 +18,9 @@ styleSecEnv = {
 	dgsCreateNineSlice = dgsCreateNineSlice,
 	dgsCreateMask = dgsCreateMask,
 	dxCreateFont = dxCreateFont,
-	dxCreateTexture = dxCreateTexture,
+	dxCreateTexture = function(path) return dxCreateTexture(path,false) end,
 	dxCreateScreenSource = dxCreateScreenSource,
-	dxCreateShader = dxCreateShader,
+	dxCreateShader = function(path) return dxCreateShader(path,false) end,
 	dxCreateRenderTarget = dxCreateRenderTarget,
 }
 
@@ -59,17 +59,17 @@ function getAvailableFilePath(path)
 	end
 end
 
-function newTexture(texture,...)
+function newTexture(texture)
 	if not isElement(texture) then
-		texture = dxCreateTexture(texture,...)
+		texture = dxCreateTexture(texture,false)
 	end
 	styleManager.createdTexture[texture] = true
 	return texture
 end
 
-function newShader(shader,...)
+function newShader(shader)
 	if not isElement(shader) then
-		shader = dxCreateShader(shader,...)
+		shader = dxCreateShader(shader,false)
 	end
 	styleManager.createdShader[shader] = true
 	return shader

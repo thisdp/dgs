@@ -46,21 +46,25 @@ function dgsCreateObjectPreviewHandle(objEle,rX,rY,rZ)
 	dgsSetData(objEle,"SOVelement",objPrevEle)
 	dgsSetData(objPrevEle,"renderElement",objEle)
 	objPrevHandles[getElementID(objPrevEle)] = objPrevEle
-	addEventHandler("onClientElementDestroy",objEle,function()
-		local objPrevEle = dgsElementData[source].SOVelement
-		objPrevHandles[getElementID(objPrevEle)] = nil
-		OP:destroyObjectPreview(objPrevEle)
-		dgsElementData[objPrevEle] = nil
-		dgsElementData[source] = nil
-	end,false)
-	addEventHandler("onClientElementDestroy",objPrevEle,function()
-		local objEle = dgsElementData[source].renderElement
-		objPrevHandles[getElementID(source)] = nil
-		dgsElementData[objEle] = nil
-		dgsElementData[source] = nil
-	end,false)
+	dgsAddEventHandler("onClientElementDestroy",objEle,"destroyObjectPreviewWhenTargetElementDestroy",false)
+	dgsAddEventHandler("onClientElementDestroy",objPrevEle,"destroyObjectPreviewWhenOPElementDestroy",false)
 	triggerEvent("onDgsPluginCreate",objPrevEle,sourceResource)
 	return objPrevEle
+end
+
+function destroyObjectPreviewWhenTargetElementDestroy()
+	local objPrevEle = dgsElementData[source].SOVelement
+	objPrevHandles[getElementID(objPrevEle)] = nil
+	OP:destroyObjectPreview(objPrevEle)
+	dgsElementData[objPrevEle] = nil
+	dgsElementData[source] = nil
+end
+
+function destroyObjectPreviewWhenTargetElementDestroy()
+	local objEle = dgsElementData[source].renderElement
+	objPrevHandles[getElementID(source)] = nil
+	dgsElementData[objEle] = nil
+	dgsElementData[source] = nil
 end
 
 function dgsObjectPreviewGetHandleByID(id)

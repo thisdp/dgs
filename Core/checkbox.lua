@@ -124,8 +124,15 @@ function dgsCreateCheckBox(...)
 		dgsSetData(cb,"text",tostring(text))
 	end
 	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
+	dgsAddEventHandler("onDgsCheckBoxChange",cb,"dgsCheckBoxCheckState",false)
 	triggerEvent("onDgsCreate",cb,sourceResource)
 	return cb
+end
+
+function dgsCheckBoxCheckState(state)
+	if not wasEventCancelled() then
+		dgsSetData(source,"state",state)
+	end
 end
 
 function dgsCheckBoxGetSelected(cb)
@@ -164,12 +171,6 @@ function dgsCheckBoxGetVerticalAlign(cb)
 	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxGetVerticalAlign",1,"dgs-dxcheckbox")) end
 	return dgsElementData[cb].alignment[2]
 end
-
-addEventHandler("onDgsCheckBoxChange",resourceRoot,function(state)
-	if not wasEventCancelled() then
-		dgsSetData(source,"state",state)
-	end
-end)
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------

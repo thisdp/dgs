@@ -62,6 +62,17 @@ pBCat = {
 	},
 }
 
+--------------------------Variables
+-----Net
+local byteSent = false
+local byteRecevied = false
+local tick = getTickCount()
+local speedSend = {}
+local speedRecv = {}
+local percentLoss = {}
+local MaxStatisticTimes = 60
+--------------------------
+
 function dgsBuildInCMD(command)
 	if not getElementData(resourceRoot,"allowCMD") then return outputChatBox("[DGS]Access Denied",255,0,0) end
 	guiSetInputMode("no_binds_when_editing")
@@ -131,6 +142,13 @@ addEventHandler("onDgsWindowClose",resourceRoot,function()
 		setTimer(function(source)
 			destroyElement(source)
 		end,380,1,source)
+	end
+	if source == netSystem["window"] then
+		byteSent = false
+		byteRecevied = false
+		speedSend = {}
+		speedRecv = {}
+		percentLoss = {}
 	end
 end)
 
@@ -228,13 +246,6 @@ dgsCmdAddCommandHandler("exit",function(cmd)
     end
 end)
 
-addEvent("onDGSCmdOutput",true)
-addEventHandler("onDGSCmdOutput",root,function(message)
-    if isElement(cmdSystem["cmd"]) then
-        outputCmdMessage(cmdSystem["cmd"],message)
-    end
-end)
-
 -----------------------------Inside CMD_Event
 preinstallWhiteList = {}
 
@@ -267,80 +278,64 @@ addEventHandler("mode",resourceRoot,function(cmdtype)
 	end
 end)
 
---------------------------------------------------
-local byteSent = false
-local byteRecevied = false
-local tick = getTickCount()
-local speedSend = {}
-local speedRecv = {}
-local percentLoss = {}
-local MaxStatisticTimes = 60
+--------------------------------------------------Net
 function netUpdate()
-	if isElement(netSystem["Sent"]) then
-		local network = getNetworkStats()
-		if getTickCount()-tick >= 1000 then
-			if not byteSent then
-				byteSent = network.bytesSent
-			end
-			if not byteRecevied then
-				byteRecevied = network.bytesReceived
-			end
-			local _sent,_received = network.bytesSent-byteSent,network.bytesReceived-byteRecevied
-			local sent,received = string.format("%.2f",_sent/1024),string.format("%.2f",_received/1024)
-			dgsSetText(netSystem["Sent"],"Send "..sent.." KB/s")
-			dgsSetText(netSystem["Received"],"Receive "..received.." KB/s")
+	local network = getNetworkStats()
+	if getTickCount()-tick >= 1000 then
+		if not byteSent then
 			byteSent = network.bytesSent
-			byteRecevied = network.bytesReceived
-			speedSend[0] = speedSend[0] or 100
-			speedRecv[0] = speedRecv[0] or 100
-			percentLoss[0] = 100
-			if speedSend[0] < _sent then
-				speedSend[0] = _sent
-			end
-			if speedRecv[0] < _received then
-				speedRecv[0] = _received
-			end
-			table.insert(speedSend,1,_sent)
-			table.insert(speedRecv,1,_received)
-			table.insert(percentLoss,1,network.packetlossLastSecond)
-			if #speedSend > MaxStatisticTimes+1 then
-				if speedSend[MaxStatisticTimes+2] == speedSend[0] then
-					speedSend[0] = speedSend[1]
-					for i=2,MaxStatisticTimes+1 do
-						speedSend[0] = speedSend[0] <= speedSend[i] and speedSend[i] or speedSend[0]
-					end
-				end
-				speedSend[MaxStatisticTimes+2] = nil
-			end
-			if #speedRecv > MaxStatisticTimes+1 then
-				if speedRecv[MaxStatisticTimes+2] == speedRecv[0] then
-					speedRecv[0] = speedRecv[1]
-					for i=2,MaxStatisticTimes+1 do
-						speedRecv[0] = speedRecv[0] <= speedRecv[i] and speedRecv[i] or speedRecv[0]
-					end
-				end
-				speedRecv[MaxStatisticTimes+2] = nil
-			end
-			if #percentLoss > MaxStatisticTimes+1 then
-				percentLoss[MaxStatisticTimes+2] = nil
-			end
-			tick = getTickCount()
 		end
-		dgsSetText(netSystem["BytesReceived"],"Bytes:"..(network.bytesReceived))
-		dgsSetText(netSystem["PacketsReceived"],"Packages:"..(network.packetsReceived))
-		dgsSetText(netSystem["ByteSent"],"Bytes:"..(network.bytesSent))
-		dgsSetText(netSystem["PacketsSent"],"Packages:"..(network.packetsSent))
-		dgsSetText(netSystem["packetlossLastSecond"],"Package Loss:"..string.format("%.2f",network.packetlossLastSecond).."%")
-		dgsSetText(netSystem["PacketLossTotal"],"Average Loss:"..string.format("%.2f",network.packetlossTotal).."%")
-		dgsSetText(netSystem["IP"],"My IP:"..dgs_MyIP)
-	else
-		byteSent = false
-		byteRecevied = false
-		speedSend = {}
-		speedRecv = {}
-		percentLoss = {}
-		removeEventHandler("onClientPreRender",root,netUpdate)
+		if not byteRecevied then
+			byteRecevied = network.bytesReceived
+		end
+		local _sent,_received = network.bytesSent-byteSent,network.bytesReceived-byteRecevied
+		local sent,received = string.format("%.2f",_sent/1024),string.format("%.2f",_received/1024)
+		dgsSetText(netSystem["Sent"],"Send "..sent.." KB/s")
+		dgsSetText(netSystem["Received"],"Receive "..received.." KB/s")
+		byteSent = network.bytesSent
+		byteRecevied = network.bytesReceived
+		speedSend[0] = speedSend[0] or 100
+		speedRecv[0] = speedRecv[0] or 100
+		percentLoss[0] = 100
+		if speedSend[0] < _sent then
+			speedSend[0] = _sent
+		end
+		if speedRecv[0] < _received then
+			speedRecv[0] = _received
+		end
+		table.insert(speedSend,1,_sent)
+		table.insert(speedRecv,1,_received)
+		table.insert(percentLoss,1,network.packetlossLastSecond)
+		if #speedSend > MaxStatisticTimes+1 then
+			if speedSend[MaxStatisticTimes+2] == speedSend[0] then
+				speedSend[0] = speedSend[1]
+				for i=2,MaxStatisticTimes+1 do
+					speedSend[0] = speedSend[0] <= speedSend[i] and speedSend[i] or speedSend[0]
+				end
+			end
+			speedSend[MaxStatisticTimes+2] = nil
+		end
+		if #speedRecv > MaxStatisticTimes+1 then
+			if speedRecv[MaxStatisticTimes+2] == speedRecv[0] then
+				speedRecv[0] = speedRecv[1]
+				for i=2,MaxStatisticTimes+1 do
+					speedRecv[0] = speedRecv[0] <= speedRecv[i] and speedRecv[i] or speedRecv[0]
+				end
+			end
+			speedRecv[MaxStatisticTimes+2] = nil
+		end
+		if #percentLoss > MaxStatisticTimes+1 then
+			percentLoss[MaxStatisticTimes+2] = nil
+		end
+		tick = getTickCount()
 	end
+	dgsSetText(netSystem["BytesReceived"],"Bytes:"..(network.bytesReceived))
+	dgsSetText(netSystem["PacketsReceived"],"Packages:"..(network.packetsReceived))
+	dgsSetText(netSystem["ByteSent"],"Bytes:"..(network.bytesSent))
+	dgsSetText(netSystem["PacketsSent"],"Packages:"..(network.packetsSent))
+	dgsSetText(netSystem["packetlossLastSecond"],"Package Loss:"..string.format("%.2f",network.packetlossLastSecond).."%")
+	dgsSetText(netSystem["PacketLossTotal"],"Average Loss:"..string.format("%.2f",network.packetlossTotal).."%")
+	dgsSetText(netSystem["IP"],"My IP:"..dgs_MyIP)
 end
 
 addEventHandler("onDgsDestroy",resourceRoot,function()
@@ -456,8 +451,9 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		dgsSetProperty(netSystem["picture_pkl"],"sideSize",1)
 		dgsSetProperty(netSystem["picture_pkl"],"sideState","out")
 		dgsSetProperty(netSystem["picture_pkl"],"sideColor",tocolor(100,150,240,255))
-
-		addEventHandler("onClientPreRender",root,netUpdate)
+		
+		dgsSetProperty(netSystem["Sent"],"renderEventCall",true)
+		addEventHandler("onDgsElementRender",netSystem["Sent"],netUpdate,false)
 		addEventHandler("onDGSObjectRender",netSystem["picture_sen"],function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)

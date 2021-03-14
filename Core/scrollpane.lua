@@ -104,10 +104,20 @@ function dgsCreateScrollPane(...)
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	dgsSetData(scrollbar1,"minLength",10)
 	dgsSetData(scrollbar2,"minLength",10)
-	addEventHandler("onDgsElementScroll",scrollbar1,checkSPScrollBar,false)
-	addEventHandler("onDgsElementScroll",scrollbar2,checkSPScrollBar,false)
+	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkScrollPaneScrollBar",false)
+	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScrollPaneScrollBar",false)
 	triggerEvent("onDgsCreate",scrollpane,sourceResource)
 	return scrollpane
+end
+
+function checkScrollPaneScrollBar(scb,new,old)
+	local parent = dgsElementData[source].attachedToParent
+	if dgsGetType(parent) == "dgs-dxscrollpane" then
+		local scrollbars = dgsElementData[parent].scrollbars
+		if source == scrollbars[1] or source == scrollbars[2] then
+			triggerEvent("onDgsElementScroll",parent,source,new,old)
+		end
+	end
 end
 
 addEventHandler("onDgsCreate",root,function()
@@ -369,15 +379,6 @@ function dgsScrollPaneGetScrollBarState(scrollpane)
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
 end
 
-function checkSPScrollBar(scb,new,old)
-	local parent = dgsElementData[source].attachedToParent
-	if dgsGetType(parent) == "dgs-dxscrollpane" then
-		local scrollbars = dgsElementData[parent].scrollbars
-		if source == scrollbars[1] or source == scrollbars[2] then
-			triggerEvent("onDgsElementScroll",parent,source,new,old)
-		end
-	end
-end
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------

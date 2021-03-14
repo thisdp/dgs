@@ -6,7 +6,6 @@ function createFullDemo()
 	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
 	window.position.relative = false
 	window.position.x = 400
-
 	--Color Picker
 	local cp = window:
 		dgsColorPicker("HSVRing",300,0,200,200)
@@ -125,19 +124,8 @@ function createFullDemo()
 			print(getTickCount(),isCoolDown)
 		end)
 		:setProperty("clickCoolDown",1000)
-	local interface = dgs3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
-	local edit = interface:dgsEdit(0.3,0.4,0.2,0.05,"123123",true)
-	interface:setProperties({alpha=0})
-
-	addEventHandler("onDgsCursorTypeChange",root,function(oldCursorType,newCursorType)
-		--print(getTickCount(),oldCursorType,newCursorType)
-	end)
-
-	--dgsSetCursorImage()
-	--dgsSetCustomCursorEnabled(true)
-
 end
---createFullDemo()
+
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
@@ -172,7 +160,7 @@ function EditTest() --Test Tab Switch for edit.
 	edit4 = dgsCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
 	dgsEditSetReadOnly(edit4,true)
 	dgsBringToFront(edit,"left")
-	dgsEditSetCaretPosition (edit, 1)
+	dgsEditSetCaretPosition(edit, 1)
 	dgsSetProperty(edit2,"placeHolder","Type something if you want to tell me")
 	dgsSetProperty(edit2,"placeHolderIgnoreRenderTarget",true)
 	dgsEditAddAutoComplete(edit3,"mypass",false)
@@ -476,7 +464,7 @@ function ScrollPane3DEffectTest()
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
 end
-
+ScrollPane3DEffectTest()
 ---------------QRCode
 function QRCodeTest()
 	local QRCode = dgsRequestQRCode("https://wiki.multitheftauto.com/wiki/Resource:Dgs")
@@ -488,11 +476,11 @@ function QRCodeTest()
 end
 ---------------Blur Box
 function BlurBoxTest()
-	local blurbox = dgsCreateBlurBox(400,400)
-	img = dgsCreateImage(200,200,400,200,blurbox,false)
+	local blurbox = dgsCreateBlurBox(sW/2,sH,QRCode)
+	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
 	dgsBlurBoxSetIntensity(blurbox,1)
 	dgsBlurBoxSetLevel(blurbox,15)
-	local text = dgsCreate3DImage(0,0,4,blurbox,tocolor(0,128,255,128),128,128)
+	--local text = dgsCreate3DImage(0,0,4,blurbox,tocolor(0,128,255,128),128,128)
 end
 ---------------Color Picker
 function testColorPicker()
@@ -603,11 +591,22 @@ end
 
 
 function windowStress()
-	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
-	DGSOOPFnc()
 	local tick = getTickCount()
 	for i=1,1000 do
-		local win = dgsWindow(0, 0, 800, 600, 'Dx Gui Demo')
+		local win = dgsCreateWindow(0, 0, 800, 600, 'Dx Gui Demo')
+		destroyElement(win)
 	end
 	print(getTickCount()-tick)
 end
+
+--[[
+local sp = dgsCreateScrollPane(300,300,500,500,false)
+
+local tick = getTickCount()
+local img = {}
+for i=1,40 do
+	for j=1,40 do
+		img[#img+1] = dgsCreateImage((i-1)*22,(j-1)*22,20,20,_,false,sp)
+	end
+end
+print(getTickCount()-tick)]]

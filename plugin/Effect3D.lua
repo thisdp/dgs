@@ -1,15 +1,13 @@
 local effect3DShader
 
 function dgsCreateEffect3D(rotFactor)
-	local shader = dxCreateShader(effect3DShader)
-	dgsSetData(shader,"asPlugin","dgs-dxeffect3d")
-	dgsSetData(shader,"rotFactor",rotFactor or 2)
-	dgsSetData(shader,"applyToScrollPane",nil)
-	addEventHandler("onClientElementDestroy",shader,function()
-		dgsEffect3DRemoveFromScrollPane(source)
-	end,false)
-	triggerEvent("onDgsPluginCreate",shader,sourceResource)
-	return shader
+	local effect3d = dxCreateShader(effect3DShader)
+	dgsSetData(effect3d,"asPlugin","dgs-dxeffect3d")
+	dgsSetData(effect3d,"rotFactor",rotFactor or 2)
+	dgsSetData(effect3d,"alwaysEnable",false)
+	dgsSetData(effect3d,"applyToScrollPane",nil)
+	triggerEvent("onDgsPluginCreate",effect3d,sourceResource)
+	return effect3d
 end
 
 function dgsEffect3DApplyToScrollPane(effect3d,scrollpane)
@@ -17,46 +15,37 @@ function dgsEffect3DApplyToScrollPane(effect3d,scrollpane)
 	if not(dgsGetType(scrollpane) == "dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsEffect3DApplyToScrollPane",2,"dgs-dxscrollpane")) end
 	dgsEffect3DRemoveFromScrollPane(effect3d)
 	dgsSetData(effect3d,"applyToScrollPane",scrollpane)
-	dgsSetData(scrollpane,"filter",{effect3d,0,0,0})
+	dgsSetData(scrollpane,"filter",{effect3d,0,0,0,0,0})
 	dgsSetData(scrollpane,"enableFullEnterLeaveCheck",true)
-	local function mouseMoveCheck()
-		if not isElement(source) then
-			removeEventHandler("onClientRender",root,mouseMoveCheck)
-			return
-		end
+	dgsSetData(scrollpane,"renderEventCall",true)
+	addEventHandler("onDgsElementRender",scrollpane,dgsEffect3DMouseMoveCheck,true)
+end
+
+function dgsEffect3DMouseMoveCheck()
+	local filter = dgsElementData[source].filter
+	if not isElement(filter[1]) then 
+		removeEventHandler("onDgsElementRender",source,dgsEffect3DMouseMoveCheck)
+		dgsEffect3DRemoveFromScrollPane(source)
+	end
+	local alwaysEnable = dgsElementData[ filter[1] ].alwaysEnable
+	if dgsIsMouseWithinGUI(source) or alwaysEnable then
 		local x,y = dgsGetCursorPosition()
 		local spx,spy = dgsGetPosition(source,false,true)
 		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-        local filter = dgsElementData[source].filter
 		local rotFactor = dgsElementData[filter[1]].rotFactor
 		local dx,dy = (spx+w/2)-x,(spy+h/2)-y
 		local dx,dy = -dx/w*rotFactor,dy/h*rotFactor
-		dgsSetData(source,"filter",{effect3d,dx,dy,0,0,0})
+		filter[2] = dx
+		filter[3] = dy
 	end
-	local newEnv = {source=scrollpane,mouseMoveCheck=mouseMoveCheck}
-	setmetatable(newEnv,{__index=_G})
-	setfenv(mouseMoveCheck,newEnv)
-
-	function mouseEnterLeave()
-		if eventName == "onDgsElementEnter" then
-			addEventHandler("onClientRender",root,mouseMoveCheck)
-		else
-			removeEventHandler("onClientRender",root,mouseMoveCheck)
-		end
-	end
-	addEventHandler("onDgsElementEnter",scrollpane,mouseEnterLeave,false)
-	addEventHandler("onDgsElementLeave",scrollpane,mouseEnterLeave,false)
-	dgsSetData(effect3d,"mouseMoveCheck",mouseMoveCheck)
-	dgsSetData(effect3d,"mouseEnterLeaveCheck",mouseEnterLeave)
 end
-
+	
 function dgsEffect3DRemoveFromScrollPane(effect3d)
 	if dgsGetPluginType(effect3d) == "dgs-dxeffect3d" then
 		local sp = dgsElementData[effect3d].applyToScrollPane
 		if dgsGetType(sp) == "dgs-dxscrollpane" then
-			removeEventHandler("onDgsElementEnter",sp,dgsElementData[effect3d].mouseEnterLeaveCheck)
-			removeEventHandler("onDgsElementLeave",sp,dgsElementData[effect3d].mouseEnterLeaveCheck)
-			removeEventHandler("onClientRender",root,dgsElementData[effect3d].mouseMoveCheck)
+			dgsSetData(sp,"renderEventCall",false)
+			removeEventHandler("onDgsElementRender",sp,dgsEffect3DMouseMoveCheck)
 			dgsSetData(sp,"filter",nil)
 		end
 		dgsSetData(sp,"enableFullEnterLeaveCheck",false)
@@ -66,10 +55,9 @@ function dgsEffect3DRemoveFromScrollPane(effect3d)
 		local filter = dgsElementData[sp].filter
 		if filter then
 			local effect3d = filter[1]
+			dgsSetData(sp,"renderEventCall",false)
+			removeEventHandler("onDgsElementRender",sp,dgsEffect3DMouseMoveCheck)
 			if isElement(effect3d) then
-				removeEventHandler("onDgsElementEnter",sp,dgsElementData[effect3d].mouseEnterLeaveCheck)
-				removeEventHandler("onDgsElementLeave",sp,dgsElementData[effect3d].mouseEnterLeaveCheck)
-				removeEventHandler("onClientRender",root,dgsElementData[effect3d].mouseMoveCheck)
 				dgsSetData(effect3d,"applyToScrollPane",nil)
 			end
 		end
@@ -82,7 +70,6 @@ end
 ----------------Shader
 effect3DShader = [[
 texture sourceTexture;
-
 technique effect3D {
 	pass p0 {
 		Texture[0] = sourceTexture;

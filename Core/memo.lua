@@ -161,8 +161,8 @@ function dgsCreateMemo(...)
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	dgsSetData(scrollbar1,"minLength",10)
 	dgsSetData(scrollbar2,"minLength",10)
-	addEventHandler("onDgsElementScroll",scrollbar1,checkMMScrollBar,false)
-	addEventHandler("onDgsElementScroll",scrollbar2,checkMMScrollBar,false)
+	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkMemoScrollBar",false)
+	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkMemoScrollBar",false)
 	local padding = dgsElementData[memo].padding
 	local sizex,sizey = abx-padding[1]*2,abx-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
@@ -175,43 +175,44 @@ function dgsCreateMemo(...)
 	dgsElementData[memo].renderTarget = renderTarget
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
-
-	addEventHandler("onDgsMouseMultiClick",memo,function(button,state,x,y,times)
-		if state == "down" then
-			local pos,line,side = searchMemoMousePosition(source,x,y)
-			eleData = dgsElementData[source]
-			if button == "left" then
-				if not eleData.multiClickCounter[1] then
-					eleData.multiClickCounter = {pos,line,times-1}
-				elseif eleData.multiClickCounter[1] ~= pos or eleData.multiClickCounter[2] ~= line then
-					eleData.multiClickCounter = {pos,line,times-1}
-				end
-			end
-			local t = times-eleData.multiClickCounter[3]
-			if t == 1 then
-				if button ~= "middle" then
-					local shift = getKeyState("lshift") or getKeyState("rshift")
-					dgsMemoSetCaretPosition(source,pos,line,shift)
-				end
-			elseif t == 2 then
-				if button == "left" then
-					local textTable = dgsElementData[memo].text
-					local text = textTable[line][0]
-					local s,e = dgsSearchFullWordType(text,pos,side)
-					dgsMemoSetCaretPosition(source,s,line)
-					dgsMemoSetCaretPosition(source,e,line,true)
-				end
-			elseif t == 3 then
-				if button == "left" then
-					dgsMemoSetCaretPosition(source,_,line)
-					dgsMemoMoveCaret(source,1,0)
-					dgsMemoSetCaretPosition(source,0,line,true)
-				end
-			end
-		end
-	end,false)
+	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
 	triggerEvent("onDgsCreate",memo,sourceResource)
 	return memo
+end
+
+function dgsMemoMultiClickCheck(button,state,x,y,times)
+	if state == "down" then
+		local pos,line,side = searchMemoMousePosition(source,x,y)
+		eleData = dgsElementData[source]
+		if button == "left" then
+			if not eleData.multiClickCounter[1] then
+				eleData.multiClickCounter = {pos,line,times-1}
+			elseif eleData.multiClickCounter[1] ~= pos or eleData.multiClickCounter[2] ~= line then
+				eleData.multiClickCounter = {pos,line,times-1}
+			end
+		end
+		local t = times-eleData.multiClickCounter[3]
+		if t == 1 then
+			if button ~= "middle" then
+				local shift = getKeyState("lshift") or getKeyState("rshift")
+				dgsMemoSetCaretPosition(source,pos,line,shift)
+			end
+		elseif t == 2 then
+			if button == "left" then
+				local textTable = dgsElementData[source].text
+				local text = textTable[line][0]
+				local s,e = dgsSearchFullWordType(text,pos,side)
+				dgsMemoSetCaretPosition(source,s,line)
+				dgsMemoSetCaretPosition(source,e,line,true)
+			end
+		elseif t == 3 then
+			if button == "left" then
+				dgsMemoSetCaretPosition(source,_,line)
+				dgsMemoMoveCaret(source,1,0)
+				dgsMemoSetCaretPosition(source,0,line,true)
+			end
+		end
+	end
 end
 
 function dgsMemoGetLineCount(memo,strongLineOnly)
@@ -1163,7 +1164,7 @@ function configMemo(memo)
 	dgsSetData(memo,"configNextFrame",false)
 end
 
-function checkMMScrollBar(source,new,old)
+function checkMemoScrollBar(source,new,old)
 	local memo = dgsGetParent(source)
 	if dgsGetType(memo) == "dgs-dxmemo" then
 		local eleData = dgsElementData[memo]
@@ -1303,7 +1304,7 @@ function dgsMemoSetVerticalScrollPosition(memo,vertical)
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end
 
-addEventHandler("onClientGUIChanged",resourceRoot,function()
+addEventHandler("onClientGUIChanged",GlobalMemo,function()
 	if not dgsElementData[source] then return end
 	if getElementType(source) == "gui-memo" then
 		local dxMemo = dgsElementData[source].linkedDxMemo
@@ -1323,7 +1324,7 @@ addEventHandler("onClientGUIChanged",resourceRoot,function()
 			end
 		end
 	end
-end)
+end,false)
 
 function dgsMemoRebuildWordWrapMapTable(memo)
 	dgsSetData(memo,"rebuildMapTableNextFrame",false)

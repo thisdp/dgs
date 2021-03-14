@@ -11,12 +11,12 @@ _dxCreateTexture = dxCreateTexture
 _dxCreateShader = dxCreateShader
 _createElement = createElement
 _dxCreateRenderTarget = dxCreateRenderTarget
-local __createElement = _createElement
-local __dxCreateShader = _dxCreateShader
-local __dxCreateTexture = _dxCreateTexture
-local __dxCreateRenderTarget = _dxCreateRenderTarget
-local __dxDrawImageSection = dxDrawImageSection
-local __dxDrawImage = dxDrawImage
+__createElement = _createElement
+__dxCreateShader = _dxCreateShader
+__dxCreateTexture = _dxCreateTexture
+__dxCreateRenderTarget = _dxCreateRenderTarget
+__dxDrawImageSection = dxDrawImageSection
+__dxDrawImage = dxDrawImage
 ClientInfo = {
 	SupportedPixelShader={}
 }
@@ -138,13 +138,47 @@ end
 
 function isMaterial(ele)
 	local eleType = dgsGetType(ele)
-	return eleType=="shader" or eleType=="texture" or eleType=="render-target-texture"
+	return eleType == "shader" or eleType == "texture" or eleType == "render-target-texture"
+end
+
+dgsElementLogger = {}	--1:texture; 2:shader
+dgsElementKeeper = {}
+function dxCreateTexture(pathOrData,sRes)
+	local texture
+	if sRes ~= false then	--Read the data instead of create from path, and create remotely
+		sourceResource = sRes or sourceResource
+		if dgsElementKeeper[sourceResource] then
+			local textureData
+			if fileExists(pathOrData) then
+				local f = fileOpen(pathOrData,true)
+				textureData = fileRead(f,fileGetSize(f))
+				fileClose(f)
+			else
+				textureData = pathOrData
+			end
+			local sourceResRoot = getResourceRootElement(sourceResource)
+			local _sourceResource = sourceResource
+			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",textureData)
+			sourceResource = _sourceResource
+			texture = dgsPopElement("texture",sourceResource)
+		end
+	end
+	if not texture then
+		texture = __dxCreateTexture(pathOrData)
+		dgsElementLogger[texture] = {1,pathOrData,texture}	--Log internally created texture
+		addEventHandler("onClientElementDestroy",texture,function()
+			dgsElementLogger[texture] = nil	--Clear logging
+		end,false)
+		return texture
+	else
+		return texture
+	end
 end
 
 function dxCreateShader(pathOrData,sRes)
 	local shader
-	sourceResource = sRes or sourceResource
-	if sourceResource then
+	if sRes ~= false then	--Read the data instead of create from path, and create remotely
+		sourceResource = sRes or sourceResource
 		if dgsElementKeeper[sourceResource] then
 			local shaderData
 			if fileExists(pathOrData) then
@@ -161,13 +195,22 @@ function dxCreateShader(pathOrData,sRes)
 			shader = dgsPopElement("shader",sourceResource)
 		end
 	end
-	return shader or __dxCreateShader(pathOrData)
+	if not shader then
+		shader = __dxCreateShader(pathOrData)
+		dgsElementLogger[shader] = {2,pathOrData,shader}	--Log internally created shader
+		addEventHandler("onClientElementDestroy",shader,function()
+			dgsElementLogger[shader] = nil	--Clear logging
+		end,false)
+		return shader
+	else
+		return shader
+	end
 end
 
 function dxCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
 	local rt
-	sourceResource = sRes or sourceResource
-	if sourceResource then
+	if sRes ~= false then	--Create remotely
+		sourceResource = sRes or sourceResource
 		if dgsElementKeeper[sourceResource] then
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
@@ -191,7 +234,7 @@ end
 function createElement(eleType,sRes)
 	local ele
 	sourceResource = sRes or sourceResource
-	if sourceResource then
+	if sourceResource then	--Create remotely
 		if dgsElementKeeper[sourceResource] then
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
@@ -205,6 +248,22 @@ end
 
 function removeElementData(element,key)
 	setElementData(element,key,nil)
+end
+
+function dgsAddEventHandler(eventName,element,fncName,...)
+	if addEventHandler(eventName,element,_G[fncName],...) then
+		dgsElementData[element].eventHandlers = dgsElementData[element].eventHandlers or {}
+		local eventHandlers = dgsElementData[element].eventHandlers
+		eventHandlers[eventName] = eventHandlers[eventName] or {}
+		eventHandlers[eventName][fncName] = {fncName,...}	--Log event handler
+		return true
+	end
+	return false
+end
+
+function dgsRemoveEventHandler(eventName,element,fncName)
+	eventHandlers[element][eventName][fncName] = nil	--Remove event handler
+	return removeEventHandler(eventName,element,_G[fncName])
 end
 --------------------------------Table Utility
 function table.find(tab,ke,num)

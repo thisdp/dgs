@@ -165,6 +165,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 			resetTimer(MouseData.EditMemoTimer)
 			guiFocus(GlobalMemo)
 			dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
+			print(GlobalMemo)
 		elseif dgsEle ~= lastFront then
 			local dgsType = dgsGetType(lastFront)
 			if dgsType == "dgs-dxedit" then
@@ -815,19 +816,66 @@ function DGSI_SaveData()
 	setElementData(root,"DGSI_SaveData",true,false)
 end
 
+function DGSI_AllocateDxElement(e,oldDgsElementLogger)
+	if oldDgsElementLogger[e] then
+		if isElement(oldDgsElementLogger[e][3]) then
+			return oldDgsElementLogger[e][3]
+		else
+			local dxElement
+			if oldDgsElementLogger[e][1] == 1 then
+				dxElement = __dxCreateTexture(oldDgsElementLogger[e][2])
+			elseif oldDgsElementLogger[e][1] == 2 then 
+				dxElement = __dxCreateShader(oldDgsElementLogger[e][2])
+			end
+			if dxElement then
+				oldDgsElementLogger[e][3] = dxElement
+				dgsElementLogger[dxElement] = oldDgsElementLogger[e]
+				return dxElement
+			end
+		end
+	end
+	return nil
+end
+
 function DGSI_ReadData()
 	local SaveData = getElementData(root,"DGSI_SaveData")
 	if SaveData == true then
+		--Element Logger
+		local oldDgsElementLogger = getElementData(root,"DGSI_ElementLogger") or {}
 		--Properties
-		dgsElementData = getElementData(root,"DGSI_Properties") or {}
-		for dgsElement,data in pairs(dgsElementData) do
-			if not isElement(dgsElement) then dgsElementData[dgsElement] = nil end
+		local _dgsElementData = getElementData(root,"DGSI_Properties") or {}
+		for dgsElement,data in pairs(_dgsElementData) do
+			if not isElement(dgsElement) then _dgsElementData[dgsElement] = nil end
 			if data.functions_string then
 				local fnc = loadstring(data.functions_string[1])
 				data.functions = {fnc,data.functions_string[2]}
 			end
+			if data.eventHandlers then
+				local eventHandlers = data.eventHandlers
+				for eventName,fncs in pairs(eventHandlers) do
+					for fncName,datas in pairs(fncs) do
+						if not addEventHandler(eventName,dgsElement,_G[fncName],datas[2],datas[3]) then
+							fncs[fncName] = nil
+						end
+					end
+				end
+			end
+			for key,value in pairs(data) do
+				local dataType = type(value)
+				if dataType == "table" then
+					for i,e in pairs(value) do
+						local eType = type(e)
+						if eType == "userdata" and not isElement(e) then
+							value[i] = DGSI_AllocateDxElement(e,oldDgsElementLogger)
+						end
+					end
+				elseif dataType == "userdata" and not isElement(value) then
+					data[key] = DGSI_AllocateDxElement(value,oldDgsElementLogger)
+				end
+			end
 		end
 		removeElementData(root,"DGSI_Properties")
+		dgsElementData = table.merger(dgsElementData,_dgsElementData)
 		--Types
 		dgsElementType = getElementData(root,"DGSI_ElementType") or {}
 		for dgsElement,data in pairs(dgsElementType) do
@@ -878,17 +926,23 @@ function DGSI_ReadData()
 		CenterFatherTable = layerData.center
 		TopFatherTable = layerData.top
 		for index,dgsElement in pairs(BottomFatherTable) do
-			if not isElement(dgsElement) then BottomFatherTable[dgsElement] = nil end
+			if not isElement(dgsElement) then BottomFatherTable[index] = nil end
 		end
 		for index,dgsElement in pairs(CenterFatherTable) do
-			if not isElement(dgsElement) then CenterFatherTable[dgsElement] = nil end
+			if not isElement(dgsElement) then CenterFatherTable[index] = nil end
 		end
 		for index,dgsElement in pairs(TopFatherTable) do
-			if not isElement(dgsElement) then TopFatherTable[dgsElement] = nil end
+			if not isElement(dgsElement) then TopFatherTable[index] = nil end
 		end
 		LayerCastTable = {bottom=BottomFatherTable,center=CenterFatherTable,top=TopFatherTable}
 		dgsWorld3DTable = layerData.world3d
+		for index,dgsElement in pairs(dgsWorld3DTable) do
+			if not isElement(dgsElement) then dgsWorld3DTable[index] = nil end
+		end
 		dgsScreen3DTable = layerData.screen3d
+		for index,dgsElement in pairs(dgsScreen3DTable) do
+			if not isElement(dgsElement) then dgsScreen3DTable[index] = nil end
+		end
 		removeElementData(root,"DGSI_LayerData")
 		
 		local pcData = getElementData(root,"DGSI_ParentChildData") or {}
@@ -916,6 +970,8 @@ function DGSI_ReadData()
 end
 
 addEventHandler("onClientResourceStop",resourceRoot,function()
+	--Element Logger
+	setElementData(root,"DGSI_ElementLogger",dgsElementLogger,false)
 	destroyElement(GlobalEdit)
 	destroyElement(GlobalMemo)
 	local terminator = createElement("dgs-dxterminator")
@@ -923,7 +979,10 @@ addEventHandler("onClientResourceStop",resourceRoot,function()
 		DGSI_SaveData()
 	end,false)
 end,false)
-DGSI_ReadData()
+
+addEventHandler("onClientResourceStart",resourceRoot,function()
+	DGSI_ReadData()
+end,false)
 
 addEventHandler("onClientResourceStop",root,function(res)
 	if boundResource[res] then

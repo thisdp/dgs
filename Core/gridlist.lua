@@ -188,12 +188,57 @@ function dgsCreateGridList(...)
 	dgsSetData(scrollbar2,"multiplier",{1,false})
 	dgsSetData(scrollbar1,"minLength",10)
 	dgsSetData(scrollbar2,"minLength",10)
-	addEventHandler("onDgsElementScroll",scrollbar1,checkGLScrollBar,false)
-	addEventHandler("onDgsElementScroll",scrollbar2,checkGLScrollBar,false)
+	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkGridListScrollBar",false)
+	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkGridListScrollBar",false)
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(gridlist,"FromTo",{1,0})
+	dgsAddEventHandler("onDgsGridListSelect",gridlist,"dgsGridListCheckSelect",false)
 	triggerEvent("onDgsCreate",gridlist,sourceResource)
 	return gridlist
+end
+
+function checkGridListScrollBar(scb,new,old)
+	local gridlist = dgsGetParent(source)
+	if dgsGetType(gridlist) == "dgs-dxgridlist" then
+		local eleData = dgsElementData[gridlist]
+		local scrollbars = eleData.scrollbars
+		local sx,sy = eleData.absSize[1],eleData.absSize[2]
+		local scbThick = eleData.scrollBarThick
+		if source == scrollbars[1] then
+			local scbThickH = dgsElementData[scrollbars[2]].visible and scbThick or 0
+			local rowLength = #eleData.rowData*(eleData.rowHeight+eleData.leading)
+			local temp = -new*(rowLength-sy+scbThickH+eleData.columnHeight)/100
+			if temp <= 0 then
+				local temp = eleData.scrollFloor[1] and temp-temp%1 or temp
+				dgsSetData(gridlist,"rowMoveOffset",temp)
+			end
+			triggerEvent("onDgsElementScroll",gridlist,source,new,old)
+		elseif source == scrollbars[2] then
+			local scbThickV = dgsElementData[scrollbars[1]].visible and scbThick or 0
+			local columnWidth = dgsGridListGetColumnAllWidth(gridlist,#eleData.columnData)
+			local columnOffset = eleData.columnOffset
+			local temp = -new*(columnWidth-sx+scbThickV+columnOffset)/100
+			if temp <= 0 then
+				local temp = eleData.scrollFloor[2] and temp-temp%1 or temp
+				dgsSetData(gridlist,"columnMoveOffset",temp)
+			end
+			triggerEvent("onDgsElementScroll",gridlist,source,new,old)
+		end
+	end
+end
+
+
+function dgsGridListCheckSelect(rowOrTable,c,oldRowOrTable,oldColumn)
+	local lastSelected = dgsElementData[source].lastSelectedItem
+	if type(rowOrTable) == "table" then
+		local r,c = next(rowOrTable)
+		if r then
+			local c = next(c)
+			dgsSetData(source,"lastSelectedItem",{r,c})
+		end
+	else
+		dgsSetData(source,"lastSelectedItem",{rowOrTable == -1 and lastSelected[1] or rowOrTable,c == -1 and lastSelected[2] or c})
+	end
 end
 
 function dgsGridListSetSelectionMode(gridlist,mode)
@@ -2058,36 +2103,6 @@ function dgsGridListGetItemBackGroundImage(gridlist,r,c)
 	return false,false,false
 end
 
-function checkGLScrollBar(scb,new,old)
-	local gridlist = dgsGetParent(source)
-	if dgsGetType(gridlist) == "dgs-dxgridlist" then
-		local eleData = dgsElementData[gridlist]
-		local scrollbars = eleData.scrollbars
-		local sx,sy = eleData.absSize[1],eleData.absSize[2]
-		local scbThick = eleData.scrollBarThick
-		if source == scrollbars[1] then
-			local scbThickH = dgsElementData[scrollbars[2]].visible and scbThick or 0
-			local rowLength = #eleData.rowData*(eleData.rowHeight+eleData.leading)
-			local temp = -new*(rowLength-sy+scbThickH+eleData.columnHeight)/100
-			if temp <= 0 then
-				local temp = eleData.scrollFloor[1] and temp-temp%1 or temp
-				dgsSetData(gridlist,"rowMoveOffset",temp)
-			end
-			triggerEvent("onDgsElementScroll",gridlist,source,new,old)
-		elseif source == scrollbars[2] then
-			local scbThickV = dgsElementData[scrollbars[1]].visible and scbThick or 0
-			local columnWidth = dgsGridListGetColumnAllWidth(gridlist,#eleData.columnData)
-			local columnOffset = eleData.columnOffset
-			local temp = -new*(columnWidth-sx+scbThickV+columnOffset)/100
-			if temp <= 0 then
-				local temp = eleData.scrollFloor[2] and temp-temp%1 or temp
-				dgsSetData(gridlist,"columnMoveOffset",temp)
-			end
-			triggerEvent("onDgsElementScroll",gridlist,source,new,old)
-		end
-	end
-end
-
 function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local eleData = dgsElementData[gridlist]
 	local rowMoveOffset = rowMoveOffset or eleData.rowMoveOffsetTemp
@@ -2202,19 +2217,6 @@ function configGridList(gridlist)
 	dgsGridListUpdateRowMoveOffset(gridlist)
 	eleData.configNextFrame = false
 end
-
-addEventHandler("onDgsGridListSelect",resourceRoot,function(rowOrTable,c,oldRowOrTable,oldColumn)
-	local lastSelected = dgsElementData[source].lastSelectedItem
-	if type(rowOrTable) == "table" then
-		local r,c = next(rowOrTable)
-		if r then
-			local c = next(c)
-			dgsSetData(source,"lastSelectedItem",{r,c})
-		end
-	else
-		dgsSetData(source,"lastSelectedItem",{rowOrTable == -1 and lastSelected[1] or rowOrTable,c == -1 and lastSelected[2] or c})
-	end
-end)
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
