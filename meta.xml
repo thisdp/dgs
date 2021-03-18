@@ -116,7 +116,7 @@
 
 	<!--&Add Your Styles Here-->
 	<script src="lastExecution.lua" type="client" />
-	
+
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
 	<export function="dgsRemoveEasingFunction" type="client" />
@@ -757,6 +757,20 @@
 	<export function="dgsBlurPasteHandler" type="client" />
 	<export function="dgsDisablePasteHandler" type="client" />
 	<export function="dgsIsPasteHandlerEnabled" type="client" />
+
+	<export function="dgsCreateCircle" type="client" />
+	<export function="dgsCircleSetRadius" type="client" />
+	<export function="dgsCircleGetRadius" type="client" />
+	<export function="dgsCircleSetTexture" type="client" />
+	<export function="dgsCircleGetTexture" type="client" />
+	<export function="dgsCircleSetColor" type="client" />
+	<export function="dgsCircleGetColor" type="client" />
+	<export function="dgsCircleSetColorOverwritten" type="client" />
+	<export function="dgsCircleGetColorOverwritten" type="client" />
+	<export function="dgsCircleSetDirection" type="client" />
+	<export function="dgsCircleGetDirection" type="client" />
+	<export function="dgsCircleSetAngle" type="client" />
+	<export function="dgsCircleGetAngle" type="client" />
 
 	<export function="dgsCreateCanvas" type="client" />
 
