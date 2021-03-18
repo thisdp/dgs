@@ -1,3 +1,7 @@
+------------------
+---DGS Basic Shape
+------------------
+----------------------------------------------------------Rounded Rectangle
 function requestRoundRectangleShader(withoutFilled)
 	local woF = not withoutFilled and ""
 	return
@@ -150,9 +154,7 @@ function Old_dgsCreateRoundRect(radius,color,texture,relative)
 	local shader = dxCreateShader(requestRoundRectangleShader())
 	local color = color or tocolor(255,255,255,255)
 	dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
-	dgsSetData(shader,"radius",radius)
-	dgsSetData(shader,"color",color)
-	dgsSetData(shader,"colorOverwritten",true)
+	dgsRoundRectSetColorOverwritten(shader,true)
 	dgsRoundRectSetRadius(shader,radius,relative)
 	dgsRoundRectSetTexture(shader,texture)
 	dgsRoundRectSetColor(shader,color)
@@ -296,4 +298,203 @@ end
 function dgsRoundRectGetBorderOnly(rectShader)
 	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetBorderOnly",1,"plugin dgs-dxroundrectangle")) end
 	return dgsElementData[rectShader].borderOnly
+end
+
+----------------------------------------------------------Circle
+local circleShader = [[
+#define PI 3.1415926
+#define PI2 PI*2
+float4 color = float4(1,1,1,1);
+float borderSoft = 0.01;
+float angle = 2*PI;
+float outsideRadius = 0.5;
+float insideRadius = 0.2;
+float angleOffset = 0.5*PI;
+texture sourceTexture;
+bool direction = true; //anticlockwise
+bool textureLoad = false;
+bool textureRotated = false;
+bool colorOverwritten = true;
+
+SamplerState tSampler{
+	Texture = sourceTexture;
+	MinFilter = Linear;
+	MagFilter = Linear;
+	MipFilter = Linear;
+};
+
+float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
+	float4 result = textureLoad?tex2D(tSampler,textureRotated?tex.yx:tex)*color:color;
+	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
+	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
+	float xDistance = tex.x-0.5,yDistance = 0.5-tex.y;
+	float angle_p = atan2(yDistance,xDistance);	//angle_p
+	if(angle_p>PI2) angle_p -= PI2;
+	if(angle_p<0) angle_p += PI2;
+	float2 P = float2(xDistance,yDistance);
+	float2 Q = float2(cos(angle),sin(angle));
+	float2 N = float2(-Q.y,Q.x)*nBorderSoft;
+	Q *= outsideRadius;
+	float2 Start = float2(outsideRadius,0);
+	float2 StartN = float2(-Start.y,Start.x);
+	float alpha = !direction;
+	if(angle_p<angle) alpha = direction;
+	if(direction){
+		float2 P1 = P-N;
+		float len0P = length(P1);
+		float len0Q = length(Q);
+		float lenPQ = distance(P1,Q);
+		float a = dot(Q,P1)/(len0Q*len0P);
+		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
+		float dis1 = 2*sqrt(halfC1*(halfC1-len0P)*(halfC1-len0Q)*(halfC1-lenPQ))/len0Q;
+		float _a = dot(N,P1)/(nBorderSoft*len0P);
+		P.y += nBorderSoft;
+		len0P = length(P);
+		float len0S = outsideRadius;
+		float lenPS = distance(P,Start);
+		float b = dot(Start,P)/(len0S*len0P);
+		float halfC2 = 0.5*(len0P+len0S+lenPS);
+		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
+		float _b = dot(StartN,P)/(length(StartN)*len0P);
+		bool hit1 = (a >= 0 && dis1 < nBorderSoft && _a<=0);
+		bool hit2 = (b >= 0 && dis2 < nBorderSoft && _b>=0);
+		if(hit1&&hit2)
+			alpha += max(clamp((dis1)/nBorderSoft,0,1),clamp((dis2)/nBorderSoft,0,1));
+		else if(hit1)
+			alpha += clamp((dis1)/nBorderSoft,0,1);
+		else if(hit2)
+			alpha += clamp((dis2)/nBorderSoft,0,1);
+	}else{
+		float2 P1 = P+N;
+		float len0P = length(P1);
+		float len0Q = length(Q);
+		float lenPQ = distance(P1,Q);
+		float a = dot(Q,P1)/(len0Q*len0P);
+		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
+		float dis1 = 2*sqrt(halfC1*(halfC1-len0P)*(halfC1-len0Q)*(halfC1-lenPQ))/len0Q;
+		float _a = dot(N,P1)/(nBorderSoft*len0P);
+		P.y -= nBorderSoft;
+		len0P = length(P);
+		float len0S = outsideRadius;
+		float lenPS = distance(P,Start);
+		float b = dot(Start,P)/(len0S*len0P);
+		float halfC2 = 0.5*(len0P+len0S+lenPS);
+		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
+		float _b = dot(StartN,P)/(length(StartN)*len0P);
+		bool hit1 = (a >= 0 && dis1 < nBorderSoft && _a>=0);
+		bool hit2 = (b >= 0 && dis2 < nBorderSoft && _b<=0);
+		if(hit1&&hit2){
+			alpha += max(clamp((dis1)/nBorderSoft,0,1),clamp((dis2)/nBorderSoft,0,1));
+		}else if(hit1)
+			alpha += clamp((dis1)/nBorderSoft,0,1);
+		else if(hit2)
+			alpha += clamp((dis2)/nBorderSoft,0,1);
+	}
+	alpha *= clamp((1-distance(tex,0.5)-outsideRadius+nBorderSoft)/nBorderSoft,0,1);
+	alpha *= clamp((distance(tex,0.5)-insideRadius+nBorderSoft)/nBorderSoft,0,1);
+	result.a *= clamp(alpha,0,1)*_color.a;
+	result.rgb = colorOverwritten?result.rgb:_color.rgb;
+	return result;
+}
+
+technique circleTechnique{
+	pass p0{
+		PixelShader = compile ps_2_a circleShader();
+	}
+}
+]]
+
+function dgsCreateCircle(outsideRadius,insideRadius,color,texture)
+	local circle = dxCreateShader(circleShader)
+	if not circle then return false end
+	local color = color or tocolor(255,255,255,255)
+	dgsSetData(circle,"asPlugin","dgs-dxcircle")
+	dgsCircleSetColorOverwritten(circle,true)
+	dgsCircleSetRadius(circle,outsideRadius or 0.5,insideRadius or 0.2)
+	dgsCircleSetTexture(circle,texture)
+	dgsCircleSetColor(circle,color)
+	triggerEvent("onDgsPluginCreate",circle,sourceResource)
+	return circle
+end
+
+function dgsCircleSetRadius(circle,outsideRadius,insideRadius)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetOutsideRadius",1,"plugin dgs-dxcircle")) end
+	local outside,inside = outsideRadius or dgsElementData[circle].outsideRadius,insideRadius or dgsElementData[circle].insideRadius
+	dxSetShaderValue(circle,"outsideRadius",outside)
+	dxSetShaderValue(circle,"insideRadius",inside)
+	return dgsSetData(circle,"outsideRadius",outside) and dgsSetData(circle,"insideRadius",inside) 
+end
+
+function dgsCircleGetRadius(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetRadius",1,"plugin dgs-dxcircle")) end
+	return dgsElementData[circle].outsideRadius,dgsElementData[circle].insideRadius
+end
+
+function dgsCircleSetTexture(circle,texture)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetTexture",1,"plugin dgs-dxcircle")) end
+	if isElement(texture) then
+		dxSetShaderValue(circle,"textureLoad",true)
+		dxSetShaderValue(circle,"sourceTexture",texture)
+		dgsSetData(circle,"sourceTexture",texture)
+	else
+		dxSetShaderValue(circle,"textureLoad",false)
+		dxSetShaderValue(circle,"sourceTexture",0)
+		dgsSetData(circle,"sourceTexture",nil)
+	end
+	return true
+end
+
+function dgsCircleGetTexture(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetTexture",1,"plugin dgs-dxcircle")) end
+	return dgsElementData[circle].sourceTexture
+end
+
+function dgsCircleSetColor(circle,color)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetColor",1,"plugin dgs-dxcircle")) end
+	if not(type(color) == "number") then error(dgsGenAsrt(color,"dgsCircleSetColor",2,"number")) end
+	dxSetShaderValue(circle,"color",{fromcolor(color,true,true)})
+	return dgsSetData(circle,"color",color)
+end
+
+function dgsCircleGetColor(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetColor",1,"plugin dgs-dxcircle")) end
+	return dgsElementData[circle].color
+end
+
+function dgsCircleSetColorOverwritten(circle,colorOverwritten)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetColorOverwritten",1,"plugin dgs-dxcircle")) end
+	if not(type(colorOverwritten) == "boolean") then error(dgsGenAsrt(colorOverwritten,"dgsCircleSetColorOverwritten",2,"boolean")) end
+	dxSetShaderValue(circle,"colorOverwritten",colorOverwritten)
+	return dgsSetData(circle,"colorOverwritten",colorOverwritten)
+end
+
+function dgsCircleGetColorOverwritten(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetColorOverwritten",1,"plugin dgs-dxcircle")) end
+	return dgsElementData[circle].colorOverwritten
+end
+
+function dgsCircleSetDirection(circle,direction) --true:anticlockwise; false:clockwise
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetDirection",1,"plugin dgs-dxcircle")) end
+	if not(type(direction) == "boolean") then error(dgsGenAsrt(direction,"dgsCircleSetDirection",2,"boolean")) end
+	dxSetShaderValue(circle,"direction",direction and 1 or 0)
+	return dgsSetData(circle,"direction",direction and 1 or 0)
+end
+
+function dgsCircleGetDirection(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetDirection",1,"plugin dgs-dxcircle")) end
+	return dgsElementData[circle].direction
+end
+
+function dgsCircleSetAngle(circle,angle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetAngle",1,"plugin dgs-dxcircle")) end
+	if not(type(angle) == "number") then error(dgsGenAsrt(angle,"dgsCircleSetAngle",2,"number")) end
+	dxSetShaderValue(circle,"angle",angle/180*math.pi)
+	return dgsSetData(circle,"angle",angle/180*math.pi)
+end
+
+function dgsCircleGetAngle(circle,angle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetAngle",1,"plugin dgs-dxcircle")) end
+	if not(type(angle) == "number") then error(dgsGenAsrt(angle,"dgsCircleSetAngle",2,"number")) end
+	dxSetShaderValue(circle,"angle",angle/180*math.pi)
+	return dgsSetData(circle,"angle",angle/180*math.pi)
 end

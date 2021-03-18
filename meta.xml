@@ -59,7 +59,7 @@
 
 	<script src="plugin/Effect3D.lua" type="client" />
 
-	<script src="plugin/roundRect.lua" type="client" />
+	<script src="plugin/basicShape.lua" type="client" />
 
 	<script src="plugin/QRCode.lua" type="client" />
 
@@ -70,8 +70,6 @@
 	<script src="plugin/nineSlice.lua" type="client" />
 
 	<script src="plugin/BlurBox.lua" type="client" />
-
-	<script src="plugin/circle.lua" type="client" />
 
 	<script src="plugin/pasteHandler/pasteHandler.lua" type="client"/>
 	<file src="plugin/pasteHandler/pasteHandler.html" />

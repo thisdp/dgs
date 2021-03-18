@@ -1,4 +1,6 @@
+
 local loadstring = loadstring
+addEventHandler("onClientResourceStart",resourceRoot,function()
 ------------Full demo
 function createFullDemo()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
@@ -125,7 +127,7 @@ function createFullDemo()
 		end)
 		:setProperty("clickCoolDown",1000)
 end
-
+--createFullDemo()
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
@@ -428,6 +430,7 @@ function LanguageChangeInTabPanelTest()
 	end,1000,1)
 end
 
+---------------Plugin Test
 function dgsRoundRectTest()
 	local rndRect = dgsCreateRoundRect(0.5,true,tocolor(0,0,0,150),_,false,true)
 	local button = dgsCreateButton(200,200,800,400,"text",false)
@@ -444,12 +447,19 @@ function dgsRoundRectWithWindowText()
 	dgsSetProperty(window,"image",bgRoundRect)
 end
 
+function dgsCircleTest()
+	local c = dgsCreateCircle()
+	local img = dgsCreateImage(300,300,400,400,c,false)
+	dgsCircleSetAngle(c,120)
+	dgsCircleSetDirection(c,false)
+end
+
 function test9SliceScale()
 	local img = dxCreateTexture("palette.png")
 	local nSli = dgsCreateNineSlice(img,0.2,0.8,0.4,0.6,true)
 	local image = dgsCreateImage(400,400,400,400,nSli,false)
 end
----------------Plugin Test
+
 function ScrollPane3DEffectTest()
 	material = dgsCreate3DInterface(0,0,4,4,4,500,500,tocolor(255,255,255,255),1,0,0,_,0)
 	dgsSetProperty(material,"maxDistance",1000)
@@ -470,11 +480,14 @@ end
 function QRCodeTest()
 	local QRCode = dgsRequestQRCode("https://wiki.multitheftauto.com/wiki/Resource:Dgs")
 	local image = dgsCreateImage(200,200,128,128,QRCode,false)
+	local mask = dgsCreateMask(QRCode,"backgroundFilter")
+	local image2 = dgsCreateImage(400,200,128,128,mask,false)
 	outputChatBox(dgsGetQRCodeLoaded(QRCode) and "Loaded" or "Loading")
 	addEventHandler("onDgsQRCodeLoad",QRCode,function()
 		outputChatBox(dgsGetQRCodeLoaded(source) and "Loaded" or "Loading")
 	end,false)
 end
+
 ---------------Blur Box
 function BlurBoxTest()
 	local blurbox = dgsCreateBlurBox(sW/2,sH,QRCode)
@@ -611,3 +624,5 @@ for i=1,40 do
 	end
 end
 print(getTickCount()-tick)]]
+
+end)
