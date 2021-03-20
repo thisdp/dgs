@@ -507,7 +507,7 @@ function getPositionFromElementOffset(element,offX,offY,offZ)
 end
 
 function getRotationMatrix(rx,ry,rz)	--Super fast
-    local rx,ry,rz = -rx*pi180,-ry*pi180,rz*pi180
+    local rx,ry,rz = rx*pi180,ry*pi180,rz*pi180
 	local rxCos,ryCos,rzCos,rxSin,rySin,rzSin = cos(rx),cos(ry),cos(rz),sin(rx),sin(ry),sin(rz)
 	--m11,m12,m13,m21,m22,m23,m31,m32,m33 For extreme performance, using upvalue instead of table
 	return rzCos*ryCos-rzSin*rxSin*rySin,ryCos*rzSin+rzCos*rxSin*rySin,-rxCos*rySin,-rxCos*rzSin,rzCos*rxCos,rxSin,rzCos*rySin+ryCos*rzSin*rxSin,rzSin*rySin-rzCos*ryCos*rxSin,rxCos*ryCos
