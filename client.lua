@@ -1260,7 +1260,8 @@ function dgsCheckHit(hits,mx,my,cursorShowing)
 				local scale = cData[5]
 				local materialSize = cData[6]
 				local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
-				local cursowX,cursorY = mx+offset[1]*cursorW,my+offset[2]*cursorH
+				local cursorScrX,cursorScrY = dgsGetCursorPosition(_,false,true)
+				local cursowX,cursorY = cursorScrX+offset[1]*cursorW,cursorScrY+offset[2]*cursorH
 				setCursorAlpha(0)
 				_dxDrawImage(cursowX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
 			else
