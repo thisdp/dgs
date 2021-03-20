@@ -471,7 +471,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			------------------------------------
 			if eleData.functionRunBefore then
 				local fnc = eleData.functions
-				if type(fnc) == "table" then
+				if type(fnc) == "table" and fnc[1] then
 					fnc[1](unpack(fnc[2]))
 				end
 			end

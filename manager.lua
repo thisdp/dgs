@@ -337,8 +337,10 @@ function dgsIsType(dgsEle,isType)
 			return type(dgsEle) == isType
 		end
 	else
-		return isElement(dgsEle) and ((dgsElementType[dgsEle] or (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin) or getElementType(dgsEle)):sub(1,6) == "dgs-dx")
+		local theType = isElement(dgsEle) and (dgsElementType[dgsEle] or (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin) or getElementType(dgsEle))
+		return theType and theType:sub(1,6) == "dgs-dx" or false
 	end
+	return false
 end
 
 function dgsGetPluginType(dgsEle) return dgsEle and (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin or false) or dgsGetType(dgsEle) end
@@ -880,7 +882,7 @@ function DGSI_ReadData()
 		for dgsElement,data in pairs(_dgsElementType) do
 			if not isElement(dgsElement) then _dgsElementType[dgsElement] = nil end
 		end
-		dgsElementType = table.merger(dgsElementType,_dgsElementData)
+		dgsElementType = table.merger(dgsElementType,_dgsElementType)
 		removeElementData(root,"DGSI_ElementType")
 		--Bound Resource
 		local _boundResource = getElementData(root,"DGSI_BoundResource") or {}
