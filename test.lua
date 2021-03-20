@@ -127,7 +127,7 @@ function createFullDemo()
 		end)
 		:setProperty("clickCoolDown",1000)
 end
---createFullDemo()
+
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
@@ -592,8 +592,8 @@ function testButtonEffect()
 			dgsAnimTo(source,"circleRadius",0,"ButtonEffect_1",600)				--Let's Do It Reverse!
 		end
 	end
-	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler)
-	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler)
+	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler,false)
+	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler,false)
 end
 ---------------------StressTest
 
