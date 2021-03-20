@@ -308,11 +308,13 @@ end
 
 function _3DLineTest()
 	line = dgsCreate3DLine(0,0,4,0,0,45,tocolor(255,255,255,255),2,100)
-	dgs3DLineAddLine(line,_,_,_,0,0,2,1,tocolor(255,255,255,255),true)
-	for i=1,200 do
-		dgs3DLineAddLine(line,_,_,_,math.cos(i/200*math.pi*2),math.sin(i/200*math.pi*2),2,1,tocolor(i/200*255,255-i/200*255,0,255),true)
+	local i = 1
+	dgs3DLineAddLine(line,4,0,0,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
+	for i=2,200 do
+		dgs3DLineAddLine(line,_,_,_,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
 	end
-	dgs3DLineAttachToElement(line,localPlayer)
+	local veh = getPedOccupiedVehicle(localPlayer)
+	dgs3DLineAttachToElement(line,veh)
 end
 
 function DetectAreaApplyingTest()
