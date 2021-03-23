@@ -4,6 +4,12 @@ float3 HSL_Chg = float3(0,0,0);
 float3 defHSL = float3(0,1,0.5);
 float3 StaticMode = float3(1,1,1);
 bool isReversed = false;
+bool useMaskTexture = false;
+texture maskTexture;
+
+SamplerState maskSampler{
+	Texture = maskTexture;
+};
 
 float HUE2RGB(float v1,float v2,float vH){
 	if (vH < 0) vH = vH+1;
@@ -33,6 +39,8 @@ float4 HSLComponent(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float3 nHSL = HSL*StaticMode+defHSL*(1-StaticMode);
 	float3 hsl = HSL_Chg*kValue+nHSL*(1-HSL_Chg);
 	color.rgb = HSL2RGB(float3(hsl.x,hsl.y,hsl.z));
+	float3 _maskRGB = tex2D(maskSampler,tex).rgb;
+	color.a *= useMaskTexture?((_maskRGB.r+_maskRGB.g+_maskRGB.b)/3):1;
 	return color;
 }
 

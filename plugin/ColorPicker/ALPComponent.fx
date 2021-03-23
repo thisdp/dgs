@@ -2,6 +2,12 @@ float items = 2;
 float4 currentColor = float4(1,0,0,1);
 bool vertical = false;
 bool isReversed = false;
+bool useMaskTexture = false;
+texture maskTexture;
+
+SamplerState maskSampler{
+	Texture = maskTexture;
+};
 
 float4 alpChannel(float2 otex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float dxdy = ddx(otex.x)/ddy(otex.y);
@@ -15,6 +21,8 @@ float4 alpChannel(float2 otex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	_y = isReversed?(1-_y):_y;
 	float4 newColor = color*(1-_y)+currentColor*_y;
 	color.rgb = newColor.rgb;
+	float3 _maskRGB = tex2D(maskSampler,tex).rgb;
+	color.a *= useMaskTexture?((_maskRGB.r+_maskRGB.g+_maskRGB.b)/3):1;
 	return color;
 }
 

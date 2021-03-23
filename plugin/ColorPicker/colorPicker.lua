@@ -121,6 +121,29 @@ function dgsComponentSelectorGetCursorThickness(cs)
 	return dgsElementData[cs].thickness
 end
 
+function dgsComponentSelectorSetMask(cs,maskTexture)
+	if not(dgsGetPluginType(cs) == "dgs-dxcomponentselector") then error(dgsGenAsrt(cs,"dgsComponentSelectorSetMask",1,"plugin dgs-dxcomponentselector")) end
+	local shader = dgsElementData[cs].shader
+	if maskTexture then
+		if shader then
+			dxSetShaderValue(shader,"maskTexture",maskTexture)
+			dxSetShaderValue(shader,"useMaskTexture",true)
+		end
+		return dgsSetData(cs,"maskTexture",maskTexture)
+	else
+		if shader then
+			dxSetShaderValue(shader,"maskTexture",nil)
+			dxSetShaderValue(shader,"useMaskTexture",false)
+		end
+		return dgsSetData(cs,"maskTexture",nil)
+	end
+end
+
+function dgsComponentSelectorGetMask(cs)
+	if not(dgsGetPluginType(cs) == "dgs-dxcomponentselector") then error(dgsGenAsrt(cs,"dgsComponentSelectorGetMask",1,"plugin dgs-dxcomponentselector")) end
+	return dgsElementData[cs].maskTexture or false
+end
+
 function ComponentResize()
 	local thickness = dgsElementData[source].thickness
 	local offset =  dgsElementData[source].offset
@@ -433,6 +456,11 @@ function dgsBindToColorPicker(cs,colorPicker,colorType,colorAttribute,staticMode
 			else
 				dxSetShaderValue(HSVComponent,"StaticMode",{1,1,1})
 			end
+		end
+		
+		if dgsElementData[cs].maskTexture then
+			dxSetShaderValue(shader,"maskTexture",maskTexture)
+			dxSetShaderValue(shader,"useMaskTexture",true)
 		end
 		dgsAddEventHandler("onDgsColorPickerComponentSelectorChange",cs,"updateColorOnSelectorChange_ComponentSelector",false)
 		source = cs

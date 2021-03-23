@@ -4,6 +4,12 @@ float3 defHSV = float3(0,1,1);
 float3 HSV_Chg = float3(0,0,0);
 float3 StaticMode = float3(1,1,1);
 bool isReversed = false;
+bool useMaskTexture = false;
+texture maskTexture;
+
+SamplerState maskSampler{
+	Texture = maskTexture;
+};
 
 float3 HSV2RGB(float3 HSV){
 	HSV.x*=6;
@@ -24,6 +30,8 @@ float4 HSVComponent(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float3 nHSV = HSV*StaticMode+defHSV*(1-StaticMode);
 	float3 hsv = HSV_Chg*kValue+nHSV*(1-HSV_Chg);
 	color.rgb = HSV2RGB(hsv);
+	float3 _maskRGB = tex2D(maskSampler,tex).rgb;
+	color.a *= useMaskTexture?((_maskRGB.r+_maskRGB.g+_maskRGB.b)/3):1;
 	return color;
 }
 
