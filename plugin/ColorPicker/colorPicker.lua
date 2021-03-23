@@ -121,8 +121,8 @@ function dgsComponentSelectorGetCursorThickness(cs)
 	return dgsElementData[cs].thickness
 end
 
-function dgsComponentSelectorSetMask(cs,maskTexture)
-	if not(dgsGetPluginType(cs) == "dgs-dxcomponentselector") then error(dgsGenAsrt(cs,"dgsComponentSelectorSetMask",1,"plugin dgs-dxcomponentselector")) end
+function dgsColorPickerSetComponentSelectorMask(cs,maskTexture)
+	if not(dgsGetPluginType(cs) == "dgs-dxcomponentselector") then error(dgsGenAsrt(cs,"dgsColorPickerSetComponentSelectorMask",1,"plugin dgs-dxcomponentselector")) end
 	local shader = dgsElementData[cs].shader
 	if maskTexture then
 		if shader then
@@ -139,8 +139,8 @@ function dgsComponentSelectorSetMask(cs,maskTexture)
 	end
 end
 
-function dgsComponentSelectorGetMask(cs)
-	if not(dgsGetPluginType(cs) == "dgs-dxcomponentselector") then error(dgsGenAsrt(cs,"dgsComponentSelectorGetMask",1,"plugin dgs-dxcomponentselector")) end
+function dgsColorPickerGetComponentSelectorMask(cs)
+	if not(dgsGetPluginType(cs) == "dgs-dxcomponentselector") then error(dgsGenAsrt(cs,"dgsColorPickerGetComponentSelectorMask",1,"plugin dgs-dxcomponentselector")) end
 	return dgsElementData[cs].maskTexture or false
 end
 

@@ -695,6 +695,8 @@
 	<export function="dgsColorPickerCreateComponentSelector" type="client" />
 	<export function="dgsColorPickerGetComponentSelectorValue" type="client" />
 	<export function="dgsColorPickerSetComponentSelectorValue" type="client" />
+	<export function="dgsColorPickerGetComponentSelectorMask" type="client" />
+	<export function="dgsColorPickerSetComponentSelectorMask" type="client" />
 	<export function="dgsBindToColorPicker" type="client" />
 	<export function="dgsUnbindFromColorPicker" type="client" />
 	<export function="dgsColorPickerGetColor" type="client" />
