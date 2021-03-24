@@ -144,13 +144,17 @@ local function class(tab)
 		if type(tab.extends) ~= "table" then
 			local extendsClass = dgsOOP[tab.extends]
 			for k,v in pairs(extendsClass.public or {}) do
-				tab.public[k] = v
+				if not tab.public[k] then	--Don't overwrite child's function when copying parent's functions
+					tab.public[k] = v
+				end
 			end
 		else
 			for key,extend in ipairs(tab.extends) do
 				local extendsClass = dgsOOP[extend]
 				for k,v in pairs(extendsClass.public or {}) do
-					tab.public[k] = v
+					if not tab.public[k] then	--Don't overwrite child's function when copying parent's functions
+						tab.public[k] = v
+					end
 				end
 			end
 		end
@@ -875,6 +879,7 @@ class {
 		insertText = gObjFnc("dgsMemoInsertText",true),
 		appendText = gObjFnc("dgsMemoAppendText",true),
 		clearText = gObjFnc("dgsMemoClearText",true),
+		getTextBoundingBox = gObjFnc("dgsMemoGetTextBoundingBox"),
 		getTypingSound = gObjFnc("dgsMemoGetTypingSound"),
 		setTypingSound = gObjFnc("dgsMemoSetTypingSound",true),
 		getLineCount = gObjFnc("dgsMemoGetLineCount"),
