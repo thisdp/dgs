@@ -444,6 +444,7 @@
 	<export function="dgsMemoInsertText" type="client" />
 	<export function="dgsMemoAppendText" type="client" />
 	<export function="dgsMemoClearText" type="client" />
+	<export function="dgsMemoGetTextBoundingBox" type="client" />
 	<export function="dgsMemoGetScrollBar" type="client" />
 	<export function="dgsMemoSetScrollPosition" type="client" />
 	<export function="dgsMemoGetScrollPosition" type="client" />

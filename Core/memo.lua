@@ -223,6 +223,29 @@ function dgsMemoGetLineCount(memo,strongLineOnly)
 	return #dgsElementData[memo].text
 end
 
+function dgsMemoGetTextBoundingBox(memo,excludePadding)
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTextBoundingBox",1,"dgs-dxmemo")) end
+	local eleData = dgsElementData[memo]
+	local fontHeight = dxGetFontHeight(eleData.textSize[2],eleData.font or systemFont)
+	if eleData.wordWrap then
+		local textTable = eleData.wordWrapMapText
+		if excludePadding then
+			return eleData.absSize[1],#textTable*fontHeight
+		else
+			local padding = eleData.padding
+			return eleData.absSize[1]+padding[1]*2,#textTable*fontHeight+padding[2]*2
+		end
+	else
+		local textTable = eleData.text
+		if excludePadding then
+			return eleData.rightLength[1],#textTable*fontHeight
+		else
+			local padding = eleData.padding
+			return eleData.rightLength[1]+padding[1]*2,#textTable*fontHeight+padding[2]*2
+		end
+	end
+end
+
 function dgsMemoGetScrollBar(memo)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetScrollBar",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].scrollbars
@@ -1393,7 +1416,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 	local renderTarget = eleData.renderTarget
-	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
+	local fontHeight = dxGetFontHeight(txtSizY,font)
 	local wordwrap = eleData.wordWrap
 	local scbThick = eleData.scrollBarThick
 	local scrollbars = eleData.scrollbars
@@ -1518,7 +1541,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			dxSetRenderTarget(rndtgt)
-			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 			if MouseData.focused == source and MouseData.editMemoCursor then
@@ -1595,7 +1618,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			dxSetRenderTarget(rndtgt)
-			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
+			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 			if MouseData.focused == source and MouseData.editMemoCursor then
