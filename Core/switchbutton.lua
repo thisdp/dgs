@@ -214,7 +214,6 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		else
 			local offColor = applyColorAlpha(colorOff[colorImgID],animProgress)
 			local onColor = applyColorAlpha(colorOn[colorImgID],1-animProgress)
-
 			local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,onColor,isPostGUI)
 			local _empty = imageOff[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,offColor,isPostGUI)
 		end
@@ -237,12 +236,10 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			colorOff = applyColorAlpha(colorOff,parentAlpha)
 			colorOn = applyColorAlpha(colorOn,parentAlpha)
 		end
-		
 		local xOff,yOff,wOff,hOff,xOn,yOn,wOn,hOn
 		if isReverse then
 			xOff,yOff,wOff,hOff = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
 			xOn,yOn,wOn,hOn = x,y,cursorX-x+cursorLength/2,h
-			
 		else
 			xOn,yOn,wOn,hOn = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
 			xOff,yOff,wOff,hOff = x,y,cursorX-x+cursorLength/2,h
@@ -254,7 +251,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,colorOn,isPostGUI)
 		local _empty = imageOff[colorImgBgID] and dxDrawImage(xOff,yOff,wOff,hOff,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(xOff,yOff,wOff,hOff,colorOff,isPostGUI)
 	elseif style == 2 then
-			local colorOff = colorOff[colorImgID]
+		local colorOff = colorOff[colorImgID]
 		local colorOn = colorOn[colorImgID]
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
