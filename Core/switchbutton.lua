@@ -216,7 +216,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			local onColor = applyColorAlpha(colorOn[colorImgID],1-animProgress)
 
 			local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,onColor,isPostGUI)
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOnimageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,offColor,isPostGUI)
+			local _empty = imageOff[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,offColor,isPostGUI)
 		end
 	elseif style == 1 then
 		local colorOff = colorOff[colorImgID]
@@ -238,21 +238,65 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			colorOn = applyColorAlpha(colorOn,parentAlpha)
 		end
 		
-		local xOff,yOff,wOff,hOff,xOn,yOn,wOh,hOn
+		local xOff,yOff,wOff,hOff,xOn,yOn,wOn,hOn
 		if isReverse then
 			xOff,yOff,wOff,hOff = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
-			xOn,yOn,wOh,hOn = x,y,cursorX-x+cursorLength/2,h
+			xOn,yOn,wOn,hOn = x,y,cursorX-x+cursorLength/2,h
 			
 		else
-			xOn,yOn,wOh,hOn = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
+			xOn,yOn,wOn,hOn = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
 			xOff,yOff,wOff,hOff = x,y,cursorX-x+cursorLength/2,h
 		end
-		yOn = yOn+hOn/2-troughWidth/2 -- todo
+		yOn = yOn+hOn/2-troughWidth/2
 		hOn = troughWidth
-		yOff = yOff+hOff/2-troughWidth/2 -- todo
+		yOff = yOff+hOff/2-troughWidth/2
 		hOff = troughWidth
-		local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOh,hOn,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOh,hOn,colorOn,isPostGUI)
+		local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,colorOn,isPostGUI)
 		local _empty = imageOff[colorImgBgID] and dxDrawImage(xOff,yOff,wOff,hOff,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(xOff,yOff,wOff,hOff,colorOff,isPostGUI)
+	elseif style == 2 then
+			local colorOff = colorOff[colorImgID]
+		local colorOn = colorOn[colorImgID]
+		if not enabledInherited and not enabledSelf then
+			if type(eleData.disabledColor) == "number" then
+				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
+				colorOn = applyColorAlpha(eleData.disabledColor,parentAlpha)
+			elseif eleData.disabledColor == true then
+				local r,g,b,a = fromcolor(colorOff,true)
+				local average = (r+g+b)/3*eleData.disabledColorPercent
+				colorOff = tocolor(average,average,average,a*parentAlpha)
+				local r,g,b,a = fromcolor(colorOn,true)
+				local average = (r+g+b)/3*eleData.disabledColorPercent
+				colorOn = tocolor(average,average,average,a*parentAlpha)
+			end
+		else
+			colorOff = applyColorAlpha(colorOff,parentAlpha)
+			colorOn = applyColorAlpha(colorOn,parentAlpha)
+		end
+		
+		local xOff,yOff,wOff,hOff,xOn,yOn,wOn,hOn
+		if isReverse then
+			xOff,yOff,wOff,hOff = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
+			xOn,yOn,wOn,hOn = x,y,cursorX-x+cursorLength/2,h
+		else
+			xOn,yOn,wOn,hOn = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
+			xOff,yOff,wOff,hOff = x,y,cursorX-x+cursorLength/2,h
+		end
+		yOn = yOn+hOn/2-troughWidth/2
+		hOn = troughWidth
+		yOff = yOff+hOff/2-troughWidth/2
+		hOff = troughWidth
+		if imageOn[colorImgBgID] then
+			local onMaterialX,onMaterialY = dxGetMaterialSize(imageOn[colorImgBgID])
+			dxDrawImageSection(xOn,yOn,wOn,hOn,(xOn-x)/w*onMaterialX,0,wOn/w*onMaterialX,onMaterialY,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt)
+		else
+			dxDrawRectangle(xOn,yOn,wOn,hOn,colorOn,isPostGUI)
+		end
+		if imageOff[colorImgBgID] then
+			local offMaterialX,offMaterialY = dxGetMaterialSize(imageOff[colorImgBgID])
+			dxDrawImageSection(xOff,yOff,wOff,hOff,(xOff-x)/w*offMaterialX,0,wOff/w*offMaterialX,offMaterialY,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt)
+		else
+			dxDrawRectangle(xOff,yOff,wOff,hOff,colorOff,isPostGUI)
+		end
 	end
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
