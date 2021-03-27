@@ -333,6 +333,17 @@
 	<export function="dgs3DImageSetPosition" type="client" />
 	<export function="dgs3DImageGetPosition" type="client" />
 
+	<export function="dgsCreateScalePane" type="client" />
+	<export function="dgsScalePaneGetScrollBar" type="client" />
+	<export function="dgsScalePaneSetScrollBarState" type="client" />
+	<export function="dgsScalePaneGetScrollBarState" type="client" />
+	<export function="dgsScalePaneSetScrollPosition" type="client" />
+	<export function="dgsScalePaneGetScrollPosition" type="client" />
+	<export function="dgsScalePaneSetHorizontalScrollPosition" type="client" />
+	<export function="dgsScalePaneGetHorizontalScrollPosition" type="client" />
+	<export function="dgsScalePaneSetVerticalScrollPosition" type="client" />
+	<export function="dgsScalePaneGetVerticalScrollPosition" type="client" />
+	
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
 	<export function="dgsScrollPaneSetScrollBarState" type="client" />

@@ -62,6 +62,12 @@ local strToIntCache = {
 	["4"]=4,
 }
 
+local function __eq(self,ele2)
+	if type(ele2) == "table" then
+		return self.dgsElement == ele2.dgsElement
+	end
+end
+
 local function class(tab)
 	dgsOOP.dgsClasses[tab.dgsType or tab.type] = tab
 	local meta = {
@@ -85,6 +91,7 @@ local function class(tab)
 			newMeta.public = newMeta.public or {}
 			newMeta.__index = newMeta.default.__index or newMeta.public.__index
 			newMeta.__newindex = newMeta.default.__newindex or newMeta.public.__newindex
+			newMeta.__eq = __eq
 			newMeta.public.__index = nil
 			newMeta.public.__newindex = nil
 			newMeta.default.__index = nil

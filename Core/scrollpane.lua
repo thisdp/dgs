@@ -54,16 +54,15 @@ function dgsCreateScrollPane(...)
 	dgsElementData[scrollpane] = {
 		renderBuffer = {},
 		scrollBarThick = scbThick,
+		scrollBarAlignment = {"right","bottom"},
+		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
+		scrollBarLength = {},
 		maxChildSize = {0,0},
 		horizontalMoveOffsetTemp = 0,
 		verticalMoveOffsetTemp = 0,
 		moveHardness = {0.1,0.9},
 		childSizeRef = {{},{}}, --Horizontal,Vertical //to optimize
-		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
 		configNextFrame = false,
-		mouseWheelScrollBar = false, --false:vertical; true:horizontal
-		scrollBarLength = {},
-		childBlock = {},
 		bgColor = false,
 		bgImage = false,
 		sourceTexture = false,
@@ -378,8 +377,6 @@ function dgsScrollPaneGetScrollBarState(scrollpane)
 	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetScrollBarState",1,"dgs-dxscrollpane")) end
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
 end
-
-
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -392,12 +389,11 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	end
 	local scrollbar = eleData.scrollbars
 	local scbThick = eleData.scrollBarThick
-	local scbstate = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
-	local xthick = scbstate[1] and scbThick or 0
-	local ythick = scbstate[2] and scbThick or 0
+	local xthick = dgsElementData[scrollbar[1]].visible and scbThick or 0
+	local ythick = dgsElementData[scrollbar[2]].visible and scbThick or 0
 	local maxSize = eleData.maxChildSize
 	local relSizX,relSizY = w-xthick,h-ythick
-	local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
+	local maxX,maxY = maxSize[1]-relSizX,maxSize[2]-relSizY
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 	local _OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
 	local _OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01

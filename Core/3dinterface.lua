@@ -58,6 +58,7 @@ function dgsCreate3DInterface(...)
 	}
 	local renderTarget,err = dxCreateRenderTarget(resX,resY,true,interface)
 	if renderTarget ~= false then
+		dxSetTextureEdge(renderTarget,"mirror")
 		dgsAttachToAutoDestroy(renderTarget,interface,-1)
 	else
 		outputDebugString(err,2)
@@ -221,6 +222,7 @@ function dgs3DInterfaceSetResolution(interface,resw,resh)
 	if isElement(oldRT) then destroyElement(oldRT) end
 	local renderTarget,err = dxCreateRenderTarget(resw,resh,true,interface)
 	if renderTarget ~= false then
+		dxSetTextureEdge(renderTarget,"mirror")
 		dgsAttachToAutoDestroy(renderTarget,interface,-1)
 	else
 		outputDebugString(err,2)

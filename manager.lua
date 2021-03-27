@@ -281,6 +281,7 @@ dgsType = {
 	"dgs-dxlabel",
 	"dgs-dxscrollbar",
 	"dgs-dxscrollpane",
+	"dgs-dxscalepane",
 	"dgs-dxselector",
 	"dgs-dxswitchbutton",
 	"dgs-dxwindow",
@@ -388,7 +389,6 @@ function dgsSetData(dgsEle,key,value,nocheck)
 				if not dgsElementData[dgsEle].locked then
 					local grades = dgsElementData[dgsEle].grades
 					local scaler = dgsElementData[dgsEle].map
-					--local nValue,oValue = value/100*(scaler[2]-scaler[1])+scaler[1],oldValue/100*(scaler[2]-scaler[1])+scaler[1]
 					local nValue,oValue = value,oldValue
 					if grades then
 						nValue,oValue = nValue/100*grades+0.5,oValue/100*grades+0.5
@@ -577,6 +577,10 @@ function dgsSetData(dgsEle,key,value,nocheck)
 				dgsElementData[dgsEle].renderBuffer.UVPos = {x,y}
 				dgsElementData[dgsEle].renderBuffer.UVSize = {sx,sy}
 			end
+		end
+	elseif dgsType == "dgs-dxscalepane" then
+		if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" or key == "scrollBarLength" or key == "scale" then
+			configScalePane(dgsEle)
 		end
 	end
 	if key == "text" then

@@ -681,9 +681,10 @@ addEventHandler("onClientKey",root,function(button,state)
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
 			end
 		elseif dgsType == "dgs-dxscrollpane" then
-			local scrollPane = enteredElement
+			local scrollpane = enteredElement
+			local eleData = dgsElementData[scrollpane]
 			local scrollbar
-			local scrollbar1,scrollbar2 = dgsElementData[scrollPane].scrollbars[1],dgsElementData[scrollPane].scrollbars[2]
+			local scrollbar1,scrollbar2 = dgsElementData[scrollpane].scrollbars[1],dgsElementData[scrollpane].scrollbars[2]
 			local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
 			if visibleScb1 then
 				scrollbar = scrollbar1
@@ -693,6 +694,69 @@ addEventHandler("onClientKey",root,function(button,state)
 			if scrollbar then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+			end
+		elseif dgsType == "dgs-dxscalepane" then
+			local scalepane = enteredElement
+			local eleData = dgsElementData[scalepane]
+			if getKeyState("lalt") then
+				local scale = eleData.scale
+				local scaleMultipler = eleData.scaleMultipler
+				local maxScale = eleData.maxScale
+				local minScale = eleData.minScale
+				local newScaleX,newScaleY
+				if button == "mouse_wheel_down" then
+					newScaleX = scale[1]-scaleMultipler*scale[1]
+					newScaleY = scale[2]-scaleMultipler*scale[2]
+					if newScaleX <= minScale[1] or newScaleY <= minScale[2] then
+						if newScaleX <= minScale[1] then
+							newScaleX = minScale[1]
+							newScaleY = scale[2]/scale[1]*newScaleX
+						else
+							newScaleY = minScale[2]
+							newScaleX = scale[1]/scale[2]*newScaleY
+						end
+					end
+					if scale[1] > 1 and newScaleX < 1 then
+						newScaleX = 1
+						newScaleY = scale[2]/scale[1]*newScaleX
+					elseif scale[2] > 1 and newScaleY < 1 then
+						newScaleY = 1
+						newScaleX = scale[1]/scale[2]*newScaleY
+					end
+				else
+					newScaleX = scale[1]+scaleMultipler*scale[1]
+					newScaleY = scale[2]+scaleMultipler*scale[2]
+					if newScaleX >= maxScale[1] or newScaleY >= maxScale[2] then
+						if newScaleX >= maxScale[1] then
+							newScaleX = maxScale[1]
+							newScaleY = scale[2]/scale[1]*newScaleX
+						else
+							newScaleY = maxScale[2]
+							newScaleX = scale[1]/scale[2]*newScaleY
+						end
+					end
+					if scale[1] < 1 and newScaleX > 1 then
+						newScaleX = 1
+						newScaleY = scale[2]/scale[1]*newScaleX
+					elseif scale[2] < 1 and newScaleY > 1 then
+						newScaleY = 1
+						newScaleX = scale[1]/scale[2]*newScaleY
+					end
+				end
+				dgsSetData(scalepane,"scale",{newScaleX,newScaleY})
+			else
+				local scrollbar
+				local scrollbar1,scrollbar2 = dgsElementData[scalepane].scrollbars[1],dgsElementData[scalepane].scrollbars[2]
+				local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+				if visibleScb1 then
+					scrollbar = scrollbar1
+				elseif visibleScb2 and not visibleScb1 then
+					scrollbar = scrollbar2
+				end
+				if scrollbar then
+					dgsSetData(scrollbar,"moveType","slow")
+					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+				end
 			end
 		elseif dgsType == "dgs-dxtabpanel" or dgsType == "dgs-dxtab" then
 			local tabpanel = enteredElement
@@ -1669,7 +1733,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		if state == "down" then
 			dgsBringToFront(guiele,button)
-			if guitype == "dgs-dxscrollpane" then
+			if guitype == "dgs-dxscrollpane" or guitype == "dgs-dxscalepane" then
 				local scrollbar = eleData.scrollbars
 				dgsBringToFront(scrollbar[1],"left",_,true)
 				dgsBringToFront(scrollbar[2],"left",_,true)
