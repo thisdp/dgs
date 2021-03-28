@@ -786,9 +786,12 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 			if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
 				if debugMode then
 					local debugTrace = dgsElementData[self].debugTrace
+					local thisTrace = debug.getinfo(2)
 					if debugTrace then
 						local line,file = debugTrace.line,debugTrace.file
-						outputDebugString("dxDrawImage failed at element created at "..file..":"..line,2)
+						outputDebugString("dxDrawImage("..thisTrace.source..":"..thisTrace.currentline..") failed at element created at "..file..":"..line,2)
+					else
+						outputDebugString("dxDrawImage("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",2)
 					end
 				end
 			end
