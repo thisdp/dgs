@@ -682,7 +682,7 @@ function GenerateNPPAutoComplete(tab)
 	fileSetPos(f,0)
 	fileWrite(f,str)
 	fileClose(f)
-	print("[DGS]NPP autocomplete file is saved as nppAC4DGS.xml -> Done")
+	print("[DGS]NPP autocomplete file is saved as 'nppAC4DGS.xml'")
 end
 
 
@@ -704,5 +704,5 @@ function GenerateSublimeAutoComplete(tab)
 	local json = toJSON(t,false,"spaces")
 	fileWrite(f,json:sub(3, json:len() - 1))
 	fileClose(f)
-	print("[DGS]Sublime autocomplete file is saved as dgs.sublime-completions -> Done")
+	print("[DGS]Sublime autocomplete file is saved as 'dgs.sublime-completions'")
 end
