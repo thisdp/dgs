@@ -250,7 +250,7 @@ end
 ----------------------------------------------------------------
 
 dgsRenderer["dgs-dx3dline"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	return rndtgt,true
+	return rndtgt,true,mx,my,0,0
 end
 
 dgs3DRenderer["dgs-dx3dline"] = function(source)

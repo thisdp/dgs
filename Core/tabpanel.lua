@@ -453,5 +453,5 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			end
 		end
 	end
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

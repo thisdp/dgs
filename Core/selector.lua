@@ -437,5 +437,5 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	dxDrawText(selector[1],x,selectorStartY,x+selectorSizeX,selectorEndY,applyColorAlpha(selectorTextColorLeft,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
 	dxDrawText(selector[2],x+w-selectorSizeX,selectorStartY,x+w,selectorEndY,applyColorAlpha(selectorTextColorRight,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

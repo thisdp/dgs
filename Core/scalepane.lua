@@ -200,6 +200,30 @@ function configScalePane(scalepane)
 	dgsSetData(scalepane,"configNextFrame",false)
 end
 
+function dgsScalePaneCheckMove(scalepane)
+	local eleData = dgsElementData[scalepane]
+	local scrollbar = eleData.scrollbars
+	local scbThick = eleData.scrollBarThick
+	local x,y = dgsGetPosition(scalepane,false,true)
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local xthick = dgsElementData[scrollbar[1]].visible and scbThick or 0
+	local ythick = dgsElementData[scrollbar[2]].visible and scbThick or 0
+	local scale = eleData.scale
+	local resolution = eleData.resolution
+	local relSizX,relSizY = w-xthick,h-ythick
+	local mx,my = dgsGetCursorPosition()
+	local xScroll = eleData.horizontalMoveOffsetTemp
+	local yScroll = eleData.verticalMoveOffsetTemp
+	local renderOffsetX = -(resolution[1]-relSizX/scale[1])*xScroll
+	local renderOffsetY = -(resolution[2]-relSizY/scale[2])*yScroll
+	local moveData = eleData.moveOffsetData
+	MouseData.MoveScale[0] = true
+	MouseData.MoveScale[1] = MouseData.cursorPos[1]-x	--OffsetX
+	MouseData.MoveScale[2] = MouseData.cursorPos[2]-y	--OffsetY
+	MouseData.MoveScale[3] = renderOffsetX		--rendering OffsetX
+	MouseData.MoveScale[4] = renderOffsetY		--rendering OffsetY
+end
+
 function dgsScalePaneGetScrollBar(scalepane)
 	if not dgsIsType(scalepane,"dgs-dxscalepane") then error(dgsGenAsrt(scalepane,"dgsScalePaneGetScrollBar",1,"dgs-dxscalepane")) end
 	return dgsElementData[scalepane].scrollbars
@@ -290,9 +314,7 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	local scbThick = eleData.scrollBarThick
 	local xthick = dgsElementData[scrollbar[1]].visible and scbThick or 0
 	local ythick = dgsElementData[scrollbar[2]].visible and scbThick or 0
-	local maxSize = eleData.maxChildSize
 	local scale = eleData.scale
-	local alignment = eleData.alignment
 	local resolution = eleData.resolution
 	local relSizX,relSizY = w-xthick,h-ythick
 	local resolX,resolY = resolution[1],resolution[2]
@@ -306,7 +328,7 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	eleData.horizontalMoveOffsetTemp = xScroll
 	eleData.verticalMoveOffsetTemp = yScroll
 	OffsetX = -(resolution[1]-relSizX/scale[1])*xScroll
-	OffsetY = -(resolution[2]-relSizY/scale[1])*yScroll
+	OffsetY = -(resolution[2]-relSizY/scale[2])*yScroll
 	------------------------------------
 	if eleData.functionRunBefore then
 		local fnc = eleData.functions
@@ -341,21 +363,26 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 			eleData.sourceTexture = false
 		end
 		dxDrawImageSection(x,y,relSizX,relSizY,-OffsetX,-OffsetY,relSizX/scale[1],relSizX/scale[2],drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-		mx,my = (mx-xNRT)/scale[1]-OffsetX+xNRT,(my-yNRT)/scale[2]-OffsetY+yNRT
+		if MouseData.hit == source then
+			mx = (mx-xNRT)/scale[1]-OffsetX+xNRT
+			my = (my-yNRT)/scale[2]-OffsetY+yNRT
+		end
 	end
-	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	dxSetRenderTarget(newRndTgt,true)
+	
 	if newRndTgt then
 		local bgColor = eleData.bgColor
 		if eleData.bgImage then
 			bgColor = bgColor or 0xFFFFFFFF
-			dxDrawImage(0,0,resolution[1],resolution[2],eleData.bgImage,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI,rndtgt)
+			dxSetBlendMode("blend")
+			dxDrawImage(0,0,resolution[1],resolution[2],eleData.bgImage,0,0,0,tocolor(255,255,255,255*parentAlpha))
 			bgColor = applyColorAlpha(bgColor,parentAlpha)
 		elseif eleData.bgColor then
 			bgColor = applyColorAlpha(bgColor,parentAlpha)
-			dxDrawRectangle(0,0,resolution[1],resolution[2],bgColor,isPostGUI)
+			dxSetBlendMode("modulate_add")
+			dxDrawRectangle(0,0,resolution[1],resolution[2],bgColor)
 		end
 	end
 	rndtgt = newRndTgt
-	return rndtgt,_,mx,my
+	return rndtgt,false,mx,my,0,0
 end

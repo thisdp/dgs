@@ -179,5 +179,5 @@ dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	if eleData.debugMode and isElement(debugTexture) then
 		dxDrawImage(x,y,w,h,debugTexture,0,0,0,color,isPostGUI,rndtgt)
 	end
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

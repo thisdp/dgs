@@ -275,7 +275,7 @@ function dgsEditMoveCaret(edit,offset,selectText)
 	end
 	dgsEditAlignmentShowPosition(edit,text)
 	resetTimer(MouseData.EditMemoTimer)
-	MouseData.editMemoCursor = true
+	MouseData.EditMemoCursor = true
 	return true
 end
 
@@ -299,7 +299,7 @@ function dgsEditSetCaretPosition(edit,pos,doSelect)
 	end
 	dgsEditAlignmentShowPosition(edit,text)
 	resetTimer(MouseData.EditMemoTimer)
-	MouseData.editMemoCursor = true
+	MouseData.EditMemoCursor = true
 	return true
 end
 
@@ -531,7 +531,7 @@ end
 function resetEdit(x,y)
 	if dgsGetType(MouseData.focused) == "dgs-dxedit" then
 		if MouseData.focused == MouseData.clickl then
-			local pos = searchEditMousePosition(MouseData.focused,MouseX or x*sW)
+			local pos = searchEditMousePosition(MouseData.focused,MouseData.cursorPos[1] or x*sW)
 			dgsEditSetCaretPosition(MouseData.focused,pos,true)
 		end
 	end
@@ -1056,7 +1056,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,isPostGUI,pColorcoded)
 			end
 		end
-		if MouseData.focused == source and MouseData.editMemoCursor then
+		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
 				CaretShow = eleData.readOnlyCaretShow
@@ -1086,5 +1086,5 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 	end
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

@@ -254,5 +254,5 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 			end
 		end
 	end
-	return rndtgt,true
+	return rndtgt,true,mx,my,0,0
 end

@@ -184,5 +184,5 @@ dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		end
 	end
 	dxDrawText(text,x,y,x+w,y+h,colors,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

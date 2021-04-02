@@ -377,5 +377,5 @@ dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local padding = eleData.padding
 	local percent = eleData.progress*0.01
 	ProgressBarStyle[eleData.style](source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,isPostGUI)
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

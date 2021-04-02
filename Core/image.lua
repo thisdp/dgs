@@ -191,5 +191,5 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 	else
 		dxDrawRectangle(x,y,w,h,colors,isPostGUI)
 	end
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

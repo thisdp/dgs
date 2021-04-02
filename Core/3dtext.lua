@@ -261,5 +261,5 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			end
 		end
 	end
-	return rndtgt,true
+	return rndtgt,true,mx,my
 end

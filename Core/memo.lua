@@ -323,7 +323,7 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 		end
 	end
 	resetTimer(MouseData.EditMemoTimer)
-	MouseData.editMemoCursor = true
+	MouseData.EditMemoCursor = true
 	return true
 end
 
@@ -449,7 +449,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 		end
 	end
 	resetTimer(MouseData.EditMemoTimer)
-	MouseData.editMemoCursor = true
+	MouseData.EditMemoCursor = true
 	return true
 end
 
@@ -499,7 +499,7 @@ end
 function resetMemo(x,y)
 	if dgsGetType(MouseData.focused) == "dgs-dxmemo" then
 		if MouseData.focused == MouseData.clickl then
-			local pos,line = searchMemoMousePosition(MouseData.focused,MouseX or x*sW, MouseY or y*sH)
+			local pos,line = searchMemoMousePosition(MouseData.focused,MouseData.cursorPos[1] or x*sW, MouseData.cursorPos[2] or y*sH)
 			dgsMemoSetCaretPosition(MouseData.focused,pos,line,true)
 		end
 	end
@@ -1544,7 +1544,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-			if MouseData.focused == source and MouseData.editMemoCursor then
+			if MouseData.focused == source and MouseData.EditMemoCursor then
 				local CaretShow = true
 				if eleData.readOnly then
 					CaretShow = eleData.readOnlyCaretShow
@@ -1621,7 +1621,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-			if MouseData.focused == source and MouseData.editMemoCursor then
+			if MouseData.focused == source and MouseData.EditMemoCursor then
 				local CaretShow = true
 				if eleData.readOnly then
 					CaretShow = eleData.readOnlyCaretShow
@@ -1649,5 +1649,5 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 	end
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

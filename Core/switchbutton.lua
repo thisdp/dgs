@@ -329,5 +329,5 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		eleData.stateAnim = state == -1 and mathMax(stat,state) or mathMin(stat,state)
 	end
 	------------------------------------
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

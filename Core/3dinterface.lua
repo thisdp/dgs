@@ -295,8 +295,8 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		if eleData.faceRelativeTo == "world" then
 			fx,fy,fz = fx-x,fy-y,fz-z
 		end
-		if wX and wY and wZ then
-			lnVec = {wX-camX,wY-camY,wZ-camZ}
+		if MouseData.cursorPos3D[0] then	--Is cursor 3d position available
+			lnVec = {MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ}
 			lnPnt = {camX,camY,camZ}
 		end
 		if eleData.cameraDistance or 0 <= eleData.maxDistance then
@@ -308,36 +308,26 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		if #hitData > 0 then
 			local hit,hitX,hitY,hx,hy,hz = hitData[1],hitData[2],hitData[3],hitData[4],hitData[5],hitData[6]
 			local distance = ((camX-hx)^2+(camY-hy)^2+(camZ-hz)^2)^0.5
-			local oldPos = MouseData.interfaceHit
-			if isElement(MouseData.lock3DInterface) then
-				if MouseData.lock3DInterface == source then
-					MouseData.hit = source
-					mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
-					MouseX,MouseY = mx,my
-					MouseData.interfaceHit[0] = true
-					MouseData.interfaceHit[1] = hx
-					MouseData.interfaceHit[2] = hy
-					MouseData.interfaceHit[3] = hz
-					MouseData.interfaceHit[4] = distance
-					MouseData.interfaceHit[5] = source
-				end
-			elseif (not oldPos[0] or distance <= oldPos[4]) and hit then
+			local oldPos = MouseData.hitData3D
+			if (isElement(MouseData.lock3DInterface) and MouseData.lock3DInterface == source) or ((not oldPos[0] or distance <= oldPos[4]) and hit) then
 				MouseData.hit = source
-				mx,my = hitX*eleData.resolution[1],hitY*eleData.resolution[2]
-				MouseX,MouseY = mx,my
-				MouseData.interfaceHit[0] = true
-				MouseData.interfaceHit[1] = hx
-				MouseData.interfaceHit[2] = hy
-				MouseData.interfaceHit[3] = hz
-				MouseData.interfaceHit[4] = distance
-				MouseData.interfaceHit[5] = source
+				mx = hitX*eleData.resolution[1]
+				my = hitY*eleData.resolution[2]
+				MouseData.hitData3D[0] = true
+				MouseData.hitData3D[1] = hx
+				MouseData.hitData3D[2] = hy
+				MouseData.hitData3D[3] = hz
+				MouseData.hitData3D[4] = distance
+				MouseData.hitData3D[5] = source
+				eleData.cursorPosition[0] = dgsRenderInfo.frames+1
+				eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
 			end
 		end
 		dxSetRenderTarget(rndtgt,true)
 		dxSetRenderTarget()
-		return rndtgt,false,mx,my
+		return rndtgt,false,mx,my,0,0
 	end
-	return rndtgt,true
+	return rndtgt,true,mx,my,0,0
 end
 
 dgs3DRenderer["dgs-dx3dinterface"] = function(source)

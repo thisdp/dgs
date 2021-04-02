@@ -2755,5 +2755,5 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

@@ -87,5 +87,5 @@ dgsRenderer["dgs-dxbrowser"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 	end
 	local color = applyColorAlpha(eleData.color,parentAlpha)
 	dxDrawImage(x,y,w,h,source,0,0,0,color,isPostGUI)
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

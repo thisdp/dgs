@@ -377,35 +377,36 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	if MouseData.entered == source then
 		local preEnterData = false
 		local preEnterPos = false
+		local mxRlt,myRlt = mx-cx,my-cy
 		if isHorizontal then
-			if my >= cy and my <= cy+h then
-				if mx >= cx and mx <= cx+arrowWidth then				--Left Arrow
-					if mathAbs(cy+h/2-my) <= arrowWidth then preEnterData = 1 end
-				elseif mx < cx+arrowWidth+pos*0.01*csRange then			--Left Trough
-					if mathAbs(cy+h/2-my) <= troughWidth then preEnterData = 2 end
-				elseif mx >= cx+arrowWidth+pos*0.01*csRange and mx <= cx+arrowWidth+pos*0.01*csRange+cursorRange then
-					if mathAbs(cy+h/2-my) <= cursorWidth then preEnterData = 3 end
-				elseif mx < cx+w-arrowWidth then						--Right Trough
-					if mathAbs(cy+h/2-my) <= troughWidth then preEnterData = 4 end
-				elseif mx >= cx+w-arrowWidth and mx <= cx+w then		--Right Arrow
-					if mathAbs(cy+h/2-my) <= arrowWidth then preEnterData = 5 end
+			if myRlt >= 0 and myRlt <= h then
+				if mxRlt >= 0 and mxRlt <= arrowWidth then				--Left Arrow
+					if mathAbs(h/2-myRlt) <= arrowWidth then preEnterData = 1 end
+				elseif mxRlt < arrowWidth+pos*0.01*csRange then			--Left Trough
+					if mathAbs(h/2-myRlt) <= troughWidth then preEnterData = 2 end
+				elseif mxRlt >= arrowWidth+pos*0.01*csRange and mxRlt <= arrowWidth+pos*0.01*csRange+cursorRange then
+					if mathAbs(h/2-myRlt) <= cursorWidth then preEnterData = 3 end
+				elseif mxRlt < w-arrowWidth then						--Right Trough
+					if mathAbs(h/2-myRlt) <= troughWidth then preEnterData = 4 end
+				elseif mxRlt >= w-arrowWidth and mxRlt <= w then		--Right Arrow
+					if mathAbs(h/2-myRlt) <= arrowWidth then preEnterData = 5 end
 				end
-				preEnterPos = (mx-cx-arrowWidth)/(w-arrowWidth*2)
+				preEnterPos = (mxRlt-arrowWidth)/(w-arrowWidth*2)
 			end
 		else
-			if mx >= cx and mx <= cx+w then
-				if my >= cy and my <= cy+arrowWidth then				--Up Arrow
-					if mathAbs(cx+w/2-mx) <= arrowWidth then preEnterData = 1 end
-				elseif my < cy+arrowWidth+pos*0.01*csRange then			--Up Trough
-					if mathAbs(cx+w/2-mx) <= troughWidth then preEnterData = 2 end
-				elseif my >= cy+arrowWidth+pos*0.01*csRange and my <= cy+arrowWidth+pos*0.01*csRange+cursorRange then
-					if mathAbs(cx+w/2-mx) <= cursorWidth then preEnterData = 3 end
-				elseif my < cy+h-arrowWidth then						--Down Trough
-					if mathAbs(cx+w/2-mx) <= troughWidth then preEnterData = 4 end
-				elseif my >= cy+h-arrowWidth and my <= cy+h then		--Down Arrow
-					if mathAbs(cx+w/2-mx) <= arrowWidth then preEnterData = 5 end
+			if mxRlt >= 0 and mxRlt <= w then
+				if myRlt >= 0 and myRlt <= arrowWidth then				--Up Arrow
+					if mathAbs(w/2-mxRlt) <= arrowWidth then preEnterData = 1 end
+				elseif myRlt < arrowWidth+pos*0.01*csRange then			--Up Trough
+					if mathAbs(w/2-mxRlt) <= troughWidth then preEnterData = 2 end
+				elseif myRlt >= arrowWidth+pos*0.01*csRange and myRlt <= arrowWidth+pos*0.01*csRange+cursorRange then
+					if mathAbs(w/2-mxRlt) <= cursorWidth then preEnterData = 3 end
+				elseif myRlt < h-arrowWidth then						--Down Trough
+					if mathAbs(w/2-mxRlt) <= troughWidth then preEnterData = 4 end
+				elseif myRlt >= h-arrowWidth and myRlt <= h then		--Down Arrow
+					if mathAbs(w/2-mxRlt) <= arrowWidth then preEnterData = 5 end
 				end
-				preEnterPos = (my-cy-arrowWidth-cursorRange/2)/csRange
+				preEnterPos = (myRlt-arrowWidth-cursorRange/2)/csRange
 			end
 		end
 		if not MouseData.scbClickData then
@@ -479,5 +480,5 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 			dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[3]],isPostGUI)
 		end
 	end
-	return rndtgt
+	return rndtgt,false,mx,my,0,0
 end

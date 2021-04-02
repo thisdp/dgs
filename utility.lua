@@ -5,6 +5,7 @@ local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
 local tableInsert = table.insert
 local tableRemove = table.remove
 local pi180 = math.pi/180
+sW,sH = guiGetScreenSize()
 _dxDrawImageSection = dxDrawImageSection
 _dxDrawImage = dxDrawImage
 _dxCreateTexture = dxCreateTexture

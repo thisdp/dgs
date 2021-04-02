@@ -754,6 +754,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	eleData.enableFullEnterLeaveCheck = false
 	eleData.clickCoolDown = false
 	eleData.settingListener = {}
+	eleData.cursorPosition = {[0]=0}
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
