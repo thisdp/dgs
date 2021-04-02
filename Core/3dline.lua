@@ -29,8 +29,8 @@ function dgsCreate3DLine(...)
 		rx = argTable.rx or argTable[4]
 		ry = argTable.ry or argTable[5]
 		rz = argTable.rz or argTable[6]
-		color = argTable.color or argTable[7]
-		width = argTable.width or argTable[8]
+		width = argTable.width or argTable[7]
+		color = argTable.color or argTable[8]
 		maxDistance = argTable.maxDistance or argTable[9]
 	else
 		x,y,z,rx,ry,rz,color,width,maxDistances = ...
@@ -64,16 +64,16 @@ If StartXYZ don't exist, will use last endXYZ or center
 	{	startX,	startY,	startZ,	endX,	endY,	endZ,	width,	color,	},
 }
 ]]
-function dgs3DLineAddLine(line,sx,sy,sz,ex,ey,ez,width,color,isRelative)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineAddLine",1,"dgs-dx3dline")) end
+function dgs3DLineAddItem(line,sx,sy,sz,ex,ey,ez,width,color,isRelative)
+	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineAddItem",1,"dgs-dx3dline")) end
 	if sx or sy or sz then
-		if not(type(sx) == "number") then error(dgsGenAsrt(sx,"dgs3DLineAddLine",2,"number")) end
-		if not(type(sy) == "number") then error(dgsGenAsrt(sy,"dgs3DLineAddLine",3,"number")) end
-		if not(type(sz) == "number") then error(dgsGenAsrt(sz,"dgs3DLineAddLine",4,"number")) end
+		if not(type(sx) == "number") then error(dgsGenAsrt(sx,"dgs3DLineAddItem",2,"number")) end
+		if not(type(sy) == "number") then error(dgsGenAsrt(sy,"dgs3DLineAddItem",3,"number")) end
+		if not(type(sz) == "number") then error(dgsGenAsrt(sz,"dgs3DLineAddItem",4,"number")) end
 	end
-	if not(type(ex) == "number") then error(dgsGenAsrt(ex,"dgs3DLineAddLine",5,"number")) end
-	if not(type(ey) == "number") then error(dgsGenAsrt(ey,"dgs3DLineAddLine",6,"number")) end
-	if not(type(ez) == "number") then error(dgsGenAsrt(ez,"dgs3DLineAddLine",7,"number")) end
+	if not(type(ex) == "number") then error(dgsGenAsrt(ex,"dgs3DLineAddItem",5,"number")) end
+	if not(type(ey) == "number") then error(dgsGenAsrt(ey,"dgs3DLineAddItem",6,"number")) end
+	if not(type(ez) == "number") then error(dgsGenAsrt(ez,"dgs3DLineAddItem",7,"number")) end
 	local lData = dgsElementData[line].lineData
 	local lIndex = #lData+1
 	lData[lIndex] = {
@@ -82,11 +82,11 @@ function dgs3DLineAddLine(line,sx,sy,sz,ex,ey,ez,width,color,isRelative)
 	return lIndex
 end
 
-function dgs3DLineRemoveLine(line,index)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineRemoveLine",1,"dgs-dx3dline")) end
+function dgs3DLineRemoveItem(line,index)
+	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineRemoveItem",1,"dgs-dx3dline")) end
 	local lData = dgsElementData[line].lineData
 	local inRange = index >= 1 and index <= #lData
-	if not(type(index) == "number" and inRange) then error(dgsGenAsrt(index,"dgs3DLineRemoveLine",2,"number","1~"..(#lData),inRange and "Out Of Range")) end
+	if not(type(index) == "number" and inRange) then error(dgsGenAsrt(index,"dgs3DLineRemoveItem",2,"number","1~"..(#lData),inRange and "Out Of Range")) end
 	tableRemove(lData,index)
 	return true
 end

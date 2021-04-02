@@ -502,6 +502,31 @@ function math.seekEmpty(list)
 	return cnt
 end
 
+function math.factorial(x)
+	local a = 1
+	for i=2,x do a = a*i end
+	return a
+end
+
+function math.c(n,r)
+	local up,down = 1,1
+	for i=n-r+1,n do up = up*i end
+	for i=1,r do down = down*i end
+	return up/down
+end
+
+function math.getBezierPoint(pos,t)
+	local retX,retY = 0,0
+	local n = #pos-1
+	for i=1,n+1 do
+		local index = i-1
+		local factor = (t)^index*(1-t)^(n-index)*math.c(n,index)
+		retX = retX+factor*pos[i][1]
+		retY = retY+factor*pos[i][2]
+	end
+	return retX,retY
+end
+
 function getPositionFromElementOffset(element,offX,offY,offZ)
     local m = getElementMatrix(element)
     return offX*m[1][1]+offY*m[2][1]+offZ*m[3][1]+m[4][1],offX*m[1][2]+offY*m[2][2]+offZ*m[3][2]+m[4][2],offX*m[1][3]+offY*m[2][3]+offZ*m[3][3]+m[4][3]

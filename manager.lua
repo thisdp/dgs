@@ -279,6 +279,7 @@ dgsType = {
 	"dgs-dxradiobutton",
 	"dgs-dxcheckbox",
 	"dgs-dxlabel",
+	"dgs-dxline",
 	"dgs-dxscrollbar",
 	"dgs-dxscrollpane",
 	"dgs-dxscalepane",

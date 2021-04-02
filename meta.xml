@@ -23,6 +23,7 @@
 	<script src="Core/gridlist.lua" type="client" />
 	<script src="Core/image.lua" type="client" />
 	<script src="Core/label.lua" type="client" />
+	<script src="Core/line.lua" type="client" />
 	<script src="Core/memo.lua" type="client" />
 	<script src="Core/menulist.lua" type="client" />
 	<script src="Core/progressbar.lua" type="client" />
@@ -281,8 +282,8 @@
 	<export function="dgs3DInterfaceGetRotation" type="client" />
 
 	<export function="dgsCreate3DLine" type="client" />
-	<export function="dgs3DLineAddLine" type="client" />
-	<export function="dgs3DLineRemoveLine" type="client" />
+	<export function="dgs3DLineAddItem" type="client" />
+	<export function="dgs3DLineRemoveItem" type="client" />
 	<export function="dgs3DLineSetItemPosition" type="client" />
 	<export function="dgs3DLineGetItemPosition" type="client" />
 	<export function="dgs3DLineSetItemWidth" type="client" />
@@ -529,6 +530,16 @@
 	<export function="dgsLabelGetVerticalAlign" type="client" />
 	<export function="dgsLabelGetTextExtent" type="client" />
 	<export function="dgsLabelGetFontHeight" type="client" />
+	
+	<exports function="dgsCreateLine" type="client"/>
+	<exports function="dgsLineAddItem" type="client"/>
+	<exports function="dgsLineRemoveItem" type="client"/>
+	<exports function="dgsLineSetItemPosition" type="client"/>
+	<exports function="dgsLineGetItemPosition" type="client"/>
+	<exports function="dgsLineSetItemWidth" type="client"/>
+	<exports function="dgsLineGetItemWidth" type="client"/>
+	<exports function="dgsLineSetItemColor" type="client"/>
+	<exports function="dgsLineGetItemColor" type="client"/>
 
 	<export function="dgsCreateTabPanel" type="client" />
 	<export function="dgsCreateTab" type="client" />
