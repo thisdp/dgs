@@ -362,7 +362,7 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		else
 			eleData.sourceTexture = false
 		end
-		dxDrawImageSection(x,y,relSizX,relSizY,-OffsetX,-OffsetY,relSizX/scale[1],relSizX/scale[2],drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		dxDrawImageSection(x,y,relSizX,relSizY,-OffsetX,-OffsetY,relSizX/scale[1],relSizY/scale[2],drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		if MouseData.hit == source then
 			mx = (mx-xNRT)/scale[1]-OffsetX+xNRT
 			my = (my-yNRT)/scale[2]-OffsetY+yNRT

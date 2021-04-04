@@ -352,6 +352,7 @@ class {
 		dgsSelector = function(...) return dgsOOP.dgsSelector(dgsRootInstance,...) end,
 		dgsScrollBar = function(...) return dgsOOP.dgsScrollBar(dgsRootInstance,...) end,
 		dgsScrollPane = function(...) return dgsOOP.dgsScrollPane(dgsRootInstance,...) end,
+		dgsScalePane = function(...) return dgsOOP.dgsScalePane(dgsRootInstance,...) end,
 		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(dgsRootInstance,...) end,
 		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(dgsRootInstance,...) end,
 		dgsWindow = function(...) return dgsOOP.dgsWindow(dgsRootInstance,...) end,
@@ -427,10 +428,17 @@ class {
 		dgsSelector = function(...) return dgsOOP.dgsSelector(...) end,
 		dgsScrollBar = function(...) return dgsOOP.dgsScrollBar(...) end,
 		dgsScrollPane = function(...) return dgsOOP.dgsScrollPane(...) end,
+		dgsScalePane = function(...) return dgsOOP.dgsScalePane(...) end,
 		dgsSwitchButton = function(...) return dgsOOP.dgsSwitchButton(...) end,
 		dgsTabPanel = function(...) return dgsOOP.dgsTabPanel(...) end,
 		dgsWindow = function(...) return dgsOOP.dgsWindow(...) end,
-
+		attachToAutoDestroy = function(self,element,dgsElement,index)
+			if self == dgsRootInstance then
+				return dgsAttachToAutoDestroy(type(element) == "table" and element.dgsElement or element,type(dgsElement) == "table" and dgsElement.dgsElement or dgsElement,index) and self
+			else
+				return dgsAttachToAutoDestroy(self.dgsElement,type(element) == "table" and element.dgsElement or element,dgsElement) and self
+			end
+		end,
 		----------Plugins
 		dgsColorPicker = function(...) return dgsOOP.dgsColorPicker(...) end,
 		dgsComponentSelector = function(...) return dgsOOP.dgsComponentSelector(...) end,
@@ -984,9 +992,30 @@ class {
 		getVerticalScrollPosition = gObjFnc("dgsScrollPaneGetVerticalScrollPosition"),
 		setScrollBarState = gObjFnc("dgsScrollPaneSetScrollBarState",true),
 		getScrollBarState = gObjFnc("dgsScrollPaneGetScrollBarState"),
+		setViewOffset = gObjFnc("dgsScrollPaneSetViewOffset",true),
+		getViewOffset = gObjFnc("dgsScrollPaneGetViewOffset"),
 	};
 }
-
+--------------------------ScalePane
+class {
+	extends = "dgs2D";
+	type = "dgsScalePane";
+	dgsType = "dgs-dxscalepane";
+	preInstantiate = function(parent,x,y,w,h,rlt,...)
+		return call(dgsOOP.dgsRes,"dgsCreateScalePane",x,y,w,h,rlt,parent.dgsElement,...)
+	end;
+	public = {
+		getScrollBar = gObjFnc("dgsScalePaneGetScrollBar"),
+		setScrollPosition = gObjFnc("dgsScalePaneSetScrollPosition",true),
+		getScrollPosition = gObjFnc("dgsScalePaneGetScrollPosition"),
+		setHorizontalScrollPosition = gObjFnc("dgsScalePaneSetHorizontalScrollPosition",true),
+		getHorizontalScrollPosition = gObjFnc("dgsScalePaneGetHorizontalScrollPosition"),
+		setVerticalScrollPosition = gObjFnc("dgsScalePaneSetVerticalScrollPosition",true),
+		getVerticalScrollPosition = gObjFnc("dgsScalePaneGetVerticalScrollPosition"),
+		setScrollBarState = gObjFnc("dgsScalePaneSetScrollBarState",true),
+		getScrollBarState = gObjFnc("dgsScalePaneGetScrollBarState"),
+	};
+}
 --------------------------Selector
 class {
 	extends = "dgs2D";
