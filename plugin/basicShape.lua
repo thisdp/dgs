@@ -334,8 +334,9 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	float2 P = float2(xDistance,yDistance);
 	float2 Q = float2(cos(angle),sin(angle));
 	float2 N = float2(-Q.y,Q.x)*nBorderSoft;
-	Q *= outsideRadius;
-	float2 Start = float2(outsideRadius,0);
+	float oRadius = 1-outsideRadius;
+	Q *= oRadius;
+	float2 Start = float2(oRadius,0);
 	float2 StartN = float2(-Start.y,Start.x);
 	float alpha = !direction;
 	if(angle_p<angle) alpha = direction;
@@ -350,7 +351,7 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		float _a = dot(N,P1)/(nBorderSoft*len0P);
 		P.y += nBorderSoft;
 		len0P = length(P);
-		float len0S = outsideRadius;
+		float len0S = oRadius;
 		float lenPS = distance(P,Start);
 		float b = dot(Start,P)/(len0S*len0P);
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
@@ -375,7 +376,7 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		float _a = dot(N,P1)/(nBorderSoft*len0P);
 		P.y -= nBorderSoft;
 		len0P = length(P);
-		float len0S = outsideRadius;
+		float len0S = oRadius;
 		float lenPS = distance(P,Start);
 		float b = dot(Start,P)/(len0S*len0P);
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
@@ -390,7 +391,7 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		else if(hit2)
 			alpha += clamp((dis2)/nBorderSoft,0,1);
 	}
-	alpha *= clamp((1-distance(tex,0.5)-outsideRadius+nBorderSoft)/nBorderSoft,0,1);
+	alpha *= clamp((1-distance(tex,0.5)-oRadius+nBorderSoft)/nBorderSoft,0,1);
 	alpha *= clamp((distance(tex,0.5)-insideRadius+nBorderSoft)/nBorderSoft,0,1);
 	result.a *= clamp(alpha,0,1)*_color.a;
 	result.rgb = colorOverwritten?result.rgb:_color.rgb;
