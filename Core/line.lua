@@ -178,5 +178,5 @@ dgsRenderer["dgs-dxline"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 		dxDrawLine(startX+x,startY+y,endX+x,endY+y,applyColorAlpha(c,parentAlpha),lw,isPostGUI)
 	end
-	return rndtgt,true,mx,my,0,0
+	return rndtgt,false,mx,my,0,0
 end
