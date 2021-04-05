@@ -32,7 +32,6 @@ function dgsCreateLine(...)
 	else
 		x,y,w,h,relative,parent,lineWidth,color = ...
 	end
-	iprint(parent,lineWidth,color)
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateLine",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateLine",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateLine",3,"number")) end
@@ -151,7 +150,7 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxline"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local eleData = dgsElementData[source]
-	local width = eleData.width
+	local width = eleData.lineWidth
 	local color = eleData.color
 	local line = eleData.line
 	local lData = eleData.lineData
@@ -177,7 +176,7 @@ dgsRenderer["dgs-dxline"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if isRelative then
 			endX,endY = endX*w,endY*h
 		end
-		dxDrawLine(startX+x,startY+y,endX+x,endY+y,applyColorAlpha(c,parentAlpha),lw)
+		dxDrawLine(startX+x,startY+y,endX+x,endY+y,applyColorAlpha(c,parentAlpha),lw,isPostGUI)
 	end
 	return rndtgt,true,mx,my,0,0
 end
