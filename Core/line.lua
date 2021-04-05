@@ -30,8 +30,9 @@ function dgsCreateLine(...)
 		lineWidth = argTable.lineWidth or argTable.lwid or argTable.lw or argTable[7]
 		color = argTable.color or argTable[8]
 	else
-		x,y,w,h,relative,parent,color,lineWidth = ...
+		x,y,w,h,relative,parent,lineWidth,color = ...
 	end
+	iprint(parent,lineWidth,color)
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateLine",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateLine",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateLine",3,"number")) end

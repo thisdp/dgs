@@ -872,14 +872,12 @@ class {
 	extends = "dgs2D";
 	type = "dgsLine";
 	dgsType="dgs-dxline";
-	preInstantiate = function(parent,...)
-		local ret = call(dgsOOP.dgsRes,"dgsCreateLine",...)
-		print(ret)
-		return ret
+	preInstantiate = function(parent,x,y,w,h,rlt,...)
+		return call(dgsOOP.dgsRes,"dgsCreateLine",x,y,w,h,rlt,parent.dgsElement,...)
 	end;
 	public = {
-		addLine = gObjFnc("dgsLineAddItem"),
-		removeLine = gObjFnc("dgsLineRemoveItem",true),
+		addItem = gObjFnc("dgsLineAddItem"),
+		removeItem = gObjFnc("dgsLineRemoveItem",true),
 		getItemWidth = gObjFnc("dgsLineGetItemWidth"),
 		setItemWidth = gObjFnc("dgsLineSetItemWidth",true),
 		getItemColor = gObjFnc("dgsLineGetItemColor"),
@@ -1337,8 +1335,8 @@ class {
 		return call(dgsOOP.dgsRes,"dgsCreate3DLine",...)
 	end;
 	public = {
-		addLine = gObjFnc("dgs3DLineAddItem"),
-		removeLine = gObjFnc("dgs3DLineRemoveItem",true),
+		addItem = gObjFnc("dgs3DLineAddItem"),
+		removeItem = gObjFnc("dgs3DLineRemoveItem",true),
 		getItemWidth = gObjFnc("dgs3DLineGetItemWidth"),
 		setItemWidth = gObjFnc("dgs3DLineSetItemWidth",true),
 		getItemColor = gObjFnc("dgs3DLineGetItemColor"),

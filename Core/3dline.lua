@@ -22,7 +22,7 @@ function dgsCreate3DLine(...)
 		color = argTable.color or argTable[8]
 		maxDistance = argTable.maxDistance or argTable[9]
 	else
-		x,y,z,rx,ry,rz,color,width,maxDistances = ...
+		x,y,z,rx,ry,rz,width,color,maxDistances = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DLine",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DLine",2,"number")) end
