@@ -346,6 +346,7 @@ class {
 		dgsGridList = function(...) return dgsOOP.dgsGridList(dgsRootInstance,...) end,
 		dgsImage = function(...) return dgsOOP.dgsImage(dgsRootInstance,...) end,
 		dgsLabel = function(...) return dgsOOP.dgsLabel(dgsRootInstance,...) end,
+		dgsLine = function(...) return dgsOOP.dgsLine(dgsRootInstance,...) end,
 		dgsMemo = function(...) return dgsOOP.dgsMemo(dgsRootInstance,...) end,
 		dgsProgressBar = function(...) return dgsOOP.dgsProgressBar(dgsRootInstance,...) end,
 		dgsRadioButton = function(...) return dgsOOP.dgsRadioButton(dgsRootInstance,...) end,
@@ -422,6 +423,7 @@ class {
 		dgsGridList = function(...) return dgsOOP.dgsGridList(...) end,
 		dgsImage = function(...) return dgsOOP.dgsImage(...) end,
 		dgsLabel = function(...) return dgsOOP.dgsLabel(...) end,
+		dgsLine = function(...) return dgsOOP.dgsLine(...) end,
 		dgsMemo = function(...) return dgsOOP.dgsMemo(...) end,
 		dgsProgressBar = function(...) return dgsOOP.dgsProgressBar(...) end,
 		dgsRadioButton = function(...) return dgsOOP.dgsRadioButton(...) end,
@@ -865,6 +867,26 @@ class {
 	};
 }
 
+--------------------------Line
+class {
+	extends = "dgs2D";
+	type = "dgsLine";
+	dgsType="dgs-dxline";
+	preInstantiate = function(parent,...)
+		return call(dgsOOP.dgsRes,"dgsCreateLine",...)
+	end;
+	public = {
+		addLine = gObjFnc("dgsLineAddItem"),
+		removeLine = gObjFnc("dgsLineRemoveItem",true),
+		getItemWidth = gObjFnc("dgsLineGetItemWidth"),
+		setItemWidth = gObjFnc("dgsLineSetItemWidth",true),
+		getItemColor = gObjFnc("dgsLineGetItemColor"),
+		setItemColor = gObjFnc("dgsLineSetItemColor",true),
+		getItemPosition = gObjFnc("dgsLineGetItemPosition"),
+		setItemPosition = gObjFnc("dgsLineSetItemPosition",true),
+	};
+}
+
 --------------------------Memo
 class {
 	extends = "dgs2D";
@@ -1216,8 +1238,8 @@ class {
 		stopAlphaing = gObjFnc("dgsStopAlphaing",true),
 		getPostGUI = gObjFnc("dgsGetPostGUI"),
 		setPostGUI = gObjFnc("dgsSetPostGUI",true),
-		destroy = function(self) return destroyElement(self.dgsElement) end;
-		isElement = gObjFnc("isElement",true);
+		destroy = function(self) return destroyElement(self.dgsElement) end,
+		isElement = gObjFnc("isElement",true),
 		getElement = function(self) return self.dgsElement end,
 		attachToTranslation = gObjFnc("dgsAttachToTranslation",true),
 		detachFromTranslation = gObjFnc("dgsDetachFromTranslation",true),
@@ -1305,7 +1327,6 @@ class {
 	};
 }
 
-
 class {
 	extends = "dgs3D";
 	type = "dgs3DLine";
@@ -1314,8 +1335,8 @@ class {
 		return call(dgsOOP.dgsRes,"dgsCreate3DLine",...)
 	end;
 	public = {
-		addLine = gObjFnc("dgs3DLineAddLine"),
-		removeLine = gObjFnc("dgs3DLineRemoveLine",true),
+		addLine = gObjFnc("dgs3DLineAddItem"),
+		removeLine = gObjFnc("dgs3DLineRemoveItem",true),
 		getItemWidth = gObjFnc("dgs3DLineGetItemWidth"),
 		setItemWidth = gObjFnc("dgs3DLineSetItemWidth",true),
 		getItemColor = gObjFnc("dgs3DLineGetItemColor"),

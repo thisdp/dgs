@@ -149,7 +149,6 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-
 dgsRenderer["dgs-dxline"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local eleData = dgsElementData[source]
 	local width = eleData.width
