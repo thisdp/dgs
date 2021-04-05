@@ -873,7 +873,9 @@ class {
 	type = "dgsLine";
 	dgsType="dgs-dxline";
 	preInstantiate = function(parent,...)
-		return call(dgsOOP.dgsRes,"dgsCreateLine",...)
+		local ret = call(dgsOOP.dgsRes,"dgsCreateLine",...)
+		print(ret)
+		return ret
 	end;
 	public = {
 		addLine = gObjFnc("dgsLineAddItem"),
@@ -1360,7 +1362,6 @@ class {
 --------------------------------------DGS Built-in Plugins
 ----------------------------------------------------------
 ----------------DGS Plugins
-
 class {
 	extends = "dgsRoot";
 	type = "dgsPlugin";

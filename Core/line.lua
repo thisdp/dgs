@@ -25,13 +25,12 @@ function dgsCreateLine(...)
 		y = argTable.y or argTable[2]
 		w = argTable.width or argTable.w or argTable[3]
 		h = argTable.height or argTable.h or argTable[4]
-		img = argTable.image or argTable.img or argTable[5]
-		relative = argTable.relative or argTable.rlt or argTable[6]
-		parent = argTable.parent or argTable.p or argTable[7]
-		lineWidth = argTable.lineWidth or argTable.lwid or argTable.lw or argTable[8]
-		color = argTable.color or argTable[9]
+		relative = argTable.relative or argTable.rlt or argTable[5]
+		parent = argTable.parent or argTable.p or argTable[6]
+		lineWidth = argTable.lineWidth or argTable.lwid or argTable.lw or argTable[7]
+		color = argTable.color or argTable[8]
 	else
-		x,y,w,h,img,relative,parent,color,lineWidth = ...
+		x,y,w,h,relative,parent,color,lineWidth = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateLine",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateLine",2,"number")) end

@@ -531,15 +531,15 @@
 	<export function="dgsLabelGetTextExtent" type="client" />
 	<export function="dgsLabelGetFontHeight" type="client" />
 	
-	<exports function="dgsCreateLine" type="client"/>
-	<exports function="dgsLineAddItem" type="client"/>
-	<exports function="dgsLineRemoveItem" type="client"/>
-	<exports function="dgsLineSetItemPosition" type="client"/>
-	<exports function="dgsLineGetItemPosition" type="client"/>
-	<exports function="dgsLineSetItemWidth" type="client"/>
-	<exports function="dgsLineGetItemWidth" type="client"/>
-	<exports function="dgsLineSetItemColor" type="client"/>
-	<exports function="dgsLineGetItemColor" type="client"/>
+	<export function="dgsCreateLine" type="client"/>
+	<export function="dgsLineAddItem" type="client"/>
+	<export function="dgsLineRemoveItem" type="client"/>
+	<export function="dgsLineSetItemPosition" type="client"/>
+	<export function="dgsLineGetItemPosition" type="client"/>
+	<export function="dgsLineSetItemWidth" type="client"/>
+	<export function="dgsLineGetItemWidth" type="client"/>
+	<export function="dgsLineSetItemColor" type="client"/>
+	<export function="dgsLineGetItemColor" type="client"/>
 
 	<export function="dgsCreateTabPanel" type="client" />
 	<export function="dgsCreateTab" type="client" />
