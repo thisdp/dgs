@@ -129,6 +129,7 @@ addCommandHandler("g2d",function(player,command,...)
 					print("[DGS-G2D]G2D is not running!")
 				end
 			elseif args[1] == "-crawl" then
+				if not checkServerVersion() then return end
 				if args[2] and args[2] ~= "" then
 					if args[2] == "npp" or args[2] == "n++" then
 						CrawlWikiFromMTA("npp")

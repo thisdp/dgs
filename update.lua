@@ -54,7 +54,7 @@ function checkServerVersion(player)
 	if getVersion().sortable < "1.5.4-9.11342" then
 		if player then
 			local acc = getPlayerAccount(player)
-			if acc and getAccountName(acc) == "Console" then 
+			if acc and getAccountName(acc) == "Console" then
 				outputDebugString("[DGS]Your server version is outdated upgrade to 1.5.4-9.11342 or higher",2)
 			else
 				outputChatBox("[DGS]Your server version is outdated upgrade to 1.5.4-9.11342 or higher",player,255,255,0)
