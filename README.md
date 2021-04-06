@@ -37,6 +37,7 @@ Finally, I am glad to provide the DGS resource, and everyone is welcome to adjus
 # Auto Completion
 - [Notepad++](https://drive.google.com/file/d/1H_PiG2gmEz1AyXqZN4956IVgtZOjgMi6/view?usp=sharing)
 - [Sublime Text 3](https://drive.google.com/file/d/1_07WBEWjriTTucrNGI7jT-4SknALKG6B/view?usp=sharing)
+- [Visual Studio Code](https://drive.google.com/file/d/1J4qoSjzmXZz7yxHUZ2fExBu3zvCwRESn/view?usp=sharing)
 
 # Commands
 all commands type it on F8 console
