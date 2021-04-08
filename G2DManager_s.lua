@@ -129,6 +129,7 @@ addCommandHandler("g2d",function(player,command,...)
 					print("[DGS-G2D]G2D is not running!")
 				end
 			elseif args[1] == "-crawl" then
+				if not checkServerVersion() then return end
 				if args[2] and args[2] ~= "" then
 					if args[2] == "npp" or args[2] == "n++" then
 						CrawlWikiFromMTA("npp")
@@ -685,9 +686,21 @@ function GenerateNPPAutoComplete(tab)
 	print("[DGS]NPP autocomplete file is saved as 'nppAC4DGS.xml'")
 end
 
-
 function GenerateVSCodeAutoComplete(tab)
-
+	if fileExists("dgs.code-snippets") then fileDelete("dgs.code-snippets") end
+	print("[DGS]Generating VSCode autocomplete file...")
+	local t = {}
+	for i=1,#tab do
+		local item = tab[i]
+		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..""..(#item.optionalArguments > 0 and " [, "..table.concat(item.optionalArguments,", ").." ] " or "")..")\n\nRetruns "..table.concat(item.returns,", ").."\n"
+		t[item.fncName] = {scope="lua",prefix=item.fncName,body=item.fncName,description=r}
+	end
+	local f = fileCreate("dgs.code-snippets")
+	fileSetPos(f,0)
+	local json = toJSON(t,false,"spaces")
+	fileWrite(f,json:sub(3, json:len() - 1))
+	fileClose(f)
+	print("[DGS]VSCode autocomplete file is saved as 'dgs.code-snippets'")
 end
 
 function GenerateSublimeAutoComplete(tab)
