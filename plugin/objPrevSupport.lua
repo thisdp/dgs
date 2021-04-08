@@ -60,7 +60,7 @@ function destroyObjectPreviewWhenTargetElementDestroy()
 	dgsElementData[source] = nil
 end
 
-function destroyObjectPreviewWhenTargetElementDestroy()
+function destroyObjectPreviewWhenOPElementDestroy()
 	local objEle = dgsElementData[source].renderElement
 	objPrevHandles[getElementID(source)] = nil
 	dgsElementData[objEle] = nil
