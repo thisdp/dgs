@@ -177,7 +177,6 @@ function dgsColorPickerComponentChange()
 	dgsColorPickerSetComponentSelectorValue(source,position)
 end
 
-
 function dgsColorPickerGetComponentSelectorValue(cs)
 	if not(dgsGetPluginType(cs) == "dgs-dxcomponentselector") then error(dgsGenAsrt(cs,"dgsColorPickerGetComponentSelectorValue",1,"plugin dgs-dxcomponentselector")) end
 	return dgsElementData[cs].value

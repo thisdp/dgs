@@ -9,6 +9,13 @@ local tostring = tostring
 local tonumber = tonumber
 local call = call
 local setfenv = setfenv
+-------Utils
+local strToIntCache = {
+	["1"]=1,
+	["2"]=2,
+	["3"]=3,
+	["4"]=4,
+}
 dgsOOP = {
 	dgsClasses = {},
 	dgsInstances = {},
@@ -54,13 +61,6 @@ dgsOOP = {
 dgsRoot = dgsOOP.dgsRoot
 
 do
--------Utils
-local strToIntCache = {
-	["1"]=1,
-	["2"]=2,
-	["3"]=3,
-	["4"]=4,
-}
 
 local function __eq(self,ele2)
 	if type(ele2) == "table" then
@@ -279,7 +279,6 @@ dgsOOP.size2D = {
 --2 Types:
 --default: Will not inherit
 --public: Will inherit
-
 class {
 	type = "dgsRoot";
 	dgsType = "resourceRoot";
@@ -359,7 +358,7 @@ class {
 		dgsWindow = function(...) return dgsOOP.dgsWindow(dgsRootInstance,...) end,
 		dgsGetInstance = function(dgsElement,...)
 			local typ = type(dgsElement)
-			if typ ~= "table" and typ ~= "userdata" then return dgsElement end
+			if typ ~= "table" and typ ~= "userdata" then return dgsElement,... end
 			if typ == "table" then
 				local t = {}
 				for i=1,#dgsElement do
@@ -1426,4 +1425,5 @@ class {
 
 ------------------------------------------------
 dgsRootInstance = dgsOOP.dgsRoot()
+rootInstance = dgsOOP.dgsRoot()
 end

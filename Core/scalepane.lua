@@ -77,7 +77,7 @@ function dgsCreateScalePane(...)
 	local x,y = dgsElementData[scalepane].absPos[1],dgsElementData[scalepane].absPos[2]
 	local renderTarget,err = dxCreateRenderTarget(resolX or sx,resolY or sy,true,scalepane)
 	if renderTarget ~= false then
-		dxSetTextureEdge(renderTarget,"border",tocolor(255,255,255,0))
+		dxSetTextureEdge(renderTarget,"border",tocolor(0,0,0,0))
 		dgsAttachToAutoDestroy(renderTarget,scalepane,-1)
 	else
 		outputDebugString(err,2)
