@@ -100,6 +100,11 @@ MouseData = {
 	cursorPos = {[0]=false},
 	--3D Coordinate
 	cursorPos3D = {},
+	clickPosition = {
+		left={[0]=false,0,0},
+		middle={[0]=false,0,0},
+		right={[0]=false,0,0},
+	},
 	
 	scbEnterData = false,
 	scbEnterRltPos = false,
@@ -254,6 +259,31 @@ function dgsCoreRender()
 		end
 	end
 	dgsCheckHit(MouseData.hit,cursorShowing)
+	----Drag Drop
+	if dgsDragDropBoard[0] then
+		local preview = dgsDragDropBoard.preview
+		local align = dgsDragDropBoard.pewviewAlignment
+		local alignHoz,alignVrt = align and align[1] or "center", align and align[2] or "center"
+		local previewOffsetX,previewOffsetY = dgsDragDropBoard.previewOffsetX or 0,dgsDragDropBoard.previewOffsetY or 0
+		local posX,posY = mx+previewOffsetX,my+previewOffsetY
+		local previewWidth,previewHeight = dgsDragDropBoard.previewWidth or 20,dgsDragDropBoard.previewHeight or 20
+		if alignHoz == "right" then
+			posX = posX-previewWidth
+		elseif alignHoz == "center" then
+			posX = posX-previewWidth/2
+		end
+		if alignVrt == "bottom" then
+			posY = posY-previewHeight
+		elseif alignVrt == "center" then
+			posY = posY-previewHeight/2
+		end
+		if preview then
+			dxDrawImage(posX,posY,previewWidth,previewHeight,preview,0,0,0,dgsDragDropBoard.previewColor or 0xAAFFFFFF,true)
+		else
+			dxDrawRectangle(posX,posY,previewWidth,previewHeight,dgsDragDropBoard.previewColor or 0xAAFFFFFF,true)
+		end
+	end
+	----Debug stuff
 	dgsRenderInfo.frameEndScreen = getTickCount()
 	if debugMode then
 		dgsRenderInfo.frameRenderTimeScreen = dgsRenderInfo.frameEndScreen-dgsRenderInfo.frameStartScreen
@@ -1155,6 +1185,16 @@ function dgsCheckHit(hits,cursorShowing)
 	if isElement(MouseData.clickl) then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
 			triggerEvent("onDgsMouseDrag",MouseData.clickl,mx,my)
+			if MouseData.clickPosition.left[0] then
+				if ((MouseData.clickPosition.left[1]-mx)^2+(MouseData.clickPosition.left[2]-my)^2)^0.5 > 10 then
+					triggerEvent("onDgsDrag",MouseData.clickl)
+					if not wasEventCancelled() then
+						if dgsElementData[MouseData.clickl].dragHandler then
+							dgsSendDragNDropData(unpack(dgsElementData[MouseData.clickl].dragHandler))
+						end
+					end
+				end
+			end
 		end
 		if MouseData.Move[0] then
 			local posX,posY = 0,0
@@ -1711,6 +1751,7 @@ GirdListDoubleClick.up = false
 
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local guiele = dgsGetMouseEnterGUI()
+	local mouseX,mouseY = MouseData.cursorPos[0] and MouseData.cursorPos[1] or x,MouseData.cursorPos[0] and MouseData.cursorPos[2] or y
 	if isElement(guiele) then
 		local eleData = dgsElementData[guiele]
 		local isCoolingDown = false
@@ -1729,7 +1770,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 
 		if not isElement(guiele) then return end
-		local mouseX,mouseY = MouseData.cursorPos[0] and MouseData.cursorPos[1] or x,MouseData.cursorPos[0] and MouseData.cursorPos[2] or y
 		if state == "up" then
 			if button == "left" then
 				if MouseData.clickl == guiele then
@@ -2018,6 +2058,13 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			MouseData.clickl = false
 			MouseData.lock3DInterface = false
 			MouseData.MoveScroll[0] = false
+			
+			if dgsDragDropBoard[0] then
+				local data = dgsRetrieveDragNDropData()
+				if isElement(guiele) and dgsElementData[guiele].dropHandler then
+					triggerEvent("onDgsDrop",guiele,data)
+				end
+			end
 		elseif button == "right" then
 			MouseData.clickr = false
 		end
@@ -2026,6 +2073,16 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		MouseData.Scale[0] = false
 		MouseData.scbClickData = nil
 		MouseData.selectorClickData = nil
+	end
+	if state == "down" then
+		if isElement(guiele) then
+			MouseData.clickPosition[button][0] = true
+			local posX,posY = dgsGetPosition(guiele,false,true)
+			MouseData.clickPosition[button][1] = mouseX
+			MouseData.clickPosition[button][2] = mouseY
+		end
+	else
+		MouseData.clickPosition[button][0] = false
 	end
 end)
 

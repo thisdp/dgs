@@ -707,8 +707,58 @@ function dgsIsSizeHandled(dgsEle)
 	return dgsElementData[dgsEle].sizeHandlerData and true or false
 end
 
-function dgsAddDragDropHandler(dgsEle)
---todoi
+dgsDragDropBoard = {
+	[0] = false,
+	data = {},		--The data you want to transfer
+	preview = nil,	--The preview you want to show
+	previewColor = nil,
+	previewOffsetX = nil,
+	previewOffsetY = nil,
+	previewWidth = nil,
+	previewHeight = nil,
+	previewAlignment = nil,
+}
+
+function dgsSendDragNDropData(dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign)
+	dgsDragDropBoard[0] = true
+	dgsDragDropBoard.data = dragData
+	dgsDragDropBoard.preview = dragPreview
+	dgsDragDropBoard.previewColor = dragPreviewColor
+	dgsDragDropBoard.previewOffsetX = previewOffsetX
+	dgsDragDropBoard.previewOffsetY = previewOffsetY
+	dgsDragDropBoard.previewWidth = previewWidth
+	dgsDragDropBoard.previewHeight = previewHeight
+	dgsDragDropBoard.previewAlignment = {previewHorizontalAlign,previewVerticalAlign}
+	return true
+end
+
+function dgsRetrieveDragNDropData(retainState)
+	if dgsDragDropBoard[0] then
+		if not retainState then
+			dgsDragDropBoard[0] = false
+		end
+		return dgsDragDropBoard.data
+	end
+end
+
+function dgsIsDragNDropData()
+	return dgsDragDropBoard[0]
+end
+
+function dgsAddDragHandler(dgsEle,dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign)
+	return dgsSetData(dgsEle,"dragHandler",{dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign})
+end
+
+function dgsAddDropHandler(dgsEle)
+	return dgsSetData(dgsEle,"dropHandler",true)
+end
+
+function dgsRemoveDragHandler(dgsEle)
+	return dgsSetData(dgsEle,"dragHandler",nil)
+end
+
+function dgsRemoveDropHandler(dgsEle)
+	return dgsSetData(dgsEle,"dropHandler",nil)
 end
 ------------Auto Destroy
 function dgsAttachToAutoDestroy(element,dgsEle,index)
@@ -996,7 +1046,6 @@ function dgsTranslateText(textTable)
 	end
 	return false
 end
-
 
 ----Compatibility
 function dgsSetSide(dgsEle,which,where)

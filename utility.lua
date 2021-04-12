@@ -1018,6 +1018,8 @@ events = {
 	"onDgsMouseMultiClick",
 	"onDgsMouseDown",
 	"onDgsMouseUp",
+	"onDgsMouseDrag",
+	"onDgsMouseMove",
 	"onDgsWindowClose",
 	"onDgsPositionChange",
 	"onDgsSizeChange",
@@ -1041,7 +1043,6 @@ events = {
 	"onDgsElementSize",
 	"onDgsFocus",
 	"onDgsBlur",
-	"onDgsMouseMove",
 	"onDgsTabSelect",
 	"onDgsTabPanelTabSelect",
 	"onDgsRadioButtonChange",
@@ -1055,7 +1056,8 @@ events = {
 	"onDgsStopSizing",
 	"onDgsStopAlphaing",
 	"onDgsStopAniming",
-	"onDgsMouseDrag",
+	"onDgsDrop",
+	"onDgsDrag",
 	"onDgsStart",
 	"onDgsPaste", --DGS Paste Handler
 	-------Plugin events
