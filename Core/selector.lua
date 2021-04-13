@@ -174,7 +174,7 @@ function dgsSelectorSetItemText(selector,i,text)
 	return true
 end
 
-function dgsSelectorSetItemData(selector,i,key,data)
+function dgsSelectorSetItemData(selector,i,...)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemData",1,"dgs-dxselector")) end
 	local iData = dgsElementData[selector].itemData
 	local iLen = #iData
@@ -183,11 +183,17 @@ function dgsSelectorSetItemData(selector,i,key,data)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	iData[i][9] = iData[i][9] or {}
-	iData[i][9][key] = data
+	if select("#",...) == 2 then
+		local key,data = ...
+		iData[i][9][key] = data
+	else
+		local data = ...
+		iData[i][9]["_DGSI_NOKEY"] = data
+	end
 	return true
 end
 
-function dgsSelectorGetItemData(selector,i,key)
+function dgsSelectorGetItemData(selector,i,...)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetItemData",1,"dgs-dxselector")) end
 	local iData = dgsElementData[selector].itemData
 	local iLen = #iData
@@ -195,7 +201,11 @@ function dgsSelectorGetItemData(selector,i,key)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
-	return iData[i][9] and iData[i][9][key] or false
+	if select("#",...) == 0 then
+		return iData[i][9] and iData[i][9]["_DGSI_NOKEY"] or false
+	else
+		return iData[i][9] and iData[i][9][key] or false
+	end
 end
 
 function dgsSelectorSetItemColor(selector,i,color)
