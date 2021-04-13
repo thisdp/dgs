@@ -71,9 +71,9 @@ function dgsCreateSelector(...)
 		quickLeap = 0.02,
 		quickLeapState = 0,
 		quickLeapTick = 0,
-		scrollChangeCount = 1,
+		--scrollChangeCount = 1,
 		enableScroll = true,
-		defaultText = "-",
+		placeHolder = "-",
 		alignment = {"center","center"},
 		itemData = {},
 		subPixelPositioning = false,
@@ -360,7 +360,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local alignment = eleData.alignment
 	local font = eleData.font
 	local colorcoded = eleData.colorcoded
-	local defaultText = eleData.defaultText
+	local placeHolder = eleData.placeHolder
 	local itemTextColorDef = eleData.itemTextColor
 	local selectorSize = eleData.selectorSize
 	local selectorTextColor = eleData.selectorTextColor
@@ -442,7 +442,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxDrawText(renderItem[1],x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),renderItem[5],renderItem[6],renderItem[7],renderItem[2][1],renderItem[2][2],false,false,isPostGUI,renderItem[4])
 	else
 		local itemTextColor = type(itemTextColorDef) == "table" and itemTextColorDef[selectorTextColors[2]] or itemTextColorDef
-		dxDrawText(defaultText,x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+		dxDrawText(placeHolder,x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
 	end
 	dxDrawText(selector[1],x,selectorStartY,x+selectorSizeX,selectorEndY,applyColorAlpha(selectorTextColorLeft,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
 	dxDrawText(selector[2],x+w-selectorSizeX,selectorStartY,x+w,selectorEndY,applyColorAlpha(selectorTextColorRight,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
