@@ -22,9 +22,9 @@ local mathClamp = math.restrict
 --[[
 Selector Data Structure:
 {
-	{text,alignment,color,colorcoded,sizex,sizey,font},
-	{text,alignment,color,colorcoded,sizex,sizey,font},
-	{text,alignment,color,colorcoded,sizex,sizey,font},
+	{text,alignment,color,colorcoded,sizex,sizey,font,translationTest,data,imageData},
+	{text,alignment,color,colorcoded,sizex,sizey,font,translationTest,data,imageData},
+	{text,alignment,color,colorcoded,sizex,sizey,font,translationTest,data,imageData},
 }
 ]]
 function dgsCreateSelector(...)
@@ -195,8 +195,7 @@ function dgsSelectorGetItemData(selector,i,key)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
-	iData[i][9] = iData[i][9] or {}
-	return iData[i][9][key]
+	return iData[i][9] and iData[i][9][key] or false
 end
 
 function dgsSelectorSetItemColor(selector,i,color)
@@ -305,7 +304,7 @@ function dgsSelectorSetItemImage(selector,i,image,color,offx,offy,w,h,relative)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
-	local imageData,size = iData[i][9] or {},dgsElementData[selector].absSize
+	local imageData,size = iData[i][10] or {},dgsElementData[selector].absSize
 	imageData[1] = image or imageData[1]
 	imageData[2] = color or imageData[2] or white
 	imageData[3] = offx or imageData[3] or 0
@@ -313,7 +312,7 @@ function dgsSelectorSetItemImage(selector,i,image,color,offx,offy,w,h,relative)
 	imageData[5] = w or imageData[5] or relative and 1 or size[1]
 	imageData[6] = h or imageData[6] or relative and 1 or size[2]
 	imageData[7] = relative or false
-	iData[i][9] = imageData
+	iData[i][10] = imageData
 end
 
 function dgsSelectorGetItemImage(selector,i)
@@ -417,7 +416,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	local renderItem = itemData[eleData.selectedItem]
 	if eleData.selectedItem ~= -1 and renderItem then
-		local imageData = renderItem[9]
+		local imageData = renderItem[10]
 		if imageData then
 			local imageX = x+(imageData[7] and imageData[3]*w or imageData[3])
 			local imageY = y+(imageData[7] and imageData[4]*h or imageData[4])
