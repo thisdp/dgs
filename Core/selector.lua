@@ -125,7 +125,7 @@ function dgsSelectorRemoveItem(selector,i)
 	local iLen = #iData
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
-	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorRemoveItem",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	tableRemove(iData,i)
 	dgsElementData[selector].selectedItem = #iData >= 1 and mathClamp(dgsElementData[selector].selectedItem,1,#iData) or -1
@@ -152,7 +152,7 @@ function dgsSelectorGetItemText(selector,i,retTransOrig)
 	local iLen = #iData
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
-	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	return retTransOrig and iData[i][8] or iData[i][1]
 end
@@ -200,7 +200,7 @@ function dgsSelectorGetItemData(selector,i,key)
 end
 
 function dgsSelectorSetItemColor(selector,i,color)
-	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemText",1,"dgs-dxselector")) end
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetItemColor",1,"dgs-dxselector")) end
 	local iData = dgsElementData[selector].itemData
 	local iLen = #iData
 	local iIsNum = type(i) == "number"
