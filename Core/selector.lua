@@ -79,7 +79,7 @@ function dgsCreateSelector(...)
 		subPixelPositioning = false,
 		shadow = {shadowoffsetx,shadowoffsety,shadowcolor},
 		font = style.font or systemFont,
-		selectedItem = -1,
+		select = -1,
 	}
 	calculateGuiPositionSize(selector,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",selector,sourceResource)
@@ -113,8 +113,8 @@ function dgsSelectorAddItem(selector,text,pos)
 		{}, --item data
 		nil, -- item image
 	})
-	if eleData.selectedItem == -1 then
-		eleData.selectedItem = 1
+	if eleData.select == -1 then
+		eleData.select = 1
 	end
 	return pos
 end
@@ -128,22 +128,22 @@ function dgsSelectorRemoveItem(selector,i)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorRemoveItem",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	tableRemove(iData,i)
-	dgsElementData[selector].selectedItem = #iData >= 1 and mathClamp(dgsElementData[selector].selectedItem,1,#iData) or -1
+	dgsElementData[selector].select = #iData >= 1 and mathClamp(dgsElementData[selector].select,1,#iData) or -1
 	return true
 end
 
 function dgsSelectorSetSelectedItem(selector,i)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetSelectedItem",1,"dgs-dxselector")) end
 	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetSelectedItem",2,"number")) end
-	local prev = dgsElementData[selector].selectedItem
-	dgsSetData(selector,"selectedItem",i)
+	local prev = dgsElementData[selector].select
+	dgsSetData(selector,"select",i)
 	triggerEvent("onDgsSelectorSelect",selector,i,prev)
 	return true
 end
 
 function dgsSelectorGetSelectedItem(selector)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorGetSelectedItem",1,"dgs-dxselector")) end
-	return dgsElementData[selector].selectedItem
+	return dgsElementData[selector].select
 end
 
 function dgsSelectorGetItemText(selector,i,retTransOrig)
@@ -424,8 +424,8 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxDrawRectangle(x+w-selectorSizeX,selectorStartY,selectorSizeX,selectorSizeY,applyColorAlpha(selectorImageColorRight,parentAlpha),isPostGUI)
 		end
 	end
-	local renderItem = itemData[eleData.selectedItem]
-	if eleData.selectedItem ~= -1 and renderItem then
+	local renderItem = itemData[eleData.select]
+	if eleData.select ~= -1 and renderItem then
 		local imageData = renderItem[10]
 		if imageData then
 			local imageX = x+(imageData[7] and imageData[3]*w or imageData[3])

@@ -829,7 +829,7 @@ addEventHandler("onClientKey",root,function(button,state)
 			if dgsElementData[selector].enableScroll and MouseData.focused == selector then
 				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
-				local currentItem = dgsElementData[selector].selectedItem
+				local currentItem = dgsElementData[selector].select
 				dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+(button == "mouse_wheel_down" and -1 or 1),1,itemCount)))
 			end
 		end
@@ -1445,7 +1445,7 @@ function onClientMouseTriggered()
 			if MouseData.selectorEnterData == 1 then
 				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
-				local currentItem = dgsElementData[selector].selectedItem
+				local currentItem = dgsElementData[selector].select
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
@@ -1459,7 +1459,7 @@ function onClientMouseTriggered()
 			elseif MouseData.selectorEnterData == 3 then
 				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
-				local currentItem = dgsElementData[selector].selectedItem
+				local currentItem = dgsElementData[selector].select
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
