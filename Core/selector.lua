@@ -59,7 +59,7 @@ function dgsCreateSelector(...)
 		itemTextColor = tonumber(textColor or style.itemTextColor),
 		itemTextSize = {textSizeX or style.itemTextSize[1],textSizeY or textSizeX or style.itemTextSize[2]},
 		clip = false,
-		selectorText = {textSizeX or style.selectorText[1],textSizeY or style.selectorText[2]},
+		selectorText = {style.selectorText[1],style.selectorText[2]},
 		selectorTextSize = style.selectorTextSize,
 		selectorTextColor = style.selectorTextColor,
 		selectorSize = {nil,1,true},
