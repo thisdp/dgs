@@ -830,7 +830,7 @@ addEventHandler("onClientKey",root,function(button,state)
 				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
 				local currentItem = dgsElementData[selector].selectedItem
-				dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+(button == "mouse_wheel_down" and 1 or -1),1,itemCount)))
+				dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+(button == "mouse_wheel_down" and -1 or 1),1,itemCount)))
 			end
 		end
 	elseif state then
@@ -1449,7 +1449,7 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = mathLerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = mathLerp(0.1,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0
@@ -1463,7 +1463,7 @@ function onClientMouseTriggered()
 				if currentItem ~= -1 then
 					local offsetItem = 1
 					if MouseHolder.notIsFirst then
-						dgsElementData[selector].quickLeapState = mathLerp(0.2,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
+						dgsElementData[selector].quickLeapState = mathLerp(0.1,dgsElementData[selector].quickLeapState,dgsElementData[selector].quickLeap)
 						offsetItem = dgsElementData[selector].quickLeapState*itemCount
 					else
 						dgsElementData[selector].quickLeapState = 0
