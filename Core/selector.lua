@@ -132,6 +132,13 @@ function dgsSelectorRemoveItem(selector,i)
 	return true
 end
 
+function dgsSelectorClear(selector)
+	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorClear",1,"dgs-dxselector")) end
+	dgsElementData[selector].itemData = {}
+	dgsElementData[selector].select = -1
+	return true
+end
+
 function dgsSelectorSetSelectedItem(selector,i)
 	if dgsGetType(selector) ~= "dgs-dxselector" then error(dgsGenAsrt(selector,"dgsSelectorSetSelectedItem",1,"dgs-dxselector")) end
 	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetSelectedItem",2,"number")) end

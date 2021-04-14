@@ -351,7 +351,7 @@
 	<export function="dgsScalePaneGetHorizontalScrollPosition" type="client" />
 	<export function="dgsScalePaneSetVerticalScrollPosition" type="client" />
 	<export function="dgsScalePaneGetVerticalScrollPosition" type="client" />
-	
+
 	<export function="dgsCreateScrollPane" type="client" />
 	<export function="dgsScrollPaneGetScrollBar" type="client" />
 	<export function="dgsScrollPaneSetScrollBarState" type="client" />
@@ -537,7 +537,7 @@
 	<export function="dgsLabelGetVerticalAlign" type="client" />
 	<export function="dgsLabelGetTextExtent" type="client" />
 	<export function="dgsLabelGetFontHeight" type="client" />
-	
+
 	<export function="dgsCreateLine" type="client"/>
 	<export function="dgsLineAddItem" type="client"/>
 	<export function="dgsLineRemoveItem" type="client"/>
@@ -576,6 +576,7 @@
 	<export function="dgsCreateSelector" type="client" />
 	<export function="dgsSelectorAddItem" type="client" />
 	<export function="dgsSelectorRemoveItem" type="client" />
+	<export function="dgsSelectorClear" type="client" />
 	<export function="dgsSelectorSetSelectedItem" type="client" />
 	<export function="dgsSelectorGetSelectedItem" type="client" />
 	<export function="dgsSelectorGetItemText" type="client" />
