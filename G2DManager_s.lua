@@ -709,7 +709,7 @@ function GenerateSublimeAutoComplete(tab)
 	local t = {scope = "source.lua",completions = {}}
 	for i=1,#tab do
 		local item = tab[i]
-		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..")\t Retruns "..table.concat(item.returns,", ")
+		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..")\t Returns "..table.concat(item.returns,", ")
 		table.insert(t.completions,{trigger=r,contents=item.fncName})
 	end
 	local f = fileCreate("dgs.sublime-completions")
