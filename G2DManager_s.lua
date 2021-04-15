@@ -692,7 +692,7 @@ function GenerateVSCodeAutoComplete(tab)
 	local t = {}
 	for i=1,#tab do
 		local item = tab[i]
-		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..""..(#item.optionalArguments > 0 and " [, "..table.concat(item.optionalArguments,", ").." ] " or "")..")\n\nRetruns "..table.concat(item.returns,", ").."\n"
+		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..""..(#item.optionalArguments > 0 and " [, "..table.concat(item.optionalArguments,", ").." ] " or "")..")\n\nReturns "..table.concat(item.returns,", ").."\n"
 		t[item.fncName] = {scope="lua",prefix=item.fncName,body=item.fncName,description=r}
 	end
 	local f = fileCreate("dgs.code-snippets")
@@ -709,7 +709,7 @@ function GenerateSublimeAutoComplete(tab)
 	local t = {scope = "source.lua",completions = {}}
 	for i=1,#tab do
 		local item = tab[i]
-		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..")\t Retruns "..table.concat(item.returns,", ")
+		local r = item.fncName.."("..table.concat(item.requiredArguments,", ")..")\t Returns "..table.concat(item.returns,", ")
 		table.insert(t.completions,{trigger=r,contents=item.fncName})
 	end
 	local f = fileCreate("dgs.sublime-completions")
