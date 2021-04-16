@@ -784,6 +784,7 @@ function dgsDetachFromAutoDestroy(element,dgsEle)
 end
 -------------------------
 addEventHandler("onDgsCreate",root,function(theResource)
+	dgsElementData[source] = dgsElementData[source] or {}
 	local eleData = dgsElementData[source]
 	eleData.positionAlignment = {"left","top"}
 	eleData.visible = true
