@@ -405,15 +405,15 @@ technique circleTechnique{
 }
 ]]
 
-function dgsCreateCircle(outsideRadius,insideRadius,color,texture)
+function dgsCreateCircle(outsideRadius,insideRadius,angle,color,texture)
 	local circle = dxCreateShader(circleShader)
 	if not circle then return false end
-	local color = color or tocolor(255,255,255,255)
 	dgsSetData(circle,"asPlugin","dgs-dxcircle")
 	dgsCircleSetColorOverwritten(circle,true)
 	dgsCircleSetRadius(circle,outsideRadius or 0.5,insideRadius or 0.2)
 	dgsCircleSetTexture(circle,texture)
-	dgsCircleSetColor(circle,color)
+	dgsCircleSetColor(circle,color or tocolor(255,255,255,255))
+	dgsCircleSetAngle(circle,angle or 0)
 	triggerEvent("onDgsPluginCreate",circle,sourceResource)
 	return circle
 end
