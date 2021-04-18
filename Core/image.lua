@@ -94,7 +94,7 @@ function dgsImageCreateTextureExternal(image,res,img)
 			img = img:gsub("//","/") or img
 		end
 	end
-	texture = dxCreateTexture(img)
+	local texture = dxCreateTexture(img)
 	if isElement(texture) then
 		dgsElementData[texture] = {parent=image}
 		dgsAttachToAutoDestroy(texture,image)
