@@ -120,7 +120,6 @@ function dgsGetIntersection(lnVec,lnPnt,pnVec,pnPnt)
 	end
 end
 
-
 function dgs3DInterfaceSetRotation(interface,rotation)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetRotation",1,"dgs-dx3dinterface")) end
 	if not (type(rotation) == "number") then error(dgsGenAsrt(rotation,"dgs3DInterfaceSetRotation",2,"number")) end
