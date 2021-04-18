@@ -48,7 +48,7 @@ function dgsCreate3DImage(...)
 		rotationCenter = {0,0},
 		materialInfo = {},
 	}
-	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image,sourceResource,img) or img
+	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image3d,sourceResource,img) or img
 	triggerEvent("onDgsCreate",image3d,sourceResource)
 	return image3d
 end
