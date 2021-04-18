@@ -23,6 +23,16 @@ function dgsCreate3DImage(...)
 	else
 		x,y,z,img,color,width,height,maxDistances = ...
 	end
+
+	if type(img) == "string" then
+		local tex = dxCreateTexture(img)
+		if (tex) then
+			img = tex
+		else
+			error(dgsGenAsrt(img, "dgsCreate3DImage", 4, "string", "", "Required file path or texture"))
+		end
+	end
+
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",3,"number")) end
