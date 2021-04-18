@@ -24,15 +24,6 @@ function dgsCreate3DImage(...)
 		x,y,z,img,color,width,height,maxDistances = ...
 	end
 
-	if type(img) == "string" then
-		local tex = dxCreateTexture(img)
-		if (tex) then
-			img = tex
-		else
-			error(dgsGenAsrt(img, "dgsCreate3DImage", 4, "string", "", "Required file path or texture"))
-		end
-	end
-
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",3,"number")) end
@@ -49,10 +40,15 @@ function dgsCreate3DImage(...)
 		fadeDistance = maxDistance or 80,
 		dimension = -1,
 		interior = -1,
-		image = img,
 		canBeBlocked = false,
 		subPixelPositioning = true,
+		UVPos = {},
+		UVSize = {},
+		rotation = 0,
+		rotationCenter = {0,0},
+		materialInfo = {},
 	}
+	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image,sourceResource,img) or img
 	triggerEvent("onDgsCreate",image3d,sourceResource)
 	return image3d
 end
@@ -155,6 +151,58 @@ function dgs3DImageGetPosition(image)
 	return pos[1],pos[2],pos[3]
 end
 
+function dgs3DImageSetUVSize(image,sx,sy,relative)
+	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageSetUVSize",1,"dgs-dx3dimage")) end
+	return dgsSetData(image,"UVSize",{sx,sy,relative})
+end
+
+function dgs3DImageGetUVSize(image,relative)
+	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageGetUVSize",1,"dgs-dx3dimage")) end
+	local texture = dgsElementData[image].image
+	if isElement(texture) and getElementType(texture) ~= "shader" then
+		local UVSize = dgsElementData[image].UVSize or {1,1,true}
+		local mx,my = dxGetMaterialSize(texture)
+		local sizeU,sizeV = UVSize[1],UVSize[2]
+		if UVSize[3] and not relative then
+			sizeU,sizeV = sizeU*mx,sizeV*my
+		elseif not UVSize[3] and relative then
+			sizeU,sizeV = sizeU/mx,sizeV/my
+		end
+		return sizeU,sizeV
+	end
+	return false
+end
+
+function dgs3DImageSetUVPosition(image,x,y,relative)
+	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageSetUVPosition",1,"dgs-dx3dimage")) end
+	return dgsSetData(image,"UVPos",{x,y,relative})
+end
+
+function dgs3DImageGetUVPosition(image,relative)
+	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageGetUVPosition",1,"dgs-dx3dimage")) end
+	local texture = dgsElementData[image].image
+	if isElement(texture) and getElementType(texture) ~= "shader" then
+		local UVPos = dgsElementData[image].UVPos or {0,0,true}
+		local mx,my = dxGetMaterialSize(texture)
+		local posU,posV = UVPos[1],UVPos[2]
+		if UVPos[3] and not relative then
+			posU,posV = posU*mx,posV*my
+		elseif not UVPos[3] and relative then
+			posU,posV = posU/mx,posV/my
+		end
+		return posU,posV
+	end
+	return false
+end
+
+function dgs3DImageGetNativeSize(image)
+	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageGetNativeSize",1,"dgs-dx3dimage")) end
+	if isElement(dgsElementData[image].image) then
+		return dxGetMaterialSize(image)
+	end
+	return false
+end
+
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -221,7 +269,49 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 					local h = imageSizeY/distance*50
 					local color = applyColorAlpha(eleData.color,parentAlpha*fadeMulti)
 					local x,y=x-w*0.5,y-h*0.5
+					
 					if image then
+						local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
+						local rot = eleData.rotation or 0
+						local materialInfo = eleData.materialInfo
+						local uvPx,uvPy,uvSx,uvSy
+						if materialInfo[0] ~= image then	--is latest?
+							materialInfo[0] = image	--Update if not
+							materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
+						end
+						local uvPos = eleData.UVPos
+						local px,py,pRlt = uvPos[1],uvPos[2],uvPos[3]
+						if px and py then
+							uvPx = pRlt and px*materialInfo[1] or px
+							uvPy = pRlt and py*materialInfo[2] or py
+							local uvSize = eleData.UVSize
+							local sx,sy,sRlt = uvSize[1] or 1,uvSize[2] or 1,uvSize[3] or true
+							uvSx = pRlt and sx*materialInfo[1] or sx
+							uvSy = sRlt and sy*materialInfo[2] or sy
+						end
+						if uvPx then
+							if shadowoffx and shadowoffy and shadowc then
+								local shadowc = applyColorAlpha(shadowc,parentAlpha)
+								dxDrawImageSection(x+shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+								if shadowIsOutline then
+									dxDrawImageSection(x-shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+									dxDrawImageSection(x-shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+									dxDrawImageSection(x+shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+								end
+							end
+							dxDrawImageSection(x,y,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffy,rotOffy,colors,isPostGUI,rndtgt)
+						else
+							if shadowoffx and shadowoffy and shadowc then
+								local shadowc = applyColorAlpha(shadowc,parentAlpha)
+								dxDrawImage(x+shadowoffx,y+shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+								if shadowIsOutline then
+									dxDrawImage(x-shadowoffx,y+shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+									dxDrawImage(x-shadowoffx,y-shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+									dxDrawImage(x+shadowoffx,y-shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+								end
+							end
+							dxDrawImage(x,y,w,h,image,rot,rotOffx,rotOffy,colors,isPostGUI,rndtgt)
+						end
 						dxDrawImage(x,y,w,h,image,0,0,0,color)
 					else
 						dxDrawRectangle(x,y,w,h,color)

@@ -44,10 +44,9 @@ function dgsCreateImage(...)
 	dgsSetType(image,"dgs-dximage")
 	dgsSetParent(image,parent,true,true)
 	dgsElementData[image] = {
-		renderBuffer = {
-			UVSize = {},
-			UVPos = {},
-		},
+		UVSize = {},
+		UVPos = {},
+		materialInfo = {},
 		color = color or 0xFFFFFFFF,
 		rotationCenter = {0,0}, -- 0~1
 		rotation = 0, -- 0~360
@@ -76,6 +75,13 @@ function dgsImageSetImage(image,img)
 	if type(texture) == "string" then
 		texture,textureExists = dgsImageCreateTextureExternal(image,sourceResource,texture)
 		if not textureExists then return false end
+	end
+	local materialSize = dgsElementData[image].materialSize
+	materialSize[0] = texture
+	if isElement(texture) then
+		materialSize[1],materialSize[2] = dxGetMaterialSize(texture)
+	else
+		materialSize[0] = nil
 	end
 	return dgsSetData(image,"image",texture)
 end
@@ -155,9 +161,7 @@ end
 dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local colors,imgs = eleData.color,eleData.image
 	colors = applyColorAlpha(colors,parentAlpha)
-	if imgs then
-		local uvPos,uvSize = eleData.renderBuffer.UVPos or {},eleData.renderBuffer.UVSize or {}
-		local sx,sy,px,py = uvSize[1],uvSize[2],uvPos[1],uvPos[2]
+	if isElement(imgs) then
 		local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
 		local rot = eleData.rotation or 0
 		local shadow = eleData.shadow
@@ -165,7 +169,34 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		if shadow then
 			shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 		end
-		if not sx or not sy or not px or not py then
+		local materialInfo = eleData.materialInfo
+		local uvPx,uvPy,uvSx,uvSy
+		if materialInfo[0] ~= imgs then	--is latest?
+			materialInfo[0] = imgs	--Update if not
+			materialInfo[1],materialInfo[2] = dxGetMaterialSize(imgs)
+		end
+		local uvPos = eleData.UVPos
+		local px,py,pRlt = uvPos[1],uvPos[2],uvPos[3]
+		if px and py then
+			uvPx = pRlt and px*materialInfo[1] or px
+			uvPy = pRlt and py*materialInfo[2] or py
+			local uvSize = eleData.UVSize
+			local sx,sy,sRlt = uvSize[1] or 1,uvSize[2] or 1,uvSize[3] or true
+			uvSx = pRlt and sx*materialInfo[1] or sx
+			uvSy = sRlt and sy*materialInfo[2] or sy
+		end
+		if uvPx then
+			if shadowoffx and shadowoffy and shadowc then
+				local shadowc = applyColorAlpha(shadowc,parentAlpha)
+				dxDrawImageSection(x+shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+				if shadowIsOutline then
+					dxDrawImageSection(x-shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImageSection(x-shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImageSection(x+shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+				end
+			end
+			dxDrawImageSection(x,y,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffy,rotOffy,colors,isPostGUI,rndtgt)
+		else
 			if shadowoffx and shadowoffy and shadowc then
 				local shadowc = applyColorAlpha(shadowc,parentAlpha)
 				dxDrawImage(x+shadowoffx,y+shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
@@ -176,17 +207,6 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 				end
 			end
 			dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,isPostGUI,rndtgt)
-		else
-			if shadowoffx and shadowoffy and shadowc then
-				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawImageSection(x+shadowoffx,y+shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-				if shadowIsOutline then
-					dxDrawImageSection(x-shadowoffx,y+shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-					dxDrawImageSection(x-shadowoffx,y-shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-					dxDrawImageSection(x+shadowoffx,y-shadowoffy,w,h,px,py,sx,sy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-				end
-			end
-			dxDrawImageSection(x,y,w,h,px,py,sx,sy,imgs,rot,rotOffy,rotOffy,colors,isPostGUI,rndtgt)
 		end
 	else
 		dxDrawRectangle(x,y,w,h,colors,isPostGUI)

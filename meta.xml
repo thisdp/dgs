@@ -340,6 +340,11 @@
 	<export function="dgs3DImageGetAttachedOffsets" type="client" />
 	<export function="dgs3DImageSetPosition" type="client" />
 	<export function="dgs3DImageGetPosition" type="client" />
+	<export function="dgs3DImageGetNativeSize" type="client" />
+	<export function="dgs3DImageGetUVPosition" type="client" />
+	<export function="dgs3DImageSetUVPosition" type="client" />
+	<export function="dgs3DImageGetUVSize" type="client" />
+	<export function="dgs3DImageSetUVSize" type="client" />
 
 	<export function="dgsCreateScalePane" type="client" />
 	<export function="dgsScalePaneGetScrollBar" type="client" />

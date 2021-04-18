@@ -537,48 +537,6 @@ function dgsSetData(dgsEle,key,value,nocheck)
 			local renderTarget = dxCreateRenderTarget(value[1],value[2],true)
 			dgsSetData(dgsEle,"renderTarget",renderTarget)
 		end
-	elseif dgsType == "dgs-dximage" then
-		if key == "UVSize" then
-			local sx,sy,relative = value[1],value[2],value[3]
-			if not sx and not sy then
-				dgsElementData[dgsEle].renderBuffer.UVSize = {}
-			else
-				local texture = dgsElementData[dgsEle].image
-				if isElement(texture) and getElementType(texture) ~= "shader" then
-					local mx,my = dxGetMaterialSize(texture)
-					local sx,sy = tonumber(sx),tonumber(sy)
-					local sx,sy = relative and (sx or 1)*mx or (sx or mx),relative and (sy or 1)*my or (sy or my)
-					dgsElementData[dgsEle].renderBuffer.UVSize = {sx,sy}
-				end
-			end
-		elseif key == "UVPos" then
-			local x,y,relative = value[1],value[2],value[3]
-			if not x and not y then
-				dgsElementData[dgsEle].renderBuffer.UVPos = {}
-			else
-				local texture = dgsElementData[dgsEle].image
-				if isElement(texture) and getElementType(texture) ~= "shader" then
-					local x,y,relative = value[1],value[2],value[3]
-					local mx,my = dxGetMaterialSize(texture)
-					local x,y = tonumber(x),tonumber(y)
-					local x,y = relative and (x or 0)*mx or (x or mx),relative and (y or 0)*my or (y or my)
-					dgsElementData[dgsEle].renderBuffer.UVPos = {x,y}
-				end
-			end
-		elseif key == "image" then
-			local imgType = dgsGetType(value)
-			if isElement(value) and imgType ~= "shader" and imgType ~= "dgs-dxcustomrenderer" then
-				local UVPos,UVSize = dgsElementData[dgsEle].UVPos or {0,0,true},dgsElementData[dgsEle].UVSize or {1,1,true}
-				local x,y,relative = UVPos[1],UVPos[2],UVPos[3]
-				local sx,sy,relative = UVSize[1],UVSize[2],UVSize[3]
-				local mx,my = dxGetMaterialSize(value)
-				local x,y,sx,sy = tonumber(x),tonumber(y),tonumber(sx),tonumber(sy)
-				local x,y = relative and (x or 0)*mx or (x or mx),relative and (y or 0)*my or (y or my)
-				local sx,sy = relative and (sx or 1)*mx or (sx or mx),relative and (sy or 1)*my or (sy or my)
-				dgsElementData[dgsEle].renderBuffer.UVPos = {x,y}
-				dgsElementData[dgsEle].renderBuffer.UVSize = {sx,sy}
-			end
-		end
 	elseif dgsType == "dgs-dxscalepane" then
 		if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" or key == "scrollBarLength" or key == "scale" then
 			configScalePane(dgsEle)
