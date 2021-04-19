@@ -695,8 +695,10 @@ addEventHandler("onClientKey",root,function(button,state)
 		local dgsType = dgsGetType(enteredElement)
 		if dgsGetType(enteredElement) == "dgs-dxscrollbar" then
 			local scrollbar = enteredElement
-			dgsSetData(scrollbar,"moveType","slow")
-			scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+			if scrollbar then
+				dgsSetData(scrollbar,"moveType","slow")
+				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+			end
 		elseif dgsType == "dgs-dxgridlist" then
 			local scrollbar
 			local gridlist = enteredElement
@@ -710,13 +712,22 @@ addEventHandler("onClientKey",root,function(button,state)
 			if scrollbar then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+				if scrollbar2 then
+					dgsSetData(scrollbar2,"moveType","slow")
+					scrollScrollBar(scrollbar2,button == "mouse_wheel_down" or false)
+				end
 			end
 		elseif dgsType == "dgs-dxmemo" then
 			local memo = enteredElement
 			local scrollbar = dgsElementData[memo].scrollbars[1]
+			local scrollbar2 = dgsElementData[memo].scrollbars[2]
 			if dgsGetVisible(scrollbar) then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+				if scrollbar2 then
+					dgsSetData(scrollbar2,"moveType","slow")
+					scrollScrollBar(scrollbar2,button == "mouse_wheel_down" or false)
+				end
 			end
 		elseif dgsType == "dgs-dxscrollpane" then
 			local scrollpane = enteredElement
@@ -732,6 +743,10 @@ addEventHandler("onClientKey",root,function(button,state)
 			if scrollbar then
 				dgsSetData(scrollbar,"moveType","slow")
 				scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+				if scrollbar2 then
+					dgsSetData(scrollbar2,"moveType","slow")
+					scrollScrollBar(scrollbar2,button == "mouse_wheel_down" or false)
+				end
 			end
 		elseif dgsType == "dgs-dxscalepane" then
 			local scalepane = enteredElement
@@ -794,6 +809,10 @@ addEventHandler("onClientKey",root,function(button,state)
 				if scrollbar then
 					dgsSetData(scrollbar,"moveType","slow")
 					scrollScrollBar(scrollbar,button == "mouse_wheel_down" or false)
+					if scrollbar2 then
+						dgsSetData(scrollbar2,"moveType","slow")
+						scrollScrollBar(scrollbar2,button == "mouse_wheel_down" or false)
+					end
 				end
 			end
 		elseif dgsType == "dgs-dxtabpanel" or dgsType == "dgs-dxtab" then
