@@ -76,7 +76,7 @@ function dgsImageSetImage(image,img)
 		texture,textureExists = dgsImageCreateTextureExternal(image,sourceResource,texture)
 		if not textureExists then return false end
 	end
-	local materialSize = dgsElementData[image].materialSize
+	local materialSize = dgsElementData[image].materialInfo
 	materialSize[0] = texture
 	if isElement(texture) then
 		materialSize[1],materialSize[2] = dxGetMaterialSize(texture)
