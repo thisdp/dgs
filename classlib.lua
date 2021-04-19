@@ -440,6 +440,13 @@ class {
 				return dgsAttachToAutoDestroy(self.dgsElement,type(element) == "table" and element.dgsElement or element,dgsElement) and self
 			end
 		end,
+		detachFromAutoDestroy = function(self,element,dgsElement)
+			if self == dgsRootInstance then
+				return dgsDetachFromAutoDestroy(type(element) == "table" and element.dgsElement or element,type(dgsElement) == "table" and dgsElement.dgsElement or dgsElement) and self
+			else
+				return dgsDetachFromAutoDestroy(self.dgsElement,type(element) == "table" and element.dgsElement or element,dgsElement) and self
+			end
+		end,
 		----------Plugins
 		dgsColorPicker = function(...) return dgsOOP.dgsColorPicker(...) end,
 		dgsComponentSelector = function(...) return dgsOOP.dgsComponentSelector(...) end,
