@@ -7,8 +7,14 @@ local getmetatable = getmetatable
 local setmetatable = setmetatable
 local tostring = tostring
 local tonumber = tonumber
-local call = call
+local _call = call
 local setfenv = setfenv
+local function call(...)
+	local _source = source
+	local retValue = {_call(...)}
+	source = _source
+	return unpack(retValue)
+end
 -------Utils
 local strToIntCache = {
 	["1"]=1,
@@ -186,8 +192,22 @@ function dgsOOP.genInterface(dgsElement,meta)
 	return setmetatable({"DGS OOP: Bad usage"},newmeta)()
 end
 
-dgsOOP.genOOPFnc = function(pop,isChain) return isChain and (function(self,...) return call(dgsOOP.dgsRes,pop,self.dgsElement,...) and self or false end) or (function(self,...) return dgsGetInstance(call(dgsOOP.dgsRes,pop,self.dgsElement,...)) end) end
-dgsOOP.genOOPFncNonObj = function(pop,isChain) return (function(self,...) return dgsGetInstance(call(dgsOOP.dgsRes,pop,...)) end) end
+dgsOOP.genOOPFnc = function(pop,isChain)
+	if isChain then
+		return function(self,...)
+			return call(dgsOOP.dgsRes,pop,self.dgsElement,...) and self or false
+		end
+	else
+		return function(self,...)
+			return dgsGetInstance(call(dgsOOP.dgsRes,pop,self.dgsElement,...))
+		end
+	end
+end
+dgsOOP.genOOPFncNonObj = function(pop,isChain)
+	return function(self,...)
+		return dgsGetInstance(call(dgsOOP.dgsRes,pop,...))
+	end
+end
 local gObjFnc = dgsOOP.genOOPFnc
 local gNObjFnc = dgsOOP.genOOPFncNonObj
 ----------------DGS 2D
@@ -438,13 +458,6 @@ class {
 				return dgsAttachToAutoDestroy(type(element) == "table" and element.dgsElement or element,type(dgsElement) == "table" and dgsElement.dgsElement or dgsElement,index) and self
 			else
 				return dgsAttachToAutoDestroy(self.dgsElement,type(element) == "table" and element.dgsElement or element,dgsElement) and self
-			end
-		end,
-		detachFromAutoDestroy = function(self,element,dgsElement)
-			if self == dgsRootInstance then
-				return dgsDetachFromAutoDestroy(type(element) == "table" and element.dgsElement or element,type(dgsElement) == "table" and dgsElement.dgsElement or dgsElement) and self
-			else
-				return dgsDetachFromAutoDestroy(self.dgsElement,type(element) == "table" and element.dgsElement or element,dgsElement) and self
 			end
 		end,
 		----------Plugins
@@ -1128,7 +1141,9 @@ class {
 	type = "dgsWindow";
 	dgsType = "dgs-dxwindow";
 	preInstantiate = function(parent,...)
-		return call(dgsOOP.dgsRes,"dgsCreateWindow",...)
+		local window = call(dgsOOP.dgsRes,"dgsCreateWindow",...)
+		dgsSetParent(window,parent.dgsElement)
+		return window
 	end;
 	public = {
 		setSizable = gObjFnc("dgsWindowSetSizable",true),

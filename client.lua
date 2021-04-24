@@ -1804,8 +1804,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			dgsBringToFront(guiele,button)
 			if guitype == "dgs-dxscrollpane" or guitype == "dgs-dxscalepane" then
 				local scrollbar = eleData.scrollbars
-				dgsBringToFront(scrollbar[1],"left",_,true)
-				dgsBringToFront(scrollbar[2],"left",_,true)
+				dgsBringToFront(scrollbar[1],_,_,true)
+				dgsBringToFront(scrollbar[2],_,_,true)
 			end
 			if button == "left" then
 				if not checkScale(guiele) then
