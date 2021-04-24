@@ -1448,4 +1448,12 @@ class {
 ------------------------------------------------
 dgsRootInstance = dgsOOP.dgsRoot()
 rootInstance = dgsOOP.dgsRoot()
+
+function _onDgsStart(dResN)
+	dgsRootInstance.dgsElement = dgsRoot
+	rootInstance.dgsElement = dgsRoot
+	dgsOOP.dgsRoot = dgsRoot
+	dgsOOP.dgsRes = dgsImportHead.dgsResource
+end
+addEventHandler("onDgsStart",root,_onDgsStart,true,"low-1000")
 end
