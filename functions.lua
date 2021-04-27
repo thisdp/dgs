@@ -722,8 +722,8 @@ dgsDragDropBoard = {
 function dgsSendDragNDropData(dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign)
 	dgsDragDropBoard[0] = true
 	dgsDragDropBoard.data = dragData
-	dgsDragDropBoard.preview = dragPreview
-	dgsDragDropBoard.previewColor = dragPreviewColor
+	dgsDragDropBoard.preview = preview
+	dgsDragDropBoard.previewColor = previewColor
 	dgsDragDropBoard.previewOffsetX = previewOffsetX
 	dgsDragDropBoard.previewOffsetY = previewOffsetY
 	dgsDragDropBoard.previewWidth = previewWidth
