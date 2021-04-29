@@ -75,7 +75,7 @@ function dgsCreateEdit(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateEdit",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateEdit",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateEdit",4,"number")) end
-	text = tostring(text)
+	text = tostring(text or "")
 	local edit = createElement("dgs-dxedit")
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetParent(edit,parent,true,true)

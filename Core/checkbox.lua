@@ -121,7 +121,7 @@ function dgsCreateCheckBox(...)
 		dgsElementData[cb]._translationText = text
 		dgsSetData(cb,"text",text)
 	else
-		dgsSetData(cb,"text",tostring(text))
+		dgsSetData(cb,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
 	dgsAddEventHandler("onDgsCheckBoxChange",cb,"dgsCheckBoxCheckState",false)

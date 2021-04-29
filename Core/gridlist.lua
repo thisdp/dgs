@@ -586,7 +586,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 		name = dgsTranslate(gridlist,name,sourceResource)
 	end
 	tableInsert(cData,c,{
-		tostring(name),
+		tostring(name or ""),
 		len,
 		oldLen,
 		HorizontalAlign[alignment] or "left",
@@ -1578,7 +1578,7 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 		else
 			rData[r][c]._translationText = nil
 		end
-		rData[r][c][1] = tostring(text)
+		rData[r][c][1] = tostring(text or "")
 		if isSection then
 			dgsGridListSetRowAsSection(gridlist,r,true)
 		end

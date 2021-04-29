@@ -98,7 +98,7 @@ function dgsCreateMemo(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateMemo",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateMemo",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateMemo",4,"number")) end
-	text = tostring(text)
+	text = tostring(text or "")
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
 	dgsSetParent(memo,parent,true,true)

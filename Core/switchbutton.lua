@@ -95,8 +95,8 @@ function dgsCreateSwitchButton(...)
 		dgsElementData[switchbutton]._translationtextOff = textOff
 		textOff = dgsTranslate(switchbutton,textOff,sourceResource)
 	end
-	dgsElementData[switchbutton].textOn = tostring(textOn)
-	dgsElementData[switchbutton].textOff = tostring(textOff)
+	dgsElementData[switchbutton].textOn = tostring(textOn or "")
+	dgsElementData[switchbutton].textOff = tostring(textOff or "")
 	calculateGuiPositionSize(switchbutton,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",switchbutton,sourceResource)
 	return switchbutton

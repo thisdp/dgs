@@ -132,7 +132,6 @@ function dgsCreateTab(...)
 	local font = style.font or eleData.font
 	local t_minWid,t_maxWid = eleData.tabMinWidth,eleData.tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-	local wid = mathClamp(dxGetTextWidth(text,scaleX or 1,font),minwidth,maxwidth)
 	local tabPadding = eleData.tabPadding
 	local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
 	local tabGapSize = eleData.tabGapSize
@@ -148,7 +147,6 @@ function dgsCreateTab(...)
 		parent = tabpanel,
 		id = id,
 		font = style.font or systemFont,
-		tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1),
 		width = wid,
 		textColor = tonumber(textColor) or style.textColor or pTextColor,
 		textSize = {textSizeX,textSizeY},
@@ -168,10 +166,16 @@ function dgsCreateTab(...)
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[tab]._translationText = text
-		dgsSetData(tab,"text",text)
+		local wid = mathClamp(dxGetTextWidth(dgsTranslate(tab,text,sourceResource or resource),scaleX or 1,font),minwidth,maxwidth)
+		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
+		dgsElementData[tab].width = wid
 	else
-		dgsSetData(tab,"text",tostring(text))
+		text = tostring(text or "")
+		local wid = mathClamp(dxGetTextWidth(text,scaleX or 1,font),minwidth,maxwidth)
+		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
+		dgsElementData[tab].width = wid
 	end
+	dgsSetData(tab,"text",text)
 	triggerEvent("onDgsCreate",tab)
 	return tab
 end

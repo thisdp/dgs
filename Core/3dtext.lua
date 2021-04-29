@@ -52,7 +52,7 @@ function dgsCreate3DText(...)
 		dgsElementData[text3d]._translationText = text
 		dgsSetData(text3d,"text",text)
 	else
-		dgsSetData(text3d,"text",tostring(text))
+		dgsSetData(text3d,"text",tostring(text or ""))
 	end
 	triggerEvent("onDgsCreate",text3d,sourceResource)
 	return text3d

@@ -88,7 +88,7 @@ function dgsCreateButton(...)
 		dgsElementData[button]._translationText = text
 		dgsSetData(button,"text",text)
 	else
-		dgsSetData(button,"text",tostring(text))
+		dgsSetData(button,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(button,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",button,sourceResource)

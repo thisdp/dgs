@@ -137,7 +137,7 @@ function dgsCreateComboBox(...)
 		dgsElementData[combobox]._translationText = caption
 		dgsSetData(combobox,"caption",caption)
 	else
-		dgsSetData(combobox,"caption",tostring(caption))
+		dgsSetData(combobox,"caption",tostring(caption or ""))
 	end
 	calculateGuiPositionSize(combobox,x,y,relative or false,w,h,relative or false,true)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
@@ -326,7 +326,7 @@ function dgsComboBoxAddItem(combobox,text)
 		[-2] = dgsElementData[combobox].itemTextColor,	--text color of item
 		[-1] = dgsElementData[combobox].itemImage,		--background image of item
 		[0] = dgsElementData[combobox].itemColor,		--background color of item
-		tostring(text),
+		tostring(text or ""),
 		_translationText = _text
 	}
 
@@ -349,7 +349,7 @@ function dgsComboBoxSetItemText(combobox,i,text)
 	else
 		iData[i]._translationText = nil
 	end
-	iData[i][1] = tostring(text)
+	iData[i][1] = tostring(text or "")
 	return true
 end
 

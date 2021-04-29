@@ -84,7 +84,7 @@ function dgsCreateRadioButton(...)
 		image_t = {nImageT,hImageT,cImageT},
 		color_t = {nColorT,hColorT,cColorT},
 		rbParent = dgsIsType(parent) and parent or resourceRoot,
-		text = tostring(text),
+		text = tostring(text or ""),
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
 		textPadding = style.textPadding,

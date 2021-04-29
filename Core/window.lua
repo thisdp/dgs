@@ -74,7 +74,7 @@ function dgsCreateWindow(...)
 		dgsElementData[window]._translationText = text
 		dgsSetData(window,"text",text)
 	else
-		dgsSetData(window,"text",tostring(text))
+		dgsSetData(window,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(window,x,y,relative,w,h,relative,true)
 	triggerEvent("onDgsCreate",window,sourceResource)

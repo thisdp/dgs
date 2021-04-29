@@ -69,7 +69,7 @@ function dgsCreateLabel(...)
 		dgsElementData[label]._translationText = text
 		dgsSetData(label,"text",text)
 	else
-		dgsSetData(label,"text",tostring(text))
+		dgsSetData(label,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(label,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",label,sourceResource)

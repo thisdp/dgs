@@ -176,7 +176,7 @@ function dgsSelectorSetItemText(selector,i,text)
 		_text = text
 		text = dgsTranslate(selector,text,sourceResource)
 	end
-	iData[i][1] = tostring(text)
+	iData[i][1] = tostring(text or "")
 	iData[i][8] = _text
 	return true
 end
