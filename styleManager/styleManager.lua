@@ -269,6 +269,11 @@ function dgsSetStyle(styleName,res)
 	return true
 end
 
+function dgsGetStyle(res)
+	res = res or sourceResource or "global"
+	return styleManager.styles[res].using
+end
+
 function dgsUnloadStyle(styleName,res)
 	res = res or sourceResource or "global"
 	if styleManager.styles[res] then

@@ -220,6 +220,7 @@
 	<export function="dgsGetLoadedStyleList" type="client" />
 	<export function="dgsUnloadStyle" type="client" />
 	<export function="dgsSetStyle" type="client" />
+	<export function="dgsGetStyle" type="client" />
 	<export function="dgsGetValueFromStyle" type="client" />
 
 	<export function="dgsSendDragNDropData" type="client" />
