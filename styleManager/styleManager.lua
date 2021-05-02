@@ -227,36 +227,38 @@ function dgsLoadStyle(styleName,res)
 	if res ~= "global" then
 		assert(styleManager.styles[res],"Bad argument @dgsLoadStyle at argument 1, no style available in this resource ("..getResourceName(res)..")")
 	end
-	local path = styleManager.styles[res].mapper[styleName]
-	assert(fileExists(path.."/styleSettings.txt"),"[DGS Style] Missing style setting ("..path.."/styleSettings.txt)")
-	local fnc,err = loadstring("return {\n"..fileGetContent(path.."/styleSettings.txt").."\n}")
-	if not fnc then
-		error("Error when loading "..path.."/styleSettings.txt ("..err..")")
-	end
-	--setfenv(fnc,styleSecEnv)
-	local newStyle = fnc()
-	if styleName ~= "Default" then
-		local gStyle = table.deepcopy(styleManager.styles.global.loaded.Default)
-		for dgsType,settings in pairs(gStyle) do
-			if newStyle[dgsType] then
-				if type(settings) == "table" then
-					for dgsProperty,value in pairs(settings) do
-						if newStyle[dgsType][dgsProperty] ~= nil then
-							gStyle[dgsType] = gStyle[dgsType] or {}
-							gStyle[dgsType][dgsProperty] = newStyle[dgsType][dgsProperty]
+	if not styleManager.styles[res].loaded[styleName] then
+		local path = styleManager.styles[res].mapper[styleName]
+		assert(fileExists(path.."/styleSettings.txt"),"[DGS Style] Missing style setting ("..path.."/styleSettings.txt)")
+		local fnc,err = loadstring("return {\n"..fileGetContent(path.."/styleSettings.txt").."\n}")
+		if not fnc then
+			error("Error when loading "..path.."/styleSettings.txt ("..err..")")
+		end
+		--setfenv(fnc,styleSecEnv)
+		local newStyle = fnc()
+		if styleName ~= "Default" then
+			local gStyle = table.deepcopy(styleManager.styles.global.loaded.Default)
+			for dgsType,settings in pairs(gStyle) do
+				if newStyle[dgsType] then
+					if type(settings) == "table" then
+						for dgsProperty,value in pairs(settings) do
+							if newStyle[dgsType][dgsProperty] ~= nil then
+								gStyle[dgsType] = gStyle[dgsType] or {}
+								gStyle[dgsType][dgsProperty] = newStyle[dgsType][dgsProperty]
+							end
 						end
+					elseif newStyle[dgsType] ~= nil then
+						gStyle[dgsType] = newStyle[dgsType]
 					end
-				elseif newStyle[dgsType] ~= nil then
-					gStyle[dgsType] = newStyle[dgsType]
 				end
 			end
+			newStyle = gStyle
 		end
-		newStyle = gStyle
+		styleManager.styles[res].loaded[styleName] = newStyle
+		styleManager.styles[res].loaded[styleName].shared = {}
+		styleManager.styles[res].loaded[styleName].created = {}
+		dgsLoadSystemFont(newStyle.systemFont,path.."/",styleName,res)
 	end
-	styleManager.styles[res].loaded[styleName] = newStyle
-	styleManager.styles[res].loaded[styleName].shared = {}
-	styleManager.styles[res].loaded[styleName].created = {}
-	dgsLoadSystemFont(newStyle.systemFont,path.."/",styleName,res)
 	return true
 end
 
@@ -331,6 +333,7 @@ end)
 
 addEventHandler("onClientResourceStart",resourceRoot,function()
 	local using = dgsScanGlobalStyle()
+	dgsLoadStyle("Default")
 	dgsLoadStyle(using)
 	dgsSetStyle(using)
 end)
