@@ -35,6 +35,9 @@ function dgsImportFunction(name,nameAs)
 				elseif createType == "texture" then
 					local tex = dxCreateTexture(...)
 					call(dgsImportHead.dgsResource, "dgsPushElement",tex,createType)
+				elseif createType == "font" then
+					local font = dxCreateFont(...)
+					call(dgsImportHead.dgsResource, "dgsPushElement",font,createType)
 				elseif createType:sub(1,6) == "dgs-dx" then
 					local dgsElement = createElement(createType)
 					call(dgsImportHead.dgsResource, "dgsPushElement",dgsElement,createType)

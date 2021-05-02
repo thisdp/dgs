@@ -79,14 +79,21 @@ function dgsCreateEdit(...)
 	local edit = createElement("dgs-dxedit")
 	dgsSetType(edit,"dgs-dxedit")
 	dgsSetParent(edit,parent,true,true)
-	local style = styleSettings.edit
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.edit
 	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
 	dgsElementData[edit] = {
 		text = "",
 		bgColor = bgColor or style.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		bgColorBlur = style.bgColorBlur,
-		bgImageBlur = dgsCreateTextureFromStyle(style.bgImageBlur),
+		bgImageBlur = dgsCreateTextureFromStyle(using,res,style.bgImageBlur),
 		textSize = {textSizeX,textSizeY},
 		font = style.font or systemFont,
 		textColor = textColor or style.textColor,
@@ -352,6 +359,13 @@ function dgsEditSetWhiteList(edit,str)
 		dgsSetData(edit,"whiteList",nil)
 	end
 	local eleData = dgsElementData[edit]
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local index = dgsEditGetCaretPosition(edit,true)
@@ -551,6 +565,13 @@ function searchEditMousePosition(edit,posx)
 	if eleData.masked then
 		text = strRep(eleData.maskText,sto)
 	end
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local txtSizX = eleData.textSize[1]
 	local size = eleData.absSize
@@ -666,6 +687,13 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 		dgsSetData(edit,"caretPos",0)
 		dgsSetData(edit,"selectFrom",0)
 	end
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local _index = dgsEditGetCaretPosition(edit,true)
@@ -943,6 +971,13 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local caretPos = eleData.caretPos
 	local selectFro = eleData.selectFrom
 	local selectColor = MouseData.focused == source and eleData.selectColor or eleData.selectColorBlur
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local renderTarget = eleData.renderTarget

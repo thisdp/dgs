@@ -49,7 +49,13 @@ function dgsCreateScrollPane(...)
 	local scrollpane = createElement("dgs-dxscrollpane")
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	dgsSetParent(scrollpane,parent,true,true)
-	local style = styleSettings.scrollpane
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	
+	style = style.scrollpane
 	local scbThick = style.scrollBarThick
 	dgsElementData[scrollpane] = {
 		renderBuffer = {},

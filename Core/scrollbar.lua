@@ -54,17 +54,22 @@ function dgsCreateScrollBar(...)
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
 	dgsSetParent(scrollbar,parent,true,true)
-	local style = styleSettings.scrollbar
-	local deprecatedImage = style.image or {}
-	local arrowImage = arrowImage or dgsCreateTextureFromStyle(style.arrowImage) or dgsCreateTextureFromStyle(deprecatedImage[1])
-	local cursorImage = cursorImage or dgsCreateTextureFromStyle(style.cursorImage) or dgsCreateTextureFromStyle(deprecatedImage[2])
+				
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	
+	style = style.scrollbar
+	local arrowImage = arrowImage or dgsCreateTextureFromStyle(using,res,style.arrowImage)
+	local cursorImage = cursorImage or dgsCreateTextureFromStyle(using,res,style.cursorImage)
 	if not troughImage then
 		troughImage = isHorizontal and style.troughImageHorizontal or style.troughImage
 		if troughImage and type(troughImage) == "table" then
 			if type(troughImage[1]) == "table" then
-				troughImage = {dgsCreateTextureFromStyle(troughImage[1]),dgsCreateTextureFromStyle(troughImage[2])}
+				troughImage = {dgsCreateTextureFromStyle(using,res,troughImage[1]),dgsCreateTextureFromStyle(using,res,troughImage[2])}
 			else
-				troughImage = dgsCreateTextureFromStyle(troughImage)
+				troughImage = dgsCreateTextureFromStyle(using,res,troughImage)
 			end
 		end
 	end

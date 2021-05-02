@@ -53,7 +53,14 @@ function dgsCreateSelector(...)
 	local selector = createElement("dgs-dxselector")
 	dgsSetType(selector,"dgs-dxselector")
 	dgsSetParent(selector,parent,true,true)
-	local style = styleSettings.selector
+		
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.selector
 	local textSizeX,textSizeY = tonumber(scaleX),tonumber(scaleY)
 	dgsElementData[selector] = {
 		itemTextColor = tonumber(textColor or style.itemTextColor),

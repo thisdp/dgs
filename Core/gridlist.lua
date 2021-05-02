@@ -75,30 +75,37 @@ function dgsCreateGridList(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
-	local style = styleSettings.gridlist
+					
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.gridlist
 	local relative = relative or false
 	local scbThick = style.scrollBarThick
 	local columnHeight = tonumber(columnHeight) or style.columnHeight
 	local cColorR = cColorR or style.rowColor[1]
 	local hColorR = hColorR or style.rowColor[2]
 	local sColorR = sColorR or style.rowColor[3]
-	local nImageR = nImageR or dgsCreateTextureFromStyle(style.rowImage[1])
-	local hImageR = hImageR or dgsCreateTextureFromStyle(style.rowImage[2])
-	local sImageR = sImageR or dgsCreateTextureFromStyle(style.rowImage[3])
+	local nImageR = nImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[1])
+	local hImageR = hImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[2])
+	local sImageR = sImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[3])
 	local gridlist = createElement("dgs-dxgridlist")
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsSetParent(gridlist,parent,true,true)
 	dgsElementData[gridlist] = {
 		autoSort = true,
 		backgroundOffset = style.backgroundOffset,
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		bgColor = bgColor or style.bgColor,
 		colorcoded = false,
 		clip = true,
 		columnColor = columnColor or style.columnColor,
 		columnData = {},
 		columnHeight = columnHeight,
-		columnImage = columnImage or dgsCreateTextureFromStyle(style.columnImage),
+		columnImage = columnImage or dgsCreateTextureFromStyle(using,res,style.columnImage),
 		columnMoveOffset = 0,
 		columnMoveOffsetTemp = 0,
 		columnTextColor = columnTextColor or style.columnTextColor,
@@ -2228,6 +2235,13 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	local bgColor,bgImage = applyColorAlpha(eleData.bgColor,parentAlpha),eleData.bgImage
 	local columnColor,columnImage = applyColorAlpha(eleData.columnColor,parentAlpha),eleData.columnImage
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+
 	local font = eleData.font or systemFont
 	local columnHeight = eleData.columnHeight
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")

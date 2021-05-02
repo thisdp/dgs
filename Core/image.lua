@@ -87,13 +87,7 @@ function dgsImageSetImage(image,img)
 end
 
 function dgsImageCreateTextureExternal(image,res,img)
-	if res then
-		img = img:gsub("\\","/")
-		if not img:find(":") then
-			img = ":"..getResourceName(res).."/"..img
-			img = img:gsub("//","/") or img
-		end
-	end
+	img = string.getPath(res,img)
 	local texture = dxCreateTexture(img)
 	if isElement(texture) then
 		dgsElementData[texture] = {parent=image}

@@ -51,7 +51,13 @@ function dgsCreateScalePane(...)
 	local scalepane = createElement("dgs-dxscalepane")
 	dgsSetType(scalepane,"dgs-dxscalepane")
 	dgsSetParent(scalepane,parent,true,true)
-	local style = styleSettings.scalepane
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	
+	style = style.scalepane
 	local scbThick = style.scrollBarThick
 	dgsElementData[scalepane] = {
 		renderBuffer = {},

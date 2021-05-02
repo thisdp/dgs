@@ -102,12 +102,19 @@ function dgsCreateMemo(...)
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
 	dgsSetParent(memo,parent,true,true)
-	local style = styleSettings.memo
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.memo
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[memo] = {
 		renderBuffer = {},
 		bgColor = bgColor or style.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		bgColorBlur = style.bgColorBlur,
 		bgImageBlur = bgImageBlur,
 		font = style.font or systemFont,
@@ -226,6 +233,13 @@ end
 function dgsMemoGetTextBoundingBox(memo,excludePadding)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTextBoundingBox",1,"dgs-dxmemo")) end
 	local eleData = dgsElementData[memo]
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+			
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],eleData.font or systemFont)
 	if eleData.wordWrap then
 		local textTable = eleData.wordWrapMapText
@@ -508,6 +522,13 @@ addEventHandler("onClientCursorMove",root,resetMemo)
 
 function searchMemoMousePosition(memo,posx,posy)
 	local eleData = dgsElementData[memo]
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local txtSizX = eleData.textSize[1]
 	local padding = eleData.padding
@@ -622,7 +643,7 @@ wordArea = {
 }
 function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
 	local splitTable = {}
-	local font = font or systemFont
+
 	local textSizeX = textSizeX or 1
 	local textWidth = textWidth or _dxGetTextWidth(text,textSizeX,font)
 	if maxWidth > textWidth then
@@ -778,7 +799,14 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 		dgsSetData(memo,"rightLength",{0,1})
 		configMemo(memo)
 	end
-	local font = eleData.font
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local _index,_line = dgsMemoGetCaretPosition(memo,true)
 	local index,line = index or _index,line or _line
@@ -887,7 +915,14 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 	local eleData = dgsElementData[memo]
 	local textTable = eleData.text
 	local mapTable = eleData.wordWrapMapText
-	local font = eleData.font
+		
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 	local size = eleData.absSize
@@ -1357,7 +1392,14 @@ function dgsMemoRebuildWordWrapMapTable(memo)
 		local textTable = eleData.text
 		local size = eleData.absSize
 		local padding = eleData.padding
-		local font = eleData.font
+			
+		local res = eleData.resource or "global"
+		local style = styleManager.styles[res]
+		local using = style.using
+		style = style.loaded[using]
+		local systemFont = style.systemFontElement
+		
+		local font = eleData.font or systemFont
 		local textSizeX = eleData.textSize[1]
 		local scbThick = eleData.scrollBarThick
 		local scrollbars = eleData.scrollbars
@@ -1413,6 +1455,13 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local caretPos = eleData.caretPos
 	local selectFro = eleData.selectFrom
 	local selectColor = MouseData.focused == source and eleData.selectColor or eleData.selectColorBlur
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 	local renderTarget = eleData.renderTarget

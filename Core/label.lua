@@ -49,7 +49,14 @@ function dgsCreateLabel(...)
 	local label = createElement("dgs-dxlabel")
 	dgsSetType(label,"dgs-dxlabel")
 	dgsSetParent(label,parent,true,true)
-	local style = styleSettings.label
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.label
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[label] = {
 		alignment = {hAlign or "left",vAlign or "top"},

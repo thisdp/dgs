@@ -10,10 +10,12 @@ _dxDrawImageSection = dxDrawImageSection
 _dxDrawImage = dxDrawImage
 _dxCreateTexture = dxCreateTexture
 _dxCreateShader = dxCreateShader
+_dxCreateFont = dxCreateFont
 _createElement = createElement
 _dxCreateRenderTarget = dxCreateRenderTarget
 __createElement = _createElement
 __dxCreateShader = _dxCreateShader
+__dxCreateFont = _dxCreateFont
 __dxCreateTexture = _dxCreateTexture
 __dxCreateRenderTarget = _dxCreateRenderTarget
 __dxDrawImageSection = dxDrawImageSection
@@ -173,14 +175,7 @@ function dxCreateTexture(pathOrData,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sourceResource = sRes or sourceResource
 		if dgsElementKeeper[sourceResource] then
-			local textureData
-			if fileExists(pathOrData) then
-				local f = fileOpen(pathOrData,true)
-				textureData = fileRead(f,fileGetSize(f))
-				fileClose(f)
-			else
-				textureData = pathOrData
-			end
+			local textureData = fileGetContent(pathOrData)
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",textureData)
@@ -206,14 +201,7 @@ function dxCreateShader(pathOrData,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sourceResource = sRes or sourceResource
 		if dgsElementKeeper[sourceResource] then
-			local shaderData
-			if fileExists(pathOrData) then
-				local f = fileOpen(pathOrData,true)
-				shaderData = fileRead(f,fileGetSize(f))
-				fileClose(f)
-			else
-				shaderData = pathOrData
-			end
+			local shaderData = fileGetContent(pathOrData)
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"shader",shaderData)
@@ -231,6 +219,41 @@ function dxCreateShader(pathOrData,sRes)
 		return shader
 	else
 		return shader
+	end
+end
+
+--[[
+creationInfo
+1.path
+2.raw data
+3.{path/raw data,size,isBold,quality}
+]]
+function dxCreateFont(creationInfo,sRes)
+	local pathOrData,font,size,isbold,quality = creationInfo
+	if type(creationInfo) == "table" then
+		pathOrData,size,isbold,quality = creationInfo[1],creationInfo[2],creationInfo[3],creationInfo[4]
+	end
+	if sRes ~= false then	--Read the data instead of create from path, and create remotely
+		sourceResource = sRes or sourceResource
+		if dgsElementKeeper[sourceResource] then
+			local fontData = fileGetContent(pathOrData)
+			local sourceResRoot = getResourceRootElement(sourceResource)
+			local _sourceResource = sourceResource
+			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"font",fontData,size,isbold,quality)
+			sourceResource = _sourceResource
+			font = dgsPopElement("font",sourceResource)
+		end
+	end
+	if not font then
+		font = __dxCreateFont(pathOrData,size,isbold,quality)
+		if not font then return false end
+		dgsElementLogger[font] = {3,{pathOrData,size,isbold,quality},font}	--Log internally created font
+		addEventHandler("onClientElementDestroy",font,function()
+			dgsElementLogger[font] = nil	--Clear logging
+		end,false)
+		return font
+	else
+		return font
 	end
 end
 
@@ -279,6 +302,7 @@ end
 
 function dgsAddEventHandler(eventName,element,fncName,...)
 	if addEventHandler(eventName,element,_G[fncName],...) then
+		dgsElementData[element] = dgsElementData[element] or {}
 		dgsElementData[element].eventHandlers = dgsElementData[element].eventHandlers or {}
 		local eventHandlers = dgsElementData[element].eventHandlers
 		eventHandlers[eventName] = eventHandlers[eventName] or {}
@@ -404,6 +428,13 @@ function hashFile(fName)
 	return hash("sha256",fContent),fSize
 end
 
+function fileGetContent(fName)
+	if not fileExists(fName) then return false end
+	local f = fileOpen(fName)
+	local str = fileRead(f,fileGetSize(f))
+	fileClose(f)
+	return str
+end
 --------------------------------String Utility
 function string.split(s,delim)
 	local delimLen = len(delim)
@@ -419,6 +450,19 @@ function string.split(s,delim)
 	t[index] = sub(s,start)
 	return t
 end
+
+
+function string.getPath(res,path)
+	if res and res ~= "global" then
+		path = path:gsub("\\","/")
+		if not path:find(":") then
+			path = ":"..getResourceName(res).."/"..path
+			path = path:gsub("//","/") or path
+		end
+	end
+	return path
+end
+
 --[[
 0: symbol
 1: character

@@ -32,12 +32,20 @@ function dgsCreate3DText(...)
 	local text3d = createElement("dgs-dx3dtext")
 	tableInsert(dgsScreen3DTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.text3D
 	dgsElementData[text3d] = {
 		renderBuffer = {},
 		position = {x,y,z},
 		textSize = {scaleX or 1,scaleY or 1},
 		fixTextSize = false,
-		font = font or styleSettings.text3D.font or systemFont,
+		font = font or style.font or systemFont,
 		color = color or 0xFFFFFFFF,
 		colorcoded = colorcoded or false,
 		maxDistance = maxDistance or 80,
@@ -185,6 +193,13 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			local colorcoded = eleData.colorcoded
 			local fadeDistance = eleData.fadeDistance
 			local text = eleData.text
+			
+			local res = eleData.resource or "global"
+			local style = styleManager.styles[res]
+			local using = style.using
+			style = style.loaded[style.using]
+			local systemFont = style.systemFontElement
+
 			local font = eleData.font or systemFont
 			local subPixelPositioning = eleData.subPixelPositioning
 			if (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera))) then

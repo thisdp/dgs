@@ -59,19 +59,26 @@ function dgsCreateRadioButton(...)
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
 	dgsSetParent(rb,parent,true,true)
-	local style = styleSettings.radiobutton
+			
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.radiobutton
 	local imageUnchecked = style.image_f
-	nImageF = nImageF or dgsCreateTextureFromStyle(imageUnchecked[1])
-	hImageF = hImageF or dgsCreateTextureFromStyle(imageUnchecked[2])
-	cImageF = cImageF or dgsCreateTextureFromStyle(imageUnchecked[3])
+	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
+	hImageF = hImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[2])
+	cImageF = cImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[3])
 	local colorUnchecked = style.color_f
 	nColorF = nColorF or colorUnchecked[1]
 	hColorF = hColorF or colorUnchecked[2]
 	cColorF = cColorF or colorUnchecked[3]
 	local imageChecked = style.image_t
-	nImageT = nImageT or dgsCreateTextureFromStyle(imageChecked[1])
-	hImageT = hImageT or dgsCreateTextureFromStyle(imageChecked[2])
-	cImageT = cImageT or dgsCreateTextureFromStyle(imageChecked[3])
+	nImageT = nImageT or dgsCreateTextureFromStyle(using,res,imageChecked[1])
+	hImageT = hImageT or dgsCreateTextureFromStyle(using,res,imageChecked[2])
+	cImageT = cImageT or dgsCreateTextureFromStyle(using,res,imageChecked[3])
 	local colorChecked = style.color_t
 	nColorT = nColorT or colorChecked[1]
 	hColorT = hColorT or colorChecked[2]
@@ -217,6 +224,13 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	else
 		dxDrawRectangle(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,finalcolor,isPostGUI)
 	end
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+			
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip

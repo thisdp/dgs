@@ -52,13 +52,21 @@ function dgsCreateButton(...)
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
 	dgsSetParent(button,parent,true,true)
-	local style = styleSettings.button
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.button
+	
 	local normalColor = normalColor or style.color[1]
 	local hoveringColor = hoveringColor or style.color[2]
 	local clickedColor = clickedColor or style.color[3]
-	local normalImage = normalImage or dgsCreateTextureFromStyle(style.image[1])
-	local hoveringImage = hoveringImage or dgsCreateTextureFromStyle(style.image[2])
-	local clickedImage = clickedImage or dgsCreateTextureFromStyle(style.image[3])
+	local normalImage = normalImage or dgsCreateTextureFromStyle(using,res,style.image[1])
+	local hoveringImage = hoveringImage or dgsCreateTextureFromStyle(using,res,style.image[2])
+	local clickedImage = clickedImage or dgsCreateTextureFromStyle(using,res,style.image[3])
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[button] = {
 		alignment = {"center","center"},
@@ -80,7 +88,6 @@ function dgsCreateButton(...)
 		textOffset = {0,0,false},
 		textSize = {textSizeX, textSizeY},
 		wordbreak = false,
-
 		renderBuffer = {},
 	}
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or resource])
@@ -150,6 +157,13 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	end
 	local text = eleData.text
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[style.using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local colorcoded = eleData.colorcoded
 	local textOffset = eleData.textOffset

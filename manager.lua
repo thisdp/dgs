@@ -780,6 +780,12 @@ function DGSI_SaveData()
 	setElementData(root,"DGSI_SaveData",true,false)
 end
 
+--[[
+Logger type:
+1.Texutre
+2.Shader
+3.Font
+]]
 function DGSI_AllocateDxElement(e,oldDgsElementLogger)
 	if oldDgsElementLogger[e] then
 		if isElement(oldDgsElementLogger[e][3]) then
@@ -790,6 +796,8 @@ function DGSI_AllocateDxElement(e,oldDgsElementLogger)
 				dxElement = __dxCreateTexture(oldDgsElementLogger[e][2])
 			elseif oldDgsElementLogger[e][1] == 2 then 
 				dxElement = __dxCreateShader(oldDgsElementLogger[e][2])
+			elseif oldDgsElementLogger[e][1] == 3 then 
+				dxElement = __dxCreateFont(unpack(oldDgsElementLogger[e][2]))
 			end
 			if dxElement then
 				oldDgsElementLogger[e][3] = dxElement

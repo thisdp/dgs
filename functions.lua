@@ -438,23 +438,37 @@ function dgsGetFont(dgsEle)
 	return dgsElementData[dgsEle].font
 end
 
-function dgsGetSystemFont() return systemFont end
+function dgsGetSystemFont(sres)
 
-function dgsSetSystemFont(font,size,bold,quality)
+	local res = sres or sourceResource or "global"
+	local style = styleManager.styles[res]
+	style = style.loaded[style.using]
+	local systemFont = style.systemFontElement
+	
+	return systemFont
+end
+
+function dgsSetSystemFont(font,size,bold,quality,styleName,res)
 	if not(type(font) == "string") then error(dgsGenAsrt(font,"dgsSetSystemFont",1,"string")) end
+	
+	local res = sres or sourceResource or "global"
+	local style = styleManager.styles[res]
+	style = style.loaded[styleName or style.using]
+	local systemFont = style.systemFontElement
+	
 	if isElement(systemFont) then
 		destroyElement(systemFont)
 	end
 	sourceResource = sourceResource or getThisResource()
 	if fontBuiltIn[font] then
-		systemFont = font
+		style.systemFontElement = font
 		return true
 	elseif sourceResource then
 		local path = font:find(":") and font or ":"..getResourceName(sourceResource).."/"..font
 		if not fileExists(path) then error(dgsGenAsrt(path,"dgsSetSystemFont",1,_,_,_,"Couldn't find such file '"..path.."'")) end
-		local font = dxCreateFont(path,size,bold,quality)
+		local font = dxCreateFont({path,size,bold,quality},sres or sourceResource)
 		if isElement(font) then
-			systemFont = font
+			style.systemFontElement = font
 		end
 	end
 	return false
@@ -784,6 +798,22 @@ function dgsDetachFromAutoDestroy(element,dgsEle)
 end
 -------------------------
 addEventHandler("onDgsCreate",root,function(theResource)
+	local style
+	local res = theResource or "global"
+	if styleManager.styles[res] and styleManager.styles[res].using then
+		local _style = styleManager.styles[res]
+		local _using = styleManager.styles[res].using
+		if _style.loaded[_using] then
+			style = _style.loaded[_using]
+		else
+			style = styleManager.styles.global
+			style = style.loaded[style.using]
+		end
+	else
+		style = styleManager.styles.global
+		style = style.loaded[style.using]
+	end
+	
 	dgsElementData[source] = dgsElementData[source] or {}
 	local eleData = dgsElementData[source]
 	eleData.positionAlignment = {"left","top"}
@@ -795,11 +825,11 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	eleData.hitoutofparent = false
 	eleData.PixelInt = true
 	eleData.functionRunBefore = true --true : after render; false : before render
-	eleData.disabledColor = styleSettings.disabledColor
-	eleData.disabledColorPercent = styleSettings.disabledColorPercent
+	eleData.disabledColor = style.disabledColor
+	eleData.disabledColorPercent = style.disabledColorPercent
 	eleData.postGUI = dgsRenderSetting.postGUI == nil and true or false
 	eleData.outline = false
-	eleData.changeOrder = styleSettings.changeOrder --Change the order when "bring to front" or clicked
+	eleData.changeOrder = style.changeOrder --Change the order when "bring to front" or clicked
 	eleData.attachedTo = false
 	eleData.attachedBy = false
 	eleData.enableFullEnterLeaveCheck = false

@@ -45,14 +45,22 @@ function dgsCreateWindow(...)
 	local window = createElement("dgs-dxwindow")
 	dgsSetType(window,"dgs-dxwindow")
 	dgsSetParent(window,nil,true,true)
-	local style = styleSettings.window
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	
+	local systemFont = style.systemFontElement
+
+	style = style.window
 	dgsElementData[window] = {
 		renderBuffer = {},
-		titleImage = titleImage or dgsCreateTextureFromStyle(style.titleImage),
+		titleImage = titleImage or dgsCreateTextureFromStyle(using,res,style.titleImage),
 		textColor = tonumber(textColor) or style.textColor,
 		titleColorBlur = tonumber(titleColor) or style.titleColorBlur,
 		titleColor = tonumber(titleColor) or style.titleColor,
-		image = image or dgsCreateTextureFromStyle(style.image),
+		image = image or dgsCreateTextureFromStyle(using,res,style.image),
 		color = tonumber(color) or style.color,
 		textSize = style.textSize,
 		titleHeight = tonumber(titleHeight) or style.titleHeight,
@@ -237,6 +245,13 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		dxDrawRectangle(x,y,w,titsize,titleColor,isPostGUI)
 	end
 	local alignment = eleData.alignment
+
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+
 	local font = eleData.font or systemFont
 	local textColor = applyColorAlpha(eleData.textColor,parentAlpha)
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]

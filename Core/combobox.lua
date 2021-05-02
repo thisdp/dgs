@@ -73,19 +73,26 @@ function dgsCreateComboBox(...)
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
 	dgsSetParent(combobox,parent,true,true)
-	local style = styleSettings.combobox
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.combobox
 	local nColor = nColor or style.color[1]
 	local hColor = hColor or style.color[2]
 	local cColor = cColor or style.color[3]
-	local nImage = nImage or dgsCreateTextureFromStyle(style.image[1])
-	local hImage = hImage or dgsCreateTextureFromStyle(style.image[2])
-	local cImage = cImage or dgsCreateTextureFromStyle(style.image[3])
+	local nImage = nImage or dgsCreateTextureFromStyle(using,res,style.image[1])
+	local hImage = hImage or dgsCreateTextureFromStyle(using,res,style.image[2])
+	local cImage = cImage or dgsCreateTextureFromStyle(using,res,style.image[3])
 	local inColor = style.itemColor[1]
 	local ihColor = style.itemColor[2]
 	local icColor = style.itemColor[3]
-	local inImage = dgsCreateTextureFromStyle(style.itemImage[1])
-	local ihImage = dgsCreateTextureFromStyle(style.itemImage[2])
-	local icliimage = dgsCreateTextureFromStyle(style.itemImage[3])
+	local inImage = dgsCreateTextureFromStyle(using,res,style.itemImage[1])
+	local ihImage = dgsCreateTextureFromStyle(using,res,style.itemImage[2])
+	local icliimage = dgsCreateTextureFromStyle(using,res,style.itemImage[3])
 	local textScaleX,textScaleY = tonumber(scaleX),tonumber(scaleY)
 	local scbThick = style.scrollBarThick
 	dgsElementData[combobox] = {
@@ -101,7 +108,7 @@ function dgsCreateComboBox(...)
 		shadow = false,
 		font = style.font or systemFont,
 		bgColor = style.bgColor,
-		bgImage = dgsCreateTextureFromStyle(style.bgImage),
+		bgImage = dgsCreateTextureFromStyle(using,res,style.bgImage),
 		buttonLen = {1,true}, --1,isRelative
 		textBox = true,
 		select = -1,
@@ -115,7 +122,7 @@ function dgsCreateComboBox(...)
 		autoHideAfterSelected = style.autoHideAfterSelected,
 		itemTextPadding = style.itemTextPadding,
 		textPadding = style.textPadding,
-		arrow = dgsCreateTextureFromStyle(style.arrow),
+		arrow = dgsCreateTextureFromStyle(using,res,style.arrow),
 		arrowColor = style.arrowColor,
 		arrowSettings = style.arrowSettings or {0.3,0.15,0.04},
 		arrowOutSideColor = style.arrowOutSideColor,
@@ -719,6 +726,13 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if textBox and not captionEdit then
 		local item = eleData.itemData[eleData.select] or {}
 		local itemTextPadding = dgsElementData[source].itemTextPadding
+		
+		local res = eleData.resource or "global"
+		local style = styleManager.styles[res]
+		local using = style.using
+		style = style.loaded[using]
+		local systemFont = style.systemFontElement
+		
 		local font = item[-4] or eleData.font or systemFont
 		local textColor = item[-2] or eleData.textColor
 		local rb = eleData.alignment

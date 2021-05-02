@@ -13,29 +13,33 @@ function createFullDemo()
 		dgsColorPicker("HSVRing",300,0,200,200)
 	local rSel = window
 		:dgsComponentSelector(515,10,10,90,false)
-		:bindToColorPicker(cp,"RGB","R",true,true)
+	rSel:bindToColorPicker(cp,"RGB","R",true,true)
 	local gSel = window
 		:dgsComponentSelector(545,10,10,90,false)
-		:bindToColorPicker(cp,"RGB","G",true,true)
+	gSel:bindToColorPicker(cp,"RGB","G",true,true)
 	local bSel = window
 		:dgsComponentSelector(575,10,10,90,false)
-		:bindToColorPicker(cp,"RGB","B",true,true)
+	bSel:bindToColorPicker(cp,"RGB","B",true,true)
 
 	local hSel = window
 		:dgsComponentSelector(515,110,10,90,false)
-		:bindToColorPicker(cp,"HSV","H",true,true)
+	hSel:bindToColorPicker(cp,"HSV","H",true,true)
 	local sSel = window
 		:dgsComponentSelector(545,110,10,90,false)
-		:bindToColorPicker(cp,"HSV","S",true,true)
+	sSel:bindToColorPicker(cp,"HSV","S",true,true)
 	local vSel = window
 		:dgsComponentSelector(575,110,10,90,false)
-		:bindToColorPicker(cp,"HSV","V",true,true)
+	vSel:bindToColorPicker(cp,"HSV","V",true,true)
 
 	local button = window:dgsButton(10,210,80,50,"Test Button",false)
 	button.textColor = {tocolor(255,0,0,255),tocolor(255,255,0,255),tocolor(255,0,255,255)}
 	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"On","Off",false)
 	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"On","Off",true)
-	switchButton2.style = nil
+	local texture = dxCreateTexture("test.png")
+	switchButton2.imageOn = {texture,texture,texture}
+	switchButton2.imageOff = {texture,texture,texture}
+	switchButton1:setText("123")
+	switchButton2.style = 2
 	switchButton2.isReverse = nil
 	local gridlist = window
 		:dgsGridList(0,0,290,200,false)
@@ -126,6 +130,7 @@ function createFullDemo()
 			print(getTickCount(),isCoolDown)
 		end)
 		:setProperty("clickCoolDown",1000)
+	
 end
 
 function ProgressBarTest()
@@ -150,6 +155,8 @@ function MemoTest()
 	--dgsSetProperty(memo,"selectVisible",false)
 	--dgsSetProperty(memo,"padding",{20,10})
 	dgsMemoSetWordWrapState(memo,false)
+	local x,y = dgsMemoGetTextBoundingBox(memo)
+	dgsSetSize(memo,x,y)
 end
 
 function EditTest() --Test Tab Switch for edit.
@@ -160,7 +167,7 @@ function EditTest() --Test Tab Switch for edit.
 	edit2 = dgsCreateEdit(0.3,0.4,0.2,0.05,"123123",true)
 	edit3 = dgsCreateEdit(0.3,0.5,0.2,0.05,"123123",true)
 	edit4 = dgsCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
-	dgsEditSetReadOnly(edit4,true)
+	--dgsEditSetReadOnly(edit4,true)
 	dgsBringToFront(edit,"left")
 	dgsEditSetCaretPosition(edit, 1)
 	dgsSetProperty(edit2,"placeHolder","Type something if you want to tell me")
@@ -168,6 +175,8 @@ function EditTest() --Test Tab Switch for edit.
 	dgsEditAddAutoComplete(edit3,"mypass",false)
 	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
 	dgsSetProperty(edit,"bgColorBlur",tocolor(255,255,255,100))
+	dgsSetProperty(edit4, "alignment", {"center", "center"})
+	dgsEditSetMasked (edit4, true)
 end
 
 --[[
@@ -247,22 +256,22 @@ function GridListSortingTest()
 end
 
 function GridListTest()
-    gridlist = dgsCreateGridList(500,50,600,600,false)
-    dgsSetProperty(gridlist,"clip",false)
-    --dgsSetProperty(gridlist,"leading",10)
-    --dgsSetProperty(gridlist,"mode",true)
-    dgsGridListAddColumn(gridlist,"test1",0.4)
-    dgsGridListAddColumn(gridlist,"test2",0.8)
-    local tick = getTickCount()
-    bg = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
-    dgsSetProperty(gridlist,"rowHeight",200)
-    for i=1,10 do
-        local row = dgsGridListAddRow(gridlist)
-        local window = dgsCreateMemo(0,1,400,198,"",false)
-        dgsAttachToGridList(window,gridlist,row,2)
-        dgsGridListSetItemText(gridlist,row,1,i)
-        dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
-    end
+	gridlist = dgsCreateGridList(500,50,600,600,false)
+	dgsSetProperty(gridlist,"clip",false)
+	--dgsSetProperty(gridlist,"leading",10)
+	--dgsSetProperty(gridlist,"mode",true)
+	dgsGridListAddColumn(gridlist,"test1",0.4)
+	dgsGridListAddColumn(gridlist,"test2",0.8)
+	local tick = getTickCount()
+	bg = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
+	dgsSetProperty(gridlist,"rowHeight",200)
+	for i=1,10 do
+		local row = dgsGridListAddRow(gridlist)
+		local window = dgsCreateMemo(0,1,400,198,"",false)
+		dgsAttachToGridList(window,gridlist,row,2)
+		dgsGridListSetItemText(gridlist,row,1,i)
+		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
+	end
 end
 
 function MediaBrowserTest()
@@ -291,9 +300,9 @@ function PasteHandlerTest()
 end
 
 function _3DInterfaceTest()
-	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(128,128,128,128),1,2,0,_,0)
+	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
-	edit1 = dgsCreateMemo(0,0,1,1,"123",true,material)
+	edit1 = dgsCreateMemo(0,0,1,0.5,"123",true,material)
 end
 
 function _3DInterfaceAttachTest()
@@ -309,9 +318,9 @@ end
 function _3DLineTest()
 	line = dgsCreate3DLine(0,0,4,0,0,45,tocolor(255,255,255,255),2,100)
 	local i = 1
-	dgs3DLineAddLine(line,4,0,0,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
+	dgs3DLineAddItem(line,4,0,0,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
 	for i=2,200 do
-		dgs3DLineAddLine(line,_,_,_,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
+		dgs3DLineAddItem(line,_,_,_,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
 	end
 	local veh = getPedOccupiedVehicle(localPlayer)
 	dgs3DLineAttachToElement(line,veh)
@@ -354,6 +363,25 @@ function ScrollBarTest()
 	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
 end
 
+function ScalePaneTest()
+	local sp = dgsCreateScalePane(0,0,500,800,false,_,2000,1000)
+	dgsSetProperty(sp,"bgColor",tocolor(128,128,128,128))
+	gridlist = dgsCreateGridList(20,20,600,600,false,sp)
+	dgsSetProperty(gridlist,"clip",false)
+	dgsGridListAddColumn(gridlist,"test1",0.4)
+	dgsGridListAddColumn(gridlist,"test2",0.8)
+	local tick = getTickCount()
+	bg = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
+	dgsSetProperty(gridlist,"rowHeight",200)
+	for i=1,10 do
+		local row = dgsGridListAddRow(gridlist)
+		local window = dgsCreateMemo(0,1,400,198,"",false)
+		dgsAttachToGridList(window,gridlist,row,2)
+		dgsGridListSetItemText(gridlist,row,1,i)
+		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
+	end
+end
+
 function SelectorTest()
 	selector = dgsCreateSelector(400,500,100,20,false)
 	dgsSetProperty(selector,"selectorImageColorLeft",{0x99FF0000,0x99FF0000,0x99FF0000})
@@ -362,6 +390,7 @@ function SelectorTest()
 	for i=1,5000 do
 		dgsSelectorAddItem(selector,i)
 	end
+	dgsSelectorSetItemData(selector,dgsSelectorGetSelectedItem(selector),123)
 end
 
 function TabPanelTest()
@@ -372,6 +401,29 @@ function TabPanelTest()
 	tab = dgsCreateTab("test3",tabpanel)
 end
 
+function Line2DTest()
+	local line = dgsCreateLine(400,200,600,400)
+	local sinX = math.sin(0/500*4*math.pi)
+	dgsLineAddItem(line,0/500,sinX/2+0.5,0/500,sinX/2+0.5,2,tocolor(0,255,0,255),true)
+	for i=1,100 do
+		local sinX = math.sin(i/100*4*math.pi)
+		dgsLineAddItem(line,_,_,i/100,sinX/2+0.5,2,tocolor(i/100*255,255-i/100*255,0,255),true)
+	end
+end
+
+function dragndropTest()
+	local btn1 = dgsCreateButton(200,200,200,200,"Button1",false)
+	dgsAddDragHandler(btn1,{"From Button 1"})
+	local btn2 = dgsCreateButton(200,500,200,200,"Button2",false)
+	dgsAddDragHandler(btn2,{"From Button 2"})
+
+	local btn3 = dgsCreateButton(500,500,200,200,"Receive",false)
+	dgsAddDropHandler(btn3)
+
+	addEventHandler("onDgsDrop",btn3,function(data)
+		iprint("Drop","Data:",data)
+	end,false)
+end
 ---------------Language Test
 function LanguageChangeInComboBoxTest()
 	languageTab = {wtf="DGS %rep%"}
@@ -450,8 +502,8 @@ function dgsRoundRectWithWindowText()
 end
 
 function dgsCircleTest()
-	local c = dgsCreateCircle()
-	local img = dgsCreateImage(300,300,400,400,c,false)
+	local c = dgsCreateCircle(0.5,0.3)
+	local img = dgsCreateImage(300,200,200,200,c,false)
 	dgsCircleSetAngle(c,120)
 	dgsCircleSetDirection(c,false)
 end
@@ -614,17 +666,5 @@ function windowStress()
 	end
 	print(getTickCount()-tick)
 end
-
---[[
-local sp = dgsCreateScrollPane(300,300,500,500,false)
-
-local tick = getTickCount()
-local img = {}
-for i=1,40 do
-	for j=1,40 do
-		img[#img+1] = dgsCreateImage((i-1)*22,(j-1)*22,20,20,_,false,sp)
-	end
-end
-print(getTickCount()-tick)]]
 
 end)

@@ -59,14 +59,21 @@ function dgsCreateTabPanel(...)
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
 	dgsSetParent(tabpanel,parent,true,true)
-	local style = styleSettings.tabpanel
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.tabpanel
 	local tabHeight = tabHeight or style.tabHeight
 	dgsElementData[tabpanel] = {
 		tabHeight = {tabHeight,false},
 		tabMaxWidth = {10000,false},
 		tabMinWidth = {10,false},
 		bgColor = tonumber(bgColor) or style.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		tabs = {},
 		font = style.font or systemFont,
 		selected = -1,
@@ -122,7 +129,14 @@ function dgsCreateTab(...)
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
 	dgsSetParent(tab,tabpanel,true,true)
-	local style = styleSettings.tab
+						
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+
+	style = style.tab
 	local eleData = dgsElementData[tabpanel]
 	local pTextColor = eleData.textColor
 	local w = eleData.absSize[1]
@@ -137,9 +151,9 @@ function dgsCreateTab(...)
 	local tabGapSize = eleData.tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
-	local nImage = nImage or dgsCreateTextureFromStyle(style.tabImage[1])
-	local hImage = hImage or dgsCreateTextureFromStyle(style.tabImage[2])
-	local cImage = cImage or dgsCreateTextureFromStyle(style.tabImage[3])
+	local nImage = nImage or dgsCreateTextureFromStyle(using,res,style.tabImage[1])
+	local hImage = hImage or dgsCreateTextureFromStyle(using,res,style.tabImage[2])
+	local cImage = cImage or dgsCreateTextureFromStyle(using,res,style.tabImage[3])
 	local nColor = nColor or style.tabColor[1]
 	local hColor = hColor or style.tabColor[2]
 	local cColor = cColor or style.tabColor[3]
@@ -151,7 +165,7 @@ function dgsCreateTab(...)
 		textColor = tonumber(textColor) or style.textColor or pTextColor,
 		textSize = {textSizeX,textSizeY},
 		bgColor = tonumber(bgColor) or style.bgColor or eleData.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage) or eleData.bgImage,
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage) or eleData.bgImage,
 		tabImage = {nImage,hImage,cImage},
 		tabColor = {nColor,hColor,cColor},
 		iconColor = 0xFFFFFFFF,
@@ -315,6 +329,13 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local selected = eleData.selected
 	local tabs = eleData.tabs
 	local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
 	local font = eleData.font or systemFont
 	local colorcoded = eleData.colorcoded
 	local wordbreak = eleData.wordbreak

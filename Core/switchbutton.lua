@@ -50,13 +50,20 @@ function dgsCreateSwitchButton(...)
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
 	dgsSetParent(switchbutton,parent,true,true)
-	local style = styleSettings.switchbutton
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+	
+	style = style.switchbutton
 	local imageOff = style.imageOff
-	local norimg_o,hovimg_o,cliimg_o = dgsCreateTextureFromStyle(imageOff[1]),dgsCreateTextureFromStyle(imageOff[2]),dgsCreateTextureFromStyle(imageOff[3])
+	local norimg_o,hovimg_o,cliimg_o = dgsCreateTextureFromStyle(using,res,imageOff[1]),dgsCreateTextureFromStyle(using,res,imageOff[2]),dgsCreateTextureFromStyle(using,res,imageOff[3])
 	local imageOn = style.imageOn
-	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(imageOn[1]),dgsCreateTextureFromStyle(imageOn[2]),dgsCreateTextureFromStyle(imageOn[3])
+	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(using,res,imageOn[1]),dgsCreateTextureFromStyle(using,res,imageOn[2]),dgsCreateTextureFromStyle(using,res,imageOn[3])
 	local cursorImage = style.cursorImage
-	local norimg_c,hovimg_c,cliimg_c = dgsCreateTextureFromStyle(cursorImage[1]),dgsCreateTextureFromStyle(cursorImage[2]),dgsCreateTextureFromStyle(cursorImage[3])
+	local norimg_c,hovimg_c,cliimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[1]),dgsCreateTextureFromStyle(using,res,cursorImage[2]),dgsCreateTextureFromStyle(using,res,cursorImage[3])
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[switchbutton] = {
 		renderBuffer = {};
@@ -295,6 +302,13 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			dxDrawRectangle(xOff,yOff,wOff,hOff,colorOff,isPostGUI)
 		end
 	end
+	
+	local res = eleData.resource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	local systemFont = style.systemFontElement
+			
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip

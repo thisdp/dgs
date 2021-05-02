@@ -183,13 +183,19 @@ function dgsCreateProgressBar(...)
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
 	dgsSetParent(progressbar,parent,true,true)
-	local style = styleSettings.progressbar
+	
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using]
+	
+	style = style.progressbar
 	dgsElementData[progressbar] = {
 		renderBuffer = {},
 		bgColor = bgColor or style.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(style.bgImage),
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		indicatorColor = indicatorColor or style.indicatorColor,
-		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(style.indicatorImage),
+		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(using,res,style.indicatorImage),
 		indicatorMode = indicatorMode and true  or false,
 		padding = style.padding,
 		styleData = {},
