@@ -192,13 +192,6 @@
 	<export function="dgsGetInputMode" type="client" />
 	<export function="dgsGetRootElement" type="client" />
 	<export function="dgsSetInputEnabled" type="client" />
-
-	<export function="dgsAddStyle" type="client" />
-	<export function="dgsLoadStyle" type="client" />
-	<export function="dgsUnloadStyle" type="client" />
-	<export function="dgsSetStyle" type="client" />
-	<export function="dgsGetValueFromStyle" type="client" />
-
 	<export function="dgsAddMoveHandler" type="client" />
 	<export function="dgsRemoveMoveHandler" type="client" />
 	<export function="dgsIsMoveHandled" type="client" />
@@ -221,6 +214,14 @@
 	<export function="dgsPopElement" type="client" />
 	<export function="dgsSetElementKeeperEnabled" type="client" />
 	<export function="dgsGetElementKeeperEnabled" type="client" />
+
+	<export function="dgsAddStyle" type="client" />
+	<export function="dgsLoadStyle" type="client" />
+	<export function="dgsGetLoadedStyleList" type="client" />
+	<export function="dgsUnloadStyle" type="client" />
+	<export function="dgsSetStyle" type="client" />
+	<export function="dgsGetValueFromStyle" type="client" />
+
 	<export function="dgsSendDragNDropData" type="client" />
 	<export function="dgsRetrieveDragNDropData" type="client" />
 	<export function="dgsIsDragNDropData" type="client" />
