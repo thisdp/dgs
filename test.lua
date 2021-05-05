@@ -111,9 +111,19 @@ function createFullDemo()
 			return true
 		]])
 
-	local progressBar_R = window
+	local progressBar_RR = window
 		:dgsProgressBar(45,440,100,100,false)
 		:setStyle("ring-round")
+		:setProperty("functions",[[
+			local progress = dgsGetProperty(self,"progress")
+			dgsSetProperty(self,"progress",(progress+0.5)%100)
+			return true
+		]])
+		:setStyleProperty("radius",0.4)
+		:setStyleProperty("thickness",0.05)
+	local progressBar_RP = window
+		:dgsProgressBar(145,440,100,100,false)
+		:setStyle("ring-plain")
 		:setProperty("functions",[[
 			local progress = dgsGetProperty(self,"progress")
 			dgsSetProperty(self,"progress",(progress+0.5)%100)

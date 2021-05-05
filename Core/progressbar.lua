@@ -20,6 +20,8 @@ local isElement = isElement
 local assert = assert
 local tonumber = tonumber
 local type = type
+local PI = math.pi
+local PI2 = math.pi*2
 
 ProgressBarShaders = {}
 local ProgressBarStyle = {
@@ -148,6 +150,18 @@ local ProgressBarStyle = {
 		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
 		dxDrawImage(x,y,w,h,circle,styleData.rotation,0,0,bgColor,rendSet,rndtgt)
 	end,
+	["ring-plain"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
+		local eleData = dgsElementData[source]
+		local styleData = eleData.styleData
+		local circle = styleData.elements.circleShader
+		dxSetShaderValue(circle,"progress",percent)
+		dxSetShaderValue(circle,"isReverse",styleData.isReverse)
+		dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
+		dxSetShaderValue(circle,"thickness",styleData.thickness)
+		dxSetShaderValue(circle,"radius",styleData.radius)
+		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
+		dxDrawImage(x,y,w,h,circle,styleData.rotation,0,0,bgColor,rendSet,rndtgt)
+	end,
 }
 
 function dgsCreateProgressBar(...)
@@ -196,7 +210,7 @@ function dgsCreateProgressBar(...)
 		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		indicatorColor = indicatorColor or style.indicatorColor,
 		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(using,res,style.indicatorImage),
-		indicatorMode = indicatorMode and true  or false,
+		indicatorMode = indicatorMode and true or false,
 		padding = style.padding,
 		styleData = {},
 		style = "normal-horizontal",
@@ -233,6 +247,16 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			local styleData = dgsElementData[progressbar].styleData
 			styleData.elements = {}
 			styleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-round"])
+			styleData.isReverse = false
+			styleData.rotation = 0
+			styleData.antiAliased = 0.005
+			styleData.radius = 0.2
+			styleData.thickness = 0.02
+		elseif style == "ring-plain" then
+			dgsSetData(progressbar,"styleData",{})
+			local styleData = dgsElementData[progressbar].styleData
+			styleData.elements = {}
+			styleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-plain"])
 			styleData.isReverse = false
 			styleData.rotation = 0
 			styleData.antiAliased = 0.005
@@ -305,12 +329,13 @@ function dgsProgressBarGetMode(progressbar)
 end
 
 ----------------Shader
-ProgressBarShaders["ring-round"] = [[float borderSoft = 0.02;
+ProgressBarShaders["ring-round"] = [[
+#define PI2 6.283185
+float borderSoft = 0.02;
 float radius = 0.2;
 float thickness = 0.02;
 float2 progress = float2(0,0.1);
-float4 indicatorColor = float4(0,1,1,1);
-float PI2 = 6.283185;
+float4 indicatorColor = float4(1,1,1,1);
 
 float4 blend(float4 c1, float4 c2){
 	float alp = c1.a+c2.a-c1.a*c2.a;
@@ -363,6 +388,201 @@ float4 myShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 technique DrawCircle{
 	pass P0	{
 		PixelShader = compile ps_2_a myShader();
+	}
+}
+]]
+
+ProgressBarShaders["ring-plain"] = [[
+#define PI2 6.283185
+float4 indicatorColor = float4(1,1,1,1);
+float borderSoft = 0.02;
+float progress = PI2;
+float radius = 0.2;
+float thickness = 0.02;
+bool isReverse = false; //anticlockwise
+
+
+float4 blend(float4 c1, float4 c2){
+	float alp = c1.a+c2.a-c1.a*c2.a;
+	float3 color = (c1.rgb*c1.a*(1.0-c2.a)+c2.rgb*c2.a)/alp;
+	return float4(color,alp);
+}
+float4 circleShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
+	float4 result = indicatorColor;
+	float4 bgColor = color;
+	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
+	float nBS = borderSoft*sqrt(dxy.x*dxy.y)*100;
+	float xDistance = tex.x-0.5,yDistance = 0.5-tex.y;
+	float angle_p = atan2(yDistance,xDistance);	//angle_p
+	float delta = clamp(1-(abs(length(float2(xDistance,yDistance))-radius)-thickness+nBS)/nBS,0,1);
+	if(angle_p>PI2) angle_p -= PI2;
+	if(angle_p<0) angle_p += PI2;
+	float2 P = float2(xDistance,yDistance);
+	float angle = progress*PI2;
+	float2 Q = float2(cos(angle),sin(angle));
+	float2 N = float2(-Q.y,Q.x)*nBS;
+	float oRadius = 1-(radius+thickness);
+	Q *= oRadius;
+	float2 Start = float2(oRadius,0);
+	float2 StartN = float2(-Start.y,Start.x);
+	float alpha = isReverse;
+	if(angle_p<angle) alpha = !isReverse;
+	if(!isReverse){
+		float2 P1 = P-N;
+		float len0P = length(P1);
+		float len0Q = length(Q);
+		float lenPQ = distance(P1,Q);
+		float a = dot(Q,P1)/(len0Q*len0P);
+		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
+		float dis1 = 2*sqrt(halfC1*(halfC1-len0P)*(halfC1-len0Q)*(halfC1-lenPQ))/len0Q;
+		float _a = dot(N,P1)/(nBS*len0P);
+		P.y += nBS;
+		len0P = length(P);
+		float len0S = oRadius;
+		float lenPS = distance(P,Start);
+		float b = dot(Start,P)/(len0S*len0P);
+		float halfC2 = 0.5*(len0P+len0S+lenPS);
+		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
+		float _b = dot(StartN,P)/(length(StartN)*len0P);
+		bool hit1 = (a >= 0 && dis1 < nBS && _a<=0);
+		bool hit2 = (b >= 0 && dis2 < nBS && _b>=0);
+		if(hit1&&hit2)
+			alpha += max(clamp(dis1/nBS,0,1),clamp(dis2/nBS,0,1));
+		else if(hit1)
+			alpha += clamp(dis1/nBS,0,1);
+		else if(hit2)
+			alpha += clamp(dis2/nBS,0,1);
+	}else{
+		float2 P1 = P+N;
+		float len0P = length(P1);
+		float len0Q = length(Q);
+		float lenPQ = distance(P1,Q);
+		float a = dot(Q,P1)/(len0Q*len0P);
+		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
+		float dis1 = 2*sqrt(halfC1*(halfC1-len0P)*(halfC1-len0Q)*(halfC1-lenPQ))/len0Q;
+		float _a = dot(N,P1)/(nBS*len0P);
+		P.y -= nBS;
+		len0P = length(P);
+		float len0S = oRadius;
+		float lenPS = distance(P,Start);
+		float b = dot(Start,P)/(len0S*len0P);
+		float halfC2 = 0.5*(len0P+len0S+lenPS);
+		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
+		float _b = dot(StartN,P)/(length(StartN)*len0P);
+		bool hit1 = (a >= 0 && dis1 < nBS && _a>=0);
+		bool hit2 = (b >= 0 && dis2 < nBS && _b<=0);
+		if(hit1&&hit2){
+			alpha += max(clamp(dis1/nBS,0,1),clamp(dis2/nBS,0,1));
+		}else if(hit1)
+			alpha += clamp(dis1/nBS,0,1);
+		else if(hit2)
+			alpha += clamp(dis2/nBS,0,1);
+	}
+	alpha *= clamp((1-distance(tex,0.5)-oRadius)/nBS,0,1);
+	alpha *= clamp((distance(tex,0.5)-radius+thickness)/nBS,0,1);
+	result.a *= clamp(alpha,0,1);
+	bgColor.a *= delta;
+	return blend(bgColor,result);
+}
+
+technique circleTechnique{
+	pass p0{
+		PixelShader = compile ps_2_a circleShader();
+	}
+}
+]]
+ProgressBarShaders["ring-plaina"] = [[
+#define PI2 6.283185
+float4 indicatorColor = float4(1,1,1,1);
+float borderSoft = 0.01;
+float radius = 0.2;
+float angle = PI2;
+float thickness = 0.1;
+bool isReverse = false; //anticlockwise
+
+float4 blend(float4 c1, float4 c2){
+	float alp = c1.a+c2.a-c1.a*c2.a;
+	float3 color = (c1.rgb*c1.a*(1.0-c2.a)+c2.rgb*c2.a)/alp;
+	return float4(color,alp);
+}
+
+float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
+	float4 result = indicatorColor;
+	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
+	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
+	float xDistance = tex.x-0.5,yDistance = 0.5-tex.y;
+	float angle_p = atan2(yDistance,xDistance);	//angle_p
+	if(angle_p>PI2) angle_p -= PI2;
+	if(angle_p<0) angle_p += PI2;
+	float2 P = float2(xDistance,yDistance);
+	float2 Q = float2(cos(angle),sin(angle));
+	float2 N = float2(-Q.y,Q.x)*nBorderSoft;
+	float oRadius = 1-(radius+thickness);
+	Q *= oRadius;
+	float2 Start = float2(oRadius,0);
+	float2 StartN = float2(-Start.y,Start.x);
+	float alpha = isReverse;
+	if(angle_p<angle) alpha = !isReverse;
+	if(!isReverse){
+		float2 P1 = P-N;
+		float len0P = length(P1);
+		float len0Q = length(Q);
+		float lenPQ = distance(P1,Q);
+		float a = dot(Q,P1)/(len0Q*len0P);
+		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
+		float dis1 = 2*sqrt(halfC1*(halfC1-len0P)*(halfC1-len0Q)*(halfC1-lenPQ))/len0Q;
+		float _a = dot(N,P1)/(nBorderSoft*len0P);
+		P.y += nBorderSoft;
+		len0P = length(P);
+		float len0S = oRadius;
+		float lenPS = distance(P,Start);
+		float b = dot(Start,P)/(len0S*len0P);
+		float halfC2 = 0.5*(len0P+len0S+lenPS);
+		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
+		float _b = dot(StartN,P)/(length(StartN)*len0P);
+		bool hit1 = (a >= 0 && dis1 < nBorderSoft && _a<=0);
+		bool hit2 = (b >= 0 && dis2 < nBorderSoft && _b>=0);
+		if(hit1&&hit2)
+			alpha += max(clamp((dis1)/nBorderSoft,0,1),clamp((dis2)/nBorderSoft,0,1));
+		else if(hit1)
+			alpha += clamp((dis1)/nBorderSoft,0,1);
+		else if(hit2)
+			alpha += clamp((dis2)/nBorderSoft,0,1);
+	}else{
+		float2 P1 = P+N;
+		float len0P = length(P1);
+		float len0Q = length(Q);
+		float lenPQ = distance(P1,Q);
+		float a = dot(Q,P1)/(len0Q*len0P);
+		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
+		float dis1 = 2*sqrt(halfC1*(halfC1-len0P)*(halfC1-len0Q)*(halfC1-lenPQ))/len0Q;
+		float _a = dot(N,P1)/(nBorderSoft*len0P);
+		P.y -= nBorderSoft;
+		len0P = length(P);
+		float len0S = oRadius;
+		float lenPS = distance(P,Start);
+		float b = dot(Start,P)/(len0S*len0P);
+		float halfC2 = 0.5*(len0P+len0S+lenPS);
+		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
+		float _b = dot(StartN,P)/(length(StartN)*len0P);
+		bool hit1 = (a >= 0 && dis1 < nBorderSoft && _a>=0);
+		bool hit2 = (b >= 0 && dis2 < nBorderSoft && _b<=0);
+		if(hit1&&hit2){
+			alpha += max(clamp((dis1)/nBorderSoft,0,1),clamp((dis2)/nBorderSoft,0,1));
+		}else if(hit1)
+			alpha += clamp((dis1)/nBorderSoft,0,1);
+		else if(hit2)
+			alpha += clamp((dis2)/nBorderSoft,0,1);
+	}
+	alpha *= clamp((1-distance(tex,0.5)-oRadius+nBorderSoft)/nBorderSoft,0,1);
+	alpha *= clamp((distance(tex,0.5)-(radius-thickness)+nBorderSoft)/nBorderSoft,0,1);
+	alpha = clamp(alpha,0,1);
+	return blend(_color,result);
+}
+
+technique circleTechnique{
+	pass p0{
+		PixelShader = compile ps_2_a circleShader();
 	}
 }
 ]]

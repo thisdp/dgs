@@ -309,7 +309,6 @@ float borderSoft = 0.01;
 float angle = 2*PI;
 float outsideRadius = 0.5;
 float insideRadius = 0.2;
-float angleOffset = 0.5*PI;
 texture sourceTexture;
 bool direction = true; //anticlockwise
 bool textureLoad = false;
