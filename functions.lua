@@ -419,7 +419,7 @@ function dgsCreateFont(path,size,bold,quality)
 		path = ":"..resname.."/"..path
 	end
 	if not fileExists(path) then error(dgsGenAsrt(path,"dgsCreateFont",1,_,_,_,"Couldn't find such file '"..path.."'")) end
-	return dxCreateFont(path,size,bold,quality)
+	return dxCreateFont({path,size,bold,quality})
 end
 
 function dgsSetFont(dgsEle,font)
