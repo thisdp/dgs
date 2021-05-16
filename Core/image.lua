@@ -79,7 +79,11 @@ function dgsImageSetImage(image,img)
 	local materialInfo = dgsElementData[image].materialInfo
 	materialInfo[0] = texture
 	if isElement(texture) then
-		materialInfo[1],materialInfo[2] = dxGetMaterialSize(texture)
+		if dgsGetType(texture) ~= "dgs-dxcustomrenderer" then
+			materialInfo[1],materialInfo[2] = dxGetMaterialSize(texture)
+		else 
+			materialInfo[1],materialInfo[2] = 0,0
+		end
 	else
 		materialInfo[0] = nil
 	end
@@ -105,7 +109,7 @@ end
 function dgsImageGetUVSize(image,relative)
 	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetUVSize",1,"dgs-dximage")) end
 	local texture = dgsElementData[image].image
-	if isElement(texture) and getElementType(texture) ~= "shader" then
+	if isElement(texture) and getElementType(texture) == "texture" then
 		local UVSize = dgsElementData[image].UVSize or {1,1,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local sizeU,sizeV = UVSize[1],UVSize[2]
@@ -127,7 +131,8 @@ end
 function dgsImageGetUVPosition(image,relative)
 	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetUVPosition",1,"dgs-dximage")) end
 	local texture = dgsElementData[image].image
-	if isElement(texture) and getElementType(texture) ~= "shader" then
+	local imgType = dgsGetType(texture)
+	if isElement(texture) and getElementType(texture) == "texture" then
 		local UVPos = dgsElementData[image].UVPos or {0,0,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local posU,posV = UVPos[1],UVPos[2]
@@ -143,7 +148,8 @@ end
 
 function dgsImageGetNativeSize(image)
 	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetNativeSize",1,"dgs-dximage")) end
-	if isElement(dgsElementData[image].image) then
+	local img = dgsElementData[image].image
+	if isElement(img) and dgsGetType(img) ~= "dgs-dxcustomrenderer" then
 		return dxGetMaterialSize(image)
 	end
 	return false
@@ -167,7 +173,11 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		local uvPx,uvPy,uvSx,uvSy
 		if materialInfo[0] ~= imgs then	--is latest?
 			materialInfo[0] = imgs	--Update if not
-			materialInfo[1],materialInfo[2] = dxGetMaterialSize(imgs)
+			if dgsGetType(imgs) ~= "dgs-dxcustomrenderer" then
+				materialInfo[1],materialInfo[2] = dxGetMaterialSize(imgs)
+			else 
+				materialInfo[1],materialInfo[2] = 0,0
+			end
 		end
 		local uvPos = eleData.UVPos
 		local px,py,pRlt = uvPos[1],uvPos[2],uvPos[3]
