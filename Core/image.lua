@@ -32,7 +32,7 @@ function dgsCreateImage(...)
 		img = argTable.image or argTable.img or argTable[5]
 		relative = argTable.relative or argTable.rlt or argTable[6]
 		parent = argTable.parent or argTable.p or argTable[7]
-		color = arg.Table.color or argTable[8]
+		color = argTable.color or argTable[8]
 	else
 		x,y,w,h,img,relative,parent,color = ...
 	end
