@@ -206,7 +206,7 @@ function dgsLoadSystemFont(newFont,path,styleName,res)
 	dgsSetSystemFont(newFont,fontSize,fontBold,fontQuality,styleName,res)
 end
 
-function dgsAddStyle(styleName,res,stylePath)
+function dgsAddStyle(styleName,stylePath,res)
 	res = res or sourceResource or "global"
 	assert(type(styleName) == "string","Bad argument @dgsAddStyle at argument 1, expect a string got "..type(styleName))
 	assert(type(stylePath) == "string","Bad argument @dgsAddStyle at argument 2, expect a string got "..type(stylePath))
