@@ -297,15 +297,15 @@ function dgsUnloadStyle(styleName,res)
 	return true
 end
 
-function dgsGetValueFromStyle(elementType,key,res,styleName)
+function dgsGetValueFromStyle(elementType,key,styleName,res)
 	res = res or sourceResource or "global"
 	assert(type(elementType) == "string","Bad argument @dgsGetValueFromStyle at argument 1, expect a string got "..type(elementType))
 	assert(type(key) == "string","Bad argument @dgsGetValueFromStyle at argument 2, expect a string got "..type(key))
-	if styleManager.styles[res].loaded[styleManager.styles[res].using] then
-		if key and styleManager.styles[res].loaded[styleManager.styles[res].using][elementType] then
-			return styleManager.styles[res].loaded[styleManager.styles[res].using][elementType][key]
+	if styleManager.styles[res].loaded[styleName or styleManager.styles[res].using] then
+		if key and styleManager.styles[res].loaded[styleName or styleManager.styles[res].using][elementType] then
+			return styleManager.styles[res].loaded[styleName or styleManager.styles[res].using][elementType][key]
 		else
-			return styleManager.styles[res].loaded[styleManager.styles[res].using][elementType]
+			return styleManager.styles[res].loaded[styleName or styleManager.styles[res].using][elementType]
 		end
 	end
 	return false
