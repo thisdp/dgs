@@ -451,7 +451,6 @@ function string.split(s,delim)
 	return t
 end
 
-
 function string.getPath(res,path)
 	if res and res ~= "global" then
 		path = path:gsub("\\","/")

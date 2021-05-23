@@ -128,9 +128,9 @@ function dgsScanGlobalStyle()
 	local using = customStyleTable.use or "Default"
 	customStyleTable.Default = nil	--Skip Default
 	customStyleTable.use = nil		--Skip Use
-	dgsAddStyle("Default","global","styleManager/Default")	--Add default style
+	dgsAddStyle("Default","styleManager/Default","global")	--Add default style
 	for styleName,stylePath in pairs(customStyleTable) do
-		dgsAddStyle(styleName,"global","styleManager/"..stylePath)
+		dgsAddStyle(styleName,"styleManager/"..stylePath,"global")
 	end
 	return using
 end
