@@ -968,6 +968,7 @@ addEventHandler("onClientResourceStop",root,function(res)
 		dgsClear(_,res)
 		resourceTranslation[res] = nil
 	end
+	externalElementPool[res] = nil	--Clear external element pool
 	if dgsElementKeeper[res] then dgsElementKeeper[res] = nil end
 	if res == getThisResource() then	--Recover Cursor Alpha
 		setCursorAlpha(255)
