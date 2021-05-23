@@ -311,7 +311,7 @@ function dgsGetValueFromStyle(elementType,key,res,styleName)
 	return false
 end
 
-function dgsGetLoadedStyleList(res,includeGlobal)
+function dgsGetLoadedStyleList(includeGlobal,res)
 	res = res or sourceResource or "global"
 	local loadedListIndex = {}
 	if includeGlobal then
@@ -329,7 +329,7 @@ function dgsGetLoadedStyleList(res,includeGlobal)
 	return loadedList
 end
 
-function dgsGetAddedStyleList(res,includeGlobal)
+function dgsGetAddedStyleList(includeGlobal,res)
 	res = res or sourceResource or "global"
 	local addedListIndex = {}
 	if includeGlobal then
