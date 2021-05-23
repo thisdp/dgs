@@ -311,11 +311,13 @@ function dgsGetValueFromStyle(elementType,key,res,styleName)
 	return false
 end
 
-function dgsGetLoadedStyleList(res)
+function dgsGetLoadedStyleList(res,includeGlobal)
 	res = res or sourceResource or "global"
 	local loadedListIndex = {}
-	for name,data in pairs(styleManager.styles.global.loaded) do
-		loadedListIndex[name] = true
+	if includeGlobal then
+		for name,data in pairs(styleManager.styles.global.loaded) do
+			loadedListIndex[name] = true
+		end
 	end
 	for name,data in pairs(styleManager.styles[res].loaded) do
 		loadedListIndex[name] = true
@@ -325,6 +327,24 @@ function dgsGetLoadedStyleList(res)
 		loadedList[#loadedList+1] = name
 	end
 	return loadedList
+end
+
+function dgsGetAddedStyleList(res,includeGlobal)
+	res = res or sourceResource or "global"
+	local addedListIndex = {}
+	if includeGlobal then
+		for name,data in pairs(styleManager.styles.global.mapper) do
+			addedListIndex[name] = true
+		end
+	end
+	for name,data in pairs(styleManager.styles[res].mapper) do
+		addedListIndex[name] = true
+	end
+	local addedList = {}
+	for name in pairs(addedList) do
+		addedList[#addedList+1] = name
+	end
+	return addedList
 end
 
 addEventHandler("onClientResourceStop",root,function(res)

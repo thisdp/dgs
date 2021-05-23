@@ -218,6 +218,7 @@
 	<export function="dgsAddStyle" type="client" />
 	<export function="dgsLoadStyle" type="client" />
 	<export function="dgsGetLoadedStyleList" type="client" />
+	<export function="dgsGetAddedStyleList" type="client" />
 	<export function="dgsUnloadStyle" type="client" />
 	<export function="dgsSetStyle" type="client" />
 	<export function="dgsGetStyle" type="client" />
