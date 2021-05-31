@@ -248,20 +248,44 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 						sideColor = applyColorAlpha(sideColor,parentAlpha*fadeMulti)
 						local side = outlineData[1]
 						if side == "in" then
-							dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize)
-							dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize)
-							dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize)
-							dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
+							if outlineData[6] ~= false then
+								dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize)
+							end
+							if outlineData[4] ~= false then
+								dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize)
+							end
+							if outlineData[5] ~= false then 
+								dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize)
+							end
+							if outlineData[7] ~= false then
+								dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
+							end
 						elseif side == "center" then
-							dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize)
-							dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize)
-							dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
-							dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize)
+							if outlineData[6] ~= false then
+								dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize)
+							end
+							if outlineData[4] ~= false then
+								dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize)
+							end
+							if outlineData[5] ~= false then 
+								dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
+							end
+							if outlineData[7] ~= false then
+								dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize)
+							end
 						elseif side == "out" then
-							dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize)
-							dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize)
-							dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize)
-							dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize)
+							if outlineData[6] ~= false then
+								dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize)
+							end
+							if outlineData[4] ~= false then
+								dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize)
+							end
+							if outlineData[5] ~= false then 
+								dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize)
+							end
+							if outlineData[7] ~= false then
+								dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize)
+							end
 						end
 					end
 				end
