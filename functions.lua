@@ -8,7 +8,7 @@ local type = type
 local assert = assert
 local isElement = isElement
 local destroyElement = destroyElement
-local guiBlur = function()
+local guiBlur = guiBlur or function()
 	destroyElement(guiCreateLabel(0,0,0,0,"",false))
 end
 
