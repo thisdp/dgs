@@ -551,7 +551,7 @@ function dgsGetRootElement() return resourceRoot end
 function GlobalEditMemoBlurCheck()
 	local dxChild = source == GlobalEdit and dgsElementData[source].linkedDxEdit or dgsElementData[source].linkedDxMemo
 	if isElement(dxChild) and MouseData.focused == dxChild then
-		dgsBlur(dxChild)
+		dgsBlur(dxChild,true)
 	end
 end
 
@@ -578,16 +578,20 @@ function dgsFocus(dgsEle)
 	return true
 end
 
-function dgsBlur(dgsEle)
+function dgsBlur(dgsEle,noTriggerGUI)
 	if not dgsEle or not isElement(MouseData.focused) or dgsEle ~= MouseData.focused then return end
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser()
 	elseif eleType == "dgs-dxedit" then
-		guiBlur(GlobalEdit)
+		if not noTriggerGUI then
+			guiBlur(GlobalEdit)
+		end
 		dgsElementData[GlobalEdit].linkedDxEdit = nil
 	elseif eleType == "dgs-dxmemo" then
-		guiBlur(GlobalMemo)
+		if not noTriggerGUI then
+			guiBlur(GlobalMemo)
+		end
 		dgsElementData[GlobalEdit].linkedDxMemo = nil
 	end
 	triggerEvent("onDgsBlur",dgsEle)
