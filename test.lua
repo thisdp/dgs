@@ -153,7 +153,7 @@ function ProgressBarTest()
 		start = start + 0.1
 	end)
 end
-ProgressBarTest()
+
 function MemoTest()
 	local sW,sH = dgsGetScreenSize()
 	local memo = dgsCreateMemo(10,10,300,200,[[]],false)
