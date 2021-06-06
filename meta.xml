@@ -534,9 +534,6 @@
 	<export function="dgsProgressBarSetHorizontalSide" type="client" />
 	<export function="dgsProgressBarGetStyle" type="client" />
 	<export function="dgsProgressBarSetStyle" type="client" />
-	<export function="dgsProgressBarGetStyleProperty" type="client" />
-	<export function="dgsProgressBarGetStyleProperties" type="client" />
-	<export function="dgsProgressBarSetStyleProperty" type="client" />
 
 	<export function="dgsCreateLabel" type="client" />
 	<export function="dgsLabelGetColor" type="client" />

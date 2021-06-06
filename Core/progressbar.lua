@@ -136,31 +136,55 @@ local ProgressBarStyle = {
 	end,
 	["ring-round"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 		local eleData = dgsElementData[source]
-		local styleData = eleData.styleData
-		local circle = styleData.elements.circleShader
+		local circle = eleData.elements.circleShader
+		local circleBG = eleData.elements.circleShaderBG
 		local startPoint,endPoint = 0,percent
-		dxSetShaderValue(circle,"progress",{styleData.isReverse and endPoint or startPoint,not styleData.isReverse and endPoint or startPoint})
+		local progress = {eleData.isReverse and endPoint or startPoint,not eleData.isReverse and endPoint or startPoint}
+		dxSetShaderValue(circle,"progress",progress)
 		if startPoint == endPoint then
 			dxSetShaderValue(circle,"indicatorColor",{0,0,0,0})
 		else
 			dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
 		end
-		dxSetShaderValue(circle,"thickness",styleData.thickness)
-		dxSetShaderValue(circle,"radius",styleData.radius)
-		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
-		dxDrawImage(x,y,w,h,circle,styleData.rotation,0,0,bgColor,rendSet,rndtgt)
+		dxSetShaderValue(circle,"thickness",eleData.thickness)
+		dxSetShaderValue(circle,"radius",eleData.radius)
+		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)
+		
+		local bgStartPoint,bgEndPoint = 0,eleData.bgProgress or 1
+		local bgProgress = {eleData.isReverse and bgEndPoint or bgStartPoint,not eleData.isReverse and bgEndPoint or bgStartPoint}
+		dxSetShaderValue(circleBG,"progress",bgProgress)
+		if bgStartPoint == bgEndPoint then
+			dxSetShaderValue(circleBG,"indicatorColor",{0,0,0,0})
+		else
+			dxSetShaderValue(circleBG,"indicatorColor",{fromcolor(eleData.bgColor,true,true)})
+		end
+		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
+		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
+		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
+		dxDrawImage(x,y,w,h,circleBG,eleData.bgRotation or eleData.rotation,0,0,0,rendSet,rndtgt)
+
+		dxDrawImage(x,y,w,h,circle,eleData.rotation,0,0,0,rendSet,rndtgt)
 	end,
 	["ring-plain"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 		local eleData = dgsElementData[source]
-		local styleData = eleData.styleData
-		local circle = styleData.elements.circleShader
+		local circle = eleData.elements.circleShader
+		local circleBG = eleData.elements.circleShaderBG
+		
+		dxSetShaderValue(circleBG,"progress",eleData.bgProgress or 1)
+		dxSetShaderValue(circleBG,"isReverse",eleData.isReverse)
+		dxSetShaderValue(circleBG,"indicatorColor",{fromcolor(eleData.bgColor,true,true)})
+		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
+		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
+		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
+		dxDrawImage(x,y,w,h,circleBG,eleData.bgRotation or eleData.rotation,0,0,0,rendSet,rndtgt)
+		
 		dxSetShaderValue(circle,"progress",percent)
-		dxSetShaderValue(circle,"isReverse",styleData.isReverse)
+		dxSetShaderValue(circle,"isReverse",eleData.isReverse)
 		dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
-		dxSetShaderValue(circle,"thickness",styleData.thickness)
-		dxSetShaderValue(circle,"radius",styleData.radius)
-		dxSetShaderValue(circle,"antiAliased",styleData.antiAliased)
-		dxDrawImage(x,y,w,h,circle,styleData.rotation,0,0,bgColor,rendSet,rndtgt)
+		dxSetShaderValue(circle,"thickness",eleData.thickness)
+		dxSetShaderValue(circle,"radius",eleData.radius)
+		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)
+		dxDrawImage(x,y,w,h,circle,eleData.rotation,0,0,0,rendSet,rndtgt)
 	end,
 }
 
@@ -212,7 +236,6 @@ function dgsCreateProgressBar(...)
 		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(using,res,style.indicatorImage),
 		indicatorMode = indicatorMode and true or false,
 		padding = style.padding,
-		styleData = {},
 		style = "normal-horizontal",
 		progress = 0,
 		map = {0,100},
@@ -237,34 +260,40 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetStyle",1,"dgs-dxprogressbar")) end
 	if ProgressBarStyle[style] then
 		dgsSetData(progressbar,"style",style)
-		for k,v in pairs(dgsElementData[progressbar].styleData.elements or {}) do
+		local eleData = dgsElementData[progressbar]
+		for k,v in pairs(eleData.elements or {}) do
 			destroyElement(v)
 		end
 		if style == "normal-horizontal" or style == "normal-vertical" then
-			dgsSetData(progressbar,"styleData",{})
 		elseif style == "ring-round" then
-			dgsSetData(progressbar,"styleData",{})
-			local styleData = dgsElementData[progressbar].styleData
-			styleData.elements = {}
-			styleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-round"])
-			styleData.isReverse = false
-			styleData.rotation = 0
-			styleData.antiAliased = 0.005
-			styleData.radius = 0.2
-			styleData.thickness = 0.02
+			eleData.elements = {}
+			eleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-round"])
+			eleData.elements.circleShaderBG = dxCreateShader(ProgressBarShaders["ring-round"])
+			eleData.isReverse = false
+			eleData.antiAliased = 0.005
+			eleData.rotation = 0
+			eleData.radius = 0.2
+			eleData.thickness = 0.02
+			eleData.bgRotation = false
+			eleData.bgRadius = false
+			eleData.bgThickness = false
+			eleData.bgProgress = false
 		elseif style == "ring-plain" then
-			dgsSetData(progressbar,"styleData",{})
-			local styleData = dgsElementData[progressbar].styleData
-			styleData.elements = {}
-			styleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-plain"])
-			styleData.isReverse = false
-			styleData.rotation = 0
-			styleData.antiAliased = 0.005
-			styleData.radius = 0.2
-			styleData.thickness = 0.02
+			eleData.elements = {}
+			eleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-plain"])
+			eleData.elements.circleShaderBG = dxCreateShader(ProgressBarShaders["ring-plain"])
+			eleData.isReverse = false
+			eleData.rotation = 0
+			eleData.antiAliased = 0.005
+			eleData.radius = 0.2
+			eleData.thickness = 0.02
+			eleData.bgRotation = false
+			eleData.bgRadius = false
+			eleData.bgThickness = false
+			eleData.bgProgress = false
 		end
 		for k,v in pairs(settingTable or {}) do
-			dgsElementData[progressbar].styleData[k] = v
+			dgsElementData[progressbar][k] = v
 		end
 		return true
 	end
@@ -274,22 +303,6 @@ end
 function dgsProgressBarGetStyle(progressbar)
 	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetStyle",1,"dgs-dxprogressbar")) end
 	return dgsElementData[progressbar].style
-end
-
-function dgsProgressBarGetStyleProperty(progressbar,propertyName)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetStyleProperty",1,"dgs-dxprogressbar")) end
-	return dgsElementData[progressbar].styleData[propertyName]
-end
-
-function dgsProgressBarGetStyleProperties(progressbar)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetStyleProperties",1,"dgs-dxprogressbar")) end
-	return dgsElementData[progressbar].styleData
-end
-
-function dgsProgressBarSetStyleProperty(progressbar,propertyName,value)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetStyleProperty",1,"dgs-dxprogressbar")) end
-	dgsElementData[progressbar].styleData[propertyName] = value
-	return true
 end
 
 function dgsProgressBarGetProgress(progressbar,isAbsolute)

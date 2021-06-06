@@ -146,27 +146,41 @@ end
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
-	dgsProgressBarSetStyle(pb,"ring-round",{rotation=90})
+	dgsProgressBarSetStyle(pb,"ring-plain",{rotation=90})
 	local start = 0
 	addEventHandler("onClientRender",root,function()
 		dgsProgressBarSetProgress(pb,start)
 		start = start + 0.1
 	end)
 end
-
+ProgressBarTest()
 function MemoTest()
 	local sW,sH = dgsGetScreenSize()
-	local memo = dgsCreateMemo(10,10,200,300,[[This is a dgs-dxmemo
-
-	Thisdp's DirectX Graphical User Interface System
-
-	Test UTF8: 你好]],false)
-	dgsSetFont(memo,"default-bold")
+	local memo = dgsCreateMemo(10,10,300,200,[[]],false)
+	--dgsSetFont(memo,"default-bold")
 	--dgsSetProperty(memo,"selectVisible",false)
 	--dgsSetProperty(memo,"padding",{20,10})
-	dgsMemoSetWordWrapState(memo,false)
-	local x,y = dgsMemoGetTextBoundingBox(memo)
-	dgsSetSize(memo,x,y)
+	dgsMemoSetWordWrapState(memo,true)
+	--local x,y = dgsMemoGetTextBoundingBox(memo)
+	--dgsSetSize(memo,x,y)
+	dgsSetText(memo,[[
+	This is a dgs-dxmemo
+
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System
+
+	Test UTF8: 你好]])
+	dgsMemoSetCaretPosition(memo,10,20)
 end
 
 function EditTest() --Test Tab Switch for edit.
@@ -676,5 +690,17 @@ function windowStress()
 	end
 	print(getTickCount()-tick)
 end
+
+
+function dgsSetPropertyTest()
+	local img = dgsCreateImage(0, 0, 800, 600, _,false)
+	local tick = getTickCount()
+	for i=1,100000 do
+		dgsSetProperty({img},"color",0xFFFFFFFF)
+	end
+	print(getTickCount()-tick)
+	destroyElement(img)
+end
+dgsSetPropertyTest()
 
 end)
