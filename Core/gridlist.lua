@@ -2285,8 +2285,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		eleData.rowMoveOffsetTemp = mathLerp(rowMoveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
 		local rMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
 		dgsGridListUpdateRowMoveOffset(source)
-		if rMoveOffset-eleData.rowMoveOffsetTemp <= 0.5 and rMoveOffset-eleData.rowMoveOffsetTemp >= -0.5 then
-			eleData.rowMoveOffsetTemp = rMoveOffset
+		if _rowMoveOffset-eleData.rowMoveOffsetTemp <= 0.5 and _rowMoveOffset-eleData.rowMoveOffsetTemp >= -0.5 then
+			eleData.rowMoveOffsetTemp = _rowMoveOffset
 		end
 		rowMoveOffset = rMoveOffset
 	end
@@ -2297,8 +2297,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local columnMoveHardness  = dgsElementData[scb2].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
 		eleData.columnMoveOffsetTemp = mathLerp(columnMoveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
 		local cMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
-		if cMoveOffset-eleData.columnMoveOffsetTemp <= 0.5 and cMoveOffset-eleData.columnMoveOffsetTemp >= -0.5 then
-			eleData.columnMoveOffsetTemp = cMoveOffset
+		if _columnMoveOffset-eleData.columnMoveOffsetTemp <= 0.5 and _columnMoveOffset-eleData.columnMoveOffsetTemp >= -0.5 then
+			eleData.columnMoveOffsetTemp = _columnMoveOffset
 		end
 		columnMoveOffset = cMoveOffset
 	end
