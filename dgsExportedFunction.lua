@@ -147,7 +147,7 @@ function dgsG2DLoadHooker()
 			local width,height = dgsGetSize(combobox,false)
 			dgsSetSize(combobox,width,22,false)
 			dgsSetProperty(combobox,"relative",{relative,relative})
-			dgsComboBoxSetBoxHeight(combobox,height-22)
+			dgsComboBoxSetBoxHeight(combobox,height-22,false)
 			isGUIComboBox[combobox] = true
 			addEventHandler("onDgsDestroy",combobox,function()
 				isGUIComboBox[source] = nil
