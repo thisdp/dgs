@@ -155,6 +155,7 @@ function dgsG2DLoadHooker()
 			return combobox
 		end
 		guiComboBoxAddItem = dgsComboBoxAddItem
+		guiComboBoxAdjustHeight = dgsComboBoxSetBoxHeight
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
 		guiComboBoxGetItemText = function(combobox,item,...)
@@ -165,11 +166,11 @@ function dgsG2DLoadHooker()
 		end
 		guiComboBoxGetSelected = function(combobox,...)
 			if isGUIComboBox[combobox] then
-				local selectedItem = dgsComboBoxGetSelectedItem(combobox,item,...)
+				local selectedItem = dgsComboBoxGetSelectedItem(combobox,...)
 				selectedItem = selectedItem == -1 and -1 or selectedItem-1
 				return selectedItem
 			else
-				return dgsComboBoxGetSelectedItem(combobox,item,...)
+				return dgsComboBoxGetSelectedItem(combobox,...)
 			end
 		end
 		guiComboBoxIsOpen = dgsComboBoxGetState
