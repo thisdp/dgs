@@ -690,7 +690,7 @@ function windowStress()
 	end
 	print(getTickCount()-tick)
 end
-
+--windowStress()
 
 function dgsSetPropertyTest()
 	local img = dgsCreateImage(0, 0, 800, 600, _,false)

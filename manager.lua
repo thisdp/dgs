@@ -336,10 +336,10 @@ setElementData(resourceRoot,"DGSType",dgsType,false)
 function dgsAddType(typeName,isPlugin)
 	if isPlugin then
 		dgsPluginType[#dgsPluginType+1] = typeName
-		dgsPluginType[typeName] = true
+		dgsPluginType[typeName] = typeName
 	else
-		dgsType[#dgsPluginType+1] = typeName
-		dgsType[typeName] = true
+		dgsType[#dgsType+1] = typeName
+		dgsType[typeName] = typeName
 	end
 	return true
 end
@@ -362,13 +362,13 @@ function dgsIsType(dgsEle,isType)
 			return type(dgsEle) == isType
 		end
 	else
-		local eleData = dgsElementData[dgsEle]
+	
 		if not isElement(dgsEle) then return false end
+		local eleData = dgsElementData[dgsEle]
 		if eleData and eleData.asPlugin then
 			return dgsPluginType[eleData.asPlugin]
-		else
-			return dgsType[dgsElementType[dgsEle] or getElementType(dgsEle)]
 		end
+		return dgsType[dgsElementType[dgsEle] or getElementType(dgsEle)]
 	end
 	return false
 end
@@ -686,10 +686,8 @@ function dgsSetData(dgsEle,key,value,nocheck)
 	eleData[key] = value
 	if nocheck then return true end
 	local dataHandlerList = dgsDataFunctions[dgsType] or dgsDataFunctions.default
-	if dataHandlerList then
-		local dataHandler = dataHandlerList[key]
-		if dataHandler then dataHandler(dgsEle,key,value,oldValue) end
-	end
+	local dataHandler = dataHandlerList[key] or dgsDataFunctions.default[key]
+	if dataHandler then dataHandler(dgsEle,key,value,oldValue) end
 	return true
 end
 
