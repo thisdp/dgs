@@ -221,9 +221,10 @@ function dgsG2DLoadHooker()
 		guiGridListGetSelectedCount = dgsGridListGetSelectedCount
 		guiGridListGetSelectedItem = function(gl)
 			if isGUIGridList[gl] then
-				local selected = dgsGridListGetSelectedItem(gl)
-				if selected == -1 then return -1 end
-				return selected-1
+				local selectedRow,selectedColumn = dgsGridListGetSelectedItem(gl)
+				selectedRow = selectedRow == -1 and -1 or selectedRow-1
+				selectedColumn = selectedColumn == -1 and -1 or selectedColumn-1
+				return selectedRow,selectedColumn
 			else
 				return dgsGridListGetSelectedItem(gl)
 			end
