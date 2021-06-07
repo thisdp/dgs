@@ -16,6 +16,7 @@ local calculateGuiPositionSize = calculateGuiPositionSize
 local tonumber = tonumber
 local assert = assert
 local type = type
+local applyColorAlpha = applyColorAlpha
 
 function dgsCreateWindow(...)
 	local x,y,w,h,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton
@@ -246,10 +247,8 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	end
 	local alignment = eleData.alignment
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
 	local systemFont = style.systemFontElement
 
 	local font = eleData.font or systemFont

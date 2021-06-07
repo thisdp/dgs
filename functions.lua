@@ -782,11 +782,12 @@ end
 function dgsAttachToAutoDestroy(element,dgsEle,index)
 	if not isElement(element) then return true end
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAttachToAutoDestroy",2,"dgs-dxelement")) end
-	dgsElementData[dgsEle].autoDestroyList = dgsElementData[dgsEle].autoDestroyList or {}
+	local eleData = dgsElementData[dgsEle]
+	eleData.autoDestroyList = eleData.autoDestroyList or {}
 	if not index then
-		tableInsert(dgsElementData[dgsEle].autoDestroyList,element)
+		tableInsert(eleData.autoDestroyList,element)
 	else
-		dgsElementData[dgsEle].autoDestroyList[index] = element
+		eleData.autoDestroyList[index] = element
 	end
 	return true
 end
@@ -795,9 +796,7 @@ function dgsDetachFromAutoDestroy(element,dgsEle)
 	if not(isElement(element)) then error(dgsGenAsrt(element,"dgsDetachFromAutoDestroy",1,"element")) end
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsDetachFromAutoDestroy",2,"dgs-dxelement")) end
 	local id = tableFind(dgsElementData[dgsEle].autoDestroyList or {},element)
-	if id then
-		tableRemove(dgsElementData[dgsEle].autoDestroyList,id)
-	end
+	if id then tableRemove(dgsElementData[dgsEle].autoDestroyList,id) end
 	return true
 end
 -------------------------
