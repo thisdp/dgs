@@ -516,12 +516,12 @@ addEventHandler("onDgsMouseClick",root,function(button,state,x,y,isCoolingDown)
 	end
 end)
 
-addEventHandler("onDgsMouseDoubleClick",root,function(button,state,x,y,isCoolingDown)
+addEventHandler("onDgsMouseDoubleClick",root,function(button,state,x,y)
 	if not isElement(source) then return end
 	if state == "down" then
-		triggerEvent("onDgsMouseDoubleClickDown",source,button,state,x,y,isCoolingDown)
+		triggerEvent("onDgsMouseDoubleClickDown",source,button,state,x,y)
 	elseif state == "up" then
-		triggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y,isCoolingDown)
+		triggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y)
 	end
 end)
 
