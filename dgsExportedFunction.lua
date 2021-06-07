@@ -384,7 +384,7 @@ function dgsG2DLoadHooker()
 			onClientGUIChanged="onDgsTextChange-C",
 			onClientGUIClick="onDgsMouseClickUp",
 			onClientGUIComboBoxAccepted="onDgsComboBoxSelect-C",
-			onClientGUIDoubleClick="onDgsMouseDoubleClick",
+			onClientGUIDoubleClick="onDgsMouseDoubleClickUp",
 			onClientGUIFocus="onDgsFocus",
 			onClientGUIMouseDown="onDgsMouseDown",
 			onClientGUIMouseUp="onDgsMouseUp",

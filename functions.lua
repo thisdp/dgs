@@ -516,6 +516,15 @@ addEventHandler("onDgsMouseClick",root,function(button,state,x,y,isCoolingDown)
 	end
 end)
 
+addEventHandler("onDgsMouseDoubleClick",root,function(button,state,x,y,isCoolingDown)
+	if not isElement(source) then return end
+	if state == "down" then
+		triggerEvent("onDgsMouseDoubleClickDown",source,button,state,x,y,isCoolingDown)
+	elseif state == "up" then
+		triggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y,isCoolingDown)
+	end
+end)
+
 addEvent("onDgsScrollBarScrollPositionChange",true)
 addEventHandler("onDgsElementScroll",root,function(scb,new,old)
 	if dgsGetType(source) == "scrollbar" then
