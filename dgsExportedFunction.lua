@@ -133,7 +133,15 @@ function dgsG2DLoadHooker()
 		guiSetInputEnabled = dgsSetInputEnabled
 		guiSetInputMode = dgsSetInputMode
 		guiSetPosition = dgsSetPosition
-		guiSetSize = dgsSetSize
+		guiSetSize = function (gl,w,h,relative)
+			local v = dgsSetSize(gl,w,h,relative)
+			if _getElementType(gl) == "dgs-dxcombobox" then 
+				local width,height = dgsGetSize(gl,false)
+				dgsSetSize(gl,width,22,false)
+				dgsComboBoxSetBoxHeight(gl,height-22,false)
+			end
+			return v
+		end
 		guiSetText = dgsSetText
 		guiSetVisible = dgsSetVisible
 		guiCreateBrowser = dgsCreateBrowser
@@ -155,7 +163,6 @@ function dgsG2DLoadHooker()
 			return combobox
 		end
 		guiComboBoxAddItem = dgsComboBoxAddItem
-		guiComboBoxAdjustHeight = dgsComboBoxSetBoxHeight
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
 		guiComboBoxGetItemText = function(combobox,item,...)
