@@ -696,11 +696,10 @@ function dgsSetPropertyTest()
 	local img = dgsCreateImage(0, 0, 800, 600, _,false)
 	local tick = getTickCount()
 	for i=1,100000 do
-		dgsSetProperty({img},"color",0xFFFFFFFF)
+		dgsSetProperty(img,"color",0xFFFFFFFF)
 	end
 	print(getTickCount()-tick)
 	destroyElement(img)
 end
-dgsSetPropertyTest()
 
 end)

@@ -14,6 +14,7 @@ local mathMax = math.max
 local mathClamp = math.restrict
 local getElementType = getElementType
 
+--Parent System
 BottomFatherTable = {}		--Store Bottom Father Element
 CenterFatherTable = {}		--Store Center Father Element (Default)
 TopFatherTable = {}			--Store Top Father Element
@@ -22,7 +23,15 @@ dgsScreen3DTable = {}
 FatherTable = {}			--Store Father Element
 ChildrenTable = {}			--Store Children Element
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
-
+--
+--Element Data System
+dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
+local l_dgsElementData = dgsElementData
+--
+--Element Type
+dgsElementType = {}
+local l_dgsElementType = dgsElementType
+--
 function dgsSetLayer(dgsEle,layer,forceDetatch)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetLayer",1,"dgs-dxelement")) end
 	if dgsElementType[dgsEle] == "dgs-dxtab" then return false end
@@ -266,7 +275,6 @@ function dgsMoveToBack(dgsEle)
 end
 
 ------------------------------------------------Type Manager
-dgsElementType = {}
 dgsType = {
 	"dgs-dx3dinterface",
 	"dgs-dx3dline",
@@ -297,6 +305,10 @@ dgsType = {
 	"dgs-dxbrowser",
 }
 
+dgsPluginType = {
+
+}
+
 dgsScreen3DType = {
 	"dgs-dx3dimage",
 	"dgs-dx3dtext",
@@ -321,6 +333,17 @@ end
 
 setElementData(resourceRoot,"DGSType",dgsType,false)
 
+function dgsAddType(typeName,isPlugin)
+	if isPlugin then
+		dgsPluginType[#dgsPluginType+1] = typeName
+		dgsPluginType[typeName] = true
+	else
+		dgsType[#dgsPluginType+1] = typeName
+		dgsType[typeName] = true
+	end
+	return true
+end
+
 function dgsGetType(dgsEle)
 	if isElement(dgsEle) then return tostring(dgsElementType[dgsEle] or getElementType(dgsEle)) end
 	local theType = type(dgsEle)
@@ -339,8 +362,13 @@ function dgsIsType(dgsEle,isType)
 			return type(dgsEle) == isType
 		end
 	else
-		local theType = isElement(dgsEle) and (dgsElementType[dgsEle] or (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin) or getElementType(dgsEle))
-		return theType and theType:sub(1,6) == "dgs-dx" or false
+		local eleData = dgsElementData[dgsEle]
+		if not isElement(dgsEle) then return false end
+		if eleData and eleData.asPlugin then
+			return dgsPluginType[eleData.asPlugin]
+		else
+			return dgsType[dgsElementType[dgsEle] or getElementType(dgsEle)]
+		end
 	end
 	return false
 end
@@ -364,17 +392,17 @@ function dgsIsMaterialElement(ele)
 end
 
 ------------------------------------------------Property Manager
-dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
 local dgsDataFunctions = {
-	["dgs-dxscrollbar"] = function(dgsEle,key,value,oldValue)
-		if key == "length" then
+	["dgs-dxscrollbar"] = {
+		length = function(dgsEle,key,value,oldValue)
 			local absSize = dgsElementData[dgsEle].absSize
 			local w,h = absSize[1],absSize[2]
 			local isHorizontal = dgsElementData[dgsEle].isHorizontal
 			if (value[2] and value[1]*(isHorizontal and w-h*2 or h-w*2) or value[1]) < dgsElementData[dgsEle].minLength then
 				dgsElementData[dgsEle].length = {dgsElementData[dgsEle].minLength,false}
 			end
-		elseif key == "position" then
+		end,
+		position = function(dgsEle,key,value,oldValue)
 			if oldValue then
 				if not dgsElementData[dgsEle].locked then
 					local grades = dgsElementData[dgsEle].grades
@@ -393,25 +421,38 @@ local dgsDataFunctions = {
 					dgsElementData[dgsEle][key] = oldValue
 				end
 			end
-		elseif key == "grades" then
+		end,
+		grades = function(dgsEle,key,value,oldValue)
 			if value then
 				local currentGrade = dgsElementData[dgsEle].position/100*value+0.5
 				dgsSetData(dgsEle,"currentGrade",currentGrade-currentGrade%1)
 			else
 				dgsSetData(dgsEle,"currentGrade",false)
 			end
-		end
-	end,
-	["dgs-dxgridlist"] = function(dgsEle,key,value,oldValue)
-		if key == "columnHeight" or key == "mode" or key== "scrollBarThick" or key== "leading" then
+		end,
+	},
+	["dgs-dxgridlist"] = {
+		columnHeight = function(dgsEle,key,value,oldValue)
 			configGridList(dgsEle)
-		elseif key == "rowData" then
+		end,
+		mode = function(dgsEle,key,value,oldValue)
+			configGridList(dgsEle)
+		end,
+		scrollBarThick = function(dgsEle,key,value,oldValue)
+			configGridList(dgsEle)
+		end,
+		leading = function(dgsEle,key,value,oldValue)
+			configGridList(dgsEle)
+		end,
+		rowData = function(dgsEle,key,value,oldValue)
 			if dgsElementData[dgsEle].autoSort then
 				dgsElementData[dgsEle].nextRenderSort = true
 			end
-		elseif key == "rowMoveOffset" then
+		end,
+		rowMoveOffset = function(dgsEle,key,value,oldValue)
 			dgsGridListUpdateRowMoveOffset(dgsEle)
-		elseif key == "defaultSortFunctions" then
+		end,
+		defaultSortFunctions = function(dgsEle,key,value,oldValue)
 			local sortFunction = dgsElementData[dgsEle].sortFunction
 			local oldDefSortFnc = oldValue
 			local oldUpperSortFnc = sortFunctions[oldDefSortFnc[1]]
@@ -420,59 +461,90 @@ local dgsDataFunctions = {
 			local upperSortFnc = sortFunctions[defSortFnc[1]]
 			local lowerSortFnc = sortFunctions[defSortFnc[2]]
 			local oldSort = sortFunction == oldLowerSortFnc and lowerSortFnc or upperSortFnc
-		end
-	end,
-	["dgs-dxscrollpane"] = function(dgsEle,key,value,oldValue)
-		if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" or key == "scrollBarLength" then
+		end,
+	},
+	["dgs-dxscrollpane"] = {
+		scrollBarThick = function(dgsEle,key,value,oldValue)
 			configScrollPane(dgsEle)
-		end
-	end,
-	["dgs-dxswitchbutton"] = function(dgsEle,key,value,oldValue)
-		if key == "state" then
+		end,
+		scrollBarState = function(dgsEle,key,value,oldValue)
+			configScrollPane(dgsEle)
+		end,
+		scrollBarOffset = function(dgsEle,key,value,oldValue)
+			configScrollPane(dgsEle)
+		end,
+		scrollBarLength = function(dgsEle,key,value,oldValue)
+			configScrollPane(dgsEle)
+		end,
+		ignoreParentTitle = function(dgsEle,key,value,oldValue)
+			configPosSize(dgsEle,false,true)
+			configScrollPane(dgsEle)
+		end,
+		ignoreTitle = function(dgsEle,key,value,oldValue)
+			local children = dgsGetChildren(dgsEle)
+			for i=1,#children do
+				if not dgsElementData[children[i]].ignoreParentTitle then
+					configPosSize(children[i],false,true)
+					configScrollPane(children[i])
+				end
+			end
+		end,
+	},
+	["dgs-dxswitchbutton"] = {
+		state = function(dgsEle,key,value,oldValue)
 			triggerEvent("onDgsSwitchButtonStateChange",dgsEle,value,oldValue)
-		end
-	end,
-	["dgs-dxcombobox"] = function(dgsEle,key,value,oldValue)
-		if key == "scrollBarThick" then
+		end,
+	},
+	["dgs-dxcombobox"] = {
+		scrollBarThick = function(dgsEle,key,value,oldValue)
 			assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
 			local scrollbar = dgsElementData[dgsEle].scrollbar
 			configComboBox(dgsEle)
-		elseif key == "listState" then
+		end,
+		listState = function(dgsEle,key,value,oldValue)
 			triggerEvent("onDgsComboBoxStateChange",dgsEle,value == 1 and true or false)
-		elseif key == "viewCount" then
+		end,
+		viewCount = function(dgsEle,key,value,oldValue)
 			dgsComboBoxSetViewCount(dgsEle,value)
-		elseif key == "itemHeight" and dgsElementData[dgsEle].viewCount then
-			dgsComboBoxSetViewCount(dgsEle,dgsElementData[dgsEle].viewCount)
-		end
-	end,
-	["dgs-dxtabpanel"] = function(dgsEle,key,value,oldValue)
-		if key == "selected" then
+		end,
+		itemHeight = function(dgsEle,key,value,oldValue)
+			if dgsElementData[dgsEle].viewCount then
+				dgsComboBoxSetViewCount(dgsEle,dgsElementData[dgsEle].viewCount)
+			end
+		end,
+	},
+	["dgs-dxtabpanel"] = {
+		selected = function(dgsEle,key,value,oldValue)
 			local old,new = oldValue,value
 			local tabs = dgsElementData[dgsEle].tabs
 			triggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
 			if isElement(tabs[new]) then
 				triggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
 			end
-		elseif key == "tabPadding" then
+		end,
+		tabPadding = function(dgsEle,key,value,oldValue)
 			local width = dgsElementData[dgsEle].absSize[1]
 			local change = value[2] and value[1]*width or value[1]
 			local old = oldValue[2] and oldValue[1]*width or oldValue[1]
 			local tabs = dgsElementData[dgsEle].tabs
 			dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*#tabs*2)
-		elseif key == "tabGapSize" then
+		end,
+		tabGapSize = function(dgsEle,key,value,oldValue)
 			local width = dgsElementData[dgsEle].absSize[1]
 			local change = value[2] and value[1]*width or value[1]
 			local old = oldValue[2] and oldValue[1]*width or oldValue[1]
 			local tabs = dgsElementData[dgsEle].tabs
 			dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*mathMax((#tabs-1),1))
-		elseif key == "tabAlignment" then
+		end,
+		tabAlignment = function(dgsEle,key,value,oldValue)
 			dgsElementData[dgsEle].showPos = 0
-		elseif key == "tabHeight" then
+		end,
+		tabHeight = function(dgsEle,key,value,oldValue)
 			dgsElementData[dgsEle].configNextFrame = true
-		end
-	end,
-	["dgs-dxtab"] = function(dgsEle,key,value,oldValue)
-		if key == "text" then
+		end,
+	},
+	["dgs-dxtab"] = {
+		text = function(dgsEle,key,value,oldValue)
 			if type(value) == "table" then
 				dgsElementData[dgsEle]._translationText = value
 				value = dgsTranslate(dgsEle,value,sourceResource)
@@ -488,47 +560,53 @@ local dgsDataFunctions = {
 			dgsElementData[dgsEle].text = tostring(value)
 			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
 			return triggerEvent("onDgsTextChange",dgsEle)
-		elseif key == "width" then
+		end,
+		width = function(dgsEle,key,value,oldValue)
 			local tabpanel = dgsElementData[dgsEle].parent
 			dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll+(value-oldValue))
-		end
-	end,
-	["dgs-dxedit"] = function(dgsEle,key,value,oldValue)
-		if key == "text" then
-			local txtSize = dgsElementData[dgsEle].textSize
-			local success = handleDxEditText(dgsEle,value)
-			return success
-		elseif key == "textSize" then
+		end,
+	},
+	["dgs-dxedit"] = {
+		text = function(dgsEle,key,value,oldValue)
+			handleDxEditText(dgsEle,value)
+		end,
+		textSize = function(dgsEle,key,value,oldValue)
 			dgsElementData[dgsEle].textFontLen = dxGetTextWidth(dgsElementData[dgsEle].text,value[1],dgsElementData[dgsEle].font)
-		elseif key == "font" then
-			local txtSize = dgsElementData[dgsEle].textSize
-			dgsElementData[dgsEle].textFontLen = dxGetTextWidth(dgsElementData[dgsEle].text,txtSize[1],dgsElementData[dgsEle].font)
-		elseif key == "padding" then
+		end,
+		font = function(dgsEle,key,value,oldValue)
+			local eleData = dgsElementData[dgsEle]
+			eleData.textFontLen = dxGetTextWidth(eleData.text,eleData.textSize[1],eleData.font)
+		end,
+		padding = function(dgsEle,key,value,oldValue)
 			configEdit(dgsEle)
-		end
-	end,
-	["dgs-dxmemo"] = function(dgsEle,key,value,oldValue)
-		if key == "text" then
+		end,
+	},
+	["dgs-dxmemo"] = {
+		text = function(dgsEle,key,value,oldValue)
 			return handleDxMemoText(dgsEle,value)
-		elseif key == "scrollBarThick" then
+		end,
+		scrollBarThick = function(dgsEle,key,value,oldValue)
 			configMemo(dgsEle)
-		elseif key == "textSize" then
+		end,
+		textSize = function(dgsEle,key,value,oldValue)
 			dgsMemoRebuildTextTable(dgsEle)
-		elseif key == "font" then
+		end,
+		font = function(dgsEle,key,value,oldValue)
 			dgsMemoRebuildTextTable(dgsEle)
-		elseif key == "wordWrap" then
+		end,
+		wordWrap = function(dgsEle,key,value,oldValue)
 			if value then
 				dgsMemoRebuildWordWrapMapTable(dgsEle)
 			end
-		end
-	end,
-	["dgs-dxprogressbar"] = function(dgsEle,key,value,oldValue)
-		if key == "progress" then
+		end,
+	},
+	["dgs-dxprogressbar"] = {
+		progress = function(dgsEle,key,value,oldValue)
 			triggerEvent("onDgsProgressBarChange",dgsEle,value,oldValue)
 		end
-	end,
-	["dgs-dx3dinterface"] = function(dgsEle,key,value,oldValue)
-		if key == "size" then
+	},
+	["dgs-dx3dinterface"] = {
+		size = function(dgsEle,key,value,oldValue)
 			local temprt = dgsElementData[dgsEle].renderTarget
 			if isElement(temprt) then
 				destroyElement(temprt)
@@ -536,13 +614,62 @@ local dgsDataFunctions = {
 			local renderTarget = dxCreateRenderTarget(value[1],value[2],true)
 			dgsSetData(dgsEle,"renderTarget",renderTarget)
 		end
-	end,
-	["dgs-dxscalepane"] = function(dgsEle,key,value,oldValue)
-		if key == "scrollBarThick" or key == "scrollBarState" or key == "scrollBarOffset" or key == "scrollBarLength" or key == "scale" then
+	},
+	["dgs-dxscalepane"] = {
+		scrollBarThick = function(dgsEle,key,value,oldValue)
 			configScalePane(dgsEle)
-		end
-	end,
-	
+		end,
+		scrollBarState = function(dgsEle,key,value,oldValue)
+			configScalePane(dgsEle)
+		end,
+		scrollBarOffset = function(dgsEle,key,value,oldValue)
+			configScalePane(dgsEle)
+		end,
+		scrollBarLength = function(dgsEle,key,value,oldValue)
+			configScalePane(dgsEle)
+		end,
+		scale = function(dgsEle,key,value,oldValue)
+			configScalePane(dgsEle)
+		end,
+	},
+	["default"] = {
+		text = function(dgsEle,key,value,oldValue)
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationText = value
+				value = dgsTranslate(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationText = nil
+			end
+			dgsElementData[dgsEle].text = tostring(value)
+			triggerEvent("onDgsTextChange",dgsEle)
+		end,
+		caption = function(dgsEle,key,value,oldValue)
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationText = value
+				value = dgsTranslate(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationText = nil
+			end
+			dgsElementData[dgsEle].caption = tostring(value)
+		end,
+		ignoreParentTitle = function(dgsEle,key,value,oldValue)
+			configPosSize(dgsEle,false,true)
+		end,
+		ignoreTitle = function(dgsEle,key,value,oldValue)
+			local children = dgsGetChildren(dgsEle)
+			for i=1,#children do
+				if not dgsElementData[children[i]].ignoreParentTitle then
+					configPosSize(children[i],false,true)
+					if dgsElementType[children[i]] == "dgs-dxscrollpane" then
+						configScrollPane(children[i])
+					end
+				end
+			end
+		end,
+		asPlugin = function(dgsEle,key,value,oldValue)
+			dgsAddType(value,true)
+		end,
+	},
 }
 
 function dgsGetData(dgsEle,key)
@@ -550,47 +677,18 @@ function dgsGetData(dgsEle,key)
 end
 
 function dgsSetData(dgsEle,key,value,nocheck)
-	local dgsType,key = dgsGetType(dgsEle),tostring(key)
+	local dgsType,key = dgsElementType[dgsEle] or "",key or ""
 	if not (isElement(dgsEle) and dgsType) then return false end
-	dgsElementData[dgsEle] = dgsElementData[dgsEle] or {}
-	local oldValue = dgsElementData[dgsEle][key]
+	if not dgsElementData[dgsEle] then dgsElementData[dgsEle] = {} end
+	local eleData = dgsElementData[dgsEle]
+	local oldValue = eleData[key]
 	if oldValue == value then return true end
-	dgsElementData[dgsEle][key] = value
+	eleData[key] = value
 	if nocheck then return true end
-	local checkType = dgsDataFunctions[dgsType]
-	if checkType then checkType() end
-	if key == "text" then
-		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationText = value
-			value = dgsTranslate(dgsEle,value,sourceResource)
-		else
-			dgsElementData[dgsEle]._translationText = nil
-		end
-		dgsElementData[dgsEle].text = tostring(value)
-		triggerEvent("onDgsTextChange",dgsEle)
-	elseif key == "caption" then
-		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationText = value
-			value = dgsTranslate(dgsEle,value,sourceResource)
-		else
-			dgsElementData[dgsEle]._translationText = nil
-		end
-		dgsElementData[dgsEle].caption = tostring(value)
-	elseif key == "ignoreParentTitle" then
-		configPosSize(dgsEle,false,true)
-		if dgsType == "dgs-dxscrollpane" then
-			configScrollPane(dgsEle)
-		end
-	elseif key == "ignoreTitle" then
-		local children = dgsGetChildren(dgsEle)
-		for i=1,#children do
-			if not dgsElementData[children[i]].ignoreParentTitle then
-				configPosSize(children[i],false,true)
-				if dgsElementType[children[i]] == "dgs-dxscrollpane" then
-					configScrollPane(children[i])
-				end
-			end
-		end
+	local dataHandlerList = dgsDataFunctions[dgsType] or dgsDataFunctions.default
+	if dataHandlerList then
+		local dataHandler = dataHandlerList[key]
+		if dataHandler then dataHandler(dgsEle,key,value,oldValue) end
 	end
 	return true
 end
@@ -614,6 +712,7 @@ function checkCompatibility(dgsEle,key)
 	return true
 end
 
+local _dgsSetData = dgsSetData
 function dgsSetProperty(dgsEle,key,value,...)
 	local isTable = type(dgsEle) == "table"
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetProperty",1,"dgs-dxelement/table")) end
@@ -636,12 +735,6 @@ function dgsSetProperty(dgsEle,key,value,...)
 					if not fnc then error("Bad argument @dgsSetProperty at argument 2, failed to load function ("..err..")") end
 					value = {fnc,{...}}
 				end
-			elseif key == "text" then
-				if dgsElementType[dgsEle] == "dgs-dxmemo" then
-					return handleDxMemoText(dgsEle,value)
-				elseif dgsElementType[dgsEle] == "dgs-dxedit" then
-					return handleDxEditText(dgsEle,value)
-				end
 			elseif key == "absPos" then
 				dgsSetPosition(dgsEle,value[1],value[2],false)
 			elseif key == "rltPos" then
@@ -651,7 +744,7 @@ function dgsSetProperty(dgsEle,key,value,...)
 			elseif key == "rltSize" then
 				dgsSetSize(dgsEle,value[1],value[2],true)
 			end
-			return dgsSetData(dgsEle,key,value)
+			return _dgsSetData(dgsEle,key,value)
 		else
 			error("DGS Compatibility Check")
 		end
