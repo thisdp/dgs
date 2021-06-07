@@ -5,12 +5,12 @@ function dgsCreateCanvas(renderSource,w,h,color)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCanvas",3,"number")) end
 	color = color or 0xFFFFFFFF
 	local canvas = dxCreateRenderTarget(w,h,true) -- Main Render Target
-	local rt,err = dxCreateRenderTarget(w,h,true,renderSource)
+	--[[local rt,err = dxCreateRenderTarget(w,h,true,renderSource)
 	if rt ~= false then
 		dgsAttachToAutoDestroy(rt,renderSource,-1)
 	else
 		outputDebugString(err,2)
-	end
+	end]]
 	dgsElementData[canvas] = {
 		asPlugin="dgs-dxcanvas",
 		blendMode="blend",
