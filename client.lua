@@ -1125,7 +1125,7 @@ function onClientKeyTriggered(button)
 		end
 	elseif dgsGetType(MouseData.focused) == "dgs-dxgridlist" then
 		local gridlist = MouseData.focused
-		if eleData.enableNavigation then
+		if eleData.enableNavigation and eleData.visible and eleData.enabled then
 			if button == "arrow_u" then
 				if eleData.selectionMode ~= 2 then
 					local lastSelected = eleData.lastSelectedItem
