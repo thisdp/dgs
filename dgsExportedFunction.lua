@@ -100,8 +100,10 @@ end
 
 function dgsG2DLoadHooker()
 	return [[
-		if isGUIGridList then return end
+		if loadedG2D then return end
 		isGUIGridList = {}
+		isGUIComboBox = {}
+		loadedG2D = true
 		loadstring(exports.dgs:dgsImportFunction())()
 		for fName,fnc in pairs(_G) do
 			if fName:sub(1,3) == "gui" then
@@ -139,17 +141,57 @@ function dgsG2DLoadHooker()
 		guiCheckBoxGetSelected = dgsCheckBoxGetSelected
 		guiCheckBoxSetSelected = dgsCheckBoxSetSelected
 		guiCreateCheckBox = dgsCreateCheckBox
-		guiCreateComboBox = dgsCreateComboBox
+		guiCreateComboBox = function(...)
+			local x,y,w,h,caption,relative,parent = ...
+			local combobox = dgsCreateComboBox(x,y,w,h,caption,relative,parent)
+			local width,height = dgsGetSize(combobox,false)
+			dgsSetSize(combobox,width,22,false)
+			dgsSetProperty(combobox,"relative",{relative,relative})
+			dgsComboBoxSetBoxHeight(combobox,height-22)
+			isGUIComboBox[combobox] = true
+			addEventHandler("onDgsDestroy",combobox,function()
+				isGUIComboBox[source] = nil
+			end,false)
+			return combobox
+		end
 		guiComboBoxAddItem = dgsComboBoxAddItem
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
-		guiComboBoxGetItemText = dgsComboBoxGetItemText
-		guiComboBoxGetSelected = dgsComboBoxGetSelectedItem
+		guiComboBoxGetItemText = function(combobox,item,...)
+			if item then
+				item = isGUIComboBox[combobox] and item+1 or item
+			end
+			return dgsComboBoxGetItemText(combobox,item,...)
+		end
+		guiComboBoxGetSelected = function(combobox,...)
+			if isGUIComboBox[combobox] then
+				local selectedItem = dgsComboBoxGetSelectedItem(combobox,item,...)
+				selectedItem = selectedItem == -1 and -1 or selectedItem-1
+				return selectedItem
+			else
+				return dgsComboBoxGetSelectedItem(combobox,item,...)
+			end
+		end
 		guiComboBoxIsOpen = dgsComboBoxGetState
-		guiComboBoxRemoveItem = dgsComboBoxRemoveItem
-		guiComboBoxSetItemText = dgsComboBoxSetItemText
+		guiComboBoxRemoveItem = function(combobox,item,...)
+			if item then
+				item = isGUIComboBox[combobox] and item+1 or item
+			end
+			return dgsComboBoxRemoveItem(combobox,item,...)
+		end
+		guiComboBoxSetItemText = function(combobox,item,...)
+			if item then
+				item = isGUIComboBox[combobox] and item+1 or item
+			end
+			return dgsComboBoxSetItemText(combobox,item,...)
+		end
 		guiComboBoxSetOpen = dgsComboBoxSetState
-		guiComboBoxSetSelected = dgsComboBoxSetSelectedItem
+		guiComboBoxSetSelected = function(combobox,item,...)
+			if item then
+				item = isGUIComboBox[combobox] and item+1 or item
+			end
+			return dgsComboBoxSetSelectedItem(combobox,item,...)
+		end
 		guiCreateEdit = dgsCreateEdit
 		guiEditGetCaretIndex = dgsEditGetCaretPosition
 		guiEditGetMaxLength = dgsEditGetMaxLength
