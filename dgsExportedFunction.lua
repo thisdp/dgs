@@ -449,7 +449,7 @@ function dgsG2DLoadHooker()
 		_removeEventHandler = removeEventHandler
 		
 		removeEventHadnler = function(event,...)
-			return removeEventHandler(eventReplace[event] or event,...)
+			return _removeEventHandler(eventReplace[event] or event,...)
 		end
 		local typeReplace ={
 			["dgs-dxbutton"]="gui-button",
