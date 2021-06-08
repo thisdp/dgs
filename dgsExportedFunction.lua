@@ -98,7 +98,15 @@ function dgsImportFunction(name,nameAs)
 	end
 end
 
+G2DHookerEvents = {}
 function dgsG2DLoadHooker()
+	if table.count(G2DHookerEvents) == 0 then 
+		addEventHandler("onDgsEditAccepted",root,handleHookerEvents)
+		addEventHandler("onDgsTextChange",root,handleHookerEvents)
+		addEventHandler("onDgsComboBoxSelect",root,handleHookerEvents)
+		addEventHandler("onDgsTabSelect",root,handleHookerEvents)
+	end
+	G2DHookerEvents[sourceResource or resource] = true	
 	return [[
 		if loadedG2D then return end
 		isGUIGridList = {}
@@ -413,21 +421,6 @@ function dgsG2DLoadHooker()
 				return dgsSetProperty(gl,prop,v)
 			end
 		end
-
-		addEvent("onDgsEditAccepted-C",true)
-		addEvent("onDgsTextChange-C",true)
-		addEvent("onDgsComboBoxSelect-C",true)
-		addEvent("onDgsTabSelect-C",true)
-		if not getElementData(root,"__DGSDef") then
-			setElementData(root,"__DGSDef",true)
-			function fncTrans(...)
-				triggerEvent(eventName.."-C",source,source,...)
-			end
-			addEventHandler("onDgsEditAccepted",root,fncTrans)
-			addEventHandler("onDgsTextChange",root,fncTrans)
-			addEventHandler("onDgsComboBoxSelect",root,fncTrans)
-			addEventHandler("onDgsTabSelect",root,fncTrans)
-		end
 		local eventReplace = {
 			onClientGUIAccepted="onDgsEditAccepted-C",
 			onClientGUIBlur="onDgsBlur",
@@ -478,6 +471,10 @@ function dgsG2DLoadHooker()
 	]]
 end
 
+function handleHookerEvents(...)
+	triggerEvent(eventName.."-C",source,source,...)
+end
+	
 -------Inside DGS
 setElementData(root,"__DGSRes",getThisResource(),false)
 addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)
