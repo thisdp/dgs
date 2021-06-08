@@ -448,7 +448,7 @@ function dgsG2DLoadHooker()
 		
 		_removeEventHandler = removeEventHandler
 		
-		removeEventHadnler = function(event,...)
+		removeEventHandler = function(event,...)
 			return _removeEventHandler(eventReplace[event] or event,...)
 		end
 		local typeReplace ={
