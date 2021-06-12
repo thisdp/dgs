@@ -98,7 +98,15 @@ function dgsImportFunction(name,nameAs)
 	end
 end
 
+G2DHookerEvents = {}
 function dgsG2DLoadHooker()
+	if table.count(G2DHookerEvents) == 0 then 
+		addEventHandler("onDgsEditAccepted",root,handleHookerEvents)
+		addEventHandler("onDgsTextChange",root,handleHookerEvents)
+		addEventHandler("onDgsComboBoxSelect",root,handleHookerEvents)
+		addEventHandler("onDgsTabSelect",root,handleHookerEvents)
+	end
+	G2DHookerEvents[sourceResource or resource] = true	
 	return [[
 		if loadedG2D then return end
 		isGUIGridList = {}
@@ -133,7 +141,15 @@ function dgsG2DLoadHooker()
 		guiSetInputEnabled = dgsSetInputEnabled
 		guiSetInputMode = dgsSetInputMode
 		guiSetPosition = dgsSetPosition
-		guiSetSize = dgsSetSize
+		guiSetSize = function (gl,w,h,relative)
+			local v = dgsSetSize(gl,w,h,relative)
+			if _getElementType(gl) == "dgs-dxcombobox" then 
+				local width,height = dgsGetSize(gl,false)
+				dgsSetSize(gl,width,22,false)
+				dgsComboBoxSetBoxHeight(gl,height-22,false)
+			end
+			return v
+		end
 		guiSetText = dgsSetText
 		guiSetVisible = dgsSetVisible
 		guiCreateBrowser = dgsCreateBrowser
@@ -155,7 +171,6 @@ function dgsG2DLoadHooker()
 			return combobox
 		end
 		guiComboBoxAddItem = dgsComboBoxAddItem
-		guiComboBoxAdjustHeight = dgsComboBoxSetBoxHeight
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
 		guiComboBoxGetItemText = function(combobox,item,...)
@@ -266,7 +281,7 @@ function dgsG2DLoadHooker()
 			if isGUIGridList[gl] then
 				local selectedRow,selectedColumn = dgsGridListGetSelectedItem(gl)
 				selectedRow = selectedRow == -1 and -1 or selectedRow-1
-				selectedColumn = selectedColumn == -1 and -1 or selectedColumn-1
+				selectedColumn = selectedColumn == -1 and 0 or selectedColumn
 				return selectedRow,selectedColumn
 			else
 				return dgsGridListGetSelectedItem(gl)
@@ -406,21 +421,6 @@ function dgsG2DLoadHooker()
 				return dgsSetProperty(gl,prop,v)
 			end
 		end
-
-		addEvent("onDgsEditAccepted-C",true)
-		addEvent("onDgsTextChange-C",true)
-		addEvent("onDgsComboBoxSelect-C",true)
-		addEvent("onDgsTabSelect-C",true)
-		if not getElementData(root,"__DGSDef") then
-			setElementData(root,"__DGSDef",true)
-			function fncTrans(...)
-				triggerEvent(eventName.."-C",source,source,...)
-			end
-			addEventHandler("onDgsEditAccepted",root,fncTrans)
-			addEventHandler("onDgsTextChange",root,fncTrans)
-			addEventHandler("onDgsComboBoxSelect",root,fncTrans)
-			addEventHandler("onDgsTabSelect",root,fncTrans)
-		end
 		local eventReplace = {
 			onClientGUIAccepted="onDgsEditAccepted-C",
 			onClientGUIBlur="onDgsBlur",
@@ -444,6 +444,12 @@ function dgsG2DLoadHooker()
 
 		addEventHandler = function(event,...)
 			return _addEventHandler(eventReplace[event] or event,...)
+		end
+		
+		_removeEventHandler = removeEventHandler
+		
+		removeEventHandler = function(event,...)
+			return _removeEventHandler(eventReplace[event] or event,...)
 		end
 		local typeReplace ={
 			["dgs-dxbutton"]="gui-button",
@@ -471,6 +477,10 @@ function dgsG2DLoadHooker()
 	]]
 end
 
+function handleHookerEvents(...)
+	triggerEvent(eventName.."-C",source,source,...)
+end
+	
 -------Inside DGS
 setElementData(root,"__DGSRes",getThisResource(),false)
 addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)

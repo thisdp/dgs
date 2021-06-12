@@ -1084,4 +1084,13 @@ addEventHandler("onClientResourceStop",root,function(res)
 	if res == getThisResource() then	--Recover Cursor Alpha
 		setCursorAlpha(255)
 	end
+	if G2DHookerEvents[res] then -- G2D Hooker
+		G2DHookerEvents[res] = nil 
+		if table.count(G2DHookerEvents) == 0 then 
+			removeEventHandler("onDgsEditAccepted",root,handleHookerEvents)
+			removeEventHandler("onDgsTextChange",root,handleHookerEvents)
+			removeEventHandler("onDgsComboBoxSelect",root,handleHookerEvents)
+			removeEventHandler("onDgsTabSelect",root,handleHookerEvents)
+		end
+	end
 end)

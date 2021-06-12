@@ -1114,6 +1114,11 @@ events = {
 	"DGSI_SendAboutData",
 	"DGSI_ReceiveQRCode",
 	"DGSI_ReceiveRemoteImage",
+	-------G2D Hooker events
+    "onDgsEditAccepted-C",
+    "onDgsTextChange-C",
+    "onDgsComboBoxSelect-C",
+    "onDgsTabSelect-C",
 	-------
 }
 local addEvent = addEvent
