@@ -113,7 +113,6 @@ function dgsBlurBoxSetLevel(bb,level)
 	dxSetShaderValue(shaderV,"intensity",dgsElementData[bb].intensity)
 	dgsSetData(bb,"shaders",{shaderH,shaderV})
 	dgsSetData(bb,"level",level)
-	dgsSetData(bb,"updateScreenSource",false)
 	return true
 end
 

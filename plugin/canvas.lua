@@ -11,8 +11,9 @@ function dgsCreateCanvas(renderSource,w,h,color)
 	else
 		outputDebugString(err,2)
 	end]]
+	dgsSetType(canvas,"dgs-dxcanvas")
+	dgsSetData(canvas,"asPlugin","dgs-dxcanvas")
 	dgsElementData[canvas] = {
-		asPlugin="dgs-dxcanvas",
 		blendMode="blend",
 		renderSource=renderSource,
 		resolution={w,h},
