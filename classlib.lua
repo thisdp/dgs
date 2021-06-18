@@ -312,10 +312,14 @@ class {
 		end
 	end;
 	default = {
-		isStyleAvailable = gNObjFnc("dgsIsStyleAvailable"),
-		getLoadedStyleList = gNObjFnc("dgsGetLoadedStyleList"),
-		setCurrentStyle = gNObjFnc("dgsSetCurrentStyle"),
-		getCurrentStyle = gNObjFnc("dgsGetCurrentStyle"),
+		dgsAddStyle = gNObjFnc("addStyle"),
+		dgsLoadStyle = gNObjFnc("loadStyle"),
+		dgsGetLoadedStyleList = gNObjFnc("getLoadedStyleList"),
+		dgsGetAddedStyleList = gNObjFnc("getAddedStyleList"),
+		dgsUnloadStyle = gNObjFnc("unloadStyle"),
+		dgsSetStyle = gNObjFnc("setStyle"),
+		dgsGetStyle = gNObjFnc("getStyle"),
+		dgsGetValueFromStyle = gNObjFnc("getValueFromStyle"),
 		getScreenSize = function(self) return Vector2(guiGetScreenSize()) end,
 		setInputEnabled = function(self,...) return guiSetInputEnabled(...) end,
 		getInputEnabled = function(self,...) return guiGetInputEnabled(...) end,
@@ -401,6 +405,9 @@ class {
 		end
 	};
 	public = {
+		isDragNDropData = gNObjFnc("dgsIsDragNDropData"),
+		retrieveDragNDropData = gNObjFnc("dgsRetrieveDragNDropData"),
+		sendDragNDropData = gNObjFnc("dgsSendDragNDropData"),
 		on = function(self,eventName,theFnc,p)
 			local eventName = dgsOOP.transfromEventName(eventName)
 			removeEventHandler(eventName,self.dgsElement,theFnc)
@@ -583,6 +590,10 @@ class {
 		attach = gObjFnc("dgsAttachElements",true),
 		detach = gObjFnc("dgsDetachElements",true),
 		isAttached = gObjFnc("dgsElementIsAttached"),
+		addDragHandler = gObjFnc("dgsAddDragHandler",true),
+		removeDragHandler = gObjFnc("dgsRemoveDragHandler",true),
+		addDropHandler = gObjFnc("dgsAddDropHandler",true),
+		removeDropHandler = gObjFnc("dgsRemoveDropHandler",true),
 	};
 	default = {
 

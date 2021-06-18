@@ -718,6 +718,7 @@ end
 dgsDragDropBoard = {
 	[0] = false,
 	data = {},		--The data you want to transfer
+	lock = false,
 	preview = nil,	--The preview you want to show
 	previewColor = nil,
 	previewOffsetX = nil,
