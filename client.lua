@@ -262,7 +262,7 @@ function dgsCoreRender()
 	----Drag Drop
 	if dgsDragDropBoard[0] then
 		local preview = dgsDragDropBoard.preview
-		local align = dgsDragDropBoard.pewviewAlignment
+		local align = dgsDragDropBoard.previewAlignment
 		local alignHoz,alignVrt = align and align[1] or "center", align and align[2] or "center"
 		local previewOffsetX,previewOffsetY = dgsDragDropBoard.previewOffsetX or 0,dgsDragDropBoard.previewOffsetY or 0
 		local posX,posY = mx+previewOffsetX,my+previewOffsetY
@@ -691,6 +691,7 @@ end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 
 function dgsCore3DRender()
+	
 	dgsRenderInfo.frameStart3D = getTickCount()
 	local rendering3D = 0
 	local created3D = #dgsWorld3DTable
@@ -1209,8 +1210,9 @@ function dgsCheckHit(hits,cursorShowing)
 	if isElement(MouseData.clickl) then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
 			triggerEvent("onDgsMouseDrag",MouseData.clickl,mx,my)
-			if MouseData.clickPosition.left[0] then
+			if not dgsDragDropBoard.lock and MouseData.clickPosition.left[0] then
 				if ((MouseData.clickPosition.left[1]-mx)^2+(MouseData.clickPosition.left[2]-my)^2)^0.5 > 10 then
+					dgsDragDropBoard.lock = true
 					triggerEvent("onDgsDrag",MouseData.clickl)
 					if not wasEventCancelled() then
 						if dgsElementData[MouseData.clickl].dragHandler then
@@ -2089,6 +2091,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					triggerEvent("onDgsDrop",guiele,data)
 				end
 			end
+			dgsDragDropBoard.lock = false
 		elseif button == "right" then
 			MouseData.clickr = false
 		end
