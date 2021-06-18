@@ -1124,7 +1124,7 @@ end
 function dgsMemoSetTypingSoundVolume(memo,volume)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetTypingSoundVolume",1,"dgs-dxmemo")) end
 	if type(volume) ~= "number" then error(dgsGenAsrt(volume,"dgsMemoSetTypingSoundVolume",2,"number")) end
-	dgsElementData[memo].typingSoundVolume = volume
+	dgsElementData[memo].typingSoundVolume = tonumber(volume)
 	return true
 end
 
