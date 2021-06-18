@@ -137,6 +137,7 @@ function dgsCreateEdit(...)
 		undoHistory = {},
 		redoHistory = {},
 		typingSound = style.typingSound,
+		typingSoundVolume = style.typingSoundVolume,
 		maxLength = 0x3FFFFFFF,
 		--rtl = nil,	--nil: auto; false:disabled; true: enabled
 		editCounts = editsCount, --Tab Switch
@@ -724,7 +725,7 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 	end
 end
 
-function dgsEditSetTypingSound(edit,path)
+function dgsEditSetTypingSound(edit,path,volume)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditSetTypingSound",1,"dgs-dxedit")) end
 	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsEditSetTypingSound",2,"string")) end
 	if sourceResource then
@@ -734,12 +735,26 @@ function dgsEditSetTypingSound(edit,path)
 	end
 	if not fileExists(path) then error(dgsGenAsrt(path,"dgsEditSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
 	dgsElementData[edit].typingSound = path
+	dgsElementData[edit].typingSoundVolume = tonumber(volume)
 end
 
 function dgsEditGetTypingSound(edit)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditGetTypingSound",1,"dgs-dxedit")) end
 	return dgsElementData[edit].typingSound
 end
+
+function dgsEditSetTypingSoundVolume(edit,volume)
+	if dgsGetType(edit) ~= "dgs-dxedit" then error(dgsGenAsrt(edit,"dgsEditSetTypingSoundVolume",1,"dgs-dxedit")) end
+	if type(volume) ~= "number" then error(dgsGenAsrt(volume,"dgsEditSetTypingSoundVolume",2,"number")) end
+	dgsElementData[edit].typingSoundVolume = volume
+	return true
+end
+
+function dgsEditGetTypingSoundVolume(edit)
+	if dgsGetType(edit) ~= "dgs-dxedit" then error(dgsGenAsrt(edit,"dgsEditGetTypingSoundVolume",1,"dgs-dxedit")) end
+	return dgsElementData[edit].typingSoundVolume
+end
+
 
 function dgsEditSetAlignment(edit,horizontal,vertical)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditSetAlignment",1,"dgs-dxedit")) end

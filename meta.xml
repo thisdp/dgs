@@ -450,6 +450,8 @@
 	<export function="dgsEditClearText" type="client" />
 	<export function="dgsEditSetTypingSound" type="client" />
 	<export function="dgsEditGetTypingSound" type="client" />
+	<export function="dgsEditSetTypingSoundVolume" type="client" />
+	<export function="dgsEditGetTypingSoundVolume" type="client" />
 	<export function="dgsEditSetAlignment" type="client" />
 	<export function="dgsEditGetAlignment" type="client" />
 	<export function="dgsEditSetPlaceHolder" type="client" />
@@ -483,6 +485,8 @@
 	<export function="dgsMemoGetVerticalScrollPosition" type="client" />
 	<export function="dgsMemoSetTypingSound" type="client" />
 	<export function="dgsMemoGetTypingSound" type="client" />
+	<export function="dgsMemoSetTypingSoundVolume" type="client" />
+	<export function="dgsMemoGetTypingSoundVolume" type="client" />
 	<export function="dgsMemoGetLineCount" type="client" />
 	<export function="dgsMemoSetWordWrapState" type="client" />
 	<export function="dgsMemoGetWordWrapState" type="client" />

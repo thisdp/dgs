@@ -147,6 +147,7 @@ function dgsCreateMemo(...)
 		redoHistory = {},
 		padding = style.padding,
 		typingSound = style.typingSound,
+		typingSoundVolume = style.typingSoundVolume,
 		selectColor = style.selectColor,
 		selectColorBlur = style.selectColorBlur,
 		selectVisible = style.selectVisible,
@@ -1102,7 +1103,7 @@ function dgsMemoGetSelectedArea(memo)
 	return fromIndex,fromLine,toIndex,toLine
 end
 
-function dgsMemoSetTypingSound(memo,path)
+function dgsMemoSetTypingSound(memo,path,volume)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetTypingSound",1,"dgs-dxmemo")) end
 	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsMemoSetTypingSound",2,"string")) end
 	if sourceResource then
@@ -1112,12 +1113,26 @@ function dgsMemoSetTypingSound(memo,path)
 	end
 	if not fileExists(path) then error(dgsGenAsrt(path,"dgsMemoSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
 	dgsElementData[memo].typingSound = path
+	dgsElementData[memo].typingSoundVolume = volume
 end
 
 function dgsMemoGetTypingSound(memo)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTypingSound",1,"dgs-dxmemo")) end
 	return dgsElementData[memo].typingSound
 end
+
+function dgsMemoSetTypingSoundVolume(memo,volume)
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetTypingSoundVolume",1,"dgs-dxmemo")) end
+	if type(volume) ~= "number" then error(dgsGenAsrt(volume,"dgsMemoSetTypingSoundVolume",2,"number")) end
+	dgsElementData[memo].typingSoundVolume = volume
+	return true
+end
+
+function dgsMemoGetTypingSoundVolume(memo)
+	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTypingSoundVolume",1,"dgs-dxmemo")) end
+	return dgsElementData[memo].typingSoundVolume
+end
+
 
 function dgsMemoSetWordWrapState(memo,state)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoSetWordWrapState",1,"dgs-dxmemo")) end
