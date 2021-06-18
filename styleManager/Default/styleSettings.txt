@@ -260,6 +260,7 @@
 		caretOffset = 0,
 		caretHeight = 1,
 		typingSound = nil,
+		typingSoundVolume = 1,
 		placeHolder = "",
 		placeHolderColorcoded = false,
 		placeHolderOffset = {0,0},
@@ -335,6 +336,7 @@
 		scrollBarThick = 15,
 		selectVisible = true,
 		typingSound = nil,
+		typingSoundVolume = 1,
 		padding = {2,2},
 	},
 

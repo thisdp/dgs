@@ -752,7 +752,7 @@ end
 
 function dgsEditGetTypingSoundVolume(edit)
 	if dgsGetType(edit) ~= "dgs-dxedit" then error(dgsGenAsrt(edit,"dgsEditGetTypingSoundVolume",1,"dgs-dxedit")) end
-	return dgsElementData[edit].typingSoundVolume
+	return dgsElementData[edit].typingSoundVolume or 1
 end
 
 

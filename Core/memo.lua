@@ -1130,7 +1130,7 @@ end
 
 function dgsMemoGetTypingSoundVolume(memo)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTypingSoundVolume",1,"dgs-dxmemo")) end
-	return dgsElementData[memo].typingSoundVolume
+	return dgsElementData[memo].typingSoundVolume or 1
 end
 
 
