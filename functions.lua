@@ -1,8 +1,6 @@
 local loadstring = loadstring
 ---------------Speed Up
-local tableInsert = table.insert
-local tableRemove = table.remove
-local tableFind = table.find
+local tableInsert,tableRemove,tableFind = table.insert,table.remove,table.find
 local triggerEvent = triggerEvent
 local type = type
 local assert = assert
@@ -11,7 +9,6 @@ local destroyElement = destroyElement
 local guiBlur = guiBlur or function()
 	destroyElement(guiCreateLabel(0,0,0,0,"",false))
 end
-
 local guiFocus = guiBringToFront
 
 function insertResource(res,dgsEle)
@@ -450,12 +447,10 @@ end
 
 function dgsSetSystemFont(font,size,bold,quality,styleName,res)
 	if not(type(font) == "string") then error(dgsGenAsrt(font,"dgsSetSystemFont",1,"string")) end
-	
 	local res = sres or sourceResource or "global"
 	local style = styleManager.styles[res]
 	style = style.loaded[styleName or style.using]
 	local systemFont = style.systemFontElement
-	
 	if isElement(systemFont) then
 		destroyElement(systemFont)
 	end
@@ -524,16 +519,6 @@ addEventHandler("onDgsMouseDoubleClick",root,function(button,state,x,y)
 		triggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y)
 	end
 end)
-
-addEvent("onDgsScrollBarScrollPositionChange",true)
-addEventHandler("onDgsElementScroll",root,function(scb,new,old)
-	if dgsGetType(source) == "scrollbar" then
-		triggerEvent("onDgsScrollBarScrollPositionChange",source,new,old)
-	end
-end)
-
-addEvent("onDgsCursorMove",true)
-addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)
 
 function dgsGetMouseClickGUI(button)
 	if button == "left" then
@@ -608,7 +593,6 @@ function dgsBlur(dgsEle,noTriggerGUI)
 	return true
 end
 
-
 ------------------Cursor Management
 local CursorPosX,CursorPosY = sW/2,sH/2
 local CursorPosXVisible,CursorPosYVisible = CursorPosX,CursorPosY
@@ -635,24 +619,22 @@ function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
 				end
 			else
 				local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
-				local curX,curY = absX-xPos,absY-yPos
 				local eleSize = dgsElementData[relativeElement].absSize
 				if rlt then
-					return curX/eleSize[1],curY/eleSize[2]
+					return (absX-xPos)/eleSize[1],(absY-yPos)/eleSize[2]
 				else
-					return curX,curY
+					return absX-xPos,absY-yPos
 				end
 			end
 		else
 			local absX,absY = CursorPosXVisible,CursorPosYVisible
 			if dgsIsType(relativeElement) then
 				local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
-				local curX,curY = absX-xPos,absY-yPos
 				local eleSize = dgsElementData[relativeElement].absSize
 				if rlt then
-					return curX/eleSize[1],curY/eleSize[2]
+					return (absX-xPos)/eleSize[1],(absY-yPos)/eleSize[2]
 				else
-					return curX,curY
+					return absX-xPos,absY-yPos
 				end
 			else
 				if rlt then
@@ -665,13 +647,12 @@ function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
 	end
 end
 
-addEventHandler("onClientCursorMove",root,function (_,_,x,y)
+addEventHandler("onClientCursorMove",root,function(_,_,x,y)
 	CursorPosX,CursorPosY = x,y
 	if dgsGetCursorVisible() then
 		CursorPosXVisible,CursorPosYVisible = CursorPosX,CursorPosY
 	end
 end)
-
 
 function dgsGetMultiClickInterval() return multiClick.Interval end
 
@@ -907,7 +888,6 @@ function dgsClear(theType,res)
 end
 
 ----------------------------------Multi Language Support
-
 function dgsTranslationTableExists(name)
 	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsTranslationTableExists",1,"string")) end
 	return LanguageTranslation[name] and true or false
@@ -1118,3 +1098,13 @@ function dgsGetSide(dgsEle,which)
 		return v
 	end
 end
+
+addEvent("onDgsScrollBarScrollPositionChange",true)
+addEventHandler("onDgsElementScroll",root,function(scb,new,old)
+	if dgsGetType(source) == "scrollbar" then
+		triggerEvent("onDgsScrollBarScrollPositionChange",source,new,old)
+	end
+end)
+
+addEvent("onDgsCursorMove",true)
+addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)

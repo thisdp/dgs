@@ -175,7 +175,7 @@ function dxCreateTexture(pathOrData,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sourceResource = sRes or sourceResource
 		if dgsElementKeeper[sourceResource] then
-			local textureData = fileGetContent(pathOrData)
+			local textureData = fileGetContent(pathOrData) or pathOrData
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",textureData)
@@ -201,7 +201,7 @@ function dxCreateShader(pathOrData,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sourceResource = sRes or sourceResource
 		if dgsElementKeeper[sourceResource] then
-			local shaderData = fileGetContent(pathOrData)
+			local shaderData = fileGetContent(pathOrData) or pathOrData
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"shader",shaderData)
@@ -236,7 +236,7 @@ function dxCreateFont(creationInfo,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sourceResource = sRes or sourceResource
 		if dgsElementKeeper[sourceResource] then
-			local fontData = fileGetContent(pathOrData)
+			local fontData = fileGetContent(pathOrData) or pathOrData
 			local sourceResRoot = getResourceRootElement(sourceResource)
 			local _sourceResource = sourceResource
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"font",fontData,size,isbold,quality)
@@ -974,7 +974,6 @@ function checkPixelShaderVersion()
 	end
 end
 checkPixelShaderVersion()
-
 --Render Target Assigner
 --[[
 RTState:

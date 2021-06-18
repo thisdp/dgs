@@ -119,8 +119,8 @@ function createFullDemo()
 			dgsSetProperty(self,"progress",(progress+0.5)%100)
 			return true
 		]])
-		:setStyleProperty("radius",0.4)
-		:setStyleProperty("thickness",0.05)
+		:setProperty("radius",0.4)
+		:setProperty("thickness",0.05)
 	local progressBar_RP = window
 		:dgsProgressBar(145,440,100,100,false)
 		:setStyle("ring-plain")
@@ -129,8 +129,8 @@ function createFullDemo()
 			dgsSetProperty(self,"progress",(progress+0.5)%100)
 			return true
 		]])
-		:setStyleProperty("radius",0.4)
-		:setStyleProperty("thickness",0.05)
+		:setProperty("radius",0.4)
+		:setProperty("thickness",0.05)
 	---------------------
 	local RadioButton1 = window:dgsRadioButton(10,380,180,30,"This is a radio button for demo",false)
 	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
@@ -142,7 +142,6 @@ function createFullDemo()
 		:setProperty("clickCoolDown",1000)
 	
 end
-
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
@@ -568,12 +567,16 @@ end
 
 ---------------Blur Box
 function BlurBoxTest()
-	local blurbox = dgsCreateBlurBox(sW/2,sH,QRCode)
+	local blurbox = dgsCreateBlurBox(sW/2,sH)
+	dgsSetProperty(blurbox,"updateScreenSource",true)
 	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
 	dgsBlurBoxSetIntensity(blurbox,1)
 	dgsBlurBoxSetLevel(blurbox,15)
+	window = dgsCreateWindow(400,200,800,200,"123",false)
+	dgsSetPostGUI(window,false)
 	--local text = dgsCreate3DImage(0,0,4,blurbox,tocolor(0,128,255,128),128,128)
 end
+
 ---------------Color Picker
 function testColorPicker()
 	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false)
@@ -686,11 +689,11 @@ function windowStress()
 	local tick = getTickCount()
 	for i=1,1000 do
 		local win = dgsCreateWindow(0, 0, 800, 600, 'Dx Gui Demo')
-		destroyElement(win)
+		--destroyElement(win)
 	end
 	print(getTickCount()-tick)
 end
---windowStress()
+
 
 function dgsSetPropertyTest()
 	local img = dgsCreateImage(0, 0, 800, 600, _,false)
