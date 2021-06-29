@@ -394,10 +394,10 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local preEnterData = false
 	local selectorTextColors = {1,1,1}
 	if MouseData.entered == source then
-		if my >= selectorStartY and my <= selectorEndY then
-			if mx >= cx and mx <= cx+selectorSizeX then				--Left Arrow
+		if my-cx >= selectorStartY and my-cy <= selectorEndY then
+			if mx-cx >= 0 and mx-cx <= selectorSizeX then				--Left Arrow
 				preEnterData = 1
-			elseif mx >= cx+w-selectorSizeX and mx <= cx+w then		--Right Arrow
+			elseif mx-cx >= w-selectorSizeX and mx-cx <= w then		--Right Arrow
 				preEnterData = 3
 			else
 				preEnterData = 2
