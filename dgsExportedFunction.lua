@@ -219,6 +219,7 @@ function dgsG2DLoadHooker()
 		guiEditSetReadOnly = dgsEditSetReadOnly
 		guiCreateGridList = function(...)
 			local gl = dgsCreateGridList(...)
+			dgsSetProperty(gl,"defaultSortFunctions",{"numGreaterLower","numGreaterUpper"})
 			isGUIGridList[gl] = true
 			addEventHandler("onDgsDestroy",gl,function()
 				isGUIGridList[source] = nil
