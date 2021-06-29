@@ -406,17 +406,17 @@ end
 sortFunctions.numGreaterUpper = function(...)
 	local arg = {...}
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
-	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
-	return a < b
+	local a = tonumber(arg[1][column][1])
+	local b = tonumber(arg[2][column][1])
+	return (a and b) and a < b or false
 end
 
 sortFunctions.numGreaterLower = function(...)
 	local arg = {...}
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
-	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
-	return a > b
+	local a = tonumber(arg[1][column][1])
+	local b = tonumber(arg[2][column][1])
+	return (a and b) and a > b or false
 end
 
 sortFunctions.longerUpper = function(...)
