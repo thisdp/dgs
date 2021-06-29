@@ -152,6 +152,7 @@ function dgsCreateGridList(...)
 		sortColumn = false,
 		sortEnabled = true,
 		defaultSortFunctions = {"greaterLower","greaterUpper"},
+		defaultSortIcons = {"▲","▼"},
 		renderBuffer = {
 			columnEndPos = {},
 			columnPos = {},
@@ -2313,7 +2314,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local mouseInsideRow = mouseInsideGridList and my > cy+columnHeight
 	local defaultSortFunctions = eleData.defaultSortFunctions
 	eleData.selectedColumn = -1
-	local sortIcon = eleData.sortFunction == sortFunctions[defaultSortFunctions[1]] and "▼" or (eleData.sortFunction == sortFunctions[defaultSortFunctions[2]] and "▲") or nil
+	local sortIcon = eleData.sortFunction == sortFunctions[defaultSortFunctions[1]] and eleData.defaultSortIcons[1] or (eleData.sortFunction == sortFunctions[defaultSortFunctions[2]] and eleData.defaultSortIcons[2]) or nil
 	local sortColumn = eleData.sortColumn
 	local backgroundOffset = eleData.backgroundOffset
 
