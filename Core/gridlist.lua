@@ -403,20 +403,64 @@ sortFunctions.greaterLower = function(...)
 	return arg[1][column][1] > arg[2][column][1]
 end
 
-sortFunctions.numGreaterUpper = function(...)
+sortFunctions.numGreaterUpperNumFirst = function(...)
 	local arg = {...}
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1])
-	local b = tonumber(arg[2][column][1])
-	return (a and b) and a < b or false
+	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
+	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return false
+	elseif aType == "number" and bType == "string" then
+		return true
+	end
+	return a < b
 end
 
-sortFunctions.numGreaterLower = function(...)
+sortFunctions.numGreaterLowerNumFirst = function(...)
 	local arg = {...}
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1])
-	local b = tonumber(arg[2][column][1])
-	return (a and b) and a > b or false
+	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
+	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return true
+	elseif aType == "number" and bType == "string" then
+		return false
+	end
+	return a > b
+end
+
+sortFunctions.numGreaterUpperStrFirst = function(...)
+	local arg = {...}
+	local column = dgsElementData[self].sortColumn
+	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
+	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return true
+	elseif aType == "number" and bType == "string" then
+		return false
+	end
+	return a < b
+end
+
+sortFunctions.numGreaterLowerStrFirst = function(...)
+	local arg = {...}
+	local column = dgsElementData[self].sortColumn
+	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
+	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return false
+	elseif aType == "number" and bType == "string" then
+		return true
+	end
+	return a > b
 end
 
 sortFunctions.longerUpper = function(...)
