@@ -99,14 +99,15 @@ function dgsImportFunction(name,nameAs)
 end
 
 G2DHookerEvents = {}
-function dgsG2DLoadHooker()
+function dgsG2DLoadHooker(isLocal)
 	if table.count(G2DHookerEvents) == 0 then 
 		addEventHandler("onDgsEditAccepted",root,handleHookerEvents)
 		addEventHandler("onDgsTextChange",root,handleHookerEvents)
 		addEventHandler("onDgsComboBoxSelect",root,handleHookerEvents)
 		addEventHandler("onDgsTabSelect",root,handleHookerEvents)
 	end
-	G2DHookerEvents[sourceResource or resource] = true	
+	G2DHookerEvents[sourceResource or resource] = true
+	local usingLocal = isLocal and "local" or ""
 	return [[
 		if loadedG2D then return end
 		isGUIGridList = {}
@@ -219,7 +220,7 @@ function dgsG2DLoadHooker()
 		guiEditSetReadOnly = dgsEditSetReadOnly
 		guiCreateGridList = function(...)
 			local gl = dgsCreateGridList(...)
-			dgsSetProperty(gl,"defaultSortFunctions",{"numGreaterLower","numGreaterUpper"})
+			dgsSetProperty(gl,"defaultSortFunctions",{"numGreaterLowerStrFirst","numGreaterUpperStrFirst"})
 			isGUIGridList[gl] = true
 			addEventHandler("onDgsDestroy",gl,function()
 				isGUIGridList[source] = nil
