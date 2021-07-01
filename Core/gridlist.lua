@@ -344,7 +344,8 @@ function dgsGridListSetVerticalScrollPosition(gridlist,vertical)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetVerticalScrollPosition",1,"dgs-dxgridlist")) end
 	if not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsGridListSetVerticalScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[gridlist].scrollbars
-	return dgsScrollBarSetScrollPosition(scb[1],vertical)
+	print(dgsScrollBarSetScrollPosition(scb[1],vertical))
+	return 
 end
 
 function dgsAttachToGridList(element,gridlist,r,c)
@@ -2213,12 +2214,12 @@ function configGridList(gridlist)
 	local relSizX,relSizY = w-scbThickV,h-scbThickH
 	local rowShowRange = relSizY-columnHeight
 	local columnShowRange = relSizX
-	if scbStateH and scbStateH ~= oriScbStateH then
-		dgsSetData(scrollbar[2],"position",0)
-	end
-	if scbStateV and scbStateV ~= oriScbStateV  then
-		dgsSetData(scrollbar[1],"position",0)
-	end
+	--if scbStateH and scbStateH ~= oriScbStateH then
+		--dgsSetData(scrollbar[2],"position",0)
+	--end
+	--if scbStateV and scbStateV ~= oriScbStateV  then
+		--dgsSetData(scrollbar[1],"position",0)
+	--end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	dgsSetPosition(scrollbar[1],scbX,0,false)
