@@ -344,8 +344,7 @@ function dgsGridListSetVerticalScrollPosition(gridlist,vertical)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetVerticalScrollPosition",1,"dgs-dxgridlist")) end
 	if not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsGridListSetVerticalScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[gridlist].scrollbars
-	print(dgsScrollBarSetScrollPosition(scb[1],vertical))
-	return 
+	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end
 
 function dgsAttachToGridList(element,gridlist,r,c)
