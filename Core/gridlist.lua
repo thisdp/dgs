@@ -433,6 +433,9 @@ sortFunctions.numGreaterLowerNumFirst = function(...)
 	return a > b
 end
 
+sortFunctions.numGreaterUpper = sortFunctions.numGreaterUpperNumFirst 
+sortFunctions.numGreaterLower = sortFunctions.numGreaterLowerNumFirst 
+
 sortFunctions.numGreaterUpperStrFirst = function(...)
 	local arg = {...}
 	local column = dgsElementData[self].sortColumn
