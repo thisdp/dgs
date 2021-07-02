@@ -48,7 +48,7 @@ function dgsCreateImage(...)
 		UVPos = {},
 		materialInfo = {},
 		color = color or 0xFFFFFFFF,
-		rotationCenter = {0,0}, -- 0~1
+		rotationCenter = {0,0,false}, -- rotationCenterX,rotationCenterY,relative
 		rotation = 0, -- 0~360
 		shadow = {},
 	}
@@ -162,7 +162,8 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 	local colors,imgs = eleData.color,eleData.image
 	colors = applyColorAlpha(colors,parentAlpha)
 	if isElement(imgs) then
-		local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]
+		local rotCenter = eleData.rotationCenter
+		local rotOffx,rotOffy = rotCenter[3] and w*rotCenter[1] or rotCenter[1],rotCenter[3] and h*rotCenter[2] or rotCenter[2]
 		local rot = eleData.rotation or 0
 		local shadow = eleData.shadow
 		local shadowoffx,shadowoffy,shadowc,shadowIsOutline
