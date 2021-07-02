@@ -430,7 +430,7 @@ function dgsG2DLoadHooker(isLocal)
 			onClientGUIClick="onDgsMouseClickUp",
 			onClientGUIComboBoxAccepted="onDgsComboBoxSelect-C",
 			onClientGUIDoubleClick="onDgsMouseDoubleClickUp",
-			onClientGUIFocus="onDgsFocus",j
+			onClientGUIFocus="onDgsFocus",
 			onClientGUIMouseDown="onDgsMouseDown",
 			onClientGUIMouseUp="onDgsMouseUp",
 			onClientGUIMove="onDgsElementMove",
