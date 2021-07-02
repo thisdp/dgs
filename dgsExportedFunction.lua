@@ -204,8 +204,8 @@ function dgsG2DLoadHooker(isLocal)
 		end
 		guiComboBoxSetOpen = dgsComboBoxSetState
 		guiComboBoxSetSelected = function(combobox,item,...)
-			if item then
-				item = isGUIComboBox[combobox] and item+1 or item
+			if item and isGUIComboBox[combobox] and item ~= -1 then
+				item = item+1
 			end
 			return dgsComboBoxSetSelectedItem(combobox,item,...)
 		end
@@ -430,7 +430,7 @@ function dgsG2DLoadHooker(isLocal)
 			onClientGUIClick="onDgsMouseClickUp",
 			onClientGUIComboBoxAccepted="onDgsComboBoxSelect-C",
 			onClientGUIDoubleClick="onDgsMouseDoubleClickUp",
-			onClientGUIFocus="onDgsFocus",
+			onClientGUIFocus="onDgsFocus",j
 			onClientGUIMouseDown="onDgsMouseDown",
 			onClientGUIMouseUp="onDgsMouseUp",
 			onClientGUIMove="onDgsElementMove",
