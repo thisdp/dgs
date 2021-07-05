@@ -53,6 +53,7 @@ function dgsCreateObjectPreviewHandle(objEle,rX,rY,rZ)
 end
 
 function destroyObjectPreviewWhenTargetElementDestroy()
+	local OP = exports[objPrevResStatus.name]
 	local objPrevEle = dgsElementData[source].SOVelement
 	objPrevHandles[getElementID(objPrevEle)] = nil
 	OP:destroyObjectPreview(objPrevEle)
