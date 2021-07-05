@@ -348,7 +348,9 @@ function dgsGetAddedStyleList(includeGlobal,res)
 end
 
 addEventHandler("onClientResourceStop",root,function(res)
-	dgsUnloadStyle(res)
+	if res ~= resource then
+		dgsUnloadStyle(res)
+	end
 end)
 
 addEventHandler("onClientResourceStart",resourceRoot,function()
