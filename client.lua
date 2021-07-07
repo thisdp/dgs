@@ -2038,15 +2038,31 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			if button == "left" then
 				if MouseData.clickl == dgsEle then
 					triggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+					if eleData.clickingSound and eleData.clickingSound.left and eleData.clickingSound.left.up then
+						local sound = playSound(eleData.clickingSound.left.up)
+						setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
+					end
 				end
 			elseif button == "right" then
 				if MouseData.clickr == dgsEle then
 					triggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+					if eleData.clickingSound and eleData.clickingSound.right and eleData.clickingSound.right.up then
+						local sound = playSound(eleData.clickingSound.right.up)
+						setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
+					end
 				end
 			else
+				if eleData.clickingSound and eleData.clickingSound.middle and eleData.clickingSound.middle.up then
+					local sound = playSound(eleData.clickingSound.middle.up)
+					setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
+				end
 				triggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 			end
 		else
+			if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button].down then
+				local sound = playSound(eleData.clickingSound[button].down)
+				setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
+			end
 			triggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 		end
 		if not isElement(dgsEle) then return end

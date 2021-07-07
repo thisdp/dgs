@@ -153,6 +153,10 @@
 	<export function="dgsSetVisible" type="client" />
 	<export function="dgsGetEnabled" type="client" />
 	<export function="dgsSetEnabled" type="client" />
+	<export function="dgsSetClickingSound" type="client" />
+	<export function="dgsGetClickingSound" type="client" />
+	<export function="dgsSetClickingSoundVolume" type="client" />
+	<export function="dgsGetClickingSoundVolume" type="client" />
 	<export function="dgsGetPositionAlignment" type="client" />
 	<export function="dgsSetPositionAlignment" type="client" />
 

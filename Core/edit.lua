@@ -736,6 +736,7 @@ function dgsEditSetTypingSound(edit,path,volume)
 	if not fileExists(path) then error(dgsGenAsrt(path,"dgsEditSetTypingSound",2,_,_,_,"Couldn't find such file '"..path.."'")) end
 	dgsElementData[edit].typingSound = path
 	dgsElementData[edit].typingSoundVolume = tonumber(volume)
+	return true
 end
 
 function dgsEditGetTypingSound(edit)
@@ -754,7 +755,6 @@ function dgsEditGetTypingSoundVolume(edit)
 	if dgsGetType(edit) ~= "dgs-dxedit" then error(dgsGenAsrt(edit,"dgsEditGetTypingSoundVolume",1,"dgs-dxedit")) end
 	return dgsElementData[edit].typingSoundVolume or 1
 end
-
 
 function dgsEditSetAlignment(edit,horizontal,vertical)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditSetAlignment",1,"dgs-dxedit")) end

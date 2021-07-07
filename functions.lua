@@ -28,7 +28,11 @@ function dgsGetGuiLocationOnScreen(dgsEle,rlt,rndsup)
 	end
 	return false
 end
-
+--[[
+function dgsGetPositionInElement(dgsEle,x,y,rndSuspend,includeSide)
+	local 
+end]]
+-- todo
 function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 	local eleData
 	local x,y = 0,0
@@ -89,6 +93,15 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 			end
 			x,y = x+absPosX,y+absPosY+titleHeight
 		elseif dgsElementType[dgsEle] == "dgs-dxscrollpane" then
+			local scrollbar = eleData.scrollbars
+			local scbThick = eleData.scrollBarThick
+			local size = eleData.absSize
+			local relSizX,relSizY = size[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0),size[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0)
+			local maxSize = eleData.maxChildSize
+			local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
+			maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
+			x,y = x+absPosX-maxX*dgsElementData[scrollbar[2]].position*0.01,y+absPosY-maxY*dgsElementData[scrollbar[1]].position*0.01
+		elseif dgsElementType[dgsEle] == "dgs-dxscalepane" then
 			local scrollbar = eleData.scrollbars
 			local scbThick = eleData.scrollBarThick
 			local size = eleData.absSize
@@ -193,6 +206,7 @@ function dgsAttachElements(dgsEle,attachTo,offsetX,offsetY,offsetW,offsetH,relat
 	end
 	offsetX,offsetY = offsetX or 0,offsetY or 0
 	local attachedTable = {attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize}
+	dgsElementData[attachTo] = dgsElementData[attachTo] or {}
 	local attachedBy = dgsElementData[attachTo].attachedBy
 	tableInsert(attachedBy,dgsEle)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
@@ -484,6 +498,55 @@ function dgsGetText(dgsEle)
 	end
 end
 
+function dgsSetClickingSound(dgsEle,soundPath,volume,button,state)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetClickingSound",1,"dgs-dxelement")) end
+	if not(type(soundPath) == "string") then error(dgsGenAsrt(soundPath,"dgsSetClickingSound",2,"string")) end
+	if sourceResource then
+		if not soundPath:find(":") then
+			soundPath = ":"..getResourceName(sourceResource).."/"..soundPath
+		end
+	end
+	if not fileExists(soundPath) then error(dgsGenAsrt(soundPath,"dgsSetClickingSound",2,_,_,_,"Couldn't find such file '"..soundPath.."'")) end
+	button = button or "left"
+	state = state or "down"
+	if not dgsElementData[dgsEle].clickingSound then dgsElementData[dgsEle].clickingSound = {} end
+	if not dgsElementData[dgsEle].clickingSound[button] then dgsElementData[dgsEle].clickingSound[button] = {} end
+	dgsElementData[dgsEle].clickingSound[button][state] = soundPath
+	if not dgsElementData[dgsEle].clickingSoundVolume then dgsElementData[dgsEle].clickingSoundVolume = {} end
+	if not dgsElementData[dgsEle].clickingSoundVolume[button] then dgsElementData[dgsEle].clickingSoundVolume[button] = {} end
+	dgsElementData[dgsEle].clickingSoundVolume[button][state] = tonumber(volume)
+	return true
+end
+
+function dgsGetClickingSound(dgsEle,button,state)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetClickingSound",1,"dgs-dxelement")) end
+	button = button or "left"
+	state = state or "down"
+	if not dgsElementData[dgsEle].clickingSound then return false end
+	if not dgsElementData[dgsEle].clickingSound[button] then return false end
+	return dgsElementData[dgsEle].clickingSound[button][state] or false
+end
+
+function dgsSetClickingSoundVolume(dgsEle,volume,button,state)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetClickingSoundVolume",1,"dgs-dxelement")) end
+	if type(volume) ~= "number" then error(dgsGenAsrt(volume,"dgsSetClickingSoundVolume",2,"number")) end
+	button = button or "left"
+	state = state or "down"
+	if not dgsElementData[dgsEle].clickingSoundVolume then dgsElementData[dgsEle].clickingSoundVolume = {} end
+	if not dgsElementData[dgsEle].clickingSoundVolume[button] then dgsElementData[dgsEle].clickingSoundVolume[button] = {} end
+	dgsElementData[dgsEle].clickingSoundVolume[button][state] = volume
+	return true
+end
+
+function dgsGetClickingSoundVolume(dgsEle,button,state)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetClickingSound",1,"dgs-dxelement")) end
+	button = button or "left"
+	state = state or "down"
+	if not dgsElementData[dgsEle].clickingSoundVolume then return 1 end
+	if not dgsElementData[dgsEle].clickingSoundVolume[button] then return 1 end
+	return dgsElementData[dgsEle].clickingSoundVolume[button][state] or 1
+end
+
 function dgsSetPostGUI(dgsEle,state)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPostGUI",1,"dgs-dxelement")) end
 	return dgsSetProperty(dgsEle,"postGUI",state)
@@ -606,20 +669,20 @@ function dgsGetCursorVisible()
 	return (isCursorShowing() or isChatBoxInputActive() or isConsoleActive()) and not isMainMenuActive() --Is visible in game
 end
 
-function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
+function dgsGetCursorPosition(rltEle,rlt,forceOnScreen,onSurface)
 	if dgsGetCursorVisible() then
 		if MouseData.intfaceHitElement and not forceOnScreen then
 			local absX,absY = MouseData.dgsCursorPos[1],MouseData.dgsCursorPos[2]
 			local resolution = dgsElementData[MouseData.intfaceHitElement].resolution
-			if not relativeElement and not dgsIsType(relativeElement) then
+			if not rltEle and not dgsIsType(rltEle) then
 				if rlt then
 					return absX/resolution[1],absY/resolution[2]
 				else
 					return absX,absY
 				end
 			else
-				local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
-				local eleSize = dgsElementData[relativeElement].absSize
+				local xPos,yPos = dgsGetGuiLocationOnScreen(rltEle,false)
+				local eleSize = dgsElementData[rltEle].absSize
 				if rlt then
 					return (absX-xPos)/eleSize[1],(absY-yPos)/eleSize[2]
 				else
@@ -628,9 +691,21 @@ function dgsGetCursorPosition(relativeElement,rlt,forceOnScreen)
 			end
 		else
 			local absX,absY = CursorPosXVisible,CursorPosYVisible
-			if dgsIsType(relativeElement) then
-				local xPos,yPos = dgsGetGuiLocationOnScreen(relativeElement,false)
-				local eleSize = dgsElementData[relativeElement].absSize
+			if dgsIsType(rltEle) then
+				local xPos,yPos = dgsGetGuiLocationOnScreen(rltEle,false)
+				local eleSize = dgsElementData[rltEle].absSize
+				
+				
+				-- todo
+				if dgsElementData[rltEle].scale then
+					x,y = (absX-xPos),(absY-yPos)
+				end
+				--[[
+				OffsetX = -(resolution[1]-relSizX/scale[1])*eleData.horizontalMoveOffsetTemp
+				OffsetY = -(resolution[2]-relSizY/scale[2])*eleData.verticalMoveOffsetTemp
+				mx = (mx-xNRT)/scale[1]-OffsetX+xNRT
+				my = (my-yNRT)/scale[2]-OffsetY+yNRT]]
+	
 				if rlt then
 					return (absX-xPos)/eleSize[1],(absY-yPos)/eleSize[2]
 				else
@@ -829,6 +904,8 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	eleData.enableFullEnterLeaveCheck = false
 	eleData.clickCoolDown = false
 	eleData.settingListener = {}
+	eleData.clickingSound = false
+	eleData.clickingSoundVolume = false
 	eleData.cursorPosition = {[0]=0}
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
