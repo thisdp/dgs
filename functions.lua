@@ -888,24 +888,24 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	eleData.positionAlignment = {"left","top"}
 	eleData.visible = true
 	eleData.enabled = true
-	eleData.ignoreParentTitle = nil
-	eleData.textRelative = nil
+	eleData.ignoreParentTitle = false
+	eleData.textRelative = false
 	eleData.alpha = 1
-	eleData.hitoutofparent = nil
+	eleData.hitoutofparent = false
 	eleData.PixelInt = true
 	eleData.functionRunBefore = true --true : after render; false : before render
 	eleData.disabledColor = style.disabledColor
 	eleData.disabledColorPercent = style.disabledColorPercent
 	eleData.postGUI = dgsRenderSetting.postGUI == nil and true or false
-	eleData.outline = nil
+	eleData.outline = false
 	eleData.changeOrder = style.changeOrder --Change the order when "bring to front" or clicked
-	eleData.attachedTo = nil
-	eleData.attachedBy = nil
-	eleData.enableFullEnterLeaveCheck = nil
-	eleData.clickCoolDown = nil
+	eleData.attachedTo = false
+	eleData.attachedBy = false
+	eleData.enableFullEnterLeaveCheck = false
+	eleData.clickCoolDown = false
 	eleData.settingListener = {}
-	eleData.clickingSound = nil
-	eleData.clickingSoundVolume = nil
+	eleData.clickingSound = false
+	eleData.clickingSoundVolume = false
 	eleData.cursorPosition = {[0]=0}
 	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
