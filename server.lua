@@ -93,12 +93,18 @@ function verifyFile()
 		if nodeName == "script" then
 			local typ = xmlNodeGetAttribute(child,"type") or "server"
 			if typ == "client" then
+				local cache = xmlNodeGetAttribute(child,"cache")
+				if cache ~= "false" then
+					local src = xmlNodeGetAttribute(child,"src")
+					DGSRecordedFiles[src] = {hashFile(src)}
+				end
+			end
+		elseif nodeName == "file" then
+			local cache = xmlNodeGetAttribute(child,"cache")
+			if cache ~= "false" then
 				local src = xmlNodeGetAttribute(child,"src")
 				DGSRecordedFiles[src] = {hashFile(src)}
 			end
-		elseif nodeName == "file" then
-			local src = xmlNodeGetAttribute(child,"src")
-			DGSRecordedFiles[src] = {hashFile(src)}
 		end
 	end
 end
