@@ -134,7 +134,7 @@ end
 function dgs3DInterfaceSetFaceTo(interface,fx,fy,fz,relativeTo)
 	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetFaceTo at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
 	if not fx and not fy and not fz then
-		return dgsSetData(interface,"faceTo",nil)
+		return dgsSetData(interface,"faceTo",{})
 	else
 		assert(type(fx) == "number","Bad argument @dgs3DInterfaceSetFaceTo at argument 2, expect a number got "..dgsGetType(fx))
 		assert(type(fy) == "number","Bad argument @dgs3DInterfaceSetFaceTo at argument 3, expect a number got "..dgsGetType(fy))
