@@ -650,7 +650,6 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 	local cTextSize = eleData.columnTextSize
 	local cTextColor = eleData.columnTextColor
 	local colorcoded = eleData.colorcoded
-	local font = eleData.columnFont
 	for i=c+1,cLen+1 do
 		cData[i] = {
 			cData[i][1],
@@ -661,7 +660,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 			colorcoded,
 			cTextSize[1],
 			cTextSize[2],
-			font,
+			nil, --Font
 		}
 	end
 	dgsSetData(gridlist,"columnData",cData)
@@ -1065,7 +1064,7 @@ function dgsGridListAddRow(gridlist,r,...)
 			colorcoded,
 			scale[1],
 			scale[2],
-			eleData.rowFont,
+			nil, --Font
 		}
 	end
 	tableInsert(rData,r,rowTable)
@@ -2384,7 +2383,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local _columnTextColor = data[5] or columnTextColor
 				local _columnTextColorCoded = data[6] or colorcoded
 				local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
-				local _columnFont = data[9] or font
+				local _columnFont = data[9] or eleData.columnFont or font
 				local tempCpos = data[3]*multiplier
 				local _tempStartx = tempCpos+tempColumnOffset
 				local _tempEndx = _tempStartx+data[2]*multiplier
@@ -2472,7 +2471,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					for id = cPosStart,cPosEnd do
 						local currentRowData = lc_rowData[id]
 						local text = currentRowData[1]
-						local _txtFont = isSection and (currentRowData[6] or sectionFont) or (currentRowData[6] or font)
+						local _txtFont = isSection and (currentRowData[6] or sectionFont) or (currentRowData[6] or eleData.rowFont or eleData.columnFont or font)
 						local _txtScalex = currentRowData[4] or rowTextSx
 						local _txtScaley = currentRowData[5] or rowTextSy
 						local alignment = currentRowData[11] or columnData[id][4]
@@ -2638,7 +2637,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local _columnTextColor = data[5] or columnTextColor
 			local _columnTextColorCoded = data[6] or colorcoded
 			local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
-			local _columnFont = data[9] or font
+			local _columnFont = data[9] or eleData.columnFont or font
 			local column_sx = column_x+cpos[i]+data[2]*multiplier-scbThickV
 			local posx = column_x+cpos[i]
 			local tPosX = posx-posx%1
@@ -2719,7 +2718,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			for id=whichColumnToStart,whichColumnToEnd do
 				local currentRowData = lc_rowData[id]
 				local text = currentRowData[1]
-				local _txtFont = isSection and sectionFont or (currentRowData[6] or font)
+				local _txtFont = isSection and sectionFont or (currentRowData[6] or eleData.rowFont or eleData.columnFont or font)
 				local _txtScalex = currentRowData[4] or rowTextSx
 				local _txtScaley = currentRowData[5] or rowTextSy
 				local alignment = currentRowData[11] or columnData[id][4]
