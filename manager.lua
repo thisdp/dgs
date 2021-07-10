@@ -561,6 +561,24 @@ local dgsDataFunctions = {
 			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
 			return triggerEvent("onDgsTextChange",dgsEle)
 		end,
+		textSize = function(dgsEle,key,value,oldValue)
+			local tabpanel = dgsElementData[dgsEle].parent
+			local w = dgsElementData[tabpanel].absSize[1]
+			local t_minWid = dgsElementData[tabpanel].tabMinWidth
+			local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
+			local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
+			local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
+			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+		end,
+		font = function(dgsEle,key,value,oldValue)
+			local tabpanel = dgsElementData[dgsEle].parent
+			local w = dgsElementData[tabpanel].absSize[1]
+			local t_minWid = dgsElementData[tabpanel].tabMinWidth
+			local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
+			local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
+			local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
+			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+		end,
 		width = function(dgsEle,key,value,oldValue)
 			local tabpanel = dgsElementData[dgsEle].parent
 			dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll+(value-oldValue))
