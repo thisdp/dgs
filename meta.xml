@@ -757,6 +757,7 @@
 	<export function="dgsBlurBoxGetLevel" type="client" />
 	<export function="dgsBlurBoxSetTexture" type="client" />
 	<export function="dgsBlurBoxGetTexture" type="client" />
+	<export function="dgsBlurBoxSetFilter" type="client" />
 
 	<export function="dgsCreateEffect3D" type="client" />
 	<export function="dgsEffect3DApplyToScrollPane" type="client" />

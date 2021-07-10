@@ -650,7 +650,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 	local cTextSize = eleData.columnTextSize
 	local cTextColor = eleData.columnTextColor
 	local colorcoded = eleData.colorcoded
-	local font = eleData.font
+	local font = eleData.columnFont
 	for i=c+1,cLen+1 do
 		cData[i] = {
 			cData[i][1],
@@ -1065,7 +1065,7 @@ function dgsGridListAddRow(gridlist,r,...)
 			colorcoded,
 			scale[1],
 			scale[2],
-			font,
+			eleData.rowFont,
 		}
 	end
 	tableInsert(rData,r,rowTable)
