@@ -22,11 +22,7 @@ function dgsPasteHandlerSetEnabled(state)
 		addEventHandler("DGSI_Paste",GlobalPasteHandler,function(data,theType)
 			if theType == "file" then
 				local result = base64Decode(split(data,",")[2])
-				local texture = dxCreateTexture(result)
-				if texture then
-					return triggerEvent("onDgsPaste",resourceRoot,texture,theType)
-				end
-				triggerEvent("onDgsPaste",resourceRoot,result,theType)
+				return triggerEvent("onDgsPaste",resourceRoot,result,theType)
 			elseif theType == "string" then
 				triggerEvent("onDgsPaste",resourceRoot,data,theType)
 			end
