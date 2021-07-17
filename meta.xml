@@ -801,9 +801,9 @@
 	<export function="dgsGetQRCodeLoaded" type="client" />
 
 	<export function="dgsPasteHandlerSetEnabled" type="client" />
-	<export function="dgsIsPasteHandlerEnabled" type="client" />
+	<export function="dgsPasteHandlerIsEnabled" type="client" />
 	<export function="dgsPasteHandlerSetFocused" type="client" />
-	<export function="dgsIsPasteHandlerFocused" type="client" />
+	<export function="dgsPasteHandlerIsFocused" type="client" />
 
 	<export function="dgsCreateCircle" type="client" />
 	<export function="dgsCircleSetRadius" type="client" />

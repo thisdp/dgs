@@ -44,11 +44,11 @@ function dgsPasteHandlerSetFocused(state)
 	return false
 end
 
-function dgsIsPasteHandlerFocused()
+function dgsPasteHandlerIsFocused()
 	return isElement(GlobalPasteHandler) and isBrowserFocused(GlobalPasteHandler)
 end
 
 
-function dgsIsPasteHandlerEnabled()
+function dgsPasteHandlerIsEnabled()
 	return isElement(GlobalPasteHandler)
 end
