@@ -24,7 +24,7 @@ function dgsPasteHandlerSetEnabled(state)
 				local result = base64Decode(split(data,",")[2])
 				return triggerEvent("onDgsPaste",resourceRoot,result,theType)
 			elseif theType == "string" then
-				triggerEvent("onDgsPaste",resourceRoot,data,theType)
+				return triggerEvent("onDgsPaste",resourceRoot,data,theType)
 			end
 		end)
 	end
