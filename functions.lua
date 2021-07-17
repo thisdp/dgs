@@ -207,6 +207,7 @@ function dgsAttachElements(dgsEle,attachTo,offsetX,offsetY,offsetW,offsetH,relat
 	offsetX,offsetY = offsetX or 0,offsetY or 0
 	local attachedTable = {attachTo,offsetX,offsetY,relativePos,offsetW,offsetH,relativeSize}
 	dgsElementData[attachTo] = dgsElementData[attachTo] or {}
+	dgsElementData[attachTo].attachedBy = dgsElementData[attachTo].attachedBy or {}
 	local attachedBy = dgsElementData[attachTo].attachedBy
 	tableInsert(attachedBy,dgsEle)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
