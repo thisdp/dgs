@@ -2367,6 +2367,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local renderBuffer = eleData.renderBuffer
 	local columnPos = renderBuffer.columnPos
 	local columnEndPos = renderBuffer.columnEndPos
+	local columnShadow = eleData.columnShadow
 
 	if not eleData.mode then
 		local renderTarget = eleData.renderTarget
@@ -2400,13 +2401,13 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
 							local iconTextPosL = textPosL-iconWidth
 							local iconTextPosR = textPosR-iconWidth
-							if eleData.columnShadow then
-								dxDrawText(sortIcon,iconTextPosL,textPosT,iconTextPosR,textPosB,black,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,false,false,true)
+							if columnShadow then
+								dxDrawText(sortIcon,iconTextPosL+columnShadow[1],textPosT+columnShadow[2],iconTextPosR+columnShadow[1],textPosB+columnShadow[2],columnShadow[3],_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,false,false,true)
 							end
 							dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,false,false,true)
 						end
-						if eleData.columnShadow then
-							dxDrawText(data[1],textPosL+1,textPosT+1,textPosR+1,textPosB+1,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,false,true)
+						if columnShadow then
+							dxDrawText(data[1],textPosL+columnShadow[1],textPosT+columnShadow[2],textPosR+columnShadow[1],textPosB+columnShadow[2],columnShadow[3],_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,false,true)
 						end
 						dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,false,_columnTextColorCoded,true)
 					end
