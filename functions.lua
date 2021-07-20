@@ -153,7 +153,7 @@ function dgsSetPosition(dgsEle,x,y,bool,isCenterPosition)
 	local x,y = x or pos[1],y or pos[2]
 	if isCenterPosition then
 		local size = dgsElementData[dgsEle][bool and "rltSize" or "absSize"]
-		calculateGuiPositionSize(dgsEle,x-size[1]/2,y-size[2],bool)
+		calculateGuiPositionSize(dgsEle,x-size[1]/2,y-size[2]/2,bool)
 	else
 		calculateGuiPositionSize(dgsEle,x,y,bool)
 	end
