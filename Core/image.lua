@@ -131,7 +131,6 @@ end
 function dgsImageGetUVPosition(image,relative)
 	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetUVPosition",1,"dgs-dximage")) end
 	local texture = dgsElementData[image].image
-	local imgType = dgsGetType(texture)
 	if isElement(texture) and getElementType(texture) == "texture" then
 		local UVPos = dgsElementData[image].UVPos or {0,0,true}
 		local mx,my = dxGetMaterialSize(texture)
@@ -148,9 +147,9 @@ end
 
 function dgsImageGetNativeSize(image)
 	if dgsGetType(image) ~= "dgs-dximage" then error(dgsGenAsrt(image,"dgsImageGetNativeSize",1,"dgs-dximage")) end
-	local img = dgsElementData[image].image
-	if isElement(img) and dgsGetType(img) ~= "dgs-dxcustomrenderer" then
-		return dxGetMaterialSize(image)
+	local texture = dgsElementData[image].image
+	if isElement(texture) and getElementType(texture) == "texture" then
+		return dxGetMaterialSize(texture)
 	end
 	return false
 end
