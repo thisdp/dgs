@@ -679,17 +679,15 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 					end
 				end
 			elseif eleType == "dgs-dxscrollpane" then
-				local scrollPaneOffsetX, scrollPaneOffsetY = mathAbs(offx), mathAbs(offy)
-				local scrollPaneScbThickV = dgsElementData[ eleData.scrollbars[1] ].visible and eleData.scrollBarThick or 0
-				local scrollPaneScbThickH = dgsElementData[ eleData.scrollbars[2] ].visible and eleData.scrollBarThick or 0
-				
+				local scrollPaneOffsetX, scrollPaneOffsetY = mathCeil(mathAbs(offx)), mathCeil(mathAbs(offy))
+	
 				for i=1, childrenCnt do
 					local child = children[i]
 					local childAbsPos = dgsElementData[child].absPos
 					local childAbsSize = dgsElementData[child].absSize
 					local childMinX, childMinY, childMaxX, childMaxY = childAbsPos[1], childAbsPos[2], childAbsPos[1] + childAbsSize[1], childAbsPos[2] + childAbsSize[2]
-					
-					if (scrollPaneOffsetX >= childMinX) and ((scrollPaneOffsetX + w - scrollPaneScbThickH) <= childMaxX) and (scrollPaneOffsetY >= childMinY) and (scrollPaneOffsetY - scrollPaneScbThickV <= childMaxY) then
+
+					if (scrollPaneOffsetX > childMinX - childAbsSize[1]) and (scrollPaneOffsetX + childAbsSize[1] <= childAbsSize[1] + childMaxX) and (scrollPaneOffsetY + h > childMinY) and (scrollPaneOffsetY < childMaxY) then
 						isElementInside = renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
 					end
 				end
