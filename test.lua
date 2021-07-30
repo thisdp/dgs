@@ -705,4 +705,20 @@ function dgsSetPropertyTest()
 	destroyElement(img)
 end
 
+function dgsScrollPaneTest()
+	local ele = dgsCreateScrollPane(760, 340, 400, 600, false, nil)
+	local tex = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
+	local y = 0
+
+	for i = 1, 1000 do
+		y = ((i - 1) * 45)
+		dgsCreateImage(0, y, 380, 40, tex, false, ele)
+	end
+
+	for i = 1, 1000 do
+		y = ((i - 1) * 45)
+		dgsCreateImage(405, y, 380, 40, tex, false, ele)
+	end
+end
+
 end)

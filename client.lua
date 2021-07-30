@@ -678,6 +678,18 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 						isElementInside = renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
 					end
 				end
+			elseif eleType == "dgs-dxscrollpane" then
+				local scrollPaneOffsetX, scrollPaneOffsetY = -offx, -offy
+				for i=1, childrenCnt do
+					local child = children[i]
+					local childAbsPos = dgsElementData[child].absPos
+					local childAbsSize = dgsElementData[child].absSize
+					local childMinX, childMinY, childMaxX, childMaxY = childAbsPos[1], childAbsPos[2], childAbsPos[1] + childAbsSize[1], childAbsPos[2] + childAbsSize[2]
+				
+					if (scrollPaneOffsetY - 1 <= childMinY) and ((scrollPaneOffsetY + h) >= childMaxY) and (scrollPaneOffsetX - 1 <= childMaxX) and ((scrollPaneOffsetX + w) >= childMinX) then
+						isElementInside = renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
+					end
+				end
 			else
 				for i=1,childrenCnt do
 					isElementInside = renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
