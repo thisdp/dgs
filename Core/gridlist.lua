@@ -114,6 +114,7 @@ function dgsCreateGridList(...)
 		columnOffset = style.columnOffset,
 		columnRelative = true,
 		columnShadow = false,
+		defaultColumnOffset = style.defaultColumnOffset,
 		enableNavigation = true,
 		font = style.font or systemFont,
 		guiCompat = false,
@@ -913,7 +914,7 @@ function dgsGridListSetColumnWidth(gridlist,c,width,relative)
 	return true
 end
 
-function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem)
+function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListAutoSizeColumn",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData = eleData.columnData
@@ -925,28 +926,10 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 	local c = c-c%1
 	if not (additionalLength == nil or type(additionalLength) == "number") then error(dgsGenAsrt(c,"dgsGridListAutoSizeColumn",3,"number")) end
 	if not additionalLength then relative = false end
-	if isByItem then
-		local rData = eleData.rowData
-		local maxWidth = 0
-		local colorcoded = eleData.colorcoded
-		local font = eleData.font
-		local sectionFont = eleData.sectionFont or font
-		for i=1,#rData do
-			local colorCoded = rData[i][c][3] == nil and colorcoded or rData[i][c][3]
-			local rowFont = rData[i][-5] and (rData[i][c][6] or sectionFont) or (rData[i][c][6] or eleData.rowFont or eleData.columnFont or font)
-			local wid = dxGetTextWidth(rData[i][c][1],rData[i][c][4],rowFont,colorCoded)
-			if maxWidth < wid then
-				maxWidth = wid
-			end
-		end
-		local maxWidth = maxWidth+(relative and additionalLength*maxWidth or (additionalLength or 0))
-		return dgsGridListSetColumnWidth(gridlist,c,maxWidth,false)
-	else
-		local font = cData[c][9] or eleData.columnFont or eleData.font
-		local wid = dxGetTextWidth(columnData[c][1],cData[c][7],font)
-		local wid = wid+(relative and additionalLength*wid or (additionalLength or 0))
-		return dgsGridListSetColumnWidth(gridlist,c,wid,false)
-	end
+	local font = cData[c][9] or eleData.font
+	local wid = dxGetTextWidth(columnData[c][1],cData[c][7],font)
+	local wid = wid+(relative and additionalLength*wid or (additionalLength or 0)+wid)
+	return dgsGridListSetColumnWidth(gridlist,c,wid,false)
 end
 
 --[[
@@ -1059,7 +1042,7 @@ function dgsGridListAddRow(gridlist,r,...)
 	local rData = eleData.rowData
 	r = tonumber(r) or #rData+1
 	local rowTable = {
-		[-4] = eleData.columnOffset,
+		[-4] = eleData.defaultColumnOffset,
 		[-3] = eleData.rowImage,
 		[-2] = true,
 		[-1] = true,
@@ -1113,7 +1096,7 @@ function dgsGridListAddRows(gridlist,r,t,isRawData)
 	else
 		for i=1,#t do
 			local rowTable = {
-				[-4] = eleData.columnOffset,
+				[-4] = eleData.defaultColumnOffset,
 				[-3] = eleData.rowImage,
 				[-2] = true,
 				[-1] = true,
@@ -1302,7 +1285,7 @@ function dgsGridListSetRowAsSection(gridlist,r,enabled,enableMouseClickAndSelect
 			rData[r][-1] = true
 		end
 	else
-		rData[r][-4] = eleData.columnOffset
+		rData[r][-4] = eleData.defaultColumnOffset
 		rData[r][-2] = true
 		rData[r][-1] = true
 	end
@@ -2483,6 +2466,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					if eleData.PixelInt then
 						_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 					end
+
 					if not cPosStart or not cPosEnd then break end
 					dxSetBlendMode("modulate_add")
 					for id = cPosStart,cPosEnd do
