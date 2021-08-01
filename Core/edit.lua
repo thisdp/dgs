@@ -1129,8 +1129,9 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					end
 					if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
 						local offset = eleData.caretOffset
-						local selStartY = y+h/2-h/2*caretHeight+sideheight
-						dxDrawLine(selStartX,selStartY-offset,selStartX+cursorWidth,selStartY-offset,caretColor,eleData.caretThick,isPostGUI)
+						local textHeight = dxGetFontHeight(txtSizY,font)
+						local selStartY = y+h/2+textHeight/2+sideheight-offset
+						dxDrawLine(selStartX,selStartY,selStartX+cursorWidth,selStartY,caretColor,eleData.caretThick,isPostGUI)
 					end
 				end
 			end
