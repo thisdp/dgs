@@ -914,7 +914,7 @@ function dgsGridListSetColumnWidth(gridlist,c,width,relative)
 	return true
 end
 
-function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative)
+function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListAutoSizeColumn",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData = eleData.columnData
@@ -926,10 +926,28 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative)
 	local c = c-c%1
 	if not (additionalLength == nil or type(additionalLength) == "number") then error(dgsGenAsrt(c,"dgsGridListAutoSizeColumn",3,"number")) end
 	if not additionalLength then relative = false end
-	local font = cData[c][9] or eleData.font
-	local wid = dxGetTextWidth(columnData[c][1],cData[c][7],font)
-	local wid = wid+(relative and additionalLength*wid or (additionalLength or 0)+wid)
-	return dgsGridListSetColumnWidth(gridlist,c,wid,false)
+	if isByItem then
+		local rData = eleData.rowData
+		local maxWidth = 0
+		local colorcoded = eleData.colorcoded
+		local font = eleData.font
+		local sectionFont = eleData.sectionFont or font
+		for i=1,#rData do
+			local colorCoded = rData[i][c][3] == nil and colorcoded or rData[i][c][3]
+			local rowFont = rData[i][-5] and (rData[i][c][6] or sectionFont) or (rData[i][c][6] or eleData.rowFont or eleData.columnFont or font)
+			local wid = dxGetTextWidth(rData[i][c][1],rData[i][c][4],rowFont,colorCoded)
+			if maxWidth < wid then
+				maxWidth = wid
+			end
+		end
+		local maxWidth = maxWidth+(relative and additionalLength*maxWidth or (additionalLength or 0))
+		return dgsGridListSetColumnWidth(gridlist,c,maxWidth,false)
+	else
+		local font = cData[c][9] or eleData.columnFont or eleData.font
+		local wid = dxGetTextWidth(columnData[c][1],cData[c][7],font)
+		local wid = wid+(relative and additionalLength*wid or (additionalLength or 0))
+		return dgsGridListSetColumnWidth(gridlist,c,wid,false)
+	end
 end
 
 --[[
