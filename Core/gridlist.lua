@@ -932,6 +932,7 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 		local colorcoded = eleData.colorcoded
 		local font = eleData.font
 		local sectionFont = eleData.sectionFont or font
+		local columnSize = eleData.absSize[1]-eleData.scrollBarThick
 		for i=1,#rData do
 			local colorCoded = rData[i][c][3] == nil and colorcoded or rData[i][c][3]
 			local rowFont = rData[i][-5] and (rData[i][c][6] or sectionFont) or (rData[i][c][6] or eleData.rowFont or eleData.columnFont or font)
@@ -940,7 +941,7 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 				maxWidth = wid
 			end
 		end
-		local maxWidth = maxWidth+(relative and additionalLength*maxWidth or (additionalLength or 0))
+		local maxWidth = maxWidth+(relative and additionalLength*columnSize or (additionalLength or 0))
 		return dgsGridListSetColumnWidth(gridlist,c,maxWidth,false)
 	else
 		local font = cData[c][9] or eleData.columnFont or eleData.font
