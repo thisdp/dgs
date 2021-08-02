@@ -115,7 +115,8 @@ function dgsCreateEdit(...)
 		caretThick = style.caretThick,
 		caretOffset = style.caretOffset,
 		caretColor = style.caretColor,
-		caretHeight = style.caretHeight,
+		caretHeight = style.caretHeight, --For caretStyle 0
+		caretWidth = {1,8,true}, --For caretStyle 1, {1,true}: textSize * 8   or {10,false}: 10 pixels
 		readOnly = false,
 		readOnlyCaretShow = false,
 		clearSelection = true,
@@ -140,6 +141,7 @@ function dgsCreateEdit(...)
 		typingSoundVolume = style.typingSoundVolume,
 		maxLength = 0x3FFFFFFF,
 		--rtl = nil,	--nil: auto; false:disabled; true: enabled
+		insertMode = false,
 		editCounts = editsCount, --Tab Switch
 	}
 	editsCount = editsCount+1
@@ -1123,15 +1125,21 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 						dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,isPostGUI)
 					end
 				elseif caretStyle == 1 then
-					local cursorWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
-					if cursorWidth == 0 then
-						cursorWidth = txtSizX*8
+					local caretWidth = eleData.caretWidth
+					if caretWidth[3] == true then
+						local cWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
+						if cWidth == 0 then
+							cWidth = txtSizX*caretWidth[2]
+						end
+						caretWidth = cWidth*caretWidth[1]
+					else
+						caretWidth = caretWidth[1]
 					end
-					if selStartX+1 >= x+sidelength and selStartX+cursorWidth <= x+w-sidelength then
+					if selStartX+1 >= x+sidelength and selStartX+caretWidth <= x+w-sidelength then
 						local offset = eleData.caretOffset
 						local textHeight = dxGetFontHeight(txtSizY,font)
 						local selStartY = y+h/2+textHeight/2+sideheight-offset
-						dxDrawLine(selStartX,selStartY,selStartX+cursorWidth,selStartY,caretColor,eleData.caretThick,isPostGUI)
+						dxDrawLine(selStartX,selStartY,selStartX+caretWidth,selStartY,caretColor,eleData.caretThick,isPostGUI)
 					end
 				end
 			end
