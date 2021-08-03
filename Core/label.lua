@@ -68,7 +68,8 @@ function dgsCreateLabel(...)
 		shadow = {shadowOffsetX,shadowOffsetY,shadowColor,false,nil},
 		subPixelPositioning = false,
 		textColor = textColor or style.textColor,
-		textSize = {textSizeX, textSizeY},
+		textSize = {textSizeX,textSizeY},
+		textOffset = {0,0,false},
 		wordbreak = false,
 	}
 	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
@@ -162,13 +163,17 @@ dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 	local text = eleData.text
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 	local colorcoded = eleData.colorcoded
+	local textOffset = eleData.textOffset
+	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
+	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
+	
 	local shadow = eleData.shadow
 	local subPixelPos = eleData.subPixelPositioning and true or false
 	local rotation = eleData.rotation
 	local rotationCenter = eleData.rotationCenter
 	if shadow then
 		local shadowoffx,shadowoffy,shadowc,shadowIsOutline,shadowfont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5] or font
-		local textX,textY = x,y
+		local textX,textY = x+txtoffsetsX,y+txtoffsetsY
 		if shadowoffx and shadowoffy and shadowc then
 			local shadowc = applyColorAlpha(shadowc,parentAlpha)
 			local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
@@ -181,12 +186,10 @@ dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
-			
 				dxDrawText(shadowText,textX,textY+shadowoffy,textX+w,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX-shadowoffx,textY,textX+w-shadowoffx,textY+h,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX,textY-shadowoffy,textX+w,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX+shadowoffx,textY,textX+w+shadowoffx,textY+h,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordbreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
-			
 			end
 		end
 	end
