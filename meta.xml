@@ -810,6 +810,8 @@
 	<export function="dgsCreateGradient" type="client" />
 	<export function="dgsGradientSetColor" type="client" />
 	<export function="dgsGradientGetColor" type="client" />
+	<export function="dgsGradientSetColorOverwritten" type="client" />
+	<export function="dgsGradientGetColorOverwritten" type="client" />
 	<export function="dgsGradientSetRotation" type="client" />
 	<export function="dgsGradientGetRotation" type="client" />
 	<export function="dgsGradientSetTexture" type="client" />
