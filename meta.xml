@@ -67,6 +67,8 @@
 	<script src="plugin/remoteImage.lua" type="client" />
 
 	<script src="plugin/canvas.lua" type="client" />
+	
+	<script src="plugin/gradient.lua" type="client" />
 
 	<script src="plugin/nineSlice.lua" type="client" />
 
@@ -804,6 +806,14 @@
 	<export function="dgsPasteHandlerIsEnabled" type="client" />
 	<export function="dgsPasteHandlerSetFocused" type="client" />
 	<export function="dgsPasteHandlerIsFocused" type="client" />
+	
+	<export function="dgsCreateGradient" type="client" />
+	<export function="dgsGradientSetColor" type="client" />
+	<export function="dgsGradientGetColor" type="client" />
+	<export function="dgsGradientSetRotation" type="client" />
+	<export function="dgsGradientGetRotation" type="client" />
+	<export function="dgsGradientSetTexture" type="client" />
+	<export function="dgsGradientGetTexture" type="client" />
 
 	<export function="dgsCreateCircle" type="client" />
 	<export function="dgsCircleSetRadius" type="client" />
