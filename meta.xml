@@ -814,6 +814,8 @@
 	<export function="dgsGradientGetRotation" type="client" />
 	<export function="dgsGradientSetTexture" type="client" />
 	<export function="dgsGradientGetTexture" type="client" />
+	<export function="dgsGradientSetColorOverwritten" type="client" />
+	<export function="dgsGradientGetColorOverwritten" type="client" />
 
 	<export function="dgsCreateCircle" type="client" />
 	<export function="dgsCircleSetRadius" type="client" />
