@@ -96,3 +96,14 @@ function dgsGradientGetTexture(gradShader)
 	if not(dgsGetPluginType(gradShader) == "dgs-dxgradient") then error(dgsGenAsrt(gradShader,"dgsGradientGetTexture",1,"plugin dgs-dxgradient")) end
 	return dgsElementData[gradShader].sourceTexture
 end
+
+function dgsGradientGetColorOverwritten(gradShader)
+	if not(dgsGetPluginType(gradShader) == "dgs-dxgradient") then error(dgsGenAsrt(gradShader,"dgsGradientGetColorOverwritten",1,"plugin dgs-dxgradient")) end
+	return dgsElementData[gradShader].colorOverwritten
+end
+
+function dgsGradientSetColorOverwritten(gradShader,colorOverwritten)
+	if not(dgsGetPluginType(gradShader) == "dgs-dxgradient") then error(dgsGenAsrt(gradShader,"dgsGradientSetColorOverwritten",1,"plugin dgs-dxgradient")) end
+	dxSetShaderValue(gradShader,"colorOverwritten",colorOverwritten)
+	return dgsSetData(gradShader,"colorOverwritten",colorOverwritten)
+end
