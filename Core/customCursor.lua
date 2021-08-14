@@ -5,7 +5,10 @@ CursorData = {
 }
 
 function dgsSetCustomCursorImage(cursorType,image,rotation,rotationCenter,offset,scale)
-	local style = styleSettings.cursor
+	local res = sourceResource or "global"
+	local style = styleManager.styles[res]
+	local using = style.using
+	style = style.loaded[using].cursor
 	if not cursorType then	--Apply all (image in current style)
 		for k,v in pairs(cursorTypesBuiltIn) do
 			local texture = dgsCreateTextureFromStyle(_,_style[k].image)
