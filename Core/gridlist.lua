@@ -2826,6 +2826,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
 			local clr,tSclx,tScly,tFnt,tClip,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11],line[12]
 			local color = applyColorAlpha(clr,parentAlpha)
+			local psx = psx-psx%1,			--startX
+			local psy = psy-psy%1,			--startY
+			local pex = pex-pex%1,			--endX
+			local pey = pey-pey%1,			--endY
 			if shadow then
 				if tClrCode then
 					text = text:gsub("#%x%x%x%x%x%x","") or text
