@@ -2652,9 +2652,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		column_x = cx-cpos[whichColumnToStart]+columnOffset
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		local relativeBlack = applyColorAlpha(black,parentAlpha)
 		for i=whichColumnToStart,whichColumnToEnd or columnCount do
 			local data = columnData[i]
-			local _columnTextColor = data[5] or columnTextColor
+			local _columnTextColor = applyColorAlpha(data[5] or columnTextColor,parentAlpha)
 			local _columnTextColorCoded = data[6] or colorcoded
 			local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
 			local _columnFont = data[9] or eleData.columnFont or font
@@ -2670,12 +2671,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local iconTextPosL = textPosL-iconWidth
 				local iconTextPosR = textPosR-iconWidth
 				if eleData.columnShadow then
-					dxDrawText(sortIcon,iconTextPosL,textPosT,iconTextPosR,textPosB,black,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,isPostGUI,false,true)
+					dxDrawText(sortIcon,iconTextPosL,textPosT,iconTextPosR,textPosB,relativeBlack,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,isPostGUI,false,true)
 				end
 				dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,false,isPostGUI,false,true)
 			end
 			if eleData.columnShadow then
-				dxDrawText(data[1],textPosL+1,textPos+1,textPosR+1,textPosB+1,black,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,isPostGUI,false,true)
+				dxDrawText(data[1],textPosL+1,textPos+1,textPosR+1,textPosB+1,relativeBlack,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,isPostGUI,false,true)
 			end
 			dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,false,isPostGUI,false,true)
 			if mouseInsideGridList and mouseSelectColumn == -1 then
@@ -2777,7 +2778,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				elseif columnWidth+_x-x >= w or whichColumnToEnd == id then
 					columnWidth = w-_x+x-scbThickV
 				end
-				local itemUsingBGColor,itemUsingBGImage = itemBGColor[rowState] or color[rowState],itemBGImage[rowState] or image[rowState]
+				local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
 				if itemUsingBGImage then
 					dxDrawImage(_bgX,_y,columnWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)
 				else
@@ -2787,10 +2788,11 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
 					if currentRowData[7] then
 						local imageData = currentRowData[7]
+						local color = applyColorAlpha(imageData[2],parentAlpha)
 						if isElement(imageData[1]) then
-							dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,imageData[2],rndtgt)
+							dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,color,rndtgt)
 						else
-							dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[2])
+							dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],color)
 						end
 					end
 					local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
@@ -2823,13 +2825,15 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local text = line[1]
 			local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
 			local clr,tSclx,tScly,tFnt,tClip,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11],line[12]
+			local color = applyColorAlpha(clr,parentAlpha)
 			if shadow then
 				if tClrCode then
 					text = text:gsub("#%x%x%x%x%x%x","") or text
 				end
-				dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadow[3],tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,false,true)
+				local shadowColor = applyColorAlpha(shadow[3],parentAlpha)
+				dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,false,true)
 			end
-			dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,tClrCode,true)
+			dxDrawText(line[1],psx,psy,pex,pey,color,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,tClrCode,true)
 		end
 		if MouseData.hit == source then	--For grid list preselect
 			MouseData.enteredGridList[2] = source
