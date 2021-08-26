@@ -117,8 +117,6 @@ function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
 	if not(type(pos) == "number") then error(dgsGenAsrt(pos,"dgsScrollBarSetScrollPosition",2,"number")) end
 	pos = isGrade and dgsElementData[scrollbar].grades/grades*100 or pos
 	local scaler = dgsElementData[scrollbar].map
-	if pos < 0 then pos = 0 end
-	if pos > 100 then pos = 100 end
 	if not isAbsolute then
 		pos = (pos-scaler[1])/(scaler[2]-scaler[1])*100
 	end
