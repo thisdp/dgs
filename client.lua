@@ -868,7 +868,8 @@ addEventHandler("onClientKey",root,function(button,state)
 				local itemData = dgsElementData[selector].itemData
 				local itemCount = #itemData
 				local currentItem = dgsElementData[selector].select
-				dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+(button == "mouse_wheel_down" and -1 or 1),1,itemCount)))
+				local isReversed = dgsElementData[selector].isReversed
+				dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+(button == "mouse_wheel_down" and 1 or -1)*(isReversed and -1 or 1),1,itemCount)))
 			end
 		end
 	elseif state then
