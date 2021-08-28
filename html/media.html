@@ -51,8 +51,10 @@
 			function stopMedia(){
 				var element = document.getElementById("element");
 				if(element!=null){
-					if(element.stop)
-						element.stop()
+					//if(element.stop)
+					//element.stop()
+					element.pause()
+					element.currentTime = 0
 				}
 			}
 			function playMedia(){
