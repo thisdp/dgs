@@ -1005,11 +1005,11 @@ function onClientKeyTriggered(button)
 			dgsEditDoOpposite(edit,true)
 		elseif button == "y" and ctrl then
 			dgsEditDoOpposite(edit,false)
-		elseif button == "tab" then
+		elseif button == dgsElementData[edit].autoCompleteConfirmKey then
 			makeEventCancelled = true
-			local autoCompleteShow = eleData.autoCompleteShow
-			if autoCompleteShow then
-				dgsSetText(edit,autoCompleteShow[1])
+			local autoCompleteShow = eleData.autoCompleteShow or {}
+			if autoCompleteShow.result then
+				dgsSetText(edit,autoCompleteShow.result)
 			else
 				triggerEvent("onDgsEditPreSwitch",edit)
 			end

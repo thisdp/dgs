@@ -50,6 +50,7 @@ dgsSetData(GlobalEdit,"linkedDxEdit",nil)
 local splitChar = "\r\n"
 local splitChar2 = "\n"
 local editsCount = 1
+local autoCompleteParameterFunction = {}
 ----
 function dgsCreateEdit(...)
 	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor,selectMode
@@ -129,6 +130,7 @@ function dgsCreateEdit(...)
 		autoCompleteShow = false,
 		autoCompleteTextColor = nil,
 		autoCompleteSkip = false,
+		autoCompleteCount = 0,
 		autoComplete = {},
 		autoCompleteConfirmKey = "tab",
 		selectColor = style.selectColor,
@@ -192,27 +194,60 @@ function dgsEditCheckMultiClick(button,state,x,y,times)
 end
 
 function dgsEditCheckAutoComplete()
-	if not dgsElementData[source].autoCompleteSkip then
+	if not dgsElementData[source].autoCompleteSkip and dgsElementData[source].autoCompleteCount ~= 0 then
 		local text = dgsElementData[source].text
-		dgsSetData(source,"autoCompleteShow",false)
+		local autoCompleteResult = {}
+		local autoCompleteShow = dgsElementData[source].autoCompleteShow or {}
 		if text ~= "" then
-			local lowertxt = utf8Lower(text)
-			local textLen = utf8Len(text)
+			local currentStart = 0
+			local textTable = split(text," ")
 			local acTable = dgsElementData[source].autoComplete
+			local lowerText = utf8Lower(textTable[1])
+			local isSensitive
+			local textLen = utf8Len(textTable[1])
+			local foundAC = {}
 			for k,v in pairs(acTable) do
-				if v == true then
-					if utf8Sub(k,1,textLen) == text then
-						dgsSetData(source,"autoCompleteShow",{k,k})
-						break
-					end
-				elseif v == false then
-					if utf8Lower(utf8Sub(k,1,textLen)) == lowertxt then
-						dgsSetData(source,"autoCompleteShow",{k,text..utf8Sub(k,textLen+1)})
-						break
-					end
+				local isAdvanced = type(v) == "table"
+				if isAdvanced then
+					isSensitive = v[1]
+				else
+					isSensitive = v
+				end
+				local _inputAC = utf8Sub(k,1,textLen)
+				local textAutoComplete = isSensitive and _inputAC or utf8Lower(_inputAC)
+				local textInput = isSensitive and textTable[1] or lowerText
+				if textInput == textAutoComplete then
+					foundAC[#foundAC+1] = k
 				end
 			end
+			currentStart = currentStart+textLen+1
+			if foundAC[1] then
+				autoCompleteResult[1] = textTable[1]..utf8Sub(foundAC[1],textLen+1)
+				for i=2,#textTable do
+					local textParam = textTable[i]
+					local paramLen = utf8Len(textParam)
+					autoCompleteResult[i] = textParam
+					if dgsElementData[source].caretPos >= currentStart and dgsElementData[source].caretPos <= currentStart+paramLen+1 then
+						local acParamFunctionName = acTable[foundAC[1]][i]
+						if not acParamFunctionName then return end
+						local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input) 
+							if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
+								return acParamFunctionName
+							end
+						end
+						local fullParam = acParamFunction(textParam)
+						if fullParam then
+							autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
+						end
+					end
+					currentStart = currentStart+paramLen+1
+				end
+			else
+				autoCompleteShow.result = ""
+			end
 		end
+		autoCompleteShow.result = table.concat(autoCompleteResult," ")
+		dgsSetData(source,"autoCompleteShow",autoCompleteShow)
 	end
 end
 
@@ -781,17 +816,47 @@ function dgsEditGetPlaceHolder(edit)
 	return dgsElementData[edit].placeHolder
 end
 
-function dgsEditAddAutoComplete(edit,str,isSensitive)
+function dgsEditAutoCompleteAddParameterFunction(parameterType,parameterFunction)
+	if not dgsIsType(parameterType,"string") then error(dgsGenAsrt(parameterType,"dgsEditAddAutoCompleteParameterFunction",1,"string")) end
+	if not dgsIsType(parameterFunction,"string") then error(dgsGenAsrt(parameterFunction,"dgsEditAddAutoCompleteParameterFunction",2,"string")) end
+	local fnc,err = loadstring(parameterFunction)
+	if err then error(dgsGenAsrt(parameterFunction,"dgsEditAddAutoCompleteParameterFunction",_,_,_,err)) end
+	autoCompleteParameterFunction[parameterType] = {fnc,parameterFunction}
+	return true
+end
+
+function dgsEditAutoCompleteRemoveParameterFunction(parameterType)
+	if not dgsIsType(parameterType,"string") then error(dgsGenAsrt(parameterType,"dgsEditRemoteAutoCompleteParameterFunction",1,"string")) end
+	autoCompleteParameterFunction[parameterType] = nil
+	return true
+end
+
+--[[
+Auto Complete String Format:
+{Identifier [, parameterType1, parameterType2, ... ]}
+]]
+function dgsEditAddAutoComplete(edit,str,isSensitive,isAdvanced)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditAddAutoComplete",1,"dgs-dxedit")) end
 	local strTyp = type(str)
 	if strTyp == "table" then
-		local autoComplete = dgsElementData[edit].autoComplete
-		for k,v in pairs(str) do
-			autoComplete[k] = isSensitive == nil and v or isSensitive
+		if isAdvanced then
+			local autoComplete = dgsElementData[edit].autoComplete
+			if not autoComplete[identifier] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount+1 end
+			local identifier = str[1]
+			str[1] = isSensitive == nil and v or isSensitive
+			autoComplete[identifier] = str
+			return true
+		else
+			local autoComplete = dgsElementData[edit].autoComplete
+			for k,v in pairs(str) do
+				if not autoComplete[k] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount+1 end
+				autoComplete[k] = isSensitive == nil and v or isSensitive
+			end
+			return true
 		end
-		return true
 	elseif strTyp == "string" then
 		local autoComplete = dgsElementData[edit].autoComplete
+		if not autoComplete[str] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount+1 end
 		autoComplete[str] = isSensitive
 		return true
 	end
@@ -802,6 +867,7 @@ function dgsEditSetAutoComplete(edit,acTable)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditSetAutoComplete",1,"dgs-dxedit")) end
 	if not (type(acTable) == "table") then error(dgsGenAsrt(acTable,"dgsEditSetAutoComplete",2,"table")) end
 	local autoComplete = dgsElementData[edit].autoComplete
+	dgsElementData[edit].autoCompleteCount = table.count(autoComplete)
 	return dgsSetData(edit,"autoComplete",acTable)
 end
 
@@ -811,11 +877,13 @@ function dgsEditDeleteAutoComplete(edit,str)
 	if strTyp == "table" then
 		local autoComplete = dgsElementData[edit].autoComplete
 		for k,v in pairs(str) do
+			if autoComplete[k] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount-1 end
 			autoComplete[k] = isSensitive == nil and v or isSensitive
 		end
 		return true
 	elseif strTyp == "string" then
 		local autoComplete = dgsElementData[edit].autoComplete
+		if autoComplete[str] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount-1 end
 		autoComplete[str] = nil
 		return true
 	end
@@ -1066,7 +1134,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		if eleData.autoCompleteShow then
-			dxDrawText(eleData.autoCompleteShow[2],textX_Left,0,textX_Right-posFix,h-sidelength,eleData.autoCompleteTextColor or applyColorAlpha(textColor,0.7),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+			dxDrawText(eleData.autoCompleteShow.result or "",textX_Left,0,textX_Right-posFix,h-sidelength,eleData.autoCompleteTextColor or applyColorAlpha(textColor,0.7),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 		end
 		dxDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 		if eleData.underline then

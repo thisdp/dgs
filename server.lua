@@ -7,7 +7,8 @@ dgsConfig.updateSystemDisabled		= false		-- Minutes
 dgsConfig.backupMeta				= true		-- Backup meta.xml
 dgsConfig.backupStyleMeta			= true		-- Backup style files meta index from meta.xml
 dgsConfig.g2d						= true		-- GUI To DGS command line
-dgsConfig.enableBuiltInCMD			= true		-- Enable DGS Built CMD /dgscmd
+dgsConfig.enableBuiltInCMD			= true		-- Enable DGS Built-in CMD /dgscmd
+dgsConfig.enableServerConsole		= false		-- Enable DGS Built Server Console
 
 function loadConfig()
 	if fileExists("config.txt") then
@@ -27,6 +28,7 @@ function loadConfig()
 		end
 	end
 	setElementData(resourceRoot,"allowCMD",dgsConfig.enableBuiltInCMD)
+	setElementData(resourceRoot,"enableServerConsole",dgsConfig.enableBuiltInCMD)
 	if dgsConfig.g2d then
 		outputDebugString("[DGS]G2D is enabled!")
 	end
@@ -119,4 +121,18 @@ addEventHandler("DGSI_AbnormalDetected",root,function(fData)
 	for fName,fData in pairs(fData) do
 		outputDebugString("[DGS-Security]Abnormal Detected at '"..fName.."' of player '"..pName.."'")
 	end
+end)
+
+-------------------Server Console
+if not dgsConfig.enableServerConsole then return end
+local resourceTable = {}
+for key,res in ipairs(getResources()) do
+	local resName = getResourceName(res)
+	resourceTable[resName] = getResourceState(res)
+end
+setElementData(root,"DGSI_Resources",resourceTable)
+addEventHandler("onResourceLoadStateChange",root,function(changedResource,newState)
+	local resName = getResourceName(changedResource)
+	resourceTable[resName] = newState
+	setElementData(root,"DGSI_Resources",resourceTable)
 end)
