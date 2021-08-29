@@ -222,6 +222,7 @@ function dgsEditCheckAutoComplete()
 				end
 			end
 			currentStart = currentStart+textLen+1
+			table.sort(foundAC)
 			if foundAC[1] then
 				autoCompleteResult[1] = textTable[1]..utf8Sub(foundAC[1],textLen+1)
 				for i=2,#textTable do
