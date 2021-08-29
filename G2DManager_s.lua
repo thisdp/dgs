@@ -403,7 +403,7 @@ end
 
 ]]
 
-converEventTable = {
+convertEventTable = {
 	{{"onClientGUIAccepted",			},{"onDgsEditAccepted-C"}},
 	{{"onClientGUIBlur",				},{"onDgsBlur"}},
 	{{"onClientGUIChanged",				},{"onDgsTextChange-C"}},
@@ -487,10 +487,10 @@ function processFile(filename)
 			coroutine.yield()
 		end
 	end
-	local convTabCnt = #converEventTable
+	local convTabCnt = #convertEventTable
 	print("[G2D]Replacing Events")
 	for i=1,convTabCnt do
-		az:set(converEventTable[i],true)
+		az:set(convertEventTable[i],true)
 		az:executeProcess()
 		if getTickCount()-G2D.StartTick >= 100 then
 			showProgress((i-1)/convTabCnt*100)
