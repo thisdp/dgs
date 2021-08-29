@@ -1,8 +1,0 @@
-dgsConfig.backupMeta = true
-dgsConfig.enableBuiltInCMD = true
-dgsConfig.updateSystemDisabled = false
-dgsConfig.updateCheck = true
-dgsConfig.g2d = true
-dgsConfig.backupStyleMeta = false
-dgsConfig.updateCheckNoticeInterval = 120
-dgsConfig.updateCheckInterval = 120
