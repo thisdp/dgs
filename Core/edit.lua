@@ -206,6 +206,7 @@ function dgsEditCheckAutoComplete()
 			local isSensitive
 			local textLen = utf8Len(textTable[1])
 			local foundAC = {}
+			autoCompleteResult[1] = textTable[1]
 			for k,v in pairs(acTable) do
 				local isAdvanced = type(v) == "table"
 				if isAdvanced then
