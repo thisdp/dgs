@@ -200,7 +200,7 @@ function dgsEditCheckAutoComplete()
 		local autoCompleteShow = dgsElementData[source].autoCompleteShow or {}
 		if text ~= "" then
 			local currentStart = 0
-			local textTable = split(text," ")
+			local textTable = string.split(text," ")
 			local acTable = dgsElementData[source].autoComplete
 			local lowerText = utf8Lower(textTable[1])
 			local isSensitive
@@ -229,15 +229,16 @@ function dgsEditCheckAutoComplete()
 					autoCompleteResult[i] = textParam
 					if dgsElementData[source].caretPos >= currentStart and dgsElementData[source].caretPos <= currentStart+paramLen+1 then
 						local acParamFunctionName = acTable[foundAC[1]][i]
-						if not acParamFunctionName then return end
-						local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input) 
-							if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
-								return acParamFunctionName
+						if acParamFunctionName then
+							local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input) 
+								if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
+									return acParamFunctionName
+								end
 							end
-						end
-						local fullParam = acParamFunction(textParam)
-						if fullParam then
-							autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
+							local fullParam = acParamFunction(textParam)
+							if fullParam then
+								autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
+							end
 						end
 					end
 					currentStart = currentStart+paramLen+1
