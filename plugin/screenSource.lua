@@ -76,7 +76,6 @@ function dgsScreenSourceGetUVSize(ss,relative)
 end
 
 dgsCustomTexture["dgs-dxscreensource"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
-print(postGUI)
 	if dgsElementData[image].customUV then
 		local uvPos = dgsElementData[image].uvPos
 		local uvSize = dgsElementData[image].uvSize
