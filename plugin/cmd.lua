@@ -1,5 +1,5 @@
 ﻿cmdBaseWhiteList = {}
-eventHandlers = {}
+commandHandlers = {}
 
 function dgsCreateCmd(x,y,w,h,relative,parent)
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateCmd",1,"number")) end
@@ -18,10 +18,12 @@ function dgsCreateCmd(x,y,w,h,relative,parent)
 	dgsSetFont(cmdMemo,"arial")
 	dgsSetData(cmdMemo,"leading",tonumber(leading) or 20)
 	dgsSetData(cmdMemo,"preName","")
+	dgsSetData(cmdMemo,"commandHandlers",{})
 	dgsSetData(cmdMemo,"whitelist",cmdBaseWhiteList)
 	dgsSetData(cmdMemo,"cmdType","function")
 	dgsSetData(cmdMemo,"cmdHistory",{[0]=""})
 	dgsSetData(cmdMemo,"cmdCurrentHistory",0)
+	dgsSetData(cmdmemo,"enableCommandInfo",true)
 	local sx,sy = dgsGetSize(cmdMemo,false)
 	local edit = dgsCreateEdit(0,-20,sx,20,"",false,cmdMemo,tocolor(255,255,255,255))
 	dgsSetData(edit,"textSize",{1.3,1.3})
@@ -36,9 +38,6 @@ function dgsCreateCmd(x,y,w,h,relative,parent)
 			end
 		end
 	end,false)
-	for k,v in pairs(eventHandlers) do
-		dgsEditAddAutoComplete(edit,k,false)
-	end
 	dgsSetPositionAlignment(edit,_,"bottom")
 	dgsSetData(cmdMemo,"cmdEdit",edit)
 	dgsSetData(cmdMemo,"hitoutofparent",true)
@@ -60,6 +59,15 @@ function dgsCreateCmd(x,y,w,h,relative,parent)
 	end,false)
 	triggerEvent("onDgsPluginCreate",cmdMemo,sourceResource)
 	return cmdMemo
+end
+
+function dgsCmdApplyDefaultCommands(cmd)
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"dgsCmdApplyDefaultCommands",1,"plugin dgs-dxcmd")) end
+	for command,functions in pairs(commandHandlers) do
+		for index,fnc in ipairs(functions) do
+			dgsCmdAddCommandHandler(cmd,command,fnc)
+		end
+	end
 end
 
 function dgsCmdSetMode(cmd,mode,output)
@@ -167,14 +175,13 @@ function outputCmdMessage(cmd,str)
 end
 
 function receiveCmdEditInput(cmd,str)
-	if dgsGetPluginType(cmd) == "dgs-dxcmd" then
-		local history = dgsGetData(cmd,"cmdHistory")
-		if history[1] ~= str then
-			table.insert(history,1,str)
-			dgsSetData(cmd,"cmdHistory",history)
-		end
-		executeCmdCommand(cmd,unpack(split(str," ")))
+	if not(dgsGetPluginType(cmd) == "dgs-dxcmd") then error(dgsGenAsrt(cmd,"receiveCmdEditInput",1,"plugin dgs-dxcmd")) end
+	local history = dgsGetData(cmd,"cmdHistory")
+	if history[1] ~= str then
+		table.insert(history,1,str)
+		dgsSetData(cmd,"cmdHistory",history)
 	end
+	executeCmdCommand(cmd,unpack(split(str," ")))
 end
 
 function dgsCmdGetEdit(cmd)
@@ -192,22 +199,49 @@ function configCMD(source)
 	dgsSetSize(dxedit,sx,scaley*20,false)
 end
 
-function dgsCmdAddCommandHandler(str,func)
-	eventHandlers[str] = eventHandlers[str] or {}
-	if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdAddCommandHandler",1,"string")) end
-	if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdAddCommandHandler",2,"function")) end
-	return table.insert(eventHandlers[str],func)
+function dgsCmdAddCommandHandler(...)
+	if select("#",...) == 2 then
+		local str,func = ...
+		commandHandlers[str] = commandHandlers[str] or {}
+		if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdAddCommandHandler",1,"string")) end
+		if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdAddCommandHandler",2,"function")) end
+		return table.insert(commandHandlers[str],func)
+	elseif select("#",...) == 3 then
+		local cmd,str,func = ...
+		if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdAddCommandHandler",2,"string")) end
+		if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdAddCommandHandler",3,"function")) end
+		local cmdEdit = dgsElementData[cmd].cmdEdit
+		local cmdHandlers = dgsElementData[cmd].commandHandlers
+		cmdHandlers[str] = cmdHandlers[str] or {}
+		table.insert(cmdHandlers[str],func)
+		dgsEditAddAutoComplete(cmdEdit,str,false)
+	end
 end
 
-function dgsCmdRemoveCommandHandler(str,func)
-	eventHandlers[str] = eventHandlers[str] or {}
-	if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdRemoveCommandHandler",1,"string")) end
-	if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdRemoveCommandHandler",2,"function")) end
-	local id = table.find(eventHandlers[str],func)
-	if id then
-		return table.remove(eventHandlers[str],id)
+function dgsCmdRemoveCommandHandler(...)
+	if select("#",...) == 2 then
+		local str,func = ...
+		commandHandlers[str] = commandHandlers[str] or {}
+		if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdRemoveCommandHandler",1,"string")) end
+		if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdRemoveCommandHandler",2,"function")) end
+		local id = table.find(commandHandlers[str],func)
+		if id then
+			return table.remove(commandHandlers[str],id)
+		end
+		return true
+	elseif select("#",...) == 3 then
+		local cmd,str,func = ...
+		commandHandlers[str] = commandHandlers[str] or {}
+		if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsCmdRemoveCommandHandler",2,"string")) end
+		if not(type(func) == "function") then error(dgsGenAsrt(func,"dgsCmdRemoveCommandHandler",3,"function")) end
+		local cmdHandlers = dgsElementData[cmd].commandHandlers or {}
+		local id = table.find(cmdHandlers[str],func)
+		if id then
+			return table.remove(cmdHandlers[str],id)
+		end
+		if #cmdHandlers[str] == 0 then cmdHandlers[str] = nil end
+		return true
 	end
-	return true
 end
 
 function executeCmdCommand(cmd,str,...)
@@ -215,16 +249,21 @@ function executeCmdCommand(cmd,str,...)
 	local ifound = false
 	local cmdType = dgsGetData(cmd,"cmdType")
 	if cmdType == "function" then
-		outputCmdMessage(cmd,"Execute: "..str)
-		for k,v in pairs(eventHandlers[str] or {}) do
+		if dgsElementData[cmd].enableCommandInfo then
+			outputCmdMessage(cmd,"Execute: "..str)
+		end
+		local cmdHandlers = dgsElementData[cmd].commandHandlers or {}
+		for k,v in pairs(cmdHandlers[str] or {}) do
 			if type(v) == "function" then
 				ifound = true
 				v(cmd,unpack(arg))
 				break
 			end
 		end
-		if not ifound then
-			outputCmdMessage(cmd,"Coundn't Find Command:"..str)
+		if dgsElementData[cmd].enableCommandInfo then
+			if not ifound then
+				outputCmdMessage(cmd,"Could't Find Command:"..str)
+			end
 		end
 	elseif cmdType == "event" then
 		outputCmdMessage(cmd,"Trigger: "..str)

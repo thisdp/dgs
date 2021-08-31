@@ -124,15 +124,155 @@ addEventHandler("DGSI_AbnormalDetected",root,function(fData)
 end)
 
 -------------------Server Console
-if not dgsConfig.enableServerConsole then return end
+addEvent("DGSI_RequestServerInfo",true)
+if not dgsConfig.enableServerConsole then 
+	addEventHandler("DGSI_RequestServerInfo",root,function(required)
+		triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,"disabled")
+	end)
+	return
+end
 local resourceTable = {}
 for key,res in ipairs(getResources()) do
 	local resName = getResourceName(res)
 	resourceTable[resName] = getResourceState(res)
 end
 setElementData(root,"DGSI_Resources",resourceTable)
+
 addEventHandler("onResourceLoadStateChange",root,function(changedResource,newState)
 	local resName = getResourceName(changedResource)
 	resourceTable[resName] = newState
 	setElementData(root,"DGSI_Resources",resourceTable)
+end)
+
+local playerConnection = {}
+addEventHandler("DGSI_RequestServerInfo",root,function(required)
+	
+	--Access Control?
+
+	if required.connection == true then
+		playerConnection[client] = true
+	elseif required.connection == false then
+		playerConnection[client] = nil
+	end
+	if required.maxPlayers then
+		required.maxPlayers = getMaxPlayers()
+	end
+	-------------------------------Execute
+	
+	--Start
+	if required.start then
+		local res = getResourceFromName(required.start)
+		local resName = getResourceName(res)
+		if res then
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{
+				time = getRealTime(),
+				start = {
+					"start: Requested by "..getPlayerName(client),
+					"start: Starting "..resName,
+				}
+			})
+			if startResource(res) then
+				triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),start="start: Resource '"..resName.."' started"})
+			end
+		else
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),start="start: Resource could not be found"})
+		end
+		required.start = nil
+	end
+	
+	--Stop
+	if required.stop then
+		local res = getResourceFromName(required.stop)
+		local resName = getResourceName(res)
+		if res then
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{
+				time = getRealTime(),
+				start = {
+					"stop: Requested by "..getPlayerName(client),
+					"stop: Stopping "..resName,
+				}
+			})
+			if stopResource(res) then
+				triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),stop = "start: Resource '"..resName.."' stopped"})
+			end
+		else
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),stop = "stop: Resource could not be found"})
+		end
+		required.stop = nil
+	end
+	
+	--Restart
+	if required.restart then
+		local res = getResourceFromName(required.restart)
+		local resName = getResourceName(res)
+		if res then
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{
+				time = getRealTime(),
+				restart = {
+					"restart: Requested by "..getPlayerName(client),
+					"restart: Stopping "..resName,
+				}
+			})
+			stopResource(res)
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{
+				time = getRealTime(),
+				restart = {
+					"restart: Starting "..resName,
+				}
+			})
+			if startResource(res) then
+				triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),restart="restart: "..resName.." restarted successfully"})
+			end
+		else
+			required.restart = "restart: Resource could not be found"
+		end
+		required.restart = nil
+	end
+	
+	--Refresh
+	if required.refresh then
+		if required.refresh == true then
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),refresh="refresh: refreshing resources..."})
+			if refreshResources() then
+				triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),refresh="refresh: complete"})
+			end
+		elseif type(required.refresh) == "string" then
+			local res = getResourceFromName(required.refresh)
+			local resName = getResourceName(res)
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),refresh="refresh: refreshing resource '"..resName.."'..."})
+			if refreshResources(false,res) then
+				triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),refresh="refresh: complete"})
+			end
+		end
+		required.refresh = nil
+	end
+	--Refresh all
+	if required.refreshall then
+		triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),refreshall="refreshall: refreshing all resources..."})
+		if refreshResources(true) then
+			triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,{time = getRealTime(),refreshall="refreshall: complete"})
+		end
+		required.refreshall = nil
+	end
+	
+	required.time = getRealTime()
+	triggerClientEvent(client,"DGSI_ReceiveServerInfo",client,required)
+end)
+
+addEventHandler("onDebugMessage", root, function(message, level, file, line)
+	local debugMessage
+	if level == 1 then
+		debugMessage = "ERROR: "..file..":"..tostring(line)..": "..message
+	elseif level == 2 then
+		debugMessage = "WARNING: ".. file..":"..tostring(line)..": "..message
+	else
+		debugMessage = "INFO: "..file..":"..tostring(line)..": "..message
+	end
+	for player in pairs(playerConnection) do
+		triggerClientEvent(player,"DGSI_ReceiveServerInfo",player,{time = getRealTime(), debugMessage=debugMessage})
+	end
+end)
+
+addEventHandler("onPlayerQuit",root,function()
+	playerConnection[source] = nil
 end)
