@@ -141,7 +141,11 @@ function createFullDemo()
 		end)
 		:setProperty("clickCoolDown",1000)
 	
+	RadioButton1:setVisible(false)
+	RadioButton1:bringToFront()
+	
 end
+
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
@@ -190,6 +194,7 @@ function EditTest() --Test Tab Switch for edit.
 	edit2 = dgsCreateEdit(0.3,0.4,0.2,0.05,"123123",true)
 	edit3 = dgsCreateEdit(0.3,0.5,0.2,0.05,"123123",true)
 	edit4 = dgsCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
+	dgsSetProperty(edit2,"caretStyle",1)
 	--dgsEditSetReadOnly(edit4,true)
 	dgsBringToFront(edit,"left")
 	dgsEditSetCaretPosition(edit, 1)
@@ -202,6 +207,18 @@ function EditTest() --Test Tab Switch for edit.
 	dgsEditSetMasked (edit4, true)
 end
 
+function EditAutoCompleteText()
+	dgsEditAutoCompleteAddParameterFunction("resource",[[
+		local input = ...
+		for resName,res in pairs(getElementData(root,"DGSI_Resources")) do
+			if input:lower() == resName:sub(1,input:len()):lower() then
+				return resName
+			end
+		end
+	]])
+	edit = dgsCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
+	dgsEditAddAutoComplete(edit,{"start","resource"},false,true)
+end
 --[[
 local arabicUnicode = {{0x0600,0x06FF},{0x08A0,0x08FF},{0x0750,0x077F},{0xFB50,0xFDFF},{0xFE70,0xFEFF},{0x1EE00,0x1EEFF}}
 local arabicPattern = ""
@@ -247,6 +264,31 @@ function AnimTest()
 	dgsAnimTo(label,"shadow",{100,100,tocolor(0,0,0,255)},"shadowOffset",10000)
 end
 
+function random(n, m)
+    math.randomseed(os.clock()*math.random(1000000,90000000)+math.random(1000000,90000000))
+    return math.random(n, m)
+end
+
+function randomNumber(len)
+    local rt = ""
+    for i=1,len,1 do
+        if i == 1 then
+            rt = rt..random(1,9)
+        else
+            rt = rt..random(0,9)
+        end
+    end
+    return rt
+end
+
+function randomLetter(len)
+    local rt = ""
+    for i = 1, len, 1 do
+        rt = rt..string.char(random(97,122))
+    end
+    return rt
+end
+
 function GridListSortingTest()
 	for x=1,10 do
 		local sortfnc = [[
@@ -270,12 +312,20 @@ function GridListSortingTest()
 		dgsSetProperty(gridlist,"mode",false)
 		for i=1,30 do
 			local row = dgsGridListAddRow(gridlist)
-			dgsGridListSetItemText(gridlist,row,1,tostring(i).." Test DGS")
+			dgsGridListSetItemText(gridlist,row,1,randomLetter(10)..tostring(i).." Test DGS")
 		end
-		dgsGridListSetSortEnabled(gridlist,false)
-		dgsGridListSetSortFunction(gridlist,sortfnc)
-		dgsGridListSetSortColumn(gridlist,2)
+		for i=1,30 do
+			local row = dgsGridListAddRow(gridlist)
+			dgsGridListSetItemText(gridlist,row,1,tostring(i))
+		end
+		dgsSetProperty(gridlist,"defaultSortFunctions",{"numGreaterLowerStrFirst","numGreaterUpperStrFirst"})
+		--dgsGridListSetSortEnabled(gridlist,false)
+		--dgsGridListSetSortFunction(gridlist,sortfnc)
+		--dgsGridListSetSortColumn(gridlist,2)
+		dgsGridListSetVerticalScrollPosition(gridlist,45)
+		dgsSetProperty(gridlist,"columnShadow",{1,1,tocolor(255,0,0,255)})
 	end
+	dgsBringToFront(gridlist)
 end
 
 function GridListTest()
@@ -283,18 +333,21 @@ function GridListTest()
 	dgsSetProperty(gridlist,"clip",false)
 	--dgsSetProperty(gridlist,"leading",10)
 	--dgsSetProperty(gridlist,"mode",true)
-	dgsGridListAddColumn(gridlist,"test1",0.4)
-	dgsGridListAddColumn(gridlist,"test2",0.8)
+	dgsGridListAddColumn(gridlist,"test1",0.2)
+	dgsGridListAddColumn(gridlist,"test2",0.2)
+	dgsGridListAddColumn(gridlist,"test3",0.6)
 	local tick = getTickCount()
 	bg = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
 	dgsSetProperty(gridlist,"rowHeight",200)
 	for i=1,10 do
 		local row = dgsGridListAddRow(gridlist)
 		local window = dgsCreateMemo(0,1,400,198,"",false)
-		dgsAttachToGridList(window,gridlist,row,2)
-		dgsGridListSetItemText(gridlist,row,1,i)
+		dgsAttachToGridList(window,gridlist,row,3)
+		dgsGridListSetItemText(gridlist,row,1,i.."xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
+	dgsGridListAutoSizeColumn(gridlist,1,0,false,true)
+	dgsGridListSetItemFont(gridlist,2,2,"default-bold")
 end
 
 function MediaBrowserTest()
@@ -370,6 +423,9 @@ function _3DTextTest()
 	dgsSetProperty(text,"shadow",{1,1,tocolor(0,0,0,255),true})
 	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
 	dgs3DTextAttachToElement(text,localPlayer,0,5)
+	local label = dgsCreateLabel(0,0,0,0,"",false)
+	dgsAttachToAutoDestroy(text,label)
+	--destroyElement(label)
 end
 
 function _3DImageTest()
@@ -406,10 +462,13 @@ function ScalePaneTest()
 end
 
 function SelectorTest()
-	selector = dgsCreateSelector(400,500,100,20,false)
+	local window = dgsCreateWindow(300,300,400,400,"test",false)
+	selector = dgsCreateSelector(10,10,100,20,false,window)
 	dgsSetProperty(selector,"selectorImageColorLeft",{0x99FF0000,0x99FF0000,0x99FF0000})
 	dgsSetProperty(selector,"selectorImageColorRight",{0x9900FF00,0x9900FF00,0x9900FF00})
 	dgsSetProperty(selector,"selectorText",{"-","+"})
+	--dgsSetProperty(selector,"isHorizontal",false)
+	dgsSetProperty(selector,"isReversed",false)
 	for i=1,5000 do
 		dgsSelectorAddItem(selector,i)
 	end
@@ -555,14 +614,32 @@ end
 
 ---------------QRCode
 function QRCodeTest()
+	
+	local blurbox = dgsCreateBlurBox(sW/2,sH)
+	dgsSetProperty(blurbox,"updateScreenSource",true)
+	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
+	local roundedRect = dgsCreateRoundRect(300, false, tocolor(255,255,255,255))
+	dgsBlurBoxSetFilter(blurbox,roundedRect)
+	
+	
 	local QRCode = dgsRequestQRCode("https://wiki.multitheftauto.com/wiki/Resource:Dgs")
 	local image = dgsCreateImage(200,200,128,128,QRCode,false)
 	local mask = dgsCreateMask(QRCode,"backgroundFilter")
 	local image2 = dgsCreateImage(400,200,128,128,mask,false)
+	local roundedRect = dgsCreateRoundRect(10, false, tocolor(255,255,255,255))
+	local rt = dxCreateRenderTarget(128,128,true)
+	dgsRoundRectSetTexture(roundedRect,rt)
+	local image3 = dgsCreateImage(600,200,128,128,roundedRect,false)
+	
 	outputChatBox(dgsGetQRCodeLoaded(QRCode) and "Loaded" or "Loading")
 	addEventHandler("onDgsQRCodeLoad",QRCode,function()
 		outputChatBox(dgsGetQRCodeLoaded(source) and "Loaded" or "Loading")
+		
+		dxSetRenderTarget(rt,true)
+		dxDrawImage(0,0,128,128,QRCode)
+		dxSetRenderTarget()
 	end,false)
+	
 end
 
 ---------------Blur Box
@@ -572,8 +649,6 @@ function BlurBoxTest()
 	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
 	dgsBlurBoxSetIntensity(blurbox,1)
 	dgsBlurBoxSetLevel(blurbox,15)
-	window = dgsCreateWindow(400,200,800,200,"123",false)
-	dgsSetPostGUI(window,false)
 	--local text = dgsCreate3DImage(0,0,4,blurbox,tocolor(0,128,255,128),128,128)
 end
 
@@ -607,7 +682,12 @@ function testColorPicker()
 	A = dgsColorPickerCreateComponentSelector(500,260,10,500,false,false)
 	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
 end
+--testColorPicker()
 
+function ScreenSourceTest()
+	local ss = dgsCreateScreenSource()
+	img = dgsCreateImage(0,0,sW/2,sH,ss,false,_,tocolor(255,255,255,255))
+end
 ---------------DGS Object Preview Support Test
 function testObjectPreview()
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
@@ -694,6 +774,14 @@ function windowStress()
 	print(getTickCount()-tick)
 end
 
+function gridlistStress()
+	local tick = getTickCount()
+	for i=1,500 do
+		local win = dgsCreateGridList(0, 0, 800, 600)
+		--destroyElement(win)
+	end
+	print(getTickCount()-tick)
+end
 
 function dgsSetPropertyTest()
 	local img = dgsCreateImage(0, 0, 800, 600, _,false)
@@ -720,5 +808,17 @@ function dgsScrollPaneTest()
 		dgsCreateImage(405, y, 380, 40, tex, false, ele)
 	end
 end
+--[[
+local gradient = dgsCreateGradient(tocolor(240,10,10,255),tocolor(100,10,10,255),-90)
+dgsGradientSetColorOverwritten(gradient,false)
 
+local canvas = dgsCreateCanvas(gradient,100,50)
+
+local roundedRect = dgsCreateRoundRect(10, false, tocolor(255, 255, 255, 255))
+dgsRoundRectSetTexture(roundedRect,canvas)
+
+local image = dgsCreateImage(600,400,100,50,roundedRect,false,tocolor(255,255,255,255))
+dgsSetProperty(image,"functions","dgsCanvasRender(dgsElementData[self].renderCanvas)")
+dgsSetProperty(image,"renderCanvas",canvas)
+]]
 end)
