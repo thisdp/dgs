@@ -1094,7 +1094,7 @@ end,false)
 
 addEventHandler("onClientResourceStop",root,function(res)
 	if boundResource[res] then
-		dgsClear(_,res)
+		dgsClear(nil,res)
 		resourceTranslation[res] = nil
 	end
 	externalElementPool[res] = nil	--Clear external element pool

@@ -23,6 +23,7 @@ __dxDrawImage = dxDrawImage
 ClientInfo = {
 	SupportedPixelShader={}
 }
+
 dgs = exports[getResourceName(getThisResource())]
 
 -------Built-in DX Fonts
@@ -149,13 +150,11 @@ dgsElementKeeper = {}
 function dxCreateEmptyTexture(width,height,sRes)
 	local texture
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sourceResource = sRes or sourceResource
-		if dgsElementKeeper[sourceResource] then
-			local sourceResRoot = getResourceRootElement(sourceResource)
-			local _sourceResource = sourceResource
+		sRes = sRes or sourceResource
+		if dgsElementKeeper[sRes] then
+			local sourceResRoot = getResourceRootElement(sRes)
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",width,height)
-			sourceResource = _sourceResource
-			texture = dgsPopElement("texture",sourceResource)
+			texture = dgsPopElement("texture",sRes)
 		end
 	end
 	if not texture then
@@ -173,14 +172,12 @@ end
 function dxCreateTexture(pathOrData,sRes)
 	local texture
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sourceResource = sRes or sourceResource
-		if dgsElementKeeper[sourceResource] then
+		sRes = sRes or sourceResource
+		if dgsElementKeeper[sRes] then
 			local textureData = fileGetContent(pathOrData) or pathOrData
-			local sourceResRoot = getResourceRootElement(sourceResource)
-			local _sourceResource = sourceResource
+			local sourceResRoot = getResourceRootElement(sRes)
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",textureData)
-			sourceResource = _sourceResource
-			texture = dgsPopElement("texture",sourceResource)
+			texture = dgsPopElement("texture",sRes)
 		end
 	end
 	if not texture then
@@ -199,14 +196,12 @@ end
 function dxCreateShader(pathOrData,sRes)
 	local shader
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sourceResource = sRes or sourceResource
-		if dgsElementKeeper[sourceResource] then
+		sRes = sRes or sourceResource
+		if dgsElementKeeper[sRes] then
 			local shaderData = fileGetContent(pathOrData) or pathOrData
-			local sourceResRoot = getResourceRootElement(sourceResource)
-			local _sourceResource = sourceResource
+			local sourceResRoot = getResourceRootElement(sRes)
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"shader",shaderData)
-			sourceResource = _sourceResource
-			shader = dgsPopElement("shader",sourceResource)
+			shader = dgsPopElement("shader",sRes)
 		end
 	end
 	if not shader then
@@ -234,14 +229,12 @@ function dxCreateFont(creationInfo,sRes)
 		pathOrData,size,isbold,quality = creationInfo[1],creationInfo[2],creationInfo[3],creationInfo[4]
 	end
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sourceResource = sRes or sourceResource
-		if dgsElementKeeper[sourceResource] then
+		sRes = sRes or sourceResource
+		if dgsElementKeeper[sRes] then
 			local fontData = fileGetContent(pathOrData) or pathOrData
-			local sourceResRoot = getResourceRootElement(sourceResource)
-			local _sourceResource = sourceResource
+			local sourceResRoot = getResourceRootElement(sRes)
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"font",fontData,size,isbold,quality)
-			sourceResource = _sourceResource
-			font = dgsPopElement("font",sourceResource)
+			font = dgsPopElement("font",sRes)
 		end
 	end
 	if not font then
@@ -260,13 +253,11 @@ end
 function dxCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
 	local rt
 	if sRes ~= false then	--Create remotely
-		sourceResource = sRes or sourceResource
-		if dgsElementKeeper[sourceResource] then
-			local sourceResRoot = getResourceRootElement(sourceResource)
-			local _sourceResource = sourceResource
+		sRes = sRes or sourceResource
+		if dgsElementKeeper[sRes] then
+			local sourceResRoot = getResourceRootElement(sRes)
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"rendertarget",w,h,isTransparent)
-			sourceResource = _sourceResource
-			rt = dgsPopElement("rendertarget",sourceResource)
+			rt = dgsPopElement("rendertarget",sRes)
 		end
 	end
 	local rendertarget = rt or __dxCreateRenderTarget(w,h,isTransparent)
@@ -283,17 +274,16 @@ end
 
 function createElement(eleType,sRes)
 	local ele
-	sourceResource = sRes or sourceResource
-	if sourceResource then	--Create remotely
-		if dgsElementKeeper[sourceResource] then
-			local sourceResRoot = getResourceRootElement(sourceResource)
-			local _sourceResource = sourceResource
+	sRes = sRes or sourceResource
+	if sRes then	--Create remotely
+		if dgsElementKeeper[sRes] then
+			local sourceResRoot = getResourceRootElement(sRes)
 			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,eleType)
-			sourceResource = _sourceResource
-			ele = dgsPopElement(eleType,sourceResource)
+			ele = dgsPopElement(eleType,sRes)
 		end
 	end
-	return ele or __createElement(eleType)
+	local ele = ele or __createElement(eleType)
+	return ele
 end
 
 function removeElementData(element,key)
@@ -826,10 +816,10 @@ function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends,ends)
 	if #inspectV >= 24 then
 		inspectV = inspectV:sub(1,24).."..."
 	end
+	local argIndex = argx and (" at argument "..argx) or ""
 	local expected = reqType and " expected "..reqType..reqValue or ""
 	local got = reqType and " got "..dgsGetType(x).."("..inspectV..")" or ""
 	local ends = ends and (" "..ends) or ""
-	local argIndex = argx and (" at argument "..argx) or ""
 	local str = "Bad Argument @'"..funcName.."'"..appendInfo..expected..argIndex..","..got..ends
 	return str
 end
@@ -882,6 +872,64 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 	end
 end
 
+function dxCreateEnhancedTextBuffer(text)
+	local textTable = {}
+	local _h = 0
+	local tHei = dxGetFontHeight(1,"default")
+	local lineStart = -1
+	local blockStart,_w,colorBlockStart
+	local color = 0xFFFFFFFF
+	while true do	--\n
+		local _n = text:find(_n,lineStart+2)
+		_n = _n and _n-1 or nil
+		local line = text:sub(lineStart+2,_n)
+		lineStart = _n
+		blockStart,_w = -1,0
+		textTable[#textTable+1] = {[0]=line}
+		local textTableLine = textTable[#textTable]
+		if line ~= "" then
+			while true do	--\t
+				local _t = line:find(_t,blockStart+2)
+				_t = _t and _t-1 or nil
+				local block = line:sub(blockStart+2,_t)
+				blockStart = _t
+				colorBlockStart = -7
+				if block ~= "" then
+					while true do	--#RRGGBB
+						local _c = block:find("#%x%x%x%x%x%x",colorBlockStart+8)
+						_c = _c and _c-1 or nil
+						local c
+						if _c then
+							c = "0xFF"..block:sub(_c+2,_c+7)
+						end
+						local cblock = block:sub(colorBlockStart+8,_c)
+						colorBlockStart = _c
+						textTableLine[#textTableLine+1] = {cblock,_w,_h,color}
+						_w = _w+dxGetTextWidth(cblock,1,"default")
+						color = c or color
+						if not _c then break end
+					end
+				end
+				_w = _w-_w%tabSpace+tabSpace
+				if not _t then break end
+			end
+		end
+		_h = _h+tHei+lineSpace
+		if not _n then break end
+	end
+	return textTable
+end
+
+function dxDrawEnhancedText(buffer,x,y)
+	for line=1,#buffer do
+		local l = buffer[line]
+		for index=1,#l do
+			local block = l[index]
+			local text,offx,offy,color = block[1],block[2],block[3],block[4]
+			dxDrawText(text,x+offx,y+offy,_,_,color)
+		end
+	end	
+end
 --------------------------------Other Utility
 function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)

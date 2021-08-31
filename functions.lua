@@ -425,9 +425,8 @@ end
 
 function dgsCreateFont(path,size,bold,quality)
 	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsCreateFont",1,"string")) end
-	sourceResource = sourceResource or getThisResource()
 	if not path:find(":") then
-		local resname = getResourceName(sourceResource)
+		local resname = getResourceName(sourceResource or getThisResource())
 		path = ":"..resname.."/"..path
 	end
 	if not fileExists(path) then error(dgsGenAsrt(path,"dgsCreateFont",1,_,_,_,"Couldn't find such file '"..path.."'")) end
@@ -469,14 +468,14 @@ function dgsSetSystemFont(font,size,bold,quality,styleName,res)
 	if isElement(systemFont) then
 		destroyElement(systemFont)
 	end
-	sourceResource = sourceResource or getThisResource()
+	local sResource = sourceResource or getThisResource()
 	if fontBuiltIn[font] then
 		style.systemFontElement = font
 		return true
-	elseif sourceResource then
-		local path = font:find(":") and font or ":"..getResourceName(sourceResource).."/"..font
+	else
+		local path = font:find(":") and font or ":"..getResourceName(sResource).."/"..font
 		if not fileExists(path) then error(dgsGenAsrt(path,"dgsSetSystemFont",1,_,_,_,"Couldn't find such file '"..path.."'")) end
-		local font = dxCreateFont({path,size,bold,quality},sres or sourceResource)
+		local font = dxCreateFont({path,size,bold,quality},sres or sResource)
 		if isElement(font) then
 			style.systemFontElement = font
 		end

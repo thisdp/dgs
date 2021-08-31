@@ -47,6 +47,7 @@ dgsRenderSetting = {
 	renderPriority = "normal",
 }
 dgsRenderer = {}
+dgsCustomTexture = {}
 dgs3DRenderer = {}
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)
@@ -1658,6 +1659,11 @@ function dgsCleanElement(source)
 end
 
 addEventHandler("onClientElementDestroy",root,function()
+	if BlurBoxGlobalScreenSource == source then
+		if blurboxShaders ~= 0 then
+			print("[DGS] Abnormal Screen Source Destroy Detected")
+		end
+	end
 	if dgsElementData[source] then
 		dgsCleanElement(source)
 	end
