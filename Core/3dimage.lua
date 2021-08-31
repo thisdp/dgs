@@ -277,7 +277,8 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 						local uvPx,uvPy,uvSx,uvSy
 						if materialInfo[0] ~= image then	--is latest?
 							materialInfo[0] = image	--Update if not
-							if type(image) == "string" then
+							local imageType = dgsGetType(image)
+							if imageType == "texture" then
 								materialInfo[1],materialInfo[2] = 1,1
 							else
 								materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)

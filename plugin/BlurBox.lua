@@ -155,6 +155,10 @@ function dgsBlurBoxGetTexture(bb)
 	return dgsElementData[bb].sourceTexture
 end
 
+dgsCustomTexture["dgs-dxblurbox"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
+	return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+end
+
 ----------------Shader
 function getBlurBoxShader(level)
 	local blurBoxShaderHorizontal = [[

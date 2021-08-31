@@ -48,3 +48,7 @@ function dgsCustomRendererSetFunction(cr,fncStr)
 		return dgsSetData(cr,"customRenderer",fnc)
 	end
 end
+
+dgsCustomTexture["dgs-dxcustomrenderer"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
+	return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+end

@@ -158,9 +158,9 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	local colors,imgs = eleData.color,eleData.image
-	colors = applyColorAlpha(colors,parentAlpha)
-	if isElement(imgs) then
+	local color,image = eleData.color,eleData.image
+	color = applyColorAlpha(color,parentAlpha)
+	if isElement(image) then
 		local rotCenter = eleData.rotationCenter
 		local rotOffx,rotOffy = rotCenter[3] and w*rotCenter[1] or rotCenter[1],rotCenter[3] and h*rotCenter[2] or rotCenter[2]
 		local rot = eleData.rotation or 0
@@ -171,10 +171,11 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		end
 		local materialInfo = eleData.materialInfo
 		local uvPx,uvPy,uvSx,uvSy
-		if materialInfo[0] ~= imgs then	--is latest?
-			materialInfo[0] = imgs	--Update if not
-			if dgsGetType(imgs) ~= "dgs-dxcustomrenderer" then
-				materialInfo[1],materialInfo[2] = dxGetMaterialSize(imgs)
+		if materialInfo[0] ~= image then	--is latest?
+			materialInfo[0] = image	--Update if not
+			local imageType = dgsGetType(image)
+			if imageType == "texture" then
+				materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
 			else 
 				materialInfo[1],materialInfo[2] = 0,0
 			end
@@ -192,28 +193,28 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		if uvPx then
 			if shadowoffx and shadowoffy and shadowc then
 				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawImageSection(x+shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+				dxDrawImageSection(x+shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 				if shadowIsOutline then
-					dxDrawImageSection(x-shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-					dxDrawImageSection(x-shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-					dxDrawImageSection(x+shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImageSection(x-shadowoffx,y+shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImageSection(x-shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImageSection(x+shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 				end
 			end
-			dxDrawImageSection(x,y,w,h,uvPx,uvPy,uvSx,uvSy,imgs,rot,rotOffy,rotOffy,colors,isPostGUI,rndtgt)
+			dxDrawImageSection(x,y,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffy,rotOffy,color,isPostGUI,rndtgt)
 		else
 			if shadowoffx and shadowoffy and shadowc then
 				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawImage(x+shadowoffx,y+shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+				dxDrawImage(x+shadowoffx,y+shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 				if shadowIsOutline then
-					dxDrawImage(x-shadowoffx,y+shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-					dxDrawImage(x-shadowoffx,y-shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
-					dxDrawImage(x+shadowoffx,y-shadowoffy,w,h,imgs,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(x-shadowoffx,y+shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(x-shadowoffx,y-shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(x+shadowoffx,y-shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 				end
 			end
-			dxDrawImage(x,y,w,h,imgs,rot,rotOffx,rotOffy,colors,isPostGUI,rndtgt)
+			dxDrawImage(x,y,w,h,image,rot,rotOffx,rotOffy,color,isPostGUI,rndtgt)
 		end
 	else
-		dxDrawRectangle(x,y,w,h,colors,isPostGUI)
+		dxDrawRectangle(x,y,w,h,color,isPostGUI)
 	end
 	return rndtgt,false,mx,my,0,0
 end

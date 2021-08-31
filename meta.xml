@@ -73,6 +73,8 @@
 	<script src="plugin/nineSlice.lua" type="client" />
 
 	<script src="plugin/BlurBox.lua" type="client" />
+	
+	<script src="plugin/screenSource.lua" type="client" />
 
 	<script src="plugin/pasteHandler/pasteHandler.lua" type="client"/>
 	<file src="plugin/pasteHandler/pasteHandler.html" />
@@ -832,6 +834,12 @@
 	<export function="dgsCircleGetDirection" type="client" />
 	<export function="dgsCircleSetAngle" type="client" />
 	<export function="dgsCircleGetAngle" type="client" />
+	
+	<export function="dgsCreateScreenSource" type="client" />
+	<export function="dgsScreenSourceSetUVPosition" type="client" />
+	<export function="dgsScreenSourceGetUVPosition" type="client" />
+	<export function="dgsScreenSourceSetUVSize" type="client" />
+	<export function="dgsScreenSourceGetUVSize" type="client" />
 
 	<export function="dgsCreateCanvas" type="client" />
 

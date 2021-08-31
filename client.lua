@@ -164,6 +164,9 @@ function dgsCoreRender()
 	if isElement(BlurBoxGlobalScreenSource) then
 		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
 	end
+	if isElement(GlobalScreenSource) then
+		dxUpdateScreenSource(GlobalScreenSource,true)
+	end
 	MouseData.cursorPos[1],MouseData.cursorPos[2] = mx,my
 	MouseData.hit = false
 	if bottomTableSize+centerTableSize+topTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then

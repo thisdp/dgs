@@ -828,14 +828,10 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 	local dgsBasicType = dgsGetType(image)
 	if dgsBasicType == "table" then
 		__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
-	elseif dgsBasicType == "dgs-dxcustomrenderer" then
-		dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 	else
 		local pluginType = dgsGetPluginType(image)
-		if pluginType == "dgs-dxcanvas" then
-			dgsCanvasRender(image)
-		elseif pluginType == "dgs-dxblurbox" then
-			__dxDrawImageSection(posX,posY,width,height,posX*blurboxFactor,posY*blurboxFactor,width*blurboxFactor,height*blurboxFactor,image,rotation,rotationX,rotationY,color,false)
+		if pluginType and dgsCustomTexture[pluginType] then
+			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 		else
 			local blendMode
 			if isInRndTgt and dgsBasicType == "shader" then
@@ -860,16 +856,36 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 	return true
 end
 
-function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
+function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 	local dgsBasicType = dgsGetType(image)
 	if dgsBasicType == "dgs-dxcustomrenderer" then
 		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	else
-		if dgsGetPluginType(image) == "dgs-dxcanvas" then
-			dgsCanvasRender(image)
+		local pluginType = dgsGetPluginType(image)
+		if pluginType and dgsCustomTexture[pluginType] then
+			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
+		else
+			local blendMode
+			if isInRndTgt and dgsBasicType == "shader" then
+				blendMode = dxGetBlendMode()
+				dxSetBlendMode("blend")
+			end
+			if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
+				if debugMode then
+					local debugTrace = dgsElementData[self].debugTrace
+					local thisTrace = debug.getinfo(2)
+					if debugTrace then
+						local line,file = debugTrace.line,debugTrace.file
+						outputDebugString("dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed at element created at "..file..":"..line,2)
+					else
+						outputDebugString("dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",2)
+					end
+				end
+			end
+			if blendMode then dxSetBlendMode(blendMode) end
 		end
-		return __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	end
+	return true
 end
 
 function dxCreateEnhancedTextBuffer(text)
