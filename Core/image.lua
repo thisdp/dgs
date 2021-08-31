@@ -177,7 +177,7 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 			if imageType == "texture" then
 				materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
 			else 
-				materialInfo[1],materialInfo[2] = 0,0
+				materialInfo[1],materialInfo[2] = 1,1
 			end
 		end
 		local uvPos = eleData.UVPos
