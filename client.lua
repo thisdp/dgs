@@ -1664,7 +1664,7 @@ end
 addEventHandler("onClientElementDestroy",root,function()
 	if BlurBoxGlobalScreenSource == source then
 		if blurboxShaders ~= 0 then
-			print("[DGS] Abnormal Screen Source Destroy Detected")
+			--print("[DGS]Abnormal Screen Source Destroy Detected")
 		end
 	end
 	if dgsElementData[source] then
