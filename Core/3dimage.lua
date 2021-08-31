@@ -277,7 +277,11 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 						local uvPx,uvPy,uvSx,uvSy
 						if materialInfo[0] ~= image then	--is latest?
 							materialInfo[0] = image	--Update if not
-							materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
+							if type(image) == "string" then
+								materialInfo[1],materialInfo[2] = 1,1
+							else
+								materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
+							end
 						end
 						local uvPos = eleData.UVPos
 						local px,py,pRlt = uvPos[1],uvPos[2],uvPos[3]
