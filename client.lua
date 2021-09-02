@@ -94,7 +94,6 @@ MouseData = {
 	hit = false,
 	entered = false,
 	left = false,
-	enteredGridList = {},
 	--2D Position
 	cursorPosScr = {[0]=false},
 	cursorPosWld = {[0]=false},
@@ -238,7 +237,6 @@ function dgsCoreRender()
 			MouseData.cursorPosScr[0] = false
 		end
 		triggerEvent("onDgsRender",resourceRoot)
-		MouseData.enteredGridList[1] = MouseData.enteredGridList[2]
 		if KeyHolder.repeatKey then
 			local tick = getTickCount()
 			if tick-KeyHolder.repeatStartTick >= KeyHolder.repeatDuration then
@@ -556,9 +554,6 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 					end
 					if eleType == "dgs-dxgridlist" then
 						_hitElement = MouseData.hit
-					end
-					if MouseData.hit == source then	--For grid list preselect
-						MouseData.enteredGridList[2] = false
 					end
 				end
 				rt,disableOutline,_mx,_my,offx,offy = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
@@ -1204,7 +1199,7 @@ function dgsCheckHit(hits,cursorShowing)
 		if MouseData.entered ~= hits then
 			if isElement(MouseData.entered) then
 				if enteredElementType == "dgs-dxgridlist" then
-					local preSelect = dgsElementData[MouseData.entered]
+					local preSelect = dgsElementData[MouseData.entered].preSelect
 					preSelect[1],preSelect[2] = -1,-1
 					dgsSetData(MouseData.entered,"preSelect",preSelect)
 				end

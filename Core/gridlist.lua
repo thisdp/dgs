@@ -2440,27 +2440,23 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetRenderTarget(renderTarget[2],true)
 			local preSelectLastFrame = eleData.preSelectLastFrame
 			local preSelect = eleData.preSelect
-			if MouseData.enteredGridList[1] == source then		-------PreSelect
-				if mouseInsideRow then
-					local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
-					local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp
-					local sid = (tempID-tempID%1)+eleData.FromTo[1]+1
-					if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
-						eleData.oPreSelect = sid
-						if rowData[sid][-2] ~= false then
-							preSelect[1],preSelect[2] = sid,mouseSelectColumn
-						else
-							preSelect[1],preSelect[2] = -1,mouseSelectColumn
-						end
+			if mouseInsideRow then
+				local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
+				local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp
+				local sid = (tempID-tempID%1)+eleData.FromTo[1]+1
+				if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
+					eleData.oPreSelect = sid
+					if rowData[sid][-2] ~= false then
+						preSelect[1],preSelect[2] = sid,mouseSelectColumn
 					else
 						preSelect[1],preSelect[2] = -1,mouseSelectColumn
 					end
-				elseif mouseInsideColumn then
-					eleData.selectedColumn = mouseSelectColumn
-					preSelect[1],preSelect[2] = -1,mouseSelectColumn
 				else
-					preSelect[1],preSelect[2] = -1,-1
+					preSelect[1],preSelect[2] = -1,mouseSelectColumn
 				end
+			elseif mouseInsideColumn then
+				eleData.selectedColumn = mouseSelectColumn
+				preSelect[1],preSelect[2] = -1,mouseSelectColumn
 			else
 				preSelect[1],preSelect[2] = -1,-1
 			end
@@ -2610,9 +2606,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						end
 					end
 				end
-			end
-			if preHitElement == source then	--For grid list preselect
-				MouseData.enteredGridList[2] = source
 			end
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode("modulate_add")
@@ -2838,9 +2831,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,false,true)
 			end
 			dxDrawText(line[1],psx,psy,pex,pey,color,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,isPostGUI,tClrCode,true)
-		end
-		if MouseData.hit == source then	--For grid list preselect
-			MouseData.enteredGridList[2] = source
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
