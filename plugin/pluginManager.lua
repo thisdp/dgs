@@ -11,10 +11,5 @@ addEventHandler("onDgsPluginCreate",resourceRoot,function(theResource)
 		if id then
 			table.remove(dgsPluginTable[typ],id)
 		end
-		if typ == "dgs-dxblurbox" then
-			if not(next(dgsPluginTable[typ])) and isElement(BlurBoxGlobalScreenSource) then
-				destroyElement(BlurBoxGlobalScreenSource)
-			end
-		end
 	end,false)
 end)
