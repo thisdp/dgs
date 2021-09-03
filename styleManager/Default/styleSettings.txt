@@ -356,7 +356,7 @@
 	scrollbar = {
 	---Color
 		cursorColor = {	--Cursor color
-			tocolor(85,90,100,255),		--Normal
+			tocolor(79,83,91,255),		--Normal
 			tocolor(90,160,230,255),		--Hover
 			tocolor(60,110,180,255),		--Click
 		},

@@ -152,13 +152,20 @@ function dgsCreateEdit(...)
 	local padding = dgsElementData[edit].padding
 	local sizex,sizey = sx-padding[1]*2,sy-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local renderTarget,err = dxCreateRenderTarget(sizex,sizey,true,edit)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,edit,-1)
+	local bgRT,err = dxCreateRenderTarget(sizex,sizey,true,edit)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,edit,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsElementData[edit].renderTarget = renderTarget
+	dgsElementData[edit].bgRT = bgRT
+	local textRT,err = dxCreateRenderTarget(sizex,sizey,true,edit)
+	if textRT ~= false then
+		dgsAttachToAutoDestroy(textRT,edit,-2)
+	else
+		outputDebugString(err,2)
+	end
+	dgsElementData[edit].textRT = textRT
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
 	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)
@@ -570,14 +577,22 @@ function configEdit(edit)
 	local padding = dgsElementData[edit].padding
 	local px,py = w-padding[1]*2,h-padding[2]*2
 	px,py = px-px%1,py-py%1
-	local renderTarget,err = dxCreateRenderTarget(px,py,true,edit)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,edit,-1)
+	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
+	if isElement(eleData.textRT) then destroyElement(eleData.textRT) end
+	local bgRT,err = dxCreateRenderTarget(px,py,true,edit)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,edit,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsAttachToAutoDestroy(renderTarget,edit,1)
-	dgsSetData(edit,"renderTarget",renderTarget)
+	dgsSetData(edit,"bgRT",bgRT)
+	local textRT,err = dxCreateRenderTarget(px,py,true,edit)
+	if textRT ~= false then
+		dgsAttachToAutoDestroy(textRT,edit,-2)
+	else
+		outputDebugString(err,2)
+	end
+	dgsSetData(edit,"textRT",textRT)
 	local oldPos = dgsEditGetCaretPosition(edit)
 	dgsEditSetCaretPosition(edit,0)
 	dgsEditSetCaretPosition(edit,oldPos)
@@ -1068,56 +1083,62 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
-	local renderTarget = eleData.renderTarget
 	local alignment = eleData.alignment
-	if isElement(renderTarget) then
-		local textColor = eleData.textColor
-		local selx = 0
-		if selectFro-caretPos > 0 then
-			selx = dxGetTextWidth(utf8Sub(text,caretPos+1,selectFro),txtSizX,font)
-		elseif selectFro-caretPos < 0 then
-			selx = -dxGetTextWidth(utf8Sub(text,selectFro+1,caretPos),txtSizX,font)
-		end
-		local showPos = eleData.showPos
-		local padding = eleData.padding
-		local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
-		local caretHeight = eleData.caretHeight
-		local textX_Left,textX_Right
-		local insideH = h-sideheight*2
-		local selStartY = insideH/2-insideH/2*caretHeight
-		local selEndY = (insideH/2-selStartY)*2
-		local width,selectX,selectW
-		local posFix = 0
-		local placeHolder = eleData.placeHolder
-		local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
-		local placeHolderOffset = eleData.placeHolderOffset
-		dxSetRenderTarget(renderTarget,true)
+	local textX_Left,textX_Right
+	local textColor = eleData.textColor
+	
+	local selx = 0
+	if selectFro-caretPos > 0 then
+		selx = dxGetTextWidth(utf8Sub(text,caretPos+1,selectFro),txtSizX,font)
+	elseif selectFro-caretPos < 0 then
+		selx = -dxGetTextWidth(utf8Sub(text,selectFro+1,caretPos),txtSizX,font)
+	end
+	local showPos = eleData.showPos
+	local padding = eleData.padding
+	local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
+	local caretHeight = eleData.caretHeight
+	local insideH = h-sideheight*2
+	local selStartY = insideH/2-insideH/2*caretHeight
+	local selEndY = (insideH/2-selStartY)*2
+	local width,selectX,selectW
+	local posFix = 0
+	local placeHolder = eleData.placeHolder
+	local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
+	local placeHolderOffset = eleData.placeHolderOffset
+	if alignment[1] == "left" then
+		width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
+		textX_Left,textX_Right = showPos,w-sidelength
+		selectX,selectW = width+showPos,selx
+	elseif alignment[1] == "center" then
+		local __width = eleData.textFontLen
+		width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
+		textX_Left,textX_Right = showPos,w-sidelength
+		selectX,selectW = width+showPos*0.5+w*0.5-__width*0.5-sidelength+1,selx
+		posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
+	elseif alignment[1] == "right" then
+		width = dxGetTextWidth(utf8Sub(text,caretPos+1),txtSizX,font)
+		textX_Left,textX_Right = x,w-sidelength*2-showPos
+		selectX,selectW = textX_Right-width,selx
+		posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
+	end
+	
+	if eleData.bgRT then
+		dxSetRenderTarget(eleData.bgRT,true)
 		dxSetBlendMode("modulate_add")
-		if alignment[1] == "left" then
-			width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
-			textX_Left,textX_Right = showPos,w-sidelength
-			selectX,selectW = width+showPos,selx
-			if selx ~= 0 then
-				dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
-			end
-		elseif alignment[1] == "center" then
-			local __width = eleData.textFontLen
-			width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
-			textX_Left,textX_Right = showPos,w-sidelength
-			selectX,selectW = width+showPos*0.5+w*0.5-__width*0.5-sidelength+1,selx
-			if selx ~= 0 then
-				dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
-			end
-			posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
-		elseif alignment[1] == "right" then
-			width = dxGetTextWidth(utf8Sub(text,caretPos+1),txtSizX,font)
-			textX_Left,textX_Right = x,w-sidelength*2-showPos
-			selectX,selectW = textX_Right-width,selx
-			if selx ~= 0 then
-				dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
-			end
-			posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
+		if selx ~= 0 then
+			dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
 		end
+		if eleData.underline then
+			local textHeight = dxGetFontHeight(txtSizY,font)
+			local lineOffset = eleData.underlineOffset+h*0.5+textHeight*0.5
+			local lineWidth = eleData.underlineWidth
+			local textFontLen = eleData.textFontLen
+			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
+		end
+	end
+	if eleData.textRT then
+		dxSetBlendMode("overwrite")
+		dxSetRenderTarget(eleData.textRT,true)
 		textX_Left = textX_Left-textX_Left%1
 		textX_Right = textX_Right-textX_Right%1
 		if not placeHolderIgnoreRndTgt then
@@ -1132,7 +1153,6 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				else
 					pHolderTextSizeX,pHolderTextSizeY = txtSizX,txtSizY
 				end
-				
 				dxDrawText(placeHolder,textX_Left+placeHolderOffset[1],placeHolderOffset[2],textX_Right-posFix+placeHolderOffset[1],h-sidelength+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,alignment[1],alignment[2],false,false,false,pColorcoded)
 			end
 		end
@@ -1140,78 +1160,74 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxDrawText(eleData.autoCompleteShow.result or "",textX_Left,0,textX_Right-posFix,h-sidelength,eleData.autoCompleteTextColor or applyColorAlpha(textColor,0.7),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 		end
 		dxDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
-		if eleData.underline then
-			local textHeight = dxGetFontHeight(txtSizY,font)
-			local lineOffset = eleData.underlineOffset+h*0.5+textHeight*0.5
-			local lineWidth = eleData.underlineWidth
-			local textFontLen = eleData.textFontLen
-			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
-		end
-		dxSetRenderTarget(rndtgt)
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-		local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
-		local finalcolor
-		if not enabledInherited and not enabledSelf then
-			if type(eleData.disabledColor) == "number" then
-				finalcolor = eleData.disabledColor
-			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(bgColor,true)
-				local average = (r+g+b)/3*eleData.disabledColorPercent
-				finalcolor = tocolor(average,average,average,a)
-			else
-				finalcolor = bgColor
-			end
+	end
+	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+	dxSetRenderTarget(rndtgt)
+	local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
+	local finalcolor
+	if not enabledInherited and not enabledSelf then
+		if type(eleData.disabledColor) == "number" then
+			finalcolor = eleData.disabledColor
+		elseif eleData.disabledColor == true then
+			local r,g,b,a = fromcolor(bgColor,true)
+			local average = (r+g+b)/3*eleData.disabledColorPercent
+			finalcolor = tocolor(average,average,average,a)
 		else
 			finalcolor = bgColor
 		end
-		if bgImage then
-			dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
-		else
-			dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
+	else
+		finalcolor = bgColor
+	end
+	if bgImage then
+		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
+	else
+		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
+	end
+	_dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+	if placeHolderIgnoreRndTgt then
+		if text == "" and MouseData.focused ~= source then
+			local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
+			local pFont = eleData.placeHolderFont
+			local pColorcoded = eleData.placeHolderColorcoded
+			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+			dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,isPostGUI,pColorcoded)
 		end
-		_dxDrawImage(px,py,pw,ph,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-		if placeHolderIgnoreRndTgt then
-			if text == "" and MouseData.focused ~= source then
-				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
-				local pFont = eleData.placeHolderFont
-				local pColorcoded = eleData.placeHolderColorcoded
-				dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-				dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,isPostGUI,pColorcoded)
-			end
+	end
+	
+	_dxDrawImage(px,py,pw,ph,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+
+	if MouseData.focused == source and MouseData.EditMemoCursor then
+		local CaretShow = true
+		if eleData.readOnly then
+			CaretShow = eleData.readOnlyCaretShow
 		end
-		if MouseData.focused == source and MouseData.EditMemoCursor then
-			local CaretShow = true
-			if eleData.readOnly then
-				CaretShow = eleData.readOnlyCaretShow
-			end
-			if CaretShow then
-				local caretStyle = eleData.caretStyle
-				local selStartX = selectX+x+sidelength
-				selStartX = selStartX-selStartX%1
-				if caretStyle == 0 then
-					if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
-						local offset = eleData.caretOffset
-						local selStartY = h/2-h/2*caretHeight+sideheight-offset
-						local selEndY = (h/2-selStartY)*2
-						dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,isPostGUI)
+		if CaretShow then
+			local caretStyle = eleData.caretStyle
+			local selStartX = selectX+x+sidelength
+			selStartX = selStartX-selStartX%1
+			if caretStyle == 0 then
+				if selStartX+1 >= x+sidelength and selStartX <= x+w-sidelength then
+					local offset = eleData.caretOffset
+					local selStartY = h/2-h/2*caretHeight+sideheight-offset
+					local selEndY = (h/2-selStartY)*2
+					dxDrawLine(selStartX,y+selStartY,selStartX,y+selEndY+selStartY,caretColor,eleData.caretThick,isPostGUI)
+				end
+			elseif caretStyle == 1 then
+				local caretWidth = eleData.caretWidth
+				if caretWidth[3] == true then
+					local cWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
+					if cWidth == 0 then
+						cWidth = txtSizX*caretWidth[2]
 					end
-				elseif caretStyle == 1 then
-					local caretWidth = eleData.caretWidth
-					if caretWidth[3] == true then
-						local cWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
-						if cWidth == 0 then
-							cWidth = txtSizX*caretWidth[2]
-						end
-						caretWidth = cWidth*caretWidth[1]
-					else
-						caretWidth = caretWidth[1]
-					end
-					if selStartX+1 >= x+sidelength and selStartX+caretWidth <= x+w-sidelength then
-						local offset = eleData.caretOffset
-						local textHeight = dxGetFontHeight(txtSizY,font)
-						local selStartY = y+h/2+textHeight/2+sideheight-offset
-						dxDrawLine(selStartX,selStartY,selStartX+caretWidth,selStartY,caretColor,eleData.caretThick,isPostGUI)
-					end
+					caretWidth = cWidth*caretWidth[1]
+				else
+					caretWidth = caretWidth[1]
+				end
+				if selStartX+1 >= x+sidelength and selStartX+caretWidth <= x+w-sidelength then
+					local offset = eleData.caretOffset
+					local textHeight = dxGetFontHeight(txtSizY,font)
+					local selStartY = y+h/2+textHeight/2+sideheight-offset
+					dxDrawLine(selStartX,selStartY,selStartX+caretWidth,selStartY,caretColor,eleData.caretThick,isPostGUI)
 				end
 			end
 		end

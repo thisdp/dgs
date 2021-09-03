@@ -87,15 +87,23 @@ function dgsCreateTabPanel(...)
 		wordbreak = false,
 		tabAlignment = "left",
 		tabOffset = {0,false},
+		textRenderBuffer = {},
 	}
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
-	local renderTarget,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,tabpanel,-1)
+	local bgRT,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,tabpanel,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsElementData[tabpanel].renderTarget = renderTarget
+	local textRT,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
+	if textRT ~= false then
+		dgsAttachToAutoDestroy(textRT,tabpanel,-2)
+	else
+		outputDebugString(err,2)
+	end
+	dgsElementData[tabpanel].bgRT = bgRT
+	dgsElementData[tabpanel].textRT = textRT
 	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
 	triggerEvent("onDgsCreate",tabpanel,sourceResource)
 	return tabpanel
@@ -283,18 +291,26 @@ function dgsDeleteTab(tab)
 end
 
 function configTabPanel(source)
-	local sx,sy = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
-	local tabHeight = dgsElementData[source].tabHeight
-	local rentarg = dgsElementData[source].renderTarget
-	if isElement(rentarg) then destroyElement(rentarg) end
-	local renderTarget,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,source,-1)
+	local eleData = dgsElementData[source]
+	local sx,sy = eleData.absSize[1],eleData.absSize[2]
+	local tabHeight = eleData.tabHeight
+	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
+	if isElement(eleData.textRT) then destroyElement(eleData.textRT) end
+	local bgRT,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,source,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsSetData(source,"renderTarget",renderTarget)
-	dgsElementData[source].configNextFrame = false
+	dgsSetData(source,"bgRT",bgRT)
+	local textRT,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
+	if textRT ~= false then
+		dgsAttachToAutoDestroy(textRT,source,-2)
+	else
+		outputDebugString(err,2)
+	end
+	dgsSetData(source,"textRT",textRT)
+	eleData.configNextFrame = false
 end
 
 function dgsGetSelectedTab(tabpanel,useNumber)
@@ -343,23 +359,24 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if selected == -1 then
 		dxDrawRectangle(x,y+height,w,h-height,eleData.bgColor,isPostGUI)
 	else
-		local rendt = eleData.renderTarget
-		if isElement(rendt) then
-			dxSetRenderTarget(rendt,true)
+		local tabOffset = eleData.tabOffset[2] and eleData.tabOffset[1]*w or eleData.tabOffset[1]
+		local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
+		local tabAllWidth = dgsTabPanelGetWidth(source)
+		local tabX = tabOffset
+		if tabAlignment == "left" then
+			tabX = tabX-eleData.showPos*(tabAllWidth-w)
+		elseif tabAlignment == "center" then
+			tabX = tabX-(0.5-eleData.showPos)*(tabAllWidth-w)
+		elseif tabAlignment == "right" then
+			tabX = tabX-(1-eleData.showPos)*(tabAllWidth-w)
+		end
+		local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
+		if eleData.PixelInt then height = height-height%1 end
+		local textRenderBuffer = eleData.textRenderBuffer
+		textRenderBuffer.count = 0
+		if eleData.bgRT then
 			dxSetBlendMode("blend")
-			local tabOffset = eleData.tabOffset[2] and eleData.tabOffset[1]*w or eleData.tabOffset[1]
-			local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
-			local tabAllWidth = dgsTabPanelGetWidth(source)
-			local tabX = tabOffset
-			if tabAlignment == "left" then
-				tabX = tabX-eleData.showPos*(tabAllWidth-w)
-			elseif tabAlignment == "center" then
-				tabX = tabX-(0.5-eleData.showPos)*(tabAllWidth-w)
-			elseif tabAlignment == "right" then
-				tabX = tabX-(1-eleData.showPos)*(tabAllWidth-w)
-			end
-			local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
-			if eleData.PixelInt then height = height-height%1 end
+			dxSetRenderTarget(eleData.bgRT,true)
 			for d=1,#tabs do
 				local t = tabs[d]
 				local tabData = dgsElementData[t]
@@ -452,7 +469,18 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							end
 						end]]
 
-						dxDrawText(tabData.text,_tabsize,0,_width,height,applyColorAlpha(tabTextColor[selState],parentAlpha),textSizeX,textSizeY,tabData.font or font,"center","center",false,false,false,colorcoded,true)
+						textRenderBuffer.count = textRenderBuffer.count+1
+						if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
+						textRenderBuffer[textRenderBuffer.count][1] = tabData.text
+						textRenderBuffer[textRenderBuffer.count][2] = _tabsize
+						textRenderBuffer[textRenderBuffer.count][3] = 0
+						textRenderBuffer[textRenderBuffer.count][4] = _width
+						textRenderBuffer[textRenderBuffer.count][5] = height
+						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(tabTextColor[selState],parentAlpha)
+						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
+						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
+						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
+						textRenderBuffer[textRenderBuffer.count][10] = colorcoded	--Color Coded
 						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
 							MouseData.hit = t
@@ -461,21 +489,34 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					tabX = tabX+width+gap
 				end
 			end
-			eleData.preSelect = -1
-			dxSetRenderTarget(rndtgt)
-			dxSetBlendMode("add")
-			_dxDrawImage(x,y,w,height,rendt,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
-			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-			local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,parentAlpha)
-			if dgsElementData[tabs[selected]].bgImage then
-				dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgImage,0,0,0,colors,isPostGUI,rndtgt)
-			else
-				dxDrawRectangle(x,y+height,w,h-height,colors,isPostGUI)
-			end
-			local children = ChildrenTable[tabs[selected]]
-			for i=1,#children do
-				renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
-			end
+		end
+		
+		if eleData.textRT then
+			dxSetBlendMode("overwrite")
+			dxSetRenderTarget(eleData.textRT,true)
+			for i=1,textRenderBuffer.count do
+				local tRB = textRenderBuffer[i]
+				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],true)
+			end		
+		end
+		eleData.preSelect = -1
+		dxSetRenderTarget(rndtgt)
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		if eleData.bgRT then
+			_dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
+		end
+		if eleData.textRT then
+			_dxDrawImage(x,y,w,height,eleData.textRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
+		end
+		local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,parentAlpha)
+		if dgsElementData[tabs[selected]].bgImage then
+			dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgImage,0,0,0,colors,isPostGUI,rndtgt)
+		else
+			dxDrawRectangle(x,y+height,w,h-height,colors,isPostGUI)
+		end
+		local children = ChildrenTable[tabs[selected]]
+		for i=1,#children do
+			renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
 		end
 	end
 	return rndtgt,false,mx,my,0,0

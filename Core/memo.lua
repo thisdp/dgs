@@ -157,6 +157,7 @@ function dgsCreateMemo(...)
 		scrollBarLength = {},
 		multiClickCounter = {false,false,0},
 		colorcoded = true,
+		textRenderBuffer = {},
 	}
 	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
@@ -174,13 +175,20 @@ function dgsCreateMemo(...)
 	local padding = dgsElementData[memo].padding
 	local sizex,sizey = abx-padding[1]*2,abx-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local renderTarget,err = dxCreateRenderTarget(sizex,sizey,true,memo)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,memo,-1)
+	local bgRT,err = dxCreateRenderTarget(sizex,sizey,true,memo)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,memo,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsElementData[memo].renderTarget = renderTarget
+	dgsElementData[memo].bgRT = bgRT
+	local textRT,err = dxCreateRenderTarget(sizex,sizey,true,memo)
+	if textRT ~= false then
+		dgsAttachToAutoDestroy(textRT,memo,-2)
+	else
+		outputDebugString(err,2)
+	end
+	dgsElementData[memo].textRT = textRT
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
@@ -1190,12 +1198,8 @@ function configMemo(memo)
 		scbStateH = eleData.rightLength[1] > size[1]-padding[1]*2-scbTakes1
 	end
 	local forceState = eleData.scrollBarState
-	if forceState[1] ~= nil then
-		scbStateV = forceState[1]
-	end
-	if forceState[2] ~= nil then
-		scbStateH = forceState[2]
-	end
+	if forceState[1] ~= nil then scbStateV = forceState[1] end
+	if forceState[2] ~= nil then scbStateH = forceState[2] end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	local scbTakes1 = scbStateV and scbThick or 0
@@ -1225,15 +1229,22 @@ function configMemo(memo)
 	local padding = eleData.padding
 	local sizex,sizey = size[1]-padding[1]*2,size[2]-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local rt_old = eleData.renderTarget
-	if isElement(rt_old) then destroyElement(rt_old) end
-	local renderTarget,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,memo,-1)
+	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
+	if isElement(eleData.textRT) then destroyElement(eleData.textRT) end
+	local bgRT,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,memo,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsSetData(memo,"renderTarget",renderTarget)
+	dgsSetData(memo,"bgRT",bgRT)
+	local textRT,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
+	if textRT ~= false then
+		dgsAttachToAutoDestroy(textRT,memo,-2)
+	else
+		outputDebugString(err,2)
+	end
+	dgsSetData(memo,"textRT",textRT)
 	dgsSetData(memo,"configNextFrame",false)
 end
 
@@ -1479,7 +1490,6 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
-	local renderTarget = eleData.renderTarget
 	local fontHeight = dxGetFontHeight(txtSizY,font)
 	local wordwrap = eleData.wordWrap
 	local scbThick = eleData.scrollBarThick
@@ -1502,28 +1512,30 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local padding = eleData.padding
 	local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
 	local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
+	local textRenderBuffer = eleData.textRenderBuffer
+	textRenderBuffer.count = 0
 	if bgImage then
 		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	else
 		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
 	end
-	if isElement(renderTarget) then
-		if wordwrap then
-			if eleData.rebuildMapTableNextFrame then
-				dgsMemoRebuildWordWrapMapTable(source)
-			end
-			local allLines = #eleData.wordWrapMapText
-			local textColor = eleData.textColor
-			local wordWrapShowLine = eleData.wordWrapShowLine
-			local caretHeight = eleData.caretHeight-1
-			local canHoldLines = mathFloor((h-4)/fontHeight)
-			canHoldLines = canHoldLines > allLines and allLines or canHoldLines
-			dxSetRenderTarget(renderTarget,true)
+	if wordwrap then
+		if eleData.rebuildMapTableNextFrame then
+			dgsMemoRebuildWordWrapMapTable(source)
+		end
+		local allLines = #eleData.wordWrapMapText
+		local textColor = eleData.textColor
+		local wordWrapShowLine = eleData.wordWrapShowLine
+		local caretHeight = eleData.caretHeight-1
+		local canHoldLines = mathFloor((h-4)/fontHeight)
+		canHoldLines = canHoldLines > allLines and allLines or canHoldLines
+		local showPos = eleData.showPos
+		local caretRltHeight = fontHeight*caretHeight
+		local caretDrawPos
+		local selPosStart,selPosEnd,selStart,selEnd
+		if eleData.bgRT then
+			dxSetRenderTarget(eleData.bgRT,true)
 			dxSetBlendMode("modulate_add")
-			local showPos = eleData.showPos
-			local caretRltHeight = fontHeight*caretHeight
-			local caretDrawPos
-			local selPosStart,selPosEnd,selStart,selEnd
 			if allLines > 0 then
 				if selectFro[2] > caretPos[2] then
 					selStart,selEnd = caretPos[2],selectFro[2]
@@ -1590,56 +1602,78 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 									caretDrawPos = {px-showPos-2,py+ypos,utf8Sub(renderingText,1,indexInWeakLine),utf8Sub(renderingText,indexInWeakLine+1,indexInWeakLine+1)}
 								end
 							end
-							dxDrawText(renderingText,-showPos,ypos,-showPos,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
+							textRenderBuffer.count = textRenderBuffer.count+1
+							if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
+							textRenderBuffer[textRenderBuffer.count][1] = renderingText
+							textRenderBuffer[textRenderBuffer.count][2] = -showPos
+							textRenderBuffer[textRenderBuffer.count][3] = ypos
+							textRenderBuffer[textRenderBuffer.count][4] = -showPos
+							textRenderBuffer[textRenderBuffer.count][5] = fontHeight+ypos
+							textRenderBuffer[textRenderBuffer.count][6] = textColor
+							textRenderBuffer[textRenderBuffer.count][7] = txtSizX
+							textRenderBuffer[textRenderBuffer.count][8] = txtSizY
+							textRenderBuffer[textRenderBuffer.count][9] = font
 							rndPos = 1
 							lineCnt = lineCnt + 1
 						end
 						weakLinePos = weakLinePos+weakLineLen
-						if lineCnt > canHoldLines then
-							break
-						end
+						if lineCnt > canHoldLines then break end
 					end
-					if lineCnt > canHoldLines then
-						break
-					end
+					if lineCnt > canHoldLines then break end
 				end
 			end
-			dxSetRenderTarget(rndtgt)
-			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
-			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-			if MouseData.focused == source and MouseData.EditMemoCursor then
-				local CaretShow = true
-				if eleData.readOnly then
-					CaretShow = eleData.readOnlyCaretShow
-				end
-				if CaretShow and caretDrawPos then
-					local caretStyle = eleData.caretStyle
-					local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
-					if caretStyle == 0 then
-						dxDrawLine(caretRenderX,caretDrawPos[2],caretRenderX,caretDrawPos[2]+fontHeight*(1-caretHeight),caretColor,eleData.caretThick,isPostGUI)
-					elseif caretStyle == 1 then
-						local cursorWidth = dxGetTextWidth(caretDrawPos[4],txtSizX,font)
-						if cursorWidth == 0 then
-							cursorWidth = txtSizX*8
-						end
-						local offset = eleData.caretOffset
-						local caretRenderY = caretDrawPos[2]+fontHeight*(1-caretHeight)*0.85+offset-2
-						dxDrawLine(caretRenderX,caretRenderY,caretRenderX+cursorWidth,caretRenderY,caretColor,eleData.caretThick,isPostGUI)
+		end
+		if eleData.textRT then
+			dxSetRenderTarget(eleData.textRT,true)
+			dxSetBlendMode("overwrite")
+			for i=1,textRenderBuffer.count do
+				local tRB = textRenderBuffer[i]
+				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+			end
+		end
+		dxSetRenderTarget(rndtgt)
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+
+		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
+		if eleData.bgRT then
+			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		end
+		if eleData.textRT then
+			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		end
+		if MouseData.focused == source and MouseData.EditMemoCursor then
+			local CaretShow = true
+			if eleData.readOnly then
+				CaretShow = eleData.readOnlyCaretShow
+			end
+			if CaretShow and caretDrawPos then
+				local caretStyle = eleData.caretStyle
+				local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
+				if caretStyle == 0 then
+					dxDrawLine(caretRenderX,caretDrawPos[2],caretRenderX,caretDrawPos[2]+fontHeight*(1-caretHeight),caretColor,eleData.caretThick,isPostGUI)
+				elseif caretStyle == 1 then
+					local cursorWidth = dxGetTextWidth(caretDrawPos[4],txtSizX,font)
+					if cursorWidth == 0 then
+						cursorWidth = txtSizX*8
 					end
+					local offset = eleData.caretOffset
+					local caretRenderY = caretDrawPos[2]+fontHeight*(1-caretHeight)*0.85+offset-2
+					dxDrawLine(caretRenderX,caretRenderY,caretRenderX+cursorWidth,caretRenderY,caretColor,eleData.caretThick,isPostGUI)
 				end
 			end
-		else
-			local allLine = #text
-			local textColor = eleData.textColor
-			local showLine = eleData.showLine
-			local caretHeight = eleData.caretHeight-1
-			local canHoldLines = mathFloor((h-4)/fontHeight)
-			canHoldLines = canHoldLines > allLine and allLine or canHoldLines
-			local selPosStart,selPosEnd,selStart,selEnd
-			dxSetRenderTarget(renderTarget,true)
+		end
+	else
+		local allLine = #text
+		local textColor = eleData.textColor
+		local showLine = eleData.showLine
+		local caretHeight = eleData.caretHeight-1
+		local canHoldLines = mathFloor((h-4)/fontHeight)
+		canHoldLines = canHoldLines > allLine and allLine or canHoldLines
+		local selPosStart,selPosEnd,selStart,selEnd
+		local showPos = eleData.showPos
+		if eleData.textRT then
+			dxSetRenderTarget(eleData.textRT,true)
 			dxSetBlendMode("modulate_add")
-			local showPos = eleData.showPos
 			if allLine > 0 then
 				local toShowLine = showLine+canHoldLines
 				toShowLine = toShowLine > allLine and allLine or toShowLine
@@ -1678,36 +1712,59 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 							dxDrawRectangle(-showPos,ypos-caretRltHeight,text[i][-1],caretRltHeight+fontHeight,selectColor)
 						end
 					end
-					dxDrawText(text[i][0],-showPos,ypos,-showPos,fontHeight+ypos,textColor,txtSizX,txtSizY,font,"left","top",false,false,false,false)
+					textRenderBuffer.count = textRenderBuffer.count+1
+					if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
+					textRenderBuffer[textRenderBuffer.count][1] = text[i][0]
+					textRenderBuffer[textRenderBuffer.count][2] = -showPos
+					textRenderBuffer[textRenderBuffer.count][3] = ypos
+					textRenderBuffer[textRenderBuffer.count][4] = -showPos
+					textRenderBuffer[textRenderBuffer.count][5] = fontHeight+ypos
+					textRenderBuffer[textRenderBuffer.count][6] = textColor
+					textRenderBuffer[textRenderBuffer.count][7] = txtSizX
+					textRenderBuffer[textRenderBuffer.count][8] = txtSizY
+					textRenderBuffer[textRenderBuffer.count][9] = font
 				end
 			end
-			dxSetRenderTarget(rndtgt)
-			local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
-			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
-			if MouseData.focused == source and MouseData.EditMemoCursor then
-				local CaretShow = true
-				if eleData.readOnly then
-					CaretShow = eleData.readOnlyCaretShow
-				end
-				if CaretShow then
-					local showLine = eleData.showLine
-					local currentLine = eleData.caretPos[2]
-					if currentLine >= showLine and currentLine <= showLine+canHoldLines then
-						local lineStart = fontHeight*(currentLine-showLine)
-						local theText = (text[caretPos[2]] or {[0]=""})[0]
-						local cursorPX = caretPos[1]
-						local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
-						if eleData.caretStyle == 0 then
-							local selStartY = py+lineStart+fontHeight*(1-caretHeight)
-							local selEndY = py+lineStart+fontHeight*caretHeight
-							dxDrawLine(px+width-showPos-1,selStartY,px+width-showPos-1,selEndY,caretColor,eleData.caretThick,isPostGUI)
-						elseif eleData.caretStyle == 1 then
-							local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
-							cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
-							local offset = eleData.caretOffset
-							dxDrawLine(px+width-showPos,py+ph-4+offset,px+width-showPos+cursorWidth+2,py+ph-4+offset,caretColor,eleData.caretThick,isPostGUI)
-						end
+		end
+		if eleData.textRT then
+			dxSetRenderTarget(eleData.textRT,true)
+			dxSetBlendMode("overwrite")
+			for i=1,textRenderBuffer.count do
+				local tRB = textRenderBuffer[i]
+				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+			end
+		end
+		dxSetRenderTarget(rndtgt)
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
+		if eleData.bgRT then
+			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		end
+		if eleData.textRT then
+			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		end
+		if MouseData.focused == source and MouseData.EditMemoCursor then
+			local CaretShow = true
+			if eleData.readOnly then
+				CaretShow = eleData.readOnlyCaretShow
+			end
+			if CaretShow then
+				local showLine = eleData.showLine
+				local currentLine = eleData.caretPos[2]
+				if currentLine >= showLine and currentLine <= showLine+canHoldLines then
+					local lineStart = fontHeight*(currentLine-showLine)
+					local theText = (text[caretPos[2]] or {[0]=""})[0]
+					local cursorPX = caretPos[1]
+					local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
+					if eleData.caretStyle == 0 then
+						local selStartY = py+lineStart+fontHeight*(1-caretHeight)
+						local selEndY = py+lineStart+fontHeight*caretHeight
+						dxDrawLine(px+width-showPos-1,selStartY,px+width-showPos-1,selEndY,caretColor,eleData.caretThick,isPostGUI)
+					elseif eleData.caretStyle == 1 then
+						local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
+						cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
+						local offset = eleData.caretOffset
+						dxDrawLine(px+width-showPos,py+ph-4+offset,px+width-showPos+cursorWidth+2,py+ph-4+offset,caretColor,eleData.caretThick,isPostGUI)
 					end
 				end
 			end
