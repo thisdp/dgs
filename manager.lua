@@ -590,13 +590,21 @@ local dgsDataFunctions = {
 		end,
 		textSize = function(dgsEle,key,value,oldValue)
 			dgsElementData[dgsEle].textFontLen = dxGetTextWidth(dgsElementData[dgsEle].text,value[1],dgsElementData[dgsEle].font)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
+		end,
+		textColor = function(dgsEle,key,value,oldValue)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 		font = function(dgsEle,key,value,oldValue)
 			local eleData = dgsElementData[dgsEle]
 			eleData.textFontLen = dxGetTextWidth(eleData.text,eleData.textSize[1],eleData.font)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 		padding = function(dgsEle,key,value,oldValue)
 			configEdit(dgsEle)
+		end,
+		showPos = function(dgsEle,key,value,oldValue)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 	},
 	["dgs-dxmemo"] = {
@@ -608,14 +616,23 @@ local dgsDataFunctions = {
 		end,
 		textSize = function(dgsEle,key,value,oldValue)
 			dgsMemoRebuildTextTable(dgsEle)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
+		end,
+		textColor = function(dgsEle,key,value,oldValue)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 		font = function(dgsEle,key,value,oldValue)
 			dgsMemoRebuildTextTable(dgsEle)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 		wordWrap = function(dgsEle,key,value,oldValue)
 			if value then
 				dgsMemoRebuildWordWrapMapTable(dgsEle)
 			end
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
+		end,
+		showPos = function(dgsEle,key,value,oldValue)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 	},
 	["dgs-dxprogressbar"] = {
@@ -946,32 +963,35 @@ function DGSI_ReadData()
 		--Properties
 		local _dgsElementData = getElementData(root,"DGSI_Properties") or {}
 		for dgsElement,data in pairs(_dgsElementData) do
-			if not isElement(dgsElement) then _dgsElementData[dgsElement] = nil end
-			if data.functions_string then
-				local fnc = loadstring(data.functions_string[1])
-				data.functions = {fnc,data.functions_string[2]}
-			end
-			if data.eventHandlers then
-				local eventHandlers = data.eventHandlers
-				for eventName,fncs in pairs(eventHandlers) do
-					for fncName,datas in pairs(fncs) do
-						if not addEventHandler(eventName,dgsElement,_G[fncName],datas[2],datas[3]) then
-							fncs[fncName] = nil
+			if not isElement(dgsElement) then
+				_dgsElementData[dgsElement] = nil
+			else
+				if data.functions_string then
+					local fnc = loadstring(data.functions_string[1])
+					data.functions = {fnc,data.functions_string[2]}
+				end
+				if data.eventHandlers then
+					local eventHandlers = data.eventHandlers
+					for eventName,fncs in pairs(eventHandlers) do
+						for fncName,datas in pairs(fncs) do
+							if not addEventHandler(eventName,dgsElement,_G[fncName],datas[2],datas[3]) then
+								fncs[fncName] = nil
+							end
 						end
 					end
 				end
-			end
-			for key,value in pairs(data) do
-				local dataType = type(value)
-				if dataType == "table" then
-					for i,e in pairs(value) do
-						local eType = type(e)
-						if eType == "userdata" and not isElement(e) then
-							value[i] = DGSI_AllocateDxElement(e,oldDgsElementLogger)
+				for key,value in pairs(data) do
+					local dataType = type(value)
+					if dataType == "table" then
+						for i,e in pairs(value) do
+							local eType = type(e)
+							if eType == "userdata" and not isElement(e) then
+								value[i] = DGSI_AllocateDxElement(e,oldDgsElementLogger)
+							end
 						end
+					elseif dataType == "userdata" and not isElement(value) then
+						data[key] = DGSI_AllocateDxElement(value,oldDgsElementLogger)
 					end
-				elseif dataType == "userdata" and not isElement(value) then
-					data[key] = DGSI_AllocateDxElement(value,oldDgsElementLogger)
 				end
 			end
 		end

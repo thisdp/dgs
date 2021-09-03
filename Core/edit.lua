@@ -145,6 +145,7 @@ function dgsCreateEdit(...)
 		--rtl = nil,	--nil: auto; false:disabled; true: enabled
 		insertMode = false,
 		editCounts = editsCount, --Tab Switch
+		updateTextRTNextFrame = true,
 	}
 	editsCount = editsCount+1
 	calculateGuiPositionSize(edit,x,y,relative or false,w,h,relative or false,true)
@@ -201,14 +202,15 @@ function dgsEditCheckMultiClick(button,state,x,y,times)
 end
 
 function dgsEditCheckAutoComplete()
-	if not dgsElementData[source].autoCompleteSkip and dgsElementData[source].autoCompleteCount ~= 0 then
-		local text = dgsElementData[source].text
+	local eleData = dgsElementData[source]
+	if not eleData.autoCompleteSkip and eleData.autoCompleteCount ~= 0 then
+		local text = eleData.text
 		local autoCompleteResult = {}
-		local autoCompleteShow = dgsElementData[source].autoCompleteShow or {}
+		local autoCompleteShow = eleData.autoCompleteShow or {}
 		if text ~= "" then
 			local currentStart = 0
 			local textTable = string.split(text," ")
-			local acTable = dgsElementData[source].autoComplete
+			local acTable = eleData.autoComplete
 			local lowerText = utf8Lower(textTable[1])
 			local isSensitive
 			local textLen = utf8Len(textTable[1])
@@ -236,7 +238,7 @@ function dgsEditCheckAutoComplete()
 					local textParam = textTable[i]
 					local paramLen = utf8Len(textParam)
 					autoCompleteResult[i] = textParam
-					if dgsElementData[source].caretPos >= currentStart and dgsElementData[source].caretPos <= currentStart+paramLen+1 then
+					if eleData.caretPos >= currentStart and eleData.caretPos <= currentStart+paramLen+1 then
 						local acParamFunctionName = acTable[foundAC[1]][i]
 						if acParamFunctionName then
 							local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input) 
@@ -257,6 +259,7 @@ function dgsEditCheckAutoComplete()
 			end
 		end
 		autoCompleteShow.result = table.concat(autoCompleteResult," ")
+		eleData.updateTextRTNextFrame = true
 		dgsSetData(source,"autoCompleteShow",autoCompleteShow)
 	end
 end
@@ -431,6 +434,7 @@ function dgsEditSetWhiteList(edit,str)
 	end
 	dgsSetData(edit,"undoHistory",{})
 	dgsSetData(edit,"redoHistory",{})
+	eleData.updateTextRTNextFrame = true
 	triggerEvent("onDgsTextChange",edit,oldText)
 end
 
@@ -496,11 +500,12 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 		showPos = showPos + deleted
 		if showPos > 0 then showPos = 0 end
 	end
-	eleData.showPos = showPos-showPos%1
+	dgsSetData(edit,"showPos",showPos-showPos%1)
 	if eleData.masked then
 		text = strRep(eleData.maskText,utf8Len(text))
 	end
 	eleData.textFontLen = _dxGetTextWidth(text,eleData.textSize[1],eleData.font)
+	eleData.updateTextRTNextFrame = true
 	triggerEvent("onDgsTextChange",edit,oldText)
 	return deletedText
 end
@@ -512,6 +517,7 @@ function dgsEditClearText(edit)
 	dgsSetData(edit,"caretPos",0)
 	dgsSetData(edit,"selectFrom",0)
 	dgsElementData[edit].textFontLen = 0
+	eleData.updateTextRTNextFrame = true
 	triggerEvent("onDgsTextChange",edit,oldText)
 	return true
 end
@@ -596,6 +602,7 @@ function configEdit(edit)
 	local oldPos = dgsEditGetCaretPosition(edit)
 	dgsEditSetCaretPosition(edit,0)
 	dgsEditSetCaretPosition(edit,oldPos)
+	eleData.updateTextRTNextFrame = true
 end
 
 function resetEdit(x,y)
@@ -769,6 +776,7 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 			dgsEditSetCaretPosition(edit,index+textLen)
 		end
 	end
+	eleData.updateTextRTNextFrame = true
 	triggerEvent("onDgsTextChange",edit,oldText)
 	if eleData.enableRedoUndoRecord then
 		historyRecState = historyRecState or 1
@@ -1136,7 +1144,8 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
 		end
 	end
-	if eleData.textRT then
+	if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
+		eleData.updateTextRTNextFrame = false
 		dxSetBlendMode("overwrite")
 		dxSetRenderTarget(eleData.textRT,true)
 		textX_Left = textX_Left-textX_Left%1

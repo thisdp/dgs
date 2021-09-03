@@ -41,6 +41,7 @@ fontSize = {}
 self,renderArguments = false,{}
 dgsRenderInfo = {
 	frames = 0,
+	RTRestoreNeed = false,
 }
 dgsRenderSetting = {
 	postGUI = nil,
@@ -127,6 +128,10 @@ MouseData = {
 		end
 	end,500,0)
 }
+
+addEventHandler("onClientRestore",root,function(isRTCleared)
+	if isRTCleared then RTRestoreNeed = true end
+end)
 
 function dgsCoreRender()
 	dgsRenderInfo.frames = dgsRenderInfo.frames+1
@@ -285,6 +290,7 @@ function dgsCoreRender()
 			dxDrawRectangle(posX,posY,previewWidth,previewHeight,dgsDragDropBoard.previewColor or 0xAAFFFFFF,true)
 		end
 	end
+	dgsRenderInfo.RTRestoreNeed = false
 	----Debug stuff
 	dgsRenderInfo.frameEndScreen = getTickCount()
 	if debugMode then
