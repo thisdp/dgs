@@ -578,10 +578,9 @@ end
 
 -----------------Internal Functions
 function configEdit(edit)
-	local absSize = dgsElementData[edit].absSize
-	local w,h = absSize[1],absSize[2]
-	local padding = dgsElementData[edit].padding
-	local px,py = w-padding[1]*2,h-padding[2]*2
+	local eleData = dgsElementData[edit]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	local px,py = w-eleData.padding[1]*2,h-eleData.padding[2]*2
 	px,py = px-px%1,py-py%1
 	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
 	if isElement(eleData.textRT) then destroyElement(eleData.textRT) end
