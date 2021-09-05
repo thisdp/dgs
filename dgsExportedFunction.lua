@@ -54,10 +54,10 @@ function dgsImportFunction(name,nameAs)
 				end
 				addEventHandler("onDgsStart",root,onDgsStart)
 			end)
-			local isTraceDebug = getElementData(localPlayer,"DGS-DEBUG") == 3
+			local isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") or (getElementData(localPlayer,"DGS-DEBUG") == 3)
 			addEventHandler("onClientElementDataChange",localPlayer,function(key,_,v)
-				if key == "DGS-DEBUG" then
-					isTraceDebug = v == 3
+				if key == "DGS-DebugTracer" or key == "DGS-DEBUG" then
+					isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") and (getElementData(localPlayer,"DGS-DEBUG") == 3)
 				end
 			end,false)
 			function DGSCallMT:__index(fncName)
