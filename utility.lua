@@ -420,7 +420,7 @@ end
 
 function fileGetContent(fName)
 	if not fileExists(fName) then return false end
-	local f = fileOpen(fName)
+	local f = fileOpen(fName,true)
 	local str = fileRead(f,fileGetSize(f))
 	fileClose(f)
 	return str
