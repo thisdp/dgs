@@ -103,6 +103,7 @@ addCommandHandler("debugdgs",function(command,arg)
 	elseif arg == "3" then
 		debugMode = 3
 		setElementData(localPlayer,"DGS-DEBUG",3,false)
+		setElementData(localPlayer,"DGS-DebugTracer",true,false)
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 3 )"),255,255,255,true)
 	elseif arg == "c" then
 		local comp = not getElementData(localPlayer,"DGS-DEBUG-C")
@@ -112,6 +113,10 @@ addCommandHandler("debugdgs",function(command,arg)
 end)
 
 debugMode = getElementData(localPlayer,"DGS-DEBUG")
+
+function dgsSetDebugTracerEnabled(state)
+	return setElementData(localPlayer,"DGS-DebugTracer",state,false)
+end
 --------------------------------Element Utility
 --------Element Pool
 externalElementPool = {}
