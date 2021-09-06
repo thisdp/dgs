@@ -1626,7 +1626,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.textRT and eleData.updateTextRTNextFrame then
 			eleData.updateTextRTNextFrame = false
 			dxSetRenderTarget(eleData.textRT,true)
-			dxSetBlendMode("add")
+			dxSetBlendMode("modulate_add")
 			local tRB
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
@@ -1674,7 +1674,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		local showPos = eleData.showPos
 		if eleData.bgRT then
 			dxSetRenderTarget(eleData.bgRT,true)
-			dxSetBlendMode("modulate_add")
+			dxSetBlendMode("blend")
 			if allLine > 0 then
 				local toShowLine = showLine+canHoldLines
 				toShowLine = toShowLine > allLine and allLine or toShowLine
@@ -1731,7 +1731,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 			eleData.updateTextRTNextFrame = false
 			dxSetRenderTarget(eleData.textRT,true)
-			dxSetBlendMode("add")
+			dxSetBlendMode("modulate_add")
 			local tRB
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]

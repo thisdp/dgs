@@ -874,7 +874,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		
 		if DataTab.textRT then
 			dxSetRenderTarget(DataTab.textRT,true)
-			dxSetBlendMode("add")
+			dxSetBlendMode("modulate_add")
 			local tRB
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]

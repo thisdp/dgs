@@ -1145,7 +1145,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	end
 	if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 		eleData.updateTextRTNextFrame = false
-		dxSetBlendMode("add")
+		dxSetBlendMode("modulate_add")
 		dxSetRenderTarget(eleData.textRT,true)
 		textX_Left = textX_Left-textX_Left%1
 		textX_Right = textX_Right-textX_Right%1
