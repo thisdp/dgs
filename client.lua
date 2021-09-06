@@ -42,6 +42,7 @@ self,renderArguments = false,{}
 dgsRenderInfo = {
 	frames = 0,
 	RTRestoreNeed = false,
+	renderingResource = {},
 }
 dgsRenderSetting = {
 	postGUI = nil,
@@ -432,13 +433,14 @@ function dgsCoreRender()
 				local resDGSCnt = tableCount(va)
 				if resDGSCnt ~= 0 then
 					ResCount = ResCount +1
-					dxDrawText(getResourceName(ka).." : "..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
-					dxDrawText(getResourceName(ka).." : "..resDGSCnt,300,sH*0.4+15*(ResCount+1))
+					dxDrawText(getResourceName(ka).." : "..(dgsRenderInfo.renderingResource[ka] or 0).."/"..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
+					dxDrawText(getResourceName(ka).." : #00FF00"..(dgsRenderInfo.renderingResource[ka] or 0).."#FFFFFF/#FFFF00"..resDGSCnt,300,sH*0.4+15*(ResCount+1),sW,sH,white,1,1,"default","left","top",false,false,false,true)
 				end
 			end
+			dgsRenderInfo.renderingResource[ka] = 0
 		end
-		dxDrawText("Resource Elements("..ResCount.."):",301,sH*0.4+16,sW,sH,black)
-		dxDrawText("Resource Elements("..ResCount.."):",300,sH*0.4+15)
+		dxDrawText("Resource("..ResCount..") Elements: Rendering / Created",301,sH*0.4+16,sW,sH,black)
+		dxDrawText("Resource("..ResCount..") Elements: #00FF00Rendering #FFFFFF/ #FFFF00Created",300,sH*0.4+15,sW,sH,white,1,1,"default","left","top",false,false,false,true)
 	end
 end
 
@@ -459,7 +461,12 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		local rndtgt = isElement(rndtgt) and rndtgt or false
 		local globalBlendMode = rndtgt and "modulate_add" or "blend"
 		dxSetBlendMode(globalBlendMode)
-		if debugMode then dgsRenderInfo.rendering = dgsRenderInfo.rendering+1 end
+		if debugMode then
+			dgsRenderInfo.rendering = dgsRenderInfo.rendering+1
+			if eleData.resource then
+				dgsRenderInfo.renderingResource[eleData.resource] = (dgsRenderInfo.renderingResource[eleData.resource] or 0)+1
+			end
+		end
 		local parent,children,parentAlpha = FatherTable[source],ChildrenTable[source],(eleData.alpha or 1)*parentAlpha
 		local eleTypeP,eleDataP
 		if parent then
