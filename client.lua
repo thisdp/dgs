@@ -173,6 +173,7 @@ function dgsCoreRender()
 	end
 	MouseData.cursorPos[1],MouseData.cursorPos[2] = mx,my
 	MouseData.hit = false
+	MouseData.hitDebug = false
 	if bottomTableSize+centerTableSize+topTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
 		dxSetRenderTarget()
 		MouseData.hitData3D[0] = false
@@ -297,9 +298,10 @@ function dgsCoreRender()
 		dgsRenderInfo.frameRenderTimeScreen = dgsRenderInfo.frameEndScreen-dgsRenderInfo.frameStartScreen
 		dgsRenderInfo.frameRenderTime3D = (dgsRenderInfo.frameEnd3D or getTickCount())-(dgsRenderInfo.frameStart3D or getTickCount())
 		dgsRenderInfo.frameRenderTimeTotal = dgsRenderInfo.frameRenderTimeScreen+dgsRenderInfo.frameRenderTime3D
-		if isElement(MouseData.hit) and debugMode >= 2 then
-			local highlight = MouseData.hit
-			if dgsElementType[MouseData.hit] == "dgs-dxtab" then
+		local debugHitElement = checkDisabledElement and MouseData.hitDebug or MouseData.hit
+		if isElement(debugHitElement) and debugMode >= 2 then
+			local highlight = debugHitElement
+			if dgsElementType[debugHitElement] == "dgs-dxtab" then
 				highlight = dgsElementData[highlight].parent
 			end
 			if dgsGetType(highlight) ~= "dgs-dx3dinterface" and dgsGetType(highlight) ~= "dgs-dx3dtext" then
@@ -336,7 +338,7 @@ function dgsCoreRender()
 					dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,isPostGUI)
 				end
 			end
-			local parent = MouseData.hit
+			local parent = debugHitElement
 			dxDrawText("Parent List:", sW*0.5+91,11,sW,sH,black)
 			dxDrawText("Parent List:", sW*0.5+90,10)
 			dxDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+100,26,sW,sH,black)
@@ -527,39 +529,87 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			local dgsRendererFunction = dgsRenderer[eleType]
 			if dgsRendererFunction then
 				local _hitElement
-				if enabledInherited and mx and eleType ~= "dgs-dxdetectarea" then
-					local collider = eleData.dgsCollider
-					if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
-						local daEleData = dgsElementData[collider]
-						local checkPixel = daEleData.checkFunction
-						if checkPixel then
-							local _mx,_my = (mx-xRT)/w,(my-yNRT)/h
-							if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
-								if type(checkPixel) == "function" then
-									local checkFnc = daEleData.checkFunction
-									if checkFnc((mx-xRT)/w,(my-yNRT)/h,mx,my) then
-										MouseData.hit = source
-										daDebugColor = 0xFF0000
-									end
-								else
-									local px,py = dxGetPixelsSize(checkPixel)
-									local pixX,pixY = _mx*px,_my*py
-									local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
-									local gray = ((r or 0)+(g or 0)+(b or 0))/3
-									if gray >= 128 then
-										MouseData.hit = source
-										daDebugColor = 0xFF0000
+				if checkDisabledElement then
+					if mx and eleType ~= "dgs-dxdetectarea" then
+						local collider = eleData.dgsCollider
+						if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
+							local daEleData = dgsElementData[collider]
+							local checkPixel = daEleData.checkFunction
+							if checkPixel then
+								local _mx,_my = (mx-xRT)/w,(my-yNRT)/h
+								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+									if type(checkPixel) == "function" then
+										local checkFnc = daEleData.checkFunction
+										if checkFnc((mx-xRT)/w,(my-yNRT)/h,mx,my) then
+											if enabledInherited then
+												MouseData.hit = source
+											end
+											MouseData.hitDebug = source
+											daDebugColor = 0xFF0000
+										end
+									else
+										local px,py = dxGetPixelsSize(checkPixel)
+										local pixX,pixY = _mx*px,_my*py
+										local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
+										local gray = ((r or 0)+(g or 0)+(b or 0))/3
+										if gray >= 128 then
+											if enabledInherited then
+												MouseData.hit = source
+											end
+											MouseData.hitDebug = source
+											daDebugColor = 0xFF0000
+										end
 									end
 								end
+								daDebugTexture = daEleData.debugTexture
+								daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 							end
-							daDebugTexture = daEleData.debugTexture
-							daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
+						else
+							local hit = dgsCollider[eleType](source,mx,my,xNRT,yNRT,w,h) 
+							if enabledInherited then
+								MouseData.hit = hit or MouseData.hit
+							end
+							MouseData.hitDebug = hit or MouseData.hitDebug
 						end
-					else
-						MouseData.hit = dgsCollider[eleType](source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
+						if eleType == "dgs-dxgridlist" and enabledInherited then
+							_hitElement = MouseData.hit
+						end
 					end
-					if eleType == "dgs-dxgridlist" then
-						_hitElement = MouseData.hit
+				else
+					if enabledInherited and mx and eleType ~= "dgs-dxdetectarea" then
+						local collider = eleData.dgsCollider
+						if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
+							local daEleData = dgsElementData[collider]
+							local checkPixel = daEleData.checkFunction
+							if checkPixel then
+								local _mx,_my = (mx-xRT)/w,(my-yNRT)/h
+								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+									if type(checkPixel) == "function" then
+										local checkFnc = daEleData.checkFunction
+										if checkFnc((mx-xRT)/w,(my-yNRT)/h,mx,my) then
+											MouseData.hit = source
+											daDebugColor = 0xFF0000
+										end
+									else
+										local px,py = dxGetPixelsSize(checkPixel)
+										local pixX,pixY = _mx*px,_my*py
+										local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
+										local gray = ((r or 0)+(g or 0)+(b or 0))/3
+										if gray >= 128 then
+											MouseData.hit = source
+											daDebugColor = 0xFF0000
+										end
+									end
+								end
+								daDebugTexture = daEleData.debugTexture
+								daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
+							end
+						else
+							MouseData.hit = dgsCollider[eleType](source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
+						end
+						if eleType == "dgs-dxgridlist" then
+							_hitElement = MouseData.hit
+						end
 					end
 				end
 				rt,disableOutline,_mx,_my,offx,offy = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)

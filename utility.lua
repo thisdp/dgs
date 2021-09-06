@@ -95,15 +95,18 @@ addCommandHandler("debugdgs",function(command,arg)
 	if not arg or arg == "1" then
 		debugMode = (not getElementData(localPlayer,"DGS-DEBUG") or arg == "1") and 1 or false
 		setElementData(localPlayer,"DGS-DEBUG",debugMode,false)
+		checkDisabledElement = false
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
 	elseif arg == "2" then
 		debugMode = 2
 		setElementData(localPlayer,"DGS-DEBUG",2,false)
+		checkDisabledElement = false
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 2 )"),255,255,255,true)
 	elseif arg == "3" then
 		debugMode = 3
 		setElementData(localPlayer,"DGS-DEBUG",3,false)
 		setElementData(localPlayer,"DGS-DebugTracer",true,false)
+		checkDisabledElement = true
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 3 )"),255,255,255,true)
 	elseif arg == "c" then
 		local comp = not getElementData(localPlayer,"DGS-DEBUG-C")
@@ -113,6 +116,7 @@ addCommandHandler("debugdgs",function(command,arg)
 end)
 
 debugMode = getElementData(localPlayer,"DGS-DEBUG")
+checkDisabledElement = debugMode == 3
 
 function dgsSetDebugTracerEnabled(state)
 	return setElementData(localPlayer,"DGS-DebugTracer",state,false)
