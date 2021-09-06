@@ -1626,7 +1626,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.textRT and eleData.updateTextRTNextFrame then
 			eleData.updateTextRTNextFrame = false
 			dxSetRenderTarget(eleData.textRT,true)
-			dxSetBlendMode("overwrite")
+			dxSetBlendMode("add")
 			local tRB
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
@@ -1731,7 +1731,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 			eleData.updateTextRTNextFrame = false
 			dxSetRenderTarget(eleData.textRT,true)
-			dxSetBlendMode("overwrite")
+			dxSetBlendMode("add")
 			local tRB
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]

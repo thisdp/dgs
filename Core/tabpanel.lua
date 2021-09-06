@@ -492,7 +492,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		
 		if eleData.textRT then
-			dxSetBlendMode("overwrite")
+			dxSetBlendMode("add")
 			dxSetRenderTarget(eleData.textRT,true)
 			for i=1,textRenderBuffer.count do
 				local tRB = textRenderBuffer[i]

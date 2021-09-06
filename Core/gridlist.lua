@@ -2422,7 +2422,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		---dxSetRenderTarget(eleData.columnRT,true)
 
 		dxSetRenderTarget(eleData.columnTextRT,true)
-		dxSetBlendMode("overwrite")
+		dxSetBlendMode("add")
 		local multiplier = columnRelt and (w-scbThickV) or 1
 		local tempColumnOffset = columnMoveOffset+columnOffset
 		local mouseColumnPos = mx-cx
@@ -2632,7 +2632,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		if eleData.rowTextRT then
 			dxSetRenderTarget(eleData.rowTextRT,true)
-			dxSetBlendMode("overwrite")
+			dxSetBlendMode("add")
 			for a=1,textBufferCnt do
 				local line = textBuffer[a]
 				local text = line[1]

@@ -138,6 +138,7 @@ function dgsCreateComboBox(...)
 		scrollFloor = true,
 		captionEdit = false,
 		configNextFrame = false,
+		textRenderBuffer = {},
 	}
 	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or resource])
 	if type(caption) == "table" then
@@ -151,13 +152,20 @@ function dgsCreateComboBox(...)
 	dgsElementData[combobox].myBox = box
 	dgsElementData[box].myCombo = combobox
 	local boxsiz = dgsElementData[box].absSize
-	local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sourceResource)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,combobox,-1)
+	local bgRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sourceResource)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,combobox,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsElementData[combobox].renderTarget = renderTarget
+	local textRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sourceResource)
+	if textRT ~= false then
+		dgsAttachToAutoDestroy(textRT,combobox,-2)
+	else
+		outputDebugString(err,2)
+	end
+	dgsElementData[combobox].bgRT = bgRT
+	dgsElementData[combobox].textRT = textRT
 	local scrollbar = dgsCreateScrollBar(boxsiz[1]-scbThick,0,scbThick,boxsiz[2],false,false,box)
 	dgsSetData(scrollbar,"length",{0,true})
 	dgsSetData(scrollbar,"multiplier",{1,true})
@@ -583,16 +591,23 @@ function configComboBox(combobox,remainBox)
 	local res = eleData.resource
 	if not remainBox then
 		local boxsiz = dgsElementData[box].absSize
-		local renderTarget = eleData.renderTarget
-		if isElement(renderTarget) then destroyElement(renderTarget) end
 		local sbt = eleData.scrollBarThick
-		local renderTarget,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,res)
-		if renderTarget ~= false then
-			dgsAttachToAutoDestroy(renderTarget,combobox,-1)
+		if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
+		if isElement(eleData.textRT) then destroyElement(eleData.textRT) end
+		local bgRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,res)
+		if bgRT ~= false then
+			dgsAttachToAutoDestroy(bgRT,combobox,-1)
 		else
 			outputDebugString(err,2)
 		end
-		dgsSetData(combobox,"renderTarget",renderTarget)
+		dgsSetData(combobox,"bgRT",bgRT)
+		local textRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,res)
+		if textRT ~= false then
+			dgsAttachToAutoDestroy(textRT,combobox,-2)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(combobox,"textRT",textRT)
 		dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
 		dgsSetSize(scrollbar,sbt,boxsiz[2],false)
 		local higLen = 1-(allHeight-boxsiz[2])/allHeight
@@ -770,11 +785,11 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local DataTab = dgsElementData[combo]
 	local itemData = DataTab.itemData
 	local itemDataCount = #itemData
-	local scbThick = dgsElementData[combo].scrollBarThick
+	local scbThick = DataTab.scrollBarThick
 	local itemHeight = DataTab.itemHeight
 	--Smooth Item
 	local _itemMoveOffset = DataTab.itemMoveOffset
-	local scrollbar = dgsElementData[combo].scrollbar
+	local scrollbar = DataTab.scrollbar
 	local itemMoveHardness = dgsElementData[scrollbar].moveType == "slow" and DataTab.moveHardness[1] or DataTab.moveHardness[2]
 	DataTab.itemMoveOffsetTemp = mathLerp(itemMoveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
 	local itemMoveOffset = DataTab.itemMoveOffsetTemp-DataTab.itemMoveOffsetTemp%1
@@ -782,13 +797,14 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1
 	local whichRowToEnd = whichRowToStart+mathFloor(h/itemHeight)+1
 	DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}
-	local renderTarget = dgsElementData[combo].renderTarget
-	if isElement(renderTarget) then
-		dxSetRenderTarget(renderTarget,true)
+	local textRenderBuffer = DataTab.textRenderBuffer
+	textRenderBuffer.count = 0
+	if DataTab.bgRT then
+		dxSetRenderTarget(DataTab.bgRT,true)
 		dxSetBlendMode("modulate_add")
-		local rb_l = dgsElementData[combo].itemAlignment
+		local align = DataTab.itemAlignment
 		local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
-		if mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h and MouseData.entered == source then
+		if MouseData.entered == source and mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
 			local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
 			sid = mathFloor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
 			if sid <= itemDataCount then
@@ -802,10 +818,10 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		end
 		local preSelect = DataTab.preSelect
 		local Select = DataTab.select
-		local shadow = dgsElementData[combo].shadow
+		local shadow = DataTab.shadow
 		local wordbreak = eleData.wordbreak
 		local clip = eleData.clip
-		local itemTextPadding = dgsElementData[combo].itemTextPadding
+		local itemTextPadding = DataTab.itemTextPadding
 		for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 			local item = itemData[i]
 			local textSize = item[-3]
@@ -838,14 +854,44 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			end
 			local _y,_sx,_sy = rowpos+itemMoveOffset,sW-itemTextPadding[2],rowpos+itemHeight+itemMoveOffset
 			local text = itemData[i][1]
-			if shadow then
-				dxDrawText(text:gsub("#%x%x%x%x%x%x",""),itemTextPadding[1]-shadow[1],_y-shadow[2],_sx-shadow[1],_sy-shadow[2],shadow[3],textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak)
+			textRenderBuffer.count = textRenderBuffer.count+1
+			if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
+			textRenderBuffer[textRenderBuffer.count][1] = text
+			textRenderBuffer[textRenderBuffer.count][2] = itemTextPadding[1]
+			textRenderBuffer[textRenderBuffer.count][3] = _y
+			textRenderBuffer[textRenderBuffer.count][4] = _sx
+			textRenderBuffer[textRenderBuffer.count][5] = _sy
+			textRenderBuffer[textRenderBuffer.count][6] = textColor
+			textRenderBuffer[textRenderBuffer.count][7] = textSize[1]
+			textRenderBuffer[textRenderBuffer.count][8] = textSize[2]
+			textRenderBuffer[textRenderBuffer.count][9] = font
+			textRenderBuffer[textRenderBuffer.count][10] = align[1]
+			textRenderBuffer[textRenderBuffer.count][11] = align[2]
+			textRenderBuffer[textRenderBuffer.count][12] = clip
+			textRenderBuffer[textRenderBuffer.count][13] = wordbreak
+			textRenderBuffer[textRenderBuffer.count][14] = colorcoded
+		end
+		
+		if DataTab.textRT then
+			dxSetRenderTarget(DataTab.textRT,true)
+			dxSetBlendMode("add")
+			local tRB
+			for i=1,textRenderBuffer.count do
+				tRB = textRenderBuffer[i]
+				if shadow then
+					dxDrawText(tRB[1]:gsub("#%x%x%x%x%x%x",""),tRB[2]-shadow[1],tRB[3]-shadow[2],tRB[4]-shadow[1],tRB[5]-shadow[2],tRB[6],tRB[7],tRB[8],tRB[9],tRB[10],tRB[11],tRB[12],tRB[13])
+				end
+				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],tRB[10],tRB[11],tRB[12],tRB[13],false,tRB[14])
 			end
-			dxDrawText(text,itemTextPadding[1],_y,_sx,_sy,textColor,textSize[1],textSize[2],font,rb_l[1],rb_l[2],clip,wordbreak,false,colorcoded)
 		end
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode("add")
-		_dxDrawImage(x,y,w,h,renderTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		if DataTab.bgRT then
+			_dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		end
+		if DataTab.textRT then
+			_dxDrawImage(x,y,w,h,DataTab.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+		end
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	end
 	return rndtgt,false,mx,my,0,0
