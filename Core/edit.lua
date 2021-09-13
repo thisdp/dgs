@@ -517,7 +517,7 @@ function dgsEditClearText(edit)
 	dgsSetData(edit,"caretPos",0)
 	dgsSetData(edit,"selectFrom",0)
 	dgsElementData[edit].textFontLen = 0
-	eleData.updateTextRTNextFrame = true
+	dgsElementData[edit].updateTextRTNextFrame = true
 	triggerEvent("onDgsTextChange",edit,oldText)
 	return true
 end
