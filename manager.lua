@@ -726,20 +726,22 @@ function dgsSetData(dgsEle,key,value,nocheck)
 	return true
 end
 
-local compatibility = {}
+local compatibility = {
+	1,
+	["dgs-dxprogressbar"] = {
+		isReverse = "isClockWise",
+	}
+}
 function checkCompatibility(dgsEle,key)
 	local eleTyp = dgsGetType(dgsEle)
-	if compatibility[eleTyp] then
-		for k,v in pairs(compatibility[eleTyp]) do
-			if key == k then
-				if not getElementData(localPlayer,"DGS-DEBUG-C") then
-					outputDebugString("Deprecated property '"..k.."' @dgsSetProperty with "..eleTyp..". To fix, run it again with command /debugdgs c",2)
-					return true
-				else
-					outputDebugString("Found deprecated property '"..k.."' @dgsSetProperty with "..eleTyp..", replace with "..v,2)
-					return false
-				end
-			end
+	if compatibility[eleTyp] and compatibility[eleTyp][key] then
+		if not getElementData(localPlayer,"DGS-DEBUG-C") then
+			outputDebugString("Deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..". To fix (Replace with "..compatibility[eleTyp][key]..")",2)
+			outputDebugString("To find it, run it again with command /debugdgs c",2)
+			return true
+		else
+			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..", replace with "..compatibility[eleTyp][key],2)
+			return false
 		end
 	end
 	return true

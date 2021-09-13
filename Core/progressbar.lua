@@ -136,10 +136,15 @@ local ProgressBarStyle = {
 	end,
 	["ring-round"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet)
 		local eleData = dgsElementData[source]
+		local startPoint,endPoint = 0,percent
+		local bgStartPoint,bgEndPoint = 0,eleData.bgProgress or 1
+		if eleData.isClockwise then
+			bgStartPoint,bgEndPoint = 1-bgEndPoint,1-bgStartPoint
+			startPoint,endPoint = 1-endPoint,1-startPoint
+		end
 		local circle = eleData.elements.circleShader
 		local circleBG = eleData.elements.circleShaderBG
-		local startPoint,endPoint = 0,percent
-		local progress = {eleData.isReverse and endPoint or startPoint,not eleData.isReverse and endPoint or startPoint}
+		local progress = {startPoint,endPoint}
 		dxSetShaderValue(circle,"progress",progress)
 		if startPoint == endPoint then
 			dxSetShaderValue(circle,"indicatorColor",{0,0,0,0})
@@ -150,8 +155,7 @@ local ProgressBarStyle = {
 		dxSetShaderValue(circle,"radius",eleData.radius)
 		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)
 		
-		local bgStartPoint,bgEndPoint = 0,eleData.bgProgress or 1
-		local bgProgress = {eleData.isReverse and bgEndPoint or bgStartPoint,not eleData.isReverse and bgEndPoint or bgStartPoint}
+		local bgProgress = {bgStartPoint,bgEndPoint}
 		dxSetShaderValue(circleBG,"progress",bgProgress)
 		if bgStartPoint == bgEndPoint then
 			dxSetShaderValue(circleBG,"indicatorColor",{0,0,0,0})
@@ -169,17 +173,22 @@ local ProgressBarStyle = {
 		local eleData = dgsElementData[source]
 		local circle = eleData.elements.circleShader
 		local circleBG = eleData.elements.circleShaderBG
-		
-		dxSetShaderValue(circleBG,"progress",eleData.bgProgress or 1)
-		dxSetShaderValue(circleBG,"isReverse",eleData.isReverse)
+		local bgProgress = eleData.bgProgress or 1
+		local progress = percent
+		if eleData.isClockwise then
+			bgProgress = 1-bgProgress
+			progress = 1-progress
+		end
+		dxSetShaderValue(circleBG,"progress",bgProgress)
+		dxSetShaderValue(circleBG,"isClockwise",eleData.isClockwise)
 		dxSetShaderValue(circleBG,"indicatorColor",{fromcolor(eleData.bgColor,true,true)})
 		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
 		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
 		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
 		dxDrawImage(x,y,w,h,circleBG,eleData.bgRotation or eleData.rotation,0,0,0,rendSet,rndtgt)
 		
-		dxSetShaderValue(circle,"progress",percent)
-		dxSetShaderValue(circle,"isReverse",eleData.isReverse)
+		dxSetShaderValue(circle,"progress",progress)
+		dxSetShaderValue(circle,"isClockwise",eleData.isClockwise)
 		dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
 		dxSetShaderValue(circle,"thickness",eleData.thickness)
 		dxSetShaderValue(circle,"radius",eleData.radius)
@@ -269,7 +278,7 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			eleData.elements = {}
 			eleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-round"])
 			eleData.elements.circleShaderBG = dxCreateShader(ProgressBarShaders["ring-round"])
-			eleData.isReverse = false
+			eleData.isClockwise = false
 			eleData.antiAliased = 0.005
 			eleData.rotation = 0
 			eleData.radius = 0.2
@@ -282,7 +291,7 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			eleData.elements = {}
 			eleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-plain"])
 			eleData.elements.circleShaderBG = dxCreateShader(ProgressBarShaders["ring-plain"])
-			eleData.isReverse = false
+			eleData.isClockwise = false
 			eleData.rotation = 0
 			eleData.antiAliased = 0.005
 			eleData.radius = 0.2
@@ -412,7 +421,7 @@ float borderSoft = 0.02;
 float progress = PI2;
 float radius = 0.2;
 float thickness = 0.02;
-bool isReverse = false; //anticlockwise
+bool isClockwise = false; //antiClockwise
 
 
 float4 blend(float4 c1, float4 c2){
@@ -438,9 +447,9 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	Q *= oRadius;
 	float2 Start = float2(oRadius,0);
 	float2 StartN = float2(-Start.y,Start.x);
-	float alpha = isReverse;
-	if(angle_p<angle) alpha = !isReverse;
-	if(!isReverse){
+	float alpha = isClockwise;
+	if(angle_p<angle) alpha = !isClockwise;
+	if(!isClockwise){
 		float2 P1 = P-N;
 		float len0P = length(P1);
 		float len0Q = length(Q);
