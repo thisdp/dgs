@@ -430,7 +430,13 @@ function dgsCoreRender()
 		ResCount = 0
 		for ka,va in pairs(boundResource) do
 			if type(ka) == "userdata" and va then
-				local resDGSCnt = tableCount(va)
+				local resDGSCnt = 0
+				for ele in pairs(va) do
+					local eleType = getElementType(ele)
+					if eleType:sub(1,3) == "dgs" then
+						resDGSCnt = resDGSCnt+1
+					end
+				end
 				if resDGSCnt ~= 0 then
 					ResCount = ResCount +1
 					dxDrawText(getResourceName(ka).." : "..(dgsRenderInfo.renderingResource[ka] or 0).."/"..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
