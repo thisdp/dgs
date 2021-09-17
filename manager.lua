@@ -441,6 +441,9 @@ local dgsDataFunctions = {
 		scrollBarThick = function(dgsEle,key,value,oldValue)
 			configGridList(dgsEle)
 		end,
+		scrollBarState = function(dgsEle,key,value,oldValue)
+			configGridList(dgsEle)
+		end,
 		leading = function(dgsEle,key,value,oldValue)
 			configGridList(dgsEle)
 		end,
@@ -612,6 +615,9 @@ local dgsDataFunctions = {
 			return handleDxMemoText(dgsEle,value)
 		end,
 		scrollBarThick = function(dgsEle,key,value,oldValue)
+			configMemo(dgsEle)
+		end,
+		scrollBarState = function(dgsEle,key,value,oldValue)
 			configMemo(dgsEle)
 		end,
 		textSize = function(dgsEle,key,value,oldValue)
