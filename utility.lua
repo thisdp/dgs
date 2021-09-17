@@ -240,9 +240,8 @@ function dxCreateFont(creationInfo,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
-			local fontData = fileGetContent(pathOrData) or pathOrData
 			local sourceResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"font",fontData,size,isbold,quality)
+			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"font",pathOrData,size,isbold,quality)
 			font = dgsPopElement("font",sRes)
 		end
 	end

@@ -40,6 +40,7 @@ function dgsCreateImage(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateImage",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateImage",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateImage",4,"number")) end
+	local res = sourceResource or "global"
 	local image = createElement("dgs-dximage")
 	dgsSetType(image,"dgs-dximage")
 	dgsSetParent(image,parent,true,true)
@@ -52,9 +53,9 @@ function dgsCreateImage(...)
 		rotation = 0, -- 0~360
 		shadow = {},
 	}
-	dgsElementData[image].image = type(img) == "string" and dgsImageCreateTextureExternal(image,sourceResource,img) or img
+	dgsElementData[image].image = type(img) == "string" and dgsImageCreateTextureExternal(image,res,img) or img
 	calculateGuiPositionSize(image,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",image,sourceResource)
+	triggerEvent("onDgsCreate",image,res)
 	return image
 end
 
