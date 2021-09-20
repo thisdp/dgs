@@ -691,10 +691,7 @@ function applyColorAlpha(color,alpha)
 	return rgb+a*0x1000000
 end
 
---If you are trying to edit following code...
---You should know that
---HSL and HSV are not the same thing,while HSB is the same as HSV...
-
+--HSL and HSV are not the same thing, while HSB is the same as HSV...
 function HSL2RGB(H,S,L)
 	local H,S,L = H/360,S/100,L/100
 	local R,G,B
