@@ -1,12 +1,20 @@
+local lineShader = [[
+
+
+]]
+
 function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 	local customRenderer = dgsCreateCustomRenderer()
+	local chartRT = dgsCreateRenderTarget(w,h,true)
 	local chart = dgsCreateImage(x,y,w,h,customRenderer,relative,parent)
 	dgsSetData(chart,"asPlugin","dgs-dxchart")
+	dgsSetData(chart,"chartRT",chartRT)
 	if chartType == "line" then
 		dgsSetData(chart,"chartType",chartType)
 		dgsSetData(chart,"chartPadding",{0,0,20,20,false})
+		dgsSetData(chart,"sampleType","pointXY")
 		dgsSetData(chart,"xAxis",{})
-		dgsSetData(chart,"yAxis",{0,0,0})	--Min/Max/Step
+		dgsSetData(chart,"yAxis",{0,0,0})	--Min/Max/Items
 		dgsSetData(chart,"axisLeading",{10,false})
 		dgsSetData(chart,"xAxisLeading",{10,false})
 		dgsSetData(chart,"renderer",customRenderer)
@@ -30,6 +38,12 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 			dxDrawLine(posX+paddingLeft-axisLineThickHalf,posY+height-paddingDown,posX+width,posY+height-paddingDown,axisLineColor,axisLineThick,postGUI)
 			--yAxis
 			dxDrawLine(posX+paddingLeft,posY,posX+paddingLeft,posY+height-paddingDown+axisLineThickHalf,axisLineColor,axisLineThick,postGUI)
+			local xAxis = eleData.xAxis
+			local yAxis = eleData.yAxis
+			for x=2,#xAxis do
+				dxDrawLine(posX+paddingLeft,posY,posX+paddingLeft,posY+height-paddingDown+axisLineThickHalf,axisLineColor,axisLineThick,postGUI)
+			end
+			
 		]])
 	else
 	
@@ -39,13 +53,22 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 	return chart
 end
 
-function dgsChartSetSamples(chart,samples)
+--[[
+sampleTableType:
+"pointXYInOneTable" {x,y,x,y,x,y}
+"pointYXInOneTable" {y,x,y,x,y,x}
+"pointXY" {{x,y},{x,y},...}
+"pointYX" {{y,x},{y,x},...}
+"keyAsX"  {[X]=Y,[X]=Y,...}
+"keyAsY"  {[Y]=X,[Y]=X,...}
+]]
+function dgsChartSetSamples(chart,samples,sampleTableType)
 	
 end
---[[
+
 setTimer(function()
 
---dgsCreateChart(400,300,400,400,"line",false)
+dgsCreateChart(400,300,400,400,"line",false)
 
 
-end,100,1)]]
+end,100,1)
