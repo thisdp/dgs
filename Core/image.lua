@@ -187,8 +187,8 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 			uvPx = pRlt and px*materialInfo[1] or px
 			uvPy = pRlt and py*materialInfo[2] or py
 			local uvSize = eleData.UVSize
-			local sx,sy,sRlt = uvSize[1] or 1,uvSize[2] or 1,uvSize[3] or true
-			uvSx = pRlt and sx*materialInfo[1] or sx
+			local sx,sy,sRlt = uvSize[1] or 1,uvSize[2] or 1,uvSize[3] ~= false
+			uvSx = sRlt and sx*materialInfo[1] or sx
 			uvSy = sRlt and sy*materialInfo[2] or sy
 		end
 		if uvPx then

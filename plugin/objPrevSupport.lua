@@ -80,21 +80,18 @@ function dgsAttachObjectPreviewToImage(objPrev,dgsImage)
 	OP:setAlpha(objPrev,254)
 	dgsSetProperty(dgsImage,"functionRunBefore",true)
 	dgsImageSetImage(dgsImage,OP:getRenderTarget())
-	local function fnc()
+	dgsSetProperty(dgsImage,"functions",[[
 		if objPrevResStatus.valid then
 			local objPrevEle = dgsElementData[self].SOVelement
 			if dgsElementData[objPrevEle] then
-				local resName = objPrevResStatus.name
-				local OP = exports[resName]
 				dgsImageSetUVPosition(self,renderArguments[1],renderArguments[2],false)
 				dgsImageSetUVSize(self,renderArguments[3],renderArguments[4],false)
-				OP:setProjection(objPrevEle,renderArguments[1],renderArguments[2],renderArguments[3],renderArguments[4])
+				exports[objPrevResStatus.name]:setProjection(objPrevEle,renderArguments[1],renderArguments[2],renderArguments[3],renderArguments[4])
 			end
 		elseif dgsElementData[self].image then
 			dgsImageSetImage(self,nil)
 		end
-	end
-	dgsSetProperty(dgsImage,"functions",fnc)
+	]])
 	addEventHandler("onDgsDestroy",dgsImage,function()
 		dgsRemoveObjectPreviewFromImage(source)
 	end,false)
