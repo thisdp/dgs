@@ -131,7 +131,7 @@ MouseData = {
 }
 
 addEventHandler("onClientRestore",root,function(isRTCleared)
-	if isRTCleared then RTRestoreNeed = true end
+	if isRTCleared then dgsRenderInfo.RTRestoreNeed = true end
 end)
 
 function dgsCoreRender()
