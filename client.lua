@@ -432,7 +432,6 @@ function dgsCoreRender()
 			if type(ka) == "userdata" and va then
 				local resDGSCnt = 0
 				for ele in pairs(va) do
-					local eleType = getElementType(ele)
 					if dgsType[dgsGetType(ele)] then
 						resDGSCnt = resDGSCnt+1
 					end
