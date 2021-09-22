@@ -313,7 +313,7 @@ function dgsG2DLoadHooker(isLocal)
 			return dgsGridListSetItemColor(gl,row,...)
 		end
 		guiGridListSetSelectedItem = function(gl,row,...)
-			if row and row = -1 then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListSetSelectedItem(gl,row,...)
