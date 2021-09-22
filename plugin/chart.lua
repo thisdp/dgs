@@ -5,7 +5,7 @@ local lineShader = [[
 
 function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 	local customRenderer = dgsCreateCustomRenderer()
-	local chartRT = dgsCreateRenderTarget(w,h,true)
+	local chartRT = dxCreateRenderTarget(w,h,true)
 	local chart = dgsCreateImage(x,y,w,h,customRenderer,relative,parent)
 	dgsSetData(chart,"asPlugin","dgs-dxchart")
 	dgsSetData(chart,"chartRT",chartRT)
@@ -65,10 +65,3 @@ sampleTableType:
 function dgsChartSetSamples(chart,samples,sampleTableType)
 	
 end
-
-setTimer(function()
-
-dgsCreateChart(400,300,400,400,"line",false)
-
-
-end,100,1)
