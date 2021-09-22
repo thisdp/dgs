@@ -14,18 +14,18 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 		dgsSetData(chart,"chartPadding",{0,0,20,20,false})
 		dgsSetData(chart,"sampleType","pointXY")
 		dgsSetData(chart,"xAxis",{})
-		dgsSetData(chart,"yAxis",{0,0,0})	--Min/Max/Items
-		dgsSetData(chart,"axisLeading",{10,false})
-		dgsSetData(chart,"xAxisLeading",{10,false})
+		dgsSetData(chart,"yAxis",{0,0,0})	--Items/Min/Max
 		dgsSetData(chart,"renderer",customRenderer)
 		dgsSetData(chart,"axisLineColor",tocolor(0,0,0,255))
 		dgsSetData(chart,"axisLineThick",5)
+		dgsSetData(chart,"lineThick",2)
 		dgsCustomRendererSetFunction(customRenderer,[[
 			--posX,posY,width,height,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI
 			
 			
 			local eleData = dgsElementData[ dgsElementData[self].chart ]
 			local axisLineThick = eleData.axisLineThick
+			local lineThick = eleData.lineThick
 			local axisLineThickHalf = axisLineThick/2
 			local axisLineColor = eleData.axisLineColor
 			local padding = eleData.chartPadding
@@ -40,8 +40,16 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 			dxDrawLine(posX+paddingLeft,posY,posX+paddingLeft,posY+height-paddingDown+axisLineThickHalf,axisLineColor,axisLineThick,postGUI)
 			local xAxis = eleData.xAxis
 			local yAxis = eleData.yAxis
+			local startPosX,chartWidth = posX+paddingLeft,width-paddingLeft-paddingRight
+			local startPosY,chartHeight = posY+paddingTop,height-paddingDown-paddingTop
 			for x=2,#xAxis do
-				dxDrawLine(posX+paddingLeft,posY,posX+paddingLeft,posY+height-paddingDown+axisLineThickHalf,axisLineColor,axisLineThick,postGUI)
+				local percentA = (x-2)/(#xAxis-1)
+				local percentB = (x-1)/(#xAxis-1)
+				local pointAx = startPosX+chartWidth*percentA
+				local pointAy = startPosY+chartHeight-xAxis[x-1]/yAxis[2]*chartHeight
+				local pointBx = startPosX+chartWidth*percentB
+				local pointBy = startPosY+chartHeight-xAxis[x]/yAxis[2]*chartHeight
+				dxDrawLine(pointAx,pointAy,pointBx,pointBy,axisLineColor,lineThick,postGUI)
 			end
 			
 		]])
@@ -65,3 +73,12 @@ sampleTableType:
 function dgsChartSetSamples(chart,samples,sampleTableType)
 	
 end
+--[[
+setTimer(function()
+
+local chart = dgsCreateChart(400,300,400,400,"line",false)
+dgsSetData(chart,"sampleType","keyAsY")
+dgsSetData(chart,"xAxis",{1,2,4,8,16,32,64})
+dgsSetData(chart,"yAxis",{0,100,10})	--Min/Max/Items
+
+end,100,1)]]
