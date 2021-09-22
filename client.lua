@@ -433,7 +433,7 @@ function dgsCoreRender()
 				local resDGSCnt = 0
 				for ele in pairs(va) do
 					local eleType = getElementType(ele)
-					if eleType:sub(1,3) == "dgs" then
+					if dgsType[dgsGetType(ele)] then
 						resDGSCnt = resDGSCnt+1
 					end
 				end
