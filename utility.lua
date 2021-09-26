@@ -151,7 +151,7 @@ end
 
 function isMaterial(ele)
 	local eleType = dgsGetType(ele)
-	return eleType == "shader" or eleType == "texture" or eleType == "render-target-texture"
+	return eleType == "shader" or eleType == "texture" or eleType == "render-target-texture" or eleType == "svg"
 end
 
 dgsElementLogger = {}	--0:Empty texture 1:texture; 2:shader

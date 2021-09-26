@@ -1285,15 +1285,15 @@ function dgsGridListSetRowBackGroundImage(gridlist,r,nImg,sImg,cImg)
 	local r = r-r%1
 	if nImg ~= nil then
 		local imgType = dgsGetType(nImg)
-		if not (imgType == "texture" or imgType == "shader") then error(dgsGenAsrt(nImg,"dgsGridListSetRowBackGroundImage",3,"material")) end
+		if not (imgType == "texture" or imgType == "shader" or imgType == "svg") then error(dgsGenAsrt(nImg,"dgsGridListSetRowBackGroundImage",3,"material")) end
 	end
 	if sImg ~= nil then
 		local imgType = dgsGetType(sImg)
-		if not (imgType == "texture" or imgType == "shader") then error(dgsGenAsrt(sImg,"dgsGridListSetRowBackGroundImage",4,"material")) end
+		if not (imgType == "texture" or imgType == "shader" or imgType == "svg") then error(dgsGenAsrt(sImg,"dgsGridListSetRowBackGroundImage",4,"material")) end
 	end
 	if cImg ~= nil then
 		local imgType = dgsGetType(cImg)
-		if not (imgType == "texture" or imgType == "shader") then error(dgsGenAsrt(cImg,"dgsGridListSetRowBackGroundImage",5,"material")) end
+		if not (imgType == "texture" or imgType == "shader" or imgType == "svg") then error(dgsGenAsrt(cImg,"dgsGridListSetRowBackGroundImage",5,"material")) end
 	end
 	rData[r][-3] = {nImg,sImg,cImg}
 	return true
@@ -2139,15 +2139,15 @@ function dgsGridListSetItemBackGroundImage(gridlist,r,c,nImg,sImg,cImg)
 
 	if nImg ~= nil then
 		local imgType = dgsGetType(nImg)
-		if not (imgType == "texture" or imgType == "shader") then error(dgsGenAsrt(nImg,"dgsGridListSetItemBackGroundImage",4,"material")) end
+		if not (imgType == "texture" or imgType == "shader" or imgType == "svg") then error(dgsGenAsrt(nImg,"dgsGridListSetItemBackGroundImage",4,"material")) end
 	end
 	if sImg ~= nil then
 		local imgType = dgsGetType(sImg)
-		if not (imgType == "texture" or imgType == "shader") then error(dgsGenAsrt(sImg,"dgsGridListSetItemBackGroundImage",5,"material")) end
+		if not (imgType == "texture" or imgType == "shader" or imgType == "svg") then error(dgsGenAsrt(sImg,"dgsGridListSetItemBackGroundImage",5,"material")) end
 	end
 	if cImg ~= nil then
 		local imgType = dgsGetType(cImg)
-		if not (imgType == "texture" or imgType == "shader") then error(dgsGenAsrt(cImg,"dgsGridListSetItemBackGroundImage",6,"material")) end
+		if not (imgType == "texture" or imgType == "shader" or imgType == "svg") then error(dgsGenAsrt(cImg,"dgsGridListSetItemBackGroundImage",6,"material")) end
 	end
 	if r == -1 then
 		if c == -1 then

@@ -72,7 +72,7 @@ end
 
 function dgsDetectAreaSetFunction(detectarea,fncStr)
 	if dgsGetType(detectarea) ~= "dgs-dxdetectarea" then error(dgsGenAsrt(detectarea,"dgsDetectAreaSetFunction",1,"dgs-dxdetectarea")) end
-	if not (dgsIsType(fncStr,"string") or dgsIsType(fncStr,"texture")) then error(dgsGenAsrt(fncStr,"dgsDetectAreaSetFunction",2,"string/texture")) end
+	if not (dgsIsType(fncStr,"string") or dgsIsType(fncStr,"texture") or dgsIsType(fncStr,"svg")) then error(dgsGenAsrt(fncStr,"dgsDetectAreaSetFunction",2,"string/texture")) end
 	if type(fncStr) == "string" then
 		fncStr = detectAreaBuiltIn[fncStr] or fncStr
 		local fnc,err = loadstring(detectAreaPreDefine..fncStr)
