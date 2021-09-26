@@ -159,7 +159,8 @@ end
 function dgs3DImageGetUVSize(image,relative)
 	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageGetUVSize",1,"dgs-dx3dimage")) end
 	local texture = dgsElementData[image].image
-	if isElement(texture) and getElementType(texture) ~= "shader" then
+	local imageType = dgsGetType(texture)
+	if imageType == "texture" or imageType == "svg" then
 		local UVSize = dgsElementData[image].UVSize or {1,1,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local sizeU,sizeV = UVSize[1],UVSize[2]
@@ -181,7 +182,8 @@ end
 function dgs3DImageGetUVPosition(image,relative)
 	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageGetUVPosition",1,"dgs-dx3dimage")) end
 	local texture = dgsElementData[image].image
-	if isElement(texture) and getElementType(texture) ~= "shader" then
+	local imageType = dgsGetType(texture)
+	if imageType == "texture" or imageType == "svg" then
 		local UVPos = dgsElementData[image].UVPos or {0,0,true}
 		local mx,my = dxGetMaterialSize(texture)
 		local posU,posV = UVPos[1],UVPos[2]
@@ -278,7 +280,7 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 						if materialInfo[0] ~= image then	--is latest?
 							materialInfo[0] = image	--Update if not
 							local imageType = dgsGetType(image)
-							if imageType == "shader" then
+							if imageType ~= "texture" and imageType ~= "svg" then
 								materialInfo[1],materialInfo[2] = 1,1
 							else
 								materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)

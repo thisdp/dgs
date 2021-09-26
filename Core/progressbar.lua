@@ -220,12 +220,10 @@ function dgsCreateProgressBar(...)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateProgressBar",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateProgressBar",4,"number")) end
 	if isElement(bgImage) then
-		local imgtyp = getElementType(bgImage)
-		if not(imgtyp == "texture" or imgtyp == "shader" or imgtyp == "svg") then error(dgsGenAsrt(bgImage,"dgsCreateProgressBar",7,"texture")) end
+		if not isMaterial(bgImage) then error(dgsGenAsrt(bgImage,"dgsCreateProgressBar",7,"texture")) end
 	end
 	if isElement(indicatorImage) then
-		local imgtyp = getElementType(indicatorImage)
-		if not(imgtyp == "texture" or imgtyp == "shader" or imgtyp == "svg") then error(dgsGenAsrt(indicatorImage,"dgsCreateProgressBar",9,"texture")) end
+		if not isMaterial(indicatorImage) then error(dgsGenAsrt(indicatorImage,"dgsCreateProgressBar",9,"material")) end
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")

@@ -383,14 +383,6 @@ function dgsSetType(dgsEle,myType)
 	return false
 end
 
-function dgsIsMaterialElement(ele)
-	if isElement(ele) then
-		local eleType = getElementType(ele)
-		return eleType == "shader" or eleType == "texture" or eleType == "svg"
-	end
-	return false
-end
-
 ------------------------------------------------Property Manager
 local dgsDataFunctions = {
 	["dgs-dxscrollbar"] = {
