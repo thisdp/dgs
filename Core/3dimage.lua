@@ -199,8 +199,10 @@ end
 
 function dgs3DImageGetNativeSize(image)
 	if dgsGetType(image) ~= "dgs-dx3dimage" then error(dgsGenAsrt(image,"dgs3DImageGetNativeSize",1,"dgs-dx3dimage")) end
-	if isElement(dgsElementData[image].image) then
-		return dxGetMaterialSize(image)
+	local texture = dgsElementData[image].image
+	local imageType = dgsGetType(texture)
+	if imageType == "texture" or imageType == "svg" then
+		return dxGetMaterialSize(texture)
 	end
 	return false
 end
