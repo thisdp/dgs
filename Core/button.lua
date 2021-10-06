@@ -73,7 +73,7 @@ function dgsCreateButton(...)
 		clickOffset = {0,0},
 		clickType = 1;	--1:LMB;2:Wheel;3:RM,
 		clip = false,
-		colorTransformPeriod  = 0, --ms
+		colorTransformPeriod = 0, --ms
 		color = {normalColor, hoveringColor, clickedColor},
 		colorcoded = false,
 		font = style.font or systemFont,
@@ -151,8 +151,8 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			finalcolor = tocolor(average,average,average,a*parentAlpha)
 		else
 			local targetColor = colors[buttonState]
-			if eleData.colorTransformPeriod  > 0 then
-				renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransformPeriod ) -- todo
+			if eleData.colorTransformPeriod > 0 then
+				renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransformPeriod) -- todo
 				finalcolor = renderBuffer.currentColor
 			else
 				finalcolor = targetColor
@@ -160,8 +160,8 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 	else
 		local targetColor = colors[buttonState]
-		if eleData.colorTransformPeriod  > 0 and getTickCount()-eleData.currentStateTick <= eleData.colorTransformPeriod  then
-			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransformPeriod ) -- todo
+		if eleData.colorTransformPeriod > 0 and getTickCount()-eleData.currentStateTick <= eleData.colorTransformPeriod then
+			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransformPeriod) -- todo
 			finalcolor = renderBuffer.currentColor
 		else
 			finalcolor = targetColor
