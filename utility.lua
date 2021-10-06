@@ -691,6 +691,35 @@ function applyColorAlpha(color,alpha)
 	return rgb+a*0x1000000
 end
 
+function interpolateColor(colorA,colorB,s) --From, To, Percent
+	local cAr,cAg,cAb,cAa
+	local cBr,cBg,cBb,cBa
+	local r,g,b,a
+	cAb = colorA%256
+	colorA = (colorA-cAb)/256
+	cAg = colorA%256
+	colorA = (colorA-cAg)/256
+	cAr = colorA%256
+	colorA = (colorA-cAr)/256
+	cAa = colorA%256
+	cBb = colorB%256
+	colorB = (colorB-cBb)/256
+	cBg = colorB%256
+	colorB = (colorB-cBg)/256
+	cBr = colorB%256
+	colorB = (colorB-cBr)/256
+	cBa = colorB%256
+	a = cAa+(cBa-cAa)*s
+	r = cAr+(cBr-cAr)*s
+	g = cAg+(cBg-cAg)*s
+	b = cAb+(cBb-cAb)*s
+	a = a-a%1
+	r = r-r%1
+	g = g-g%1
+	b = b-b%1
+	return a*0x1000000+r*0x10000+g*0x100+b
+end
+
 --HSL and HSV are not the same thing, while HSB is the same as HSV...
 function HSL2RGB(H,S,L)
 	local H,S,L = H/360,S/100,L/100
@@ -893,8 +922,8 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 	return true
 end
 
-function dxCreateEnhancedTextBuffer(text)
-	local textTable = {}
+function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,isWordWrap)
+	local textTable = {dgsTextBuffer = true, }
 	local _h = 0
 	local tHei = dxGetFontHeight(1,"default")
 	local lineStart = -1
@@ -941,7 +970,7 @@ function dxCreateEnhancedTextBuffer(text)
 	return textTable
 end
 
-function dxDrawEnhancedText(buffer,x,y)
+function dgsDrawText(buffer,x,y)
 	for line=1,#buffer do
 		local l = buffer[line]
 		for index=1,#l do
