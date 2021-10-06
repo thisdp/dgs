@@ -78,6 +78,8 @@
 	
 	<script src="plugin/screenSource.lua" type="client" />
 	
+	<script src="plugin/svg.lua" type="client" />
+	
 	<script src="plugin/chart.lua" type="client" />
 
 	<script src="plugin/pasteHandler/pasteHandler.lua" type="client"/>

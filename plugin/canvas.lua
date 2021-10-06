@@ -26,7 +26,6 @@ function dgsCanvasRender(canvas)
 	dxSetBlendMode(blendMode)
 end
 
-
 dgsCustomTexture["dgs-dxcanvas"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	return dgsCanvasRender(image)
 end
