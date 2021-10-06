@@ -26,11 +26,14 @@ dgsCustomTexture["dgs-dxsvg"] = function(posX,posY,width,height,u,v,usize,vsize,
 		svgSetDocumentXML(image,eleData.svgDocument)
 		eleData.svgDocumentUpdate = false
 	end
+	dxSetBlendMode("add")
 	if u and v and usize and vsize then
-		return dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
+		dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	else
-		return dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
+		dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	end
+	dxSetBlendMode("blend")
+	return true
 end
 
 function dgsSVGGetSize(svg)
@@ -74,14 +77,15 @@ function dgsSVGSetElementStyle(element,styleTable)
 	return xmlNodeSetAttribute(element,"style",toStyle(styleTable))
 end
 
-function dgsSVGCreateRect(svg,x,y,width,height,rx,ry)
+function dgsSVGCreateRect(svg,x,y,width,height,parent,rx,ry)
 	if not(dgsIsType(svg,"svg")) then error(dgsGenAsrt(svg,"dgsSVGCreateRect",1,"svg")) end
-	local newRect = xmlCreateChild(dgsElementData[svg].svgDocument,"rect")
+	local newRect = xmlCreateChild(parent or dgsElementData[svg].svgDocument,"rect")
 	xmlNodeSetAttribute(newRect,"x",x)
 	xmlNodeSetAttribute(newRect,"y",y)
 	xmlNodeSetAttribute(newRect,"width",width)
 	xmlNodeSetAttribute(newRect,"height",height)
-	xmlNodeSetAttribute(newRect,"style","fill:rgb(255,255,255)")
+	xmlNodeSetAttribute(newRect,"rx",rx or 0)
+	xmlNodeSetAttribute(newRect,"ry",ry or 0)
 	dgsElementData[svg].svgDocumentUpdate = true
 	return newRect
 end
