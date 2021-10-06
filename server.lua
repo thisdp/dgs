@@ -146,9 +146,7 @@ end)
 
 local playerConnection = {}
 addEventHandler("DGSI_RequestServerInfo",root,function(required)
-	
 	--Access Control?
-
 	if required.connection == true then
 		playerConnection[client] = true
 	elseif required.connection == false then
@@ -158,7 +156,6 @@ addEventHandler("DGSI_RequestServerInfo",root,function(required)
 		required.maxPlayers = getMaxPlayers()
 	end
 	-------------------------------Execute
-	
 	--Start
 	if required.start then
 		local res = getResourceFromName(required.start)

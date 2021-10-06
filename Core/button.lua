@@ -73,6 +73,7 @@ function dgsCreateButton(...)
 		clickOffset = {0,0},
 		clickType = 1;	--1:LMB;2:Wheel;3:RM,
 		clip = false,
+		colorTransformTime = 0, --ms
 		color = {normalColor, hoveringColor, clickedColor},
 		colorcoded = false,
 		font = style.font or systemFont,
@@ -82,13 +83,17 @@ function dgsCreateButton(...)
 		iconOffset = {0,0},
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
 		iconShadow = {},
+		imageTransformTime = 0, --ms
 		image = {normalImage, hoveringImage, clickedImage},
 		shadow = {},
 		textColor = tonumber(textColor) or style.textColor,
 		textOffset = {0,0,false},
 		textSize = {textSizeX, textSizeY},
 		wordbreak = false,
-		renderBuffer = {},
+		renderBuffer = {
+			lastState = 0,
+		},
+		
 	}
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
@@ -108,6 +113,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
+	local renderBuffer = eleData.renderBuffer
 	local colors,imgs = eleData.color,eleData.image
 	local buttonState = 1
 	if MouseData.entered == source then
@@ -126,6 +132,15 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			end
 		end
 	end
+	if eleData.lastState ~= buttonState then
+		eleData.lastState = eleData.currentState
+		eleData.lastStateTick = getTickCount()
+	end
+	if eleData.currentState ~= buttonState then
+		eleData.currentState = buttonState
+		eleData.currentStateTick = getTickCount()
+		renderBuffer.startColor = renderBuffer.currentColor or colors[eleData.lastState]
+	end
 	local finalcolor
 	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
@@ -135,10 +150,22 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			local average = (r+g+b)/3*eleData.disabledColorPercent
 			finalcolor = tocolor(average,average,average,a*parentAlpha)
 		else
-			finalcolor = colors[buttonState]
+			local targetColor = colors[buttonState]
+			if eleData.colorTransformTime > 0 then
+				renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransformTime) -- todo
+				finalcolor = renderBuffer.currentColor
+			else
+				finalcolor = targetColor
+			end
 		end
 	else
-		finalcolor = applyColorAlpha(colors[buttonState],parentAlpha)
+		local targetColor = colors[buttonState]
+		if eleData.colorTransformTime > 0 and getTickCount()-eleData.currentStateTick <= eleData.colorTransformTime then
+			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransformTime) -- todo
+			finalcolor = renderBuffer.currentColor
+		else
+			finalcolor = targetColor
+		end
 	end
 	------------------------------------
 	if eleData.functionRunBefore then
@@ -170,7 +197,6 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
 	local alignment = eleData.alignment
-
 	local iconImage = eleData.iconImage
 	if iconImage then
 		local iconColor = eleData.iconColor
