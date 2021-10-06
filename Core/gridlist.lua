@@ -2337,7 +2337,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if bgImage then
 		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	else
-		dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,isPostGUI)
+		dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,isPostGUI,true)
 	end
 	local columnData,rowData = eleData.columnData,eleData.rowData
 	local columnCount,rowCount = #columnData,#rowData
@@ -2409,7 +2409,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if columnImage then
 		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
 	else
-		dxDrawRectangle(x,y,w,columnHeight,columnColor,isPostGUI)
+		dxDrawRectangle(x,y,w,columnHeight,columnColor,isPostGUI,true)
 	end
 	if not eleData.mode then
 
@@ -2508,9 +2508,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading
 					local rowpos_1 = rowpos-rowHeight
 					local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1,sW,rowpos
-					if eleData.PixelInt then
+					--[[if eleData.PixelInt then
 						_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
-					end
+					end]]
 
 					for id = cPosStart,cPosEnd do
 						local currentRowData = lc_rowData[id]
@@ -2559,7 +2559,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						if itemUsingBGImage then
 							dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)
 						else
-							dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGColor)
+							dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGColor,false)
 						end
 						elementBuffer[i][id] = elementBuffer[i][id] or {}
 						local currentElementBuffer = elementBuffer[i][id]
@@ -2577,7 +2577,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								if isElement(imageData[1]) then
 									dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
 								else
-									dxDrawRectangle(imagex,imagey,imagew,imageh,imageData[2])
+									dxDrawRectangle(imagex,imagey,imagew,imageh,imageData[2],false)
 								end
 							end
 							local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
