@@ -960,7 +960,7 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 		return dgsGridListSetColumnWidth(gridlist,c,maxWidth,false)
 	else
 		local font = cData[c][9] or eleData.columnFont or eleData.font
-		local wid = dxGetTextWidth(columnData[c][1],cData[c][7],font)
+		local wid = dxGetTextWidth(cData[c][1],cData[c][7],font)
 		local wid = wid+(relative and additionalLength*wid or (additionalLength or 0))
 		return dgsGridListSetColumnWidth(gridlist,c,wid,false)
 	end
