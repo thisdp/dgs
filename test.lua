@@ -577,7 +577,7 @@ function dragNdropDynamic()
 		iprint("Drop","Data:",data)
 	end,false)
 end
-dragNdropDynamic()
+
 ---------------Language Test
 function LanguageChangeInComboBoxTest()
 	languageTab = {wtf="DGS %rep%"}
