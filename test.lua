@@ -546,19 +546,38 @@ function Line2DTest()
 	end
 end
 
-function dragndropTest()
+---------------Drag And Drop Test
+--Static Example
+function dragNdropStatic()
 	local btn1 = dgsCreateButton(200,200,200,200,"Button1",false)
-	dgsAddDragHandler(btn1,{"From Button 1"})
 	local btn2 = dgsCreateButton(200,500,200,200,"Button2",false)
-	dgsAddDragHandler(btn2,{"From Button 2"})
-
 	local btn3 = dgsCreateButton(500,500,200,200,"Receive",false)
-	dgsAddDropHandler(btn3)
+	
+	dgsAddDragHandler(btn1,{"From Button 1"})
+	dgsAddDragHandler(btn2,{"From Button 2"})
 
 	addEventHandler("onDgsDrop",btn3,function(data)
 		iprint("Drop","Data:",data)
 	end,false)
 end
+
+--Dynamic Example
+function dragNdropDynamic()
+	local btn1 = dgsCreateButton(200,200,200,200,"Button1",false)
+	local btn2 = dgsCreateButton(200,500,200,200,"Button2",false)
+	local btn3 = dgsCreateButton(500,500,200,200,"Receive",false)
+	addEventHandler("onDgsDrag",btn1,function(data)
+		dgsSendDragNDropData({"From Button 1",getTickCount()})
+	end,false)
+	addEventHandler("onDgsDrag",btn2,function(data)
+		dgsSendDragNDropData({"From Button 1",getTickCount()})
+	end,false)
+
+	addEventHandler("onDgsDrop",btn3,function(data)
+		iprint("Drop","Data:",data)
+	end,false)
+end
+dragNdropDynamic()
 ---------------Language Test
 function LanguageChangeInComboBoxTest()
 	languageTab = {wtf="DGS %rep%"}
