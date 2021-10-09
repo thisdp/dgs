@@ -1,4 +1,3 @@
-
 local loadstring = loadstring
 addEventHandler("onClientResourceStart",resourceRoot,function()
 ------------Full demo
@@ -47,6 +46,7 @@ function createFullDemo()
 		:setProperty("rowTextSize",{1.2,1.2})
 		:setProperty("rowHeight",20)
 		:setProperty("clip",false)
+		:setProperty("rowShadow",{1,1,tocolor(0,0,0,255)})
 		:setSelectionMode(3)
 		:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
 		:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
@@ -143,13 +143,13 @@ function createFullDemo()
 	
 	RadioButton1:setVisible(false)
 	RadioButton1:bringToFront()
-	
 end
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
-	dgsProgressBarSetStyle(pb,"ring-plain",{rotation=90})
+	dgsProgressBarSetStyle(pb,"ring-plain")
+	dgsSetProperty(pb,"isReverse",true)
 	local start = 0
 	addEventHandler("onClientRender",root,function()
 		dgsProgressBarSetProgress(pb,start)
@@ -159,28 +159,43 @@ end
 
 function MemoTest()
 	local sW,sH = dgsGetScreenSize()
-	local memo = dgsCreateMemo(10,10,300,200,[[]],false)
+	local memo = dgsCreateMemo(200,200,500,500,[[]],false)
 	--dgsSetFont(memo,"default-bold")
 	--dgsSetProperty(memo,"selectVisible",false)
 	--dgsSetProperty(memo,"padding",{20,10})
-	dgsMemoSetWordWrapState(memo,true)
+	--dgsMemoSetWordWrapState(memo,true)
 	--local x,y = dgsMemoGetTextBoundingBox(memo)
 	--dgsSetSize(memo,x,y)
 	dgsSetText(memo,[[
 	This is a dgs-dxmemo
 
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
+	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
 
 	Test UTF8: 你好]])
 	dgsMemoSetCaretPosition(memo,10,20)
@@ -194,6 +209,7 @@ function EditTest() --Test Tab Switch for edit.
 	edit2 = dgsCreateEdit(0.3,0.4,0.2,0.05,"123123",true)
 	edit3 = dgsCreateEdit(0.3,0.5,0.2,0.05,"123123",true)
 	edit4 = dgsCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
+	dgsSetProperty(edit2,"textSize",{1.3,1.3})
 	dgsSetProperty(edit2,"caretStyle",1)
 	--dgsEditSetReadOnly(edit4,true)
 	dgsBringToFront(edit,"left")
@@ -337,17 +353,33 @@ function GridListTest()
 	dgsGridListAddColumn(gridlist,"test2",0.2)
 	dgsGridListAddColumn(gridlist,"test3",0.6)
 	local tick = getTickCount()
-	bg = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
 	dgsSetProperty(gridlist,"rowHeight",200)
+	dgsSetProperty(gridlist,"rowTextSize",{1.3,1.3})
 	for i=1,10 do
 		local row = dgsGridListAddRow(gridlist)
-		local window = dgsCreateMemo(0,1,400,198,"",false)
+		local window = dgsCreateGridList(0,1,400,198,false)
+		dgsGridListAddColumn(window,"t1",0.2)
+		dgsGridListAddColumn(window,"t2",0.6)
+		for x=1,100 do
+			local row = dgsGridListAddRow(window)
+			dgsGridListSetItemText(window,row,1,x.."xx")
+			dgsGridListSetItemText(window,row,2,tostring(50-x).." Test DGS")
+		end
 		dgsAttachToGridList(window,gridlist,row,3)
-		dgsGridListSetItemText(gridlist,row,1,i.."xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+		dgsGridListSetItemText(gridlist,row,1,i.."xx")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
 	dgsGridListAutoSizeColumn(gridlist,1,0,false,true)
 	dgsGridListSetItemFont(gridlist,2,2,"default-bold")
+end
+
+function GridListTest1()
+	for i=1,100 do
+		gridlist = dgsCreateGridList(500,50,600,600,false)
+		dgsGridListAddColumn(gridlist,"test1",0.2)
+		dgsGridListAddColumn(gridlist,"test2",0.2)
+		dgsGridListAddColumn(gridlist,"test3",0.6)
+	end
 end
 
 function MediaBrowserTest()
@@ -359,6 +391,27 @@ function MediaBrowserTest()
 	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
 	dgsMediaPlay(bro)
 	dgsMediaSetSpeed(bro,0.5)
+end
+
+function browserTest()
+	local webBrowser = dgsCreateBrowser(200,200,400,400,false)
+	requestBrowserDomains({"bilibili.com"}, false, function(accepted, newDomains)
+		if (accepted == true) then
+			reloadBrowserPage(webBrowser)
+		end
+	end)
+	addEventHandler("onClientBrowserResourceBlocked", webBrowser, function(url, domain, reason)
+		if (reason == 0) then
+			requestBrowserDomains({domain}, false, function(accepted, newDomains)
+				if (accepted == true) then
+					reloadBrowserPage(webBrowser)
+				end
+			end)
+		end
+	end)
+	addEventHandler("onClientBrowserCreated", webBrowser, function()
+		loadBrowserURL(webBrowser, "https://bilibili.com")
+	end)
 end
 
 function PasteHandlerTest()
@@ -586,7 +639,7 @@ end
 function dgsCircleTest()
 	local c = dgsCreateCircle(0.5,0.3)
 	local img = dgsCreateImage(300,200,200,200,c,false)
-	dgsCircleSetAngle(c,120)
+	dgsCircleSetAngle(c,0)
 	dgsCircleSetDirection(c,false)
 end
 
@@ -679,15 +732,20 @@ function testColorPicker()
 	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false)
 	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
 
-	A = dgsColorPickerCreateComponentSelector(500,260,10,500,false,false)
+	A = dgsColorPickerCreateComponentSelector(500,260,500,10,true,false)
 	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
+	--[[
+	local tex = dxCreateTexture("example.bmp")
+	dgsColorPickerSetComponentSelectorMask(A,tex)
+	]]
 end
---testColorPicker()
+
 
 function ScreenSourceTest()
 	local ss = dgsCreateScreenSource()
 	img = dgsCreateImage(0,0,sW/2,sH,ss,false,_,tocolor(255,255,255,255))
 end
+
 ---------------DGS Object Preview Support Test
 function testObjectPreview()
 	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
@@ -698,6 +756,7 @@ function testObjectPreview()
 	local image = dgsCreateImage(20,20,300,300,_,false,wind)
 	dgsAttachObjectPreviewToImage(objPrev,image)
 end
+
 ---------------DGS Animation With Shader Example
 --Example 1, Simple Button Effect
 function testButtonEffect()
@@ -764,6 +823,11 @@ function buttonStress()
 	end
 end
 
+function editStress()
+	for i=1,1 do
+		edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
+	end
+end
 
 function windowStress()
 	local tick = getTickCount()
@@ -808,17 +872,37 @@ function dgsScrollPaneTest()
 		dgsCreateImage(405, y, 380, 40, tex, false, ele)
 	end
 end
+
 --[[
-local gradient = dgsCreateGradient(tocolor(240,10,10,255),tocolor(100,10,10,255),-90)
-dgsGradientSetColorOverwritten(gradient,false)
+dgsLocateObjectPreviewResource("object_preview")
 
-local canvas = dgsCreateCanvas(gradient,100,50)
+local x1, y1, z1 = getCameraMatrix()
+local theCar1 = createVehicle(411, x1, y1, z1)
+local theCar2 = createVehicle(411, x1, y1, z1)
+local vehPreview1 = dgsCreateObjectPreviewHandle(theCar1, 0, 0, 45, false)
+local vehPreview2 = dgsCreateObjectPreviewHandle(theCar2, 0, 0, 45, false)
+local bg = dgsCreateScrollPane(500,500,200,200,false)
+carPreview1 = dgsCreateImage(40, 40, 300, 300, _, false, bg)
+carPreview2 = dgsCreateImage(340, 3340, 300, 300, _, false, bg)
+dgsAttachObjectPreviewToImage(vehPreview1, carPreview1)
+dgsAttachObjectPreviewToImage(vehPreview2, carPreview2)
+]]
 
-local roundedRect = dgsCreateRoundRect(10, false, tocolor(255, 255, 255, 255))
-dgsRoundRectSetTexture(roundedRect,canvas)
-
-local image = dgsCreateImage(600,400,100,50,roundedRect,false,tocolor(255,255,255,255))
-dgsSetProperty(image,"functions","dgsCanvasRender(dgsElementData[self].renderCanvas)")
-dgsSetProperty(image,"renderCanvas",canvas)
+--[[
+local svg = dgsCreateSVG(100,100)
+local rect = dgsSVGCreateRect(svg,10,10,50,50,_,rx,ry)
+dgsSVGSetElementStyle(rect,{
+	["stroke"] = "transparent",
+	["stroke-width"] = "0px",
+	["fill"] = "rgb(0,0,0)",
+})
+local recta = dgsSVGCreateRect(svg,0,0,50,50,rect,rx,ry)
+dgsSVGSetElementStyle(recta,{
+	["stroke"] = "transparent",
+	["stroke-width"] = "0px",
+	["fill"] = "rgb(255,255,255)",
+})
+local btn1 = dgsCreateImage(200,200,200,200,svg,false)
 ]]
 end)
+
