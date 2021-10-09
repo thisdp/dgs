@@ -309,10 +309,11 @@ float borderSoft = 0.01;
 float angle = 2*PI;
 float outsideRadius = 0.5;
 float insideRadius = 0.2;
+float textureRot = 0;
+float2 textureRotCenter = float2(0.5,0.5);
 texture sourceTexture;
 bool direction = true; //anticlockwise
 bool textureLoad = false;
-bool textureRotated = false;
 bool colorOverwritten = true;
 
 SamplerState tSampler{
@@ -323,7 +324,11 @@ SamplerState tSampler{
 };
 
 float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
-	float4 result = textureLoad?tex2D(tSampler,textureRotated?tex.yx:tex)*color:color;
+	float thetaCos = cos(-textureRot/180.0*PI);
+	float thetaSin = sin(-textureRot/180.0*PI);
+	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
+	float2 rotedTex = mul(tex-textureRotCenter,rot)+textureRotCenter;
+	float4 result = textureLoad?tex2D(tSampler,rotedTex)*color:color;
 	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float xDistance = tex.x-0.5,yDistance = 0.5-tex.y;
@@ -447,6 +452,34 @@ end
 function dgsCircleGetTexture(circle)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetTexture",1,"plugin dgs-dxcircle")) end
 	return dgsElementData[circle].sourceTexture
+end
+
+function dgsCircleSetTextureRotation(circle,rot,rotCenterX,rotCenterY)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetTextureRotation",1,"plugin dgs-dxcircle")) end
+	if not(type(rot) == "number") then error(dgsGenAsrt(rot,"dgsCircleSetTextureRotation",2,"number")) end
+	local rotCenter = dgsElementData[circle].textureRotCenter
+	if not rotCenter then
+		rotCenterX = rotCenterX or 0
+		rotCenterY = rotCenterY or 0
+	else
+		rotCenterX = rotCenterX or rotCenter[1]
+		rotCenterY = rotCenterY or rotCenter[2]
+	end
+	dxSetShaderValue(circle,"textureRot",rot)
+	dxSetShaderValue(circle,"textureRotCenter",{rotCenterX,rotCenterY})
+	dgsSetData(circle,"textureRot",rot)
+	dgsSetData(circle,"textureRotCenter",{rotCenterX,rotCenterY})
+	return true
+end
+
+function dgsCircleGetTextureRotation(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetTextureRotation",1,"plugin dgs-dxcircle")) end
+	local rot = dgsElementData[circle].textureRot or 0
+	local rotCenter = dgsElementData[circle].textureRotCenter
+	if not rotCenter then
+		return rot,0,0
+	end
+	return rot,rotCenter[1],rotCenter[2]
 end
 
 function dgsCircleSetColor(circle,color)
