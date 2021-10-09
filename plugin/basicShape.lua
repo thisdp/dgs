@@ -336,14 +336,18 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	if(angle_p>PI2) angle_p -= PI2;
 	if(angle_p<0) angle_p += PI2;
 	float2 P = float2(xDistance,yDistance);
-	float2 Q = float2(cos(angle),sin(angle));
+	float ang = angle;
+	if(!direction){
+		ang = PI2-angle;
+	}
+	float2 Q = float2(cos(ang),sin(ang));
 	float2 N = float2(-Q.y,Q.x)*nBorderSoft;
 	float oRadius = 1-outsideRadius;
 	Q *= oRadius;
 	float2 Start = float2(oRadius,0);
 	float2 StartN = float2(-Start.y,Start.x);
 	float alpha = !direction;
-	if(angle_p<angle) alpha = direction;
+	if(angle_p<ang) alpha = direction;
 	if(direction){
 		float2 P1 = P-N;
 		float len0P = length(P1);
