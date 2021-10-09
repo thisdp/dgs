@@ -841,6 +841,8 @@
 	<export function="dgsCircleGetDirection" type="client" />
 	<export function="dgsCircleSetAngle" type="client" />
 	<export function="dgsCircleGetAngle" type="client" />
+	<export function="dgsCircleSetTextureRotation" type="client" />
+	<export function="dgsCircleGetTextureRotation" type="client" />
 	
 	<export function="dgsCreateScreenSource" type="client" />
 	<export function="dgsScreenSourceSetUVPosition" type="client" />
