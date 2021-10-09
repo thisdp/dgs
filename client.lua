@@ -2187,7 +2187,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			MouseData.clickl = false
 			MouseData.lock3DInterface = false
 			MouseData.MoveScroll[0] = false
-			
 			if dgsDragDropBoard[0] then
 				local data = dgsRetrieveDragNDropData()
 				if isElement(dgsEle) then
