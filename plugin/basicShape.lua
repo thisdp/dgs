@@ -519,7 +519,7 @@ end
 
 function dgsCircleGetDirection(circle)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetDirection",1,"plugin dgs-dxcircle")) end
-	return dgsElementData[circle].direction
+	return dgsElementData[circle].direction == 1
 end
 
 function dgsCircleSetAngle(circle,angle)
@@ -529,9 +529,7 @@ function dgsCircleSetAngle(circle,angle)
 	return dgsSetData(circle,"angle",angle/180*math.pi)
 end
 
-function dgsCircleGetAngle(circle,angle)
-	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetAngle",1,"plugin dgs-dxcircle")) end
-	if not(type(angle) == "number") then error(dgsGenAsrt(angle,"dgsCircleSetAngle",2,"number")) end
-	dxSetShaderValue(circle,"angle",angle/180*math.pi)
-	return dgsSetData(circle,"angle",angle/180*math.pi)
+function dgsCircleGetAngle(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetAngle",1,"plugin dgs-dxcircle")) end
+	return dgsElementData[circle].angle*180/math.pi
 end
