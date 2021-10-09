@@ -153,18 +153,18 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			local targetColor = colors[buttonState]
 			if eleData.colorTransitionPeriod > 0 then
 				renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod) -- todo
-				finalcolor = renderBuffer.currentColor
+				finalcolor = applyColorAlpha(renderBuffer.currentColor,parentAlpha)
 			else
-				finalcolor = targetColor
+				finalcolor = applyColorAlpha(targetColor,parentAlpha)
 			end
 		end
 	else
 		local targetColor = colors[buttonState]
 		if eleData.colorTransitionPeriod > 0 and getTickCount()-eleData.currentStateTick <= eleData.colorTransitionPeriod then
 			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod) -- todo
-			finalcolor = renderBuffer.currentColor
+			finalcolor = applyColorAlpha(renderBuffer.currentColor,parentAlpha)
 		else
-			finalcolor = targetColor
+			finalcolor = applyColorAlpha(targetColor,parentAlpha)
 		end
 	end
 	------------------------------------
