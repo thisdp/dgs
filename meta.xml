@@ -243,9 +243,7 @@
 	<export function="dgsRetrieveDragNDropData" type="client" />
 	<export function="dgsIsDragNDropData" type="client" />
 	<export function="dgsAddDragHandler" type="client" />
-	<export function="dgsAddDropHandler" type="client" />
 	<export function="dgsRemoveDragHandler" type="client" />
-	<export function="dgsRemoveDropHandler" type="client" />
 
 	<export function="dgsSetCustomCursorImage" type="client" />
 	<export function="dgsGetCustomCursorImage" type="client" />

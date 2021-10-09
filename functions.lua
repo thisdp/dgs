@@ -833,17 +833,10 @@ function dgsAddDragHandler(dgsEle,dragData,preview,previewColor,previewOffsetX,p
 	return dgsSetData(dgsEle,"dragHandler",{dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign})
 end
 
-function dgsAddDropHandler(dgsEle)
-	return dgsSetData(dgsEle,"dropHandler",true)
-end
-
 function dgsRemoveDragHandler(dgsEle)
 	return dgsSetData(dgsEle,"dragHandler",nil)
 end
 
-function dgsRemoveDropHandler(dgsEle)
-	return dgsSetData(dgsEle,"dropHandler",nil)
-end
 ------------Auto Destroy
 function dgsAttachToAutoDestroy(element,dgsEle,index)
 	if not isElement(element) then return true end

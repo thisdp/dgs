@@ -2190,7 +2190,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			
 			if dgsDragDropBoard[0] then
 				local data = dgsRetrieveDragNDropData()
-				if isElement(dgsEle) and dgsElementData[dgsEle].dropHandler then
+				if isElement(dgsEle) then
 					triggerEvent("onDgsDrop",dgsEle,data)
 				end
 			end
