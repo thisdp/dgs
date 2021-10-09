@@ -9,7 +9,7 @@ SamplerState maskSampler{
 	Texture = maskTexture;
 };
 
-float4 alpChannel(float2 otex:TEXCOORD0,float4 color:COLOR0):COLOR0{
+float4 AlphaComponent(float2 otex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float dxdy = ddx(otex.x)/ddy(otex.y);
 	float2 ddxddy = float2(dxdy,1/dxdy);
 	float _x = otex[vertical];
@@ -26,8 +26,21 @@ float4 alpChannel(float2 otex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	return color;
 }
 
+float4 ComponentMask(float2 tex,float4 color){
+	float3 _maskRGB = tex2D(maskSampler,tex).rgb;
+	color.a *= (_maskRGB.r+_maskRGB.g+_maskRGB.b)/3;
+	return color;
+}
+
+float4 Main(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
+	color = AlphaComponent(tex,color);
+	if(useMaskTexture)
+		color = ComponentMask(tex,color);
+	return color;
+}
+
 technique RepTexture{
 	pass P0{
-		PixelShader = compile ps_2_a alpChannel();
+		PixelShader = compile ps_2_a Main();
 	}
 }

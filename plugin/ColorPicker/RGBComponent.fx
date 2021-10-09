@@ -21,8 +21,21 @@ float4 RGBComponent(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	return color;
 }
 
+float4 ComponentMask(float2 tex,float4 color){
+	float3 _maskRGB = tex2D(maskSampler,tex).rgb;
+	color.a *= (_maskRGB.r+_maskRGB.g+_maskRGB.b)/3;
+	return color;
+}
+
+float4 Main(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
+	color = RGBComponent(tex,color);
+	if(useMaskTexture)
+		color = ComponentMask(tex,color);
+	return color;
+}
+
 technique DGSRGB{
 	pass P0{
-		PixelShader = compile ps_2_0 RGBComponent();
+		PixelShader = compile ps_2_0 Main();
 	}
 }
