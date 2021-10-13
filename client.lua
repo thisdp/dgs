@@ -148,7 +148,7 @@ function dgsCoreRender()
 	local mx,my = -1000,-1000
 	local cursorShowing = dgsGetCursorVisible()
 	if cursorShowing then
-		mx,my = dgsGetCursorPosition()
+		mx,my = dgsGetCursorPosition(_,_,true)
 		MouseData.cursorPosScr[0],MouseData.cursorPosScr[1],MouseData.cursorPosScr[2] = true,mx,my
 		MouseData.cursorPosWld[0],MouseData.cursorPosWld[1],MouseData.cursorPosWld[2] = true,mx,my
 		MouseData.cursorPos3D[0],MouseData.cursorPos3D[1],MouseData.cursorPos3D[2],MouseData.cursorPos3D[3] = true,getWorldFromScreenPosition(mx,my,1)
