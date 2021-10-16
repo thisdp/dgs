@@ -1055,11 +1055,11 @@ end
 -----------------------------Row
 --[[
 	rowData Struct:
-		-4					-3							-2				-1				0							1																																																														2																																	...
-		columnOffset		bgImage						hoverable		selectable		bgColor						column1																																																													column2																																...
+	-5			-4					-3							-2				-1				0							1																																																														2																																	...
+	Identity,	columnOffset		bgImage						hoverable		selectable		bgColor						column1																																																													column2																																...
 {
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
-	{	columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
+	{ID,		columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
+	{ID,		columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
 	{	the same as preview table																																																																																						},
 }
 
@@ -1160,6 +1160,55 @@ function dgsGridListAddRows(gridlist,r,t,isRawData)
 	end
 	dgsElementData[gridlist].configNextFrame = true
 	return true
+end
+
+function dgsGridListSetRowID(gridlist,r,id)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetRowID",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	local rData = eleData.rowData
+	local rLen = #rData
+	if rLen == 0 then return false end
+	local rIsNum = type(r) == "number"
+	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowID",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	local r = r-r%1
+	if rData[r] then
+		rData[r][-5] = id
+		return true
+	end
+	return false
+end
+
+function dgsGridListGetRowID(gridlist,r)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetRowID",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	local rData = eleData.rowData
+	local rLen = #rData
+	if rLen == 0 then return false end
+	local rIsNum = type(r) == "number"
+	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowID",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	local r = r-r%1
+	if rData[r] then
+		return rData[r][-5]
+	end
+	return false
+end
+
+function dgsGridListFindRowByID(gridlist,id,position)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListFindRowByID",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	local rData = eleData.rowData
+	position = position or 0
+	for i=1,#rData do
+		if id == rData[i][-5] then
+			if position == 0 then
+				return i
+			end
+			position = position-1
+		end
+	end
+	return false
 end
 
 function dgsGridListGetRowCount(gridlist)

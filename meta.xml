@@ -650,6 +650,9 @@
 	<export function="dgsGridListInsertRowAfter" type="client" />
 	<export function="dgsGridListAddRow" type="client" />
 	<export function="dgsGridListAddRows" type="client" />
+	<export function="dgsGridListSetRowID" type="client" />
+	<export function="dgsGridListGetRowID" type="client" />
+	<export function="dgsGridListFindRowByID" type="client" />
 	<export function="dgsGridListRemoveRow" type="client" />
 	<export function="dgsGridListClearRow" type="client" />
 	<export function="dgsGridListClearColumn" type="client" />
