@@ -1638,7 +1638,14 @@ function dgsCleanElement(source)
 				end
 			end
 		end
-		if dgsType == "dgs-dxedit" then
+		if dgsType == "dgs-dxcombobox" then 
+			local arrow = eleData.arrow 
+			if isElement(arrow) then 
+				if dgsElementData[arrow] and dgsElementData[arrow].styleResource then 
+					destroyElement(arrow)
+				end
+			end
+		elseif dgsType == "dgs-dxedit" then
 			blurEditMemo()
 		elseif dgsType == "dgs-dxmemo" then
 			blurEditMemo()

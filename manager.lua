@@ -507,6 +507,11 @@ local dgsDataFunctions = {
 				dgsComboBoxSetViewCount(dgsEle,dgsElementData[dgsEle].viewCount)
 			end
 		end,
+		arrow = function (dgsEle,key,value,oldValue)
+			if dgsElementData[oldValue] and dgsElementData[oldValue].styleResource then 
+				destroyElement(oldValue)
+			end
+		end,
 	},
 	["dgs-dxtabpanel"] = {
 		selected = function(dgsEle,key,value,oldValue)
