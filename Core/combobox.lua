@@ -722,22 +722,27 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	else
 		dxDrawRectangle(x,y,textBoxLen,h,applyColorAlpha(bgColor,parentAlpha),isPostGUI)
 	end
-	local shader = eleData.arrow
+	local arrow = eleData.arrow
 	local listState = eleData.listState
 	if eleData.listStateAnim ~= listState then
-		local stat = eleData.listStateAnim+eleData.listState*0.08
+		local stat = eleData.listStateAnim+listState*0.08
 		eleData.listStateAnim = listState == -1 and mathMax(stat,listState) or mathMin(stat,listState)
 	end
-	if eleData.arrowSettings then
-		dxSetShaderValue(shader,"width",eleData.arrowSettings[1])
-		dxSetShaderValue(shader,"height",eleData.arrowSettings[2]*eleData.listStateAnim)
-		dxSetShaderValue(shader,"linewidth",eleData.arrowSettings[3])
+	if getElementType(arrow) == "shader" then
+		if eleData.arrowSettings then
+			dxSetShaderValue(arrow,"width",eleData.arrowSettings[1])
+			dxSetShaderValue(arrow,"height",eleData.arrowSettings[2]*eleData.listStateAnim)
+			dxSetShaderValue(arrow,"linewidth",eleData.arrowSettings[3])
+		end
+		local r,g,b,a = fromcolor(arrowColor,true)
+		dxSetShaderValue(arrow,"_color",{r/255,g/255,b/255,a/255*parentAlpha})
+		local r,g,b,a = fromcolor(arrowOutSideColor,true)
+		dxSetShaderValue(arrow,"ocolor",{r/255,g/255,b/255,a/255*parentAlpha})
+		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
+	else 
+		local rotation = (90 * (eleData.listStateAnim)) - 90
+		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,rotation,0,0,applyColorAlpha(eleData.arrowColor,parentAlpha),isPostGUI,rndtgt)
 	end
-	local r,g,b,a = fromcolor(arrowColor,true)
-	dxSetShaderValue(shader,"_color",{r/255,g/255,b/255,a/255*parentAlpha})
-	local r,g,b,a = fromcolor(arrowOutSideColor,true)
-	dxSetShaderValue(shader,"ocolor",{r/255,g/255,b/255,a/255*parentAlpha})
-	dxDrawImage(x+textBoxLen,y,buttonLen,h,shader,0,0,0,white,isPostGUI,rndtgt)
 	if textBox and not captionEdit then
 		local item = eleData.itemData[eleData.select] or {}
 		local itemTextPadding = dgsElementData[source].itemTextPadding
