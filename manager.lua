@@ -601,6 +601,9 @@ local dgsDataFunctions = {
 		showPos = function(dgsEle,key,value,oldValue)
 			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
+		masked = function(dgsEle,key,value,oldValue)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
+		end
 	},
 	["dgs-dxmemo"] = {
 		text = function(dgsEle,key,value,oldValue)
