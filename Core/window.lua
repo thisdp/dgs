@@ -86,14 +86,7 @@ function dgsCreateWindow(...)
 		dgsSetData(window,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(window,x,y,relative,w,h,relative,true)
-	triggerEvent("onDgsCreate",window,sourceResource)
-	local createCloseButton = true
-	if noCloseButton == nil then
-		createCloseButton = style.closeButton
-	elseif noCloseButton then
-		createCloseButton = false
-	end
-	if createCloseButton then
+	if not noCloseButtom and style.closeButton then
 		local closeBtn = dgsCreateButton(0,0,40,24,style.closeButtonText,false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
 		dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
 		dgsElementData[window].closeButtonSize = {40,24,false}
@@ -103,6 +96,7 @@ function dgsCreateWindow(...)
 		dgsElementData[closeBtn].alignment = {"center","center"}
 		dgsElementData[closeBtn].ignoreParentTitle = true
 	end
+	triggerEvent("onDgsCreate",window,sourceResource)
 	return window
 end
 
