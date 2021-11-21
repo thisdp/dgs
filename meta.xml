@@ -417,6 +417,8 @@
 	<export function="dgsComboBoxGetSelectedItem" type="client" />
 	<export function="dgsComboBoxSetItemColor" type="client" />
 	<export function="dgsComboBoxGetItemColor" type="client" />
+	<export function="dgsComboBoxSetItemData" type="client" />
+	<export function="dgsComboBoxGetItemData" type="client" />
 	<export function="dgsComboBoxSetState" type="client" />
 	<export function="dgsComboBoxGetState" type="client" />
 	<export function="dgsComboBoxSetBoxHeight" type="client" />
