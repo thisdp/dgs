@@ -729,7 +729,61 @@ function dgsSetData(dgsEle,key,value,nocheck)
 	local dataHandlerList = dgsDataFunctions[dgsType] or dgsDataFunctions.default
 	local dataHandler = dataHandlerList[key] or dgsDataFunctions.default[key]
 	if dataHandler then dataHandler(dgsEle,key,value,oldValue) end
+	if eleData.propertyListener and eleData.propertyListener[key] then triggerEvent("onDgsPropertyChange",dgsEle,key,value,oldValue) end
 	return true
+end
+
+function dgsAddPropertyListener(dgsEle,propertyNames)
+	local isTable = type(dgsEle) == "table"
+	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsAddPropertyListener",1,"dgs-dxelement/table")) end
+	if isTable then
+		for i=1,#dgsEle do
+			dgsAddPropertyListener(dgsEle[i],propertyNames)
+		end
+		return true
+	else
+		local eleData = dgsElementData[dgsEle]
+		eleData.propertyListener = eleData.propertyListener or {}
+		if type(propertyNames) == "table" then
+			for i=1,#propertyNames do
+				eleData.propertyListener[propertyNames[i]] = true
+			end
+		else
+			eleData.propertyListener[propertyNames] = true
+		end
+	end
+end
+
+function dgsRemovePropertyListener(dgsEle,propertyNames)
+	local isTable = type(dgsEle) == "table"
+	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsRemovePropertyListener",1,"dgs-dxelement/table")) end
+	if isTable then
+		for i=1,#dgsEle do
+			dgsRemovePropertyListener(dgsEle[i],propertyNames)
+		end
+		return true
+	else
+		local eleData = dgsElementData[dgsEle]
+		eleData.propertyListener = eleData.propertyListener or {}
+		if type(propertyNames) == "table" then
+			for i=1,#propertyNames do
+				eleData.propertyListener[propertyNames[i]] = false
+			end
+		else
+			eleData.propertyListener[propertyNames] = false
+		end
+	end
+end
+
+function dgsGetListeningProperties(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetListeningProperties",1,"dgs-dxelement")) end
+	local eleData = dgsElementData[dgsEle]
+	eleData.propertyListener = eleData.propertyListener or {}
+	local listening = {}
+	for k,v in pairs(eleData.propertyListener) do
+		listening[#listening+1] = k
+	end
+	return listening
 end
 
 local compatibility = {

@@ -211,6 +211,9 @@
 	<export function="dgsIsMoveHandled" type="client" />
 	<export function="dgsAddSizeHandler" type="client" />
 	<export function="dgsRemoveSizeHandler" type="client" />
+	<export function="dgsAddPropertyListener" type="client" />
+	<export function="dgsRemovePropertyListener" type="client" />
+	<export function="dgsGetListeningProperties" type="client" />
 	<export function="dgsIsSizeHandled" type="client" />
 	<export function="dgsAttachElements" type="client" />
 	<export function="dgsDetachElements" type="client" />

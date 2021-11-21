@@ -1202,6 +1202,7 @@ events = {
 	"onDgsDrag",
 	"onDgsStart",
 	"onDgsPaste", --DGS Paste Handler
+	"onDgsPropertyChange",
 	-------Plugin events
 	"onDgsRemoteImageLoad",
 	"onDgsQRCodeLoad",
