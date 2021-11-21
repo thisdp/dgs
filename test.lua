@@ -373,15 +373,6 @@ function GridListTest()
 	dgsGridListSetItemFont(gridlist,2,2,"default-bold")
 end
 
-function GridListTest1()
-	for i=1,100 do
-		gridlist = dgsCreateGridList(500,50,600,600,false)
-		dgsGridListAddColumn(gridlist,"test1",0.2)
-		dgsGridListAddColumn(gridlist,"test2",0.2)
-		dgsGridListAddColumn(gridlist,"test3",0.6)
-	end
-end
-
 function MediaBrowserTest()
 	bro = dgsCreateMediaBrowser(600,600)
 	rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
@@ -545,6 +536,14 @@ function Line2DTest()
 		dgsLineAddItem(line,_,_,i/100,sinX/2+0.5,2,tocolor(i/100*255,255-i/100*255,0,255),true)
 	end
 end
+---------------Property Listener Test
+function propertyListenerTest()
+	local win = dgsCreateWindow(200,200,400,400,"Property Listener Test",false)
+	dgsAddPropertyListener(win,"absPos")
+	addEventHandler("onDgsPropertyChange",win,function(key,newValue,oldValue)
+		print(key,newValue,oldValue)
+	end,false)
+end
 
 ---------------Drag And Drop Test
 --Static Example
@@ -658,7 +657,7 @@ end
 function dgsCircleTest()
 	local c = dgsCreateCircle(0.5,0.3)
 	local img = dgsCreateImage(300,200,200,200,c,false)
-	dgsCircleSetAngle(c,0)
+	dgsCircleSetAngle(c,10)
 	dgsCircleSetDirection(c,false)
 end
 
@@ -726,39 +725,41 @@ end
 
 ---------------Color Picker
 function testColorPicker()
-	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false)
-	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false)
-	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false)
-	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false)
-	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false)
+	--material = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
+	material = nil
+	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material)
+	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material)
+	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material)
+	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material)
+	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false,material)
 	dgsBindToColorPicker(r,colorPicker_HSVRing,"RGB","R",true,true)
-	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false)
+	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false,material)
 	dgsBindToColorPicker(g,colorPicker_HSVRing,"RGB","G",true,true)
-	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false)
+	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false,material)
 	dgsBindToColorPicker(b,colorPicker_HSVRing,"RGB","B",true,true)
 
-	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false)
+	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false,material)
 	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSL","H",true,true)
-	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false)
+	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false,material)
 	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSL","S",true,true)
-	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false)
+	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false,material)
 	dgsBindToColorPicker(L,colorPicker_HSVRing,"HSL","L",true,true)
 
-	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false)
+	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false,material)
 	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSV","H",true,true)
-	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false)
+	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false,material)
 	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSV","S",true,true)
-	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false)
+	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material)
 	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
 
-	A = dgsColorPickerCreateComponentSelector(500,260,500,10,true,false)
+	A = dgsColorPickerCreateComponentSelector(500,260,500,10,true,false,material)
 	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
+	dgsCreateButton(0,0,100,100,"test",false,material)
 	--[[
 	local tex = dxCreateTexture("example.bmp")
 	dgsColorPickerSetComponentSelectorMask(A,tex)
 	]]
 end
-
 
 function ScreenSourceTest()
 	local ss = dgsCreateScreenSource()
@@ -923,5 +924,7 @@ dgsSVGSetElementStyle(recta,{
 })
 local btn1 = dgsCreateImage(200,200,200,200,svg,false)
 ]]
+
+
 end)
 
