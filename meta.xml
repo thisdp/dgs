@@ -779,6 +779,10 @@
 	<export function="dgsCreateEffect3D" type="client" />
 	<export function="dgsEffect3DApplyToScrollPane" type="client" />
 	<export function="dgsEffect3DRemoveFromScrollPane" type="client" />
+	<export function="dgsEffect3DSetRotationFactor" type="client" />
+	<export function="dgsEffect3DGetRotationFactor" type="client" />
+	<export function="dgsEffect3DSetAlwaysEnabled" type="client" />
+	<export function="dgsEffect3DGetAlwaysEnabled" type="client" />
 
 	<export function="dgsRGBToHSV" type="client" />
 	<export function="dgsRGBToHSL" type="client" />

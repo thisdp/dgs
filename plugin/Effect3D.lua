@@ -39,6 +39,28 @@ function dgsEffect3DMouseMoveCheck()
 		filter[3] = dy
 	end
 end
+
+function dgsEffect3DSetRotationFactor(effect3d,rotFactor)
+	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(rectShader,"dgsEffect3DSetRotationFactor",1,"plugin dgs-dxeffect3d")) end
+	assert(dgsGetType(rotFactor) == "number","Bad argument @dgsEffect3DSetRotationFactor at argument 2, expect number got "..dgsGetType(rotFactor))
+	return dgsSetData(effect3d,"rotFactor",rotFactor)
+end
+
+function dgsEffect3DGetRotationFactor(effect3d)
+	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(rectShader,"dgsEffect3DGetRotationFactor",1,"plugin dgs-dxeffect3d")) end
+	return dgsElementData[effect3d].rotFactor
+end
+
+function dgsEffect3DSetAlwaysEnabled(effect3d,state)
+	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(rectShader,"dgsEffect3DSetAlwaysEnabled",1,"plugin dgs-dxeffect3d")) end
+	assert(dgsGetType(state) == "bool","Bad argument @dgsEffect3DSetAlwaysEnabled at argument 2, expect bool got "..dgsGetType(state))
+	return dgsSetData(effect3d,"alwaysEnable",state)
+end
+
+function dgsEffect3DGetAlwaysEnabled(effect3d)
+	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(rectShader,"dgsEffect3DGetAlwaysEnabled",1,"plugin dgs-dxeffect3d")) end
+	return dgsElementData[effect3d].alwaysEnable
+end
 	
 function dgsEffect3DRemoveFromScrollPane(effect3d)
 	if dgsGetPluginType(effect3d) == "dgs-dxeffect3d" then
