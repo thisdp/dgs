@@ -473,12 +473,14 @@ function _3DTextTest()
 end
 
 function _3DImageTest()
-	local text = dgsCreate3DImage(0,0,4,_,tocolor(0,128,255,128),10,10)
+	local tex = dxCreateTexture("palette.png")
+	local text = dgsCreate3DImage(0,0,4,tex,tocolor(0,128,255,128),10,10)
 	dgsSetProperty(text,"fadeDistance",20)
+	dgsSetProperty(text,"color",0xFFFF0000)
 	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
 	dgs3DImageAttachToElement(text,localPlayer,0,5)
 end
-
+_3DImageTest()
 function ScrollBarTest()
 	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
 	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
@@ -835,6 +837,25 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseEnter",button,dgsButtonEffectHandler,false)
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler,false)
 end
+
+--[[
+function clampIntoSuperEllipse(orgX,orgY,x,y,w,h,times)
+	local result = (math.abs((orgX-x)/w)^times+math.abs((orgY-y)/h)^times)^(1/times)
+	if result > 1 then
+		orgX = (orgX-x)/result+x
+		orgY = (orgY-y)/result+y
+	end
+	return orgX,orgY
+end
+
+e = dgsCreateImage(200,200,200,200,z,false)
+dgsAddMoveHandler(e,0,0,1,1)
+addEventHandler("onClientRender",root,function()
+	local x,y = dgsGetPosition(e,false)
+	local w,h = dgsGetSize(e,false)
+	local _x,_y = clampIntoSuperEllipse(x+w/2,y+h/2,sW/2,sH/2,600,300,4)
+	dgsSetPosition(e,_x-w/2,_y-h/2,false)
+end)]]
 ---------------------StressTest
 
 function buttonStress()

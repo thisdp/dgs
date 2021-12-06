@@ -308,7 +308,7 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 									dxDrawImageSection(x+shadowoffx,y-shadowoffy,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 								end
 							end
-							dxDrawImageSection(x,y,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffy,rotOffy,colors,isPostGUI,rndtgt)
+							dxDrawImageSection(x,y,w,h,uvPx,uvPy,uvSx,uvSy,image,rot,rotOffy,rotOffy,color,isPostGUI,rndtgt)
 						else
 							if shadowoffx and shadowoffy and shadowc then
 								local shadowc = applyColorAlpha(shadowc,parentAlpha)
@@ -319,11 +319,10 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 									dxDrawImage(x+shadowoffx,y-shadowoffy,w,h,image,rot,rotOffx,rotOffy,shadowc,isPostGUI,rndtgt)
 								end
 							end
-							dxDrawImage(x,y,w,h,image,rot,rotOffx,rotOffy,colors,isPostGUI,rndtgt)
+							dxDrawImage(x,y,w,h,image,rot,rotOffx,rotOffy,color,isPostGUI,rndtgt)
 						end
-						dxDrawImage(x,y,w,h,image,0,0,0,color)
 					else
-						dxDrawRectangle(x,y,w,h,color)
+						dxDrawRectangle(x,y,w,h,color,isPostGUI)
 					end
 					------------------------------------OutLine
 					local outlineData = eleData.outline
