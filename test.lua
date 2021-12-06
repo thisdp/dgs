@@ -473,14 +473,13 @@ function _3DTextTest()
 end
 
 function _3DImageTest()
-	local tex = dxCreateTexture("palette.png")
 	local text = dgsCreate3DImage(0,0,4,tex,tocolor(0,128,255,128),10,10)
 	dgsSetProperty(text,"fadeDistance",20)
 	dgsSetProperty(text,"color",0xFFFF0000)
 	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
 	dgs3DImageAttachToElement(text,localPlayer,0,5)
 end
-_3DImageTest()
+
 function ScrollBarTest()
 	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
 	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
