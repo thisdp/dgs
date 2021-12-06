@@ -46,6 +46,7 @@ function dgsCreate3DImage(...)
 		UVSize = {},
 		rotation = 0,
 		rotationCenter = {0,0},
+		isOnScreen = false,
 		materialInfo = {},
 	}
 	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image3d,sourceResource,img) or img
@@ -263,7 +264,8 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 					fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
 				end
 				local x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
-				if x and y then
+				eleData.isOnScreen = x and y
+				if eleData.isOnScreen then
 					local x,y = x-x%1,y-y%1
 					if eleData.fixImageSize then
 						distance = 50
