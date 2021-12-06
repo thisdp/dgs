@@ -248,7 +248,7 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 	local posTable = eleData.position
 	local rotTable = eleData.rotation
 	local wx,wy,wz = posTable[1],posTable[2],posTable[3]
-	local wrx,wry,wrz
+	local wrx,wry,wrz = 0,0,0
 	local width = eleData.width
 	local color = eleData.color
 	local isRender = true
@@ -257,9 +257,10 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 			if isElementStreamedIn(attachTable[1]) then
 				wx,wy,wz = getPositionFromElementOffset(attachTable[1],attachTable[2],attachTable[3],attachTable[4])
 				local offrx,offry,offrz = attachTable[5] or 0,attachTable[6] or 0,attachTable[7] or 0
-				wrx,wry,wrz = getElementRotation(attachTable[1])
-				wrx,wry,wrz = wrx+offrx,wry+offry,wrz+offrz
-
+				local rx,ry,rz = getElementRotation(attachTable[1])
+				if rx and ry and rz then
+					wrx,wry,wrz = rx+offrx,ry+offry,rz+offrz
+				end
 				eleData.position[1] = wx
 				eleData.position[2] = wy
 				eleData.position[3] = wz
