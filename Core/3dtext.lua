@@ -41,9 +41,11 @@ function dgsCreate3DText(...)
 	
 	style = style.text3D
 	dgsElementData[text3d] = {
+		alignment = {"center", "center"},
 		renderBuffer = {},
 		position = {x,y,z},
 		textSize = {scaleX or 1,scaleY or 1},
+		textOffset = {0,0},
 		fixTextSize = false,
 		font = font or style.font or systemFont,
 		color = color or 0xFFFFFFFF,
@@ -54,6 +56,8 @@ function dgsCreate3DText(...)
 		interior = -1,
 		canBeBlocked = false,
 		subPixelPositioning = true,
+		isBlocked = false,
+		isOnScreen = false,
 	}
 	dgsAttachToTranslation(text3d,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
@@ -189,27 +193,30 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 				if canBeBlocked.seeThroughStuff == nil then canBeBlocked.seeThroughStuff = g_canBeBlocked.seeThroughStuff end
 				if canBeBlocked.ignoreSomeObjectsForCamera == nil then canBeBlocked.ignoreSomeObjectsForCamera = g_canBeBlocked.ignoreSomeObjectsForCamera end
 			end
-			local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
-			local colorcoded = eleData.colorcoded
 			local fadeDistance = eleData.fadeDistance
-			local text = eleData.text
 			
 			local res = eleData.resource or "global"
 			local style = styleManager.styles[res]
 			local using = style.using
 			style = style.loaded[style.using]
 			local systemFont = style.systemFontElement
-
-			local font = eleData.font or systemFont
-			local subPixelPositioning = eleData.subPixelPositioning
-			if (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera))) then
+			eleData.isBlocked = (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera)))
+			if eleData.isBlocked then
 				local fadeMulti = 1
 				if maxDistance > fadeDistance and distance >= fadeDistance then
 					fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
 				end
 				local x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
-				if x and y then
-					local x,y = x-x%1,y-y%1
+				eleData.isOnScreen = x and y
+				if eleData.isOnScreen then
+					local offsetX,offsetY = eleData.textOffset[1],eleData.textOffset[2]
+					local subPixelPositioning = eleData.subPixelPositioning
+					local colorcoded = eleData.colorcoded
+					local text = eleData.text
+					local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
+					local font = eleData.font or systemFont
+					local alignment = eleData.alignment
+					local x,y = x+offsetX-x%1,y+offsetY-y%1
 					if eleData.fixTextSize then
 						distance = 50
 					end
@@ -227,15 +234,15 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 							end
 							local shadowc = applyColorAlpha(shadowc,parentAlpha*fadeMulti)
 							local shadowoffx,shadowoffy = shadowoffx*antiDistance*50,shadowoffy*antiDistance*50
-							dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
+							dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
 							if shadowIsOutline then
-								dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
-								dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
-								dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,"center","center",false,false,false,false,subPixelPositioning)
+								dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
+								dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
+								dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
 							end
 						end
 					end
-					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,"center","center",false,false,false,colorcoded,subPixelPositioning)
+					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorcoded,subPixelPositioning)
 					------------------------------------OutLine
 					local outlineData = eleData.outline
 					if outlineData then
@@ -289,6 +296,8 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 						end
 					end
 				end
+			else
+				eleData.isOnScreen = false
 			end
 		end
 	end

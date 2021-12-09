@@ -47,6 +47,7 @@ function dgsCreate3DImage(...)
 		rotation = 0,
 		rotationCenter = {0,0},
 		isOnScreen = false,
+		isBlocked = false,
 		materialInfo = {},
 	}
 	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image3d,sourceResource,img) or img
@@ -258,7 +259,8 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 			local imageSizeX,imageSizeY = eleData.imageSize[1],eleData.imageSize[2]
 			local fadeDistance = eleData.fadeDistance
 			local image = eleData.image
-			if (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera))) then
+			eleData.isBlocked = (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera)))
+			if eleData.isBlocked then
 				local fadeMulti = 1
 				if maxDistance > fadeDistance and distance >= fadeDistance then
 					fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
@@ -376,6 +378,8 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 						end
 					end
 				end
+			else
+				eleData.isOnScreen = false
 			end
 		end
 	end
