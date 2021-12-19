@@ -62,40 +62,19 @@ function deleteSvg()
 end
 
 function newSvg(styleName, res, svg, width, height)
-	local isSvgLoaded = true
-
 	if not isElement(svg) then
-		isSvgLoaded = false
-
-		local co = coroutine.create(function()
-			svg = svgCreate(width, height, svg, function (didLoad)
-				coroutine.yield(didLoad)
-			end)
-		end)
-
-		local success, loaded = coroutine.resume(co)
-		if success then
-			isSvgLoaded = loaded
-		end
-
-		if isSvgLoaded then
-			dgsSetData(svg, "path", svg)
-			dgsSetData(svg, "width", width)
-			dgsSetData(svg, "height", height)
-			dgsAddEventHandler("onClientElementDestroy",svg,"deleteSvg")
-		end
+		svg = svgCreate(width, height, svg)
+		dgsSetData(svg, "path", svg)
+		dgsSetData(svg, "width", width)
+		dgsSetData(svg, "height", height)
+		dgsAddEventHandler("onClientElementDestroy",svg,"deleteSvg")
 	end
-
-	if isSvgLoaded then
-		local res = res or "global"
-		styleManager.styles[res].loaded[styleName].created.svg = styleManager.styles[res].loaded[styleName].created.svg or {}
-		styleManager.styles[res].loaded[styleName].created[svg] = true
-		dgsSetData(svg,"styleResource",res)
-		dgsSetData(svg,"styleName",styleName)
-		return svg
-	end
-
-	return nil
+	local res = res or "global"
+	styleManager.styles[res].loaded[styleName].created.svg = styleManager.styles[res].loaded[styleName].created.svg or {}
+	styleManager.styles[res].loaded[styleName].created.svg[svg] = true
+	dgsSetData(svg,"styleResource",res)
+	dgsSetData(svg,"styleName",styleName)
+	return svg
 end
 
 function newTexture(styleName,res,texture)

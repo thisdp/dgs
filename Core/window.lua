@@ -94,8 +94,24 @@ function dgsCreateWindow(...)
 		createCloseButton = false
 	end
 	if createCloseButton then
-		local closeBtn = dgsCreateButton(0,0,40,24,style.closeButtonText,false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
+		local closeButtonImage = nil
+
+		if style.closeButtonImage and type(style.closeButtonImage) == "table" then
+			closeButtonImage =  dgsCreateTextureFromStyle(using,res,style.closeButtonImage)
+		end
+		
+		local closeBtn = dgsCreateButton(0,0,40,24,"",false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
 		dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
+
+		if closeButtonImage then
+			local closeBtnImage = dgsCreateImage(0,0,16,16,closeButtonImage,false,closeBtn)
+			dgsSetEnabled(closeBtnImage, false)
+			dgsSetPositionAlignment(closeBtnImage,"center","center")
+			dgsElementData[window].closeButtonImage = closeBtnImage
+		else
+			dgsSetText(closeBtn, style.closeButtonText)
+		end
+
 		dgsElementData[window].closeButtonSize = {40,24,false}
 		dgsElementData[window].closeButton = closeBtn
 		dgsSetPositionAlignment(closeBtn,"right")
