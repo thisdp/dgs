@@ -2,11 +2,6 @@ local loadstring = loadstring
 
 styleSecEnv = {
 	tocolor = tocolor,
-	dgsCreateRoundRect = dgsCreateRoundRect,
-	dgsCreateEffect3D = dgsCreateEffect3D,
-	dgsCreateBlurBox = dgsCreateBlurBox,
-	dgsCreateNineSlice = dgsCreateNineSlice,
-	dgsCreateMask = dgsCreateMask,
 	dxCreateFont = dxCreateFont,
 	dxCreateTexture = function(path) return dxCreateTexture(path,false) end,
 	dxCreateScreenSource = dxCreateScreenSource,
@@ -354,6 +349,11 @@ addEventHandler("onClientResourceStop",root,function(res)
 end)
 
 addEventHandler("onClientResourceStart",resourceRoot,function()
+	--Add exported functions to sandbox
+	for i,name in ipairs(getResourceExportedFunctions()) do
+		styleSecEnv[name] = _G[name]
+	end
+	
 	local using = dgsScanGlobalStyle()
 	dgsLoadStyle("Default")
 	dgsLoadStyle(using)
