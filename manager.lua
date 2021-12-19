@@ -257,8 +257,8 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 								dgsBringToFront(scrollbar[1],"left",_,true)
 								dgsBringToFront(scrollbar[2],"left",_,true)
 							end
-							break
 						end
+						break
 					end
 				end
 				if dontMoveParent then
@@ -605,6 +605,15 @@ local dgsDataFunctions = {
 			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
 		end,
 		font = function(dgsEle,key,value,oldValue)
+			--Multilingual
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationFont = value
+				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationFont = nil
+			end
+			dgsElementData[dgsEle].font = value
+			
 			local tabpanel = dgsElementData[dgsEle].parent
 			local w = dgsElementData[tabpanel].absSize[1]
 			local t_minWid = dgsElementData[tabpanel].tabMinWidth
@@ -630,6 +639,15 @@ local dgsDataFunctions = {
 			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 		font = function(dgsEle,key,value,oldValue)
+			--Multilingual
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationFont = value
+				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationFont = nil
+			end
+			dgsElementData[dgsEle].font = value
+			
 			local eleData = dgsElementData[dgsEle]
 			eleData.textFontLen = dxGetTextWidth(eleData.text,eleData.textSize[1],eleData.font)
 			dgsElementData[dgsEle].updateTextRTNextFrame = true
@@ -662,6 +680,15 @@ local dgsDataFunctions = {
 			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
 		font = function(dgsEle,key,value,oldValue)
+			--Multilingual
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationFont = value
+				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationFont = nil
+			end
+			dgsElementData[dgsEle].font = value
+			
 			dgsMemoRebuildTextTable(dgsEle)
 			dgsElementData[dgsEle].updateTextRTNextFrame = true
 		end,
@@ -717,6 +744,16 @@ local dgsDataFunctions = {
 			end
 			dgsElementData[dgsEle].text = tostring(value)
 			triggerEvent("onDgsTextChange",dgsEle)
+		end,
+		font = function(dgsEle,key,value,oldValue)
+			--Multilingual
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationFont = value
+				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationFont = nil
+			end
+			dgsElementData[dgsEle].font = value
 		end,
 		caption = function(dgsEle,key,value,oldValue)
 			if type(value) == "table" then
