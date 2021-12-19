@@ -234,7 +234,7 @@ function dgsLoadStyle(styleName,res)
 		if not fnc then
 			error("Error when loading "..path.."/styleSettings.txt ("..err..")")
 		end
-		--setfenv(fnc,styleSecEnv)
+		setfenv(fnc,styleSecEnv)
 		local newStyle = fnc()
 		if styleName ~= "Default" then
 			local gStyle = table.deepcopy(styleManager.styles.global.loaded.Default)
