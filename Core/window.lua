@@ -110,11 +110,9 @@ function dgsCreateWindow(...)
 			dgsElementData[window].closeIconImageSize = {16,16}
 			dgsElementData[window].closeIconImage = closeIconImg
 			dgsElementData[window].closeIconTexture = closeIconTexture
-			dgsElementData[window].showCloseIconImage = true
 		else
 			dgsElementData[window].closeButtonText = style.closeButtonText
 			dgsSetText(closeBtn, style.closeButtonText)
-			dgsElementData[window].showCloseIconImage = false
 		end
 
 		dgsElementData[window].closeButtonSize = {40,24,false}
@@ -144,7 +142,7 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 			local closeBtn = dgsCreateButton(0,0,cbSize[1],cbSize[2],"",cbSize[3],window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
 			dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
 			
-			if dgsElementData[window].showCloseIconImage then
+			if isElement(dgsElementData[window].closeIconTexture) then
 				local closeIconImageSize = dgsElementData[window].closeIconImageSize
 				local closeIconImg = dgsCreateImage(0,0,closeIconImageSize[1],closeIconImageSize[2],dgsElementData[window].closeIconTexture,false,closeBtn)
 				dgsSetEnabled(closeIconImg, false)
