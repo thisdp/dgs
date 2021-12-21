@@ -113,7 +113,7 @@ function dgsG2DLoadHooker(isLocal)
 		isGUIGridList = {}
 		isGUIComboBox = {}
 		loadedG2D = true
-		loadstring(exports.dgs:dgsImportFunction())()
+		loadstring(exports["]]..dgsResName..[["]:dgsImportFunction())()
 		for fName,fnc in pairs(_G) do
 			if fName:sub(1,3) == "gui" then
 				_G["_"..fName] = fnc
