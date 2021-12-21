@@ -1984,7 +1984,6 @@ function dgsGridListItemIsSelected(gridlist,r,c)
 	return false
 end
 
-
 function dgsGridListSetItemTextOffset(gridlist,r,c,offsetX,offsetY,relative)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetItemTextOffset",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
@@ -2654,6 +2653,26 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					end
 				end
 			end
+			
+			if eleData.rowTextRT then
+				dxSetRenderTarget(eleData.rowTextRT,true)
+				dxSetBlendMode("modulate_add")
+				for a=1,textBufferCnt do
+					local line = textBuffer[a]
+					local text = line[1]
+					local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
+					local clr,tSclx,tScly,tFnt,tClip,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11],line[12]
+					if shadow then
+						if tClrCode then
+							text = text:gsub("#%x%x%x%x%x%x","") or text
+						end
+						dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadow[3],tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,false,false,true)
+					end
+					dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,false,tClrCode,true)
+				end
+			end
+			
+			dxSetRenderTarget(eleData.rowRT)
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			if not eleData.hitoutofparent then
 				if MouseData.hit ~= source then
@@ -2671,23 +2690,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						end
 					end
 				end
-			end
-		end
-		if eleData.rowTextRT then
-			dxSetRenderTarget(eleData.rowTextRT,true)
-			dxSetBlendMode("modulate_add")
-			for a=1,textBufferCnt do
-				local line = textBuffer[a]
-				local text = line[1]
-				local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
-				local clr,tSclx,tScly,tFnt,tClip,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11],line[12]
-				if shadow then
-					if tClrCode then
-						text = text:gsub("#%x%x%x%x%x%x","") or text
-					end
-					dxDrawText(text,psx+shadow[1],psy+shadow[2],pex+shadow[1],pey+shadow[2],shadow[3],tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,false,false,true)
-				end
-				dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",tClip,false,false,tClrCode,true)
 			end
 		end
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
