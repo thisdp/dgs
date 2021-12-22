@@ -473,11 +473,13 @@ function _3DTextTest()
 end
 
 function _3DImageTest()
-	local text = dgsCreate3DImage(0,0,4,tex,tocolor(0,128,255,128),10,10)
-	dgsSetProperty(text,"fadeDistance",20)
-	dgsSetProperty(text,"color",0xFFFF0000)
-	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
-	dgs3DImageAttachToElement(text,localPlayer,0,5)
+	local image1 = dgsCreate3DImage(0,0,10,_,tocolor(255,0,0,255),2,400)
+	local image = dgsCreate3DImage(0,0,20,_,tocolor(0,128,255,128),10,10)
+	dgsSetProperty(image,"fadeDistance",20000)
+	dgsSetProperty(image,"maxDistance",20000)
+	dgsSetProperty(image,"outline",{"out",1,tocolor(255,255,255,255)})
+	--dgs3DImageAttachToElement(image,localPlayer,0,5)
+	dgsBringToFront(image1)
 end
 
 function ScrollBarTest()
@@ -504,6 +506,16 @@ function ScalePaneTest()
 		dgsGridListSetItemText(gridlist,row,1,i)
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
+end
+
+function LayoutTest()
+	layout = dgsCreateLayout(400,400,200,200,"vertical",false)
+	local image = {}
+	for i=1,20 do
+		image[i] = dgsCreateImage(0,0,20,20,_,false,layout,tocolor(math.random(0,255),math.random(0,255),math.random(0,255),255))
+	end
+	--dgsLayoutAddItem(layout,image)
+	destroyElement(image[1])
 end
 
 function SelectorTest()
@@ -726,8 +738,7 @@ end
 
 ---------------Color Picker
 function testColorPicker()
-	--material = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
-	material = nil
+	material = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
 	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material)
 	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material)
 	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material)

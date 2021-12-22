@@ -129,7 +129,7 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 		if id then
 			tableRemove(parentTable,id)
 		end
-		FatherTable[id] = nil
+		FatherTable[child] = nil
 		tableInsert(CenterFatherTable,child)
 		setElementParent(child,resourceRoot)
 	end
@@ -324,6 +324,7 @@ dgsType = {
 	"dgs-dxcheckbox",
 	"dgs-dxlabel",
 	"dgs-dxline",
+	"dgs-dxlayout",
 	"dgs-dxscrollbar",
 	"dgs-dxscrollpane",
 	"dgs-dxscalepane",

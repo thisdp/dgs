@@ -474,8 +474,10 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		end
 		local parent,children,parentAlpha = FatherTable[source],ChildrenTable[source],(eleData.alpha or 1)*parentAlpha
 		local eleTypeP,eleDataP
+		local elePAlignH,elePAlignV
 		if parent then
 			eleTypeP,eleDataP = dgsElementType[parent],dgsElementData[parent]
+			elePAlignH,elePAlignV = dgsElementData[parent].contentPositionAlignment[1],dgsElementData[parent].contentPositionAlignment[2]
 		end
 		dxSetRenderTarget(rndtgt)
 		--Side Processing
@@ -499,17 +501,18 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			w,h = absW,absH
 		end
 		local eleAlign = eleData.positionAlignment
-		if eleAlign[1] == "right" then	--Horizontal
+		local eleAlignH,eleAlignV = eleAlign[1] or elePAlignH, eleAlign[2] or elePAlignV
+		if eleAlignH == "right" then	--Horizontal
 			local pWidth = parent and eleDataP.absSize[1] or sW
 			PosX = pWidth-PosX-eleData.absSize[1]
-		elseif eleAlign[1] == "center" then
+		elseif eleAlignH == "center" then
 			local pWidth = parent and eleDataP.absSize[1] or sW
 			PosX = PosX+pWidth/2-eleData.absSize[1]/2
 		end
-		if eleAlign[2] == "bottom" then --Vertical
+		if eleAlignV == "bottom" then --Vertical
 			local pHeight = parent and eleDataP.absSize[2] or sH
 			PosY = pHeight-PosY-eleData.absSize[2]
-		elseif eleAlign[2] == "center" then
+		elseif eleAlignV == "center" then
 			local pHeight = parent and eleDataP.absSize[2] or sH
 			PosY = PosY+pHeight/2-eleData.absSize[2]/2
 		end
@@ -1618,11 +1621,12 @@ addEventHandler("onDgsMouseClick",root,onDGSMouseCheck)
 
 function dgsCleanElement(source)
 	local isAlive = isElement(source)
-	local parent = FatherTable[source] or root
 	local dgsType = dgsElementType[source]
 	if dgsType then
 		local eleData = dgsElementData[source] or {}
-		if isAlive then triggerEvent("onDgsDestroy",source) end
+		if isAlive then
+			triggerEvent("onDgsDestroy",source)
+		end
 		local isAttachedToGridList = eleData.attachedToGridList
 		if isAttachedToGridList and isAlive then dgsDetachFromGridList(source) end
 		local child = ChildrenTable[source] or {}
@@ -1703,7 +1707,7 @@ function dgsCleanElement(source)
 			tableRemoveItemFromArray(dgsScreen3DTable,source)
 		else
 			local parent = FatherTable[source]
-			if not parent then
+			if not parent or parent == root then
 				local layer = eleData.alwaysOn or "center"
 				if layer == "bottom" then
 					tableRemoveItemFromArray(BottomFatherTable,source)

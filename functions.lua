@@ -47,18 +47,20 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 		if includeSide then
 			local parent = FatherTable[dgsEle]
 			local pEleData = dgsElementData[parent]
+			local eleConAlign = parent and pEleData.contentPositionAlignment
 			local eleAlign = eleData.positionAlignment
-			if eleAlign[1] == "right" then
+			local eleAlignH,eleAlignV = eleAlign[1] or eleConAlign[1], eleAlign[2] or eleConAlign[2]
+			if eleAlignH == "right" then
 				local pWidth = parent and pEleData.absSize[1] or sW
 				absPosX = pWidth-absPosX
-			elseif eleAlign[1] == "center" then
+			elseif eleAlignH == "center" then
 				local pWidth = parent and pEleData.absSize[1] or sW
 				absPosX = absPosX+pWidth/2-eleData.absSize[1]/2
 			end
-			if eleAlign[2] == "bottom" then
+			if eleAlignV == "bottom" then
 				local pHeight = parent and pEleData.absSize[2] or sH
 				absPosY = pHeight-absPosY
-			elseif eleAlign[2] == "center" then
+			elseif eleAlignV == "center" then
 				local pHeight = parent and pEleData.absSize[2] or sH
 				absPosY = absPosY+pHeight/2-eleData.absSize[2]/2
 			end
@@ -291,14 +293,14 @@ end
 function dgsSetPositionAlignment(dgsEle,horizontal,vertical)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPositionAlignment",1,"dgs-dxelement")) end
 	local eleAlign = dgsElementData[dgsEle].positionAlignment
-	eleAlign[1] = horizontal or eleAlign[1] or "left"
-	eleAlign[2] = vertical or eleAlign[2] or "top"
+	eleAlign[1] = horizontal or eleAlign[1]
+	eleAlign[2] = vertical or eleAlign[2]
 	return dgsSetData(dgsEle,"positionAlignment",eleAlign)
 end
 
 function dgsGetPositionAlignment(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetPositionAlignment",1,"dgs-dxelement")) end
-	return dgsElementData[dgsEle].positionAlignment[1],dgsElementData[dgsEle].positionAlignment[2]
+	return dgsElementData[dgsEle].positionAlignment[1] or "left",dgsElementData[dgsEle].positionAlignment[2] or "top"
 end
 
 function configPosSize(dgsEle,pos,size)
@@ -438,8 +440,10 @@ function dgsSetFont(dgsEle,font)
 	local fontType = dgsGetType(font)
 	if fontType == "string" then
 		if not(fontBuiltIn[font]) then error(dgsGenAsrt(font,"dgsSetFont",2,_,_,_,"font "..font.." doesn't exist")) end
+	elseif fontType == "table" then
+		
 	elseif fontType ~= "dx-font" then
-		error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font"))
+		error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font/table"))
 	end
 	dgsSetData(dgsEle,"font",font)
 end
@@ -878,7 +882,8 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	
 	dgsElementData[source] = dgsElementData[source] or {}
 	local eleData = dgsElementData[source]
-	eleData.positionAlignment = {"left","top"}
+	eleData.positionAlignment = {nil,nil}
+	eleData.contentPositionAlignment = {nil,nil}
 	eleData.visible = true
 	eleData.enabled = true
 	eleData.ignoreParentTitle = false
