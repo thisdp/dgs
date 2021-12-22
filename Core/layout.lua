@@ -1,6 +1,6 @@
 builtinLayoutStyle = {
 	horizontal = {
-		onItemAdd = function(layout,item,id)
+		onItemAdd = function(layout,item,id,updateOnly)
 			local eleData = dgsElementData[layout]
 			local spacing = eleData.spacing
 			local alignment = eleData.alignment
@@ -145,7 +145,9 @@ function dgsCreateLayout(...)
 		onItemAdd = layoutStyle.onItemAdd,
 		onItemRemove = layoutStyle.onItemRemove,
 		spacing = {5,5},
+		hideInvisible = false,
 		layoutData = {},
+		autoUpdate = true,
 	}
 	calculateGuiPositionSize(layout,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",layout,res)
@@ -167,7 +169,7 @@ end
 
 function dgsLayoutAddItem(layout,item)
 	if dgsGetType(layout) == "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsCreateLayout",1,"dgs-dxlayout")) end
-	if dgsIsType(item) then error(dgsGenAsrt(item,"dgsCreateLayout"2,"dgs-dxelement")) end
+	if dgsIsType(item) then error(dgsGenAsrt(item,"dgsCreateLayout",2,"dgs-dxelement")) end
 	local onItemAdd = dgsElementData[layout].onItemAdd
 	local layoutData = dgsElementData[layout].layoutData
 	local itemID = #layoutData+1
@@ -182,7 +184,7 @@ end
 
 function dgsLayoutRemoveItem(layout,item)
 	if dgsGetType(layout) == "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutRemoveItem",1,"dgs-dxlayout")) end
-	if dgsIsType(item) then error(dgsGenAsrt(item,"dgsLayoutRemoveItem"2,"dgs-dxelement")) end
+	if dgsIsType(item) then error(dgsGenAsrt(item,"dgsLayoutRemoveItem",2,"dgs-dxelement")) end
 	local onItemRemove = dgsElementData[layout].onItemRemove
 	local layoutData = dgsElementData[layout].layoutData
 	local itemID = table.find(layoutData,item)
@@ -199,11 +201,16 @@ end
 
 function dgsLayoutGetItemIndex(layout,item)
 	if dgsGetType(layout) == "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutGetItemIndex",1,"dgs-dxlayout")) end
-	if dgsIsType(item) then error(dgsGenAsrt(item,"dgsLayoutGetItemIndex"2,"dgs-dxelement")) end
+	if dgsIsType(item) then error(dgsGenAsrt(item,"dgsLayoutGetItemIndex",2,"dgs-dxelement")) end
 	local layoutData = dgsElementData[layout].layoutData
 	return table.find(layoutData,item)
 end
-
+--[[
+function dgsLayoutUpdate(layout)
+	if dgsGetType(layout) == "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutUpdate",1,"dgs-dxlayout")) end
+	local layoutData = eleData.layoutData
+	for i=1,
+end]]
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
