@@ -1628,6 +1628,31 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxSetRenderTarget(eleData.textRT,true)
 			dxSetBlendMode("modulate_add")
 			local tRB
+			if shadow then
+				local shadowoffx,shadowoffy,shadowc,shadowIsOutline,shadowfont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5] or font
+				if shadowoffx and shadowoffy and shadowc then
+					local shadowc = applyColorAlpha(shadowc,parentAlpha)
+					for i=1,textRenderBuffer.count do
+						tRB = textRenderBuffer[i]
+						local shadowText = colorcoded and tRB[1]:gsub('#%x%x%x%x%x%x','') or tRB[1]
+						dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]+shadowoffy,tRB[4]+shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+						if shadowIsOutline == true or shadowIsOutline == 1 then
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]+shadowoffy,tRB[4]-shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]-shadowoffy,tRB[4]-shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]-shadowoffy,tRB[4]+shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+						elseif shadowIsOutline == 2 then
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]+shadowoffy,tRB[4]-shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]-shadowoffy,tRB[4]-shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]-shadowoffy,tRB[4]+shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+
+							dxDrawText(shadowText,tRB[2],tRB[3]+shadowoffy,tRB[4],tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3],tRB[4]-shadowoffx,tRB[5],shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2],tRB[3]-shadowoffy,tRB[4],tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3],tRB[4]+shadowoffx,tRB[5],shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+						end
+					end
+				end
+			end
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
 				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
@@ -1733,6 +1758,32 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxSetRenderTarget(eleData.textRT,true)
 			dxSetBlendMode("modulate_add")
 			local tRB
+			local shadow = eleData.shadow
+			if shadow then
+				local shadowoffx,shadowoffy,shadowc,shadowIsOutline,shadowfont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5] or font
+				if shadowoffx and shadowoffy and shadowc then
+					local shadowc = applyColorAlpha(shadowc,parentAlpha)
+					for i=1,textRenderBuffer.count do
+						tRB = textRenderBuffer[i]
+						local shadowText = colorcoded and tRB[1]:gsub('#%x%x%x%x%x%x','') or tRB[1]
+						dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]+shadowoffy,tRB[4]+shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+						if shadowIsOutline == true or shadowIsOutline == 1 then
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]+shadowoffy,tRB[4]-shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]-shadowoffy,tRB[4]-shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]-shadowoffy,tRB[4]+shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+						elseif shadowIsOutline == 2 then
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]+shadowoffy,tRB[4]-shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]-shadowoffy,tRB[4]-shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]-shadowoffy,tRB[4]+shadowoffx,tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+
+							dxDrawText(shadowText,tRB[2],tRB[3]+shadowoffy,tRB[4],tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3],tRB[4]-shadowoffx,tRB[5],shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2],tRB[3]-shadowoffy,tRB[4],tRB[5]-shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+							dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3],tRB[4]+shadowoffx,tRB[5],shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
+						end
+					end
+				end
+			end
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
 				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
