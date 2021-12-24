@@ -46,6 +46,32 @@ function deleteTexture()
 	end
 end
 
+function deleteSvg()
+	local styleResource = dgsElementData[source].styleResource
+	if styleManager.styles[styleResource] then
+		local styleName = dgsElementData[source].styleName
+		styleManager.styles[styleResource].loaded[styleName].created.svg = styleManager.styles[styleResource].loaded[styleName].created.svg or {}
+		styleManager.styles[styleResource].loaded[styleName].created.svg[source] = nil	--Remove a svg from a specific style with a specific resource
+		--styleManager.styles[styleResource].shared.svg[source] = nil	--If it is shared, remove
+	end
+end
+
+function newSvg(styleName, res, svg, width, height)
+	if not isElement(svg) then
+		svg = svgCreate(width, height, svg)
+		dgsSetData(svg, "path", svg)
+		dgsSetData(svg, "width", width)
+		dgsSetData(svg, "height", height)
+		dgsAddEventHandler("onClientElementDestroy",svg,"deleteSvg")
+	end
+	local res = res or "global"
+	styleManager.styles[res].loaded[styleName].created.svg = styleManager.styles[res].loaded[styleName].created.svg or {}
+	styleManager.styles[res].loaded[styleName].created.svg[svg] = true
+	dgsSetData(svg,"styleResource",res)
+	dgsSetData(svg,"styleName",styleName)
+	return svg
+end
+
 function newTexture(styleName,res,texture)
 	if not isElement(texture) then
 		texture = dxCreateTexture(texture,false)
@@ -179,6 +205,12 @@ function dgsCreateTextureFromStyle(styleName,res,theTable)
 					dxSetShaderValue(shader,k,v)
 				end
 				return shader
+			elseif textureType == "svg" then
+				local width, height = tonumber(shaderSettings[1]), tonumber(shaderSettings[2])
+
+				if width and height then
+					return newSvg(styleName, res, thePath, width, height)
+				end
 			end
 		end
 	end
