@@ -385,10 +385,6 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					if tWordbreak == nil then tWordbreak = wordbreak end
 					if tColorcoded == nil then tColorcoded = colorcoded end
 					local width = tabData.width+tabPadding*2
-					local _width = 0
-					if tabs[d+1] then
-						_width = dgsElementData[tabs[d+1]].width+tabPadding*2
-					end
 					if tabX+width >= 0 and tabX <= w then
 						local tabImage = tabData.tabImage
 						local tabColor = tabData.tabColor
@@ -420,9 +416,6 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							dxDrawRectangle(tabX,0,width,height,finalcolor)
 						end
 						local textSizeX,textSizeY = tabData.textSize[1],tabData.textSize[2]
-						if eleData.PixelInt then
-							_tabsize,_width = tabX-tabX%1,mathFloor(width+tabX)
-						end
 						--[[local iconImage = eleData.iconImage
 						if iconImage then
 							local iconColor = eleData.iconColor
@@ -472,9 +465,9 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer.count = textRenderBuffer.count+1
 						if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
 						textRenderBuffer[textRenderBuffer.count][1] = tabData.text
-						textRenderBuffer[textRenderBuffer.count][2] = _tabsize
+						textRenderBuffer[textRenderBuffer.count][2] = tabX
 						textRenderBuffer[textRenderBuffer.count][3] = 0
-						textRenderBuffer[textRenderBuffer.count][4] = _width
+						textRenderBuffer[textRenderBuffer.count][4] = width+tabX
 						textRenderBuffer[textRenderBuffer.count][5] = height
 						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(tabTextColor[selState],parentAlpha)
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
