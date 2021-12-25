@@ -94,8 +94,27 @@ function dgsCreateWindow(...)
 		createCloseButton = false
 	end
 	if createCloseButton then
-		local closeBtn = dgsCreateButton(0,0,40,24,style.closeButtonText,false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
+		local closeIconTexture = nil
+
+		if style.closeIconImage and type(style.closeIconImage) == "table" then
+			closeIconTexture =  dgsCreateTextureFromStyle(using,res,style.closeIconImage)
+		end
+		
+		local closeBtn = dgsCreateButton(0,0,40,24,"",false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
 		dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
+
+		if closeIconTexture then
+			local closeIconImg = dgsCreateImage(0,0,16,16,closeIconTexture,false,closeBtn)
+			dgsSetEnabled(closeIconImg, false)
+			dgsSetPositionAlignment(closeIconImg,"center","center")
+			dgsElementData[window].closeIconImageSize = {16,16}
+			dgsElementData[window].closeIconImage = closeIconImg
+			dgsElementData[window].closeIconTexture = closeIconTexture
+		else
+			dgsElementData[window].closeButtonText = style.closeButtonText
+			dgsSetText(closeBtn, style.closeButtonText)
+		end
+
 		dgsElementData[window].closeButtonSize = {40,24,false}
 		dgsElementData[window].closeButton = closeBtn
 		dgsSetPositionAlignment(closeBtn,"right")
@@ -120,8 +139,18 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 	if bool then
 		if not isElement(closeButton) then
 			local cbSize = dgsElementData[window].closeButtonSize
-			local closeBtn = dgsCreateButton(0,0,cbSize[1],cbSize[2],"×",cbSize[3],window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
+			local closeBtn = dgsCreateButton(0,0,cbSize[1],cbSize[2],"",cbSize[3],window,_,_,_,_,_,_,tocolor(200,50,50,255),tocolor(250,20,20,255),tocolor(150,50,50,255),true)
 			dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
+			
+			if isElement(dgsElementData[window].closeIconTexture) then
+				local closeIconImageSize = dgsElementData[window].closeIconImageSize
+				local closeIconImg = dgsCreateImage(0,0,closeIconImageSize[1],closeIconImageSize[2],dgsElementData[window].closeIconTexture,false,closeBtn)
+				dgsSetEnabled(closeIconImg, false)
+				dgsSetPositionAlignment(closeIconImg,"center","center")
+			else
+				dgsSetText(closeBtn, dgsElementData[window].closeButtonText)
+			end
+
 			dgsSetData(window,"closeButton",closeBtn)
 			dgsSetData(closeBtn,"alignment",{"center","center"})
 			dgsSetData(closeBtn,"ignoreParentTitle",true)
@@ -130,6 +159,13 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 		end
 	else
 		if isElement(closeButton) then
+			local closeIconImage = dgsElementData[window].closeIconImage
+
+			if isElement(closeIconImage) then
+				destroyElement(closeIconImage)
+				dgsSetData(window,"closeIconImage",nil)
+			end
+
 			destroyElement(closeButton)
 			dgsSetData(window,"closeButton",nil)
 			return true
