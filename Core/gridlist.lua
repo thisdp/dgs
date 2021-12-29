@@ -2385,7 +2385,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if bgImage then
 		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	else
-		dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,isPostGUI,true)
+		dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,isPostGUI)
 	end
 	local columnData,rowData = eleData.columnData,eleData.rowData
 	local columnCount,rowCount = #columnData,#rowData
@@ -2397,7 +2397,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 	end
 	local columnTextColor = eleData.columnTextColor
-	local columnRelt = eleData.columnRelative
 	local rowHeight = eleData.rowHeight
 	local rowTextPosOffset = eleData.rowTextPosOffset
 	local columnTextPosOffset = eleData.columnTextPosOffset
@@ -2457,7 +2456,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if columnImage then
 		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
 	else
-		dxDrawRectangle(x,y,w,columnHeight,columnColor,isPostGUI,true)
+		dxDrawRectangle(x,y,w,columnHeight,columnColor,isPostGUI)
 	end
 	if not eleData.mode then
 
@@ -2465,7 +2464,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 
 		dxSetRenderTarget(eleData.columnTextRT,true)
 		dxSetBlendMode("modulate_add")
-		local multiplier = columnRelt and (w-scbThickV) or 1
+		local multiplier = eleData.columnRelative and (w-scbThickV) or 1
 		local tempColumnOffset = columnMoveOffset+columnOffset
 		local mouseColumnPos = mx-cx
 		local mouseSelectColumn = -1
@@ -2707,7 +2706,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local whichColumnToStart,whichColumnToEnd = -1,-1
 		local _rowMoveOffset = (1-eleData.FromTo[1])*rowHeightLeadingTemp
 		local cpos = {}
-		local multiplier = columnRelt and (w-scbThickV) or 1
+		local multiplier = eleData.columnRelative and (w-scbThickV) or 1
 		local ypcolumn = cy+columnHeight
 		local _y,_sx = ypcolumn+_rowMoveOffset,cx+w-scbThickV
 		local column_x = columnOffset
