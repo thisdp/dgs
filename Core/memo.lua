@@ -254,10 +254,10 @@ function dgsMemoGetTextBoundingBox(memo,excludePadding)
 	if eleData.wordWrap then
 		local textTable = eleData.wordWrapMapText
 		if excludePadding then
-			return eleData.absSize[1],#textTable*fontHeight
+			return eleData.rightLength[1],#textTable*fontHeight
 		else
 			local padding = eleData.padding
-			return eleData.absSize[1]+padding[1]*2,#textTable*fontHeight+padding[2]*2
+			return eleData.rightLength[1]+padding[1]*2,#textTable*fontHeight+padding[2]*2
 		end
 	else
 		local textTable = eleData.text
