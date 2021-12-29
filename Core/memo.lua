@@ -253,11 +253,12 @@ function dgsMemoGetTextBoundingBox(memo,excludePadding)
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],eleData.font or systemFont)
 	if eleData.wordWrap then
 		local textTable = eleData.wordWrapMapText
+		if eleData.rebuildMapTableNextFrame then dgsMemoRebuildWordWrapMapTable(memo) end
 		if excludePadding then
-			return eleData.rightLength[1],#textTable*fontHeight
+			return eleData.absSize[1],#textTable*fontHeight
 		else
 			local padding = eleData.padding
-			return eleData.rightLength[1]+padding[1]*2,#textTable*fontHeight+padding[2]*2
+			return eleData.absSize[1]+padding[1]*2,#textTable*fontHeight+padding[2]*2
 		end
 	else
 		local textTable = eleData.text
