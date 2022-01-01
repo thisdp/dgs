@@ -1034,6 +1034,8 @@ function dgsGridListClearColumn(gridlist,notResetSelected,notResetScrollBar)
  	local scrollbars = dgsElementData[gridlist].scrollbars
 	local rowData = dgsElementData[gridlist].rowData
 	if not notResetScrollBar then
+		dgsSetData(gridlist,"columnMoveOffset",0)
+		dgsSetData(gridlist,"columnMoveOffsetTemp",0)
 		dgsSetData(scrollbars[2],"length",{0,true})
 		dgsSetData(scrollbars[2],"position",0)
 		dgsSetVisible(scrollbars[2],false)
@@ -1393,6 +1395,8 @@ function dgsGridListClearRow(gridlist,notResetSelected,notResetScrollBar)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListClearRow",1,"dgs-dxgridlist")) end
  	local scrollbars = dgsElementData[gridlist].scrollbars
 	if not notResetScrollBar then
+		dgsSetData(gridlist,"rowMoveOffset",0)
+		dgsSetData(gridlist,"rowMoveOffsetTemp",0)
 		dgsSetData(scrollbars[1],"length",{0,true})
 		dgsSetData(scrollbars[1],"position",0)
 		dgsSetVisible(scrollbars[1],false)
