@@ -11,7 +11,7 @@ function dgsSetCustomCursorImage(cursorType,image,rotation,rotationCenter,offset
 	style = style.loaded[using].cursor
 	if not cursorType then	--Apply all (image in current style)
 		for k,v in pairs(cursorTypesBuiltIn) do
-			local texture = dgsCreateTextureFromStyle(_,_style[k].image)
+			local texture = dgsCreateTextureFromStyle(using,res,style[k].image)
 			CursorData[k] = {texture,style[k].rotation or 0,style[k].rotationCenter or {0,0},style[k].offset or {0,0},style[k].scale,{dxGetMaterialSize(texture)}}
 		end
 	elseif style[cursorType] then
