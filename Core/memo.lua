@@ -1028,7 +1028,8 @@ end
 
 function dgsMemoClearText(memo)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoClearText",1,"dgs-dxmemo")) end
-	dgsElementData[memo].text = {{[-1]=0,[0]=""}}
+	local eleData = dgsElementData[memo]
+	eleData.text = {{[-1]=0,[0]=""}}
 	dgsSetData(memo,"caretPos",{0,1})
 	dgsSetData(memo,"wordWrapMapText",{})
 	dgsSetData(memo,"wordWrapShowLine",{1,1,1})
