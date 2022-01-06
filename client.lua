@@ -2233,7 +2233,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	end
 	local children = ChildrenTable[source] or {}
 	local childrenCnt = #children
-	for k=1,childrenCnt do
+	--[[for k=1,childrenCnt do
 		local child = children[k]
 		local relt = dgsElementData[child].relative
 		if relt then
@@ -2244,7 +2244,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 			end
 			calculateGuiPositionSize(child,x,y,relativePos)
 		end
-	end
+	end]]
 	local attachedBy = dgsElementData[source].attachedBy
 	if attachedBy then
 		local absx,absy = dgsGetPosition(source,false,true)
@@ -2267,14 +2267,16 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 		if dgsElementType[child] ~= "dgs-dxtab" then
 			local relt = dgsElementData[child].relative
 			local relativePos,relativeSize = relt[1],relt[2]
-			local x,y,sx,sy
-			if relativePos then
-				x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
+			if relativePos or relativeSize then
+				local x,y,sx,sy
+				if relativePos then
+					x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
+				end
+				if relativeSize then
+					sx,sy = dgsElementData[child].rltSize[1],dgsElementData[child].rltSize[2]
+				end
+				calculateGuiPositionSize(child,x,y,relativePos,sx,sy,relativeSize)
 			end
-			if relativeSize then
-				sx,sy = dgsElementData[child].rltSize[1],dgsElementData[child].rltSize[2]
-			end
-			calculateGuiPositionSize(child,x,y,relativePos,sx,sy,relativeSize)
 		end
 	end
 	local typ = dgsGetType(source)
