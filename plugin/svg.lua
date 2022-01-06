@@ -90,7 +90,14 @@ function dgsSVGCreateRect(svg,x,y,width,height,parent,rx,ry)
 	return newRect
 end
 
-function dgsSVGCreateCircle()
+SVGElementCreation = {
+	rect = function(...)
+		local x,y,w,h = ...
+		
+	end,
+}
+function dgsSVGCreateElement(elementType,...)
+	
 
 end
 
