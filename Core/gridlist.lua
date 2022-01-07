@@ -707,11 +707,26 @@ function dgsGridListSetColumnFont(gridlist,c,font,affectRow)
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnFont",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
 	local c = c-c%1
 	if not (fontBuiltIn[font] or dgsGetType(font) == "dx-font") then error(dgsGenAsrt(font,"dgsGridListSetColumnFont",3,"dx-font/string",_,"invalid font")) end
+	--Multilingual
+	if type(font) == "table" then
+		cData[c]._translationFont = font
+		font = dgsGetTranslationFont(gridlist,font,sourceResource)
+	else
+		cData[c]._translationFont = nil
+	end
 	cData[c][9] = font
 	if affectRow then
 		local rData = eleData.rowData
-		for i=1,#rData do
-			rData[i][c][6] = font
+		for r=1,#rData do
+			--Multilingual
+			if type(font) == "table" then
+				rData[r][c]._translationFont = font
+				font = dgsGetTranslationFont(gridlist,font,sourceResource)
+			else
+				rData[r][c]._translationFont = nil
+			end
+
+			rData[r][c][6] = font
 		end
 	end
 	return true
@@ -1154,7 +1169,7 @@ function dgsGridListAddRows(gridlist,r,t,isRawData)
 					colorcoded,
 					scale[1],
 					scale[2],
-					font,
+					nil,	--Font
 				}
 			end
 			tableInsert(rowData,r+i,rowTable)
@@ -1461,9 +1476,18 @@ function dgsGridListSetItemFont(gridlist,r,c,font)
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
 	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemFont",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemFont",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
-	if not (fontBuiltIn[font] or dgsGetType(font) == "dx-font") then error(dgsGenAsrt(font,"dgsGridListSetItemFont",4,"dx-font/string",_,"invalid font")) end
+	local fontType = dgsGetType(font) 
+	if not (fontBuiltIn[font] or fontType == "dx-font" or fontType == "table") then error(dgsGenAsrt(font,"dgsGridListSetItemFont",4,"dx-font/string/table",_,"invalid font")) end
 	local c,r = c-c%1,r-r%1
 	if rData[r][c] then
+		--Multilingual
+		if type(font) == "table" then
+			rData[r][c]._translationFont = font
+			font = dgsGetTranslationFont(gridlist,font,sourceResource)
+		else
+			rData[r][c]._translationFont = nil
+		end
+		
 		rData[r][c][6] = font
 		return true
 	end

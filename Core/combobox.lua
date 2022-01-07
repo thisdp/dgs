@@ -333,6 +333,7 @@ function dgsComboBoxAddItem(combobox,text)
 		_text = text
 		text = dgsTranslate(combobox,text,sourceResource)
 	end
+
 	local tab = {
 		[-6] = nil,										--built-in image {[1]=image,[2]=color,[3]=offsetX,[4]=offsetY,[5]=width,[6]=height,[7]=relative}
 		[-5] = dgsElementData[combobox].colorcoded,		--use color code
@@ -342,9 +343,9 @@ function dgsComboBoxAddItem(combobox,text)
 		[-1] = dgsElementData[combobox].itemImage,		--background image of item
 		[0] = dgsElementData[combobox].itemColor,		--background color of item
 		tostring(text or ""),
-		_translationText = _text
+		_translationText = _text,
+		_translationFont = dgsElementData[combobox]._translationFont,
 	}
-
 	tableInsert(iData,id,tab)
 	dgsSetData(combobox,"configNextFrame",true)
 	return id
@@ -450,6 +451,14 @@ function dgsComboBoxSetItemFont(combobox,i,font)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
+
+	--Multilingual
+	if type(font) == "table" then
+		iData[i]._translationFont = font
+		font = dgsGetTranslationFont(combobox,font,sourceResource)
+	else
+		iData[i]._translationFont = nil
+	end
 	iData[i][-4] = font
 	return true
 end

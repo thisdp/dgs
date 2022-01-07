@@ -568,6 +568,31 @@ function math.getBezierPoint(pos,t)
 	return retX,retY
 end
 
+function random(n, m)
+    math.randomseed(os.clock()*math.random(1000000,90000000)+math.random(1000000,90000000))
+    return math.random(n, m)
+end
+
+function randomNumber(len)
+    local rt = ""
+    for i=1,len,1 do
+        if i == 1 then
+            rt = rt..random(1,9)
+        else
+            rt = rt..random(0,9)
+        end
+    end
+    return rt
+end
+
+function randomLetter(len)
+    local rt = ""
+    for i = 1, len, 1 do
+        rt = rt..string.char(random(97,122))
+    end
+    return rt
+end
+
 function getPositionFromElementOffset(element,offX,offY,offZ)
     local m = getElementMatrix(element)
     return offX*m[1][1]+offY*m[2][1]+offZ*m[3][1]+m[4][1],offX*m[1][2]+offY*m[2][2]+offZ*m[3][2]+m[4][2],offX*m[1][3]+offY*m[2][3]+offZ*m[3][3]+m[4][3]

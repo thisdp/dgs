@@ -441,7 +441,7 @@ function dgsSetFont(dgsEle,font)
 	if fontType == "string" then
 		if not(fontBuiltIn[font]) then error(dgsGenAsrt(font,"dgsSetFont",2,_,_,_,"font "..font.." doesn't exist")) end
 	elseif fontType == "table" then
-		
+		--nothing
 	elseif fontType ~= "dx-font" then
 		error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font/table"))
 	end
@@ -1005,6 +1005,10 @@ function dgsAttachToTranslation(dgsEle,name)
 	if text then
 		dgsSetData(dgsEle,"text",text)
 	end
+	local font = dgsElementData[dgsEle]._translationFont
+	if font then
+		dgsSetData(dgsEle,"font",font)
+	end
 	return true
 end
 
@@ -1073,6 +1077,22 @@ function dgsTranslate(dgsEle,textTable,sourceResource)
 	return false
 end
 
+function dgsGetTranslationFont(dgsEle,fontTable,sourceResource)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
+	if type(fontTable) == "table" then
+		local translation = dgsElementData[dgsEle]._translang or resourceTranslation[sourceResource or getThisResource()]
+		local font = translation and LanguageTranslation[translation] and LanguageTranslation[translation][fontTable[1]] or fontTable[1]
+		local fontType = dgsGetType(font)
+		if fontType == "dx-font" then
+			return font
+		elseif fontType == "string" then
+			if not(fontBuiltIn[font]) then return "default" end
+			return font
+		end
+	end
+	return false
+end
+
 function dgsApplyLanguageChange(name,translation,attach)
 	for i=1,#attach do
 		local dgsEle = attach[i]
@@ -1085,6 +1105,10 @@ function dgsApplyLanguageChange(name,translation,attach)
 					if text then
 						columnData[cIndex][1] = dgsTranslate(dgsEle,text,sourceResource)
 					end
+					local font = columnData[cIndex]._translationFont
+					if font then
+						columnData[cIndex][9] = dgsGetTranslationFont(dgsEle,font,sourceResource)
+					end
 				end
 				dgsSetData(dgsEle,"columnData",columnData)
 				local rowData = dgsElementData[dgsEle].rowData
@@ -1093,6 +1117,10 @@ function dgsApplyLanguageChange(name,translation,attach)
 						local text = rowData[rID][cID]._translationText
 						if text then
 							rowData[rID][cID][1] = dgsTranslate(dgsEle,text,sourceResource)
+						end
+						local font = rowData[rID][cID]._translationFont
+						if font then
+							rowData[rID][cID][6] = dgsGetTranslationFont(dgsEle,font,sourceResource)
 						end
 					end
 				end
@@ -1108,6 +1136,10 @@ function dgsApplyLanguageChange(name,translation,attach)
 					if text then
 						itemData[itemID][1] = dgsTranslate(dgsEle,text,sourceResource)
 					end
+					local font = itemData[itemID]._translationFont
+					if font then
+						itemData[itemID][-4] = dgsGetTranslationFont(dgsEle,font,sourceResource)
+					end
 				end
 				dgsSetData(dgsEle,"itemData",itemData)
 			elseif dgsType == "dgs-dxswitchbutton" then
@@ -1118,6 +1150,10 @@ function dgsApplyLanguageChange(name,translation,attach)
 				local text = dgsElementData[dgsEle]._translationText
 				if text then
 					dgsSetData(dgsEle,"text",text)
+				end
+				local font = dgsElementData[dgsEle]._translationFont
+				if font then
+					dgsSetData(dgsEle,"font",font)
 				end
 			end
 		end

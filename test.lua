@@ -199,6 +199,7 @@ function MemoTest()
 
 	Test UTF8: 你好]])
 	dgsMemoSetCaretPosition(memo,10,20)
+	dgsSetProperty(memo,"shadow",{1,1,tocolor(0,0,0,255)})
 end
 
 function EditTest() --Test Tab Switch for edit.
@@ -280,31 +281,6 @@ function AnimTest()
 	dgsAnimTo(label,"shadow",{100,100,tocolor(0,0,0,255)},"shadowOffset",10000)
 end
 
-function random(n, m)
-    math.randomseed(os.clock()*math.random(1000000,90000000)+math.random(1000000,90000000))
-    return math.random(n, m)
-end
-
-function randomNumber(len)
-    local rt = ""
-    for i=1,len,1 do
-        if i == 1 then
-            rt = rt..random(1,9)
-        else
-            rt = rt..random(0,9)
-        end
-    end
-    return rt
-end
-
-function randomLetter(len)
-    local rt = ""
-    for i = 1, len, 1 do
-        rt = rt..string.char(random(97,122))
-    end
-    return rt
-end
-
 function GridListSortingTest()
 	for x=1,10 do
 		local sortfnc = [[
@@ -374,14 +350,19 @@ function GridListTest()
 end
 
 function MediaBrowserTest()
+	setDevelopmentMode(true,true)
 	bro = dgsCreateMediaBrowser(600,600)
-	rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
-	material1 = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
-	img = dgsCreateImage(0,0,800,500,rndRect1,false,material1)
+	toggleBrowserDevTools(bro,true)
+	--rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
+	--material1 = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
+	img = dgsCreateImage(400,200,600,600,bro,false)
 	dgsMediaLoadMedia(bro,"a.webm","VIDEO") -- Give a video file PLZ! (Only .webm file)
 	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
 	dgsMediaPlay(bro)
-	dgsMediaSetSpeed(bro,0.5)
+	--dgsMediaSetSpeed(bro,2)
+	setTimer(function()
+		dgsMediaSetCurrentPosition(bro,10)
+	end,500,1)
 end
 
 function browserTest()
@@ -955,7 +936,5 @@ dgsSVGSetElementStyle(recta,{
 })
 local btn1 = dgsCreateImage(200,200,200,200,svg,false)
 ]]
-
-
 end)
 
