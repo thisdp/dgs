@@ -2078,7 +2078,7 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 		error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"table/number"))
 	elseif argLen == 1 then
 		if type(args[1]) == "table" then
-			colors = args[1]
+			colors = {args[1][1],args[1][2] or args[1][1],args[1][3] or args[1][1]}
 		else
 			colors = {args[1],args[1],args[1]}
 		end
