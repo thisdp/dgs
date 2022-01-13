@@ -573,11 +573,18 @@ end
 
 ---------------Language Test
 function LanguageChangeInComboBoxTest()
-	languageTab = {wtf="DGS %rep%"}
-	languageTab2 = {wtf="Test %rep% %rep%"}
+	languageTab = {
+		wtf="DGS %rep%",
+		fontX = "default",
+	}
+	languageTab2 = {
+		wtf="Test %rep% %rep%",
+		fontX = "default",
+	}
 	dgsSetTranslationTable("test",languageTab)
 	dgsSetAttachTranslation("test")
 	combobox = dgsCreateComboBox(500,400,200,30,{"wtf","1"},false)
+	dgsSetFont(combobox,{"fontX"})
 	for i=1,20 do
 		dgsComboBoxAddItem(combobox,{"wtf",i})
 	end
