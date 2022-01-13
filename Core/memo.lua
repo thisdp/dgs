@@ -1679,13 +1679,15 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				local caretStyle = eleData.caretStyle
 				local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
 				if caretStyle == 0 then
-					dxDrawLine(caretRenderX,caretDrawPos[2],caretRenderX,caretDrawPos[2]+fontHeight*(1-caretHeight),caretColor,eleData.caretThick,isPostGUI)
+					local caretOffset = eleData.caretOffset
+					dxDrawLine(caretRenderX,caretDrawPos[2]-caretOffset,caretRenderX,caretDrawPos[2]+fontHeight*(1-caretHeight)-caretOffset,caretColor,eleData.caretThick,isPostGUI)
 				elseif caretStyle == 1 then
 					local cursorWidth = dxGetTextWidth(caretDrawPos[4],txtSizX,font)
 					if cursorWidth == 0 then
 						cursorWidth = txtSizX*8
 					end
-					local caretRenderY = caretDrawPos[2]+fontHeight*(1-caretHeight)*0.85+eleData.caretOffset-2
+					local caretOffset = eleData.caretOffset
+					local caretRenderY = caretDrawPos[2]+fontHeight*(1-caretHeight)*0.85-caretOffset-2
 					dxDrawLine(caretRenderX,caretRenderY,caretRenderX+cursorWidth,caretRenderY,caretColor,eleData.caretThick,isPostGUI)
 				end
 			end
@@ -1816,12 +1818,13 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					if eleData.caretStyle == 0 then
 						local selStartY = py+lineStart+fontHeight*(1-caretHeight)
 						local selEndY = py+lineStart+fontHeight*caretHeight
-						dxDrawLine(px+width-showPos-1,selStartY,px+width-showPos-1,selEndY,caretColor,eleData.caretThick,isPostGUI)
+						local caretOffset = eleData.caretOffset
+						dxDrawLine(px+width-showPos-1,selStartY-caretOffset,px+width-showPos-1,selEndY-caretOffset,caretColor,eleData.caretThick,isPostGUI)
 					elseif eleData.caretStyle == 1 then
 						local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
 						cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
-						local offset = eleData.caretOffset
-						dxDrawLine(px+width-showPos,py+ph-4+offset,px+width-showPos+cursorWidth+2,py+ph-4+offset,caretColor,eleData.caretThick,isPostGUI)
+						local caretOffset = eleData.caretOffset
+						dxDrawLine(px+width-showPos,py+ph-4-caretOffset,px+width-showPos+cursorWidth+2,py+ph-4-caretOffset,caretColor,eleData.caretThick,isPostGUI)
 					end
 				end
 			end
