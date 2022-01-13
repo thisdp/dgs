@@ -26,6 +26,7 @@ pBCat = {
 		"RenderTargets",
 		"ScreenSources",
 		"WebBrowsers",
+		"VectorGraphics",
 	},
 	["Lib memory"] = {
 		"name",
