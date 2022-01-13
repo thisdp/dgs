@@ -2076,8 +2076,12 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 	local args = {...}
 	if argLen == 0 then
 		error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"table/number"))
-	elseif argLen == 1 and type(args[1]) == "table" then
-		colors = args[1]
+	elseif argLen == 1 then
+		if type(args[1]) == "table" then
+			colors = args[1]
+		else
+			colors = {args[1],args[1],args[1]}
+		end
 	elseif argLen >= 3 then
 		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"number")) end
 		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemColor",3,"number")) end
