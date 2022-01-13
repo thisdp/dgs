@@ -243,7 +243,7 @@ function dgsAddStyle(styleName,stylePath,res)
 		using = "Default",
 	}
 	local stylePath = string.getPath(res,stylePath)
-	assert(fileExists(stylePath.."/styleSettings.txt"),"Bad argument @dgsAddStyle at argument 3, Failed to add resource style [ styleSetting.txt not found at '"..stylePath.."']")
+	assert(fileExists(stylePath.."/styleSettings.txt"),"Bad argument @dgsAddStyle at argument 3, Failed to add resource style [ styleSettings.txt not found at '"..stylePath.."']")
 	styleManager.styles[res].mapper[styleName] = stylePath
 	return true
 end
