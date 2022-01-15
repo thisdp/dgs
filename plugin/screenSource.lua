@@ -1,6 +1,8 @@
 GlobalScreenSource = false
 GlobalScreenSourceWidthFactor = 1
 GlobalScreenSourceHeightFactor = 1
+
+DGSI_RegisterMaterialType("dgs-dxscreensource","texture")
 function dgsCreateScreenSource(uPos,vPos,uSize,vSize,relative)
 	local ss = createElement("dgs-dxscreensource")
 	dgsSetData(ss,"asPlugin","dgs-dxscreensource")

@@ -133,7 +133,7 @@ function dgsCreateMemo(...)
 		showLine = 1,
 		caretStyle = style.caretStyle,
 		caretThick = style.caretThick,
-		caretOffest = style.caretOffest,
+		caretOffset = style.caretOffset,
 		caretColor = style.caretColor,
 		caretHeight = style.caretHeight,
 		scrollBarThick = style.scrollBarThick,

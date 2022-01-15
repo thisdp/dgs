@@ -149,9 +149,21 @@ function dgsPopElement(eleType,sRes)
 	end
 end
 
+--Built in
+dgsMaterialType = {
+	texture = "texture",
+	shader = "shader",
+	svg = "texture",
+	["render-target-texture"] = "texture",
+}
+
+function DGSI_RegisterMaterialType(typeName,sort)
+	dgsMaterialType[typeName] = sort
+end
+
 function isMaterial(ele)
 	local eleType = dgsGetType(ele)
-	return eleType == "shader" or eleType == "texture" or eleType == "render-target-texture" or eleType == "svg"
+	return dgsMaterialType[eleType] or false
 end
 
 dgsElementLogger = {}	--0:Empty texture 1:texture; 2:shader

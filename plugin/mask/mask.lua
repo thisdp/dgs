@@ -7,7 +7,7 @@ masks = {
 function dgsCreateMask(texture1,texture2,settings)
 	settings = settings or {}
 	local tex1Type = dgsGetType(texture1)
-	if not(tex1Type == "texture" or tex1Type == "svg") then error(dgsGenAsrt(texture1,"dgsCreateMask",1,"texture")) end
+	if not(isMaterial(texture1) == "texture") then error(dgsGenAsrt(texture1,"dgsCreateMask",1,"texture")) end
 	local tex2Type = dgsGetType(texture2)
 	local maskResult
 	if tex2Type == "string" then

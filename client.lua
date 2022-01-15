@@ -266,33 +266,33 @@ function dgsCoreRender()
 				end
 			end
 		end
+		dgsCheckHit(MouseData.hit,cursorShowing)
+		----Drag Drop
+		if dgsDragDropBoard[0] then
+			local preview = dgsDragDropBoard.preview
+			local align = dgsDragDropBoard.previewAlignment
+			local alignHoz,alignVrt = align and align[1] or "center", align and align[2] or "center"
+			local previewOffsetX,previewOffsetY = dgsDragDropBoard.previewOffsetX or 0,dgsDragDropBoard.previewOffsetY or 0
+			local posX,posY = mx+previewOffsetX,my+previewOffsetY
+			local previewWidth,previewHeight = dgsDragDropBoard.previewWidth or 20,dgsDragDropBoard.previewHeight or 20
+			if alignHoz == "right" then
+				posX = posX-previewWidth
+			elseif alignHoz == "center" then
+				posX = posX-previewWidth/2
+			end
+			if alignVrt == "bottom" then
+				posY = posY-previewHeight
+			elseif alignVrt == "center" then
+				posY = posY-previewHeight/2
+			end
+			if preview then
+				dxDrawImage(posX,posY,previewWidth,previewHeight,preview,0,0,0,dgsDragDropBoard.previewColor or 0xAAFFFFFF,true)
+			else
+				dxDrawRectangle(posX,posY,previewWidth,previewHeight,dgsDragDropBoard.previewColor or 0xAAFFFFFF,true)
+			end
+		end
+		dgsRenderInfo.RTRestoreNeed = false
 	end
-	dgsCheckHit(MouseData.hit,cursorShowing)
-	----Drag Drop
-	if dgsDragDropBoard[0] then
-		local preview = dgsDragDropBoard.preview
-		local align = dgsDragDropBoard.previewAlignment
-		local alignHoz,alignVrt = align and align[1] or "center", align and align[2] or "center"
-		local previewOffsetX,previewOffsetY = dgsDragDropBoard.previewOffsetX or 0,dgsDragDropBoard.previewOffsetY or 0
-		local posX,posY = mx+previewOffsetX,my+previewOffsetY
-		local previewWidth,previewHeight = dgsDragDropBoard.previewWidth or 20,dgsDragDropBoard.previewHeight or 20
-		if alignHoz == "right" then
-			posX = posX-previewWidth
-		elseif alignHoz == "center" then
-			posX = posX-previewWidth/2
-		end
-		if alignVrt == "bottom" then
-			posY = posY-previewHeight
-		elseif alignVrt == "center" then
-			posY = posY-previewHeight/2
-		end
-		if preview then
-			dxDrawImage(posX,posY,previewWidth,previewHeight,preview,0,0,0,dgsDragDropBoard.previewColor or 0xAAFFFFFF,true)
-		else
-			dxDrawRectangle(posX,posY,previewWidth,previewHeight,dgsDragDropBoard.previewColor or 0xAAFFFFFF,true)
-		end
-	end
-	dgsRenderInfo.RTRestoreNeed = false
 	----Debug stuff
 	dgsRenderInfo.frameEndScreen = getTickCount()
 	if debugMode then

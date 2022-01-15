@@ -17,6 +17,7 @@ addEvent("onDgsMediaLoaded",true)
 addEvent("onDgsMediaTimeUpdate",true)
 addEvent("onDgsMediaBrowserReturn",true)
 
+DGSI_RegisterMaterialType("dgs-dxmedia","texture")
 --Media Element won't be rendered by DGS render, so it should be set into other dgs element(Such as dgs-dximage).
 --Media Element is "cef"(browser element), but if you want to manage it well, please use the functions dgs offered.
 function dgsCreateMediaBrowser(w,h,transparent)

@@ -352,6 +352,7 @@ end
 function MediaBrowserTest()
 	setDevelopmentMode(true,true)
 	bro = dgsCreateMediaBrowser(600,600)
+	mask = dgsCreateMask(bro,"backgroundFilter")
 	toggleBrowserDevTools(bro,true)
 	--rndRect1 = dgsCreateRoundRect(1,tocolor(255,255,255,255),bro)
 	--material1 = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
@@ -360,9 +361,7 @@ function MediaBrowserTest()
 	--dgsMediaLoadMedia(bro,"test.ogg","AUDIO") -- Give a audio file PLZ! (Only .ogg file)
 	dgsMediaPlay(bro)
 	--dgsMediaSetSpeed(bro,2)
-	setTimer(function()
-		dgsMediaSetCurrentPosition(bro,10)
-	end,500,1)
+
 end
 
 function browserTest()

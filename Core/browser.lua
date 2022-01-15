@@ -20,6 +20,8 @@ local addEventHandler = addEventHandler
 local assert = assert
 local type = type
 
+DGSI_RegisterMaterialType("dgs-dxbrowser","texture")
+
 function dgsCreateBrowser(...)
 	local x,y,w,h,relative,parent,isLocal,isTransparent,resX,resY,color
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
