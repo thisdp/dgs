@@ -25,6 +25,7 @@ local mathMin = math.min
 local mathMax = math.max
 local tableInsert = table.insert
 local tableRemove = table.remove
+local tableSort = table.sort
 local assert = assert
 local type = type
 local tonumber = tonumber
@@ -139,6 +140,7 @@ function dgsCreateComboBox(...)
 		captionEdit = false,
 		configNextFrame = false,
 		textRenderBuffer = {},
+		autoSort = true,
 	}
 	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or resource])
 	if type(caption) == "table" then
@@ -366,6 +368,9 @@ function dgsComboBoxSetItemText(combobox,i,text)
 		iData[i]._translationText = nil
 	end
 	iData[i][1] = tostring(text or "")
+	if dgsElementData[combobox].autoSort then
+		dgsElementData[combobox].nextRenderSort = true
+	end
 	return true
 end
 
@@ -674,6 +679,130 @@ function dgsComboBoxGetViewCount(combobox,count)
 	return dgsElementData[combobox].viewCount
 end
 
+
+-------------Sort
+comboSortFunctions = {}
+comboSortFunctions.greaterUpper = function(...)
+	local a,b = ...
+	return a[1] < b[1]
+end
+
+comboSortFunctions.greaterLower = function(...)
+	local a,b = ...
+	return a[1] > b[1]
+end
+
+comboSortFunctions.numGreaterUpperNumFirst = function(...)
+	local a,b = ...
+	local a = tonumber(a[1]) or a[1]
+	local b = tonumber(b[1]) or b[1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return false
+	elseif aType == "number" and bType == "string" then
+		return true
+	end
+	return a < b
+end
+
+comboSortFunctions.numGreaterLowerNumFirst = function(...)
+	local a,b = ...
+	local a = tonumber(a[1]) or a[1]
+	local b = tonumber(b[1]) or b[1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return true
+	elseif aType == "number" and bType == "string" then
+		return false
+	end
+	return a > b
+end
+
+comboSortFunctions.numGreaterUpper = comboSortFunctions.numGreaterUpperNumFirst 
+comboSortFunctions.numGreaterLower = comboSortFunctions.numGreaterLowerNumFirst 
+
+comboSortFunctions.numGreaterUpperStrFirst = function(...)
+	local a,b = ...
+	local a = tonumber(a[1]) or a[1]
+	local b = tonumber(b[1]) or b[1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return true
+	elseif aType == "number" and bType == "string" then
+		return false
+	end
+	return a < b
+end
+
+comboSortFunctions.numGreaterLowerStrFirst = function(...)
+	local a,b = ...
+	local a = tonumber(a[1]) or a[1]
+	local b = tonumber(b[1]) or b[1]
+	local aType = type(a)
+	local bType = type(b)
+	if aType == "string" and bType == "number" then
+		return false
+	elseif aType == "number" and bType == "string" then
+		return true
+	end
+	return a > b
+end
+
+comboSortFunctions.longerUpper = function(...)
+	local a,b = ...
+	return utf8Len(a[1]) < utf8Len(b[1])
+end
+
+comboSortFunctions.longerLower = function(...)
+	local a,b = ...
+	return utf8Len(a[1]) > utf8Len(b[1])
+end
+
+function dgsComboBoxSetSortFunction(combobox,str)
+	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxSetSortFunction",1,"dgs-dxcombobox")) end
+	local fnc,err
+	if type(str) == "string" then
+		if comboSortFunctions[str] then
+			fnc = comboSortFunctions[str]
+		else
+			fnc,err = loadstring(str)
+			if not fnc then error("Bad Argument @'dgsComboBoxSetSortFunction' at argument 1, failed to load the function:\n"..err) end
+		end
+	elseif type(str) == "function" then
+		fnc = str
+	end
+	local newfenv = {}
+	setmetatable(newfenv, {__index = _G})
+	newfenv.self = combobox
+	newfenv.dgsElementData = dgsElementData
+	setfenv(fnc,newfenv)
+	if dgsElementData[combobox].autoSort then
+		dgsElementData[combobox].nextRenderSort = true
+	end
+	return dgsSetData(combobox,"sortFunction",fnc)
+end
+
+function dgsComboBoxSortSetAutoSortEnabled(combobox,state)
+	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxSortSetAutoSortEnabled",1,"dgs-dxcombobox")) end
+	return dgsSetData(combobox,"autoSort",state and true or false)
+end
+
+function dgsComboBoxSortGetAutoSortEnabled(combobox)
+	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxSortGetAutoSortEnabled",1,"dgs-dxcombobox")) end
+	return dgsElementData[combobox].autoSort
+end
+
+function dgsComboBoxSort(combobox)
+	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxSortSort",1,"dgs-dxcombobox")) end
+	local itemData = dgsElementData[combobox].itemData
+	local sortFunction = dgsElementData[combobox].sortFunction
+	tableSort(itemData,sortFunction)
+	dgsElementData[combobox].itemData = itemData
+	return true
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -787,6 +916,10 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI)
 		end
 		dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI,colorcoded)
+	end
+	if eleData.nextRenderSort then
+		dgsComboBoxSort(source)
+		eleData.nextRenderSort = false
 	end
 	return rndtgt,false,mx,my,0,0
 end

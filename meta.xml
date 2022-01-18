@@ -440,6 +440,10 @@
 	<export function="dgsComboBoxSetItemImage" type="client" />
 	<export function="dgsComboBoxGetItemImage" type="client" />
 	<export function="dgsComboBoxRemoveItemImage" type="client" />
+	<export function="dgsComboBoxSetSortFunction" type="client" />
+	<export function="dgsComboBoxSortSetAutoSortEnabled" type="client" />
+	<export function="dgsComboBoxSortGetAutoSortEnabled" type="client" />
+	<export function="dgsComboBoxSort" type="client" />
 
 	<export function="dgsCreateButton" type="client" />
 

@@ -33,7 +33,7 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 local tableRemoveItemFromArray = table.removeItemFromArray
 local utf8Len = utf8.len
-sortFunctions = {}
+gridlistSortFunctions = {}
 self = false
 mouseButtonOrder = {
 	left=1,
@@ -160,7 +160,6 @@ function dgsCreateGridList(...)
 			elementBuffer = {},
 		},
 	}
-	dgsGridListSetSortFunction(gridlist,sortFunctions_upper)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or resource])
 	dgsElementData[gridlist].configNextFrame = false
 	calculateGuiPositionSize(gridlist,x,y,relative,w,h,relative,true)
@@ -406,23 +405,23 @@ function dgsDetachFromGridList(element)
 	return dgsSetData(element,"attachedToGridList",nil)
 end
 -----------------------------Sort
-sortFunctions.greaterUpper = function(...)
-	local arg = {...}
+gridlistSortFunctions.greaterUpper = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	return arg[1][column][1] < arg[2][column][1]
+	return a[column][1] < b[column][1]
 end
 
-sortFunctions.greaterLower = function(...)
-	local arg = {...}
+gridlistSortFunctions.greaterLower = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	return arg[1][column][1] > arg[2][column][1]
+	return a[column][1] > b[column][1]
 end
 
-sortFunctions.numGreaterUpperNumFirst = function(...)
-	local arg = {...}
+gridlistSortFunctions.numGreaterUpperNumFirst = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
-	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local a = tonumber(a[column][1]) or a[column][1]
+	local b = tonumber(b[column][1]) or b[column][1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -433,11 +432,11 @@ sortFunctions.numGreaterUpperNumFirst = function(...)
 	return a < b
 end
 
-sortFunctions.numGreaterLowerNumFirst = function(...)
-	local arg = {...}
+gridlistSortFunctions.numGreaterLowerNumFirst = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
-	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local a = tonumber(a[column][1]) or a[column][1]
+	local b = tonumber(b[column][1]) or b[column][1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -448,14 +447,14 @@ sortFunctions.numGreaterLowerNumFirst = function(...)
 	return a > b
 end
 
-sortFunctions.numGreaterUpper = sortFunctions.numGreaterUpperNumFirst 
-sortFunctions.numGreaterLower = sortFunctions.numGreaterLowerNumFirst 
+gridlistSortFunctions.numGreaterUpper = gridlistSortFunctions.numGreaterUpperNumFirst 
+gridlistSortFunctions.numGreaterLower = gridlistSortFunctions.numGreaterLowerNumFirst 
 
-sortFunctions.numGreaterUpperStrFirst = function(...)
-	local arg = {...}
+gridlistSortFunctions.numGreaterUpperStrFirst = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
-	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local a = tonumber(a[column][1]) or a[column][1]
+	local b = tonumber(b[column][1]) or b[column][1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -466,11 +465,11 @@ sortFunctions.numGreaterUpperStrFirst = function(...)
 	return a < b
 end
 
-sortFunctions.numGreaterLowerStrFirst = function(...)
-	local arg = {...}
+gridlistSortFunctions.numGreaterLowerStrFirst = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	local a = tonumber(arg[1][column][1]) or arg[1][column][1]
-	local b = tonumber(arg[2][column][1]) or arg[2][column][1]
+	local a = tonumber(a[column][1]) or a[column][1]
+	local b = tonumber(b[column][1]) or b[column][1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -481,16 +480,16 @@ sortFunctions.numGreaterLowerStrFirst = function(...)
 	return a > b
 end
 
-sortFunctions.longerUpper = function(...)
-	local arg = {...}
+gridlistSortFunctions.longerUpper = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	return utf8Len(arg[1][column][1]) < utf8Len(arg[2][column][1])
+	return utf8Len(a[column][1]) < utf8Len(b[column][1])
 end
 
-sortFunctions.longerLower = function(...)
-	local arg = {...}
+gridlistSortFunctions.longerLower = function(...)
+	local a,b = ...
 	local column = dgsElementData[self].sortColumn
-	return utf8Len(arg[1][column][1]) > utf8Len(arg[2][column][1])
+	return utf8Len(a[column][1]) > utf8Len(b[column][1])
 end
 
 function dgsGridListSetSortFunction(gridlist,str)
@@ -1744,6 +1743,9 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 		if isSection then
 			dgsGridListSetRowAsSection(gridlist,r,true)
 		end
+		if dgsElementData[gridlist].autoSort then
+			dgsElementData[gridlist].nextRenderSort = true
+		end
 		return true
 	end
 	return false
@@ -2421,13 +2423,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	local columnData,rowData = eleData.columnData,eleData.rowData
 	local columnCount,rowCount = #columnData,#rowData
-	local sortColumn = eleData.sortColumn
-	if sortColumn and columnData[sortColumn] then
-		if eleData.nextRenderSort then
-			dgsGridListSort(source)
-			eleData.nextRenderSort = false
-		end
-	end
 	local columnTextColor = eleData.columnTextColor
 	local rowHeight = eleData.rowHeight
 	local rowTextPosOffset = eleData.rowTextPosOffset
@@ -2474,10 +2469,19 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local mouseInsideGridList = mx >= cx and mx <= cx+w and my >= cy and my <= cy+h-scbThickH
 	local mouseInsideColumn = mouseInsideGridList and my <= cy+columnHeight
 	local mouseInsideRow = mouseInsideGridList and my > cy+columnHeight
-	local defaultSortFunctions = eleData.defaultSortFunctions
 	eleData.selectedColumn = -1
-	local sortIcon = eleData.sortFunction == sortFunctions[defaultSortFunctions[1]] and eleData.defaultSortIcons[1] or (eleData.sortFunction == sortFunctions[defaultSortFunctions[2]] and eleData.defaultSortIcons[2]) or nil
+	local defaultSortFunctions,sortIcon
 	local sortColumn = eleData.sortColumn
+	if eleData.sortEnabled then
+		defaultSortFunctions = eleData.defaultSortFunctions
+		sortIcon = eleData.sortFunction == gridlistSortFunctions[defaultSortFunctions[1]] and eleData.defaultSortIcons[1] or (eleData.sortFunction == gridlistSortFunctions[defaultSortFunctions[2]] and eleData.defaultSortIcons[2]) or nil
+	end
+	if sortColumn and columnData[sortColumn] then
+		if eleData.nextRenderSort then
+			dgsGridListSort(source)
+			eleData.nextRenderSort = false
+		end
+	end
 	local backgroundOffset = eleData.backgroundOffset
 
 	local renderBuffer = eleData.renderBuffer

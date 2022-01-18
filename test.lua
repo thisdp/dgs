@@ -320,6 +320,17 @@ function GridListSortingTest()
 	dgsBringToFront(gridlist)
 end
 
+function ComboBoxSortingTest()
+	combobox = dgsCreateComboBox(200,50,600,50,false)
+	for i=1,30 do
+		dgsComboBoxAddItem(combobox,randomLetter(10)..tostring(i).." Test DGS")
+	end
+	for i=1,30 do
+		dgsComboBoxAddItem(combobox,tostring(i))
+	end
+	dgsComboBoxSetSortFunction(combobox,"greaterUpper")
+end
+
 function GridListTest()
 	gridlist = dgsCreateGridList(500,50,600,600,false)
 	dgsSetProperty(gridlist,"clip",false)
@@ -489,13 +500,18 @@ function ScalePaneTest()
 end
 
 function LayoutTest()
-	layout = dgsCreateLayout(400,400,200,200,"vertical",false)
+	layout = dgsCreateLayout(400,400,200,200,"horizontal",false)
 	local image = {}
 	for i=1,20 do
 		image[i] = dgsCreateImage(0,0,20,20,_,false,layout,tocolor(math.random(0,255),math.random(0,255),math.random(0,255),255))
 	end
 	--dgsLayoutAddItem(layout,image)
-	destroyElement(image[1])
+	
+	layout = dgsCreateLayout(400,500,200,200,"horizontal",false)
+	local image = {}
+	for i=1,20 do
+		image[i] = dgsCreateImage(0,0,math.random(15,20),20,_,false,layout,tocolor(math.random(0,255),math.random(0,255),math.random(0,255),255))
+	end
 end
 
 function SelectorTest()
