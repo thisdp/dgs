@@ -485,11 +485,11 @@ local dgsDataFunctions = {
 		defaultSortFunctions = function(dgsEle,key,value,oldValue)
 			local sortFunction = dgsElementData[dgsEle].sortFunction
 			local oldDefSortFnc = oldValue
-			local oldUpperSortFnc = sortFunctions[oldDefSortFnc[1]]
-			local oldLowerSortFnc = sortFunctions[oldDefSortFnc[2]]
+			local oldUpperSortFnc = gridlistSortFunctions[oldDefSortFnc[1]]
+			local oldLowerSortFnc = gridlistSortFunctions[oldDefSortFnc[2]]
 			local defSortFnc = dgsElementData[dgsEle].defaultSortFunctions
-			local upperSortFnc = sortFunctions[defSortFnc[1]]
-			local lowerSortFnc = sortFunctions[defSortFnc[2]]
+			local upperSortFnc = gridlistSortFunctions[defSortFnc[1]]
+			local lowerSortFnc = gridlistSortFunctions[defSortFnc[2]]
 			local oldSort = sortFunction == oldLowerSortFnc and lowerSortFnc or upperSortFnc
 		end,
 	},
