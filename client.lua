@@ -50,6 +50,11 @@ dgsRenderSetting = {
 }
 dgsRenderer = {}
 dgsCustomTexture = {}
+dgsBackEndRenderer = {
+	register = function(self,dgsType,theFunction)
+		self[dgsType] = theFunction
+	end,
+}
 dgs3DRenderer = {}
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)
@@ -130,6 +135,28 @@ MouseData = {
 	end,500,0)
 }
 
+--Render
+function dgsAddToBackEndRenderList(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAddToBackEndRenderList",1,"dgs-dxelement")) end
+	local pluginType = dgsGetPluginType(dgsEle)
+	local dgsType = dgsGetType(dgsEle)
+	if not(dgsBackEndRenderer[pluginType] or dgsBackEndRenderer[dgsType]) then error(dgsGenAsrt(dgsEle,"dgsAddToBackEndRenderList",1,_,_,_,"Type "..pluginType.." ("..dgsType..") doesn't have back-end renderer")) end
+	local id = table.find(BackEndTable,dgsEle)
+	if not id then
+		BackEndTable[#BackEndTable+1] = dgsEle
+	end
+	return true
+end
+
+function dgsRemoveFromBackEndRenderList(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsRemoveFromBackEndRenderList",1,"dgs-dxelement")) end
+	local id = table.find(BackEndTable,dgsEle)
+	if id then
+		table.remove(BackEndTable,id)
+	end
+	return true
+end
+
 addEventHandler("onClientRestore",root,function(isRTCleared)
 	if isRTCleared then dgsRenderInfo.RTRestoreNeed = true end
 end)
@@ -139,6 +166,7 @@ function dgsCoreRender()
 	dgsRenderInfo.frameStartScreen = getTickCount()
 	dgsRenderInfo.rendering = 0
 	triggerEvent("onDgsPreRender",resourceRoot)
+	local backendTableSize = #BackEndTable
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
 	local topTableSize = #TopFatherTable
@@ -175,8 +203,21 @@ function dgsCoreRender()
 	MouseData.cursorPos[1],MouseData.cursorPos[2] = mx,my
 	MouseData.hit = false
 	MouseData.hitDebug = false
-	if bottomTableSize+centerTableSize+topTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
+	if bottomTableSize+centerTableSize+topTableSize+backendTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
 		dxSetRenderTarget()
+		--Back-End Renderer
+		for i=1,backendTableSize do
+			local v = BackEndTable[i]
+			local eleData = dgsElementData[v]
+			local asPlugin = eleData.asPlugin
+			local eleType = dgsElementType[v]
+			dxSetBlendMode(eleData.blendMode)
+			local dgsRendererFunction = dgsBackEndRenderer[asPlugin or eleType]
+			if dgsRendererFunction then
+				dgsRendererFunction(v)
+			end
+		end
+		--
 		MouseData.hitData3D[0] = false
 		MouseData.hitData2D[0] = false
 		MouseData.topScrollable = false
@@ -774,7 +815,6 @@ end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 
 function dgsCore3DRender()
-	
 	dgsRenderInfo.frameStart3D = getTickCount()
 	local rendering3D = 0
 	local created3D = #dgsWorld3DTable
@@ -1722,6 +1762,9 @@ function dgsCleanElement(source)
 				end
 				FatherTable[source] = nil
 			end
+		end
+		if dgsBackEndRenderer[eleData.asPlugin] or dgsBackEndRenderer[dgsType] then
+			tableRemoveItemFromArray(BackEndTable,source)
 		end
 		if eleData._translationText then
 			tableRemoveItemFromArray(LanguageTranslationAttach,source)

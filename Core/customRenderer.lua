@@ -22,7 +22,7 @@ local createElement = createElement
 --This is a special dgs element that won't be rendered itself.
 --This dgs element is usually used for plugins
 --Note: There will be nothing if you use this dgs element as a child element or a parent element
-function dgsCreateCustomRenderer(customFnc)
+function dgsCreateCustomRenderer(customFnc,width,height)
 	local cr = createElement("dgs-dxcustomrenderer")
 	dgsSetType(cr,"dgs-dxcustomrenderer")
 	if customFnc then
@@ -30,8 +30,54 @@ function dgsCreateCustomRenderer(customFnc)
 	else
 		dgsSetData(cr,"customRenderer",function() return false end)
 	end
+	if width and width > 0 and height and height > 0 then
+		local crRenderTarget,err = dxCreateRenderTarget(width,height,true,cr,sourceResource)
+		if crRenderTarget then
+			dgsAttachToAutoDestroy(crRenderTarget,cr,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(cr,"renderTarget",crRenderTarget)
+		dgsSetData(cr,"renderTargetSize",{width,height})
+	else
+		dgsSetData(cr,"renderTargetSize",{0,0})
+	end
 	triggerEvent("onDgsCreate",cr,sourceResource)
 	return cr
+end
+
+function dgsCustomRendererSetRenderTargetSize(cr,width,height)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererSetRenderTargetSize",1,"dgs-dxcustomrenderer")) end
+	if not(not width or type(width) == "number") then error(dgsGenAsrt(width,"dgsCustomRendererSetRenderTargetSize",2,"number/nil")) end
+	if not(not height or type(height) == "number") then error(dgsGenAsrt(height,"dgsCustomRendererSetRenderTargetSize",3,"number/nil")) end
+	local eleData = dgsElementData[cr]
+	if eleData.renderTargetSize[1] ~= width or eleData.renderTargetSize[2] ~= height then
+		if isElement(eleData.renderTarget) then destroyElement(eleData.renderTarget) end
+		if not width or width == 0 or not height or height == 0 then
+			local crRenderTarget,err = dxCreateRenderTarget(width,height,true,cr,sourceResource)
+			if crRenderTarget then
+				dgsAttachToAutoDestroy(crRenderTarget,cr,-1)
+			else
+				outputDebugString(err,2)
+			end
+			dgsSetData(cr,"renderTarget",crRenderTarget)
+			dgsSetData(cr,"renderTargetSize",{width,height})
+		else
+			dgsSetData(cr,"renderTarget",nil)
+			dgsSetData(cr,"renderTargetSize",{0,0})
+		end
+	end
+	return true
+end
+
+function dgsCustomRendererGetRenderTargetSize(cr)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererGetRenderTargetSize",1,"dgs-dxcustomrenderer")) end
+	return dgsElementData[cr].renderTargetSize[1],dgsElementData[cr].renderTargetSize[2]
+end
+
+function dgsCustomRendererGetRenderTarget(cr)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererGetRenderTarget",1,"dgs-dxcustomrenderer")) end
+	return dgsElementData[cr].renderTarget
 end
 
 function dgsCustomRendererSetFunction(cr,fncStr)
@@ -49,6 +95,26 @@ function dgsCustomRendererSetFunction(cr,fncStr)
 	end
 end
 
+function dgsCustomRendererSetBackEndFunction(cr,fncStr)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererSetBackEndFunction",1,"dgs-dxcustomrenderer")) end
+	local fncType = type(fncStr)
+	if fncType == "function" then
+		return dgsSetData(cr,"customRendererBackEnd",fncStr)
+	else
+		if not (type(fncStr) == "string") then error(dgsGenAsrt(fncStr,"dgsCustomRendererSetBackEndFunction",2,"string")) end
+		fncStr = [[self = ...]]..fncStr
+		local fnc,err = loadstring(fncStr)
+		if not fnc then error(dgsGenAsrt(fnc,"dgsCustomRendererSetBackEndFunction",2,_,_,_,"Failed to load function:"..err)) end
+		return dgsSetData(cr,"customRendererBackEnd",fnc)
+	end
+end
+
 dgsCustomTexture["dgs-dxcustomrenderer"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 end
+
+dgsBackEndRenderer:register("dgs-dxcustomrenderer",function(image)
+	if dgsElementData[image].customRendererBackEnd then
+		return dgsElementData[image].customRendererBackEnd(image)
+	end
+end)

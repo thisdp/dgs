@@ -1,6 +1,7 @@
+local dxDrawImage = dxDrawImageExt
 g_DGSCanvasIndex = 0
 function dgsCreateCanvas(renderSource,w,h,color)
-	if not(isMaterial(renderSource)) then error(dgsGenAsrt(renderSource,"dgsCreateCanvas",1,"material")) end
+	if not(isMaterial(renderSource) or dgsGetType(renderSource) == "dgs-dxcustomrenderer") then error(dgsGenAsrt(renderSource,"dgsCreateCanvas",1,"material/dgs-dxcustomrenderer")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCanvas",2,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCanvas",3,"number")) end
 	color = color or 0xFFFFFFFF

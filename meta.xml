@@ -192,6 +192,8 @@
 	<export function="dgsCreateFont" type="client" />
 	<export function="dgsBringToFront" type="client" />
 	<export function="dgsMoveToBack" type="client" />
+	<export function="dgsAddToBackEndRenderList" type="client" />
+	<export function="dgsRemoveFromBackEndRenderList" type="client" />
 	<export function="dgsIsMouseWithinGUI" type="client" />
 	<export function="dgsGetMouseEnterGUI" type="client" />
 	<export function="dgsGetMouseLeaveGUI" type="client" />
@@ -286,6 +288,10 @@
 
 	<export function="dgsCreateCustomRenderer" type="client" />
 	<export function="dgsCustomRendererSetFunction" type="client" />
+	<export function="dgsCustomRendererSetBackEndFunction" type="client" />
+	<export function="dgsCustomRendererSetRenderTargetSize" type="client" />
+	<export function="dgsCustomRendererGetRenderTargetSize" type="client" />
+	<export function="dgsCustomRendererGetRenderTarget" type="client" />
 
 	<export function="dgsCreate3DInterface" type="client" />
 	<export function="dgs3DInterfaceGetBlendMode" type="client" />
