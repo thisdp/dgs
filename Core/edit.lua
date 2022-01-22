@@ -105,6 +105,7 @@ function dgsCreateEdit(...)
 		showPos = 0,
 		placeHolder = style.placeHolder,
 		placeHolderFont = systemFont,
+		placeHolderVisibleWhenFocus = false,
 		placeHolderColor = style.placeHolderColor,
 		placeHolderColorcoded = style.placeHolderColorcoded,
 		placeHolderOffset = style.placeHolderOffset,
@@ -1193,7 +1194,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	end
 	_dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 	if placeHolderIgnoreRndTgt then
-		if text == "" and MouseData.focused ~= source then
+		if text == "" and (MouseData.focused ~= source or eleDa.placeHolderVisibleWhenFocus) then
 			local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
 			local pFont = eleData.placeHolderFont
 			local pColorcoded = eleData.placeHolderColorcoded
