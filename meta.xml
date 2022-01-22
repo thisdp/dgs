@@ -877,6 +877,7 @@
 	<export function="dgsScreenSourceGetUVSize" type="client" />
 
 	<export function="dgsCreateCanvas" type="client" />
+	<export function="dgsCanvasSetBackEndFunction" type="client" />
 
 	<export function="dgsCenterElement" type="client" />
 

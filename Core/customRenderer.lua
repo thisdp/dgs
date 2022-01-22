@@ -38,20 +38,20 @@ function dgsCreateCustomRenderer(customFnc,width,height)
 			outputDebugString(err,2)
 		end
 		dgsSetData(cr,"renderTarget",crRenderTarget)
-		dgsSetData(cr,"renderTargetSize",{width,height})
+		dgsSetData(cr,"renderTargetResolution",{width,height})
 	else
-		dgsSetData(cr,"renderTargetSize",{0,0})
+		dgsSetData(cr,"renderTargetResolution",{0,0})
 	end
 	triggerEvent("onDgsCreate",cr,sourceResource)
 	return cr
 end
 
-function dgsCustomRendererSetRenderTargetSize(cr,width,height)
-	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererSetRenderTargetSize",1,"dgs-dxcustomrenderer")) end
-	if not(not width or type(width) == "number") then error(dgsGenAsrt(width,"dgsCustomRendererSetRenderTargetSize",2,"number/nil")) end
-	if not(not height or type(height) == "number") then error(dgsGenAsrt(height,"dgsCustomRendererSetRenderTargetSize",3,"number/nil")) end
+function dgsCustomRendererSetrenderTargetResolution(cr,width,height)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererSetrenderTargetResolution",1,"dgs-dxcustomrenderer")) end
+	if not(not width or type(width) == "number") then error(dgsGenAsrt(width,"dgsCustomRendererSetrenderTargetResolution",2,"number/nil")) end
+	if not(not height or type(height) == "number") then error(dgsGenAsrt(height,"dgsCustomRendererSetrenderTargetResolution",3,"number/nil")) end
 	local eleData = dgsElementData[cr]
-	if eleData.renderTargetSize[1] ~= width or eleData.renderTargetSize[2] ~= height then
+	if eleData.renderTargetResolution[1] ~= width or eleData.renderTargetResolution[2] ~= height then
 		if isElement(eleData.renderTarget) then destroyElement(eleData.renderTarget) end
 		if not width or width == 0 or not height or height == 0 then
 			local crRenderTarget,err = dxCreateRenderTarget(width,height,true,cr,sourceResource)
@@ -61,18 +61,18 @@ function dgsCustomRendererSetRenderTargetSize(cr,width,height)
 				outputDebugString(err,2)
 			end
 			dgsSetData(cr,"renderTarget",crRenderTarget)
-			dgsSetData(cr,"renderTargetSize",{width,height})
+			dgsSetData(cr,"renderTargetResolution",{width,height})
 		else
 			dgsSetData(cr,"renderTarget",nil)
-			dgsSetData(cr,"renderTargetSize",{0,0})
+			dgsSetData(cr,"renderTargetResolution",{0,0})
 		end
 	end
 	return true
 end
 
-function dgsCustomRendererGetRenderTargetSize(cr)
-	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererGetRenderTargetSize",1,"dgs-dxcustomrenderer")) end
-	return dgsElementData[cr].renderTargetSize[1],dgsElementData[cr].renderTargetSize[2]
+function dgsCustomRendererGetrenderTargetResolution(cr)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererGetrenderTargetResolution",1,"dgs-dxcustomrenderer")) end
+	return dgsElementData[cr].renderTargetResolution[1],dgsElementData[cr].renderTargetResolution[2]
 end
 
 function dgsCustomRendererGetRenderTarget(cr)

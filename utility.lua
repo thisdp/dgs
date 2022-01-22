@@ -901,7 +901,7 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 		__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
 	else
 		local pluginType = dgsGetPluginType(image)
-		if pluginType and dgsCustomTexture[pluginType] then
+		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
 			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 		else
 			local blendMode
@@ -933,7 +933,7 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	else
 		local pluginType = dgsGetPluginType(image)
-		if pluginType and dgsCustomTexture[pluginType] then
+		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
 			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 		else
 			local blendMode
