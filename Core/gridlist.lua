@@ -924,7 +924,11 @@ function dgsGridListSetColumnWidth(gridlist,c,width,relative)
 	local c = c-c%1
 	if not (type(width) == "number") then error(dgsGenAsrt(c,"dgsGridListSetColumnWidth",3,"number")) end
 	local rlt = eleData.columnRelative
-	relative = relative == nil and rlt or false
+	if relative == nil then
+		relative = rlt
+	else
+		relative = relative and true or false
+	end
 	local scbThick = eleData.scrollBarThick
 	local columnSize = eleData.absSize[1]-scbThick
 	if rlt then
