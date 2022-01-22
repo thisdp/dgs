@@ -240,16 +240,18 @@ function dgsEditCheckAutoComplete()
 					local paramLen = utf8Len(textParam)
 					autoCompleteResult[i] = textParam
 					if eleData.caretPos >= currentStart and eleData.caretPos <= currentStart+paramLen+1 then
-						local acParamFunctionName = acTable[foundAC[1]][i]
-						if acParamFunctionName then
-							local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input) 
-								if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
-									return acParamFunctionName
+						if acTable[foundAC[1]] then
+							local acParamFunctionName = acTable[foundAC[1]][i]
+							if acParamFunctionName then
+								local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input) 
+									if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
+										return acParamFunctionName
+									end
 								end
-							end
-							local fullParam = acParamFunction(textParam)
-							if fullParam then
-								autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
+								local fullParam = acParamFunction(textParam)
+								if fullParam then
+									autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
+								end
 							end
 						end
 					end
