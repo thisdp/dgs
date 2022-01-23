@@ -2041,8 +2041,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						if column and column >= 1 then
 							local sortFunction = eleData.sortFunction
 							local defSortFnc = eleData.defaultSortFunctions
-							local upperSortFnc = sortFunctions[defSortFnc[1]]
-							local lowerSortFnc = sortFunctions[defSortFnc[2]]
+							local upperSortFnc = gridlistSortFunctions[defSortFnc[1]]
+							local lowerSortFnc = gridlistSortFunctions[defSortFnc[2]]
 							local targetfunction = (sortFunction == upperSortFnc or eleData.sortColumn ~= column) and lowerSortFnc or upperSortFnc
 							dgsGridListSetSortFunction(dgsEle,targetfunction)
 							dgsGridListSetSortColumn(dgsEle,column)
