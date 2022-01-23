@@ -459,6 +459,5 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	dxSetRenderTarget(newRndTgt,true)
 	rndtgt = newRndTgt
-	dxSetRenderTarget(rndtgt)
 	return rndtgt,false,mx,my,OffsetX,OffsetY
 end
