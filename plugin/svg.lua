@@ -1,3 +1,6 @@
+local dgsSVGXMLRef = {}
+setmetatable(dgsSVGXMLRef,{__mode="kv"})
+
 function dgsCreateSVG(...)
 	local svg
 	if select("#",...) == 1 then
@@ -10,14 +13,18 @@ function dgsCreateSVG(...)
 		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSVG",2,"number")) end
 		svg = svgCreate(w,h)
 	end
-	dgsSetType(svg,"dgs-dxsvg")
 	dgsElementData[svg] = {
 		svgDocument = svgGetDocumentXML(svg),
 		svgDocumentUpdate = false,
 	}
+	dgsSVGXMLRef[dgsElementData[svg].svgDocument] = svg
 	dgsSetData(svg,"asPlugin","dgs-dxsvg")
 	triggerEvent("onDgsPluginCreate",svg,sourceResource)
 	return svg
+end
+
+function dgsSVGGetDocument(svg)
+	return dgsElementData[svg].svgDocument
 end
 
 dgsCustomTexture["dgs-dxsvg"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
@@ -36,6 +43,24 @@ dgsCustomTexture["dgs-dxsvg"] = function(posX,posY,width,height,u,v,usize,vsize,
 	return true
 end
 
+function dgsSVGMarkUpdate(ele)
+	local cnt = 0
+	while true do
+		cnt = cnt+1
+		if cnt >= 50 then return false end
+		local name = xmlNodeGetName(ele)
+		if name == "svg" then
+			if dgsSVGXMLRef[ele] then
+				dgsElementData[dgsSVGXMLRef[ele]].svgDocumentUpdate = true
+				return true
+			else
+				return false
+			end
+		end
+		ele = xmlNodeGetParent(ele)
+	end
+end
+
 function dgsSVGGetSize(svg)
 	if not(dgsIsType(dgsEle,"svg")) then error(dgsGenAsrt(dgsEle,"dgsSVGGetSize",1,"svg")) end
 	return svgGetSize(svg)
@@ -48,25 +73,6 @@ function dgsSVGSetSize(svg,w,h)
 	return svgSetSize(svg,w,h)
 end
 
-function toStyle(t)
-	local style = ""
-	for k,v in pairs(t) do
-		style = style..k..":"..v..";"
-	end
-	return style
-end
-
-function fromStyle(s)
-	local t = split(s,";")
-	local nTab = {}
-	for i=1,#t do
-		local pair = split(t[i],":")
-		if #pair == 2 then
-			nTab[pair[1]] = pair[2]
-		end
-	end
-	return nTab
-end
 
 function dgsSVGGetElementStyle(element)
 	local style = xmlNodeGetAttribute(element,"style") or ""
@@ -77,39 +83,173 @@ function dgsSVGSetElementStyle(element,styleTable)
 	return xmlNodeSetAttribute(element,"style",toStyle(styleTable))
 end
 
-function dgsSVGCreateRect(svg,x,y,width,height,parent,rx,ry)
-	if not(dgsIsType(svg,"svg")) then error(dgsGenAsrt(svg,"dgsSVGCreateRect",1,"svg")) end
-	local newRect = xmlCreateChild(parent or dgsElementData[svg].svgDocument,"rect")
-	xmlNodeSetAttribute(newRect,"x",x)
-	xmlNodeSetAttribute(newRect,"y",y)
-	xmlNodeSetAttribute(newRect,"width",width)
-	xmlNodeSetAttribute(newRect,"height",height)
-	xmlNodeSetAttribute(newRect,"rx",rx or 0)
-	xmlNodeSetAttribute(newRect,"ry",ry or 0)
-	dgsElementData[svg].svgDocumentUpdate = true
-	return newRect
-end
-
 SVGElementCreation = {
-	rect = function(...)
-		local x,y,w,h = ...
+	rect = function(svgDocument,...)
+		local x,y,width,height = ...
+		local newRect = xmlCreateChild(svgDocument,"rect")
+		xmlNodeSetAttribute(newRect,"x",x)
+		xmlNodeSetAttribute(newRect,"y",y)
+		xmlNodeSetAttribute(newRect,"width",width)
+		xmlNodeSetAttribute(newRect,"height",height)
+		dgsSVGMarkUpdate(svgDocument)
+		return newRect
+	end,
+	circle = function(svgDocument,...)
+		local cx,cy,r = ...
+		local newCircle = xmlCreateChild(svgDocument,"circle")
+		xmlNodeSetAttribute(newCircle,"cx",cx)
+		xmlNodeSetAttribute(newCircle,"cy",cy)
+		xmlNodeSetAttribute(newCircle,"r",r)
+		dgsSVGMarkUpdate(svgDocument)
+		return newCircle
+	end,
+	ellipse = function(svgDocument,...)
+		local cx,cy,rx,ry = ...
+		local newEllipse = xmlCreateChild(svgDocument,"ellipse")
+		xmlNodeSetAttribute(newEllipse,"cx",cx)
+		xmlNodeSetAttribute(newEllipse,"cy",cy)
+		xmlNodeSetAttribute(newEllipse,"rx",rx)
+		xmlNodeSetAttribute(newEllipse,"ry",ry)
+		dgsSVGMarkUpdate(svgDocument)
+		return newEllipse
+	end,
+	line = function(svgDocument,...)
+		local x1,y1,x2,y2 = ...
+		local newLine = xmlCreateChild(svgDocument,"line")
+		xmlNodeSetAttribute(newLine,"x1",x1)
+		xmlNodeSetAttribute(newLine,"y1",y1)
+		xmlNodeSetAttribute(newLine,"x2",x2)
+		xmlNodeSetAttribute(newLine,"y2",y2)
+		dgsSVGMarkUpdate(svgDocument)
+		return newLine
+	end,
+	polygon = function(svgDocument,...)
+		local argCount = select("#",...)
+		local newPolygon
+		if argCount == 1 then
+			local points = ...
+			if type(points) == "string" then
+				newPolygon = xmlCreateChild(svgDocument,"polygon")
+				xmlNodeSetAttribute(newPolygon,"points",...)
+			elseif type(points) == "table" and #points%2 == 0 then -- Even number
+				local pointsTmp = {}
+				for i=1,#points,2 do
+					pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
+				end
+				newPolygon = xmlCreateChild(svgDocument,"polygon")
+				xmlNodeSetAttribute(newPolygon,"points",table.concat(pointsTmp," "))
+			end
+		elseif argCount%2 == 0 then -- There should be scripter's mistake if the count of arguments is an odd number..
+			local points = {...}
+			local pointsTmp = {}
+			for i=1,argCount,2 do
+				pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
+			end
+			newPolygon = xmlCreateChild(svgDocument,"polygon")
+			xmlNodeSetAttribute(newPolygon,"points",table.concat(pointsTmp," "))
+		end
+		dgsSVGMarkUpdate(svgDocument)
+		return newPolygon
+	end,
+	polyline = function(svgDocument,...)
+		local argCount = select("#",...)
+		local newPolyline
+		if argCount == 1 then
+			local points = ...
+			if type(points) == "string" then
+				newPolyline = xmlCreateChild(svgDocument,"polyline")
+				xmlNodeSetAttribute(newPolyline,"points",...)
+			elseif type(points) == "table" and #points%2 == 0 then -- Even number
+				local pointsTmp = {}
+				for i=1,#points,2 do
+					pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
+				end
+				newPolyline = xmlCreateChild(svgDocument,"polyline")
+				xmlNodeSetAttribute(newPolyline,"points",table.concat(pointsTmp," "))
+			end
+		elseif argCount%2 == 0 then -- There should be scripter's mistake if the count of arguments is an odd number..
+			local points = {...}
+			local pointsTmp = {}
+			for i=1,argCount,2 do
+				pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
+			end
+			newPolyline = xmlCreateChild(svgDocument,"polyline")
+			xmlNodeSetAttribute(newPolyline,"points",table.concat(pointsTmp," "))
+		end
+		dgsSVGMarkUpdate(svgDocument)
+		return newPolyline
+	end,
+	path = function(svgDocument,...)
 		
 	end,
 }
+
+
+function dgsSVGSetAttribute(svgEle,attr,...)
+	local svgType = xmlNodeGetName(svgEle)
+	local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
+	local result = ...
+	if handleFunction and handleFunction.set then
+		if select("#",...) ~= 1 or type(result) ~= "string" then	
+			result = handleFunction.set(...)
+		end
+	end
+	xmlNodeSetAttribute(svgEle,attr,result)
+	dgsSVGMarkUpdate(svgEle)
+	return true
+end
+
+function dgsSVGSetAttributes(svgEle,attributeWithData)
+	local svgType = xmlNodeGetName(svgEle)
+	for attr,data in pairs(attributeWithData) do
+		local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
+		result = data
+		if handleFunction and handleFunction.set then
+			if type(data) == "table" then
+				result = handleFunction.set(unpack(data))
+			end
+		end
+		xmlNodeSetAttribute(svgEle,attr,result)
+	end
+	dgsSVGMarkUpdate(svgEle)
+	return true
+end
+
+function dgsSVGGetAttribute(svgEle,attr,...)
+	local svgType = xmlNodeGetName(svgEle)
+	local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
+	local result = xmlNodeGetAttribute(svgEle,attr)
+	if handleFunction and handleFunction.get and result then
+		result = handleFunction.get(result,...)
+	end
+	return result
+end
+
+function dgsSVGGetAttributes(svgEle,attributes)
+	local svgType = xmlNodeGetName(svgEle)
+	local ret = {}
+	if not attributes then
+		local attrs = xmlNodeGetAttributes(svgEle)
+		for attr,result in pairs(attrs) do
+			local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
+			if handleFunction and handleFunction.get and result then
+				ret[attr] = handleFunction.get(result)
+			end
+		end
+	else
+		for i,attr in ipairs(attributes) do
+			local result = xmlNodeGetAttribute(svgEle,attr)
+			local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
+			if handleFunction and handleFunction.get and result then
+				ret[attr] = handleFunction.get(result)
+			end
+		end
+	end
+	return ret
+end
+
 function dgsSVGCreateElement(elementType,...)
 	
-
-end
-
-function dgsSVGCreateEllipse()
-
-end
-
-function dgsSVGCreateLine()
-
-end
-
-function dgsSVGCreatePolygon()
 
 end
 
@@ -137,3 +277,161 @@ function dgsSVGGetElementsByType()
 
 end
 
+------SVG Util
+svgGetColor = function(value,retType)
+	if not value then value = "#ffffff" end
+	retType = retType or "raw"
+	local retType = string.lower(retType)
+	if retType == "raw" then return value end
+	local value = string.gsub(value,"%s+"," ")
+	if string.sub(value,1,1) == "#" then
+		if retType == "rgb" then
+			return {getColorFromString(value)}
+		elseif retType == "number" then
+			return tonumber("0x"..string.sub(value,2))
+		end
+	elseif string.sub(value,1,3) == "rgb" then
+		local r,g,b = string.match(value,"(%d+),(%d+),(%d+)")
+		if retType == "rgb" then
+			return {r,g,b}
+		elseif retType == "number" then
+			return r*0x10000+g*0x100+b
+		end
+	end
+	return value
+end
+
+svgSetColor = function(...)
+	local arguments = select("#",...)
+	if arguments == 1 then
+		local color = ...
+		if tonumber("0x"..color) then
+			return string.format("#%.6x",color)
+		else
+			return color
+		end
+	elseif arguments == 3 then
+		return string.format("#%.2x%.2x%.2x",...)
+	end
+	return nil
+end
+
+svgGetCoordinate = function(value,retType)
+	retType = retType or "raw"
+	local retType = string.lower(retType)
+	if retType == "raw" then return value end
+	local value = string.gsub(value,"%s+"," ")
+	local coord = string.match(value,"(%d+)")
+	return coord
+end
+
+svgSetPoints = function(...)
+	local argCount = select("#",...)
+	if argCount == 1 then
+		local points = ...
+		if type(points) == "string" then
+			return points
+		elseif type(points) == "table" and #points%2 == 0 then -- Even number
+			local pointsTmp = {}
+			for i=1,#points,2 do
+				pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
+			end
+			return table.concat(pointsTmp," ")
+		end
+	elseif argCount%2 == 0 then -- There should be scripter's mistake if the count of arguments is an odd number..
+		local points = {...}
+		local pointsTmp = {}
+		for i=1,argCount,2 do
+			pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
+		end
+		return table.concat(pointsTmp," ")
+	end
+	return ...
+end
+
+svgGetPoints = function(value,retType)
+	retType = retType or "raw"
+	local retType = string.lower(retType)
+	if retType == "raw" then return value end
+	if retType == "points" then
+		local points = {}
+		for x,y in string.gmatch(value,"(%d+),(%d+)") do
+			points[#points+1] = x
+			points[#points+1] = y
+		end
+		return points
+	end
+	return value
+end
+
+svgGetPath = function()
+
+end
+
+svgSetPath = function()
+
+end
+
+svgToStyle = function(t)
+	local style = ""
+	for k,v in pairs(t) do
+		style = style..k..":"..v..";"
+	end
+	return style
+end
+
+svgFromStyle = function(s)
+	local t = split(s,";")
+	local nTab = {}
+	for i=1,#t do
+		local pair = split(t[i],":")
+		if #pair == 2 then
+			nTab[pair[1]] = pair[2]
+		end
+	end
+	return nTab
+end
+
+SVGElementAttribute = {
+	svg = {
+		viewBox = {
+			get = function(value)
+				return split(string.gsub(value,"%s+"," ")," ")
+			end,
+			set = function(...)
+				if select("#",...) == 4 then
+					local x,y,w,h = ...
+					return x.." "..y.." "..w.." "..h
+				else
+					return ...
+				end
+			end,
+		},
+	},
+	default = {
+		accumulate = nil,
+		fill = {
+			get = svgGetColor,
+			set = svgSetColor,
+		},
+		stroke = {
+			get = svgGetColor,
+			set = svgSetColor,
+		},
+		["stroke-width"] = {
+			get = svgGetCoordinate,
+		}
+	},
+	polygon = {
+		points = {
+			get = svgGetPoints,
+			set = svgSetPoints,
+		}
+	},
+	polyline = {
+		points = {
+			get = svgGetPoints,
+			set = svgSetPoints,
+		}
+	},
+}
