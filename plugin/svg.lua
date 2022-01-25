@@ -124,63 +124,25 @@ SVGElementCreation = {
 		return newLine
 	end,
 	polygon = function(svgDocument,...)
-		local argCount = select("#",...)
-		local newPolygon
-		if argCount == 1 then
-			local points = ...
-			if type(points) == "string" then
-				newPolygon = xmlCreateChild(svgDocument,"polygon")
-				xmlNodeSetAttribute(newPolygon,"points",...)
-			elseif type(points) == "table" and #points%2 == 0 then -- Even number
-				local pointsTmp = {}
-				for i=1,#points,2 do
-					pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
-				end
-				newPolygon = xmlCreateChild(svgDocument,"polygon")
-				xmlNodeSetAttribute(newPolygon,"points",table.concat(pointsTmp," "))
-			end
-		elseif argCount%2 == 0 then -- There should be scripter's mistake if the count of arguments is an odd number..
-			local points = {...}
-			local pointsTmp = {}
-			for i=1,argCount,2 do
-				pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
-			end
-			newPolygon = xmlCreateChild(svgDocument,"polygon")
-			xmlNodeSetAttribute(newPolygon,"points",table.concat(pointsTmp," "))
-		end
+		local points = svgSetPoints(...)
+		local newPolygon = xmlCreateChild(svgDocument,"polygon")
+		xmlNodeSetAttribute(newPolygon,"points",points)
 		dgsSVGMarkUpdate(svgDocument)
 		return newPolygon
 	end,
 	polyline = function(svgDocument,...)
-		local argCount = select("#",...)
-		local newPolyline
-		if argCount == 1 then
-			local points = ...
-			if type(points) == "string" then
-				newPolyline = xmlCreateChild(svgDocument,"polyline")
-				xmlNodeSetAttribute(newPolyline,"points",...)
-			elseif type(points) == "table" and #points%2 == 0 then -- Even number
-				local pointsTmp = {}
-				for i=1,#points,2 do
-					pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
-				end
-				newPolyline = xmlCreateChild(svgDocument,"polyline")
-				xmlNodeSetAttribute(newPolyline,"points",table.concat(pointsTmp," "))
-			end
-		elseif argCount%2 == 0 then -- There should be scripter's mistake if the count of arguments is an odd number..
-			local points = {...}
-			local pointsTmp = {}
-			for i=1,argCount,2 do
-				pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
-			end
-			newPolyline = xmlCreateChild(svgDocument,"polyline")
-			xmlNodeSetAttribute(newPolyline,"points",table.concat(pointsTmp," "))
-		end
+		local points = svgSetPoints(...)
+		local newPolyline = xmlCreateChild(svgDocument,"polyline")
+		xmlNodeSetAttribute(newPolyline,"points",points)
 		dgsSVGMarkUpdate(svgDocument)
 		return newPolyline
 	end,
 	path = function(svgDocument,...)
-		
+		local path = svgSetPath(...)
+		local newPath = xmlCreateChild(svgDocument,"path")
+		xmlNodeSetAttribute(newPath,"d",path)
+		dgsSVGMarkUpdate(svgDocument)
+		return newPath
 	end,
 }
 
@@ -353,9 +315,9 @@ svgGetPoints = function(value,retType)
 	retType = retType or "raw"
 	local retType = string.lower(retType)
 	if retType == "raw" then return value end
-	if retType == "points" then
+	if retType == "table" then
 		local points = {}
-		for x,y in string.gmatch(value,"(%d+),(%d+)") do
+		for x,y in string.gmatch(value,"(%d+)%D+(%d+)") do
 			points[#points+1] = x
 			points[#points+1] = y
 		end
@@ -364,12 +326,45 @@ svgGetPoints = function(value,retType)
 	return value
 end
 
-svgGetPath = function()
 
+local svgPathParaCount = {m=2,l=2,h=1,v=1,c=6,s=4,q=4,t=2,a=7,z=0}
+svgGetPath = function(value,retType)
+	retType = retType or "raw"
+	local retType = string.lower(retType)
+	if retType == "raw" then return value end
+	if retType == "table" then
+		local cmds = {index = 0}
+		repeat
+			cmds.index = cmds.index+1
+			_,cmds.index = string.find(value,"%a",cmds.index)
+			if cmds.index then
+				local cmd = string.sub(value,cmds.index,cmds.index)
+				local lCMD = cmd:lower()
+				local parameters = {}
+				if svgPathParaCount[lCMD] > 0 then
+					parameters = {string.match(value,"[%s%;%,]*(%-?%d*%.?%d+)"..string.rep("[%s%;%,]+(%-?%d*%.?%d+)",svgPathParaCount[lCMD]-1),cmds.index)}
+				end
+				table.insert(parameters,1,cmd)
+				cmds[#cmds+1] = parameters
+			end
+		until(not cmds.index)
+		return cmds
+	end
+	return value
 end
 
-svgSetPath = function()
-
+svgSetPath = function(path)
+	local pathType = type(path)
+	if pathType == "string" then
+		return path
+	elseif pathType == "table" then
+		local pathData = "" 
+		for i=1,#path do
+			pathData = pathData..table.concat(path[i]," ").." "
+		end
+		return pathData
+	end
+	return nil
 end
 
 svgToStyle = function(t)
@@ -432,6 +427,12 @@ SVGElementAttribute = {
 		points = {
 			get = svgGetPoints,
 			set = svgSetPoints,
+		}
+	},
+	path = {
+		d = {
+			get = svgGetPath,
+			set = svgSetPath,
 		}
 	},
 }
