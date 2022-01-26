@@ -139,12 +139,13 @@ for key,res in ipairs(getResources()) do
 end
 setElementData(root,"DGSI_Resources",resourceTable)
 
+--[[
 addEventHandler("onResourceLoadStateChange",root,function(changedResource,newState)
 	local resName = getResourceName(changedResource)
 	resourceTable[resName] = newState
 	setElementData(root,"DGSI_Resources",resourceTable)
 end)
-
+]]
 local playerConnection = {}
 addEventHandler("DGSI_RequestServerInfo",root,function(required)
 	--Access Control?
