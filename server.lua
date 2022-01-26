@@ -1,14 +1,15 @@
 ﻿-----------Config Loader
 dgsConfig = {}
-dgsConfig.updateCheck				= true		-- Enable:true;Disable:false
-dgsConfig.updateCheckInterval		= 120		-- Minutes
-dgsConfig.updateCheckNoticeInterval	= 120		-- Minutes
-dgsConfig.updateSystemDisabled		= false		-- Minutes
-dgsConfig.backupMeta				= true		-- Backup meta.xml
-dgsConfig.backupStyleMeta			= true		-- Backup style files meta index from meta.xml
-dgsConfig.g2d						= true		-- GUI To DGS command line
-dgsConfig.enableBuiltInCMD			= true		-- Enable DGS Built-in CMD /dgscmd
-dgsConfig.enableServerConsole		= false		-- Enable DGS Built Server Console
+dgsConfig.updateCheck				= true			-- Enable:true;Disable:false
+dgsConfig.updateCheckInterval		= 120			-- Minutes
+dgsConfig.updateCheckNoticeInterval	= 120			-- Minutes
+dgsConfig.updateSystemDisabled		= false			-- Minutes
+dgsConfig.backupMeta				= true			-- Backup meta.xml
+dgsConfig.backupStyleMeta			= true			-- Backup style files meta index from meta.xml
+dgsConfig.g2d						= true			-- GUI To DGS command line
+dgsConfig.enableBuiltInCMD			= true			-- Enable DGS Built-in CMD /dgscmd
+dgsConfig.enableServerConsole		= false			-- Enable DGS Built Server Console
+dgsConfig.updatecommand				= "updatedgs"	-- Enable DGS Built Server Console
 
 function loadConfig()
 	if fileExists("config.txt") then
