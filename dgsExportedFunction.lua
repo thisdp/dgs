@@ -175,7 +175,7 @@ function dgsG2DLoadHooker(isLocal)
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
 		guiComboBoxGetItemText = function(combobox,item,...)
-			if item then
+			if item and item ~= -1 then
 				item = isGUIComboBox[combobox] and item+1 or item
 			end
 			return dgsComboBoxGetItemText(combobox,item,...)
@@ -191,13 +191,13 @@ function dgsG2DLoadHooker(isLocal)
 		end
 		guiComboBoxIsOpen = dgsComboBoxGetState
 		guiComboBoxRemoveItem = function(combobox,item,...)
-			if item then
+			if item and item ~= -1 then
 				item = isGUIComboBox[combobox] and item+1 or item
 			end
 			return dgsComboBoxRemoveItem(combobox,item,...)
 		end
 		guiComboBoxSetItemText = function(combobox,item,...)
-			if item then
+			if item and item ~= -1 then
 				item = isGUIComboBox[combobox] and item+1 or item
 			end
 			return dgsComboBoxSetItemText(combobox,item,...)
@@ -249,31 +249,31 @@ function dgsG2DLoadHooker(isLocal)
 			end
 		end
 		guiGridListGetItemColor = function(gl,row,...)
-			if row then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListGetItemColor(gl,row,...)
 		end
 		guiGridListGetItemData = function(gl,row,...)
-			if row then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListGetItemData(gl,row,...)
 		end
 		guiGridListSetItemData = function(gl,row,...)
-			if row then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListSetItemData(gl,row,...)
 		end
 		guiGridListGetItemText = function(gl,row,...)
-			if row then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListGetItemText(gl,row,...)
 		end
 		guiGridListSetItemText = function(gl,row,...)
-			if row then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListSetItemText(gl,row,...)
@@ -301,13 +301,13 @@ function dgsG2DLoadHooker(isLocal)
 			return newItems
 		end
 		guiGridListRemoveRow = function(gl,row,...)
-			if row then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListRemoveRow(gl,row,...)
 		end
 		guiGridListSetItemColor = function(gl,row,...)
-			if row then
+			if row and row ~= -1 then
 				row = isGUIGridList[gl] and row+1 or row
 			end
 			return dgsGridListSetItemColor(gl,row,...)
