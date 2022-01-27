@@ -1,3 +1,4 @@
+--classlib.lua
 local loadstring = loadstring
 -------OOP
 if not getElementData(root,"__DGSRes") then assert(false,"Invalid DGS Resource! Please check whether your dgs resource is started") end
@@ -24,7 +25,7 @@ local strToIntCache = {
 }
 dgsOOP = {
 	dgsClasses = {},
-	dgsInstances = {},
+	dgsInstances = setmetatable({},{__mode="kv"}),
 	eventHandler = {},
 	dgsRes = getElementData(root,"__DGSRes"),
 	dgsRoot = getResourceRootElement(getElementData(root,"__DGSRes")),
@@ -86,9 +87,11 @@ local function class(tab)
 			if newMeta.preInstantiate then
 				newInstance.dgsElement = newMeta.preInstantiate(...)	--Pre Instantiate function doesn't include meta table
 				dgsOOP.dgsInstances[newInstance.dgsElement] = newInstance
-				addEventHandler("onClientElementDestroy",newInstance.dgsElement,function()
-					dgsOOP.dgsInstances[newInstance.dgsElement] = nil
-				end,false)
+				if isElement(newInstance.dgsElement) then
+					addEventHandler("onClientElementDestroy",newInstance.dgsElement,function()
+						dgsOOP.dgsInstances[newInstance.dgsElement] = nil
+					end,false)
+				end
 			end
 			newInstance.extends = nil
 			newMeta.extends = nil
@@ -122,9 +125,9 @@ local function class(tab)
 			local newMeta = dgsOOP.deepCopy(self)
 			setmetatable(self,meta)
 			local newInstance = {extends=newMeta.extends}
-			if newMeta.preInstantiate then
-				newInstance.dgsElement = dgsElement	--For converting dgs pop element to oop instance
-				dgsOOP.dgsInstances[newInstance.dgsElement] = newInstance
+			newInstance.dgsElement = dgsElement	--For converting dgs pop element to oop instance
+			dgsOOP.dgsInstances[newInstance.dgsElement] = newInstance
+			if isElement(newInstance.dgsElement) then
 				addEventHandler("onClientElementDestroy",newInstance.dgsElement,function()
 					dgsOOP.dgsInstances[newInstance.dgsElement] = nil
 				end,false)
@@ -203,12 +206,26 @@ dgsOOP.genOOPFnc = function(pop,isChain)
 		end
 	end
 end
+
+dgsOOP.genOOPFncMTA = function(pop,isChain)
+	if isChain then
+		return function(self,...)
+			return _G[pop](self.dgsElement,...) and self or false
+		end
+	else
+		return function(self,...)
+			return dgsGetInstance(_G[pop](self.dgsElement,...))
+		end
+	end
+end
+
 dgsOOP.genOOPFncNonObj = function(pop,isChain)
 	return function(self,...)
 		return dgsGetInstance(call(dgsOOP.dgsRes,pop,...))
 	end
 end
 local gObjFnc = dgsOOP.genOOPFnc
+local gObjFncMTA = dgsOOP.genOOPFncMTA
 local gNObjFnc = dgsOOP.genOOPFncNonObj
 ----------------DGS 2D
 dgsOOP.position2D = {
@@ -391,7 +408,6 @@ class {
 				end
 				return t
 			end
-			if not isElement(dgsElement) then return dgsElement end
 			local originalClass = dgsOOP.dgsInstances[dgsElement]
 			if originalClass and originalClass.dgsElement == dgsElement then
 				return originalClass
@@ -403,7 +419,28 @@ class {
 					return dgsElement
 				end
 			end
-		end
+		end,
+		dgsGetInstanceByType = function(dgsElement,instanceType,...)
+			local typ = type(dgsElement)
+			if typ ~= "table" and typ ~= "userdata" then return dgsElement,... end
+			if typ == "table" then
+				local t = {}
+				for i=1,#dgsElement do
+					t[i] = dgsRootInstance.dgsGetInstanceByType(dgsElement[i],instanceType)
+				end
+				return t
+			end
+			local originalClass = dgsOOP.dgsInstances[dgsElement]
+			if originalClass and originalClass.dgsElement == dgsElement then
+				return originalClass
+			else
+				if dgsOOP[instanceType] then
+					return dgsOOP[instanceType][dgsElement]
+				else
+					return dgsElement
+				end
+			end
+		end,
 	};
 	public = {
 		isDragNDropData = gNObjFnc("dgsIsDragNDropData"),
@@ -471,6 +508,7 @@ class {
 		----------Plugins
 		dgsColorPicker = function(...) return dgsOOP.dgsColorPicker(...) end,
 		dgsComponentSelector = function(...) return dgsOOP.dgsComponentSelector(...) end,
+		dgsSVG = function(...) return dgsOOP.dgsSVG(...) end,
 	};
 }
 
@@ -868,6 +906,7 @@ class {
 	type = "dgsImage";
 	dgsType = "dgs-dximage";
 	preInstantiate = function(parent,x,y,w,h,image,rlt,...)
+		if type(image) == "table" then image = image.dgsElement or image end
 		return call(dgsOOP.dgsRes,"dgsCreateImage",x,y,w,h,image,rlt,parent.dgsElement,...)
 	end;
 	public = {
@@ -1415,6 +1454,152 @@ class {
 		destroy = function(self) return destroyElement(self.dgsElement) end;
 		isElement = gObjFnc("isElement",true);
 		getElement = function(self) return self.dgsElement end,
+	};
+}
+
+--------------------------SVG
+-----------------Utils
+class {
+	type = "xmlNode";
+	dgsType = "xml-node";
+	public = {
+		getAttribute = gObjFncMTA("xmlNodeGetAttribute"),
+		getAttributes = gObjFncMTA("xmlNodeGetAttributes"),
+		getChildren = gObjFncMTA("xmlNodeGetChildren"),
+		getName = gObjFncMTA("xmlNodeGetName"),
+		getParent = gObjFncMTA("xmlNodeGetParent"),
+		getValue = gObjFncMTA("xmlNodeGetValue"),
+		setAttribute = gObjFncMTA("xmlNodeSetAttribute"),
+		setName = gObjFncMTA("xmlNodeSetName"),
+		setValue = gObjFncMTA("xmlNodeSetValue"),
+		destroy = gObjFncMTA("xmlDestroyNode"),
+		create = gObjFncMTA("xmlCreateChild"),
+	};
+}
+
+class {
+	type = "dgsSVG";
+	dgsType = "dgs-dxsvg";
+	preInstantiate = function(...)
+		return call(dgsOOP.dgsRes,"dgsCreateSVG",...)
+	end;
+	public = {
+		getDocument = function(self)
+			return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,"svgDocument"),"dgs-dxsvgnode")
+		end
+	};
+}
+
+class {
+	extends = {"xmlNode"};
+	type = "dgsSVGNode";
+	dgsType = "dgs-dxsvgnode";
+	public = {
+		getAttribute = gObjFnc("dgsSVGNodeGetAttribute"),
+		setAttribute = gObjFnc("dgsSVGNodeSetAttribute",true),
+		getAttributes = gObjFnc("dgsSVGNodeGetAttributes"),
+		setAttributes = gObjFnc("dgsSVGNodeSetAttributes",true),
+		__index=function(self,key)
+			if key == "parent" then
+				return dgsGetInstanceByType(self:getParent(),"dgs-dxsvgnode")
+			elseif key == "children" then
+				return dgsGetInstanceByType(self:getChildren(),"dgs-dxsvgnode")
+			elseif key == "name" then
+				return self:getName()
+			elseif key == "value" then
+				return self:getValue()
+			else
+				local name = self:getName()
+				local fnc = self.attrFunctions[name] and self.attrFunctions[name][key] or self.attrFunctions.default[key]
+				if fnc then
+					return fnc
+				end
+			end
+			return call(dgsOOP.dgsRes,"dgsSVGNodeGetAttribute",self.dgsElement,key)
+		end,
+		__newindex=function(self,key,value)
+			if key == "name" then
+				return self:setName(value) and self or false
+			elseif key == "value" then
+				return self:setValue(value) and self or false
+			end
+			return call(dgsOOP.dgsRes,"dgsSVGNodeSetAttribute",self.dgsElement,key,value) and self or false
+		end,
+	};
+	default = {
+		attrFunctions = {
+			default = {
+				fill = function(self,...)
+					self:setAttribute("fill",...)
+					return self
+				end,
+				stroke = function(self,t)
+					if type(t) == "table" then
+						if t.width then
+							self:setAttribute("stroke-width",t.width)
+						end
+						if t.color then
+							self:setAttribute("stroke",t.color)
+						end
+					else
+						self:setAttribute("stroke",t)
+					end
+					return self
+				end,
+			},
+			svg = {
+				rect = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"rect",...),"dgs-dxsvgnode") end,
+				circle = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"circle",...),"dgs-dxsvgnode") end,
+				ellipse = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"ellipse",...),"dgs-dxsvgnode") end,
+				line = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"line",...),"dgs-dxsvgnode") end,
+				polygon = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"polygon",...),"dgs-dxsvgnode") end,
+				polyline = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"polyline",...),"dgs-dxsvgnode") end,
+				path = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"path",...),"dgs-dxsvgnode") end,
+				text = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"text",...),"dgs-dxsvgnode") end,
+			},
+			rect = {
+				move = function(self,...)
+					self:setAttribute("x",x)
+					self:setAttribute("y",y)
+					return self
+				end,
+				radius = function(self,rx,ry)
+					self:setAttribute("rx",rx)
+					self:setAttribute("ry",ry)
+					return self
+				end,
+			},
+			circle = {
+				move = function(self,x,y)
+					self:setAttribute("cx",x)
+					self:setAttribute("cy",y)
+					return self
+				end,
+				radius = function(self,r)
+					self:setAttribute("r",r)
+					return self
+				end,
+			},
+			ellipse = {
+				move = function(self,x,y)
+					self:setAttribute("cx",x)
+					self:setAttribute("cy",y)
+					return self
+				end,
+				radius = function(self,rx,ry)
+					self:setAttribute("rx",rx)
+					self:setAttribute("ry",ry)
+					return self
+				end,
+			},
+			text = {
+				text = function(self,text)
+					self:setValue(text)
+					return self
+				end,
+				tspan = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"tspan",...),"dgs-dxsvgnode") end,
+			}
+		}
 	};
 }
 

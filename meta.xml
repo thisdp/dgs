@@ -875,6 +875,14 @@
 	<export function="dgsScreenSourceGetUVPosition" type="client" />
 	<export function="dgsScreenSourceSetUVSize" type="client" />
 	<export function="dgsScreenSourceGetUVSize" type="client" />
+	
+	<export function="dgsCreateSVG" type="client" />
+	<export function="dgsSVGNodeCreateNode" type="client" />
+	<export function="dgsSVGNodeSetAttribute" type="client" />
+	<export function="dgsSVGNodeGetAttribute" type="client" />
+	<export function="dgsSVGNodeSetAttributes" type="client" />
+	<export function="dgsSVGNodeGetAttributes" type="client" />
+	<export function="dgsSVGGetDocumentContent" type="client" />
 
 	<export function="dgsCreateCanvas" type="client" />
 	<export function="dgsCanvasSetBackEndFunction" type="client" />

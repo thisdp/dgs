@@ -74,18 +74,25 @@ function dgsSVGSetSize(svg,w,h)
 end
 
 
-function dgsSVGGetElementStyle(element)
+function dgsSVGNodeGetElementStyle(element)
 	local style = xmlNodeGetAttribute(element,"style") or ""
 	return fromStyle(style)
 end
 
-function dgsSVGSetElementStyle(element,styleTable)
+function dgsSVGNodeSetElementStyle(element,styleTable)
 	return xmlNodeSetAttribute(element,"style",toStyle(styleTable))
 end
 
-SVGElementCreation = {
+SVGNodeCreation = {
 	rect = function(svgDocument,...)
-		local x,y,width,height = ...
+		local argCount = select("#",...)
+		local x,y,width,height = 0,0,0,0
+		if argCount == 2 then
+			width,height = ...
+			x,y = 0,0
+		elseif argCount == 4 then
+			x,y,width,height = ...
+		end
 		local newRect = xmlCreateChild(svgDocument,"rect")
 		xmlNodeSetAttribute(newRect,"x",x)
 		xmlNodeSetAttribute(newRect,"y",y)
@@ -104,12 +111,19 @@ SVGElementCreation = {
 		return newCircle
 	end,
 	ellipse = function(svgDocument,...)
-		local cx,cy,rx,ry = ...
+		local argCount = select("#",...)
 		local newEllipse = xmlCreateChild(svgDocument,"ellipse")
-		xmlNodeSetAttribute(newEllipse,"cx",cx)
-		xmlNodeSetAttribute(newEllipse,"cy",cy)
-		xmlNodeSetAttribute(newEllipse,"rx",rx)
-		xmlNodeSetAttribute(newEllipse,"ry",ry)
+		if argCount == 2 then
+			local rx,ry = ...
+			xmlNodeSetAttribute(newEllipse,"rx",rx)
+			xmlNodeSetAttribute(newEllipse,"ry",ry)
+		elseif argCount == 4 then
+			local cx,cy,rx,ry = ...
+			xmlNodeSetAttribute(newEllipse,"cx",cx)
+			xmlNodeSetAttribute(newEllipse,"cy",cy)
+			xmlNodeSetAttribute(newEllipse,"rx",rx)
+			xmlNodeSetAttribute(newEllipse,"ry",ry)
+		end
 		dgsSVGMarkUpdate(svgDocument)
 		return newEllipse
 	end,
@@ -144,10 +158,38 @@ SVGElementCreation = {
 		dgsSVGMarkUpdate(svgDocument)
 		return newPath
 	end,
+	text = function(svgDocument,...)
+		local argCount = select("#",...)
+		local newText = xmlCreateChild(svgDocument,"text")
+		if argCount == 1 then
+			xmlNodeSetValue(newText,...)
+		elseif argCount == 3 then
+			local text,x,y = ...
+			xmlNodeSetAttribute(newText,"x",x)
+			xmlNodeSetAttribute(newText,"y",y)
+			xmlNodeSetValue(newText,text)
+		end
+		dgsSVGMarkUpdate(svgDocument)
+		return newText
+	end,
+	tspan = function(svgDocument,...)
+		local argCount = select("#",...)
+		local newtSpan = xmlCreateChild(svgDocument,"tspan")
+		if argCount == 1 then
+			xmlNodeSetValue(newtSpan,...)
+		elseif argCount == 3 then
+			local text,dx,dy = ...
+			xmlNodeSetAttribute(newtSpan,"dx",dx)
+			xmlNodeSetAttribute(newtSpan,"dy",dy)
+			xmlNodeSetValue(newtSpan,text)
+		end
+		dgsSVGMarkUpdate(svgDocument)
+		return newtSpan
+	end,
 }
 
 
-function dgsSVGSetAttribute(svgEle,attr,...)
+function dgsSVGNodeSetAttribute(svgEle,attr,...)
 	local svgType = xmlNodeGetName(svgEle)
 	local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
 	local result = ...
@@ -161,7 +203,7 @@ function dgsSVGSetAttribute(svgEle,attr,...)
 	return true
 end
 
-function dgsSVGSetAttributes(svgEle,attributeWithData)
+function dgsSVGNodeSetAttributes(svgEle,attributeWithData)
 	local svgType = xmlNodeGetName(svgEle)
 	for attr,data in pairs(attributeWithData) do
 		local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
@@ -177,7 +219,7 @@ function dgsSVGSetAttributes(svgEle,attributeWithData)
 	return true
 end
 
-function dgsSVGGetAttribute(svgEle,attr,...)
+function dgsSVGNodeGetAttribute(svgEle,attr,...)
 	local svgType = xmlNodeGetName(svgEle)
 	local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
 	local result = xmlNodeGetAttribute(svgEle,attr)
@@ -187,7 +229,7 @@ function dgsSVGGetAttribute(svgEle,attr,...)
 	return result
 end
 
-function dgsSVGGetAttributes(svgEle,attributes)
+function dgsSVGNodeGetAttributes(svgEle,attributes)
 	local svgType = xmlNodeGetName(svgEle)
 	local ret = {}
 	if not attributes then
@@ -210,33 +252,35 @@ function dgsSVGGetAttributes(svgEle,attributes)
 	return ret
 end
 
-function dgsSVGCreateElement(elementType,...)
-	
-
+function dgsSVGNodeCreateNode(svgDoc,eleType,...)
+	if SVGNodeCreation[eleType] then
+		return SVGNodeCreation[eleType](svgDoc,...)
+	end
+	return false
 end
 
-function dgsSVGCreatePath()
-
+function dgsSVGCopyNodeContent(svgNode,xmlNode)
+	xmlNodeSetValue(xmlNode,xmlNodeGetValue(svgNode))
+	for k,v in pairs(xmlNodeGetAttributes(svgNode)) do
+		xmlNodeSetAttribute(xmlNode,k,v)
+	end
+	local svgChildren = xmlNodeGetChildren(svgNode)
+	for i=1,#svgChildren do
+		local xmlChild = xmlCreateChild(xmlNode,xmlNodeGetName(svgChildren[i]))
+		dgsSVGCopyNodeContent(svgChildren[i],xmlChild)
+	end
 end
 
-function dgsSVGCreateText()
-
-end
-
-function dgsSVGSetElementID()
-
-end
-
-function dgsSVGGetElementID()
-
-end
-
-function dgsSVGGetElementByID()
-
-end
-
-function dgsSVGGetElementsByType()
-
+function dgsSVGGetDocumentContent(svgDoc)
+	local fName = "tmpSVG"..getTickCount()..".xml"
+	local f = xmlCreateFile(fName,"svg")
+	dgsSVGCopyNodeContent(svgDoc,f)
+	xmlSaveFile(f)
+	local f = fileOpen(fName)
+	local content = fileRead(f,fileGetSize(f))
+	fileClose(f)
+	fileDelete(fName)
+	return content
 end
 
 ------SVG Util

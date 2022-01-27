@@ -369,6 +369,17 @@ end
 
 setElementData(resourceRoot,"DGSType",dgsType,false)
 
+---Userdata Type
+MTAUserDataType = {
+	["resource-data"] = true,
+	["xml-node"] = true,
+	["lua-timer"] = true,
+	["vector2"] = true,
+	["vector3"] = true,
+	["vector4"] = true,
+	["matrix"] = true,
+}
+
 function dgsAddType(typeName,isPlugin)
 	if isPlugin then
 		dgsPluginType[#dgsPluginType+1] = typeName
@@ -383,7 +394,14 @@ end
 function dgsGetType(dgsEle)
 	if isElement(dgsEle) then return tostring(dgsElementType[dgsEle] or getElementType(dgsEle)) end
 	local theType = type(dgsEle)
-	if theType == "userdata" and dgsElementType[dgsEle] then return "destroyed element" end
+	if theType == "userdata" then
+		local userdataType = getUserdataType(dgsEle)
+		if MTAUserDataType[userdataType] then
+			return userdataType
+		else
+			return "destroyed element"
+		end
+	end
 	return theType
 end
 
