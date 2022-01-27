@@ -275,7 +275,7 @@ function dgsSVGGetContent(svgDoc)
 	local svgDocType = dgsGetType(svgDoc)
 	if svgDocType == "xml-node" then
 		local fName = "tmpSVG"..getTickCount()..".xml"
-		local f = xmlCreateFile(fName,xmlNodeGetname(svgDoc))
+		local f = xmlCreateFile(fName,xmlNodeGetName(svgDoc))
 		dgsSVGCopyNodeContent(svgDoc,f)
 		xmlSaveFile(f)
 		local f = fileOpen(fName)
