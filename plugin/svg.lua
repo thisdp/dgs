@@ -284,7 +284,7 @@ function dgsSVGGetContent(svgDoc)
 		fileDelete(fName)
 		return content
 	elseif svgDocType == "svg" then
-		return dgsSVGGetDocumentContent(dgsElementData[svgDoc] and dgsElementData[svgDoc].svgDocument or svgGetDocumentXML(svgDoc))
+		return dgsSVGGetContent(dgsElementData[svgDoc] and dgsElementData[svgDoc].svgDocument or svgGetDocumentXML(svgDoc))
 	end
 	return false
 end
