@@ -271,16 +271,22 @@ function dgsSVGCopyNodeContent(svgNode,xmlNode)
 	end
 end
 
-function dgsSVGGetDocumentContent(svgDoc)
-	local fName = "tmpSVG"..getTickCount()..".xml"
-	local f = xmlCreateFile(fName,"svg")
-	dgsSVGCopyNodeContent(svgDoc,f)
-	xmlSaveFile(f)
-	local f = fileOpen(fName)
-	local content = fileRead(f,fileGetSize(f))
-	fileClose(f)
-	fileDelete(fName)
-	return content
+function dgsSVGGetContent(svgDoc)
+	local svgDocType = dgsGetType(svgDoc)
+	if svgDocType == "xml-node" then
+		local fName = "tmpSVG"..getTickCount()..".xml"
+		local f = xmlCreateFile(fName,xmlNodeGetname(svgDoc))
+		dgsSVGCopyNodeContent(svgDoc,f)
+		xmlSaveFile(f)
+		local f = fileOpen(fName)
+		local content = fileRead(f,fileGetSize(f))
+		fileClose(f)
+		fileDelete(fName)
+		return content
+	elseif svgDocType == "svg" then
+		return dgsSVGGetDocumentContent(dgsElementData[svgDoc] and dgsElementData[svgDoc].svgDocument or svgGetDocumentXML(svgDoc))
+	end
+	return false
 end
 
 ------SVG Util
