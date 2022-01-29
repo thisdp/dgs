@@ -329,14 +329,14 @@ class {
 		end
 	end;
 	default = {
-		dgsAddStyle = gNObjFnc("addStyle"),
-		dgsLoadStyle = gNObjFnc("loadStyle"),
-		dgsGetLoadedStyleList = gNObjFnc("getLoadedStyleList"),
-		dgsGetAddedStyleList = gNObjFnc("getAddedStyleList"),
-		dgsUnloadStyle = gNObjFnc("unloadStyle"),
-		dgsSetStyle = gNObjFnc("setStyle"),
-		dgsGetStyle = gNObjFnc("getStyle"),
-		dgsGetValueFromStyle = gNObjFnc("getValueFromStyle"),
+		addStyle = gNObjFnc("dgsAddStyle"),
+		loadStyle = gNObjFnc("dgsLoadStyle"),
+		getLoadedStyleList = gNObjFnc("dgsGetLoadedStyleList"),
+		getAddedStyleList = gNObjFnc("dgsGetAddedStyleList"),
+		unloadStyle = gNObjFnc("dgsUnloadStyle"),
+		setStyle = gNObjFnc("dgsSetStyle"),
+		getStyle = gNObjFnc("dgsGetStyle"),
+		getValueFromStyle = gNObjFnc("dgsGetValueFromStyle"),
 		getScreenSize = function(self) return Vector2(guiGetScreenSize()) end,
 		setInputEnabled = function(self,...) return guiSetInputEnabled(...) end,
 		getInputEnabled = function(self,...) return guiGetInputEnabled(...) end,
