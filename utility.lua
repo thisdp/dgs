@@ -20,6 +20,7 @@ __dxCreateTexture = _dxCreateTexture
 __dxCreateRenderTarget = _dxCreateRenderTarget
 __dxDrawImageSection = dxDrawImageSection
 __dxDrawImage = dxDrawImage
+__dxDrawText = dxDrawText
 ClientInfo = {
 	SupportedPixelShader={}
 }
@@ -947,9 +948,9 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 					local thisTrace = debug.getinfo(2)
 					if debugTrace then
 						local line,file = debugTrace.line,debugTrace.file
-						outputDebugString("dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed at element created at "..file..":"..line,2)
+						outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed at the element ("..file..":"..line..")",4)
 					else
-						outputDebugString("dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",2)
+						outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4)
 					end
 				end
 			end
@@ -957,6 +958,21 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 		end
 	end
 	return true
+end
+
+function dxDrawText(...)
+	if not __dxDrawText(...) then
+		if debugMode then
+			local debugTrace = dgsElementData[self].debugTrace
+			local thisTrace = debug.getinfo(2)
+			if debugTrace then
+				local line,file = debugTrace.line,debugTrace.file
+				outputDebugString("↑Caused by dxDrawText("..thisTrace.source..":"..thisTrace.currentline..") failed at the element("..file..":"..line..")",4,255,200,100)
+			else
+				outputDebugString("↑Caused by dxDrawText("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4,255,140,50)
+			end
+		end
+	end
 end
 
 function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,isWordWrap)

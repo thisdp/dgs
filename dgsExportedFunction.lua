@@ -70,7 +70,7 @@ function dgsImportFunction(name,nameAs)
 							local data = debug.getinfo(2)
 							local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
 							if isCreateFunction and isElement(retValue[1]) then
-								call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",{line=data.currentline,file=data.source:gsub("\\","/"):gsub("@",":"),fncName=fncName})
+								call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",{line=data.currentline,file=data.source,fncName=fncName})
 							end
 							return unpack(retValue)
 						else
