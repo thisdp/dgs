@@ -845,7 +845,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	else
 		finalcolor = applyColorAlpha(colors[selectState],parentAlpha)
 	end
-	local bgColor = eleData.bgColor or finalcolor
+	local bgColor = eleData.bgColor and applyColorAlpha(eleData.bgColor,parentAlpha) or finalcolor
 	local bgImage = eleData.bgImage
 	if imgs[selectState] then
 		dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[selectState],0,0,0,finalcolor,isPostGUI,rndtgt)
@@ -856,9 +856,9 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local arrowOutSideColor = eleData.arrowOutSideColor
 	local textBoxLen = w-buttonLen
 	if bgImage then
-		dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,applyColorAlpha(bgColor,parentAlpha),isPostGUI,rndtgt)
+		dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	else
-		dxDrawRectangle(x,y,textBoxLen,h,applyColorAlpha(bgColor,parentAlpha),isPostGUI)
+		dxDrawRectangle(x,y,textBoxLen,h,bgColor,isPostGUI)
 	end
 	local arrow = eleData.arrow
 	local listState = eleData.listState
@@ -873,9 +873,9 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxSetShaderValue(arrow,"linewidth",eleData.arrowSettings[3])
 		end
 		local r,g,b,a = fromcolor(arrowColor,true)
-		dxSetShaderValue(arrow,"_color",{r/255,g/255,b/255,a/255*parentAlpha})
+		dxSetShaderValue(arrow,"_color",r/255,g/255,b/255,a/255*parentAlpha)
 		local r,g,b,a = fromcolor(arrowOutSideColor,true)
-		dxSetShaderValue(arrow,"ocolor",{r/255,g/255,b/255,a/255*parentAlpha})
+		dxSetShaderValue(arrow,"ocolor",r/255,g/255,b/255,a/255*parentAlpha)
 		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
 	else 
 		local rotation = (90 * (eleData.listStateAnim)) - 90
