@@ -2715,7 +2715,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			end
 			
 			dxSetBlendMode("blend")
-			if not eleData.hitoutofparent then
+			if not eleData.childOutsideHit then
 				if MouseData.hit ~= source then
 					enabledInherited = false
 				end

@@ -183,7 +183,7 @@ function dgsCreateComboBox(...)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
 	triggerEvent("onDgsCreate",combobox,sourceResource)
-	dgsSetData(combobox,"hitoutofparent",true)
+	dgsSetData(combobox,"childOutsideHit",true)
 	return combobox
 end
 
@@ -1032,10 +1032,11 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			end
 		end
 		dxSetRenderTarget(rndtgt)
-		dxSetBlendMode("add")
+		dxSetBlendMode("blend")
 		if DataTab.bgRT then
 			_dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
+		dxSetBlendMode("add")
 		if DataTab.textRT then
 			_dxDrawImage(x,y,w,h,DataTab.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end

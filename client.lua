@@ -768,7 +768,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		if eleData.renderEventCall then
 			triggerEvent("onDgsElementRender",source,xRT,yNRT,w,h)
 		end
-		if not eleData.hitoutofparent then
+		if not eleData.childOutsideHit then
 			if MouseData.hit ~= source then
 				enabledInherited = false
 			end

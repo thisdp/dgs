@@ -153,7 +153,7 @@ function dgsCreateLayout(...)
 	}
 	calculateGuiPositionSize(layout,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",layout,res)
-	dgsSetData(layout,"hitoutofparent",true)
+	dgsSetData(layout,"childOutsideHit",true)
 	dgsAddEventHandler("onDgsCreate",layout,"dgsLayoutChildrenCreateHandler")
 	dgsAddEventHandler("onDgsDestroy",layout,"dgsLayoutChildrenDestroyHandler")
 	return layout

@@ -889,7 +889,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	eleData.ignoreParentTitle = false
 	eleData.textRelative = false
 	eleData.alpha = 1
-	eleData.hitoutofparent = false
+	eleData.childOutsideHit = false
 	eleData.PixelInt = true
 	eleData.functionRunBefore = true --true : after render; false : before render
 	eleData.disabledColor = style.disabledColor

@@ -882,6 +882,7 @@ local compatibility = {
 	["dgs-dxprogressbar"] = {
 		isReverse = "isClockWise",
 	}
+	hitoutofparent = "childOutsideHit",
 }
 function checkCompatibility(dgsEle,key)
 	local eleTyp = dgsGetType(dgsEle)
@@ -892,6 +893,16 @@ function checkCompatibility(dgsEle,key)
 			return true
 		else
 			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..", replace with "..compatibility[eleTyp][key],2)
+			return false
+		end
+	end
+	if compatibility[key] then
+		if not getElementData(localPlayer,"DGS-DEBUG-C") then
+			outputDebugString("Deprecated property '"..key.."' @dgsSetProperty with all dgs elements. To fix (Replace with "..compatibility[key]..")",2)
+			outputDebugString("To find it, run it again with command /debugdgs c",2)
+			return true
+		else
+			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with all dgs elements, replace with "..compatibility[key],2)
 			return false
 		end
 	end
