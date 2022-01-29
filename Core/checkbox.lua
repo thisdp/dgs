@@ -62,7 +62,7 @@ function dgsCreateCheckBox(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateCheckBox",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCheckBox",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCheckBox",4,"number")) end
-	if not(type(state) == "boolean") then error(dgsGenAsrt(h,"dgsCreateCheckBox",6,"boolean")) end
+	if not(type(state) == "boolean") then error(dgsGenAsrt(state,"dgsCreateCheckBox",6,"boolean")) end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
 	dgsSetParent(cb,parent,true,true)
