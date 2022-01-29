@@ -88,8 +88,8 @@ function dgsCreateSwitchButton(...)
 		clickState = "up"; --"down":Down;"up":U,
 		cursorLength = style.cursorLength,
 		clip = false,
-		wordbreak = false,
-		colorcoded = false,
+		wordBreak = false,
+		colorCoded = false,
 		style = 1,
 		isReverse = false,
 	}
@@ -312,24 +312,24 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip
-	local wordbreak = eleData.wordbreak
-	local colorcoded = eleData.colorcoded
+	local wordBreak = eleData.wordBreak
+	local colorCoded = eleData.colorCoded
 	local shadow = eleData.shadow
 	local textX,textY,textWX,textHY = x+w*0.5+xAdd-cursorLength,y,x+w*0.5+xAdd+cursorLength,y+h
 	if shadow then
 		local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 		if shadowoffx and shadowoffy and shadowc then
 			local shadowc = applyColorAlpha(shadowc,parentAlpha)
-			local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textWX+shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,isPostGUI)
+			local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
+			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textWX+shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
 			if shadowIsOutline then
-				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textWX-shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,isPostGUI)
-				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textWX-shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,isPostGUI)
-				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textWX+shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordbreak,isPostGUI)
+				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textWX-shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
+				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textWX-shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
+				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textWX+shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
 			end
 		end
 	end
-	dxDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordbreak,isPostGUI,colorcoded)
+	dxDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI,colorCoded)
 	----Cursor
 	if cursorImage then
 		dxDrawImage(cursorX,cursorY,cursorW,cursorH,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)

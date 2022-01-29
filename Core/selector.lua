@@ -22,9 +22,9 @@ local mathClamp = math.restrict
 --[[
 Selector Data Structure:
 {
-	{text,alignment,color,colorcoded,sizex,sizey,font,translationTest,data,imageData},
-	{text,alignment,color,colorcoded,sizex,sizey,font,translationTest,data,imageData},
-	{text,alignment,color,colorcoded,sizex,sizey,font,translationTest,data,imageData},
+	{text,alignment,color,colorCoded,sizex,sizey,font,translationTest,data,imageData},
+	{text,alignment,color,colorCoded,sizex,sizey,font,translationTest,data,imageData},
+	{text,alignment,color,colorCoded,sizex,sizey,font,translationTest,data,imageData},
 }
 ]]
 function dgsCreateSelector(...)
@@ -74,7 +74,7 @@ function dgsCreateSelector(...)
 		selectorImageLeft = style.selectorImageLeft,
 		selectorImageColorRight = style.selectorImageColorRight,
 		selectorImageRight = style.selectorImageRight,
-		colorcoded = false,
+		colorCoded = false,
 		quickLeap = 0.02,
 		quickLeapState = 0,
 		quickLeapTick = 0,
@@ -101,7 +101,7 @@ function dgsSelectorAddItem(selector,text,pos)
 	local alignment = eleData.alignment
 	local itemTextColor = eleData.itemTextColor
 	local itemTextSize = eleData.itemTextSize
-	local colorcoded = eleData.colorcoded
+	local colorCoded = eleData.colorCoded
 	local font = eleData.font
 	local itemData = eleData.itemData
 	local pos = tonumber(pos) or #itemData+1
@@ -114,7 +114,7 @@ function dgsSelectorAddItem(selector,text,pos)
 		tostring(text or ""),
 		alignment,
 		itemTextColor,
-		colorcoded,
+		colorCoded,
 		itemTextSize[1],
 		itemTextSize[2],
 		font,
@@ -375,7 +375,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local selector = eleData.selectorText
 	local alignment = eleData.alignment
 	local font = eleData.font
-	local colorcoded = eleData.colorcoded
+	local colorCoded = eleData.colorCoded
 	local placeHolder = eleData.placeHolder
 	local itemTextColorDef = eleData.itemTextColor
 	local selectorSize = eleData.selectorSize
@@ -465,7 +465,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxDrawText(renderItem[1],x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),renderItem[5],renderItem[6],renderItem[7],renderItem[2][1],renderItem[2][2],false,false,isPostGUI,renderItem[4])
 	else
 		local itemTextColor = type(itemTextColorDef) == "table" and itemTextColorDef[selectorTextColors[2]] or itemTextColorDef
-		dxDrawText(placeHolder,x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+		dxDrawText(placeHolder,x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorCoded)
 	end
 	
 	local selectorTextColorLeft = selectorTextColor[selectorTextColors[1]]
@@ -500,8 +500,8 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				dxDrawRectangle(x+w-selectorSizeX,selectorStart,selectorSizeX,selectorSizeY,applyColorAlpha(selectorImageColorRight,parentAlpha),isPostGUI)
 			end
 		end
-		dxDrawText(selectorTextLeft,x,selectorStart,x+selectorSizeX,selectorEnd,applyColorAlpha(selectorTextColorLeft,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-		dxDrawText(selectorTextRight,x+w-selectorSizeX,selectorStart,x+w,selectorEnd,applyColorAlpha(selectorTextColorRight,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+		dxDrawText(selectorTextLeft,x,selectorStart,x+selectorSizeX,selectorEnd,applyColorAlpha(selectorTextColorLeft,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorCoded)
+		dxDrawText(selectorTextRight,x+w-selectorSizeX,selectorStart,x+w,selectorEnd,applyColorAlpha(selectorTextColorRight,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorCoded)
 	else
 		local selectorStart = x+selectMinBound
 		local selectorEnd = selectorStart+selectorSizeX
@@ -519,8 +519,8 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				dxDrawRectangle(selectorStart,y+h-selectorSizeY,selectorSizeX,selectorSizeY,applyColorAlpha(selectorImageColorRight,parentAlpha),isPostGUI)
 			end
 		end
-		dxDrawText(selectorTextLeft,selectorStart,y,selectorEnd,y+selectorSizeY,applyColorAlpha(selectorTextColorLeft,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
-		dxDrawText(selectorTextRight,selectorStart,y+h-selectorSizeY,selectorEnd,y+h,applyColorAlpha(selectorTextColorRight,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorcoded)
+		dxDrawText(selectorTextLeft,selectorStart,y,selectorEnd,y+selectorSizeY,applyColorAlpha(selectorTextColorLeft,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorCoded)
+		dxDrawText(selectorTextRight,selectorStart,y+h-selectorSizeY,selectorEnd,y+h,applyColorAlpha(selectorTextColorRight,parentAlpha),selectorTextSize[1],selectorTextSize[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorCoded)
 	end
 	return rndtgt,false,mx,my,0,0
 end

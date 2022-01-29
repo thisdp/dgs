@@ -883,6 +883,8 @@ local compatibility = {
 		isReverse = "isClockWise",
 	}
 	hitoutofparent = "childOutsideHit",
+	wordbreak = "wordBreak",
+	colorcoded = "colorCoded",
 }
 function checkCompatibility(dgsEle,key)
 	local eleTyp = dgsGetType(dgsEle)

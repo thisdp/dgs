@@ -67,11 +67,11 @@ function dgsCreateWindow(...)
 		titleHeight = tonumber(titleHeight) or style.titleHeight,
 		borderSize = tonumber(borderSize) or style.borderSize,
 		ignoreTitle = false,
-		colorcoded = false,
+		colorCoded = false,
 		movable = true,
 		sizable = true,
 		clip = true,
-		wordbreak = false,
+		wordBreak = false,
 		alignment = {"center","center"},
 		moveType = false; --false only title;true are all
 		font = style.font or systemFont,
@@ -291,23 +291,23 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local font = eleData.font or systemFont
 	local textColor = applyColorAlpha(eleData.textColor,parentAlpha)
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
-	local clip,wordbreak,colorcoded = eleData.clip,eleData.wordbreak,eleData.colorcoded
+	local clip,wordBreak,colorCoded = eleData.clip,eleData.wordBreak,eleData.colorCoded
 	local text = eleData.text
 	local shadow = eleData.shadow
 	if shadow then
 		local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 		local textX,textY = x,y
 		if shadowoffx and shadowoffy and shadowc then
-			local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+			local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
 			local shadowc = applyColorAlpha(shadowc,parentAlpha)
-			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
 			if shadowIsOutline then
-				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
+				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
+				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
 			end
 		end
 	end
-	dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,eleData.colorcoded)
+	dxDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,eleData.colorCoded)
 	return rndtgt,false,mx,my,0,0
 end

@@ -100,7 +100,7 @@ function dgsCreateGridList(...)
 		backgroundOffset = style.backgroundOffset,
 		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		bgColor = bgColor or style.bgColor,
-		colorcoded = false,
+		colorCoded = false,
 		clip = true,
 		columnWordBreak = false,
 		columnColor = columnColor or style.columnColor,
@@ -632,7 +632,7 @@ end
 	columnData Struct:
 	  1																2																N
 	  column1														column2															columnN
-	{{text1,Width,AllWidthFront,Alignment,color,colorcoded,sizex,sizey,font},	{text1,Width,AllWidthFront,alignment,color,colorcoded,sizex,sizey,font},	{text1,Width,AllWidthFront,alignment,color,colorcoded,sizex,sizey,font}, ...}
+	{{text1,Width,AllWidthFront,Alignment,color,colorCoded,sizex,sizey,font},	{text1,Width,AllWidthFront,alignment,color,colorCoded,sizex,sizey,font},	{text1,Width,AllWidthFront,alignment,color,colorCoded,sizex,sizey,font}, ...}
 
 ]]
 function dgsGridListAddColumn(gridlist,name,len,c,alignment)
@@ -665,7 +665,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 	})
 	local cTextSize = eleData.columnTextSize
 	local cTextColor = eleData.columnTextColor
-	local colorcoded = eleData.colorcoded
+	local colorCoded = eleData.colorCoded
 	for i=c+1,cLen+1 do
 		cData[i] = {
 			cData[i][1],
@@ -673,7 +673,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 			dgsGridListGetColumnAllWidth(gridlist,i-1),
 			cData[i][4],
 			cTextColor,
-			colorcoded,
+			colorCoded,
 			cTextSize[1],
 			cTextSize[2],
 			nil, --Font
@@ -687,7 +687,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 		rData[i][c]= {
 			"",
 			rTextColor,
-			colorcoded,
+			colorCoded,
 			scale[1],
 			scale[2],
 			font,
@@ -964,12 +964,12 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 	if isByItem then
 		local rData = eleData.rowData
 		local maxWidth = 0
-		local colorcoded = eleData.colorcoded
+		local colorCoded = eleData.colorCoded
 		local font = eleData.font
 		local sectionFont = eleData.sectionFont or font
 		local columnSize = eleData.absSize[1]-eleData.scrollBarThick
 		for i=1,#rData do
-			local colorCoded = rData[i][c][3] == nil and colorcoded or rData[i][c][3]
+			local colorCoded = rData[i][c][3] == nil and colorCoded or rData[i][c][3]
 			local rowFont = rData[i][-5] and (rData[i][c][6] or sectionFont) or (rData[i][c][6] or eleData.rowFont or eleData.columnFont or font)
 			local wid = dxGetTextWidth(rData[i][c][1],rData[i][c][4],rowFont,colorCoded)
 			if maxWidth < wid then
@@ -1080,8 +1080,8 @@ end
 	-5			-4					-3							-2				-1				0							1																																																														2																																	...
 	Identity,	columnOffset		bgImage						hoverable		selectable		bgColor						column1																																																													column2																																...
 {
-	{ID,		columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
-	{ID,		columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorcoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
+	{ID,		columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorCoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorCoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
+	{ID,		columnOffset,		{normal,hovering,selected},	true/false,		true/false,		{normal,hovering,selected},	{text,color,colorCoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		{text,color,colorCoded,scalex,scaley,font,{image,color,imagex,imagey,imagew,imageh,relative},unhoverable,unselectable,attachedElement,alignment,{textOffsetX,textOffsetY,relative},{bgColorNormal,bgColorHovering,bgColorSelected},{bgImageNormal,bgImageHovering,bgImageSelected}},		...		},
 	{	the same as preview table																																																																																						},
 }
 
@@ -1105,7 +1105,7 @@ function dgsGridListAddRow(gridlist,r,...)
 		[0] = eleData.rowColor,
 	}
 	local rTextColor = eleData.rowTextColor
-	local colorcoded = eleData.colorcoded
+	local colorCoded = eleData.colorCoded
 	local scale = eleData.rowTextSize
 	for i=1,cLen do
 		local text,_text = args[i]
@@ -1117,7 +1117,7 @@ function dgsGridListAddRow(gridlist,r,...)
 			_translationText=_text,
 			tostring(text or ""),
 			rTextColor,
-			colorcoded,
+			colorCoded,
 			scale[1],
 			scale[2],
 			nil, --Font
@@ -1159,7 +1159,7 @@ function dgsGridListAddRows(gridlist,r,t,isRawData)
 				[0] = eleData.rowColor,
 			}
 			local rTextColor = eleData.rowTextColor
-			local colorcoded = eleData.colorcoded
+			local colorCoded = eleData.colorCoded
 			local scale = eleData.rowTextSize
 			for col=1,cLen do
 				local text,_text = t[i][col]
@@ -1171,7 +1171,7 @@ function dgsGridListAddRows(gridlist,r,t,isRawData)
 					_translationText=_text,
 					tostring(text or ""),
 					rTextColor,
-					colorcoded,
+					colorCoded,
 					scale[1],
 					scale[2],
 					nil,	--Font
@@ -2440,7 +2440,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local scrollbars = eleData.scrollbars
 	local scb1,scb2 = scrollbars[1],scrollbars[2]
 	local scbThickV,scbThickH = dgsElementData[scb1].visible and scbThick or 0,dgsElementData[scb2].visible and scbThick or 0
-	local colorcoded = eleData.colorcoded
+	local colorCoded = eleData.colorCoded
 	local shadow = eleData.rowShadow
 	local rowHeightLeadingTemp = rowHeight+leading
 	--Smooth Row
@@ -2516,7 +2516,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		for id = 1,#columnData do
 			local data = columnData[id]
 			local _columnTextColor = data[5] or columnTextColor
-			local _columnTextColorCoded = data[6] or colorcoded
+			local _columnTextcolorCoded = data[6] or colorCoded
 			local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
 			local _columnFont = data[9] or eleData.columnFont or font
 			local tempCpos = data[3]*multiplier
@@ -2543,7 +2543,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					if columnShadow then
 						dxDrawText(data[1],textPosL+columnShadow[1],textPosT+columnShadow[2],textPosR+columnShadow[1],textPosB+columnShadow[2],columnShadow[3],_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
 					end
-					dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextColorCoded,true)
+					dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextcolorCoded,true)
 				end
 				if mouseInsideGridList and mouseSelectColumn == -1 then
 					if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
@@ -2658,7 +2658,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						currentElementBuffer[2] = _x
 						currentElementBuffer[3] = _y
 						if text then
-							local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
+							local colorCoded = currentRowData[3] == nil and colorCoded or currentRowData[3]
 							if currentRowData[7] then
 								local imageData = currentRowData[7]
 								local imagex = _x+(imageData[7] and imageData[3]*columnWidth or imageData[3])
@@ -2689,7 +2689,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							currentTextBuffer[7] = _txtScalex
 							currentTextBuffer[8] = _txtScaley
 							currentTextBuffer[9] = _txtFont
-							currentTextBuffer[10] = colorcoded
+							currentTextBuffer[10] = colorCoded
 							currentTextBuffer[11] = alignment
 						end
 					end
@@ -2779,7 +2779,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		for i=whichColumnToStart,whichColumnToEnd or columnCount do
 			local data = columnData[i]
 			local _columnTextColor = applyColorAlpha(data[5] or columnTextColor,parentAlpha)
-			local _columnTextColorCoded = data[6] or colorcoded
+			local _columnTextcolorCoded = data[6] or colorCoded
 			local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
 			local _columnFont = data[9] or eleData.columnFont or font
 			local column_sx = column_x+cpos[i]+data[2]*multiplier-scbThickV
@@ -2908,7 +2908,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					dxDrawRectangle(_bgX,_y,columnWidth,rowHeight,itemUsingBGColor,isPostGUI)
 				end
 				if text ~= "" then
-					local colorcoded = currentRowData[3] == nil and colorcoded or currentRowData[3]
+					local colorCoded = currentRowData[3] == nil and colorCoded or currentRowData[3]
 					if currentRowData[7] then
 						local imageData = currentRowData[7]
 						local color = applyColorAlpha(imageData[2],parentAlpha)
@@ -2935,7 +2935,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						_txtScalex,
 						_txtScaley,
 						_txtFont,
-						colorcoded,
+						colorCoded,
 						alignment,
 					}
 					textBufferCnt = textBufferCnt+1

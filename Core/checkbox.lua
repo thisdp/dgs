@@ -116,8 +116,8 @@ function dgsCreateCheckBox(...)
 		shadow = {_,_,_},
 		font = style.font or systemFont,
 		clip = false,
-		wordbreak = false,
-		colorcoded = false,
+		wordBreak = false,
+		colorCoded = false,
 		state = state,
 		alignment = {"left","center"},
 	}
@@ -247,11 +247,11 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip
-	local wordbreak = eleData.wordbreak
+	local wordBreak = eleData.wordBreak
 	local _textPadding = eleData.textPadding
 	local textPadding = _textPadding[2] and _textPadding[1]*w or _textPadding[1]
 	local text = eleData.text
-	local colorcoded = eleData.colorcoded
+	local colorCoded = eleData.colorCoded
 	local alignment = eleData.alignment
 	local px = x+buttonSizeX+textPadding
 	if eleData.PixelInt then px = px-px%1 end
@@ -261,15 +261,15 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local textX,textY = px,y
 		if shadowoffx and shadowoffy and shadowc then
 			local shadowc = applyColorAlpha(shadowc,parentAlpha)
-			local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
-			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+			local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
+			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
 			if shadowIsOutline then
-				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
+				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
+				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
 			end
 		end
 	end
-	dxDrawText(text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
+	dxDrawText(text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded)
 	return rndtgt,false,mx,my,0,0
 end

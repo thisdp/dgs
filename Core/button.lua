@@ -75,7 +75,7 @@ function dgsCreateButton(...)
 		clip = false,
 		colorTransitionPeriod = 0, --ms
 		color = {normalColor, hoveringColor, clickedColor},
-		colorcoded = false,
+		colorCoded = false,
 		font = style.font or systemFont,
 		iconColor = 0xFFFFFFFF,
 		iconDirection = "left",
@@ -89,7 +89,7 @@ function dgsCreateButton(...)
 		textColor = tonumber(textColor) or style.textColor,
 		textOffset = {0,0,false},
 		textSize = {textSizeX, textSizeY},
-		wordbreak = false,
+		wordBreak = false,
 		renderBuffer = {
 			lastState = 0,
 		},
@@ -192,7 +192,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local systemFont = style.systemFontElement
 	
 	local font = eleData.font or systemFont
-	local colorcoded = eleData.colorcoded
+	local colorCoded = eleData.colorCoded
 	local textOffset = eleData.textOffset
 	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
@@ -205,7 +205,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		iconColor = type(iconColor) == "table" and iconColor or {iconColor,iconColor,iconColor}
 		local iconSize = eleData.iconSize
 		local fontHeight = dxGetFontHeight(txtSizY,font)
-		local fontWidth = dxGetTextWidth(text,txtSizX,font,colorcoded)
+		local fontWidth = dxGetTextWidth(text,txtSizX,font,colorCoded)
 		local iconHeight,iconWidth = iconSize[2],iconSize[1]
 		if iconSize[3] == "text" then
 			iconWidth,iconHeight = fontHeight*iconSize[1],fontHeight*iconSize[2]
@@ -285,7 +285,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 
 	if #text ~= 0 then
 		local clip = eleData.clip
-		local wordbreak = eleData.wordbreak
+		local wordBreak = eleData.wordBreak
 		if buttonState == 3 then
 			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickOffset[1],txtoffsetsY+eleData.clickOffset[2]
 		end
@@ -294,13 +294,13 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		if shadow then
 			local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 			if shadowoffx and shadowoffy and shadowc then
-				local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+				local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
 				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+				dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
 				if shadowIsOutline then
-					dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-					dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
-					dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI)
+					dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
+					dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
+					dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
 				end
 			end
 		end
@@ -308,7 +308,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		if type(textColor) == "table" then
 			textColor = textColor[buttonState] or textColor[1]
 		end
-		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordbreak,isPostGUI,colorcoded)
+		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded)
 	end
 
 	return rndtgt,false,mx,my,0,0

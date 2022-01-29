@@ -10,7 +10,7 @@ local type = type
 local tableInsert = table.insert
 
 function dgsCreate3DText(...)
-	local x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorcoded
+	local x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorCoded
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
@@ -22,9 +22,9 @@ function dgsCreate3DText(...)
 		scaleX = argTable.scaleX or argTable[7]
 		scaleX = argTable.scaleY or argTable[8]
 		maxDistance = argTable.maxDistance or argTable[9]
-		colorcoded = argTable.colorcoded or argTable[10]
+		colorCoded = argTable.colorCoded or argTable[10]
 	else
-		x,y,z,text,color,font,scaleX,scaleY,maxDistance,colorcoded = ...
+		x,y,z,text,color,font,scaleX,scaleY,maxDistance,colorCoded = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DText",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DText",2,"number")) end
@@ -49,7 +49,7 @@ function dgsCreate3DText(...)
 		fixTextSize = false,
 		font = font or style.font or systemFont,
 		color = color or 0xFFFFFFFF,
-		colorcoded = colorcoded or false,
+		colorCoded = colorCoded or false,
 		maxDistance = maxDistance or 80,
 		fadeDistance = maxDistance or 80,
 		dimension = -1,
@@ -211,7 +211,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 				if eleData.isOnScreen then
 					local offsetX,offsetY = eleData.textOffset[1],eleData.textOffset[2]
 					local subPixelPositioning = eleData.subPixelPositioning
-					local colorcoded = eleData.colorcoded
+					local colorCoded = eleData.colorCoded
 					local text = eleData.text
 					local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
 					local font = eleData.font or systemFont
@@ -229,7 +229,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
 						if shadowoffx and shadowoffy and shadowc then
 							local shadowText = text
-							if colorcoded then
+							if colorCoded then
 								shadowText = text:gsub('#%x%x%x%x%x%x','').."\n"
 							end
 							local shadowc = applyColorAlpha(shadowc,parentAlpha*fadeMulti)
@@ -242,11 +242,11 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 							end
 						end
 					end
-					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorcoded,subPixelPositioning)
+					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorCoded,subPixelPositioning)
 					------------------------------------OutLine
 					local outlineData = eleData.outline
 					if outlineData then
-						local shadowText = colorcoded and text:gsub('#%x%x%x%x%x%x','') or text
+						local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
 						local w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
 						local x,y=x-w*0.5,y-h*0.5
 						local sideColor = outlineData[3]

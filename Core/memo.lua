@@ -156,7 +156,7 @@ function dgsCreateMemo(...)
 		maxLength = 0x3FFFFFFF,
 		scrollBarLength = {},
 		multiClickCounter = {false,false,0},
-		colorcoded = true,
+		colorCoded = true,
 		textRenderBuffer = {},
 		updateTextRTNextFrame = false,
 	}
@@ -1636,7 +1636,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					local shadowc = applyColorAlpha(shadowc,parentAlpha)
 					for i=1,textRenderBuffer.count do
 						tRB = textRenderBuffer[i]
-						local shadowText = colorcoded and tRB[1]:gsub('#%x%x%x%x%x%x','') or tRB[1]
+						local shadowText = colorCoded and tRB[1]:gsub('#%x%x%x%x%x%x','') or tRB[1]
 						dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]+shadowoffy,tRB[4]+shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
 						if shadowIsOutline == true or shadowIsOutline == 1 then
 							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]+shadowoffy,tRB[4]-shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
@@ -1769,7 +1769,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					local shadowc = applyColorAlpha(shadowc,parentAlpha)
 					for i=1,textRenderBuffer.count do
 						tRB = textRenderBuffer[i]
-						local shadowText = colorcoded and tRB[1]:gsub('#%x%x%x%x%x%x','') or tRB[1]
+						local shadowText = colorCoded and tRB[1]:gsub('#%x%x%x%x%x%x','') or tRB[1]
 						dxDrawText(shadowText,tRB[2]+shadowoffx,tRB[3]+shadowoffy,tRB[4]+shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)
 						if shadowIsOutline == true or shadowIsOutline == 1 then
 							dxDrawText(shadowText,tRB[2]-shadowoffx,tRB[3]+shadowoffy,tRB[4]-shadowoffx,tRB[5]+shadowoffy,shadowc,tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false)

@@ -83,8 +83,8 @@ function dgsCreateTabPanel(...)
 		scrollSpeed = style.scrollSpeed,
 		showPos = 0,
 		tabLengthAll = 0,
-		colorcoded = false,
-		wordbreak = false,
+		colorCoded = false,
+		wordBreak = false,
 		tabAlignment = "left",
 		tabOffset = {0,false},
 		textRenderBuffer = {},
@@ -181,8 +181,8 @@ function dgsCreateTab(...)
 		iconImage = nil,
 		iconOffset = 5,
 		iconSize = {1,1,true}, -- Text's font heigh,
-		colorcoded = nil,
-		wordbreak = nil,
+		colorCoded = nil,
+		wordBreak = nil,
 	}
 	if eleData.selected == -1 then eleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or resource])
@@ -353,8 +353,8 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local systemFont = style.systemFontElement
 	
 	local font = eleData.font or systemFont
-	local colorcoded = eleData.colorcoded
-	local wordbreak = eleData.wordbreak
+	local colorCoded = eleData.colorCoded
+	local wordBreak = eleData.wordBreak
 	local tabAlignment = eleData.tabAlignment
 	if selected == -1 then
 		local color = applyColorAlpha(eleData.bgColor,parentAlpha)
@@ -386,9 +386,9 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local t = tabs[d]
 				local tabData = dgsElementData[t]
 				if tabData.visible then
-					local tWordbreak,tColorcoded = tabData.wordbreak,tabData.colorcoded
-					if tWordbreak == nil then tWordbreak = wordbreak end
-					if tColorcoded == nil then tColorcoded = colorcoded end
+					local twordBreak,tcolorCoded = tabData.wordBreak,tabData.colorCoded
+					if twordBreak == nil then twordBreak = wordBreak end
+					if tcolorCoded == nil then tcolorCoded = colorCoded end
 					local width = tabData.width+tabPadding*2
 					if tabX+width >= 0 and tabX <= w then
 						local tabImage = tabData.tabImage
@@ -428,7 +428,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							iconColor = type(iconColor) == "table" and iconColor or {iconColor,iconColor,iconColor}
 							local iconSize = eleData.iconSize
 							local fontHeight = dxGetFontHeight(textSizeY,font)
-							local fontWidth = dxGetTextWidth(text,textSizeX,font,colorcoded)
+							local fontWidth = dxGetTextWidth(text,textSizeX,font,colorCoded)
 							local iconHeight,iconWidth = iconSize[2],iconSize[1]
 							if iconSize[3] == "text" then
 								iconWidth,iconHeight = fontHeight*iconSize[1],fontHeight*iconSize[2]
@@ -478,7 +478,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
 						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
-						textRenderBuffer[textRenderBuffer.count][10] = colorcoded	--Color Coded
+						textRenderBuffer[textRenderBuffer.count][10] = colorCoded	--Color Coded
 						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
 							MouseData.hit = t

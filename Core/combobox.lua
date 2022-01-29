@@ -114,10 +114,10 @@ function dgsCreateComboBox(...)
 		textBox = true,
 		select = -1,
 		clip = false,
-		wordbreak = false,
+		wordBreak = false,
 		itemHeight = itemHeight or style.itemHeight,
 		viewCount = false,
-		colorcoded = false,
+		colorCoded = false,
 		listState = -1,
 		listStateAnim = -1,
 		autoHideAfterSelected = style.autoHideAfterSelected,
@@ -338,7 +338,7 @@ function dgsComboBoxAddItem(combobox,text)
 
 	local tab = {
 		[-6] = nil,										--built-in image {[1]=image,[2]=color,[3]=offsetX,[4]=offsetY,[5]=width,[6]=height,[7]=relative}
-		[-5] = dgsElementData[combobox].colorcoded,		--use color code
+		[-5] = dgsElementData[combobox].colorCoded,		--use color code
 		[-4] = dgsElementData[combobox].font,			--font
 		[-3] = dgsElementData[combobox].itemTextSize,	--text size of item
 		[-2] = dgsElementData[combobox].itemTextColor,	--text color of item
@@ -895,9 +895,9 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local textColor = item[-2] or eleData.textColor
 		local rb = eleData.alignment
 		local txtSizX,txtSizY = item[-3] and item[-3][1] or eleData.textSize[1],item[-3] and (item[-3][2] or item[-3][1]) or eleData.textSize[2] or eleData.textSize[1]
-		local colorcoded = item[-5] or eleData.colorcoded
+		local colorCoded = item[-5] or eleData.colorCoded
 		local shadow = eleData.shadow
-		local wordbreak = eleData.wordbreak
+		local wordBreak = eleData.wordBreak
 		local text = item[1] or eleData.caption
 		local image = item[-6]
 		if image then
@@ -913,9 +913,9 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		local nx,ny,nw,nh = x+itemTextPadding[1],y,x+textBoxLen-itemTextPadding[2],y+h
 		if shadow then
-			dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI)
+			dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordBreak,isPostGUI)
 		end
-		dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordbreak,isPostGUI,colorcoded)
+		dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordBreak,isPostGUI,colorCoded)
 	end
 	if eleData.nextRenderSort then
 		dgsComboBoxSort(source)
@@ -966,7 +966,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		local preSelect = DataTab.preSelect
 		local Select = DataTab.select
 		local shadow = DataTab.shadow
-		local wordbreak = eleData.wordbreak
+		local wordBreak = eleData.wordBreak
 		local clip = eleData.clip
 		local itemTextPadding = DataTab.itemTextPadding
 		for i=DataTab.FromTo[1],DataTab.FromTo[2] do
@@ -976,7 +976,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			local image = item[-1]
 			local color = item[0]
 			local font = item[-4]
-			local colorcoded = item[-5]
+			local colorCoded = item[-5]
 			local itemState = 1
 			itemState = i == preSelect and 2 or itemState
 			itemState = i == Select and 3 or itemState
@@ -1015,8 +1015,8 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			textRenderBuffer[textRenderBuffer.count][10] = align[1]
 			textRenderBuffer[textRenderBuffer.count][11] = align[2]
 			textRenderBuffer[textRenderBuffer.count][12] = clip
-			textRenderBuffer[textRenderBuffer.count][13] = wordbreak
-			textRenderBuffer[textRenderBuffer.count][14] = colorcoded
+			textRenderBuffer[textRenderBuffer.count][13] = wordBreak
+			textRenderBuffer[textRenderBuffer.count][14] = colorCoded
 		end
 		
 		if DataTab.textRT then
