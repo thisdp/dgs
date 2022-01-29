@@ -881,7 +881,7 @@ local compatibility = {
 	1,
 	["dgs-dxprogressbar"] = {
 		isReverse = "isClockWise",
-	}
+	},
 	hitoutofparent = "childOutsideHit",
 	wordbreak = "wordBreak",
 	colorcoded = "colorCoded",
