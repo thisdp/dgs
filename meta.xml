@@ -894,7 +894,7 @@
 	<export function="dgsImportOOPClass" type="client" />
 	<export function="dgsG2DLoadHooker" type="client" />
 
-	<min_mta_version client="1.5.4-9.20998" server="1.5.4-9.11342" />
+	<min_mta_version client="1.5.8-9.20998" server="1.5.4-9.11342" />
 	<aclrequest>
 		<right name="function.fetchRemote" access="true" />
 		<right name="general.ModifyOtherObjects" access="true" />
