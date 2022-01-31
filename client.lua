@@ -1321,6 +1321,11 @@ function dgsCheckHit(hits,cursorShowing)
 			end
 			MouseData.left = MouseData.entered
 			MouseData.entered = hits
+			MouseData.hoverTick = getTickCount()
+		else
+			if isElement(hits) then
+				triggerEvent("onDgsMouseHover",hits,getTickCount()-MouseData.hoverTick)
+			end
 		end
 	end
 	if dgsElementType[hits] == "dgs-dxtab" then

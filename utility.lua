@@ -1225,6 +1225,7 @@ events = {
 	"onDgsSelectorSelect",
 	"onDgsGridListSelect",
 	"onDgsGridListHover",
+	"onDgsMouseHover",
 	"onDgsGridListItemDoubleClick",
 	"onDgsProgressBarChange",
 	"onDgsCreate",
