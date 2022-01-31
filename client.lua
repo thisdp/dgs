@@ -1324,7 +1324,7 @@ function dgsCheckHit(hits,cursorShowing)
 			MouseData.hoverTick = getTickCount()
 		else
 			if isElement(hits) then
-				triggerEvent("onDgsMouseHover",hits,getTickCount()-(MouseData.hoverTick or getTickCount()))
+				triggerEvent("onDgsMouseHover",hits,getTickCount()-(MouseData.hoverTick or getTickCount()),mx,my)
 			end
 		end
 	end
