@@ -157,7 +157,7 @@ local function class(tab)
 	}
 	if tab.public then
 		if tab.public.ailas then
-			for name,alias do
+			for name,alias in pairs(tab.public.ailas) do
 				tab.public[name] = alias
 			end
 		end
