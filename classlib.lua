@@ -155,6 +155,13 @@ local function class(tab)
 			return newInstance
 		end
 	}
+	if tab.public then
+		if tab.public.ailas then
+			for name,alias do
+				tab.public[name] = alias
+			end
+		end
+	end
 	if tab.extends then
 		tab.public = tab.public or {}
 		if type(tab.extends) ~= "table" then
@@ -509,6 +516,12 @@ class {
 		dgsColorPicker = function(...) return dgsOOP.dgsColorPicker(...) end,
 		dgsComponentSelector = function(...) return dgsOOP.dgsComponentSelector(...) end,
 		dgsSVG = function(...) return dgsOOP.dgsSVG(...) end,
+		
+		--Alias
+		alias = {
+			--A = B
+			destroyWith = "attachToAutoDestroy",
+		},
 	};
 }
 
