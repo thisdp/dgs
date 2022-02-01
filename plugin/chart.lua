@@ -65,6 +65,8 @@ end
 sampleTableType:
 "pointXYInOneTable" {x,y,x,y,x,y}
 "pointYXInOneTable" {y,x,y,x,y,x}
+"pointXYList" {{x,x,...},{y,y,...}}
+"pointYXList" {{x,x,...},{y,y,...}}
 "pointXY" {{x,y},{x,y},...}
 "pointYX" {{y,x},{y,x},...}
 "keyAsX"  {[X]=Y,[X]=Y,...}

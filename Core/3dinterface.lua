@@ -88,15 +88,17 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
 	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop,leftBottom,rightTop,rightBottom)
 end
 
-function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVec,lnPnt,rot)
+--lnVP = lnVector(xyz)+lnPoint(xyz)
+--pnVP = pnVector(xyz)+pnPoint(xyz)
+function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,rot)
 	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
 	local offFaceZ = atan2(vx,vy)
 	local _h=h
 	h=h*0.5
 	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
 	local x1,y1,z1 = _x*h,_y*h,_z*h
-	if lnVec and lnPnt then
-		local px,py,pz = dgsGetIntersection(lnVec,lnPnt,{vx,vy,vz},{x,y,z}) --Intersection Point
+	if lnVP1 then
+		local px,py,pz = dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,vx,vy,vz,x,y,z) --Intersection Point
 		if not px then return end
 		local model = (vx^2+vy^2+vz^2)^0.5
 		local vx,vy,vz = vx/model,vy/model,vz/model
@@ -106,17 +108,17 @@ function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVec,lnPnt,rot)
 		local vec1X,vec1Y,vec1Z = ltX+x-px,ltY+y-py,ltZ+z-pz
 		local vec2X,vec2Y,vec2Z = px-x+x1,py-y+y1,pz-z+z1
 		local _x,_y = (vec1X*ltX+vec1Y*ltY+vec1Z*ltZ)/(ltX^2+ltY^2+ltZ^2)^0.5/w,(vec2X*x1+vec2Y*y1+vec2Z*z1)/(x1^2+y1^2+z1^2)^0.5/_h
-		local angle = (x-lnPnt[1])*lnVec[1]+(y-lnPnt[2])*lnVec[2]+(z-lnPnt[3])*lnVec[3]
+		local angle = (x-lnVP4)*lnVP1+(y-lnVP5)*lnVP2+(z-lnVP6)*lnVP3
 		local inSide = _x>=0 and _x<=1 and _y>=0 and _y <=1
 		return (angle > 0) and inSide,_x,_y,px,py,pz
 	end
 end
 
-function dgsGetIntersection(lnVec,lnPnt,pnVec,pnPnt)
-	local vpt = (pnVec[1]*lnVec[1]+pnVec[2]*lnVec[2]+pnVec[3]*lnVec[3])
+function dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,pnVP1,pnVP2,pnVP3,pnVP4,pnVP5,pnVP6)
+	local vpt = pnVP1*lnVP1+pnVP2*lnVP2+pnVP3*lnVP3
 	if vpt ~= 0 then
-		local t = (pnVec[1]*(pnPnt[1]-lnPnt[1])+pnVec[2]*(pnPnt[2]-lnPnt[2])+pnVec[3]*(pnPnt[3]-lnPnt[3]))/vpt
-		return lnPnt[1]+lnVec[1]*t,lnPnt[2]+lnVec[2]*t,lnPnt[3]+lnVec[3]*t
+		local t = (pnVP1*(pnVP4-lnVP4)+pnVP2*(pnVP5-lnVP5)+pnVP3*(pnVP6-lnVP6))/vpt
+		return lnVP4+lnVP1*t,lnVP5+lnVP2*t,lnVP6+lnVP3*t
 	end
 end
 
@@ -286,7 +288,7 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 	rndtgt = eleData.renderTarget_parent
 	if x and y and z and w and h and enabledInherited and mx then
-		local lnVec,lnPnt
+		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123
 		local camX,camY,camZ = getCameraMatrix()
 		if not fx or not fy or not fz then
 			fx,fy,fz = camX-x,camY-y,camZ-z
@@ -295,11 +297,10 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 			fx,fy,fz = fx-x,fy-y,fz-z
 		end
 		if MouseData.cursorPos3D[0] then	--Is cursor 3d position available
-			lnVec = {MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ}
-			lnPnt = {camX,camY,camZ}
+			lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ,camX,camY,camZ
 		end
 		if eleData.cameraDistance or 0 <= eleData.maxDistance then
-			eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVec,lnPnt,rot)}
+			eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,rot)}
 		else
 			eleData.hit = {}
 		end
@@ -333,6 +334,8 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 	local eleData = dgsElementData[source]
 	local dimension = eleData.dimension
 	if eleData.visible then
+		local faceTo = eleData.faceTo
+		local pos = eleData.position
 		local attachTable = eleData.attachTo
 		if attachTable then
 			local element,offX,offY,offZ,offFaceX,offFaceY,offFaceZ = attachTable[1],attachTable[2],attachTable[3],attachTable[4],attachTable[5],attachTable[6],attachTable[7]
@@ -341,13 +344,11 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 			else
 				local ex,ey,ez = getElementPosition(element)
 				local tmpX,tmpY,tmpZ = getPositionFromElementOffset(element,offFaceX,offFaceY,offFaceZ)
-				eleData.position = {getPositionFromElementOffset(element,offX,offY,offZ)}
-				eleData.faceTo = {tmpX-ex,tmpY-ey,tmpZ-ez}
+				pos[1],pos[2],pos[3] = getPositionFromElementOffset(element,offX,offY,offZ)
+				faceTo[1],faceTo[2],faceTo[3] = tmpX-ex,tmpY-ey,tmpZ-ez
 			end
 		end
-		local pos = eleData.position
 		local size = eleData.size
-		local faceTo = eleData.faceTo or {}
 		local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
 		eleData.hit = false
 		if x and y and z and w and h then

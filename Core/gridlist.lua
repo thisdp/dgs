@@ -2505,7 +2505,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if not eleData.mode then
 
 		---dxSetRenderTarget(eleData.columnRT,true)
-
 		dxSetRenderTarget(eleData.columnTextRT,true)
 		dxSetBlendMode("modulate_add")
 		local multiplier = eleData.columnRelative and (w-scbThickV) or 1
@@ -2593,7 +2592,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxSetRenderTarget(eleData.rowRT,true)
 			if cPosStart and cPosEnd then
 				for i=eleData.FromTo[1],eleData.FromTo[2] do
-					elementBuffer[i] = elementBuffer[i] or {}
+					if not elementBuffer[i] then elementBuffer[i] = {} end
 					local lc_rowData = rowData[i]
 					local image,columnOffset,isSection,color = lc_rowData[-3] or eleData.rowImage,lc_rowData[-4] or eleData.columnOffset,lc_rowData[-5],lc_rowData[0] or eleData.rowColor
 					local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading
@@ -2678,7 +2677,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
 							end
 							textBufferCnt = textBufferCnt+1
-							textBuffer[textBufferCnt] = textBuffer[textBufferCnt] or {}
+							if not textBuffer[textBufferCnt] then textBuffer[textBufferCnt] = {} end
 							local currentTextBuffer = textBuffer[textBufferCnt]
 							currentTextBuffer[1] = currentRowData[1]	--Text
 							currentTextBuffer[2] = textXS-textXS%1			--startX

@@ -880,32 +880,30 @@ addEventHandler("onDgsCreate",root,function(theResource)
 		style = style.loaded[style.using]
 	end
 	
-	dgsElementData[source] = dgsElementData[source] or {}
+	if not dgsElementData[source] then dgsElementData[source] = {} end
 	local eleData = dgsElementData[source]
 	eleData.positionAlignment = {nil,nil}
 	eleData.contentPositionAlignment = {nil,nil}
 	eleData.visible = true
 	eleData.enabled = true
-	eleData.ignoreParentTitle = false
-	eleData.textRelative = false
+	--eleData.ignoreParentTitle = false
 	eleData.alpha = 1
-	eleData.childOutsideHit = false
+	--eleData.childOutsideHit = false
 	eleData.PixelInt = true
 	eleData.functionRunBefore = true --true : after render; false : before render
 	eleData.disabledColor = style.disabledColor
 	eleData.disabledColorPercent = style.disabledColorPercent
 	eleData.postGUI = dgsRenderSetting.postGUI == nil and true or false
-	eleData.outline = false
+	--eleData.outline = false
 	eleData.changeOrder = style.changeOrder --Change the order when "bring to front" or clicked
-	eleData.attachedTo = false
-	eleData.attachedBy = false
-	eleData.enableFullEnterLeaveCheck = false
-	eleData.clickCoolDown = false
-	eleData.settingListener = {}
-	eleData.clickingSound = false
-	eleData.clickingSoundVolume = false
+	--eleData.attachedTo = false
+	--eleData.attachedBy = false
+	--eleData.enableFullEnterLeaveCheck = false
+	--eleData.clickCoolDown = false=
+	--eleData.clickingSound = false
+	--eleData.clickingSoundVolume = false
 	eleData.cursorPosition = {[0]=0}
-	ChildrenTable[source] = ChildrenTable[source] or {}
+	if not ChildrenTable[source] then ChildrenTable[source] = {} end
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
 	addEventHandler("onDgsBlur",source,function()

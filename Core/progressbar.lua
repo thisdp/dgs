@@ -35,8 +35,11 @@ local ProgressBarStyle = {
 			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
 		end
 		if type(indicatorImage) == "table" then
-			if type(indicatorColor) ~= "table" then
-				indicatorColor = {indicatorColor,indicatorColor}
+			local indicatorColor1,indicatorColor2
+			if type(indicatorColor) == "table" then
+				indicatorColor1,indicatorColor2 = indicatorColor[1],indicatorColor[2]
+			else
+				indicatorColor1,indicatorColor2 = indicatorColor
 			end
 			if indicatorMode then
 				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
@@ -46,11 +49,11 @@ local ProgressBarStyle = {
 				else
 					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
 				end
-				dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
-				dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[1],0,0,0,indicatorColor[2],rendSet,rndtgt)
+				dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor1,rendSet,rndtgt)
+				dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[1],0,0,0,indicatorColor2,rendSet,rndtgt)
 			else
-				dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
-				dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet,rndtgt)
+				dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor1,rendSet,rndtgt)
+				dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor2,rendSet,rndtgt)
 			end
 		elseif isElement(indicatorImage) then
 			if type(indicatorColor) == "table" then
@@ -90,8 +93,11 @@ local ProgressBarStyle = {
 			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
 		end
 		if type(indicatorImage) == "table" then
-			if type(indicatorColor) ~= "table" then
-				indicatorColor = {indicatorColor,indicatorColor}
+			local indicatorColor1,indicatorColor2
+			if type(indicatorColor) == "table" then
+				indicatorColor1,indicatorColor2 = indicatorColor[1],indicatorColor[2]
+			else
+				indicatorColor1,indicatorColor2 = indicatorColor
 			end
 			if indicatorMode then
 				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
@@ -101,10 +107,10 @@ local ProgressBarStyle = {
 				else
 					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
 				end
-				dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
-				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy2,sx2,sy2*(1-percent),indicatorImage[1],0,0,0,indicatorColor[2],rendSet,rndtgt)
+				dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor1,rendSet,rndtgt)
+				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy2,sx2,sy2*(1-percent),indicatorImage[1],0,0,0,indicatorColor2,rendSet,rndtgt)
 			else
-				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor[1],rendSet,rndtgt)
+				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor1,rendSet,rndtgt)
 				dxDrawImage(iPosX,iSizYPercent+iPosY,iSizX,iSizY-iSizYPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],rendSet,rndtgt)
 			end
 		elseif isElement(indicatorImage) then
@@ -144,23 +150,21 @@ local ProgressBarStyle = {
 		end
 		local circle = eleData.elements.circleShader
 		local circleBG = eleData.elements.circleShaderBG
-		local progress = {startPoint,endPoint}
-		dxSetShaderValue(circle,"progress",progress)
+		dxSetShaderValue(circle,"progress",startPoint,endPoint)
 		if startPoint == endPoint then
-			dxSetShaderValue(circle,"indicatorColor",{0,0,0,0})
+			dxSetShaderValue(circle,"indicatorColor",0,0,0,0)
 		else
-			dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
+			dxSetShaderValue(circle,"indicatorColor",fromcolor(indicatorColor,true,true))
 		end
 		dxSetShaderValue(circle,"thickness",eleData.thickness)
 		dxSetShaderValue(circle,"radius",eleData.radius)
 		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)
 		
-		local bgProgress = {bgStartPoint,bgEndPoint}
-		dxSetShaderValue(circleBG,"progress",bgProgress)
+		dxSetShaderValue(circleBG,"progress",bgStartPoint,bgEndPoint)
 		if bgStartPoint == bgEndPoint then
-			dxSetShaderValue(circleBG,"indicatorColor",{0,0,0,0})
+			dxSetShaderValue(circleBG,"indicatorColor",0,0,0,0)
 		else
-			dxSetShaderValue(circleBG,"indicatorColor",{fromcolor(eleData.bgColor,true,true)})
+			dxSetShaderValue(circleBG,"indicatorColor",fromcolor(eleData.bgColor,true,true))
 		end
 		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
 		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
@@ -181,7 +185,7 @@ local ProgressBarStyle = {
 		end
 		dxSetShaderValue(circleBG,"progress",bgProgress)
 		dxSetShaderValue(circleBG,"isClockwise",eleData.isClockwise)
-		dxSetShaderValue(circleBG,"indicatorColor",{fromcolor(eleData.bgColor,true,true)})
+		dxSetShaderValue(circleBG,"indicatorColor",fromcolor(eleData.bgColor,true,true))
 		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
 		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
 		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
@@ -189,7 +193,7 @@ local ProgressBarStyle = {
 		
 		dxSetShaderValue(circle,"progress",progress)
 		dxSetShaderValue(circle,"isClockwise",eleData.isClockwise)
-		dxSetShaderValue(circle,"indicatorColor",{fromcolor(indicatorColor,true,true)})
+		dxSetShaderValue(circle,"indicatorColor",fromcolor(indicatorColor,true,true))
 		dxSetShaderValue(circle,"thickness",eleData.thickness)
 		dxSetShaderValue(circle,"radius",eleData.radius)
 		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)

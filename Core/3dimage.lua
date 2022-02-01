@@ -230,7 +230,7 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 		if isElement(attachTable[1]) then
 			if isElementStreamedIn(attachTable[1]) then
 				wx,wy,wz = getPositionFromElementOffset(attachTable[1],attachTable[2],attachTable[3],attachTable[4])
-				eleData.position = {wx,wy,wz}
+				posTable[1],posTable[2],posTable[3] = wx,wy,wz
 			else
 				isRender = false
 			end
@@ -239,8 +239,8 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 		end
 	end
 	if isRender then
-		local camX,camY,camZ = getCameraMatrix()
 		local maxDistance = eleData.maxDistance
+		local camX,camY,camZ = getCameraMatrix()
 		local distance = ((wx-camX)^2+(wy-camY)^2+(wz-camZ)^2)^0.5
 		if distance <= maxDistance and distance > 0 then
 			local canBeBlocked = eleData.canBeBlocked

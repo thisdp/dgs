@@ -896,6 +896,7 @@ function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends,ends)
 	return str
 end
 --------------------------------Dx Utility
+dgsDrawType = nil
 function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 	local dgsBasicType = dgsGetType(image)
 	if dgsBasicType == "table" then
@@ -903,6 +904,7 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 	else
 		local pluginType = dgsGetPluginType(image)
 		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
+			dgsDrawType = "image"
 			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 		else
 			local blendMode
@@ -960,8 +962,15 @@ function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rota
 	return true
 end
 
-function dxDrawText(...)
-	if not __dxDrawText(...) then
+function dxDrawText(text,...)
+	if type(text) ~= "string" then
+		local pluginType = dgsGetPluginType(text)
+		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[text].disableCustomTexture then
+			dgsDrawType = "text"
+			return dgsCustomTexture[pluginType](text,...)
+		end
+	end
+	if not __dxDrawText(text,...) then
 		if debugMode then
 			local debugTrace = dgsElementData[self].debugTrace
 			local thisTrace = debug.getinfo(2)
@@ -972,7 +981,9 @@ function dxDrawText(...)
 				outputDebugString("↑Caused by dxDrawText("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4,255,140,50)
 			end
 		end
+		return false
 	end
+	return true
 end
 
 function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,isWordWrap)

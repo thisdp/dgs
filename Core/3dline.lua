@@ -238,10 +238,6 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 
-dgsRenderer["dgs-dx3dline"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	return rndtgt,true,mx,my,0,0
-end
-
 dgs3DRenderer["dgs-dx3dline"] = function(source)
 	local eleData = dgsElementData[source]
 	local attachTable = eleData.attachTo
@@ -261,14 +257,8 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 				if rx and ry and rz then
 					wrx,wry,wrz = rx+offrx,ry+offry,rz+offrz
 				end
-				eleData.position[1] = wx
-				eleData.position[2] = wy
-				eleData.position[3] = wz
-
-				eleData.rotation[1] = wrx
-				eleData.rotation[2] = wry
-				eleData.rotation[3] = wrz
-
+				eleData.position[1],eleData.position[2],eleData.position[3] = wx,wy,wz
+				eleData.rotation[1],eleData.rotation[2],eleData.rotation[3] = wrx,wry,wrz
 			else
 				isRender = false
 			end
@@ -277,8 +267,8 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 		end
 	end
 	if isRender then
-		local camX,camY,camZ = getCameraMatrix()
 		local maxDistance = eleData.maxDistance
+		local camX,camY,camZ = getCameraMatrix()
 		local distance = ((wx-camX)^2+(wy-camY)^2+(wz-camZ)^2)^0.5
 		if distance <= maxDistance and distance > 0 then
 			local fadeDistance = eleData.fadeDistance
@@ -293,8 +283,6 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 			for i=1,#lData do
 				local lineItem = lData[i]
 				local startX,startY,startZ,endX,endY,endZ = 0,0,0,lineItem[4],lineItem[5],lineItem[6]
-				local w = lineItem[7] or width
-				local c = lineItem[8] or color
 				local isRelative = lineItem[9]
 				local startIsRelative = true
 				if lineItem[1] then
@@ -311,7 +299,7 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 				if isRelative then
 					endX,endY,endZ = endX*m11+endY*m21+endZ*m31+wx,endX*m12+endY*m22+endZ*m32+wy,endX*m13+endY*m23+endZ*m33+wz
 				end
-				dxDrawLine3D(startX,startY,startZ,endX,endY,endZ,applyColorAlpha(c,fadeMulti),w)
+				dxDrawLine3D(startX,startY,startZ,endX,endY,endZ,applyColorAlpha(lineItem[8] or color,fadeMulti),lineItem[7] or width)
 			end
 			return true
 		end

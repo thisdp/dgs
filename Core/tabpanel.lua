@@ -394,7 +394,6 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						local tabImage = tabData.tabImage
 						local tabColor = tabData.tabColor
 						local tabTextColor = tabData.textColor
-						if type(tabTextColor) ~= "table" then tabTextColor = {tabTextColor,tabTextColor,tabTextColor} end
 						local selState = 1
 						if selected == d then
 							selState = 3
@@ -474,7 +473,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][3] = 0
 						textRenderBuffer[textRenderBuffer.count][4] = width+tabX
 						textRenderBuffer[textRenderBuffer.count][5] = height
-						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(tabTextColor[selState],parentAlpha)
+						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(type(tabTextColor) == "table" and tabTextColor[selState] or tabTextColor,parentAlpha)
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
 						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font

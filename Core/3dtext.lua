@@ -167,7 +167,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		if isElement(attachTable[1]) then
 			if isElementStreamedIn(attachTable[1]) then
 				wx,wy,wz = getPositionFromElementOffset(attachTable[1],attachTable[2],attachTable[3],attachTable[4])
-				eleData.position = {wx,wy,wz}
+				posTable[1],posTable[2],posTable[3] = wx,wy,wz
 			else
 				isRender = false
 			end
@@ -194,7 +194,6 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 				if canBeBlocked.ignoreSomeObjectsForCamera == nil then canBeBlocked.ignoreSomeObjectsForCamera = g_canBeBlocked.ignoreSomeObjectsForCamera end
 			end
 			local fadeDistance = eleData.fadeDistance
-			
 			local res = eleData.resource or "global"
 			local style = styleManager.styles[res]
 			local using = style.using
