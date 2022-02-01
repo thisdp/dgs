@@ -1049,6 +1049,7 @@ LanguageTranslationSupport = {
 	"dgs-dxwindow",
 	"dgs-dxselector",
 	"dgs-dxtab",
+	"dgs-dxswitchbutton",
 	"dgs-dxcombobox",
 	"dgs-dxcombobox-Box",
 }
@@ -1144,6 +1145,10 @@ function dgsApplyLanguageChange(name,translation,attach)
 				local textOn = dgsElementData[dgsEle]._translationtextOn
 				local textOff = dgsElementData[dgsEle]._translationtextOff
 				dgsSwitchButtonSetText(dgsEle,textOn,textOff)
+				local font = dgsElementData[dgsEle]._translationFont
+				if font then
+					dgsSetData(dgsEle,"font",font)
+				end
 			else
 				local text = dgsElementData[dgsEle]._translationText
 				if text then
