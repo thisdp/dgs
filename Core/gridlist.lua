@@ -1,6 +1,6 @@
 local loadstring = loadstring
 --Dx Functions
-local dxDrawImage = dxDrawImageExt
+local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
 local dxDrawRectangle = dxDrawRectangle
 local dxSetRenderTarget = dxSetRenderTarget

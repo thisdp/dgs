@@ -1,6 +1,6 @@
 --Dx Functions
 local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImageExt
+local dxDrawImage = dxDrawImage
 local dxDrawRectangle = dxDrawRectangle
 --DGS Functions
 local dgsSetType = dgsSetType

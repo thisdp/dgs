@@ -1,4 +1,4 @@
-local dxDrawImage = dxDrawImageExt
+local dxDrawImage = __dxDrawImage
 g_DGSCanvasIndex = 0
 function dgsCreateCanvas(renderSource,w,h,color)
 	if not(isMaterial(renderSource) or dgsGetType(renderSource) == "dgs-dxcustomrenderer") then error(dgsGenAsrt(renderSource,"dgsCreateCanvas",1,"material/dgs-dxcustomrenderer")) end

@@ -1,6 +1,6 @@
 --Dx Functions
-local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
+local dxDrawImage = dxDrawImage
+local dxDrawImageSection = dxDrawImageSection
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle

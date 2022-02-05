@@ -1,5 +1,9 @@
+
+local dxDrawImageSection = __dxDrawImageSection
+local dxDrawImage = __dxDrawImage
+
 local dgsSVGXMLRef = {}
-setmetatable(dgsSVGXMLRef,{__mode="kv"})
+setmetatable(dgsSVGXMLRef,{__mode="k"})
 
 function dgsCreateSVG(...)
 	local svg
@@ -316,6 +320,7 @@ svgSetColor = function(...)
 	local arguments = select("#",...)
 	if arguments == 1 then
 		local color = ...
+		if type(color) == "number" then return string.format("#%.6x",color%0x1000000) end
 		if tonumber("0x"..color) then
 			return string.format("#%.6x",color)
 		else

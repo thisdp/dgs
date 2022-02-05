@@ -6,25 +6,14 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 local pi180 = math.pi/180
 sW,sH = guiGetScreenSize()
-_dxDrawImageSection = dxDrawImageSection
-_dxDrawImage = dxDrawImage
-_dxCreateTexture = dxCreateTexture
-_dxCreateShader = dxCreateShader
-_dxCreateFont = dxCreateFont
-_createElement = createElement
-_dxCreateRenderTarget = dxCreateRenderTarget
-__createElement = _createElement
-__dxCreateShader = _dxCreateShader
-__dxCreateFont = _dxCreateFont
-__dxCreateTexture = _dxCreateTexture
-__dxCreateRenderTarget = _dxCreateRenderTarget
+__createElement = createElement
+__dxCreateShader = dxCreateShader
+__dxCreateFont = dxCreateFont
+__dxCreateTexture = dxCreateTexture
+__dxCreateRenderTarget = dxCreateRenderTarget
 __dxDrawImageSection = dxDrawImageSection
 __dxDrawImage = dxDrawImage
 __dxDrawText = dxDrawText
-ClientInfo = {
-	SupportedPixelShader={}
-}
-
 dgs = exports[getResourceName(getThisResource())]
 
 -------Built-in DX Fonts
@@ -897,7 +886,7 @@ function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends,ends)
 end
 --------------------------------Dx Utility
 dgsDrawType = nil
-function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
+function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 	local dgsBasicType = dgsGetType(image)
 	if dgsBasicType == "table" then
 		__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
@@ -930,7 +919,7 @@ function dxDrawImageExt(posX,posY,width,height,image,rotation,rotationX,rotation
 	return true
 end
 
-function dxDrawImageSectionExt(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
+function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 	local dgsBasicType = dgsGetType(image)
 	if dgsBasicType == "dgs-dxcustomrenderer" then
 		return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
@@ -1112,30 +1101,6 @@ addEventHandler("onClientKey",root,function(but,state)
 end)
 
 --------------------------------Dx Utility
-PixelShaderCode = [[
-float4 main(float2 Tex : TEXCOORD0):COLOR0 {
-	return 0;
-}
-technique RepTexture {
-	pass P0 {
-		PixelShader = compile ps_&rep main();
-	}
-}
-]]
-PixShaderVersion = {"2_0","2_a","2_b","3_0"}
-function checkPixelShaderVersion()
-	for i,ver in ipairs(PixShaderVersion) do
-		local shaderCode = gsub(PixelShaderCode,"&rep",ver)
-		local shader = dxCreateShader(shaderCode)
-		if shader then
-			ClientInfo.SupportedPixelShader[ver] = true
-			destroyElement(shader)
-		else
-			ClientInfo.SupportedPixelShader[ver] = false
-		end
-	end
-end
-checkPixelShaderVersion()
 --Render Target Assigner
 --[[
 RTState:

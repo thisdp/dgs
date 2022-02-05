@@ -1,11 +1,11 @@
 --Dx Functions
-local dxDrawImage = dxDrawImageExt
+local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
 local dxDrawRectangle = dxDrawRectangle
 local dxSetShaderValue = dxSetShaderValue
 local dxSetRenderTarget = dxSetRenderTarget
 local dxSetBlendMode = dxSetBlendMode
-local _dxDrawImage = _dxDrawImage
+local __dxDrawImage = __dxDrawImage
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsGetType = dgsGetType
@@ -1034,11 +1034,11 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode("blend")
 		if DataTab.bgRT then
-			_dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		dxSetBlendMode("add")
 		if DataTab.textRT then
-			_dxDrawImage(x,y,w,h,DataTab.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImage(x,y,w,h,DataTab.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	end

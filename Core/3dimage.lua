@@ -1,6 +1,7 @@
 --Dx Functions
 local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImageExt
+local dxDrawImage = dxDrawImage
+local dxDrawImageSection = dxDrawImageSection
 local dxDrawRectangle = dxDrawRectangle
 --
 local getScreenFromWorldPosition = getScreenFromWorldPosition

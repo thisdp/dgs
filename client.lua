@@ -12,8 +12,8 @@ local mathLerp = math.lerp
 local tocolor = tocolor
 --Dx Functions
 local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImageExt
-local dxDrawImageSection = dxDrawImageSectionExt
+local dxDrawImage = dxDrawImage
+local dxDrawImageSection = dxDrawImageSection
 local dxDrawText = dxDrawText
 local dxDrawRectangle = dxDrawRectangle
 local dxGetPixelsSize = dxGetPixelsSize
@@ -687,7 +687,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 				if debugMode then
 					dgsElementData[source].debugData = {xRT,yNRT,w,h,xNRT,yNRT}
 					if daDebugTexture then
-						dxDrawImage(xRT,yNRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI)
+						__dxDrawImage(xRT,yNRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI)
 					end
 				end
 				rndtgt = rt or rndtgt
@@ -1560,7 +1560,7 @@ function dgsCheckHit(hits,cursorShowing)
 				local cursorScrX,cursorScrY = dgsGetCursorPosition(_,false,true)
 				local cursorX,cursorY = cursorScrX+offset[1]*cursorW,cursorScrY+offset[2]*cursorH
 				setCursorAlpha(0)
-				_dxDrawImage(cursorX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
+				__dxDrawImage(cursorX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
 			else
 				setCursorAlpha(255)
 			end

@@ -1,3 +1,7 @@
+local dxSetRenderTarget = dxSetRenderTarget
+local dxSetShaderValue = dxSetShaderValue
+local dxDrawImage = __dxDrawImage
+local dxDrawImageSection = __dxDrawImageSection
 BlurBoxGlobalScreenSource = false
 blurboxShaders = 0
 blurboxFactor = 1/2

@@ -1,6 +1,6 @@
 --Dx Functions
-local dxDrawImage = dxDrawImageExt
-local _dxDrawImage = _dxDrawImage
+local __dxDrawImage = __dxDrawImage
+local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
 local dxDrawRectangle = dxDrawRectangle
 local dxSetRenderTarget = dxSetRenderTarget
@@ -500,10 +500,10 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if eleData.bgRT then
-			_dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
+			__dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
 		end
 		if eleData.textRT then
-			_dxDrawImage(x,y,w,height,eleData.textRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
+			__dxDrawImage(x,y,w,height,eleData.textRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
 		end
 		local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,parentAlpha)
 		if dgsElementData[tabs[selected]].bgImage then

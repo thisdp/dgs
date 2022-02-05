@@ -1,14 +1,13 @@
 --Dx Functions
 local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImageExt
+local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
-local _dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local _dxDrawImage = _dxDrawImage
+local __dxDrawImage = __dxDrawImage
 local dxCreateRenderTarget = dxCreateRenderTarget
 --DGS Functions
 local dgsSetType = dgsSetType
@@ -429,7 +428,7 @@ function dgsEditSetWhiteList(edit,str)
 	if eleData.masked then
 		text = strRep(eleData.maskText,utf8Len(text))
 	end
-	eleData.textFontLen = _dxGetTextWidth(text,textSize[1],font)
+	eleData.textFontLen = dxGetTextWidth(text,textSize[1],font)
 	if index >= textLen then
 		dgsEditSetCaretPosition(edit,textLen)
 	end
@@ -479,7 +478,7 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 	if isMask then
 		deletedText = strRep(eleData.maskText,utf8Len(_deletedText))
 	end
-	local deleted = _dxGetTextWidth(deletedText,eleData.textSize[1],eleData.font)
+	local deleted = dxGetTextWidth(deletedText,eleData.textSize[1],eleData.font)
 	local text = utf8Sub(text,1,fromIndex)..utf8Sub(text,toIndex+1)
 	eleData.text = text
 	if not noAffectCaret then
@@ -505,7 +504,7 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 	if eleData.masked then
 		text = strRep(eleData.maskText,utf8Len(text))
 	end
-	eleData.textFontLen = _dxGetTextWidth(text,eleData.textSize[1],eleData.font)
+	eleData.textFontLen = dxGetTextWidth(text,eleData.textSize[1],eleData.font)
 	eleData.updateTextRTNextFrame = true
 	triggerEvent("onDgsTextChange",edit,oldText)
 	return deletedText
@@ -656,30 +655,30 @@ function searchEditMousePosition(edit,posx)
 	for i=1,sto do
 		local stoSfrom_Half = (sto+sfrom)*0.5
 		local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
-		local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
+		local strlen = dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
 		local len1 = strlen+templen
 		if pos < len1 then
 			sto = stoSfrom_Half
 		elseif pos > len1 then
 			sfrom = stoSfrom_Half
-			templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+			templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 			start = len1
 		elseif pos == len1 then
 			start = len1
 			sfrom = stoSfrom_Half
 			sto = sfrom
-			templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+			templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 		end
 		if sto-sfrom <= 10 then
 			break
 		end
 	end
-	local start = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+	local start = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 	local lastWidth
 	for i=sfrom,sto do
-		local Next = _dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
+		local Next = dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
 		local offsetR = Next+start
-		local Last = lastWidth or _dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
+		local Last = lastWidth or dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
 		lastWidth = Next
 		local offsetL = start-Last
 		if i <= sfrom and pos <= offsetL then
@@ -714,14 +713,14 @@ function dgsEditAlignmentShowPosition(edit,text)
 		text = strRep(eleData.maskText,utf8Len(text))
 	end
 	if alignment[1] == "left" then
-		local nowLen = _dxGetTextWidth(utf8Sub(text,0,pos),eleData.textSize[1],font)
+		local nowLen = dxGetTextWidth(utf8Sub(text,0,pos),eleData.textSize[1],font)
 		if nowLen+showPos > sx-padding[1]*2 then
 			dgsSetData(edit,"showPos",sx-padding[1]*2-nowLen)
 		elseif nowLen+showPos < 0 then
 			dgsSetData(edit,"showPos",-nowLen)
 		end
 	elseif alignment[1] == "right" then
-		local nowLen = _dxGetTextWidth(utf8Sub(text,pos+1),eleData.textSize[1],font)
+		local nowLen = dxGetTextWidth(utf8Sub(text,pos+1),eleData.textSize[1],font)
 		if nowLen+showPos > sx-padding[1]*2 then
 			dgsSetData(edit,"showPos",sx-padding[1]*2-nowLen)
 		elseif nowLen+showPos < 0 then
@@ -729,7 +728,7 @@ function dgsEditAlignmentShowPosition(edit,text)
 		end
 	elseif alignment[1] == "center" then
 		local __width = eleData.textFontLen
-		local nowLen = _dxGetTextWidth(utf8Sub(text,0,pos),eleData.textSize[1],font)
+		local nowLen = dxGetTextWidth(utf8Sub(text,0,pos),eleData.textSize[1],font)
 		local checkCaret = sx*0.5+nowLen-__width*0.5+showPos*0.5
 		if sx*0.5+nowLen-__width*0.5+showPos*0.5-padding[1] > sx-padding[1]*2 then
 			dgsSetData(edit,"showPos",(sx*0.5-padding[1]-nowLen+__width*0.5)*2)
@@ -770,7 +769,7 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 	local textLen = utf8Len(newTextData)-textDataLen
 	eleData.text = newTextData
 	newTextData = eleData.masked and strRep(eleData.maskText,utf8Len(newTextData)) or newTextData
-	eleData.textFontLen = _dxGetTextWidth(newTextData,eleData.textSize[1],eleData.font)
+	eleData.textFontLen = dxGetTextWidth(newTextData,eleData.textSize[1],eleData.font)
 	if not noAffectCaret then
 		if index <= _index then
 			dgsEditSetCaretPosition(edit,index+textLen)
@@ -1192,7 +1191,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	else
 		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
 	end
-	_dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+	__dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 	if placeHolderIgnoreRndTgt then
 		if text == "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) then
 			local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
@@ -1203,7 +1202,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 	end
 	
-	_dxDrawImage(px,py,pw,ph,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+	__dxDrawImage(px,py,pw,ph,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 
 	if MouseData.focused == source and MouseData.EditMemoCursor then
 		local CaretShow = true

@@ -1,6 +1,6 @@
 --Dx Functions
 local dxDrawLine = dxDrawLine
-local dxDrawImage = dxDrawImageExt
+local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxDrawRectangle = dxDrawRectangle
@@ -11,8 +11,7 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxCreateRenderTarget = dxCreateRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local _dxDrawImageSection = _dxDrawImageSection
-local _dxGetTextWidth = dxGetTextWidth
+local __dxDrawImageSection = __dxDrawImageSection
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsGetType = dgsGetType
@@ -322,7 +321,7 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 		local showLine = eleData.showLine
 		local targetLine = line-showLine
 		local showPos = eleData.showPos
-		local nowLen = _dxGetTextWidth(utf8Sub(text,0,pos),eleData.textSize[1],font)
+		local nowLen = dxGetTextWidth(utf8Sub(text,0,pos),eleData.textSize[1],font)
 		local targetLen = nowLen-showPos
 		if targetLen > size[1]-padding[1]*2-scbTakes[1] then
 			dgsSetData(memo,"showPos",-(size[1]-padding[1]*2-scbTakes[1]-nowLen))
@@ -451,7 +450,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 			index,line = dgsMemoSeekPosition(textTable,tpos,tline)
 		end
 		local showPos = eleData.showPos
-		local nowLen = _dxGetTextWidth(utf8Sub(text,0,index),eleData.textSize[1],font)
+		local nowLen = dxGetTextWidth(utf8Sub(text,0,index),eleData.textSize[1],font)
 		local targetLen = nowLen-showPos
 		if targetLen > size[1]-padding[1]*2-scbTakes[1] then
 			dgsSetData(memo,"showPos",-(size[1]-padding[1]*2-scbTakes[1]-nowLen))
@@ -557,29 +556,29 @@ function searchMemoMousePosition(memo,posx,posy)
 	for i=1,sto do
 		stoSfrom_Half = (sto+sfrom)*0.5
 		local stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
-		local strlen = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
+		local strlen = dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),txtSizX,font)
 		local len1 = strlen+templen
 		if pos < len1 then
 			sto = stoSfrom_Half
 		elseif pos > len1 then
 			sfrom = stoSfrom_Half
-			templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+			templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 			start = len1
 		elseif pos == len1 then
 			start = len1
 			sfrom = stoSfrom_Half
 			sto = sfrom
-			templen = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+			templen = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 		end
 		if sto-sfrom <= 10 then break end
 	end
-	local start = _dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
+	local start = dxGetTextWidth(utf8Sub(text,0,sfrom),txtSizX,font)
 	local resultIndex,resultLine,resultOffset = 0,1,1
 	for i=sfrom,sto do
-		local poslen1 = _dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
-		local theNext = _dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
+		local poslen1 = dxGetTextWidth(utf8Sub(text,sfrom+1,i),txtSizX,font)+start
+		local theNext = dxGetTextWidth(utf8Sub(text,i+1,i+1),txtSizX,font)*0.5
 		local offsetR = theNext+poslen1
-		local theLast = _dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
+		local theLast = dxGetTextWidth(utf8Sub(text,i,i),txtSizX,font)*0.5
 		local offsetL = poslen1-theLast
 		if i <= sfrom and pos <= offsetL then
 			resultIndex,resultLine,resultOffset = sfrom,selLine,1
@@ -618,27 +617,27 @@ function searchTextFromPosition(text,font,textSizeX,pos)
 	for i=1,sto do
 		stoSfrom_Half = (sto+sfrom)*0.5
 		stoSfrom_Half = stoSfrom_Half-stoSfrom_Half%1
-		len1 = _dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),textSizeX,font)+templen
+		len1 = dxGetTextWidth(utf8Sub(text,sfrom+1,stoSfrom_Half),textSizeX,font)+templen
 		if pos < len1 then
 			sto = stoSfrom_Half
 		elseif pos > len1 then
 			sfrom = stoSfrom_Half
-			templen = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
+			templen = dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
 			start = len1
 		elseif pos == len1 then
 			start = len1
 			sfrom = stoSfrom_Half-1
 			sto = sfrom
-			templen = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
+			templen = dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
 		end
 		if sto-sfrom <= 10 then
 			break
 		end
 	end
-	local start = _dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
+	local start = dxGetTextWidth(utf8Sub(text,1,sfrom),textSizeX,font)
 	local current
 	for i=sfrom,sto do
-		current = _dxGetTextWidth(utf8Sub(text,i+1,i+1),textSizeX,font)
+		current = dxGetTextWidth(utf8Sub(text,i+1,i+1),textSizeX,font)
 		if start+current >= pos then return i end
 		start = start+current
 	end
@@ -655,7 +654,7 @@ function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
 	local splitTable = {}
 
 	local textSizeX = textSizeX or 1
-	local textWidth = textWidth or _dxGetTextWidth(text,textSizeX,font)
+	local textWidth = textWidth or dxGetTextWidth(text,textSizeX,font)
 	if maxWidth > textWidth then
 		return {text},1
 	end
@@ -853,7 +852,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 			offset = offset+utf8Len(tab[i])+1
 			theline = line+i-1
 			if i ~= 1 and i ~= newTextLines then
-				local textLen = _dxGetTextWidth(tab[i],textSize[1],font)
+				local textLen = dxGetTextWidth(tab[i],textSize[1],font)
 				local text = tab[i]
 				tableInsert(textTable,theline,{[-1]=textLen,[0]=text})
 			else
@@ -863,12 +862,12 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 					textRear = utf8Sub(textTable[theline][0],index+1) or ""
 					local isAppendRear = newTextLines == 1 and textRear or ""
 					textTable[theline][0] = textFront..tab[1]..isAppendRear
-					textTable[theline][-1] = _dxGetTextWidth(textTable[theline][0],textSize[1],font)
+					textTable[theline][-1] = dxGetTextWidth(textTable[theline][0],textSize[1],font)
 				end
 				if i == newTextLines and i ~= 1 then
 					local text = {}
 					text[0] = (tab[i] or "")..textRear
-					text[-1] = _dxGetTextWidth(text[0],textSize[1],font)
+					text[-1] = dxGetTextWidth(text[0],textSize[1],font)
 					tableInsert(textTable,theline,text)
 				end
 			end
@@ -956,14 +955,14 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 		local _to = toIndex < fromIndex and fromIndex or toIndex
 		local _from = fromIndex > toIndex and toIndex or fromIndex
 		textTable[toLine][0] = utf8Sub(textTable[toLine][0],0,_from)..utf8Sub(textTable[toLine][0],_to+1)
-		textTable[toLine][-1] = _dxGetTextWidth(textTable[toLine][0],textSize[1],font)
+		textTable[toLine][-1] = dxGetTextWidth(textTable[toLine][0],textSize[1],font)
 		if isWordWrap then
 			insertLine,lineCnt = dgsMemoGetInsertLine(textTable,mapTable,fromLine)
 			dgsMemoRemoveMapTable(mapTable,insertLine,lineCnt)
 		end
 	else
 		textTable[fromLine][0] = utf8Sub(textTable[fromLine][0],0,fromIndex)..utf8Sub(textTable[toLine][0],toIndex+1)
-		textTable[fromLine][-1] = _dxGetTextWidth(textTable[fromLine][0],textSize[1],font)
+		textTable[fromLine][-1] = dxGetTextWidth(textTable[fromLine][0],textSize[1],font)
 		insertLine,lineCnt = dgsMemoGetInsertLine(textTable,mapTable,fromLine)
 		dgsMemoRemoveMapTable(mapTable,insertLine,lineCnt)
 		for i=fromLine+1,toLine do
@@ -1455,7 +1454,7 @@ function dgsMemoRebuildTextTable(memo)
 	local font = eleData.font
 	for i=1,#textTable do
 		local text = textTable[i][0]
-		textTable[i][-1] = _dxGetTextWidth(text,textSize[1],font)
+		textTable[i][-1] = dxGetTextWidth(text,textSize[1],font)
 		if eleData.rightLength[1] < textTable[i][-1] then
 			eleData.rightLength = {textTable[i][-1],i}
 		end
@@ -1665,10 +1664,10 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
-			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		if eleData.textRT then
-			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
@@ -1797,10 +1796,10 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
-			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		if eleData.textRT then
-			_dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
