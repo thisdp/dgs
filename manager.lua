@@ -908,7 +908,7 @@ function checkCompatibility(dgsEle,key)
 			return false
 		end
 	end
-	return true
+	return key
 end
 
 local _dgsSetData = dgsSetData
@@ -927,6 +927,7 @@ function dgsSetProperty(dgsEle,key,value,...)
 				error("DGS Compatibility Check")
 			end
 			key = newKey
+			print(key)
 		end
 		if key == "functions" then
 			if value then
