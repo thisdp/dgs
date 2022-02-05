@@ -922,10 +922,11 @@ function dgsSetProperty(dgsEle,key,value,...)
 		return true
 	else
 		if #compatibility ~= 0 then
-			key = checkCompatibility(dgsEle,key) == true and key
-			if not key then 
+			local newKey = checkCompatibility(dgsEle,key)
+			if newKey == false then
 				error("DGS Compatibility Check")
 			end
+			key = newKey
 		end
 		if key == "functions" then
 			if value then
