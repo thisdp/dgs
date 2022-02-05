@@ -73,7 +73,6 @@ function dgsSVGSetSize(svg,w,h)
 	return svgSetSize(svg,w,h)
 end
 
-
 function dgsSVGNodeGetElementStyle(element)
 	local style = xmlNodeGetAttribute(element,"style") or ""
 	return fromStyle(style)
