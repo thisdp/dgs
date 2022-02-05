@@ -79,7 +79,7 @@
 ---------------------------------------------------------------------------------------------------Unique
 -----------------------------------------------------------------------------------DGS 3D Text
 	text3D = {
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 	},
 
 ---------------------------------------------------------------------------------------------------Unique
@@ -99,7 +99,7 @@
 			{},	--Click
 		},
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 	},
 
@@ -140,7 +140,7 @@
 
 		},
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		textPadding = {
 			2,		--Space
@@ -188,7 +188,7 @@
 		},
 		bgImage = {},
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 		itemTextSize = {1,1},
 		itemHeight = 20,
@@ -225,7 +225,7 @@
 			{"Images/radiobutton/rb_t.png"},		--Click
 		},
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		textPadding = {
 			2,		--Space
@@ -241,7 +241,7 @@
 	edit = {
 	---Color
 		bgColor = tocolor(85,90,100,255),		--Background color of edit
-		bgColorBlur = nil,		--Background color of edit when blur, set to nil to use bgColor
+		bgColorBlur = false,		--Background color of edit when blur, set to nil/false to use bgColor
 		textColor = tocolor(255,255,255,255),			--Text color
 		caretColor = tocolor(255,255,255,255),		--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
@@ -249,9 +249,9 @@
 		placeHolderColor = tocolor(200,200,200,255),		--Place holder text color
 	---Image
 		bgImage = {},	--Background image of edit
-		bgImageBlur = {},	--Background image of edit when blur, set to empty or nil to use bgImage
+		bgImageBlur = {},	--Background image of edit when blur, set to empty or nil/false to use bgImage
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		maskText = "*",
 		padding = {2,2},
@@ -259,12 +259,12 @@
 		caretThick = 1.2,
 		caretOffset = 0,
 		caretHeight = 1,
-		typingSound = nil,
+		typingSound = false,
 		typingSoundVolume = 1,
 		placeHolder = "",
 		placeHolderColorcoded = false,
 		placeHolderOffset = {0,0},
-		placeHolderTextSize = nil,	---Use textSize
+		placeHolderTextSize = false,	---Use textSize if set to false/nil
 		placeHolderIgnoreRenderTarget = false,
 	},
 
@@ -290,7 +290,7 @@
 		},
 
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		columnTextSize = {1,1},
 		rowTextSize = {1,1},
 		columnOffset = 10,
@@ -309,7 +309,7 @@
 	---Image
 
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 	},
 
@@ -317,16 +317,16 @@
 	memo = {
 	---Color
 		bgColor = tocolor(85,90,100,255),	--Background color of memo
-		bgColorBlur = nil,		--Background color of memo when blur, set to nil to use bgColor
+		bgColorBlur = false,		--Background color of memo when blur, set to nil/false to use bgColor
 		textColor = tocolor(255,255,255,255),		--Text color
 		caretColor = tocolor(255,255,255,255),	--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
 		selectColorBlur = tocolor(140,140,140,200),	--Selected background color when blurred
 	---Image
 		bgImage = {},	--Background image of memo
-		bgImageBlur = {},	--Background image of memo when blur, set to empty or nil to use bgImage
+		bgImageBlur = {},	--Background image of memo when blur, set to empty or nil/false to use bgImage
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},	--Text size
 		maskText = "*",
 		caretStyle = 0,
@@ -335,7 +335,7 @@
 		caretHeight = 1,
 		scrollBarThick = 15,
 		selectVisible = true,
-		typingSound = nil,
+		typingSound = false,
 		typingSoundVolume = 1,
 		padding = {2,2},
 	},
@@ -371,9 +371,9 @@
 		},
 	---Image
 		arrowImage = {"Images/scrollbar/scrollbar_arrow.png"},		--Arrow image
-		cursorImage = nil,											--Cursor image
-		troughImage = nil,											--Trough image for vertical and horizontal
-		troughImageHorizontal = nil,								--Trough image for horizontal only
+		cursorImage = false,										--Cursor image
+		troughImage = false,										--Trough image for vertical and horizontal
+		troughImageHorizontal = false,								--Trough image for horizontal only
 		arrowBgColor = {
 			tocolor(30,30,30,255),	--Normal
 			tocolor(30,30,30,255),	--Hover
@@ -441,7 +441,7 @@
 			nil,		--Click
 		},
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		selectorTextSize = {1,1},
 		itemTextSize = {1,1},
 
@@ -483,7 +483,7 @@
 			{},
 		},
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 		textOffset = {0.25,true},
 		troughWidth = {1,true},
@@ -503,7 +503,7 @@
 	---Image
 		bgImage = {},
 	---Values
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		tabPadding = {4,false},
 		tabGapSize = {1,false},
 		scrollSpeed = {10,false},
@@ -514,7 +514,7 @@
 	tab = {
 	---Color
 		textColor = tocolor(255,255,255,255),		--Use Tab Panel's
-		bgColor = nil,			--Background color of tab panel when selected(This will overwrite the background color of tab panel when selected). nil for using tab panel's bgColor
+		bgColor = false,			--Background color of tab panel when selected(This will overwrite the background color of tab panel when selected). nil/false for using tab panel's bgColor
 		tabColor = {	--Background color of tab
 			tocolor(50,50,50,180),	--Normal
 			tocolor(80,80,80,190),	--Hovered
@@ -528,7 +528,7 @@
 			{},
 		},
 	---Values
-		font = nil,	--Using tab panel's font
+		font = false,	--Using tab panel's font
 		textSize = {1,1},
 	},
 
@@ -549,7 +549,7 @@
 		titleImage = {},
 	---Values
 		closeButton = true,
-		font = nil,	--Using systemFont ( and usage is the same as system font )
+		font = false,	--Using systemFont ( and usage is the same as system font )
 		textSize = {1,1},
 		titleHeight = 25,
 		borderSize = 5,
