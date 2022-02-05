@@ -447,8 +447,8 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart1_1,troughPart1_2 = x+arrowWidth,cursorCenter
 		local troughPart2_1,troughPart2_2 = x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter
 		local imgRotHorz = imgRot[1]
-		local __ = tempTroughImage_1 and dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) or dxDrawRectangle(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughColor[1],isPostGUI)
-		local __ = tempTroughImage_2 and dxDrawImage(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI)
+		if tempTroughImage_1 then dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) else dxDrawRectangle(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughColor[1],isPostGUI) end
+		if tempTroughImage_2 then dxDrawImage(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) else dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI) end
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
@@ -467,8 +467,8 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart1_1,troughPart1_2 = y+arrowWidth,cursorCenter
 		local troughPart2_1,troughPart2_2 = y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter
 		local imgRotVert = imgRot[2]
-		local __ = tempTroughImage_1 and dxDrawImage(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) or dxDrawRectangle(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughColor[1],isPostGUI)
-		local __ = tempTroughImage_2 and dxDrawImage(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) or dxDrawRectangle(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughColor[2],isPostGUI)
+		if tempTroughImage_1 then dxDrawImage(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) else dxDrawRectangle(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughColor[1],isPostGUI) end
+		if tempTroughImage_2 then dxDrawImage(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) else dxDrawRectangle(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughColor[2],isPostGUI) end
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
