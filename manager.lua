@@ -892,7 +892,7 @@ function checkCompatibility(dgsEle,key)
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
 			outputDebugString("Deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..". To fix (Replace with "..compatibility[eleTyp][key]..")",2)
 			outputDebugString("To find it, run it again with command /debugdgs c",2)
-			return true
+			return compatibility[eleTyp][key]
 		else
 			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..", replace with "..compatibility[eleTyp][key],2)
 			return false
@@ -902,7 +902,7 @@ function checkCompatibility(dgsEle,key)
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
 			outputDebugString("Deprecated property '"..key.."' @dgsSetProperty with all dgs elements. To fix (Replace with "..compatibility[key]..")",2)
 			outputDebugString("To find it, run it again with command /debugdgs c",2)
-			return true
+			return compatibility[key]
 		else
 			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with all dgs elements, replace with "..compatibility[key],2)
 			return false
@@ -921,32 +921,34 @@ function dgsSetProperty(dgsEle,key,value,...)
 		end
 		return true
 	else
-		if #compatibility == 0 or checkCompatibility(dgsEle,key) then
-			if key == "functions" then
-				if value then
-					local fnc,err
-					if type(value) == "function" then
-						fnc = value
-					else
-						fnc,err = loadstring(value)
-						dgsElementData[dgsEle].functions_string = {value,{...}}
-					end
-					if not fnc then error("Bad argument @dgsSetProperty at argument 2, failed to load function ("..err..")") end
-					value = {fnc,{...}}
-				end
-			elseif key == "absPos" then
-				dgsSetPosition(dgsEle,value[1],value[2],false)
-			elseif key == "rltPos" then
-				dgsSetPosition(dgsEle,value[1],value[2],true)
-			elseif key == "absSize" then
-				dgsSetSize(dgsEle,value[1],value[2],false)
-			elseif key == "rltSize" then
-				dgsSetSize(dgsEle,value[1],value[2],true)
+		if #compatibility ~= 0 then
+			key = checkCompatibility(dgsEle,key) == true and key
+			if not key then 
+				error("DGS Compatibility Check")
 			end
-			return _dgsSetData(dgsEle,key,value)
-		else
-			error("DGS Compatibility Check")
 		end
+		if key == "functions" then
+			if value then
+				local fnc,err
+				if type(value) == "function" then
+					fnc = value
+				else
+					fnc,err = loadstring(value)
+					dgsElementData[dgsEle].functions_string = {value,{...}}
+				end
+				if not fnc then error("Bad argument @dgsSetProperty at argument 2, failed to load function ("..err..")") end
+				value = {fnc,{...}}
+			end
+		elseif key == "absPos" then
+			dgsSetPosition(dgsEle,value[1],value[2],false)
+		elseif key == "rltPos" then
+			dgsSetPosition(dgsEle,value[1],value[2],true)
+		elseif key == "absSize" then
+			dgsSetSize(dgsEle,value[1],value[2],false)
+		elseif key == "rltSize" then
+			dgsSetSize(dgsEle,value[1],value[2],true)
+		end
+		return _dgsSetData(dgsEle,key,value)
 	end
 end
 
