@@ -87,6 +87,9 @@ addCommandHandler("debugdgs",function(command,arg)
 		setElementData(localPlayer,"DGS-DEBUG",debugMode,false)
 		checkDisabledElement = false
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
+		if not debugMode then
+			setElementData(localPlayer,"DGS-DEBUG-C",comp,false)
+		end
 	elseif arg == "2" then
 		debugMode = 2
 		setElementData(localPlayer,"DGS-DEBUG",2,false)

@@ -890,18 +890,18 @@ function checkCompatibility(dgsEle,key)
 	local eleTyp = dgsGetType(dgsEle)
 	if compatibility[eleTyp] and compatibility[eleTyp][key] then
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
-			outputDebugString("Deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..". To fix (Replace with "..compatibility[eleTyp][key]..")",2)
-			outputDebugString("To find it, run it again with command /debugdgs c",2)
+			outputDebugString("[DGS]Deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..". Now is '"..compatibility[eleTyp][key].."'",4,254,128,0)
+			outputDebugString("  To locate, run it again with command /debugdgs c",4,254,128,0)
 			return compatibility[eleTyp][key]
 		else
-			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..", replace with "..compatibility[eleTyp][key],2)
+			outputDebugString("Found deprecated '"..key.."' @dgsSetProperty with "..eleTyp..", replace with "..compatibility[eleTyp][key],2)
 			return false
 		end
 	end
 	if compatibility[key] then
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
-			outputDebugString("Deprecated property '"..key.."' @dgsSetProperty with all dgs elements. To fix (Replace with "..compatibility[key]..")",2)
-			outputDebugString("To find it, run it again with command /debugdgs c",2)
+			outputDebugString("[DGS]Deprecated property '"..key.."' @dgsSetProperty with all dgs elements. Now is '"..compatibility[key].."'",4,254,128,0)
+			outputDebugString("  To locate, run it again with command /debugdgs c",4,254,128,0)
 			return compatibility[key]
 		else
 			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with all dgs elements, replace with "..compatibility[key],2)
@@ -927,7 +927,6 @@ function dgsSetProperty(dgsEle,key,value,...)
 				error("DGS Compatibility Check")
 			end
 			key = newKey
-			print(key)
 		end
 		if key == "functions" then
 			if value then
