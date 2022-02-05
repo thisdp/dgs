@@ -191,7 +191,6 @@ SVGNodeCreation = {
 	end,
 }
 
-
 function dgsSVGNodeSetAttribute(svgEle,attr,...)
 	local svgType = xmlNodeGetName(svgEle)
 	local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
@@ -262,6 +261,8 @@ function dgsSVGNodeCreateNode(svgDoc,eleType,...)
 	return false
 end
 
+dgsSVGNodeDestroy = xmlDestroyNode
+
 function dgsSVGCopyNodeContent(svgNode,xmlNode)
 	xmlNodeSetValue(xmlNode,xmlNodeGetValue(svgNode))
 	for k,v in pairs(xmlNodeGetAttributes(svgNode)) do
@@ -291,6 +292,7 @@ function dgsSVGGetContent(svgDoc)
 	end
 	return false
 end
+
 
 ------SVG Util
 svgGetColor = function(value,retType)

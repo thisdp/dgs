@@ -1561,14 +1561,14 @@ class {
 				end,
 			},
 			svg = {
-				rect = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"rect",...),"dgs-dxsvgnode") end,
-				circle = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"circle",...),"dgs-dxsvgnode") end,
-				ellipse = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"ellipse",...),"dgs-dxsvgnode") end,
-				line = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"line",...),"dgs-dxsvgnode") end,
-				polygon = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"polygon",...),"dgs-dxsvgnode") end,
-				polyline = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"polyline",...),"dgs-dxsvgnode") end,
-				path = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"path",...),"dgs-dxsvgnode") end,
-				text = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"text",...),"dgs-dxsvgnode") end,
+				rect = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"rect",...),"dgs-dxsvgnode") end,
+				circle = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"circle",...),"dgs-dxsvgnode") end,
+				ellipse = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"ellipse",...),"dgs-dxsvgnode") end,
+				line = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"line",...),"dgs-dxsvgnode") end,
+				polygon = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"polygon",...),"dgs-dxsvgnode") end,
+				polyline = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"polyline",...),"dgs-dxsvgnode") end,
+				path = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"path",...),"dgs-dxsvgnode") end,
+				text = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"text",...),"dgs-dxsvgnode") end,
 			},
 			rect = {
 				move = function(self,...)
@@ -1610,7 +1610,7 @@ class {
 					self:setValue(text)
 					return self
 				end,
-				tspan = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGNodeCreateNode",self.dgsElement,"tspan",...),"dgs-dxsvgnode") end,
+				tspan = function(self,...) return dgsGetInstanceByType(call(dgsOOP.dgsRes,"dgsSVGCreateNode",self.dgsElement,"tspan",...),"dgs-dxsvgnode") end,
 			}
 		}
 	};
