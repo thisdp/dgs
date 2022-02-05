@@ -254,14 +254,14 @@ function dgsSVGNodeGetAttributes(svgEle,attributes)
 	return ret
 end
 
-function dgsSVGNodeCreateNode(svgDoc,eleType,...)
+function dgsSVGCreateNode(svgDoc,eleType,...)
 	if SVGNodeCreation[eleType] then
 		return SVGNodeCreation[eleType](svgDoc,...)
 	end
 	return false
 end
 
-dgsSVGNodeDestroy = xmlDestroyNode
+dgsSVGDestroyNode = xmlDestroyNode
 
 function dgsSVGCopyNodeContent(svgNode,xmlNode)
 	xmlNodeSetValue(xmlNode,xmlNodeGetValue(svgNode))
