@@ -1,4 +1,3 @@
-
 local dxDrawImageSection = __dxDrawImageSection
 local dxDrawImage = __dxDrawImage
 
@@ -27,9 +26,7 @@ function dgsCreateSVG(...)
 	return svg
 end
 
-function dgsSVGGetDocument(svg)
-	return dgsElementData[svg].svgDocument
-end
+function dgsSVGGetDocument(svg) return dgsElementData[svg].svgDocument end
 
 dgsCustomTexture["dgs-dxsvg"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	local eleData = dgsElementData[image]
@@ -189,6 +186,29 @@ SVGNodeCreation = {
 		dgsSVGMarkUpdate(svgDocument)
 		return newtSpan
 	end,
+	defs = function(svgDocument,...)
+		local newDef = xmlCreateChild(svgDocument,"defs")
+		dgsSVGMarkUpdate(svgDocument)
+		return newDef
+	end,
+	g = function(svgDocument,id)
+		local newG = xmlCreateChild(svgDocument,"g")
+		xmlNodeSetAttribute(newG,"id",id)
+		dgsSVGMarkUpdate(svgDocument)
+		return newG
+	end,
+	use = function(svgDocument,...)
+		local newUse = xmlCreateChild(svgDocument,"use")
+		local useID,x,y = ...
+		local href = svgSetHRef(useID)
+		xmlNodeSetAttribute(newUse,"xlink:href",href)
+		if x and y then
+			xmlNodeSetAttribute(newUse,"x",x)
+			xmlNodeSetAttribute(newUse,"y",y)
+		end
+		dgsSVGMarkUpdate(svgDocument)
+		return newUse
+	end,
 }
 
 function dgsSVGNodeSetAttribute(svgEle,attr,...)
@@ -206,6 +226,9 @@ function dgsSVGNodeSetAttribute(svgEle,attr,...)
 end
 
 function dgsSVGNodeSetAttributes(svgEle,attributeWithData)
+	if type(svgEle) == "table" then
+		for i=1,#svgEle do dgsSVGNodeSetAttributes(svgEle[i],attributeWithData) end
+	end
 	local svgType = xmlNodeGetName(svgEle)
 	for attr,data in pairs(attributeWithData) do
 		local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
@@ -213,6 +236,8 @@ function dgsSVGNodeSetAttributes(svgEle,attributeWithData)
 		if handleFunction and handleFunction.set then
 			if type(data) == "table" then
 				result = handleFunction.set(unpack(data))
+			else
+				result = handleFunction.set(data)
 			end
 		end
 		xmlNodeSetAttribute(svgEle,attr,result)
@@ -322,7 +347,9 @@ svgSetColor = function(...)
 	local arguments = select("#",...)
 	if arguments == 1 then
 		local color = ...
-		if type(color) == "number" then return string.format("#%.6x",color%0x1000000) end
+		if type(color) == "number" then
+			return string.format("#%.6x",color%0x1000000)
+		end
 		if tonumber("0x"..color) then
 			return string.format("#%.6x",color)
 		else
@@ -332,6 +359,20 @@ svgSetColor = function(...)
 		return string.format("#%.2x%.2x%.2x",...)
 	end
 	return nil
+end
+
+svgSetHRef = function(ref)
+	if string.sub(ref,1,1) ~= "#" then
+		return "#"..ref
+	end
+	return ref
+end
+
+svgGetHRef = function(value,retType)
+	retType = retType or "raw"
+	local retType = string.lower(retType)
+	if retType == "raw" then return value end
+	return string.sub(value,2)
 end
 
 svgGetCoordinate = function(value,retType)
@@ -363,6 +404,8 @@ svgSetPoints = function(...)
 			pointsTmp[#pointsTmp+1] = points[i]..","..points[i+1]
 		end
 		return table.concat(pointsTmp," ")
+	elseif argCount == 0 then
+		return ""
 	end
 	return ...
 end
@@ -471,7 +514,11 @@ SVGElementAttribute = {
 		},
 		["stroke-width"] = {
 			get = svgGetCoordinate,
-		}
+		},
+		["xlink:href"] = {
+			get = svgGetHRef,
+			set = svgSetHRef,
+		},
 	},
 	polygon = {
 		points = {
