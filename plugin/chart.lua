@@ -1,21 +1,19 @@
 function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 	local customRenderer = dgsCreateCustomRenderer()
-	local chartRT = dxCreateRenderTarget(w,h,true)
 	local svg = dgsCreateSVG(w,h)
 	local svgDoc = dgsSVGGetDocument(svg)
 	local chart = dgsCreateImage(x,y,w,h,customRenderer,relative,parent)
+	dgsAttachToAutoDestroy(svg,chart,-1)
+	dgsAttachToAutoDestroy(customRenderer,chart,-2)
 	dgsSetData(chart,"svg",svg)
 	dgsSetData(chart,"asPlugin","dgs-dxchart")
-	--dgsSetData(chart,"chartRT",chartRT)
-	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-
+	
 	if chartType == "line" then
-
 		dgsSetData(chart,"chartType",chartType)
 		dgsSetData(chart,"chartPadding",{5,20,20,5,false}) --Top Botton Left Right
 		dgsSetData(chart,"sampleType","pointXY")
@@ -32,46 +30,35 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 		dgsSetData(chart,"axisTextOffsetFromGrid",10)
 		dgsSetData(chart,"axisYScaler",nil)
 		dgsSetData(chart,"axisYLines",10)
-		
 		dgsSetData(chart,"gridLineColor",tocolor(200,200,200,255))
 		dgsSetData(chart,"gridLineWidth",1)
-
 		dgsSetData(chart,"renderBuffer",{})
 		local eleData = dgsElementData[chart]
-		
 		local bPosT = eleData.chartPadding[5] and eleData.chartPadding[1]*h or eleData.chartPadding[1]
 		local bPosB = h-(eleData.chartPadding[5] and eleData.chartPadding[2]*h or eleData.chartPadding[2])
 		local bPosL = eleData.chartPadding[5] and eleData.chartPadding[3]*w or eleData.chartPadding[3]
 		local bPosR = w-(eleData.chartPadding[5] and eleData.chartPadding[4]*w or eleData.chartPadding[4])
 		local gridLineWidth = eleData.gridLineWidth
-
 		local def = dgsSVGCreateNode(svgDoc,"defs")
 		local grid = dgsSVGCreateNode(def,"g","grid")
 		local line = dgsSVGCreateNode(def,"g","line")
 		local axis = dgsSVGCreateNode(def,"g","axis")
 		dgsSetData(chart,"defs",{grid,line,axis})
-
 		local gridUse = dgsSVGCreateNode(svgDoc,"use","grid",0,0)
 		local lineUse = dgsSVGCreateNode(svgDoc,"use","line",0,0)
 		local axisUse = dgsSVGCreateNode(svgDoc,"use","axis",0,0)
 		dgsSetData(chart,"uses",{gridUse,lineUse,axisUse})
-
-
 		local axisLine = dgsSVGCreateNode(svgDoc,"polyline",bPosL,bPosT-gridLineWidth/2,bPosL,bPosB,bPosR+gridLineWidth/2,bPosB)
 		dgsSVGNodeSetAttribute(axisLine,"stroke",eleData.axisLineColor)
 		dgsSVGNodeSetAttribute(axisLine,"stroke-width",eleData.axisLineWidth)
 		dgsSVGNodeSetAttribute(axisLine,"fill","none")
 		dgsSetData(chart,"axisLine",axisLine)
-
 		dgsCustomRendererSetFunction(customRenderer,[[
 			--posX,posY,width,height,self,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI
 			local chart = dgsElementData[self].chart
 			local eleData = dgsElementData[chart]
 			local w,h = eleData.absSize[1],eleData.absSize[2]
-			local labels = eleData.labels
-			if eleData.updateNextFrame then
-				dgsChartUpdate(chart)
-			end
+			if eleData.updateNextFrame then dgsChartUpdate(chart) end
 			local svg = eleData.svg
 			dxDrawImage(posX,posY,width,height,svg,rotation,rotationCenterOffsetX,rotationCenterOffsetY,color,postGUI)
 			
@@ -84,6 +71,8 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 			local axisTextColor = eleData.axisTextColor
 			local axisTextFont = eleData.axisTextFont or "default"
 			local axisTextOffsetFromGrid = eleData.axisTextOffsetFromGrid
+			
+			local labels = eleData.labels
 			for i=1,#labels do
 				local x,y = posX+bPosL+(i-1)/(#labels-1)*(bPosR-bPosL),posY+bPosB+axisTextOffsetFromGrid
 				dxDrawText(labels[i],x,y,x,y,axisTextColor,axisTextSize[1],axisTextSize[2],axisTextFont,"center","top",false,false,postGUI)
@@ -100,7 +89,7 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 			end
 		]])
 	else
-	
+		--todo
 	end
 	dgsSetData(customRenderer,"chart",chart)
 	dgsSetData(chart,"updateNextFrame",true)
@@ -181,8 +170,6 @@ function dgsChartUpdate(chart)
 				["stroke-width"] = gridLineWidth,
 			})
 		end
-
-
 		local gridVertical = eleData.gridVertical
 		local labels = eleData.labels
 		local deltaGrid = #labels-#gridVertical-1
@@ -196,7 +183,6 @@ function dgsChartUpdate(chart)
 				table.remove(gridVertical,#gridVertical)
 			end
 		end
-
 		for i=1,#gridVertical do
 			dgsSVGNodeSetAttributes(gridVertical[i],{
 				x1=bPosL+i/(#labels-1)*(bPosR-bPosL),
@@ -207,7 +193,6 @@ function dgsChartUpdate(chart)
 				["stroke-width"] = gridLineWidth,
 			})
 		end
-
 		for id=1,#datasets do
 			local points = {}
 			for i=1,#labels do
@@ -249,7 +234,6 @@ function dgsChartAddDataset(chart,name)
 	local eleData = dgsElementData[chart]
 	local datasets = eleData.datasets
 	local id = #datasets+1
-	
 	local svgDoc = dgsSVGGetDocument(eleData.svg)
 	local dataLine = dgsSVGCreateNode(svgDoc,"polyline")
 	dgsSVGNodeSetAttribute(dataLine,"fill","none")
@@ -298,7 +282,7 @@ function dgsChartDatasetSetData(chart,datasetID,data)
 	dgsSetData(chart,"updateNextFrame",true)
 end
 
-function dgsChartDatasetAppendData(chart,datasetID,data)
+function dgsChartDatasetAddData(chart,datasetID,data)
 	local eleData = dgsElementData[chart]
 	local datasets = eleData.datasets
 	if not datasets[datasetID] then return false end

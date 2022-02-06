@@ -870,6 +870,17 @@
 	<export function="dgsCircleSetTextureRotation" type="client" />
 	<export function="dgsCircleGetTextureRotation" type="client" />
 	
+	<export function="dgsCreateChart" type="client" />
+	<export function="dgsChartAddDataset" type="client" />
+	<export function="dgsChartSetLabels" type="client" />
+	<export function="dgsChartRemoveDataset" type="client" />
+	<export function="dgsChartDatasetSetStyle" type="client" />
+	<export function="dgsChartDatasetSetLabel" type="client" />
+	<export function="dgsChartDatasetSetData" type="client" />
+	<export function="dgsChartDatasetAddData" type="client" />
+	<export function="dgsChartDatasetRemoveData" type="client" />
+	<export function="dgsChartDatasetClearData" type="client" />
+	
 	<export function="dgsCreateScreenSource" type="client" />
 	<export function="dgsScreenSourceSetUVPosition" type="client" />
 	<export function="dgsScreenSourceGetUVPosition" type="client" />
