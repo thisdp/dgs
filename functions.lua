@@ -1233,13 +1233,25 @@ function dgs3DGetPosition()
 
 end
 
-function dgs3DSetInterior()
-
+function dgs3DSetInterior(ele3D,interior)
+	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetInterior",1,"dgs-dx3delement")) end
+	local inRange = interior >= -1
+	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
+	return dgsSetData(ele3D,"interior",interior-interior%1)
 end
+dgsRegisterDeprecatedFunction("dgs3DImageSetInterior","dgs3DSetInterior")
+dgsRegisterDeprecatedFunction("dgs3DInterfaceSetInterior","dgs3DSetInterior")
+dgsRegisterDeprecatedFunction("dgs3DLineSetInterior","dgs3DSetInterior")
+dgsRegisterDeprecatedFunction("dgs3DTextSetInterior","dgs3DSetInterior")
 
-function dgs3DGetInterior()
-
+function dgs3DGetInterior(ele3D)
+	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DGetInterior",1,"dgs-dx3delement")) end
+	return dgsElementData[ele3D].interior or -1
 end
+dgsRegisterDeprecatedFunction("dgs3DImageGetInterior","dgs3DGetInterior")
+dgsRegisterDeprecatedFunction("dgs3DInterfaceGetInterior","dgs3DGetInterior")
+dgsRegisterDeprecatedFunction("dgs3DLineGetInterior","dgs3DGetInterior")
+dgsRegisterDeprecatedFunction("dgs3DTextGetInterior","dgs3DGetInterior")
 
 function dgs3DSetDimension()
 

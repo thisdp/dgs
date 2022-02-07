@@ -42,6 +42,8 @@ dgsCollider = {
 		end
 	end,
 }
+--Plugin System
+dgsPluginTable = {}
 --
 --Parent System
 BackEndTable = {}			--Store Back-end Render Element (If it has back-end renderer)
@@ -386,6 +388,7 @@ function dgsIsType(dgsEle,isType)
 			local eleData = dgsElementData[dgsEle]
 			if isType == (eleData and eleData.asPlugin) then return true end
 			if isType == dgsElementType[dgsEle] then return true end
+			if _G[isType] and _G[isType][dgsElementType[dgsEle]] then return true end
 			return getElementType(dgsEle) == isType
 		else
 			return type(dgsEle) == isType
@@ -410,6 +413,17 @@ function dgsSetType(dgsEle,myType)
 		return true
 	end
 	return false
+end
+
+function dgsRegisterDeprecatedFunction(fncNameOld,fncNameNew)
+	_G[fncNameOld] = function(...)
+		if not getElementData(localPlayer,"DGS-DEBUG-C") then
+			outputDebugString("Deprecated function @'"..fncNameOld.."', use '"..fncNameNew.."' instead. To fix, run it again with command /debugdgs c",2)
+		else
+			error("Found deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'")
+		end
+		return _G[fncNameNew](...)
+	end
 end
 
 ------------------------------------------------Property Manager

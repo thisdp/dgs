@@ -42,8 +42,6 @@
 	<script src="plugin/media.lua" type="client" />
 	<script src="animation.lua" type="client" />
 
-	<script src="plugin/pluginManager.lua" type="client" />
-
 	<script src="plugin/objPrevSupport.lua" type="client" />
 
 	<script src="plugin/cmd.lua" type="client" />
