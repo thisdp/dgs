@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxqrcode")
 QRCodeQueue = {}
 function dgsRequestQRCode(str,w,h)
 	local w,h = w or 128,h or 128

@@ -1,4 +1,5 @@
-﻿cmdBaseWhiteList = {}
+﻿dgsRegisterPluginType("dgs-dxcmd")
+cmdBaseWhiteList = {}
 commandHandlers = {}
 
 function dgsCreateCmd(x,y,w,h,relative,parent)

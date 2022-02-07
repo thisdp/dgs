@@ -45,7 +45,8 @@ function createFullDemo()
 		:setMultiSelectionEnabled(true)
 		:setProperty("rowTextSize",{1.2,1.2})
 		:setProperty("rowHeight",20)
-		:setProperty("clip",false)
+		:setProperty("clip",true)
+		:setProperty("rowWordBreak",true)
 		:setProperty("rowShadow",{1,1,tocolor(0,0,0,255)})
 		:setSelectionMode(3)
 		:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
@@ -410,9 +411,51 @@ function PasteHandlerTest()
 	end)
 end
 
+
+local s = [[
+float4 gLightAmbient : LIGHTAMBIENT;
+float4 gLightDiffuse : LIGHTDIFFUSE;
+float4 gLightSpecular : LIGHTSPECULAR;
+float3 gLightDirection : LIGHTDIRECTION;
+float4 gGlobalAmbient       < string renderState="AMBIENT"; >;                    //  = 139,
+float4 gMaterialAmbient     < string materialState="Ambient"; >;
+float4 gMaterialDiffuse     < string materialState="Diffuse"; >;
+float4 gMaterialSpecular    < string materialState="Specular"; >;
+float4 gMaterialEmissive    < string materialState="Emissive"; >;
+float gMaterialSpecPower    < string materialState="Power"; >;
+texture sourceTexture;
+
+SamplerState mySampler{
+	Texture = sourceTexture;
+};
+
+struct PSInput{
+	float4 Position : POSITION0;
+	float4 Diffuse : COLOR0;
+	float2 TexCoord : TEXCOORD0;
+};
+
+float4 PixelShaderFunction(PSInput input) : COLOR0{
+	float4 color = tex2D(mySampler,input.TexCoord);
+	if (input.TexCoord.x < 0.5){
+		float4 amb = 0;
+		amb.xyz = gMaterialSpecular.xyz;
+		color = color-amb*gMaterialSpecPower;
+	}
+	return color;
+}
+
+technique texRelight{
+  pass P0  {
+    PixelShader  = compile ps_2_0 PixelShaderFunction();
+  }
+}
+]]
 function _3DInterfaceTest()
+	local shader = dxCreateShader(s)
 	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
 	dgsSetProperty(material,"faceTo",{-10,-10,0})
+	--dgsSetProperty(material,"filterShader",shader)
 	edit1 = dgsCreateMemo(0,0,1,0.5,"123",true,material)
 end
 
@@ -427,7 +470,7 @@ function _3DInterfaceAttachTest()
 end
 
 function _3DLineTest()
-	line = dgsCreate3DLine(0,0,4,0,0,45,tocolor(255,255,255,255),2,100)
+	line = dgsCreate3DLine(0,0,4,0,0,45,tocolor(255,255,255,255),1,100)
 	local i = 1
 	dgs3DLineAddItem(line,4,0,0,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
 	for i=2,200 do
@@ -475,11 +518,10 @@ end
 
 function ScrollBarTest()
 	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
-	dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
-	dgsSetProperty(scrollbar,"scrollArrow",false)
+	--dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
+	--dgsSetProperty(scrollbar,"scrollArrow",false)
 	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
 end
-
 function ScalePaneTest()
 	local sp = dgsCreateScalePane(0,0,500,800,false,_,2000,1000)
 	dgsSetProperty(sp,"bgColor",tocolor(128,128,128,128))
@@ -872,20 +914,20 @@ end)]]
 ---------------------StressTest
 
 function buttonStress()
-	for i=1,5000 do
+	for i=1,100 do
 		dgsCreateButton(500,500,200,200,"test",false)
 	end
 end
 
 function editStress()
-	for i=1,1 do
+	for i=1,100 do
 		edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	end
 end
 
 function windowStress()
 	local tick = getTickCount()
-	for i=1,1000 do
+	for i=1,100 do
 		local win = dgsCreateWindow(0, 0, 800, 600, 'Dx Gui Demo')
 		--destroyElement(win)
 	end
@@ -927,36 +969,110 @@ function dgsScrollPaneTest()
 	end
 end
 
---[[
-dgsLocateObjectPreviewResource("object_preview")
+function SVGTest()
+	
+	local svg = dgsCreateSVG(500,500)
+	local svgDoc = dgsSVGGetDocument(svg)
+	local rect = dgsSVGNodeCreateNode(svgDoc,"rect",50,50,50,50)
+	dgsSVGNodeSetAttributes(rect,{
+		["stroke"] = {255,255,0},
+		["stroke-width"] = "5px",
+		["fill"] = "rgb(255,0,0)",
+	})
 
-local x1, y1, z1 = getCameraMatrix()
-local theCar1 = createVehicle(411, x1, y1, z1)
-local theCar2 = createVehicle(411, x1, y1, z1)
-local vehPreview1 = dgsCreateObjectPreviewHandle(theCar1, 0, 0, 45, false)
-local vehPreview2 = dgsCreateObjectPreviewHandle(theCar2, 0, 0, 45, false)
-local bg = dgsCreateScrollPane(500,500,200,200,false)
-carPreview1 = dgsCreateImage(40, 40, 300, 300, _, false, bg)
-carPreview2 = dgsCreateImage(340, 3340, 300, 300, _, false, bg)
-dgsAttachObjectPreviewToImage(vehPreview1, carPreview1)
-dgsAttachObjectPreviewToImage(vehPreview2, carPreview2)
-]]
+	local circle = dgsSVGNodeCreateNode(svgDoc,"circle",10,10,20)
+	dgsSVGNodeSetAttributes(rect,{
+		["stroke"] = {255,255,0},
+		["stroke-width"] = "5px",
+		["fill"] = "rgb(255,0,0)",
+	})
 
---[[
-local svg = dgsCreateSVG(100,100)
-local rect = dgsSVGCreateRect(svg,10,10,50,50,_,rx,ry)
-dgsSVGSetElementStyle(rect,{
-	["stroke"] = "transparent",
-	["stroke-width"] = "0px",
-	["fill"] = "rgb(0,0,0)",
-})
-local recta = dgsSVGCreateRect(svg,0,0,50,50,rect,rx,ry)
-dgsSVGSetElementStyle(recta,{
-	["stroke"] = "transparent",
-	["stroke-width"] = "0px",
-	["fill"] = "rgb(255,255,255)",
-})
-local btn1 = dgsCreateImage(200,200,200,200,svg,false)
-]]
+	local polyline = dgsSVGNodeCreateNode(svgDoc,"polyline",{100,100,200,200,100,200})
+	dgsSVGNodeSetAttributes(polyline,{
+		["stroke"] = {255,255,0},
+		["stroke-width"] = "5px",
+		["fill"] = "rgb(255,0,0)",
+	})
+
+	local path = dgsSVGNodeCreateNode(svgDoc,"path",{
+		{"M",153,334},
+		{"C",153, 334, 151, 334, 151, 334},
+		{"C",151, 339, 153, 344, 156, 344},
+		{"C",164, 344, 171, 339, 171, 334},
+		{"C",171, 322, 164, 314, 156, 314},
+		{"C",142, 314, 131, 322, 131, 334},
+		{"C",131, 350, 142, 364, 156, 364},
+		{"C",175, 364, 191, 350, 191, 334},
+	})
+
+	dgsSVGNodeSetAttributes(path,{
+		["stroke"] = {255,255,0},
+		["stroke-width"] = "5px",
+		["fill"] = "rgb(255,0,0)",
+	})
+	local d = dgsSVGNodeSetAttribute(path,"d","table")
+	dgsSVGNodeSetAttribute(path,"d",d)
+	local btn1 = dgsCreateImage(200,200,500,500,svg,false)
+end
+
+function SVGTest_OOP()
+	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
+	print(err)
+	DGSOOPFnc()
+
+	svg = dgsSVG(500,500)
+	doc = svg:getDocument()
+	path = doc:path({
+		{"M",153, 334},
+		{"C",153, 334, 151, 334, 151, 334},
+		{"C",151, 339, 153, 344, 156, 344},
+		{"C",164, 344, 171, 339, 171, 334},
+		{"C",171, 322, 164, 314, 156, 314},
+		{"C",142, 314, 131, 322, 131, 334},
+		{"C",131, 350, 142, 364, 156, 364},
+		{"C",175, 364, 191, 350, 191, 334},
+		})
+		:fill("#FFFF00")
+		:stroke({width=5,color=0xFF0000})
+	rect = doc:rect(40,40,200,200)
+		:radius(20,20)
+		:fill("#ff0")
+		:stroke({width=5,color="rgb(128,128,0)"})
+
+	--[[doc:text("123",100,100)
+		:fill("#00FF00")
+		:stroke({width=5,color=0xFF0000})]]
+
+	--setClipboard(dgsSVGGetContent(doc.dgsElement))
+	img = dgsImage(200,200,500,500,svg,false)
+end
+
+function ChartTest()
+	local chart = dgsCreateChart(400,300,600,300,"line",false)
+	dgsChartSetLabels(chart,"Month",{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"})
+	dgsSetProperty(chart,"axisYScaler",{0,100})
+	local datasetID = dgsChartAddDataset(chart,"Counts")
+	dgsChartDatasetSetStyle(chart,datasetID,{
+			color = tocolor(255,0,0,255),
+			width = 2,
+		}
+	)
+	local setdata = {}
+	for i=1,12 do
+		setdata[i] = math.random()
+	end
+	dgsChartDatasetSetData(chart,datasetID,setdata)
+
+	local datasetID = dgsChartAddDataset(chart,"Counts")
+	dgsChartDatasetSetStyle(chart,datasetID,{
+			color = tocolor(255,255,0,255),
+			width = 2,
+		}
+	)
+	local setdata = {}
+	for i=1,12 do
+		setdata[i] = math.random(1,10)
+	end
+	dgsChartDatasetSetData(chart,datasetID,setdata)
+end
 end)
-

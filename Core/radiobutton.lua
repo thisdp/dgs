@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxradiobutton")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

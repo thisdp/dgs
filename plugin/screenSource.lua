@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxscreensource")
 GlobalScreenSource = false
 GlobalScreenSourceWidthFactor = 1
 GlobalScreenSourceHeightFactor = 1

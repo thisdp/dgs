@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxprogressbar")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawImageSection = dxDrawImageSection

@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxremoteimage")
 local remoteImagePlaceHolder
 remoteImageQueue = {}
 remoteImageDefaultImages = {

@@ -1,3 +1,5 @@
+dgsRegisterType("dgs-dxtab")
+dgsRegisterType("dgs-dxtabpanel")
 --Dx Functions
 local __dxDrawImage = __dxDrawImage
 local dxDrawImage = dxDrawImage

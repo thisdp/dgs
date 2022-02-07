@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxgradient")
 gradientShader = [[
 bool textureLoad = false;
 bool textureRotated = false;

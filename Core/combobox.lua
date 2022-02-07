@@ -1,3 +1,5 @@
+dgsRegisterType("dgs-dxcombobox")
+dgsRegisterType("dgs-dxcombobox-Box")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
@@ -1043,4 +1045,18 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	end
 	return rndtgt,false,mx,my,0,0
+end
+
+dgsCollider["dgs-dxcombobox-Box"] = function(source,mx,my,x,y,w,h)
+	local eleData = dgsElementData[source]
+	local combo = eleData.myCombo
+	local DataTab = dgsElementData[combo]
+	local itemData = DataTab.itemData
+	local itemDataCount = #itemData
+	local itemHeight = DataTab.itemHeight
+	local height = itemDataCount*itemHeight
+	h = height > h and h or height
+	if mx >= x and mx <= x+w and my >= y and my <= y+h then
+		return source
+	end
 end

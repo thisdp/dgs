@@ -1,11 +1,11 @@
+dgsRegisterType("dgs-dx3dinterface","dgsType3D","dgsTypeWorld3D")
 local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.acos,math.deg
 local assert = assert
 local type = type
 local tableInsert = table.insert
 
 function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
-	dxSetShaderValue(shader, "sElementColor",r/255,g/255,b/255,a/255)
-	dxSetShaderValue(shader, "sTexColor", tex )
+	dxSetShaderValue(shader, "sourceTexture", tex )
 end
 
 function dgsCreate3DInterface(...)
@@ -373,7 +373,6 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 				if isElement(filter) then
 					dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing,fromcolor(colors))
 					renderThing = filter
-					colors = white
 				end
 				dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
 				return true

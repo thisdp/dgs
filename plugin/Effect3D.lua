@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxeffect3d")
 local effect3DShader
 
 function dgsCreateEffect3D(rotFactor)

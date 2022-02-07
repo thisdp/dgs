@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxcanvas")
 local dxDrawImage = __dxDrawImage
 g_DGSCanvasIndex = 0
 function dgsCreateCanvas(renderSource,w,h,color)

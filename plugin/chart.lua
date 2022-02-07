@@ -1,3 +1,5 @@
+dgsRegisterPluginType("dgs-dxchart")
+
 function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 	local customRenderer = dgsCreateCustomRenderer()
 	local svg = dgsCreateSVG(w,h)

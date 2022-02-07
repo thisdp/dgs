@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxobjectpreviewhandle")
 -- To use dgs Object Preview support, you need to install Object Preview resource. Download Link https://community.multitheftauto.com/index.php?p=resources&s=details&id=11836
 -- !!Make sure that resource Object Preview is already running before using the following functions.!!
 objPrevResourceName = ""

@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxcustomrenderer")
 local loadstring = loadstring
 --Dx Functions
 local dxDrawLine = dxDrawLine

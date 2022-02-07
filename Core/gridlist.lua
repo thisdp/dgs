@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxgridlist")
 local loadstring = loadstring
 --Dx Functions
 local dxDrawImage = dxDrawImage

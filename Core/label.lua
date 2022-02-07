@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxlabel")
 --Dx Functions
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight

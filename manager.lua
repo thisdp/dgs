@@ -13,7 +13,36 @@ local mathMin = math.min
 local mathMax = math.max
 local mathClamp = math.restrict
 local getElementType = getElementType
-
+-------------------------------------------------------Table Defines
+--Render Info
+dgsRenderInfo = {
+	frames = 0,
+	RTRestoreNeed = false,
+	renderingResource = {},
+}
+--Render Settings
+dgsRenderSetting = {
+	postGUI = false,
+	renderPriority = "normal",
+}
+--Render Functions
+dgsRenderer = {}
+dgs3DRenderer = {}
+dgsCustomTexture = {}
+dgsBackEndRenderer = {
+	register = function(self,dgsType,theFunction)
+		self[dgsType] = theFunction
+	end,
+}
+--Collider
+dgsCollider = {
+	default = function(source,mx,my,x,y,w,h)
+		if mx >= x and mx <= x+w and my >= y and my <= y+h then
+			return source
+		end
+	end,
+}
+--
 --Parent System
 BackEndTable = {}			--Store Back-end Render Element (If it has back-end renderer)
 BottomFatherTable = {}		--Store Bottom Father Element
@@ -27,11 +56,9 @@ LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFathe
 --
 --Element Data System
 dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
-local l_dgsElementData = dgsElementData
 --
 --Element Type
 dgsElementType = {}
-local l_dgsElementType = dgsElementType
 --
 function dgsSetLayer(dgsEle,layer,forceDetatch)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetLayer",1,"dgs-dxelement")) end
@@ -192,13 +219,13 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 	end
 	if dgsElementData[dgsEle].changeOrder then
 		if not isElement(parent) then
-			if dgsScreen3DType[eleType] then
+			if dgsTypeScreen3D[eleType] then
 				local id = tableFind(dgsScreen3DTable,dgsEle)
 				if id then
 					tableRemove(dgsScreen3DTable,id)
 					tableInsert(dgsScreen3DTable,dgsEle)
 				end
-			elseif dgsWorld3DType[eleType] then
+			elseif dgsTypeWorld3D[eleType] then
 				local id = tableFind(dgsWorld3DTable,dgsEle)
 				if id then
 					tableRemove(dgsWorld3DTable,id)
@@ -232,14 +259,14 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 					end
 					parents = uparents
 				else
-					if dgsScreen3DType[eleType] then
+					if dgsTypeScreen3D[eleType] then
 						local id = tableFind(dgsScreen3DTable,parents)
 						if id then
 							tableRemove(dgsScreen3DTable,id)
 							tableInsert(dgsScreen3DTable,parents)
 						end
 						break
-					elseif dgsWorld3DType[eleType] then
+					elseif dgsTypeWorld3D[eleType] then
 						local id = tableFind(dgsWorld3DTable,parents)
 						if id then
 							tableRemove(dgsWorld3DTable,id)
@@ -310,64 +337,7 @@ function dgsMoveToBack(dgsEle)
 end
 
 ------------------------------------------------Type Manager
-dgsType = {
-	"dgs-dx3dinterface",
-	"dgs-dx3dline",
-	"dgs-dx3dtext",
-	"dgs-dx3dimage",
-	"dgs-dxbutton",
-	"dgs-dxedit",
-	"dgs-dxmemo",
-	"dgs-dxdetectarea",
-	"dgs-dxgridlist",
-	"dgs-dximage",
-	"dgs-dxradiobutton",
-	"dgs-dxcheckbox",
-	"dgs-dxlabel",
-	"dgs-dxline",
-	"dgs-dxlayout",
-	"dgs-dxscrollbar",
-	"dgs-dxscrollpane",
-	"dgs-dxscalepane",
-	"dgs-dxselector",
-	"dgs-dxswitchbutton",
-	"dgs-dxwindow",
-	"dgs-dxprogressbar",
-	"dgs-dxtabpanel",
-	"dgs-dxtab",
-	"dgs-dxcombobox",
-	"dgs-dxcombobox-Box",
-	"dgs-dxcustomrenderer",
-	"dgs-dxbrowser",
-}
-
-dgsPluginType = {
-
-}
-
-dgsScreen3DType = {
-	"dgs-dx3dimage",
-	"dgs-dx3dtext",
-}
-
-dgsWorld3DType = {
-	"dgs-dx3dinterface",
-	"dgs-dx3dline",
-}
-
-for i=1,#dgsType do
-	dgsType[dgsType[i]] = dgsType[i]
-end
-
-for i=1,#dgsScreen3DType do
-	dgsScreen3DType[dgsScreen3DType[i]] = dgsScreen3DType[i]
-end
-
-for i=1,#dgsWorld3DType do
-	dgsWorld3DType[dgsWorld3DType[i]] = dgsWorld3DType[i]
-end
-
-setElementData(resourceRoot,"DGSType",dgsType,false)
+dgsType,dgsPluginType = {},{}
 
 ---Userdata Type
 MTAUserDataType = {
@@ -380,15 +350,20 @@ MTAUserDataType = {
 	["matrix"] = true,
 }
 
-function dgsAddType(typeName,isPlugin)
-	if isPlugin then
-		dgsPluginType[#dgsPluginType+1] = typeName
-		dgsPluginType[typeName] = typeName
-	else
-		dgsType[#dgsType+1] = typeName
-		dgsType[typeName] = typeName
+function dgsRegisterType(typeName,...)
+	for i=1,select("#",...) do
+		local tag = select(i,...)
+		if not _G[tag] then _G[tag] = {} end
+		_G[tag][typeName] = typeName
 	end
+	--dgsType[#dgsType+1] = typeName
+	dgsType[typeName] = typeName
 	return true
+end
+
+function dgsRegisterPluginType(typeName)
+	--dgsPluginType[#dgsPluginType+1] = typeName
+	dgsPluginType[typeName] = typeName
 end
 
 function dgsGetType(dgsEle)
@@ -799,7 +774,7 @@ local dgsDataFunctions = {
 			end
 		end,
 		asPlugin = function(dgsEle,key,value,oldValue)
-			dgsAddType(value,true)
+			dgsRegisterPluginType(value)
 		end,
 	},
 }

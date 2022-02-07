@@ -1,3 +1,5 @@
+dgsRegisterPluginType("dgs-dxcircle")
+dgsRegisterPluginType("dgs-dxroundrectangle")
 ------------------
 ---DGS Basic Shape
 ------------------

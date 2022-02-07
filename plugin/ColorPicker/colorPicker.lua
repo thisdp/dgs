@@ -1,3 +1,5 @@
+dgsRegisterPluginType("dgs-dxcolorpicker")
+dgsRegisterPluginType("dgs-dxcomponentselector")
 addEvent("onDgsColorPickerChange",true)
 addEvent("onDgsColorPickerComponentSelectorChange",true)
 

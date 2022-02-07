@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxdynamicshader")
 dgsGlobalShaderTemplate = {}
 
 function dgsCreateDynamicShader()

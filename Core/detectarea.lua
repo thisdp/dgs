@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxdetectarea")
 local loadstring = loadstring
 --Dx Functions
 local dxDrawImage = dxDrawImage

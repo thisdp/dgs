@@ -37,48 +37,7 @@ local isElement = isElement
 local _getElementID = getElementID
 local getElementID = function(ele) return isElement(ele) and _getElementID(ele) or tostring(ele) end
 ----
-fontSize = {}
 self,renderArguments = false,{}
-dgsRenderInfo = {
-	frames = 0,
-	RTRestoreNeed = false,
-	renderingResource = {},
-}
-dgsRenderSetting = {
-	postGUI = false,
-	renderPriority = "normal",
-}
-dgsRenderer = {}
-dgsCustomTexture = {}
-dgsBackEndRenderer = {
-	register = function(self,dgsType,theFunction)
-		self[dgsType] = theFunction
-	end,
-}
-dgs3DRenderer = {}
-dgsCollider = {
-	default = function(source,mx,my,x,y,w,h)
-		if mx >= x and mx <= x+w and my >= y and my <= y+h then
-			return source
-		end
-	end,
-	["dgs-dxcombobox-Box"] = function(source,mx,my,x,y,w,h)
-		local eleData = dgsElementData[source]
-		local combo = eleData.myCombo
-		local DataTab = dgsElementData[combo]
-		local itemData = DataTab.itemData
-		local itemDataCount = #itemData
-		local itemHeight = DataTab.itemHeight
-		local height = itemDataCount*itemHeight
-		h = height > h and h or height
-		if mx >= x and mx <= x+w and my >= y and my <= y+h then
-			return source
-		end
-	end,
-}
-for i=1,#dgsType do
-	dgsCollider[dgsType[i]] = dgsCollider[dgsType[i]] or dgsCollider.default
-end
 
 function dgsGetRenderSetting(name) return dgsRenderSetting[name] end
 
@@ -437,16 +396,13 @@ function dgsCoreRender()
 		dxDrawText("  Right: "..rightStr,11,sH*0.4-24,sW,sH,black)
 		dxDrawText("  Right: "..rightStr,10,sH*0.4-25)
 		dgsRenderInfo.created = 0
-		for i=1,#dgsType do
-			local value = dgsType[i]
+		local index = 1
+		for value in pairs(dgsType) do
+			index = index+1
 			local elements = #getElementsByType(value)
 			dgsRenderInfo.created = dgsRenderInfo.created+elements
-			local x = 15
-			if value == "dgs-dxtab" or value == "dgs-dxcombobox-Box" then
-				x = 30
-			end
-			dxDrawText(value.." : "..elements,x+1,sH*0.4+15*i+6,sW,sH,black)
-			dxDrawText(value.." : "..elements,x,sH*0.4+15*i+5)
+			dxDrawText(value.." : "..elements,15+1,sH*0.4+15*index+6,sW,sH,black)
+			dxDrawText(value.." : "..elements,15,sH*0.4+15*index+5)
 		end
 		dxDrawText("Rendering: "..dgsRenderInfo.rendering,11,sH*0.4-9,sW,sH,black)
 		dxDrawText("Rendering: "..dgsRenderInfo.rendering,10,sH*0.4-10,sW,sH,green)
@@ -621,7 +577,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 								daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 							end
 						else
-							local hit = dgsCollider[eleType](source,mx,my,xNRT,yNRT,w,h) 
+							local hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) 
 							if enabledInherited then
 								MouseData.hit = hit or MouseData.hit
 							end
@@ -661,7 +617,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 								daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 							end
 						else
-							MouseData.hit = dgsCollider[eleType](source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
+							MouseData.hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
 						end
 						if eleType == "dgs-dxgridlist" then
 							_hitElement = MouseData.hit
@@ -1746,9 +1702,9 @@ function dgsCleanElement(source)
 		if moveGUIList[source] then if isAlive then dgsStopMoving(source) else moveGUIList[source] = nil end end
 		if sizeGUIList[source] then if isAlive then dgsStopSizing(source) else sizeGUIList[source] = nil end end
 		if alphaGUIList[source] then if isAlive then dgsStopAlphaing(source) else alphaGUIList[source] = nil end end
-		if dgsWorld3DType[dgsType] then
+		if dgsTypeWorld3D[dgsType] then
 			tableRemoveItemFromArray(dgsWorld3DTable,source)
-		elseif dgsScreen3DType[dgsType] then
+		elseif dgsTypeScreen3D[dgsType] then
 			tableRemoveItemFromArray(dgsScreen3DTable,source)
 		else
 			local parent = FatherTable[source]

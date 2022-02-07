@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dx3dline","dgsType3D","dgsTypeWorld3D")
 --Dx Functions
 local dxDrawLine3D = dxDrawLine3D
 --

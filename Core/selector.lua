@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxselector")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

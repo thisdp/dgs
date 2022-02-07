@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxmedia")
 local JS = {
 	clearelement = "clearMedia()",
 	playelement = "playMedia()",

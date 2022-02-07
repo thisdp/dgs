@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dxcheckbox")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

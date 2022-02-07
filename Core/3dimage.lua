@@ -1,3 +1,4 @@
+dgsRegisterType("dgs-dx3dimage","dgsType3D","dgsTypeScreen3D")
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage
@@ -77,18 +78,6 @@ function dgs3DImageGetSize(image)
 	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetSize",1,"dgs-dx3dimage")) end
 	local size = dgsElementData[image].imageSize
 	return size[1],size[2]
-end
-
-function dgs3DImageGetDimension(image)
-	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetDimension",1,"dgs-dx3dimage")) end
-	return dgsElementData[image].dimension or -1
-end
-
-function dgs3DImageSetDimension(image,dimension)
-	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetDimension",1,"dgs-dx3dimage")) end
-	local inRange = dimension >= -1 and dimension <= 65535
-	if not(type(dimension) == "number" and inRange) then error(dgsGenAsrt(dimension,"dgs3DImageSetDimension",2,"number","-1~65535",inRange and "Out Of Range")) end
-	return dgsSetData(image,"dimension",dimension-dimension%1)
 end
 
 function dgs3DImageGetInterior(image)

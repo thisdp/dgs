@@ -1223,3 +1223,36 @@ end)
 
 addEvent("onDgsCursorMove",true)
 addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)
+
+---------------DGS 3D Common Functions
+function dgs3DSetPosition()
+
+end
+
+function dgs3DGetPosition()
+
+end
+
+function dgs3DSetInterior()
+
+end
+
+function dgs3DGetInterior()
+
+end
+
+function dgs3DSetDimension()
+
+end
+
+function dgs3DGetDimension()
+
+end
+
+function dgs3DAttachElements()
+
+end
+
+function dgs3DDetatchElements()
+
+end

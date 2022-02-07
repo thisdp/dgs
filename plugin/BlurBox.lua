@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxblurbox")
 local dxSetRenderTarget = dxSetRenderTarget
 local dxSetShaderValue = dxSetShaderValue
 local dxDrawImage = __dxDrawImage

@@ -1,3 +1,4 @@
+dgsRegisterPluginType("dgs-dxmask")
 masks = {
 	circle="plugin/mask/mask-Circle.fx",
 	backgroundFilter="plugin/mask/mask-BackGroundFilter.fx",
