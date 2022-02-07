@@ -887,6 +887,9 @@ local compatibility = {
 	["dgs-dxprogressbar"] = {
 		isReverse = "isClockWise",
 	},
+	["dgs-dx3dinterface"] = {
+		rotation = "roll",
+	},
 	hitoutofparent = "childOutsideHit",
 	wordbreak = "wordBreak",
 	colorcoded = "colorCoded",

@@ -122,12 +122,14 @@ function dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,pnVP1,pnVP2,pnVP
 	end
 end
 
+dgsRegisterDeprecatedFunction("dgs3DInterfaceSetRotation","dgs3DInterfaceSetRoll")
 function dgs3DInterfaceSetRoll(interface,roll)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetRoll",1,"dgs-dx3dinterface")) end
 	if not (type(roll) == "number") then error(dgsGenAsrt(roll,"dgs3DInterfaceSetRoll",2,"number")) end
 	return dgsSetData(interface,"roll",roll)
 end
 
+dgsRegisterDeprecatedFunction("dgs3DInterfaceGetRotation","dgs3DInterfaceGetRoll")
 function dgs3DInterfaceGetRoll(interface)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetRoll",1,"dgs-dx3dinterface")) end
 	return dgsElementData[interface].roll

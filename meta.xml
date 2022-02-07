@@ -317,6 +317,8 @@
 	<export function="dgs3DInterfaceGetDimension" type="client" />
 	<export function="dgs3DInterfaceSetInterior" type="client" />
 	<export function="dgs3DInterfaceGetInterior" type="client" />
+	<export function="dgs3DInterfaceSetRoll" type="client" />
+	<export function="dgs3DInterfaceGetRoll" type="client" />
 	<export function="dgs3DInterfaceSetRotation" type="client" />
 	<export function="dgs3DInterfaceGetRotation" type="client" />
 
