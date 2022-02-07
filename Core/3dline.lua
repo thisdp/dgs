@@ -146,30 +146,6 @@ function dgs3DLineGetItemColor(line,index)
 	return ilData[8]
 end
 
-function dgs3DLineGetDimension(line)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineGetDimension",1,"dgs-dx3dline")) end
-	return dgsElementData[line].dimension or -1
-end
-
-function dgs3DLineSetDimension(line,dimension)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineSetDimension",1,"dgs-dx3dline")) end
-	local inRange = dimension >= -1 and dimension <= 65535
-	if not(type(dimension) == "number" and inRange) then error(dgsGenAsrt(dimension,"dgs3DLineSetDimension",2,"number","-1~65535",inRange and "Out Of Range")) end
-	return dgsSetData(line,"dimension",dimension-dimension%1)
-end
-
-function dgs3DLineGetInterior(line)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineGetInterior",1,"dgs-dx3dline")) end
-	return dgsElementData[line].interior or -1
-end
-
-function dgs3DLineSetInterior(line,interior)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineSetInterior",1,"dgs-dx3dline")) end
-	local inRange = interior >= -1
-	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DLineSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
-	return dgsSetData(line,"interior",interior-interior%1)
-end
-
 function dgs3DLineAttachToElement(line,element,offX,offY,offZ,offRX,offRY,offRZ)
 	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineAttachToElement",1,"dgs-dx3dline")) end
 	if not(isElement(element)) then error(dgsGenAsrt(element,"dgs3DLineAttachToElement",2,"element")) end
@@ -205,20 +181,6 @@ function dgs3DLineGetAttachedOffsets(line,offX,offY,offZ,offRX,offRY,offRZ)
 		return attachTable[2],attachTable[3],attachTable[4],attachTable[5],attachTable[6],attachTable[7]
 	end
 	return false
-end
-
-function dgs3DLineSetPosition(line,x,y,z)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineSetPosition",1,"dgs-dx3dline")) end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DLineSetPosition",2,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DLineSetPosition",3,"number")) end
-	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DLineSetPosition",4,"number")) end
-	return dgsSetData(line,"position",{x,y,z})
-end
-
-function dgs3DLineGetPosition(line)
-	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineGetPosition",1,"dgs-dx3dline")) end
-	local pos = dgsElementData[line].position
-	return pos[1],pos[2],pos[3]
 end
 
 function dgs3DLineSetRotation(line,rx,ry,rz)

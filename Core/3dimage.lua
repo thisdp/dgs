@@ -80,18 +80,6 @@ function dgs3DImageGetSize(image)
 	return size[1],size[2]
 end
 
-function dgs3DImageGetInterior(image)
-	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetInterior",1,"dgs-dx3dimage")) end
-	return dgsElementData[image].interior or -1
-end
-
-function dgs3DImageSetInterior(image,interior)
-	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetInterior",1,"dgs-dx3dimage")) end
-	local inRange = interior >= -1
-	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DImageSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
-	return dgsSetData(image,"interior",interior-interior%1)
-end
-
 function dgs3DImageAttachToElement(image,element,offX,offY,offZ)
 	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageAttachToElement",1,"dgs-dx3dimage")) end
 	if not(isElement(element)) then error(dgsGenAsrt(element,"dgs3DImageAttachToElement",2,"element")) end
@@ -127,20 +115,6 @@ function dgs3DImageGetAttachedOffsets(image,offX,offY,offZ)
 		return offX,offY,offZ
 	end
 	return false
-end
-
-function dgs3DImageSetPosition(image,x,y,z)
-	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetPosition",1,"dgs-dx3dimage")) end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DImageSetPosition",2,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DImageSetPosition",3,"number")) end
-	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DImageSetPosition",4,"number")) end
-	return dgsSetData(image,"position",{x,y,z})
-end
-
-function dgs3DImageGetPosition(image)
-	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetPosition",1,"dgs-dx3dimage")) end
-	local pos = dgsElementData[image].position
-	return pos[1],pos[2],pos[3]
 end
 
 function dgs3DImageSetUVSize(image,sx,sy,relative)

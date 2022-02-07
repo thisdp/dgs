@@ -1225,13 +1225,27 @@ addEvent("onDgsCursorMove",true)
 addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)
 
 ---------------DGS 3D Common Functions
-function dgs3DSetPosition()
-
+function dgs3DSetPosition(ele3D,x,y,z)
+	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetPosition",1,"dgs-dx3delement")) end
+	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DSetPosition",2,"number")) end
+	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DSetPosition",3,"number")) end
+	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DSetPosition",4,"number")) end
+	return dgsSetData(ele3D,"position",{x,y,z})
 end
+dgsRegisterDeprecatedFunction("dgs3DImageSetPosition","dgs3DSetPosition")
+dgsRegisterDeprecatedFunction("dgs3DInterfaceSetPosition","dgs3DSetPosition")
+dgsRegisterDeprecatedFunction("dgs3DLineSetPosition","dgs3DSetPosition")
+dgsRegisterDeprecatedFunction("dgs3DTextSetPosition","dgs3DSetPosition")
 
-function dgs3DGetPosition()
-
+function dgs3DGetPosition(ele3D)
+	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DGetPosition",1,"dgs-dx3delement")) end
+	local pos = dgsElementData[ele3D].position
+	return pos[1],pos[2],pos[3]
 end
+dgsRegisterDeprecatedFunction("dgs3DImageGetPosition","dgs3DGetPosition")
+dgsRegisterDeprecatedFunction("dgs3DInterfaceGetPosition","dgs3DGetPosition")
+dgsRegisterDeprecatedFunction("dgs3DLineGetPosition","dgs3DGetPosition")
+dgsRegisterDeprecatedFunction("dgs3DTextGetPosition","dgs3DGetPosition")
 
 function dgs3DSetInterior(ele3D,interior)
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetInterior",1,"dgs-dx3delement")) end
@@ -1253,18 +1267,22 @@ dgsRegisterDeprecatedFunction("dgs3DInterfaceGetInterior","dgs3DGetInterior")
 dgsRegisterDeprecatedFunction("dgs3DLineGetInterior","dgs3DGetInterior")
 dgsRegisterDeprecatedFunction("dgs3DTextGetInterior","dgs3DGetInterior")
 
-function dgs3DSetDimension()
-
+function dgs3DSetDimension(ele3D,dimension)
+	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetDimension",1,"dgs-dx3delement")) end
+	local inRange = dimension >= -1 and dimension <= 65535
+	if not(type(dimension) == "number" and dimension) then error(dgsGenAsrt(dimension,"dgs3DSetDimension",2,"number","-1~+∞",inRange and "Out Of Range")) end
+	return dgsSetData(ele3D,"dimension",dimension-dimension%1)
 end
+dgsRegisterDeprecatedFunction("dgs3DImageSetDimension","dgs3DSetDimension")
+dgsRegisterDeprecatedFunction("dgs3DInterfaceSetDimension","dgs3DSetDimension")
+dgsRegisterDeprecatedFunction("dgs3DLineSetDimension","dgs3DSetDimension")
+dgsRegisterDeprecatedFunction("dgs3DTextSetDimension","dgs3DSetDimension")
 
 function dgs3DGetDimension()
-
+	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DGetDimension",1,"dgs-dx3delement")) end
+	return dgsElementData[ele3D].dimension or -1
 end
-
-function dgs3DAttachElements()
-
-end
-
-function dgs3DDetatchElements()
-
-end
+dgsRegisterDeprecatedFunction("dgs3DImageGetDimension","dgs3DGetDimension")
+dgsRegisterDeprecatedFunction("dgs3DInterfaceGetDimension","dgs3DGetDimension")
+dgsRegisterDeprecatedFunction("dgs3DLineGetDimension","dgs3DGetDimension")
+dgsRegisterDeprecatedFunction("dgs3DTextGetDimension","dgs3DGetDimension")

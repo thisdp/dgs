@@ -71,30 +71,6 @@ function dgsCreate3DText(...)
 	return text3d
 end
 
-function dgs3DTextGetDimension(text)
-	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetDimension",1,"dgs-dx3dtext")) end
-	return dgsElementData[text].dimension or -1
-end
-
-function dgs3DTextSetDimension(text,dimension)
-	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetDimension",1,"dgs-dx3dtext")) end
-	local inRange = dimension >= -1 and dimension <= 65535
-	if not(type(dimension) == "number" and inRange) then error(dgsGenAsrt(dimension,"dgs3DTextSetDimension",2,"number","-1~65535",inRange and "Out Of Range")) end
-	return dgsSetData(text,"dimension",dimension-dimension%1)
-end
-
-function dgs3DTextGetInterior(text)
-	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetInterior",1,"dgs-dx3dtext")) end
-	return dgsElementData[text].interior or -1
-end
-
-function dgs3DTextSetInterior(text,interior)
-	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetInterior",1,"dgs-dx3dtext")) end
-	local inRange = interior >= -1
-	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DTextSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
-	return dgsSetData(text,"interior",interior-interior%1)
-end
-
 function dgs3DTextAttachToElement(text,element,offX,offY,offZ)
 	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextAttachToElement",1,"dgs-dx3dtext")) end
 	if not isElement(element) then error(dgsGenAsrt(element,"dgs3DTextAttachToElement",2,"element")) end
@@ -130,20 +106,6 @@ function dgs3DTextGetAttachedOffsets(text,offX,offY,offZ)
 		return offX,offY,offZ
 	end
 	return false
-end
-
-function dgs3DTextSetPosition(text,x,y,z)
-	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetPosition",1,"dgs-dx3dtext")) end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DTextSetPosition",2,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DTextSetPosition",3,"number")) end
-	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DTextSetPosition",4,"number")) end
-	return dgsSetData(text,"position",{x,y,z})
-end
-
-function dgs3DTextGetPosition(text)
-	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetPosition",1,"dgs-dx3dtext")) end
-	local pos = dgsElementData[text].position
-	return pos[1],pos[2],pos[3]
 end
 
 ----------------------------------------------------------------

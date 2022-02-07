@@ -169,10 +169,8 @@
 	<export function="dgsGetClickingSoundVolume" type="client" />
 	<export function="dgsGetPositionAlignment" type="client" />
 	<export function="dgsSetPositionAlignment" type="client" />
-
 	<export function="dgsGetSide" type="client" />
 	<export function="dgsSetSide" type="client" />
-
 	<export function="dgsGetAlpha" type="client" />
 	<export function="dgsSetAlpha" type="client" />
 	<export function="dgsSetLayer" type="client" />
@@ -234,6 +232,13 @@
 	<export function="dgsSetElementKeeperEnabled" type="client" />
 	<export function="dgsGetElementKeeperEnabled" type="client" />
 	<export function="dgsSetDebugTracerEnabled" type="client" />
+	
+	<export function="dgs3DSetPosition" type="client" />
+	<export function="dgs3DGetPosition" type="client" />
+	<export function="dgs3DSetInterior" type="client" />
+	<export function="dgs3DGetInterior" type="client" />
+	<export function="dgs3DSetDimension" type="client" />
+	<export function="dgs3DGetDimension" type="client" />
 
 	<export function="dgsAddStyle" type="client" />
 	<export function="dgsLoadStyle" type="client" />

@@ -4,12 +4,12 @@ local assert = assert
 local type = type
 local tableInsert = table.insert
 
-function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,rotation,w,h,tex,r,g,b,a)
+function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,roll,w,h,tex,r,g,b,a)
 	dxSetShaderValue(shader, "sourceTexture", tex )
 end
 
 function dgsCreate3DInterface(...)
-	local x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,rot
+	local x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,roll
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
@@ -24,9 +24,9 @@ function dgsCreate3DInterface(...)
 		faceY = argTable.faceY or argTable[10]
 		faceZ = argTable.faceZ or argTable[11]
 		distance = argTable.distance or argTable[12]
-		rot = argTable.rotation or argTable.rot or argTable[13]
+		roll = argTable.roll or argTable[13]
 	else
-		x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,rot = ...
+		x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,roll = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DInterface",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DInterface",2,"number")) end
@@ -53,7 +53,7 @@ function dgsCreate3DInterface(...)
 		attachTo = false,
 		dimension = -1,
 		interior = -1,
-		rotation = rot or 0,
+		roll = roll or 0,
 		--filterShader = dxCreateShader(defaultFilter)
 	}
 	local renderTarget,err = dxCreateRenderTarget(resX,resY,true,interface)
@@ -72,10 +72,10 @@ function dgsCreate3DInterface(...)
 	return interface
 end
 
-function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,rot)
+function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,roll)
 	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
 	local offFaceZ = atan2(vx,vy)
-	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
+	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(roll)+sin(roll)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(roll)-sin(roll)*sin(offFaceZ),-cos(offFaceX)*cos(roll)
 	w,h = w/2,h/2
 	local topX,topY,topZ = _x*h,_y*h,_z*h
 	local leftX,leftY,leftZ = topY*vz-vy*topZ,topZ*vx-vz*topX,topX*vy-vx*topY --Left Point
@@ -90,12 +90,12 @@ end
 
 --lnVP = lnVector(xyz)+lnPoint(xyz)
 --pnVP = pnVector(xyz)+pnPoint(xyz)
-function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,rot)
+function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
 	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
 	local offFaceZ = atan2(vx,vy)
 	local _h=h
 	h=h*0.5
-	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(rot)+sin(rot)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(rot)-sin(rot)*sin(offFaceZ),-cos(offFaceX)*cos(rot)
+	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(roll)+sin(roll)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(roll)-sin(roll)*sin(offFaceZ),-cos(offFaceX)*cos(roll)
 	local x1,y1,z1 = _x*h,_y*h,_z*h
 	if lnVP1 then
 		local px,py,pz = dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,vx,vy,vz,x,y,z) --Intersection Point
@@ -122,15 +122,15 @@ function dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,pnVP1,pnVP2,pnVP
 	end
 end
 
-function dgs3DInterfaceSetRotation(interface,rotation)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetRotation",1,"dgs-dx3dinterface")) end
-	if not (type(rotation) == "number") then error(dgsGenAsrt(rotation,"dgs3DInterfaceSetRotation",2,"number")) end
-	return dgsSetData(interface,"rotation",rotation)
+function dgs3DInterfaceSetRoll(interface,roll)
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetRoll",1,"dgs-dx3dinterface")) end
+	if not (type(roll) == "number") then error(dgsGenAsrt(roll,"dgs3DInterfaceSetRoll",2,"number")) end
+	return dgsSetData(interface,"roll",roll)
 end
 
-function dgs3DInterfaceGetRotation(interface)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetRotation",1,"dgs-dx3dinterface")) end
-	return dgsElementData[interface].rotation
+function dgs3DInterfaceGetRoll(interface)
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetRoll",1,"dgs-dx3dinterface")) end
+	return dgsElementData[interface].roll
 end
 
 function dgs3DInterfaceSetFaceTo(interface,fx,fy,fz,relativeTo)
@@ -164,20 +164,6 @@ function dgs3DInterfaceGetBlendMode(interface)
 	return dgsElementData[interface].blendMode
 end
 
-function dgs3DInterfaceSetPosition(interface,x,y,z)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetPosition",1,"dgs-dx3dinterface")) end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgs3DInterfaceSetPosition",1,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgs3DInterfaceSetPosition",2,"number")) end
-	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DInterfaceSetPosition",3,"number")) end
-	return dgsSetData(interface,"position",{x,y,z})
-end
-
-function dgs3DInterfaceGetPosition(interface)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetPosition",1,"dgs-dx3dinterface")) end
-	local pos = dgsElementData[interface].position
-	return pos[1],pos[2],pos[3]
-end
-
 function dgs3DInterfaceSetSize(interface,w,h)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetSize",1,"dgs-dx3dinterface")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgs3DInterfaceSetSize",2,"number")) end
@@ -189,30 +175,6 @@ function dgs3DInterfaceGetSize(interface)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetSize",1,"dgs-dx3dinterface")) end
 	local size = dgsElementData[interface].size
 	return size[1],size[2]
-end
-
-function dgs3DInterfaceGetDimension(interface)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetDimension",1,"dgs-dx3dinterface")) end
-	return dgsElementData[interface].dimension or -1
-end
-
-function dgs3DInterfaceSetDimension(interface,dimension)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetDimension",1,"dgs-dx3dinterface")) end
-	local inRange = dimension >= -1 and dimension <= 65535
-	if not(type(dimension) == "number" and inRange) then error(dgsGenAsrt(dimension,"dgs3DInterfaceSetDimension",2,"number","-1~65535",inRange and "Out Of Range")) end
-	return dgsSetData(interface,"dimension",dimension-dimension%1)
-end
-
-function dgs3DInterfaceGetInterior(interface)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetInterior",1,"dgs-dx3dinterface")) end
-	return dgsElementData[interface].interior or -1
-end
-
-function dgs3DInterfaceSetInterior(interface,interior)
-	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetInterior",1,"dgs-dx3dinterface")) end
-	local inRange = interior >= -1
-	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DInterfaceSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
-	return dgsSetData(interface,"interior",interior-interior%1)
 end
 
 function dgs3DInterfaceSetResolution(interface,resw,resh)
@@ -285,7 +247,7 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local pos = eleData.position
 	local size = eleData.size
 	local faceTo = eleData.faceTo
-	local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
+	local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
 	rndtgt = eleData.renderTarget_parent
 	if x and y and z and w and h and enabledInherited and mx then
 		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123
@@ -300,7 +262,7 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 			lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ,camX,camY,camZ
 		end
 		if eleData.cameraDistance or 0 <= eleData.maxDistance then
-			eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,rot)}
+			eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)}
 		else
 			eleData.hit = {}
 		end
@@ -349,7 +311,7 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 			end
 		end
 		local size = eleData.size
-		local x,y,z,w,h,fx,fy,fz,rot = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.rotation
+		local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
 		eleData.hit = false
 		if x and y and z and w and h then
 			self = source
@@ -371,10 +333,10 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 				end
 				local filter = eleData.filterShader
 				if isElement(filter) then
-					dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,rot,w,h,renderThing,fromcolor(colors))
+					dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,roll,w,h,renderThing,fromcolor(colors))
 					renderThing = filter
 				end
-				dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,rot)
+				dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,roll)
 				return true
 			end
 		end
