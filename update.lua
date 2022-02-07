@@ -155,24 +155,28 @@ end
 
 function checkFiles()
 	local xml = xmlLoadFile("updated/meta.xml")
-	for k,v in pairs(xmlNodeGetChildren(xml)) do
+	for k,v in ipairs(xmlNodeGetChildren(xml)) do
+		repeat
 		if xmlNodeGetName(v) == "script" or xmlNodeGetName(v) == "file" then
 			local path = xmlNodeGetAttribute(v,"src")
-			if not string.find(path,"styleMapper.lua") and path ~= "meta.xml" then
-				local sha = ""
-				if fileExists(path) then
-					local file = fileOpen(path)
-					local size = fileGetSize(file)
-					local text = fileRead(file,size)
-					fileClose(file)
-					sha = hash("sha1","blob " .. size .. "\0" ..text)
-				end
-				if sha ~= fileHash[path] then
-					outputDebugString("[DGS]Update Required: ("..path..")")
-					table.insert(preUpdate,path)
-				end
+			if string.find(path,"styleMapper.lua") then break end
+			if path == "meta.xml" then break end
+			if string.find(path,"test.lua") and not dgsConfig.enableTestFile then break end
+			local sha = ""
+			if fileExists(path) then
+				local file = fileOpen(path)
+				local size = fileGetSize(file)
+				local text = fileRead(file,size)
+				fileClose(file)
+				sha = hash("sha1","blob " .. size .. "\0" ..text)
+			end
+			if sha ~= fileHash[path] then
+				outputDebugString("[DGS]Update Required: ("..path..")")
+				table.insert(preUpdate,path)
 			end
 		end
+		break
+		until true
 	end
 	DownloadFiles()
 end
@@ -222,6 +226,19 @@ function DownloadFinish()
 		fileDelete("meta.xml")
 	end
 	recoverStyleMapper()
+	if not dgsConfig.enableTestFile then	--Remove test.lua from meta.xml
+		local xml = xmlLoadFile("meta.xml")
+		for k,v in ipairs(xmlNodeGetChildren(xml)) do
+			if xmlNodeGetName(v) == "script" then
+				if string.find(xmlNodeGetAttribute(v,"src"),"test.lua") then
+					xmlDestroyNode(v)
+					break
+				end
+			end
+		end
+		xmlSaveFile(xml)
+		xmlUnloadFile(xml)
+	end
 	outputDebugString("[DGS]Update Complete ( "..#preUpdate.." File"..(#preUpdate==1 and "" or "s").." Changed )")
 	outputDebugString("[DGS]Please Restart DGS")
 	outputChatBox("[DGS]Update Complete ( "..#preUpdate.." File"..(#preUpdate==1 and "" or "s").." Changed )",root,0,255,0)
