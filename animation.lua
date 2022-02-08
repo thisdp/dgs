@@ -53,6 +53,7 @@ end
 
 function dgsStopAniming(...)
 	local dgsEle,property
+	local stopTick = getTickCount()
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		dgsEle = argTable.ele or argTable.dgsEle or argTable.element or argTable.dgsElement or argTable.source or argTable[1]
@@ -64,6 +65,14 @@ function dgsStopAniming(...)
 	if type(property) == "string" then
 		for i=1,#animQueue do
 			if animQueue[i][1] == dgsEle and animQueue[i][2] == property then --Confirm
+				if property == "rltPos" or property == "absPos" then
+					triggerEvent("onDgsStopMoving",dgsEle)
+				elseif property == "rltSize" or property == "absSize" then
+					triggerEvent("onDgsStopSizing",dgsEle)
+				elseif property == "alpha" then
+					triggerEvent("onDgsStopAlphaing",dgsEle)
+				end
+				triggerEvent("onDgsStopAniming",dgsEle,property,animQueue[i][3],animQueue[i][4],animQueue[i][5],animQueue[i][7],animQueue[i][6],stopTick)
 				table.remove(animQueue,i)	--Remove
 				return true
 			end
@@ -74,6 +83,14 @@ function dgsStopAniming(...)
 			if animQueue[index][1] == dgsEle then --Confirm
 				for i=1,#property do
 					if animQueue[index][2] == property[i] then
+						if property[i] == "rltPos" or property[i] == "absPos" then
+							triggerEvent("onDgsStopMoving",dgsEle)
+						elseif property[i] == "rltSize" or property[i] == "absSize" then
+							triggerEvent("onDgsStopSizing",dgsEle)
+						elseif property[i] == "alpha" then
+							triggerEvent("onDgsStopAlphaing",dgsEle)
+						end
+						triggerEvent("onDgsStopAniming",dgsEle,property[i],animQueue[i][3],animQueue[i][4],animQueue[i][5],animQueue[i][7],animQueue[i][6],stopTick)
 						table.remove(animQueue,index)	--Remove
 					end
 				end
@@ -85,6 +102,14 @@ function dgsStopAniming(...)
 		local index = 1
 		while index <= #animQueue do
 			if animQueue[index][1] == dgsEle then --Confirm
+				if animQueue[index][2] == "rltPos" or animQueue[index][2] == "absPos" then
+					triggerEvent("onDgsStopMoving",dgsEle)
+				elseif animQueue[index][2] == "rltSize" or animQueue[index][2] == "absSize" then
+					triggerEvent("onDgsStopSizing",dgsEle)
+				elseif animQueue[index][2] == "alpha" then
+					triggerEvent("onDgsStopAlphaing",dgsEle)
+				end
+				triggerEvent("onDgsStopAniming",dgsEle,animQueue[index][2],animQueue[i][3],animQueue[i][4],animQueue[i][5],animQueue[i][7],animQueue[i][6],stopTick)
 				table.remove(animQueue,index)	--Remove
 			else
 				index = index+1
