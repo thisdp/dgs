@@ -148,8 +148,8 @@ end
 
 function dgsSetPosition(dgsEle,x,y,bool,isCenterPosition)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPosition",1,"dgs-dxelement")) end
-	if not(not x or type(x) == "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"nil/number")) end
-	if not(not y or type(y) == "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
+	if (x and type(x) ~= "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"nil/number")) end
+	if (y and type(y) ~= "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
 	local bool = bool and true or false
 	local pos = bool and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
 	local x,y = x or pos[1],y or pos[2]
@@ -186,11 +186,11 @@ end
 
 function dgsSetSize(dgsEle,w,h,bool)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSize",1,"dgs-dxelement")) end
-	if not(not w or type(w) == "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
-	if not(not h or type(h) == "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
+	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
+	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
 	local bool = bool and true or false
 	local size = bool and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
-	local w,h = w or size[1],h or size[2]
+	local w,h = w or size[1], h or size[2]
 	calculateGuiPositionSize(dgsEle,_,_,_,w,h,bool or false)
 	return true
 end
@@ -1039,20 +1039,6 @@ function dgsGetTranslationValue(name,key)
 	return false
 end
 --------------Translation Internal
-LanguageTranslationSupport = {
-	"dgs-dx3dtext",
-	"dgs-dxbutton",
-	"dgs-dxgridlist",
-	"dgs-dxradiobutton",
-	"dgs-dxcheckbox",
-	"dgs-dxlabel",
-	"dgs-dxwindow",
-	"dgs-dxselector",
-	"dgs-dxtab",
-	"dgs-dxswitchbutton",
-	"dgs-dxcombobox",
-	"dgs-dxcombobox-Box",
-}
 function dgsTranslate(dgsEle,textTable,sourceResource)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
 	if type(textTable) == "table" then
