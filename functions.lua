@@ -1172,27 +1172,20 @@ function dgsTranslateText(textTable)
 end
 
 ----Compatibility
+
+dgsRegisterDeprecatedFunction("dgsSetSide","dgsSetPositionAlignment")
+dgsRegisterDeprecatedFunction("dgsGetSide","dgsGetPositionAlignment")
 function dgsSetSide(dgsEle,which,where)
-	if not getElementData(localPlayer,"DGS-DEBUG-C") then
-		outputDebugString("Deprecated function @'dgsSetSide', use 'dgsSetPositionAlignment' instead. To fix, run it again with command /debugdgs c",2)
-	else
-		error("Found deprecated function @'dgsSetSide', replace with 'dgsSetPositionAlignment'")
-	end
 	if which == "lor" then
-		dgsSetPositionAlignment(dgsEle,where)
+		dgsSetSide(dgsEle,where)
 	elseif which == "tob" then
-		dgsSetPositionAlignment(dgsEle,_,where)
+		dgsSetSide(dgsEle,_,where)
 	end
 	return true
 end
 
 function dgsGetSide(dgsEle,which)
-	if not getElementData(localPlayer,"DGS-DEBUG-C") then
-		outputDebugString("Deprecated function @'dgsGetSide', use 'dgsGetPositionAlignment' instead. To fix, run it again with command /debugdgs c",2)
-	else
-		error("Found deprecated function @'dgsGetSide', replace with 'dgsGetPositionAlignment'")
-	end
-	local h,v = dgsGetPositionAlignment(dgsEle,_,where)
+	local h,v = dgsGetSide(dgsEle,_,where)
 	if which == "lor" then
 		return h
 	elseif which == "tob" then

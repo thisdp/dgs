@@ -19,6 +19,7 @@ function dgsImportFunction(name,nameAs)
 			local unpack = unpack
 			local outputDebugString = outputDebugString
 			local DGSCallMT = {}
+			local functionCallLogger = {}
 			dgsImportHead = {}
 			dgsImportHead.dgsName = "]]..dgsResName..[["
 			dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
@@ -68,9 +69,12 @@ function dgsImportFunction(name,nameAs)
 						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
 						if isTraceDebug then
 							local data = debug.getinfo(2)
+							functionCallLogger.line=data.currentline
+							functionCallLogger.file=data.source
+							functionCallLogger.fncName=fncName
 							local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
 							if isCreateFunction and isElement(retValue[1]) then
-								call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",{line=data.currentline,file=data.source,fncName=fncName})
+								call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",functionCallLogger)
 							end
 							return unpack(retValue)
 						else
@@ -84,7 +88,25 @@ function dgsImportFunction(name,nameAs)
 				end
 				return self[fncName]
 			end
+			addEventHandler("DGSI_onDebug",root,function(debugType,...)
+				if isTraceDebug then
+					if debugType == "PropertyCompatibility" then
+						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
+						local oldPropertyName,newPropertyName = ...
+						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', replace property '"..oldPropertyName.."' with '"..newPropertyName.."'",4,255,180,100)
+					elseif debugType == "FunctionCompatibility" then
+						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
+						local oldFunctionName,newFunctionName = ...
+						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', replace function '"..oldFunctionName.."' with '"..newFunctionName.."'",4,255,180,100)
+					elseif debugType == "ArgumentCompatibility" then
+						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
+						local argument,detail = ...
+						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', at argument "..argument..". "..detail,4,255,180,100)
+					end
+				end
+			end)
 			DGS = setmetatable({}, DGSCallMT)
+			--triggerEvent("DGSI_onImport",resourceRoot)
 		end
 		]]
 		for i,name in ipairs(getResourceExportedFunctions()) do

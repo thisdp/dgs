@@ -1245,6 +1245,7 @@ events = {
 	"DGSI_SendAboutData",
 	"DGSI_ReceiveQRCode",
 	"DGSI_ReceiveRemoteImage",
+	"DGSI_onDebug",
 	-------G2D Hooker events
     "onDgsEditAccepted-C",
     "onDgsTextChange-C",
