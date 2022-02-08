@@ -1172,20 +1172,21 @@ function dgsTranslateText(textTable)
 end
 
 ----Compatibility
-
 dgsRegisterDeprecatedFunction("dgsSetSide","dgsSetPositionAlignment")
 dgsRegisterDeprecatedFunction("dgsGetSide","dgsGetPositionAlignment")
+local _dgsSetSide = dgsSetSide
+local _dgsGetSide = dgsGetSide
 function dgsSetSide(dgsEle,which,where)
 	if which == "lor" then
-		dgsSetSide(dgsEle,where)
+		_dgsSetSide(dgsEle,where)
 	elseif which == "tob" then
-		dgsSetSide(dgsEle,_,where)
+		_dgsSetSide(dgsEle,_,where)
 	end
 	return true
 end
 
 function dgsGetSide(dgsEle,which)
-	local h,v = dgsGetSide(dgsEle,_,where)
+	local h,v = _dgsGetSide(dgsEle,_,where)
 	if which == "lor" then
 		return h
 	elseif which == "tob" then
