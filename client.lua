@@ -163,6 +163,9 @@ function dgsCoreRender()
 	MouseData.hit = false
 	MouseData.hitDebug = false
 	if bottomTableSize+centerTableSize+topTableSize+backendTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
+		--Animation Processing
+		onAnimQueueProcess()
+		----
 		dxSetRenderTarget()
 		--Back-End Renderer
 		for i=1,backendTableSize do
