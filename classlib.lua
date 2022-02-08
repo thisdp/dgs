@@ -488,7 +488,6 @@ class {
 		dgsButton = function(...) return dgsOOP.dgsButton(...) end,
 		dgsCheckBox = function(...) return dgsOOP.dgsCheckBox(...) end,
 		dgsComboBox = function(...) return dgsOOP.dgsComboBox(...) end,
-		dgsCustomRenderer = function(...) return dgsOOP.dgsCustomRenderer(...) end,
 		dgsDetectArea = function(...) return dgsOOP.dgsDetectArea(...) end,
 		dgsEdit = function(...) return dgsOOP.dgsEdit(...) end,
 		dgsGridList = function(...) return dgsOOP.dgsGridList(...) end,
@@ -1333,6 +1332,12 @@ class {
 		attachToTranslation = gObjFnc("dgsAttachToTranslation",true),
 		detachFromTranslation = gObjFnc("dgsDetachFromTranslation",true),
 		getTranslationName = gObjFnc("dgsGetTranslationName"),
+		getPosition = gObjFnc("dgs3DGetPosition"),
+		setPosition = gObjFnc("dgs3DSetPosition",true),
+		getDimension = gObjFnc("dgs3DGetDimension"),
+		setDimension = gObjFnc("dgs3DSetDimension",true),
+		getInterior = gObjFnc("dgs3DGetInterior"),
+		setInterior = gObjFnc("dgs3DSetInterior",true),
 	};
 }
 
@@ -1346,8 +1351,6 @@ class {
 	public = {
 		getBlendMode = gObjFnc("dgs3DInterfaceGetBlendMode"),
 		setBlendMode = gObjFnc("dgs3DInterfaceSetBlendMode",true),
-		getPosition = gObjFnc("dgs3DInterfaceGetPosition"),
-		setPosition = gObjFnc("dgs3DInterfaceSetPosition",true),
 		getSize = gObjFnc("dgs3DInterfaceGetSize"),
 		setSize = gObjFnc("dgs3DInterfaceSetSize",true),
 		getResolution = gObjFnc("dgs3DInterfaceGetResolution"),
@@ -1359,8 +1362,8 @@ class {
 		detachFromElement = gObjFnc("dgs3DInterfaceDetachFromElement",true),
 		setAttachedOffsets = gObjFnc("dgs3DInterfaceSetAttachedOffsets",true),
 		getAttachedOffsets = gObjFnc("dgs3DInterfaceGetAttachedOffsets"),
-		setRotation = gObjFnc("dgs3DInterfaceSetRotation",true),
-		getRotation = gObjFnc("dgs3DInterfaceGetRotation"),
+		setRoll = gObjFnc("dgs3DInterfaceSetRoll",true),
+		getRoll = gObjFnc("dgs3DInterfaceGetRoll"),
 		setFaceTo = gObjFnc("dgs3DInterfaceSetFaceTo",true),
 		getFaceTo = gObjFnc("dgs3DInterfaceGetFaceTo"),
 	};
@@ -1374,17 +1377,11 @@ class {
 		return call(dgsOOP.dgsRes,"dgsCreate3DText",...)
 	end;
 	public = {
-		getDimension = gObjFnc("dgs3DTextGetDimension"),
-		setDimension = gObjFnc("dgs3DTextSetDimension",true),
-		getInterior = gObjFnc("dgs3DTextGetInterior"),
-		setInterior = gObjFnc("dgs3DTextSetInterior",true),
 		attachToElement = gObjFnc("dgs3DTextAttachToElement",true),
 		detachFromElement = gObjFnc("dgs3DTextDetachFromElement",true),
 		isAttached = gObjFnc("dgs3DTextIsAttached"),
 		setAttachedOffsets = gObjFnc("dgs3DTextSetAttachedOffsets",true),
 		getAttachedOffsets = gObjFnc("dgs3DTextGetAttachedOffsets"),
-		setPosition = gObjFnc("dgs3DTextSetPosition",true),
-		getPosition = gObjFnc("dgs3DTextGetPosition"),
 		getText = gObjFnc("dgsGetText"),
 		setText = gObjFnc("dgsSetText",true),
 	};
@@ -1402,17 +1399,11 @@ class {
 		setSize = gObjFnc("dgs3DImageSetSize",true),
 		getImage = gObjFnc("dgs3DImageGetImage"),
 		setImage = gObjFnc("dgs3DImageSetImage",true),
-		getDimension = gObjFnc("dgs3DImageGetDimension"),
-		setDimension = gObjFnc("dgs3DImageSetDimension",true),
-		getInterior = gObjFnc("dgs3DImageGetInterior"),
-		setInterior = gObjFnc("dgs3DImageSetInterior",true),
 		attachToElement = gObjFnc("dgs3DImageAttachToElement",true),
 		detachFromElement = gObjFnc("dgs3DImageDetachFromElement",true),
 		isAttached = gObjFnc("dgs3DImageIsAttached"),
 		setAttachedOffsets = gObjFnc("dgs3DImageSetAttachedOffsets",true),
 		getAttachedOffsets = gObjFnc("dgs3DImageGetAttachedOffsets"),
-		setPosition = gObjFnc("dgs3DImageSetPosition",true),
-		getPosition = gObjFnc("dgs3DImageGetPosition"),
 	};
 }
 
@@ -1430,17 +1421,11 @@ class {
 		setItemWidth = gObjFnc("dgs3DLineSetItemWidth",true),
 		getItemColor = gObjFnc("dgs3DLineGetItemColor"),
 		setItemColor = gObjFnc("dgs3DLineSetItemColor",true),
-		getDimension = gObjFnc("dgs3DLineGetDimension"),
-		setDimension = gObjFnc("dgs3DLineSetDimension",true),
-		getInterior = gObjFnc("dgs3DLineGetInterior"),
-		setInterior = gObjFnc("dgs3DLineSetInterior",true),
 		attachToElement = gObjFnc("dgs3DLineAttachToElement",true),
 		detachFromElement = gObjFnc("dgs3DLineDetachFromElement",true),
 		isAttached = gObjFnc("dgs3DLineIsAttached"),
 		setAttachedOffsets = gObjFnc("dgs3DLineSetAttachedOffsets",true),
 		getAttachedOffsets = gObjFnc("dgs3DLineGetAttachedOffsets"),
-		setPosition = gObjFnc("dgs3DLineSetPosition",true),
-		getPosition = gObjFnc("dgs3DLineGetPosition"),
 		setRotation = gObjFnc("dgs3DLineSetRotation",true),
 		getRotation = gObjFnc("dgs3DLineGetRotation"),
 	};
