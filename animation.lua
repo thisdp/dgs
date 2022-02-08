@@ -213,7 +213,7 @@ function dgsMoveTo(...)
 end
 
 function dgsStopMoving(dgsEle)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopMoving",1,"dgs-dxelement")) end
+	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopMoving",1,"dgs-dxelement/table")) end
 	if type(dgsEle) == "table" then
 		for i=1,#dgsEle do dgsStopMoving(dgsEle[i]) end
 	else
@@ -257,7 +257,7 @@ function dgsSizeTo(...)
 end
 
 function dgsStopSizing()
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopSizing",1,"dgs-dxelement")) end
+	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopSizing",1,"dgs-dxelement/table")) end
 	if type(dgsEle) == "table" then
 		for i=1,#dgsEle do dgsStopMoving(dgsEle[i]) end
 	else
@@ -272,7 +272,6 @@ function dgsIsSizing(dgsEle)
 end
 
 function dgsAlphaTo(...)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAlphaTo",1,"dgs-dxelement")) end
 	local dgsEle,alpha,relative,easing,duration,delay
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -299,7 +298,7 @@ function dgsAlphaTo(...)
 end
 
 function dgsStopAlphaing(dgsEle)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopAlphaing",1,"dgs-dxelement")) end
+	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopAlphaing",1,"dgs-dxelement/table")) end
 	if type(dgsEle) == "table" then
 		for i=1,#dgsEle do dgsStopMoving(dgsEle[i]) end
 	else
