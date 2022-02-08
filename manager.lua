@@ -14,6 +14,8 @@ local mathMax = math.max
 local mathClamp = math.restrict
 local getElementType = getElementType
 -------------------------------------------------------Table Defines
+--Animations
+animQueue = {}
 --Render Info
 dgsRenderInfo = {
 	frames = 0,
