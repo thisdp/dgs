@@ -368,13 +368,11 @@ function dgsCoreRender()
 			end
 		end
 		local version = getElementData(resourceRoot,"Version") or "?"
-		local freeMemory = " | Free VMemory: "..(dxGetStatus().VideoMemoryFreeForMTA).." MB" or "N/A"
-		dxDrawText("Thisdp's Dx Lib(DGS)",6,sH*0.4-129,sW,sH,black)
-		dxDrawText("Thisdp's Dx Lib(DGS)",5,sH*0.4-130)
-		dxDrawText("Version: "..version..freeMemory,6,sH*0.4-114,sW,sH,black)
-		dxDrawText("Version: "..version..freeMemory,5,sH*0.4-115)
+		local freeMemory = " | Free VMemory: "..(dxGetStatus().VideoMemoryFreeForMTA).."M" or "N/A"
+		dxDrawText("DGS "..version..freeMemory,5+1,sH*0.4-129,sW,sH,black)
+		dxDrawText("DGS "..version..freeMemory,5,sH*0.4-130)
 		local renderTimeStr = dgsRenderInfo.frameRenderTimeTotal.."ms-"..dgsRenderInfo.frameRenderTimeScreen.."ms-"..dgsRenderInfo.frameRenderTime3D.."ms"
-		dxDrawText("Render Time(All-2D-3D): "..renderTimeStr,11,sH*0.4-99,sW,sH,black)
+		dxDrawText("Render Time(All-2D-3D): "..renderTimeStr,5+1,sH*0.4-115+1,sW,sH,black)
 		local tickColor
 		if dgsRenderInfo.frameRenderTimeTotal <= 8 then
 			tickColor = green
@@ -383,50 +381,38 @@ function dgsCoreRender()
 		else
 			tickColor = red
 		end
-		dxDrawText("Render Time(All-2D-3D): "..renderTimeStr,10,sH*0.4-100,_,_,tickColor)
+		dxDrawText("Render Time(All-2D-3D): "..renderTimeStr,5,sH*0.4-115,_,_,tickColor)
 		local Focused = MouseData.focused and dgsGetPluginType(MouseData.focused).."("..getElementID(MouseData.focused)..")" or "None"
 		local enterStr = MouseData.hit and dgsGetPluginType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
 		local leftStr = MouseData.clickl and dgsGetPluginType(MouseData.clickl).." ("..getElementID(MouseData.clickl)..")" or "None"
 		local rightStr = MouseData.clickr and dgsGetPluginType(MouseData.clickr).." ("..getElementID(MouseData.clickr)..")" or "None"
-		dxDrawText("Focused: "..Focused,6,sH*0.4-84,sW,sH,black)
-		dxDrawText("Focused: "..Focused,5,sH*0.4-85)
-		dxDrawText("Enter: "..enterStr,11,sH*0.4-69,sW,sH,black)
-		dxDrawText("Enter: "..enterStr,10,sH*0.4-70)
-		dxDrawText("Click:",11,sH*0.4-54,sW,sH,black)
-		dxDrawText("Click:",10,sH*0.4-55)
-		dxDrawText("  Left: "..leftStr,11,sH*0.4-39,sW,sH,black)
-		dxDrawText("  Left: "..leftStr,10,sH*0.4-40)
-		dxDrawText("  Right: "..rightStr,11,sH*0.4-24,sW,sH,black)
-		dxDrawText("  Right: "..rightStr,10,sH*0.4-25)
+		dxDrawText("Focused: "..Focused,11,sH*0.4-100+1,sW,sH,black)
+		dxDrawText("Focused: "..Focused,10,sH*0.4-100)
+		dxDrawText("Enter: "..enterStr,11,sH*0.4-85+1,sW,sH,black)
+		dxDrawText("Enter: "..enterStr,10,sH*0.4-85)
+		dxDrawText("Click:",11,sH*0.4-70+1,sW,sH,black)
+		dxDrawText("Click:",10,sH*0.4-70)
+		dxDrawText("L: "..leftStr,41,sH*0.4-70+1,sW,sH,black)
+		dxDrawText("L: "..leftStr,40,sH*0.4-70)
+		dxDrawText("R: "..rightStr,41,sH*0.4-55+1,sW,sH,black)
+		dxDrawText("R: "..rightStr,40,sH*0.4-55)
 		dgsRenderInfo.created = 0
 		local index = 1
 		for value in pairs(dgsType) do
-			index = index+1
 			local elements = #getElementsByType(value)
 			dgsRenderInfo.created = dgsRenderInfo.created+elements
-			dxDrawText(value.." : "..elements,15+1,sH*0.4+15*index+6,sW,sH,black)
-			dxDrawText(value.." : "..elements,15,sH*0.4+15*index+5)
+			dxDrawText(value.." : "..elements,15+1,sH*0.4-30+15*index+6,sW,sH,black)
+			dxDrawText(value.." : "..elements,15,sH*0.4-30+15*index+5)
+			index = index+1
 		end
-		dxDrawText("Rendering: "..dgsRenderInfo.rendering,11,sH*0.4-9,sW,sH,black)
-		dxDrawText("Rendering: "..dgsRenderInfo.rendering,10,sH*0.4-10,sW,sH,green)
-		dxDrawText("Created: "..dgsRenderInfo.created,11,sH*0.4+6,sW,sH,black)
-		dxDrawText("Created: "..dgsRenderInfo.created,10,sH*0.4+5,sW,sH,yellow)
-		local anim = tableCount(animGUIList)
-		local move = tableCount(moveGUIList)
-		local size = tableCount(sizeGUIList)
-		local alp = tableCount(alphaGUIList)
-		dgsRenderInfo.runningAnimation = anim+move+size+alp
-		dxDrawText("Running Animation("..dgsRenderInfo.runningAnimation.."):",301,sH*0.4-114,sW,sH,black)
-		dxDrawText("Running Animation("..dgsRenderInfo.runningAnimation.."):",300,sH*0.4-115)
+		dxDrawText("Rendering: "..dgsRenderInfo.rendering,11,sH*0.4-40+1,sW,sH,black)
+		dxDrawText("Rendering: "..dgsRenderInfo.rendering,10,sH*0.4-40,sW,sH,green)
+		dxDrawText("Created: "..dgsRenderInfo.created,11,sH*0.4-25+1,sW,sH,black)
+		dxDrawText("Created: "..dgsRenderInfo.created,10,sH*0.4-25,sW,sH,yellow)
+		dgsRenderInfo.runningAnimation = #animQueue
+		dxDrawText("Running Animations("..dgsRenderInfo.runningAnimation..")",301,sH*0.4-114,sW,sH,black)
+		dxDrawText("Running Animations("..dgsRenderInfo.runningAnimation..")",300,sH*0.4-115)
 
-		dxDrawText("Anim:"..anim,301,sH*0.4-99,sW,sH,black)
-		dxDrawText("Anim:"..anim,300,sH*0.4-100)
-		dxDrawText("Move:"..move,301,sH*0.4-84,sW,sH,black)
-		dxDrawText("Move:"..move,300,sH*0.4-85)
-		dxDrawText("Size:"..size,301,sH*0.4-69,sW,sH,black)
-		dxDrawText("Size:"..size,300,sH*0.4-70)
-		dxDrawText("Alpha:"..alp,301,sH*0.4-54,sW,sH,black)
-		dxDrawText("Alpha:"..alp,300,sH*0.4-55)
 		ResCount = 0
 		for ka,va in pairs(boundResource) do
 			if type(ka) == "userdata" and va then
@@ -438,14 +424,14 @@ function dgsCoreRender()
 				end
 				if resDGSCnt ~= 0 then
 					ResCount = ResCount +1
-					dxDrawText(getResourceName(ka).." : "..(dgsRenderInfo.renderingResource[ka] or 0).."/"..resDGSCnt,301,sH*0.4+15*(ResCount+1)+1,sW,sH,black)
-					dxDrawText(getResourceName(ka).." : #00FF00"..(dgsRenderInfo.renderingResource[ka] or 0).."#FFFFFF/#FFFF00"..resDGSCnt,300,sH*0.4+15*(ResCount+1),sW,sH,white,1,1,"default","left","top",false,false,false,true)
+					dxDrawText(getResourceName(ka).." : "..(dgsRenderInfo.renderingResource[ka] or 0).."/"..resDGSCnt,301,sH*0.4-100+15*(ResCount+1)+1,sW,sH,black)
+					dxDrawText(getResourceName(ka).." : #00FF00"..(dgsRenderInfo.renderingResource[ka] or 0).."#FFFFFF/#FFFF00"..resDGSCnt,300,sH*0.4-100+15*(ResCount+1),sW,sH,white,1,1,"default","left","top",false,false,false,true)
 				end
 			end
 			dgsRenderInfo.renderingResource[ka] = 0
 		end
-		dxDrawText("Resource("..ResCount..") Elements: Rendering / Created",301,sH*0.4+16,sW,sH,black)
-		dxDrawText("Resource("..ResCount..") Elements: #00FF00Rendering #FFFFFF/ #FFFF00Created",300,sH*0.4+15,sW,sH,white,1,1,"default","left","top",false,false,false,true)
+		dxDrawText("Resource("..ResCount..") Elements: Rendering / Created",301,sH*0.4-100+1,sW,sH,black)
+		dxDrawText("Resource("..ResCount..") Elements: #00FF00Rendering #FFFFFF/ #FFFF00Created",300,sH*0.4-100,sW,sH,white,1,1,"default","left","top",false,false,false,true)
 	end
 end
 

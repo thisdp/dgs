@@ -2,9 +2,10 @@
 --If you don't trust dgs.. Please Disable It In "config.txt"
 
 local check = fileExists("update.cfg") and fileOpen("update.cfg") or fileCreate("update.cfg")
-local version = tonumber(fileRead(check,fileGetSize(check))) or 0
+local verRaw = fileRead(check,fileGetSize(check))
 fileClose(check)
-setElementData(resourceRoot,"Version",version)
+setElementData(resourceRoot,"Version",verRaw)
+local version = tonumber(verRaw) or 0
 if dgsConfig.updateSystemDisabled then return end
 
 local _fetchRemote = fetchRemote
