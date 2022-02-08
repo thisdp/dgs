@@ -14,7 +14,7 @@ function dgsAnimTo(...)
 		property = argTable.property or argTable[2]
 		targetValue = argTable.target or argTable.targetValue or argTable[3]
 		easing = argTable.easing or argTable.easingFunction or argTable[4]
-		duration = argTable.dur or argTable.duration or argTable.time or argTable[5]
+		duration = argTable.duration or argTable.time or argTable[5]
 		delay = argTable.delay or argTable[6]
 	else
 		dgsEle,property,targetValue,easing,duration,delay = ...
@@ -192,7 +192,7 @@ function dgsMoveTo(...)
 		y = argTable.y or argTable[3]
 		relative = argTable.rlt or argTable.relative or argTable[4]
 		easing = argTable.easing or argTable.easingFunction or argTable[5]
-		duration = argTable.dur or argTable.duration or argTable.time or argTable[6]
+		duration = argTable.duration or argTable.time or argTable[6]
 		delay = argTable.delay or argTable[7]
 	else
 		if type(select(5,...)) == "boolean" then
@@ -236,7 +236,7 @@ function dgsSizeTo(...)
 		h = argTable.h or argTable.height or argTable[3]
 		relative = argTable.rlt or argTable.relative or argTable[4]
 		easing = argTable.easing or argTable.easingFunction or argTable[5]
-		duration = argTable.dur or argTable.duration or argTable.time or argTable[6]
+		duration = argTable.duration or argTable.time or argTable[6]
 		delay = argTable.delay or argTable[7]
 	else
 		if type(select(5,...)) == "boolean" then
@@ -278,7 +278,7 @@ function dgsAlphaTo(...)
 		dgsEle = argTable.ele or argTable.dgsEle or argTable.element or argTable.dgsElement or argTable.source or argTable[1]
 		alpha = argTable.a or argTable.alpha or argTable[2]
 		easing = argTable.easing or argTable.easingFunction or argTable[3]
-		duration = argTable.dur or argTable.duration or argTable.time or argTable[4]
+		duration = argTable.duration or argTable.time or argTable[4]
 		delay = argTable.delay or argTable[5]
 	else
 		if type(select(3,...)) == "boolean" then
