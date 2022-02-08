@@ -145,11 +145,11 @@ function dgsIsAniming(dgsEle,property)
 	end
 end
 
+local easingSettings = {}
 function onAnimQueueProcess()
 	local animIndex,animItem = 1
 	local dgsEle,property,startValue,targetValue,easing,duration,startTick
 	local rTick,rProgress = getTickCount()
-	local easingSettings = {}
 	while animIndex <= #animQueue do
 		animItem = animQueue[animIndex]
 		dgsEle = animItem[1]
