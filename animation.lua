@@ -13,7 +13,7 @@ function dgsAnimTo(...)
 		dgsEle = argTable.ele or argTable.dgsEle or argTable.element or argTable.dgsElement or argTable.source or argTable[1]
 		property = argTable.property or argTable[2]
 		targetValue = argTable.target or argTable.targetValue or argTable[3]
-		easing = argTable.easing or argTable.easing or argTable[4]
+		easing = argTable.easing or argTable.easingFunction or argTable[4]
 		duration = argTable.dur or argTable.duration or argTable.time or argTable[5]
 		delay = argTable.delay or argTable[6]
 	else
@@ -191,7 +191,7 @@ function dgsMoveTo(...)
 		x = argTable.x or argTable[2]
 		y = argTable.y or argTable[3]
 		relative = argTable.rlt or argTable.relative or argTable[4]
-		easing = argTable.easing or argTable.easing or argTable[5]
+		easing = argTable.easing or argTable.easingFunction or argTable[5]
 		duration = argTable.dur or argTable.duration or argTable.time or argTable[6]
 		delay = argTable.delay or argTable[7]
 	else
@@ -235,7 +235,7 @@ function dgsSizeTo(...)
 		w = argTable.w or argTable.width or argTable[2]
 		h = argTable.h or argTable.height or argTable[3]
 		relative = argTable.rlt or argTable.relative or argTable[4]
-		easing = argTable.easing or argTable.easing or argTable[5]
+		easing = argTable.easing or argTable.easingFunction or argTable[5]
 		duration = argTable.dur or argTable.duration or argTable.time or argTable[6]
 		delay = argTable.delay or argTable[7]
 	else
@@ -278,7 +278,7 @@ function dgsAlphaTo(...)
 		local argTable = ...
 		dgsEle = argTable.ele or argTable.dgsEle or argTable.element or argTable.dgsElement or argTable.source or argTable[1]
 		alpha = argTable.a or argTable.alpha or argTable[2]
-		easing = argTable.easing or argTable.easing or argTable[3]
+		easing = argTable.easing or argTable.easingFunction or argTable[3]
 		duration = argTable.dur or argTable.duration or argTable.time or argTable[4]
 		delay = argTable.delay or argTable[5]
 	else
