@@ -24,3 +24,5 @@ addEventHandler("DGSI_ReceiveFileInfo",root,function(data)
 	DGSFileVerify = data
 	verifyFiles()
 end)
+
+collectgarbage()
