@@ -155,25 +155,29 @@ function onAnimQueueProcess()
 		dgsEle = animItem[1]
 		if isElement(dgsEle) then
 			property,startValue,targetValue,easing,duration,startTick = animItem[2],animItem[3],animItem[4],animItem[5],animItem[6],animItem[7]
-			rProgress = ((rTick < startTick and startTick or rTick)-startTick)/duration
-			if rProgress >= 1 then rProgress = 1 end
-			if dgsEasingFunction[easing] then
-				easingSettings[1],easingSettings[2],easingSettings[3] = property,targetValue,startValue
-				animItem[0] = dgsEasingFunction[easing](rProgress,easingSettings,dgsEle)
-			else
-				local easingValue = getEasingValue(rProgress,easing)
-				if type(startValue) == "table" then
-					if not animItem[0] then animItem[0] = {} end
-					for i=1,#startValue do
-						animItem[0][i] = startValue[i]+(targetValue[i]-startValue[i])*easingValue
-					end
+			if rTick >= startTick then
+				rProgress = ((rTick < startTick and startTick or rTick)-startTick)/duration
+				if rProgress >= 1 then rProgress = 1 end
+				if dgsEasingFunction[easing] then
+					easingSettings[1],easingSettings[2],easingSettings[3] = property,targetValue,startValue
+					animItem[0] = dgsEasingFunction[easing](rProgress,easingSettings,dgsEle)
 				else
-					animItem[0] = startValue+(targetValue-startValue)*easingValue
+					local easingValue = getEasingValue(rProgress,easing)
+					if type(startValue) == "table" then
+						if not animItem[0] then animItem[0] = {} end
+						for i=1,#startValue do
+							animItem[0][i] = startValue[i]+(targetValue[i]-startValue[i])*easingValue
+						end
+					else
+						animItem[0] = startValue+(targetValue-startValue)*easingValue
+					end
 				end
-			end
-			dgsSetProperty(dgsEle,property,animItem[0])
-			if rProgress == 1 then
-				dgsStopAniming(dgsEle,property)
+				dgsSetProperty(dgsEle,property,table.deepcopy(animItem[0]))
+				if rProgress == 1 then
+					dgsStopAniming(dgsEle,property)
+				else
+					animIndex = animIndex+1
+				end
 			else
 				animIndex = animIndex+1
 			end

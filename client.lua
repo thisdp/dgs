@@ -2280,7 +2280,7 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 		elseif typ == "dgs-dxedit" then
 			configEdit(source)
 		elseif typ == "dgs-dxscrollpane" then
-			configScrollPane(source)
+			dgsSetData(source,"configNextFrame",true)
 		elseif typ == "dgs-dxtabpanel" then
 			configTabPanel(source)
 		elseif typ == "dgs-dxcombobox-Box" then

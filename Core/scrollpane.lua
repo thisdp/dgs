@@ -249,11 +249,23 @@ function configScrollPane(scrollpane)
 	dgsSetData(scrollbar[2],"length",length)
 	local horizontalScrollSize = eleData.scrollSize*5/(childBounding[1]-relSizX)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
+	dgsSetData(scrollpane,"configNextFrame",false)
+	dgsSetData(scrollpane,"configRTNextFrame",true)
+end
 
+function configScrollPaneRT(scrollpane)
+	local eleData = dgsElementData[scrollpane]
+	local scrollbar = eleData.scrollbars
+	local size = eleData.absSize
+	local sx,sy = size[1],size[2]
+	local scbThick = eleData.scrollBarThick
+	local childBounding = eleData.maxChildSize
+	local scbStateV,scbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
+	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
+	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
 	local renderTarget = eleData.renderTarget_parent
 	if isElement(renderTarget) then
 		destroyElement(renderTarget)
-		eleData.renderTarget = nil
 	end
 	local renderTarget,err = dxCreateRenderTarget(relSizX,relSizY,true,scrollpane)
 	if renderTarget ~= false then
@@ -262,7 +274,7 @@ function configScrollPane(scrollpane)
 		outputDebugString(err,2)
 	end
 	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
-	dgsSetData(scrollpane,"configNextFrame",false)
+	dgsSetData(scrollpane,"configRTNextFrame",false)
 end
 
 function resizeScrollPane(scrollpane,source) --Need optimize
@@ -457,7 +469,12 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		end
 		dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 	end
+	--Let old render target finish rendering first, to reduce the situation of blinking.
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+	if eleData.configRTNextFrame then
+		configScrollPaneRT(source)
+	end
+	local newRndTgt = eleData.renderTarget_parent
 	dxSetRenderTarget(newRndTgt,true)
 	rndtgt = newRndTgt
 	return rndtgt,false,mx,my,OffsetX,OffsetY
