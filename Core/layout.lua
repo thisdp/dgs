@@ -150,6 +150,7 @@ function dgsCreateLayout(...)
 		hideInvisible = false,
 		layoutData = {},
 		autoUpdate = true,
+		sortPriority = {},
 	}
 	dgsSetParent(layout,parent,true,true)
 	calculateGuiPositionSize(layout,x,y,relative or false,w,h,relative or false,true)
@@ -170,19 +171,62 @@ function dgsLayoutChildrenDestroyHandler()
 	end
 end
 
-function dgsLayoutAddItem(layout,item)
+function dgsLayoutUpdate(layout)
+	local layoutData = dgsElementData[layout].layoutData
+	local sortPriority = dgsElementData[layout].sortPriority
+	local refreshTable = {}
+	table.sort(layoutData,function(a,b)
+		return (sortPriority[a] or 0) > (sortPriority[b] or 0)
+	end)
+	local onItemAdd = dgsElementData[layout].onItemAdd
+	if onItemAdd then
+		for i=1,#layoutData do
+			onItemAdd(layout,layoutData[i],i)
+		end
+	end
+end
+
+function dgsLayoutAddItem(layout,item,sortPriority)
 	if dgsGetType(layout) ~= "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsCreateLayout",1,"dgs-dxlayout")) end
 	if not dgsIsType(item) then error(dgsGenAsrt(item,"dgsCreateLayout",2,"dgs-dxelement")) end
+	if not (not sortPriority or type(sortPriority) == "number") then error(dgsGenAsrt(item,"dgsLayoutAddItem",1,"number/nil")) end
 	local onItemAdd = dgsElementData[layout].onItemAdd
 	local layoutData = dgsElementData[layout].layoutData
 	local itemID = #layoutData+1
-	if onItemAdd and onItemAdd(layout,item,itemID) then
-		if dgsGetParent(item) ~= layout then dgsSetParent(item,layout) end
-		layoutData = dgsElementData[layout].layoutData
-		layoutData[itemID] = item
+	if onItemAdd then
+		if not sortPriority then
+			onItemAdd(layout,item,itemID)
+			if dgsGetParent(item) ~= layout then dgsSetParent(item,layout) end
+			layoutData = dgsElementData[layout].layoutData
+			layoutData[itemID] = item
+		else
+			if dgsGetParent(item) ~= layout then dgsSetParent(item,layout) end
+			layoutData = dgsElementData[layout].layoutData
+			layoutData[itemID] = item
+			dgsLayoutSetItemSortPriority(item,sortPriority)
+		end
 		return itemID
 	end
 	return false
+end
+
+function dgsLayoutSetItemSortPriority(item,sortPriority)
+	if not dgsIsType(layout) then error(dgsGenAsrt(item,"dgsLayoutSetItemSortPriority",1,"dgs-dxelement")) end
+	if not (not sortPriority or type(sortPriority) == "number") then error(dgsGenAsrt(item,"dgsLayoutSetItemSortPriority",1,"number/nil")) end
+	local layout = dgsGetParent(item)
+	if dgsGetType(layout) ~= "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutSetItemSortPriority",1,"dgs-dxlayout as parent")) end
+	local sortPriorityTable = dgsElementData[layout].sortPriority
+	sortPriorityTable[item] = sortPriority
+	dgsLayoutUpdate(layout)
+	return true
+end
+
+function dgsLayoutGetItemSortPriority(item)
+	if not dgsIsType(layout) then error(dgsGenAsrt(item,"dgsLayoutGetItemSortPriority",1,"dgs-dxelement")) end
+	local layout = dgsGetParent(item)
+	if dgsGetType(layout) ~= "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutGetItemSortPriority",1,"dgs-dxlayout as parent")) end
+	local sortPriorityTable = dgsElementData[layout].sortPriority
+	return sortPriorityTable[item] or false
 end
 
 function dgsLayoutRemoveItem(layout,item)

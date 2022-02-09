@@ -589,6 +589,8 @@
 	<export function="dgsLayoutAddItem" type="client" />
 	<export function="dgsLayoutRemoveItem" type="client" />
 	<export function="dgsLayoutGetItemIndex" type="client" />
+	<export function="dgsLayoutSetItemSortPriority" type="client" />
+	<export function="dgsLayoutGetItemSortPriority" type="client" />
 
 	<export function="dgsCreateLine" type="client"/>
 	<export function="dgsLineAddItem" type="client"/>
