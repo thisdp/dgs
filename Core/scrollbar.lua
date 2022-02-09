@@ -54,7 +54,6 @@ function dgsCreateScrollBar(...)
 	local isHorizontal = isHorizontal or false
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
-	dgsSetParent(scrollbar,parent,true,true)
 				
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -98,8 +97,6 @@ function dgsCreateScrollBar(...)
 		troughClickAction = "none",
 		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
 		wheelReversed = false,
-
-
 		renderBuffer = {
 			tempCursorColor = {},
 			tempArrowColor = {},
@@ -108,6 +105,7 @@ function dgsCreateScrollBar(...)
 			colorImageIndex = {},
 		}
 	}
+	dgsSetParent(scrollbar,parent,true,true)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",scrollbar,sourceResource)
 	return scrollbar

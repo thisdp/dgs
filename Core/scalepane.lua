@@ -52,7 +52,6 @@ function dgsCreateScalePane(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateScalePane",4,"number")) end
 	local scalepane = createElement("dgs-dxscalepane")
 	dgsSetType(scalepane,"dgs-dxscalepane")
-	dgsSetParent(scalepane,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -80,6 +79,7 @@ function dgsCreateScalePane(...)
 		bgImage = false,
 		sourceTexture = false,
 	}
+	dgsSetParent(scalepane,parent,true,true)
 	calculateGuiPositionSize(scalepane,x,y,relative or false,w,h,relative or false,true)
 	local sx,sy = dgsElementData[scalepane].absSize[1],dgsElementData[scalepane].absSize[2]
 	local x,y = dgsElementData[scalepane].absPos[1],dgsElementData[scalepane].absPos[2]

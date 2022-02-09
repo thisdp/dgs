@@ -232,7 +232,6 @@ function dgsCreateProgressBar(...)
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
-	dgsSetParent(progressbar,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -252,6 +251,7 @@ function dgsCreateProgressBar(...)
 		progress = 0,
 		map = {0,100},
 	}
+	dgsSetParent(progressbar,parent,true,true)
 	calculateGuiPositionSize(progressbar,x,y,relative or false,w,h,relative or false,true)
 	local mx,my = false,false
 	if isElement(indicatorImage) then

@@ -49,7 +49,6 @@ function dgsCreateScrollPane(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateScrollPane",4,"number")) end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
-	dgsSetParent(scrollpane,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -74,6 +73,7 @@ function dgsCreateScrollPane(...)
 		bgImage = false,
 		sourceTexture = false,
 	}
+	dgsSetParent(scrollpane,parent,true,true)
 	local renderTarget,err = dxCreateRenderTarget(w,h,true,scrollpane)
 	if renderTarget ~= false then
 		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
@@ -284,7 +284,7 @@ function resizeScrollPane(scrollpane,source) --Need optimize
 		local x,y,sx,sy = abspos[1],abspos[2],abssize[1],abssize[2]
 		local maxSize = dgsElementData[scrollpane].maxChildSize
 		local ntempx,ntempy = 0,0
-		local children = ChildrenTable[scrollpane] or {}
+		local children = dgsElementData[scrollpane].children or {}
 		local childrenCnt = #children
 		for k=1,#children do
 			local child = children[k]

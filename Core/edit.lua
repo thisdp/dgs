@@ -79,7 +79,6 @@ function dgsCreateEdit(...)
 	text = tostring(text or "")
 	local edit = createElement("dgs-dxedit")
 	dgsSetType(edit,"dgs-dxedit")
-	dgsSetParent(edit,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -148,6 +147,7 @@ function dgsCreateEdit(...)
 		editCounts = editsCount, --Tab Switch
 		updateTextRTNextFrame = true,
 	}
+	dgsSetParent(edit,parent,true,true)
 	editsCount = editsCount+1
 	calculateGuiPositionSize(edit,x,y,relative or false,w,h,relative or false,true)
 	local sx,sy = dgsGetSize(edit,false)
@@ -268,8 +268,8 @@ end
 function dgsEditCheckPreSwitch()
 	if not wasEventCancelled() then
 		if not dgsElementData[source].enableTabSwitch then return end
-		local parent = FatherTable[source]
-		local theTable = isElement(parent) and ChildrenTable[parent] or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or CenterFatherTable)
+		local parent = dgsElementData[source].parent
+		local theTable = isElement(parent) and dgsElementData[parent].children or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or CenterFatherTable)
 		local id = dgsElementData[source].editCounts
 		if id then
 			local Next,theFirst

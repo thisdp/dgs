@@ -45,7 +45,7 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 			absPosX,absPosY = absPos[1],absPos[2]
 		end
 		if includeSide then
-			local parent = FatherTable[dgsEle]
+			local parent = dgsElementData[dgsEle].parent
 			local pEleData = dgsElementData[parent]
 			local eleConAlign = parent and pEleData.contentPositionAlignment
 			local eleAlign = eleData.positionAlignment
@@ -86,7 +86,7 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 			local w = gridListEleData.absSize[1]
 			x,y = x+columnMoveOffset+gridListEleData.columnOffset+columnOffset+columnData[data[3]][3]*(gridListEleData.columnRelative and (w-scbThickV) or 1), y+gridListEleData.rowMoveOffset+(data[2]-1)*(leading+rowHeight)+gridListEleData.columnHeight
 		end
-		dgsEle = FatherTable[dgsEle]
+		dgsEle = dgsElementData[dgsEle].parent
 		eleData = dgsElementData[dgsEle]
 		if dgsElementType[dgsEle] == "dgs-dxwindow" then
 			local titleHeight = 0
@@ -285,7 +285,7 @@ function dgsGetVisible(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetVisible",1,"dgs-dxelement")) end
 	for i=1,5000 do								--Limited to 5000 to make sure there won't be able to make an infinity loop
 		if not dgsElementData[dgsEle].visible then return false end	--check and return false if dgsEle is invisible
-		dgsEle = FatherTable[dgsEle]			--if it is visible, check whether its parent hides it
+		dgsEle = dgsElementData[dgsEle].parent			--if it is visible, check whether its parent hides it
 		if not dgsEle then return true end		--if it doesn't have parent, return true as visible
 	end
 end
@@ -402,7 +402,7 @@ function dgsGetAlpha(dgsEle,absolute,includeParent)
 		for i=1,5000 do
 			if not p then return absolute and alp*255 or alp end
 			alp = alp*(dgsElementData[p].alpha or 1)
-			p = FatherTable[p]
+			p = dgsElementData[p].parent
 		end
 	else
 		local alp = dgsElementData[dgsEle].alpha
@@ -420,7 +420,7 @@ function dgsGetEnabled(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetEnabled",1,"dgs-dxelement")) end
 	for i=1,5000 do 							--Limited to 5000 to make sure there won't be able to make an infinity loop
 		if not dgsElementData[dgsEle].enabled then return false end	--check and return false if dgsEle is disabled
-		dgsEle = FatherTable[dgsEle]			--if it is enabled, check whether its parent hides it
+		dgsEle = dgsElementData[dgsEle].parent			--if it is enabled, check whether its parent hides it
 		if not dgsEle then return true end		--if it doesn't have parent, return true as enabled
 	end
 end
@@ -833,8 +833,9 @@ function dgsIsDragNDropData()
 	return dgsDragDropBoard[0]
 end
 
-function dgsAddDragHandler(dgsEle,dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign)
-	return dgsSetData(dgsEle,"dragHandler",{dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign})
+function dgsAddDragHandler(dgsEle,...)
+	--dragData,preview,previewColor,previewOffsetX,previewOffsetY,previewWidth,previewHeight,previewHorizontalAlign,previewVerticalAlign
+	return dgsSetData(dgsEle,"dragHandler",{...})
 end
 
 function dgsRemoveDragHandler(dgsEle)
@@ -899,11 +900,11 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	--eleData.attachedTo = false
 	--eleData.attachedBy = false
 	--eleData.enableFullEnterLeaveCheck = false
-	--eleData.clickCoolDown = false=
+	--eleData.clickCoolDown = false
 	--eleData.clickingSound = false
 	--eleData.clickingSoundVolume = false
 	eleData.cursorPosition = {[0]=0}
-	if not ChildrenTable[source] then ChildrenTable[source] = {} end
+	if not eleData.children then eleData.children = {} end
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
 	addEventHandler("onDgsBlur",source,function()

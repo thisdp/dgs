@@ -54,8 +54,6 @@ CenterFatherTable = {}		--Store Center Father Element (Default)
 TopFatherTable = {}			--Store Top Father Element
 dgsWorld3DTable = {}
 dgsScreen3DTable = {}
-FatherTable = {}			--Store Father Element
-ChildrenTable = {}			--Store Children Element
 LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
 --
 --Element Data System
@@ -64,10 +62,8 @@ dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data 
 --Element Type
 dgsElementType = {}
 --
-
 --Plugin Creation Manager
 addEventHandler("onDgsPluginCreate",resourceRoot,function(theResource)
-	ChildrenTable[source] = ChildrenTable[source] or {}
 	insertResource(theResource,source)
 	local typ = dgsElementData[source].asPlugin
 	dgsPluginTable[typ] = dgsPluginTable[typ] or {}
@@ -84,14 +80,15 @@ function dgsSetLayer(dgsEle,layer,forceDetatch)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetLayer",1,"dgs-dxelement")) end
 	if dgsElementType[dgsEle] == "dgs-dxtab" then return false end
 	if not(layerBuiltIn[layer]) then error(dgsGenAsrt(layer,"dgsSetLayer",2,"string","top/center/bottom")) end
-	local hasParent = isElement(FatherTable[dgsEle])
+	local parent = dgsElementData[dgsEle].parent
+	local hasParent = isElement(parent)
 	if hasParent and not forceDetatch then return false end
 	if hasParent then
-		local id = tableFind(ChildrenTable[FatherTable[dgsEle]],dgsEle)
+		local id = tableFind(dgsElementData[parent].children,dgsEle)
 		if id then
-			tableRemove(ChildrenTable[FatherTable[dgsEle]],id)
+			tableRemove(dgsElementData[parent].children,id)
 		end
-		FatherTable[dgsEle] = nil
+		dgsElementData[dgsEle].parent = nil
 	end
 	local oldLayer = dgsElementData[dgsEle].alwaysOn or "center"
 	if oldLayer == layer then return false end
@@ -113,8 +110,8 @@ function dgsSetCurrentLayerIndex(dgsEle,index)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetCurrentLayerIndex",1,"dgs-dxelement")) end
 	if not(type(index) == "number") then error(dgsGenAsrt(index,"dgsSetCurrentLayerIndex",2,"number")) end
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
-	local hasParent = isElement(FatherTable[dgsEle])
-	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
+	local parent = dgsElementData[dgsEle].parent
+	local theTable = isElement(parent) and dgsElementData[parent].children or LayerCastTable[layer]
 	local index = mathClamp(index,1,#theTable+1)
 	local id = tableFind(theTable,dgsEle)
 	if id then
@@ -127,8 +124,8 @@ end
 function dgsGetCurrentLayerIndex(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetCurrentLayerIndex",1,"dgs-dxelement")) end
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
-	local hasParent = isElement(FatherTable[dgsEle])
-	local theTable = hasParent and ChildrenTable[FatherTable[dgsEle]] or LayerCastTable[layer]
+	local parent = dgsElementData[dgsEle].parent
+	local theTable = isElement(parent) and dgsElementData[parent].children or LayerCastTable[layer]
 	return tableFind(theTable,dgsEle) or false
 end
 
@@ -137,9 +134,25 @@ function dgsGetLayerElements(layer)
 	return #LayerCastTable[layer] or false
 end
 
-function dgsGetChild(parent,id) return ChildrenTable[parent][id] or false end
-function dgsGetChildren(parent) return ChildrenTable[parent] or {} end
-function dgsGetParent(child) return FatherTable[child] or false end
+function dgsGetChild(dgsEle,id)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetChild",1,"dgs-dxelement")) end
+	if not(type(id) == "number") then error(dgsGenAsrt(id,"dgsGetChild",2,"number")) end
+	if dgsElementData[dgsEle].children then
+		return dgsElementData[dgsEle].children[id] or false
+	end
+	return false
+end
+
+function dgsGetChildren(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetChildren",1,"dgs-dxelement")) end
+	return dgsElementData[dgsEle].children or {}
+end
+
+function dgsGetParent(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetParent",1,"dgs-dxelement")) end
+	return dgsElementData[dgsEle] and dgsElementData[dgsEle].parent or false
+
+end
 function dgsGetDxGUINoParent(alwaysBottom) return alwaysBottom and BottomFatherTable or CenterFatherTable end
 
 function dgsGetDxGUIFromResource(res)
@@ -152,32 +165,34 @@ function dgsGetDxGUIFromResource(res)
 		end
 		return serialized
 	end
+	return false
 end
 
-function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
-	if parent == resourceRoot then parent = nil end
+function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
+	if newParent == resourceRoot then newParent = nil end
 	if not(dgsIsType(child)) then error(dgsGenAsrt(child,"dgsSetParent",1,"dgs-dxelement")) end
 	if not(not dgsElementData[child] or not dgsElementData[child].attachTo) then error(dgsGenAsrt(child,"dgsSetParent",1,_,_,_,"attached dgs element can not have a parent")) end
-	local _parent = FatherTable[child]
-	local parentTable = isElement(_parent) and ChildrenTable[_parent] or CenterFatherTable
-	if isElement(parent) then
-		if not dgsIsType(parent) then return end
+	if not dgsElementData[child] then dgsElementData[child] = {} end
+	local oldParent = dgsElementData[child].parent
+	local parentTable = isElement(oldParent) and dgsElementData[oldParent].children or CenterFatherTable
+	if isElement(newParent) then
+		if not dgsIsType(newParent) then return end
 		if not nocheckfather then
 			local id = tableFind(parentTable,child)
 			if id then
 				tableRemove(parentTable,id)
 			end
 		end
-		FatherTable[child] = parent
-		ChildrenTable[parent] = ChildrenTable[parent] or {}
-		tableInsert(ChildrenTable[parent],child)
-		setElementParent(child,parent)
+		dgsElementData[child].parent = newParent
+		if not dgsElementData[newParent].children then dgsElementData[newParent].children = {} end
+		tableInsert(dgsElementData[newParent].children,child)
+		setElementParent(child,newParent)
 	else
 		local id = tableFind(parentTable,child)
 		if id then
 			tableRemove(parentTable,id)
 		end
-		FatherTable[child] = nil
+		dgsElementData[child].parent = nil
 		tableInsert(CenterFatherTable,child)
 		setElementParent(child,resourceRoot)
 	end
@@ -191,8 +206,8 @@ function dgsSetParent(child,parent,nocheckfather,noUpdatePosSize)
 	if dgsElementType[child] == "dgs-dxscrollpane" then
 		local scrollbars = (dgsElementData[child] or {}).scrollbars
 		if scrollbars then
-			dgsSetParent(scrollbars[1],parent)
-			dgsSetParent(scrollbars[2],parent)
+			dgsSetParent(scrollbars[1],newParent)
+			dgsSetParent(scrollbars[2],newParent)
 			configScrollPane(child)
 		end
 	end
@@ -211,7 +226,7 @@ end
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 	local eleType = dgsIsType(dgsEle)
 	if not(eleType) then error(dgsGenAsrt(dgsEle,"dgsBringToFront",1,"dgs-dxelement")) end
-	local parent = FatherTable[dgsEle]	--Get Parent
+	local parent = dgsElementData[dgsEle].parent	--Get Parent
 	local lastFront = MouseData.focused
 	if not dontChangeData then
 		MouseData.focused = dgsEle
@@ -263,10 +278,10 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 		else
 			local parents = dgsEle
 			while true do
-				local uparents = FatherTable[parents]	--Get Parent
+				local uparents = dgsElementData[parents].parent	--Get Parent
 				local eleType = dgsIsType(uparents)
 				if isElement(uparents) then
-					local children = ChildrenTable[uparents]
+					local children = dgsElementData[uparents].children
 					local id = tableFind(children,parents)
 					if id then
 						tableRemove(children,id)
@@ -332,9 +347,9 @@ end
 function dgsMoveToBack(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsMoveToBack",1,"dgs-dxelement")) end
 	if dgsElementData[dgsEle].changeOrder then
-		local parent = FatherTable[dgsEle]	--Get Parent
+		local parent = dgsElementData[dgsEle].parent	--Get Parent
 		if isElement(parent) then
-			local children = ChildrenTable[parent]
+			local children = dgsElementData[parent].children
 			local id = tableFind(children,dgsEle)
 			if id then
 				tableRemove(children,id)
@@ -1105,10 +1120,6 @@ function DGSI_SaveData()
 		world3d=dgsWorld3DTable,
 		screen3d=dgsScreen3DTable,
 	},false)
-	setElementData(root,"DGSI_ParentChildData",{
-		parent=FatherTable,
-		child=ChildrenTable,
-	},false)
 	--Animations
 	setElementData(root,"DGSI_Animations",{
 		anim=animGUIList,
@@ -1266,17 +1277,6 @@ function DGSI_ReadData()
 		dgsWorld3DTable = table.merger(dgsWorld3DTable,_dgsWorld3DTable)
 		dgsScreen3DTable = table.merger(dgsScreen3DTable,_dgsScreen3DTable)
 		removeElementData(root,"DGSI_LayerData")
-		
-		local pcData = getElementData(root,"DGSI_ParentChildData") or {}
-		FatherTable = pcData.parent
-		ChildrenTable = pcData.child
-		for dgsElement,data in pairs(FatherTable) do
-			if not isElement(dgsElement) then FatherTable[dgsElement] = nil end
-		end
-		for dgsElement,data in pairs(ChildrenTable) do
-			if not isElement(dgsElement) then ChildrenTable[dgsElement] = nil end
-		end
-		removeElementData(root,"DGSI_ParentChildData")
 		
 		--Animations
 		local animData = getElementData(root,"DGSI_Animations") or {}

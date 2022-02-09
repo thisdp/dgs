@@ -95,7 +95,6 @@ function dgsCreateGridList(...)
 	local sImageR = sImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[3])
 	local gridlist = createElement("dgs-dxgridlist")
 	dgsSetType(gridlist,"dgs-dxgridlist")
-	dgsSetParent(gridlist,parent,true,true)
 	dgsElementData[gridlist] = {
 		autoSort = true,
 		backgroundOffset = style.backgroundOffset,
@@ -163,6 +162,7 @@ function dgsCreateGridList(...)
 			elementBuffer = {},
 		},
 	}
+	dgsSetParent(gridlist,parent,true,true)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or resource])
 	dgsElementData[gridlist].configNextFrame = false
 	calculateGuiPositionSize(gridlist,x,y,relative,w,h,relative,true)

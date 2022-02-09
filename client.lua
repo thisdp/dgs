@@ -458,7 +458,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 				dgsRenderInfo.renderingResource[eleData.resource] = (dgsRenderInfo.renderingResource[eleData.resource] or 0)+1
 			end
 		end
-		local parent,children,parentAlpha = FatherTable[source],ChildrenTable[source],(eleData.alpha or 1)*parentAlpha
+		local parent,children,parentAlpha = dgsElementData[source].parent,dgsElementData[source].children,(eleData.alpha or 1)*parentAlpha
 		local eleTypeP,eleDataP
 		local elePAlignH,elePAlignV
 		if parent then
@@ -471,7 +471,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		if eleTypeP == "dgs-dxwindow" then
 			PosY = (not eleDataP.ignoreTitle and not eleData.ignoreParentTitle) and PosY+(eleDataP.titleHeight or 0) or PosY
 		elseif eleTypeP == "dgs-dxtab" then
-			local gpEleData = dgsElementData[FatherTable[parent]]
+			local gpEleData = dgsElementData[dgsElementData[parent].parent]
 			local gpSize = gpEleData.absSize
 			local tabHeight = gpEleData.tabHeight[2] and gpEleData.tabHeight[1]*gpSize[2] or gpEleData.tabHeight[1]
 			PosY = PosY+tabHeight
@@ -1299,7 +1299,7 @@ function dgsCheckHit(hits,cursorShowing)
 		end
 		if MouseData.Move[0] then
 			local posX,posY = 0,0
-			local parent = FatherTable[MouseData.clickl]
+			local parent = dgsElementData[MouseData.clickl].parent
 			if parent then
 				posX,posY = getParentLocation(parent)
 				if dgsElementType[parent] == "dgs-dxwindow" then
@@ -1322,7 +1322,7 @@ function dgsCheckHit(hits,cursorShowing)
 		if MouseData.Scale[0] then
 			local posX,posY = dgsGetPosition(MouseData.clickl,false,true)
 			local addPosX,addPosY = 0,0
-			local parent = FatherTable[MouseData.clickl]
+			local parent = dgsElementData[MouseData.clickl].parent
 			if parent then
 				addPosX,addPosY = getParentLocation(parent)
 				if dgsElementType[parent] == "dgs-dxwindow" then
@@ -1619,7 +1619,7 @@ function dgsCleanElement(source)
 		end
 		local isAttachedToGridList = eleData.attachedToGridList
 		if isAttachedToGridList and isAlive then dgsDetachFromGridList(source) end
-		local child = ChildrenTable[source] or {}
+		local child = dgsElementData[source].children or {}
 		for i=1,#child do
 			if isElement(child[1]) then destroyElement(child[1]) end
 		end
@@ -1686,7 +1686,6 @@ function dgsCleanElement(source)
 				end
 			end
 		end
-		ChildrenTable[source] = nil
 		if animGUIList[source] then if isAlive then dgsStopAniming(source) else animGUIList[source] = nil end end
 		if moveGUIList[source] then if isAlive then dgsStopMoving(source) else moveGUIList[source] = nil end end
 		if sizeGUIList[source] then if isAlive then dgsStopSizing(source) else sizeGUIList[source] = nil end end
@@ -1696,7 +1695,7 @@ function dgsCleanElement(source)
 		elseif dgsTypeScreen3D[dgsType] then
 			tableRemoveItemFromArray(dgsScreen3DTable,source)
 		else
-			local parent = FatherTable[source]
+			local parent = dgsElementData[source].parent
 			if not parent or parent == root then
 				local layer = eleData.alwaysOn or "center"
 				if layer == "bottom" then
@@ -1707,10 +1706,10 @@ function dgsCleanElement(source)
 					tableRemoveItemFromArray(TopFatherTable,source)
 				end
 			else
-				if ChildrenTable[parent] then
-					tableRemoveItemFromArray(ChildrenTable[parent],source)
+				if dgsElementData[parent].children then
+					tableRemoveItemFromArray(dgsElementData[parent].children,source)
 				end
-				FatherTable[source] = nil
+				dgsElementData[source].parent = nil
 			end
 		end
 		if dgsBackEndRenderer[eleData.asPlugin] or dgsBackEndRenderer[dgsType] then
@@ -2224,20 +2223,6 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 	if isElement(parent) and dgsGetType(parent) == "dgs-dxscrollpane" then
 		resizeScrollPane(parent,source)
 	end
-	local children = ChildrenTable[source] or {}
-	local childrenCnt = #children
-	--[[for k=1,childrenCnt do
-		local child = children[k]
-		local relt = dgsElementData[child].relative
-		if relt then
-			local relativePos = relt[1]
-			local x,y = dgsElementData[child].absPos[1],dgsElementData[child].absPos[2]
-			if relativePos then
-				x,y = dgsElementData[child].rltPos[1],dgsElementData[child].rltPos[2]
-			end
-			calculateGuiPositionSize(child,x,y,relativePos)
-		end
-	end]]
 	local attachedBy = dgsElementData[source].attachedBy
 	if attachedBy then
 		local absx,absy = dgsGetPosition(source,false,true)
@@ -2253,7 +2238,7 @@ addEventHandler("onDgsPositionChange",root,function(oldx,oldy)
 end)
 
 addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
-	local children = ChildrenTable[source] or {}
+	local children = dgsElementData[source].children or {}
 	local childrenCnt = #children
 	for k=1,childrenCnt do
 		local child = children[k]

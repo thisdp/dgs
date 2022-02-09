@@ -101,7 +101,6 @@ function dgsCreateMemo(...)
 	text = tostring(text or "")
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
-	dgsSetParent(memo,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -160,6 +159,7 @@ function dgsCreateMemo(...)
 		textRenderBuffer = {},
 		updateTextRTNextFrame = false,
 	}
+	dgsSetParent(memo,parent,true,true)
 	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)

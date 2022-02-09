@@ -52,14 +52,12 @@ function dgsCreateButton(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateButton",4,"number")) end
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
-	dgsSetParent(button,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
 	style = style.button
 	
 	local normalColor = normalColor or style.color[1]
@@ -73,29 +71,29 @@ function dgsCreateButton(...)
 		alignment = {"center","center"},
 		clickOffset = {0,0},
 		clickType = 1;	--1:LMB;2:Wheel;3:RM,
-		clip = false,
+		clip = nil,
 		colorTransitionPeriod = 0, --ms
 		color = {normalColor, hoveringColor, clickedColor},
-		colorCoded = false,
+		colorCoded = nil,
 		font = style.font or systemFont,
 		iconColor = 0xFFFFFFFF,
 		iconDirection = "left",
 		iconImage = nil,
 		iconOffset = {0,0},
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
-		iconShadow = {},
+		--iconShadow = {},
 		imageTransformTime = 0, --ms
 		image = {normalImage, hoveringImage, clickedImage},
-		shadow = {},
+		--shadow = {},
 		textColor = tonumber(textColor) or style.textColor,
 		textOffset = {0,0,false},
 		textSize = {textSizeX, textSizeY},
-		wordBreak = false,
+		wordBreak = nil,
 		renderBuffer = {
 			lastState = 0,
 		},
-		
 	}
+	dgsSetParent(button,parent,true,true)
 	dgsAttachToTranslation(button,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[button]._translationText = text

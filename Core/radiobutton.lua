@@ -59,7 +59,6 @@ function dgsCreateRadioButton(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateRadioButton",4,"number")) end
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
-	dgsSetParent(rb,parent,true,true)
 			
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -104,6 +103,7 @@ function dgsCreateRadioButton(...)
 		colorCoded = false,
 		alignment = {left,"center"},
 	}
+	dgsSetParent(rb,parent,true,true)
 	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[rb]._translationText = text

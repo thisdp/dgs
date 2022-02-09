@@ -66,7 +66,6 @@ function dgsCreateCheckBox(...)
 	if not(type(state) == "boolean") then error(dgsGenAsrt(state,"dgsCreateCheckBox",6,"boolean")) end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
-	dgsSetParent(cb,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -122,7 +121,7 @@ function dgsCreateCheckBox(...)
 		state = state,
 		alignment = {"left","center"},
 	}
-
+	dgsSetParent(cb,parent,true,true)
 	dgsAttachToTranslation(cb,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[cb]._translationText = text

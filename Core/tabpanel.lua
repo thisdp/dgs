@@ -60,7 +60,6 @@ function dgsCreateTabPanel(...)
 	end
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
-	dgsSetParent(tabpanel,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -91,6 +90,7 @@ function dgsCreateTabPanel(...)
 		tabOffset = {0,false},
 		textRenderBuffer = {},
 	}
+	dgsSetParent(tabpanel,parent,true,true)
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
 	local bgRT,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
 	if bgRT ~= false then
@@ -138,7 +138,6 @@ function dgsCreateTab(...)
 	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsCreateTab",2,"dgs-dxtabpanel")) end
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
-	dgsSetParent(tab,tabpanel,true,true)
 						
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -186,6 +185,7 @@ function dgsCreateTab(...)
 		colorCoded = nil,
 		wordBreak = nil,
 	}
+	dgsSetParent(tab,tabpanel,true,true)
 	if eleData.selected == -1 then eleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
@@ -507,13 +507,14 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		if eleData.textRT then
 			__dxDrawImage(x,y,w,height,eleData.textRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
 		end
-		local colors = applyColorAlpha(dgsElementData[tabs[selected]].bgColor,parentAlpha)
-		if dgsElementData[tabs[selected]].bgImage then
-			dxDrawImage(x,y+height,w,h-height,dgsElementData[tabs[selected]].bgImage,0,0,0,colors,isPostGUI,rndtgt)
+		local tabEleData = dgsElementData[ tabs[selected] ]
+		local colors = applyColorAlpha(tabEleData.bgColor,parentAlpha)
+		if tabEleData.bgImage then
+			dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
 		else
 			dxDrawRectangle(x,y+height,w,h-height,colors,isPostGUI)
 		end
-		local children = ChildrenTable[tabs[selected]]
+		local children = tabEleData.children
 		for i=1,#children do
 			renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
 		end

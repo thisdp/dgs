@@ -30,8 +30,8 @@ function dgsCreateMenuList(x,y,sx,sy,data,relative,parent)
 	if not wCheck then assert(false,"Bad argument @dgsCreateMenuList at argument 3, expect number got "..type(sx)) end
 	if not hCheck then assert(false,"Bad argument @dgsCreateMenuList at argument 4, expect number got "..type(sy)) end
 	local menulist = createElement("dgs-dxmenulist")
-	dgsSetParent(menulist,parent,true,true)
 	dgsSetType(menulist,"dgs-dxmenulist")
+	dgsSetParent(menulist,parent,true,true)
 	calculateGuiPositionSize(menulist,x,y,relative,sx,sy,relative,true)
 	triggerEvent("onDgsCreate",menulist,sourceResource)
 	return menulist

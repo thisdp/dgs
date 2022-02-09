@@ -75,7 +75,6 @@ function dgsCreateComboBox(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateComboBox",4,"number")) end
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
-	dgsSetParent(combobox,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -144,6 +143,7 @@ function dgsCreateComboBox(...)
 		textRenderBuffer = {},
 		autoSort = true,
 	}
+	dgsSetParent(combobox,parent,true,true)
 	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or resource])
 	if type(caption) == "table" then
 		dgsElementData[combobox]._translationText = caption

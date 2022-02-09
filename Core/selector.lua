@@ -53,7 +53,6 @@ function dgsCreateSelector(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSelector",4,"number")) end
 	local selector = createElement("dgs-dxselector")
 	dgsSetType(selector,"dgs-dxselector")
-	dgsSetParent(selector,parent,true,true)
 		
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -91,6 +90,7 @@ function dgsCreateSelector(...)
 		font = style.font or systemFont,
 		select = -1,
 	}
+	dgsSetParent(selector,parent,true,true)
 	calculateGuiPositionSize(selector,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",selector,sourceResource)
 	return selector

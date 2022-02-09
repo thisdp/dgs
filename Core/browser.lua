@@ -48,7 +48,6 @@ function dgsCreateBrowser(...)
 	local browser = createBrowser(1,1,isLocal and true or false,isTransparent and true or false)
 	if not isElement(browser) then error(dgsGenAsrt(browser,"dgsCreateBrowser",_,_,_,_,"Failed to create remote browser (createBrowser returns false)!")) end
 	dgsSetType(browser,"dgs-dxbrowser")
-	dgsSetParent(browser,parent,true,true)
 	dgsElementData[browser] = {
 		renderBuffer = {},
 		color = color or white,
@@ -56,6 +55,7 @@ function dgsCreateBrowser(...)
 		isLocal = isLocal and true or false,
 		requestCommand = {},
 	}
+	dgsSetParent(browser,parent,true,true)
 	calculateGuiPositionSize(browser,x,y,relative,w,h,relative,true)
 	local size = dgsElementData[browser].absSize
 	resizeBrowser(browser,resX or size[1],resY or size[2])

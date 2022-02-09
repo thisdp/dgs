@@ -28,12 +28,12 @@ function dgsCreateLine(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateLine",4,"number")) end
 	local line = createElement("dgs-dxline")
 	dgsSetType(line,"dgs-dxline")
-	dgsSetParent(line,parent,true,true)
 	dgsElementData[line] = {
 		color = color or 0xFFFFFFFF,
 		lineWidth = lineWidth or 1,
 		lineData = {},
 	}
+	dgsSetParent(line,parent,true,true)
 	calculateGuiPositionSize(line,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",line,sourceResource)
 	return line

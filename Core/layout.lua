@@ -143,7 +143,6 @@ function dgsCreateLayout(...)
 	local res = sourceResource or "global"
 	local layout = createElement("dgs-dxlayout")
 	dgsSetType(layout,"dgs-dxlayout")
-	dgsSetParent(layout,parent,true,true)
 	dgsElementData[layout] = {
 		onItemAdd = layoutStyle.onItemAdd,
 		onItemRemove = layoutStyle.onItemRemove,
@@ -152,6 +151,7 @@ function dgsCreateLayout(...)
 		layoutData = {},
 		autoUpdate = true,
 	}
+	dgsSetParent(layout,parent,true,true)
 	calculateGuiPositionSize(layout,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",layout,res)
 	dgsSetData(layout,"childOutsideHit",true)
@@ -208,12 +208,7 @@ function dgsLayoutGetItemIndex(layout,item)
 	local layoutData = dgsElementData[layout].layoutData
 	return table.find(layoutData,item)
 end
---[[
-function dgsLayoutUpdate(layout)
-	if dgsGetType(layout) == "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutUpdate",1,"dgs-dxlayout")) end
-	local layoutData = eleData.layoutData
-	for i=1,
-end]]
+
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

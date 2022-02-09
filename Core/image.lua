@@ -44,7 +44,6 @@ function dgsCreateImage(...)
 	local res = sourceResource or "global"
 	local image = createElement("dgs-dximage")
 	dgsSetType(image,"dgs-dximage")
-	dgsSetParent(image,parent,true,true)
 	dgsElementData[image] = {
 		UVSize = {},
 		UVPos = {},
@@ -54,6 +53,7 @@ function dgsCreateImage(...)
 		rotation = 0, -- 0~360
 		shadow = {},
 	}
+	dgsSetParent(image,parent,true,true)
 	dgsElementData[image].image = type(img) == "string" and dgsImageCreateTextureExternal(image,res,img) or img
 	calculateGuiPositionSize(image,x,y,relative or false,w,h,relative or false,true)
 	triggerEvent("onDgsCreate",image,res)

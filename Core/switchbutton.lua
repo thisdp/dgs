@@ -51,7 +51,6 @@ function dgsCreateSwitchButton(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSwitchButton",4,"number")) end
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
-	dgsSetParent(switchbutton,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -95,6 +94,7 @@ function dgsCreateSwitchButton(...)
 		style = 1,
 		isReverse = false,
 	}
+	dgsSetParent(switchbutton,parent,true,true)
 	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or resource])
 	if type(textOn) == "table" then
 		dgsElementData[switchbutton]._translationtextOn = textOn

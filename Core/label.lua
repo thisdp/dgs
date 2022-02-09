@@ -49,7 +49,6 @@ function dgsCreateLabel(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateLabel",4,"number")) end
 	local label = createElement("dgs-dxlabel")
 	dgsSetType(label,"dgs-dxlabel")
-	dgsSetParent(label,parent,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -73,6 +72,7 @@ function dgsCreateLabel(...)
 		textOffset = {0,0,false},
 		wordBreak = false,
 	}
+	dgsSetParent(label,parent,true,true)
 	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[label]._translationText = text

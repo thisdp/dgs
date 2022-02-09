@@ -25,7 +25,6 @@ function dgsCreate3DImage(...)
 	else
 		x,y,z,img,color,width,height,maxDistances = ...
 	end
-
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DImage",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DImage",2,"number")) end
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgsCreate3DImage",3,"number")) end

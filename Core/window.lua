@@ -46,7 +46,6 @@ function dgsCreateWindow(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateWindow",4,"number")) end
 	local window = createElement("dgs-dxwindow")
 	dgsSetType(window,"dgs-dxwindow")
-	dgsSetParent(window,nil,true,true)
 	
 	local res = sourceResource or "global"
 	local style = styleManager.styles[res]
@@ -79,6 +78,7 @@ function dgsCreateWindow(...)
 		minSize = {60,60},
 		maxSize = {20000,20000},
 	}
+	dgsSetParent(window,nil,true,true)
 	dgsAttachToTranslation(window,resourceTranslation[sourceResource or resource])
 	if type(text) == "table" then
 		dgsElementData[window]._translationText = text
