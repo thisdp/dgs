@@ -68,7 +68,7 @@ function dgsImportFunction(name,nameAs)
 					if isElement(dgsRoot) then
 						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
 						if isTraceDebug then
-							local data = debug.getinfo(2)
+							local data = debug.getinfo(2) or debug.getinfo(1)
 							functionCallLogger.line=data.currentline
 							functionCallLogger.file=data.source
 							functionCallLogger.fncName=fncName
@@ -108,11 +108,11 @@ function dgsImportFunction(name,nameAs)
 					elseif debugType == "AnimationError" then
 						local property,file,line,fncName = ...
 						if file and line and fncName then
-							outputDebugString("DGS runtime error: Animation "..file..":"..line.." @'"..fncName.."'",4,255,180,100)
+							outputDebugString("Traced "..file..":"..line.." @'"..fncName.."'",4,255,180,100)
 						end
 					end
 				end
-			end)
+			end,false)
 			DGS = setmetatable({}, DGSCallMT)
 			triggerEvent("DGSI_onImport",root,resourceRoot)
 		end
