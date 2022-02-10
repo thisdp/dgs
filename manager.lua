@@ -702,12 +702,16 @@ local dgsDataFunctions = {
 		padding = function(dgsEle,key,value,oldValue)
 			configEdit(dgsEle)
 		end,
-		showPos = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		masked = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end
+		showPos = function(dgsEle,key,value,oldValue) gsElementData[dgsEle].updateTextRTNextFrame = true end,
+		masked = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolder = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolderFont = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolderVisibleWhenFocus = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolderColor = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolderColorcoded = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolderOffset = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolderTextSize = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolderIgnoreRenderTarget = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
 	},
 	["dgs-dxmemo"] = {
 		text = function(dgsEle,key,value,oldValue)
