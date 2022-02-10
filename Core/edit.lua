@@ -1151,7 +1151,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		textX_Left = textX_Left-textX_Left%1
 		textX_Right = textX_Right-textX_Right%1
 		if not placeHolderIgnoreRndTgt then
-			if text == "" and MouseData.focused ~= source then
+			if text == "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) then
 				local pColor = eleData.placeHolderColor
 				local pFont = eleData.placeHolderFont
 				local pColorcoded = eleData.placeHolderColorcoded
