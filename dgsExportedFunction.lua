@@ -107,7 +107,9 @@ function dgsImportFunction(name,nameAs)
 						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', at argument "..argument..". "..detail,4,255,180,100)
 					elseif debugType == "AnimationError" then
 						local property,file,line,fncName = ...
-						outputDebugString("DGS runtime error: Animation "..file..":"..line.." @'"..fncName.."'",4,255,180,100)
+						if file and line and fncName then
+							outputDebugString("DGS runtime error: Animation "..file..":"..line.." @'"..fncName.."'",4,255,180,100)
+						end
 					end
 				end
 			end)
