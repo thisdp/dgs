@@ -29,12 +29,12 @@ function checkUpdate()
 			if not ManualUpdate then
 				if RemoteVersion > version then
 					outputDebugString("[DGS]Remote Version Got [Remote:"..data.." Current:"..version.."].")
-					outputDebugString("[DGS]Update? Command: "..dgsConfig.updatecommand)
+					outputDebugString("[DGS]Update? Command: "..dgsConfig.updateCommand)
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
 						if RemoteVersion > version then
 							outputDebugString("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..version.."].")
-							outputDebugString("[DGS]Update? Command: "..dgsConfig.updatecommand)
+							outputDebugString("[DGS]Update? Command: "..dgsConfig.updateCommand)
 						else
 							killTimer(updateTimer)
 						end
@@ -75,10 +75,10 @@ if dgsConfig.updateCheckAuto then
 	updatePeriodTimer = setTimer(checkUpdate,dgsConfig.updateCheckInterval*3600000,0)
 end
 
-addCommandHandler(dgsConfig.updatecommand,function(player)
+addCommandHandler(dgsConfig.updateCommand,function(player)
 	if not checkServerVersion(player) then return end
 	local account = getPlayerAccount(player)
-	local isPermit = hasObjectPermissionTo(player,"command."..dgsConfig.updatecommand)
+	local isPermit = hasObjectPermissionTo(player,"command."..dgsConfig.updateCommand)
 	if not isPermit then
 		local accName = getAccountName(account)
 		local adminGroup = aclGetGroup("Admin")
@@ -257,16 +257,16 @@ addCommandHandler("dgsver",function(pla,cmd)
 		if vsdd then
 			outputDebugString("[DGS]Version: "..vsdd,3)
 		else
-			outputDebugString("[DGS]Version State is damaged! Please use /"..dgsConfig.updatecommand.." to update",1)
+			outputDebugString("[DGS]Version State is damaged! Please use /"..dgsConfig.updateCommand.." to update",1)
 		end
 	else
-		outputDebugString("[DGS]Version State is damaged! Please use /"..dgsConfig.updatecommand.." to update",1)
+		outputDebugString("[DGS]Version State is damaged! Please use /"..dgsConfig.updateCommand.." to update",1)
 	end
 	if getPlayerName(pla) ~= "Console" then
 		if vsdd then
 			outputChatBox("[DGS]Version: "..vsdd,pla,0,255,0)
 		else
-			outputChatBox("[DGS]Version State is damaged! Please use /"..dgsConfig.updatecommand.." to update",pla,255,0,0)
+			outputChatBox("[DGS]Version State is damaged! Please use /"..dgsConfig.updateCommand.." to update",pla,255,0,0)
 		end
 	end
 end)
