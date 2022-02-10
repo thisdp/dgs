@@ -121,8 +121,11 @@ end
 function newFont(styleName,res,font,...)
 	if not isElement(font) then
 		font = dxCreateFont(font,...)
-		dgsSetData(font,"path",texture)
+		dgsSetData(font,"path",font)
 		dgsAddEventHandler("onClientElementDestroy",font,"deleteFont")
+	end
+	if not isElement(font) then
+		outputDebugString("Failed to create font "..tostring(v).." at style '"..styleName.."'")
 	end
 	local res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.font = styleManager.styles[res].loaded[styleName].created.font or {}

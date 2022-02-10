@@ -9,7 +9,7 @@ dgsConfig.backupStyleMeta			= true			-- Backup style files meta index from meta.
 dgsConfig.g2d						= true			-- GUI To DGS command line
 dgsConfig.enableBuiltInCMD			= true			-- Enable DGS Built-in CMD /dgscmd
 dgsConfig.enableServerConsole		= false			-- Enable DGS Built Server Console
-dgsConfig.updatecommand				= "updatedgs"	-- Enable DGS Built Server Console
+dgsConfig.updateCommand				= "updatedgs"	-- Enable DGS Built Server Console
 dgsConfig.enableTestFile			= true			-- Loads DGS Test File (If you want to save some bytes of memory, disable this by set to false)
 
 function loadConfig()
