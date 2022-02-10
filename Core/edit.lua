@@ -146,6 +146,10 @@ function dgsCreateEdit(...)
 		insertMode = false,
 		editCounts = editsCount, --Tab Switch
 		updateTextRTNextFrame = true,
+		
+		renderBuffer = {
+			placeHolderState = false,
+		},
 	}
 	dgsSetParent(edit,parent,true,true)
 	editsCount = editsCount+1
@@ -1144,6 +1148,11 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
 		end
 	end
+	local isPlaceHolderShown = text == "" and placeHolder ~= "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) 
+	if eleData.placeHolderState ~= isPlaceHolderShown then
+		eleData.placeHolderState = isPlaceHolderShown
+		eleData.updateTextRTNextFrame = true
+	end
 	if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 		eleData.updateTextRTNextFrame = false
 		dxSetBlendMode("modulate_add")
@@ -1151,7 +1160,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		textX_Left = textX_Left-textX_Left%1
 		textX_Right = textX_Right-textX_Right%1
 		if not placeHolderIgnoreRndTgt then
-			if text == "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) then
+			if isPlaceHolderShown then
 				local pColor = eleData.placeHolderColor
 				local pFont = eleData.placeHolderFont
 				local pColorcoded = eleData.placeHolderColorcoded
@@ -1194,7 +1203,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	end
 	__dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 	if placeHolderIgnoreRndTgt then
-		if text == "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) then
+		if isPlaceHolderShown then
 			local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
 			local pFont = eleData.placeHolderFont
 			local pColorcoded = eleData.placeHolderColorcoded
