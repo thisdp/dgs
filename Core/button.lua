@@ -268,14 +268,16 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		posX,posY = posX+x,posY+y
 		if iconImage[buttonState] then
-			local shadowoffx,shadowoffy,shadowc,shadowIsOutline = iconShadow[1],iconShadow[2],iconShadow[3],iconShadow[4]
-			if shadowoffx and shadowoffy and shadowc then
-				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
-				if shadowIsOutline then
-					dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
-					dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
-					dxDrawImage(posX+shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+			if iconShadow then
+				local shadowoffx,shadowoffy,shadowc,shadowIsOutline = iconShadow[1],iconShadow[2],iconShadow[3],iconShadow[4]
+				if shadowoffx and shadowoffy and shadowc then
+					local shadowc = applyColorAlpha(shadowc,parentAlpha)
+					dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+					if shadowIsOutline then
+						dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+						dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+						dxDrawImage(posX+shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+					end
 				end
 			end
 			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
