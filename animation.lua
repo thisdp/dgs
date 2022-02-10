@@ -179,7 +179,7 @@ function onAnimQueueProcess()
 						animItem[0] = {}
 						for i=1,#startValue do
 							easingSettings[1],easingSettings[2],easingSettings[3],easingSettings[4] = property,targetValue,startValue,i
-							animItem[0][i] = dgsEasingFunction[easing](rProgress,easingSettings,dgsEle)
+							animItem[0][i] = startValue[i]+(targetValue[i]-startValue[i])*dgsEasingFunction[easing](rProgress,easingSettings,dgsEle)
 						end
 						easingSettings[4] = nil
 					else
