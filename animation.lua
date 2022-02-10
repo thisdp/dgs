@@ -7,7 +7,7 @@ local isElement = isElement
 local getEasingValue = getEasingValue
 
 function dgsAnimTo(...)
-	local dgsEle,property,targetValue,easing,duration,delay
+	local dgsEle,property,targetValue,easing,duration,delay,otherValues
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		dgsEle = argTable.ele or argTable.dgsEle or argTable.element or argTable.dgsElement or argTable.source or argTable[1]
@@ -16,8 +16,9 @@ function dgsAnimTo(...)
 		easing = argTable.easing or argTable.easingFunction or argTable[4]
 		duration = argTable.duration or argTable.time or argTable[5]
 		delay = argTable.delay or argTable[6]
+		otherValues = argTable[7]
 	else
-		dgsEle,property,targetValue,easing,duration,delay = ...
+		dgsEle,property,targetValue,easing,duration,delay,otherValues = ...
 	end
 	local delay = tonumber(delay) or 0
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAnimTo",1,"dgs-dxelement/table")) end
@@ -27,7 +28,7 @@ function dgsAnimTo(...)
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAnimTo",5,"number")) end
 	if type(dgsEle) == "table" then
 		for i=1,#dgsEle do
-			dgsAnimTo(dgsEle[i],property,targetValue,easing,duration,delay)
+			dgsAnimTo(dgsEle[i],property,targetValue,easing,duration,delay,otherValues)
 		end
 	else
 		dgsStopAniming(dgsEle,property)
@@ -37,6 +38,7 @@ function dgsAnimTo(...)
 			end
 		end
 		local animTable = {
+			[-1]=sourceResourceRoot,
 			[0]=nil, --Result
 			[1]=dgsEle,
 			[2]=property,
@@ -46,6 +48,14 @@ function dgsAnimTo(...)
 			[6]=duration,
 			[7]=getTickCount()-delay
 		}
+		--Debugging
+		local isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") or (getElementData(localPlayer,"DGS-DEBUG") == 3)
+		if isTraceDebug then
+			dgsDebugGetContext(sourceResourceRoot,function(context)
+				animTable[-2] = context
+			end)
+		end
+		--
 		table.insert(animQueue,animTable)
 	end
 	return true
@@ -150,6 +160,7 @@ function onAnimQueueProcess()
 	local animIndex,animItem = 1
 	local dgsEle,property,startValue,targetValue,easing,duration,startTick
 	local rTick,rProgress = getTickCount()
+	local dbgResult,dbgErr
 	while animIndex <= #animQueue do
 		animItem = animQueue[animIndex]
 		dgsEle = animItem[1]
@@ -172,7 +183,15 @@ function onAnimQueueProcess()
 						animItem[0] = startValue+(targetValue-startValue)*easingValue
 					end
 				end
-				dgsSetProperty(dgsEle,property,table.deepcopy(animItem[0]))
+				dbgResult,dbgErr = pcall(dgsSetProperty(dgsEle,property,table.deepcopy(animItem[0])))
+				if dbgResult == nil then
+					if animItem[-1] and animItem[-2] then
+						local debugContext = animItem[-2] 
+						if type(debugContext) == "table" then
+							triggerEvent("DGSI_onDebug",animItem[-1],"AnimationError",property,debugContext.file,debugContext.line,debugContext.fncName)
+						end
+					end
+				end
 				if rProgress == 1 then
 					dgsStopAniming(dgsEle,property)
 				else
@@ -198,6 +217,7 @@ function dgsMoveTo(...)
 		easing = argTable.easing or argTable.easingFunction or argTable[5]
 		duration = argTable.duration or argTable.time or argTable[6]
 		delay = argTable.delay or argTable[7]
+		otherValues = argTable[8]
 	else
 		if type(select(5,...)) == "boolean" then
 			dgsEle,x,y,relative,moveType,easing,duration,delay = ...
@@ -210,7 +230,7 @@ function dgsMoveTo(...)
 				error("Found deprecated usage of @'dgsMoveTo' at argument 5, 'moveType' is no longer supported")
 			end
 		else
-			dgsEle,x,y,relative,easing,duration,delay = ...
+			dgsEle,x,y,relative,easing,duration,delay,otherValues = ...
 		end
 	end
 	local delay = tonumber(delay) or 0
@@ -220,7 +240,7 @@ function dgsMoveTo(...)
 	local easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsMoveTo",5,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsMoveTo",6,"number")) end
-	return dgsAnimTo(dgsEle,relative and "rltPos" or "absPos",{x,y},easing,duration,delay)
+	return dgsAnimTo(dgsEle,relative and "rltPos" or "absPos",{x,y},easing,duration,delay,otherValues)
 end
 
 function dgsStopMoving(dgsEle)
@@ -249,6 +269,7 @@ function dgsSizeTo(...)
 		easing = argTable.easing or argTable.easingFunction or argTable[5]
 		duration = argTable.duration or argTable.time or argTable[6]
 		delay = argTable.delay or argTable[7]
+		otherValues = argTable[8]
 	else
 		if type(select(5,...)) == "boolean" then
 			dgsEle,w,h,relative,moveType,easing,duration,delay = ...
@@ -261,7 +282,7 @@ function dgsSizeTo(...)
 				error("Found deprecated usage of @'dgsSizeTo' at argument 5, 'moveType' is no longer supported")
 			end
 		else
-			dgsEle,w,h,relative,easing,duration,delay = ...
+			dgsEle,w,h,relative,easing,duration,delay,otherValues = ...
 		end
 	end
 	local delay = tonumber(delay) or 0
@@ -271,7 +292,7 @@ function dgsSizeTo(...)
 	local easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsSizeTo",5,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsSizeTo",6,"number")) end
-	return dgsAnimTo(dgsEle,relative and "rltSize" or "absSize",{w,h},easing,duration,delay)
+	return dgsAnimTo(dgsEle,relative and "rltSize" or "absSize",{w,h},easing,duration,delay,otherValues)
 end
 
 function dgsStopSizing()
@@ -298,6 +319,7 @@ function dgsAlphaTo(...)
 		easing = argTable.easing or argTable.easingFunction or argTable[3]
 		duration = argTable.duration or argTable.time or argTable[4]
 		delay = argTable.delay or argTable[5]
+		otherValues = argTable[6]
 	else
 		if type(select(3,...)) == "boolean" then
 			dgsEle,alpha,moveType,easing,duration,delay = ...
@@ -310,7 +332,7 @@ function dgsAlphaTo(...)
 				error("Found deprecated usage of @'dgsAlphaTo' at argument 3, 'moveType' is no longer supported")
 			end
 		else
-			dgsEle,alpha,easing,duration,delay = ...
+			dgsEle,alpha,easing,duration,delay,otherValues = ...
 		end
 	end
 	local delay = tonumber(delay) or 0
@@ -319,7 +341,7 @@ function dgsAlphaTo(...)
 	local easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAlphaTo",3,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAlphaTo",4,"number")) end
-	return dgsAnimTo(dgsEle,"alpha",alpha,easing,duration,delay)
+	return dgsAnimTo(dgsEle,"alpha",alpha,easing,duration,delay,otherValues)
 end
 
 function dgsStopAlphaing(dgsEle)

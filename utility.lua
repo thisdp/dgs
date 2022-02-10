@@ -1,3 +1,87 @@
+--------------------------------Events
+events = {
+	"onDgsCursorTypeChange",
+	"onDgsMouseLeave",
+	"onDgsMouseEnter",
+	"onDgsMousePreClick",
+	"onDgsMouseWheel",
+	"onDgsMouseClick",
+	"onDgsMouseClickUp",
+	"onDgsMouseClickDown",
+	"onDgsMouseDoubleClick",
+	"onDgsMouseDoubleClickUp",
+	"onDgsMouseDoubleClickDown",
+	"onDgsMouseMultiClick",
+	"onDgsMouseDown",
+	"onDgsMouseUp",
+	"onDgsMouseDrag",
+	"onDgsMouseMove",
+	"onDgsWindowClose",
+	"onDgsPositionChange",
+	"onDgsSizeChange",
+	"onDgsTextChange",
+	"onDgsElementScroll",
+	"onDgsDestroy",
+	"onDgsSwitchButtonStateChange",
+	"onDgsSelectorSelect",
+	"onDgsGridListSelect",
+	"onDgsGridListHover",
+	"onDgsMouseHover",
+	"onDgsGridListItemDoubleClick",
+	"onDgsProgressBarChange",
+	"onDgsCreate",
+	"onDgsPluginCreate",
+	"onDgsPreRender",
+	"onDgsRender",
+	"onDgsElementRender",
+	"onDgsElementLeave",
+	"onDgsElementEnter",
+	"onDgsElementMove",
+	"onDgsElementSize",
+	"onDgsFocus",
+	"onDgsBlur",
+	"onDgsTabSelect",
+	"onDgsTabPanelTabSelect",
+	"onDgsRadioButtonChange",
+	"onDgsCheckBoxChange",
+	"onDgsComboBoxSelect",
+	"onDgsComboBoxStateChange",
+	"onDgsEditPreSwitch",
+	"onDgsEditSwitched",
+	"onDgsEditAccepted",
+	"onDgsStopMoving",
+	"onDgsStopSizing",
+	"onDgsStopAlphaing",
+	"onDgsStopAniming",
+	"onDgsDrop",
+	"onDgsDrag",
+	"onDgsStart",
+	"onDgsPaste", --DGS Paste Handler
+	"onDgsPropertyChange",
+	-------Plugin events
+	"onDgsRemoteImageLoad",
+	"onDgsQRCodeLoad",
+	-------internal events
+	"DGSI_Paste",
+	"DGSI_ReceiveIP",
+	"DGSI_SendAboutData",
+	"DGSI_ReceiveQRCode",
+	"DGSI_ReceiveRemoteImage",
+	"DGSI_onDebug",
+	"DGSI_onDebugRequestContext",
+	"DGSI_onDebugSendContext",
+	"DGSI_onImport",
+	-------G2D Hooker events
+    "onDgsEditAccepted-C",
+    "onDgsTextChange-C",
+    "onDgsComboBoxSelect-C",
+    "onDgsTabSelect-C",
+	-------
+}
+local addEvent = addEvent
+for i=1,#events do
+	addEvent(events[i],true)
+end
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.find,string.format,byte
 local utf8Len,utf8Byte,utf8Sub = utf8.len,utf8.byte,utf8.sub
@@ -1176,84 +1260,33 @@ function dgsGetRTAssignState(element)
 	local RTState = dgsElementData[element].RTState or {state=0,RT=nil}
 	return RTState.state
 end]]
---------------------------------Events
-events = {
-	"onDgsCursorTypeChange",
-	"onDgsMouseLeave",
-	"onDgsMouseEnter",
-	"onDgsMousePreClick",
-	"onDgsMouseWheel",
-	"onDgsMouseClick",
-	"onDgsMouseClickUp",
-	"onDgsMouseClickDown",
-	"onDgsMouseDoubleClick",
-	"onDgsMouseDoubleClickUp",
-	"onDgsMouseDoubleClickDown",
-	"onDgsMouseMultiClick",
-	"onDgsMouseDown",
-	"onDgsMouseUp",
-	"onDgsMouseDrag",
-	"onDgsMouseMove",
-	"onDgsWindowClose",
-	"onDgsPositionChange",
-	"onDgsSizeChange",
-	"onDgsTextChange",
-	"onDgsElementScroll",
-	"onDgsDestroy",
-	"onDgsSwitchButtonStateChange",
-	"onDgsSelectorSelect",
-	"onDgsGridListSelect",
-	"onDgsGridListHover",
-	"onDgsMouseHover",
-	"onDgsGridListItemDoubleClick",
-	"onDgsProgressBarChange",
-	"onDgsCreate",
-	"onDgsPluginCreate",
-	"onDgsPreRender",
-	"onDgsRender",
-	"onDgsElementRender",
-	"onDgsElementLeave",
-	"onDgsElementEnter",
-	"onDgsElementMove",
-	"onDgsElementSize",
-	"onDgsFocus",
-	"onDgsBlur",
-	"onDgsTabSelect",
-	"onDgsTabPanelTabSelect",
-	"onDgsRadioButtonChange",
-	"onDgsCheckBoxChange",
-	"onDgsComboBoxSelect",
-	"onDgsComboBoxStateChange",
-	"onDgsEditPreSwitch",
-	"onDgsEditSwitched",
-	"onDgsEditAccepted",
-	"onDgsStopMoving",
-	"onDgsStopSizing",
-	"onDgsStopAlphaing",
-	"onDgsStopAniming",
-	"onDgsDrop",
-	"onDgsDrag",
-	"onDgsStart",
-	"onDgsPaste", --DGS Paste Handler
-	"onDgsPropertyChange",
-	-------Plugin events
-	"onDgsRemoteImageLoad",
-	"onDgsQRCodeLoad",
-	-------internal events
-	"DGSI_Paste",
-	"DGSI_ReceiveIP",
-	"DGSI_SendAboutData",
-	"DGSI_ReceiveQRCode",
-	"DGSI_ReceiveRemoteImage",
-	"DGSI_onDebug",
-	-------G2D Hooker events
-    "onDgsEditAccepted-C",
-    "onDgsTextChange-C",
-    "onDgsComboBoxSelect-C",
-    "onDgsTabSelect-C",
-	-------
-}
-local addEvent = addEvent
-for i=1,#events do
-	addEvent(events[i],true)
+--------------------------------DEBUG
+local resourceDebugRegistered = {}
+local debugContextQueue = {}
+
+function onDGSRemoveImports()
+	resourceDebugRegistered[source] = false
 end
+
+function onDGSLogImports(resRoot)
+	resourceDebugRegistered[resRoot] = true
+	addEventHandler("onClientResourceStop",resRoot,onDGSRemoveImports,false)
+end
+addEventHandler("DGSI_onImport",root,onDGSLogImports)
+triggerEvent("DGSI_onImport",root,resourceRoot)
+
+function dgsDebugGetContext(resRoot,callBack)
+	if resourceDebugRegistered[resRoot] then
+		table.insert(debugContextQueue,{resRoot,callBack})
+		triggerEvent("DGSI_onDebugRequestContext",resRoot)
+		return true
+	end
+	return false
+end
+
+addEventHandler("DGSI_onDebugSendContext",root,function(context)
+	if #debugContextQueue > 0 then
+		debugContextQueue[1][2](context)
+		table.remove(debugContextQueue,1)
+	end
+end)

@@ -1686,10 +1686,7 @@ function dgsCleanElement(source)
 				end
 			end
 		end
-		if animGUIList[source] then if isAlive then dgsStopAniming(source) else animGUIList[source] = nil end end
-		if moveGUIList[source] then if isAlive then dgsStopMoving(source) else moveGUIList[source] = nil end end
-		if sizeGUIList[source] then if isAlive then dgsStopSizing(source) else sizeGUIList[source] = nil end end
-		if alphaGUIList[source] then if isAlive then dgsStopAlphaing(source) else alphaGUIList[source] = nil end end
+		if dgsIsAniming(source) then if isAlive then dgsStopAniming(source)  end end
 		if dgsTypeWorld3D[dgsType] then
 			tableRemoveItemFromArray(dgsWorld3DTable,source)
 		elseif dgsTypeScreen3D[dgsType] then

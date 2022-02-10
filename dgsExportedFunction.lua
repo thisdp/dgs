@@ -88,7 +88,10 @@ function dgsImportFunction(name,nameAs)
 				end
 				return self[fncName]
 			end
-			addEventHandler("DGSI_onDebug",root,function(debugType,...)
+			addEventHandler("DGSI_onDebugRequestContext",resourceRoot,function()
+				triggerEvent("DGSI_onDebugSendContext",resourceRoot,functionCallLogger)
+			end,false)
+			addEventHandler("DGSI_onDebug",resourceRoot,function(debugType,...)
 				if isTraceDebug then
 					if debugType == "PropertyCompatibility" then
 						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
@@ -102,11 +105,14 @@ function dgsImportFunction(name,nameAs)
 						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
 						local argument,detail = ...
 						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', at argument "..argument..". "..detail,4,255,180,100)
+					elseif debugType == "AnimationError" then
+						local property,file,line,fncName = ...
+						outputDebugString("DGS runtime error: Animation "..file..":"..line.." @'"..fncName.."'",4,255,180,100)
 					end
 				end
 			end)
 			DGS = setmetatable({}, DGSCallMT)
-			--triggerEvent("DGSI_onImport",resourceRoot)
+			triggerEvent("DGSI_onImport",root,resourceRoot)
 		end
 		]]
 		for i,name in ipairs(getResourceExportedFunctions()) do

@@ -452,11 +452,11 @@ function dgsRegisterDeprecatedFunction(fncNameOld,fncNameNew)
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
 			outputDebugString("Deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'. See information below, or run again with command /debugdgs c",2)
 			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",root,"FunctionCompatibility",fncNameOld,fncNameNew)
+				triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"FunctionCompatibility",fncNameOld,fncNameNew)
 			end
 		else
 			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",root,"FunctionCompatibility",fncNameOld,fncNameNew)
+				triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"FunctionCompatibility",fncNameOld,fncNameNew)
 			end
 			error("Found deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'")
 		end
@@ -916,18 +916,18 @@ local compatibility = {
 	wordbreak = "wordBreak",
 	colorcoded = "colorCoded",
 }
-function checkCompatibility(dgsEle,key)
+function checkCompatibility(dgsEle,key,sResRoot)
 	local eleTyp = dgsGetType(dgsEle)
 	if compatibility[eleTyp] and compatibility[eleTyp][key] then
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
 			outputDebugString("[DGS]Deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..", replace with '"..compatibility[eleTyp][key].."'. See information below, or run again with command /debugdgs c",4,254,128,0)
 			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",root,"PropertyCompatibility",key,compatibility[eleTyp][key])
+				triggerEvent("DGSI_onDebug",sResRoot,"PropertyCompatibility",key,compatibility[eleTyp][key])
 			end
 			return compatibility[eleTyp][key]
 		else
 			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",root,"PropertyCompatibility",key,compatibility[eleTyp][key])
+				triggerEvent("DGSI_onDebug",sResRoot,"PropertyCompatibility",key,compatibility[eleTyp][key])
 			end
 			outputDebugString("Found deprecated '"..key.."' @dgsSetProperty with "..eleTyp..", replace with "..compatibility[eleTyp][key],2)
 			return false
@@ -937,12 +937,12 @@ function checkCompatibility(dgsEle,key)
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
 			outputDebugString("[DGS]Deprecated property '"..key.."' @dgsSetProperty with all dgs elements, replace with '"..compatibility[key].."'. See information below, or run again with command /debugdgs c",4,254,128,0)
 			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",root,"PropertyCompatibility",key,compatibility[key])
+				triggerEvent("DGSI_onDebug",sResRoot,"PropertyCompatibility",key,compatibility[key])
 			end
 			return compatibility[key]
 		else
 			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",root,"PropertyCompatibility",key,compatibility[key])
+				triggerEvent("DGSI_onDebug",sResRoot,"PropertyCompatibility",key,compatibility[key])
 			end
 			outputDebugString("Found deprecated property '"..key.."' @dgsSetProperty with all dgs elements, replace with "..compatibility[key],2)
 			return false
@@ -962,7 +962,7 @@ function dgsSetProperty(dgsEle,key,value,...)
 		return true
 	else
 		if #compatibility ~= 0 then
-			local newKey = checkCompatibility(dgsEle,key)
+			local newKey = checkCompatibility(dgsEle,key,sourceResourceRoot or resourceRoot)
 			if newKey == false then
 				error("DGS Compatibility Check")
 			end
