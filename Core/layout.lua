@@ -211,7 +211,7 @@ function dgsLayoutAddItem(layout,item,sortPriority)
 end
 
 function dgsLayoutSetItemSortPriority(item,sortPriority)
-	if not dgsIsType(layout) then error(dgsGenAsrt(item,"dgsLayoutSetItemSortPriority",1,"dgs-dxelement")) end
+	if not dgsIsType(item) then error(dgsGenAsrt(item,"dgsLayoutSetItemSortPriority",1,"dgs-dxelement")) end
 	if not (not sortPriority or type(sortPriority) == "number") then error(dgsGenAsrt(item,"dgsLayoutSetItemSortPriority",1,"number/nil")) end
 	local layout = dgsGetParent(item)
 	if dgsGetType(layout) ~= "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutSetItemSortPriority",1,"dgs-dxlayout as parent")) end
@@ -222,7 +222,7 @@ function dgsLayoutSetItemSortPriority(item,sortPriority)
 end
 
 function dgsLayoutGetItemSortPriority(item)
-	if not dgsIsType(layout) then error(dgsGenAsrt(item,"dgsLayoutGetItemSortPriority",1,"dgs-dxelement")) end
+	if not dgsIsType(item) then error(dgsGenAsrt(item,"dgsLayoutGetItemSortPriority",1,"dgs-dxelement")) end
 	local layout = dgsGetParent(item)
 	if dgsGetType(layout) ~= "dgs-dxlayout" then error(dgsGenAsrt(layout,"dgsLayoutGetItemSortPriority",1,"dgs-dxlayout as parent")) end
 	local sortPriorityTable = dgsElementData[layout].sortPriority
