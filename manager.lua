@@ -702,7 +702,7 @@ local dgsDataFunctions = {
 		padding = function(dgsEle,key,value,oldValue)
 			configEdit(dgsEle)
 		end,
-		showPos = function(dgsEle,key,value,oldValue) gsElementData[dgsEle].updateTextRTNextFrame = true end,
+		showPos = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
 		masked = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
 		placeHolder = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
 		placeHolderFont = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
