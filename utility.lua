@@ -1062,10 +1062,11 @@ function dxDrawText(text,...)
 	return true
 end
 
-function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,isWordWrap)
-	local textTable = {dgsTextBuffer = true, }
+function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,isWordWrap,lineSpacing,tabSpacing)
+	local textTable = {}
 	local _h = 0
-	local tHei = dxGetFontHeight(1,"default")
+	local tabSpacing = tabSpacing or 4
+	local tHei = lineSpacing or dxGetFontHeight(1,"default")
 	local lineStart = -1
 	local blockStart,_w,colorBlockStart
 	local color = 0xFFFFFFFF
@@ -1086,7 +1087,10 @@ function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,
 				colorBlockStart = -7
 				if block ~= "" then
 					while true do	--#RRGGBB
-						local _c = block:find("#%x%x%x%x%x%x",colorBlockStart+8)
+						local _c
+						if isColorCoded then
+							_c = block:find("#%x%x%x%x%x%x",colorBlockStart+8)
+						end
 						_c = _c and _c-1 or nil
 						local c
 						if _c then
