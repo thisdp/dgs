@@ -43,7 +43,16 @@ function dgsGetRenderSetting(name) return dgsRenderSetting[name] end
 
 function dgsSetRenderSetting(name,value)
 	if name == "renderPriority" then
-		assert(type(value)=="string","Bad Argument @dgsSetRenderSetting at argument 2, expected a string got "..dgsGetType(value))
+		if type(value) == "number" then
+			if value > 0 then
+				value = "normal+"..value
+			elseif value < 0 then
+				value = "normal"..value
+			else
+				value = "normal"
+			end
+		end
+		assert(type(value)=="string","Bad Argument @dgsSetRenderSetting at argument 2, expected a string/number got "..dgsGetType(value))
 		removeEventHandler("onClientRender",root,dgsCoreRender)
 		local success = addEventHandler("onClientRender",root,dgsCoreRender,false,value)
 		if not success then
@@ -330,11 +339,11 @@ function dgsCoreRender()
 				dxDrawText("RLT W: "..rltW , sW*0.5-100,100)
 				dxDrawText("RLT H: "..rltH , sW*0.5-100,115)
 
-				local sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/10,100,50))
-				local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
-				local hSideSize = sideSize*0.5
 				local debugData = dgsElementData[highlight].debugData
 				if debugData then
+					local sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/10,100,50))
+					local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
+					local hSideSize = sideSize*0.5
 					local x,y,w,h = debugData[5],debugData[6],absW,absH
 					dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,isPostGUI)
 					dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,isPostGUI)
