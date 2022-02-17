@@ -797,6 +797,8 @@
 	<export function="dgsBlurBoxGetIntensity" type="client" />
 	<export function="dgsBlurBoxSetLevel" type="client" />
 	<export function="dgsBlurBoxGetLevel" type="client" />
+	<export function="dgsBlurBoxSetBrightness" type="client" />
+	<export function="dgsBlurBoxGetBrightness" type="client" />
 	<export function="dgsBlurBoxSetTexture" type="client" />
 	<export function="dgsBlurBoxGetTexture" type="client" />
 	<export function="dgsBlurBoxSetFilter" type="client" />
