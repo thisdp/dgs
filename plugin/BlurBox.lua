@@ -11,39 +11,41 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	local eleData = dgsElementData[self]
 	local bufferRTH = eleData.bufferRTH
 	local bufferRTV = eleData.bufferRTV
-	local shader = eleData.shaders
-	local resolution = eleData.resolution
-	local renderSource
-	local savedBlendMode = dxGetBlendMode()
-	if eleData.blendMode then dxSetBlendMode(eleData.blendMode) end
-	if not eleData.sourceTexture then
-		local isUpdateScrSource = eleData.updateScreenSource
-		if isUpdateScrSource then
-			dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+	if bufferRTH and bufferRTV then
+		local shader = eleData.shaders
+		local resolution = eleData.resolution
+		local renderSource
+		local savedBlendMode = dxGetBlendMode()
+		if eleData.blendMode then dxSetBlendMode(eleData.blendMode) end
+		if not eleData.sourceTexture then
+			local isUpdateScrSource = eleData.updateScreenSource
+			if isUpdateScrSource then
+				dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
+			end
+			renderSource = BlurBoxGlobalScreenSource
+			dxSetShaderValue(shader[1],"screenSource",renderSource)
+			dxSetRenderTarget(bufferRTH,true)
+			dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
+		else
+			renderSource = eleData.sourceTexture
+			dxSetShaderValue(shader[1],"screenSource",renderSource)
+			dxSetRenderTarget(bufferRTH,true)
+			dxDrawImage(0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
 		end
-		renderSource = BlurBoxGlobalScreenSource
-		dxSetShaderValue(shader[1],"screenSource",renderSource)
-		dxSetRenderTarget(bufferRTH,true)
-		dxDrawImageSection(0,0,resolution[1],resolution[2],x*blurboxFactor,y*blurboxFactor,w*blurboxFactor,h*blurboxFactor,shader[1],0,0,0,0xFFFFFFFF)
-	else
-		renderSource = eleData.sourceTexture
-		dxSetShaderValue(shader[1],"screenSource",renderSource)
-		dxSetRenderTarget(bufferRTH,true)
-		dxDrawImage(0,0,resolution[1],resolution[2],shader[1],0,0,0,0xFFFFFFFF)
+		dxSetShaderValue(shader[2],"screenSource",bufferRTH)
+		dxSetRenderTarget(bufferRTV,true)
+		dxDrawImage(0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF)
+		dxSetRenderTarget()
+		local filter = eleData.filter
+		if filter then
+			dxSetShaderValue(filter,"sourceTexture",bufferRTV)
+			dxSetShaderValue(filter,"textureLoad",true)
+			dgsSetData(filter,"sourceTexture",bufferRTV)
+			bufferRTV = filter
+		end
+		dxDrawImage(x,y,w,h,bufferRTV,0,0,0,color,postGUI or false)
+		dxSetBlendMode(savedBlendMode)
 	end
-	dxSetShaderValue(shader[2],"screenSource",bufferRTH)
-	dxSetRenderTarget(bufferRTV,true)
-	dxDrawImage(0,0,resolution[1],resolution[2],shader[2],0,0,0,0xFFFFFFFF)
-	dxSetRenderTarget()
-	local filter = eleData.filter
-	if filter then
-		dxSetShaderValue(filter,"sourceTexture",bufferRTV)
-		dxSetShaderValue(filter,"textureLoad",true)
-		dgsSetData(filter,"sourceTexture",bufferRTV)
-		bufferRTV = filter
-	end
-	dxDrawImage(x,y,w,h,bufferRTV,0,0,0,color,postGUI or false)
-	dxSetBlendMode(savedBlendMode)
 end
 
 function dgsCreateBlurBox(w,h,sourceTexture)
