@@ -69,12 +69,16 @@ function dgsCreateBlurBox(w,h,sourceTexture)
 	dgsSetData(bb,"shaders",{shaderH,shaderV})
 	local bufferRTH = dxCreateRenderTarget(w,h,true,bb)
 	local bufferRTV = dxCreateRenderTarget(w,h,true,bb)
-	dxSetTextureEdge(bufferRTH,"mirror")
-	dxSetTextureEdge(bufferRTV,"mirror")
-	dgsAttachToAutoDestroy(bufferRTH,bb,-3)
-	dgsAttachToAutoDestroy(bufferRTV,bb,-4)
-	dgsSetData(bb,"bufferRTH",bufferRTH)
-	dgsSetData(bb,"bufferRTV",bufferRTV)
+	if bufferRTH then
+		dxSetTextureEdge(bufferRTH,"mirror")
+		dgsAttachToAutoDestroy(bufferRTH,bb,-3)
+		dgsSetData(bb,"bufferRTH",bufferRTH)
+	end
+	if bufferRTV then
+		dxSetTextureEdge(bufferRTV,"mirror")
+		dgsAttachToAutoDestroy(bufferRTV,bb,-4)
+		dgsSetData(bb,"bufferRTV",bufferRTV)
+	end
 	dgsSetData(bb,"intensity",1)
 	dgsSetData(bb,"resolution",{w,h})
 	dgsSetData(bb,"level",5)
@@ -101,13 +105,17 @@ function dgsBlurBoxSetResolution(bb,w,h)
 	if isElement(bufferRTV) then destroyElement(bufferRTV) end
 	local bufferRTH = dxCreateRenderTarget(w,h,true,bb)
 	local bufferRTV = dxCreateRenderTarget(w,h,true,bb)
-	dxSetTextureEdge(bufferRTH,"mirror")
-	dxSetTextureEdge(bufferRTV,"mirror")
-	dgsAttachToAutoDestroy(bufferRTH,bb,-3)
-	dgsAttachToAutoDestroy(bufferRTV,bb,-4)
+	if bufferRTH then
+		dxSetTextureEdge(bufferRTH,"mirror")
+		dgsAttachToAutoDestroy(bufferRTH,bb,-3)
+		dgsSetData(bb,"bufferRTH",bufferRTH)
+	end
+	if bufferRTV then
+		dxSetTextureEdge(bufferRTV,"mirror")
+		dgsAttachToAutoDestroy(bufferRTV,bb,-4)
+		dgsSetData(bb,"bufferRTV",bufferRTV)
+	end
 	dgsSetData(bb,"resolution",{w,h})
-	dgsSetData(bb,"bufferRTH",bufferRTH)
-	dgsSetData(bb,"bufferRTV",bufferRTV)
 	return true
 end
 
