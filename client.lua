@@ -514,7 +514,12 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		local x,y = PosX+OffsetX,PosY+OffsetY
 		OffsetX,OffsetY = 0,0
 		xRT,yRT,xNRT,yNRT = xRT+x,yRT+y,xNRT+x,yNRT+y
-		local isPostGUI = not debugMode and (not rndtgt) and ((dgsRenderSetting.postGUI == nil and eleData.postGUI) or dgsRenderSetting.postGUI)
+		local isPostGUI = (not debugMode) and (not rndtgt)
+		if eleData.postGUI == nil then
+			isPostGUI = isPostGUI and dgsRenderSetting.postGUI
+		else
+			isPostGUI = isPostGUI and eleData.postGUI
+		end
 		if eleDataP and eleDataP.renderTarget_parent == rndtgt and rndtgt then xRT,yRT = x,y end
 		self = source
 		renderArguments[1] = xRT
