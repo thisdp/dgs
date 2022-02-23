@@ -95,15 +95,7 @@ function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 			end
 			x,y = x+absPosX,y+absPosY+titleHeight
 		elseif dgsElementType[dgsEle] == "dgs-dxscrollpane" then
-			local scrollbar = eleData.scrollbars
-			local scbThick = eleData.scrollBarThick
-			local size = eleData.absSize
-			local relSizX,relSizY = size[1]-(dgsElementData[ scrollbar[1] ].visible and scbThick or 0),size[2]-(dgsElementData[ scrollbar[2] ].visible and scbThick or 0)
-			local maxSize = eleData.maxChildSize
 			x,y = x+absPosX-eleData.horizontalMoveOffsetTemp,y+absPosY-eleData.verticalMoveOffsetTemp
-			--local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
-			--maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-			--x,y = x+absPosX-maxX*dgsElementData[scrollbar[2]].position*0.01,y+absPosY-maxY*dgsElementData[scrollbar[1]].position*0.01
 		elseif dgsElementType[dgsEle] == "dgs-dxscalepane" then
 			--[[local scrollbar = eleData.scrollbars
 			local scbThick = eleData.scrollBarThick

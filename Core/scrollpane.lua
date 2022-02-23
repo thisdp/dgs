@@ -64,8 +64,8 @@ function dgsCreateScrollPane(...)
 		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
 		scrollBarLength = {},
 		maxChildSize = {0,0},
-		horizontalMoveOffsetTemp = 0,
-		verticalMoveOffsetTemp = 0,
+		horizontalMoveOffset = 0,
+		verticalMoveOffset = 0,
 		moveHardness = {0.1,0.9},
 		childSizeRef = {{},{}}, --Horizontal,Vertical //to optimize
 		configNextFrame = false,
@@ -418,10 +418,10 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local _OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
 	local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
 	local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-	local OffsetX = mathLerp(xMoveHardness,eleData.horizontalMoveOffsetTemp,_OffsetX)
-	local OffsetY = mathLerp(yMoveHardness,eleData.verticalMoveOffsetTemp,_OffsetY)
-	eleData.horizontalMoveOffsetTemp = OffsetX
-	eleData.verticalMoveOffsetTemp = OffsetY
+	local OffsetX = mathLerp(xMoveHardness,eleData.horizontalMoveOffset,_OffsetX)
+	local OffsetY = mathLerp(yMoveHardness,eleData.verticalMoveOffset,_OffsetY)
+	eleData.horizontalMoveOffset = OffsetX
+	eleData.verticalMoveOffset = OffsetY
 	if OffsetX > 0 then OffsetX = 0 end
 	if OffsetY > 0 then OffsetY = 0 end
 	------------------------------------
