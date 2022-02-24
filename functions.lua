@@ -887,7 +887,7 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	eleData.functionRunBefore = true --true : after render; false : before render
 	eleData.disabledColor = style.disabledColor
 	eleData.disabledColorPercent = style.disabledColorPercent
-	eleData.postGUI = dgsRenderSetting.postGUI == nil and true or false
+	eleData.postGUI = nil
 	--eleData.outline = false
 	eleData.changeOrder = style.changeOrder --Change the order when "bring to front" or clicked
 	--eleData.attachedTo = false
