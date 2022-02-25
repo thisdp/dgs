@@ -522,6 +522,7 @@ function ScrollBarTest()
 	--dgsSetProperty(scrollbar,"scrollArrow",false)
 	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
 end
+
 function ScalePaneTest()
 	local sp = dgsCreateScalePane(0,0,500,800,false,_,2000,1000)
 	dgsSetProperty(sp,"bgColor",tocolor(128,128,128,128))
@@ -912,12 +913,27 @@ addEventHandler("onClientRender",root,function()
 	dgsSetPosition(e,_x-w/2,_y-h/2,false)
 end)]]
 ---------------------StressTest
+function animStress()
+	for i=1,1000 do
+		local image = dgsCreateImage(200,i*1,30,1,_,false)
+		dgsSizeTo(image,300,1,false,"Linear",10000)
+	end
+end
+
+function labelStress()
+	for i=1,1000 do
+		local l = dgsCreateLabel(500,500,200,200,"test",false)
+		dgsSetProperty(l,"shadow",{1,1,tocolor(0,0,0,255)})
+		dgsSetProperty(l,"colorCoded",true)
+	end
+end
 
 function buttonStress()
 	for i=1,100 do
 		dgsCreateButton(500,500,200,200,"test",false)
 	end
 end
+
 
 function editStress()
 	for i=1,100 do
@@ -954,47 +970,47 @@ function dgsSetPropertyTest()
 end
 
 function dgsScrollPaneTest()
-	local ele = dgsCreateScrollPane(760, 340, 400, 600, false, nil)
+	local ele = dgsCreateScrollPane(760, 140, 400, 600, false, nil)
 	local tex = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
 	local y = 0
-
-	for i = 1, 1000 do
+	
+	for i = 1, 5000 do
 		y = ((i - 1) * 45)
-		dgsCreateImage(0, y, 380, 40, tex, false, ele)
+		local button = dgsCreateButton(0, y, 380, 40, "", false, ele)
 	end
 
-	for i = 1, 1000 do
+	--[[for i = 1, 1000 do
 		y = ((i - 1) * 45)
-		dgsCreateImage(405, y, 380, 40, tex, false, ele)
-	end
+		dgsCreateButton(405, y, 380, 40, "", false, ele)
+	end]]
 end
 
 function SVGTest()
 	
 	local svg = dgsCreateSVG(500,500)
 	local svgDoc = dgsSVGGetDocument(svg)
-	local rect = dgsSVGNodeCreateNode(svgDoc,"rect",50,50,50,50)
+	local rect = dgsSVGCreateNode(svgDoc,"rect",50,50,50,50)
 	dgsSVGNodeSetAttributes(rect,{
 		["stroke"] = {255,255,0},
 		["stroke-width"] = "5px",
 		["fill"] = "rgb(255,0,0)",
 	})
 
-	local circle = dgsSVGNodeCreateNode(svgDoc,"circle",10,10,20)
+	local circle = dgsSVGCreateNode(svgDoc,"circle",10,10,20)
 	dgsSVGNodeSetAttributes(rect,{
 		["stroke"] = {255,255,0},
 		["stroke-width"] = "5px",
 		["fill"] = "rgb(255,0,0)",
 	})
 
-	local polyline = dgsSVGNodeCreateNode(svgDoc,"polyline",{100,100,200,200,100,200})
+	local polyline = dgsSVGCreateNode(svgDoc,"polyline",{100,100,200,200,100,200})
 	dgsSVGNodeSetAttributes(polyline,{
 		["stroke"] = {255,255,0},
 		["stroke-width"] = "5px",
 		["fill"] = "rgb(255,0,0)",
 	})
 
-	local path = dgsSVGNodeCreateNode(svgDoc,"path",{
+	local path = dgsSVGCreateNode(svgDoc,"path",{
 		{"M",153,334},
 		{"C",153, 334, 151, 334, 151, 334},
 		{"C",151, 339, 153, 344, 156, 344},
