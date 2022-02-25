@@ -9,7 +9,7 @@ function dgsCreateSVG(...)
 	local svg
 	if select("#",...) == 1 then
 		local pathOrRaw = ...
-		if not(type(pathOrRaw) == "number") then error(dgsGenAsrt(pathOrRaw,"dgsCreateSVG",1,"string")) end
+		if not(type(pathOrRaw) == "string") then error(dgsGenAsrt(pathOrRaw,"dgsCreateSVG",1,"string")) end
 		svg = svgCreate(pathOrRaw)
 	else
 		local w,h = ...
