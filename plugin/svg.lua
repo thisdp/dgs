@@ -7,15 +7,19 @@ setmetatable(dgsSVGXMLRef,{__mode="k"})
 
 function dgsCreateSVG(...)
 	local svg
-	if select("#",...) == 1 then
-		local pathOrRaw = ...
+	if select('#',...) == 3 then
+		local w,h,pathOrRaw = ...
 		if not(type(pathOrRaw) == "string") then error(dgsGenAsrt(pathOrRaw,"dgsCreateSVG",1,"string")) end
-		svg = svgCreate(pathOrRaw)
-	else
+		svg = svgCreate(w,h,pathOrRaw)
+	elseif select('#',...) == 2 then
 		local w,h = ...
 		if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSVG",1,"number")) end
 		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSVG",2,"number")) end
 		svg = svgCreate(w,h)
+	else
+		if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSVG",1,"number")) end
+		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSVG",2,"number")) end
+		return false
 	end
 	dgsElementData[svg] = {
 		svgDocument = svgGetDocumentXML(svg),
