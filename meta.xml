@@ -899,6 +899,7 @@
 	<export function="dgsScreenSourceGetUVSize" type="client" />
 	
 	<export function="dgsCreateSVG" type="client" />
+	<export function="dgsSVGGetDocument" type="client" />
 	<export function="dgsSVGGetContent" type="client" />
 	<export function="dgsSVGCreateNode" type="client" />
 	<export function="dgsSVGDestroyNode" type="client" />
