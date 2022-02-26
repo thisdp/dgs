@@ -1001,7 +1001,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 					dxDrawRectangle(imagex,imagey,imagew,imageh,rowImage[2])
 				end
 			end
-			local _y,_sx,_sy = rowpos+itemMoveOffset,sW-itemTextPadding[2],rowpos+itemHeight+itemMoveOffset
+			local _y,_sx,_sy = rowpos+itemMoveOffset,w-itemTextPadding[2],rowpos+itemHeight+itemMoveOffset
 			local text = itemData[i][1]
 			textRenderBuffer.count = textRenderBuffer.count+1
 			if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
