@@ -29,7 +29,10 @@ function dgsCreateSVG(...)
 	return svg
 end
 
-function dgsSVGGetDocument(svg) return dgsElementData[svg].svgDocument end
+function dgsSVGGetDocument(svg)
+	if not(dgsIsType(dgsEle,"svg")) then error(dgsGenAsrt(dgsEle,"dgsSVGGetDocument",1,"svg")) end
+	return dgsElementData[svg] and dgsElementData[svg].svgDocument or svgGetDocumentXML(svg)
+end
 
 dgsCustomTexture["dgs-dxsvg"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	local eleData = dgsElementData[image]
@@ -48,6 +51,7 @@ dgsCustomTexture["dgs-dxsvg"] = function(posX,posY,width,height,u,v,usize,vsize,
 end
 
 function dgsSVGMarkUpdate(ele)
+	if not dgsGetPluginType(ele) == "dgs-dxsvg" then return false end
 	local cnt = 0
 	while true do
 		cnt = cnt+1
