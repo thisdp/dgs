@@ -1138,6 +1138,7 @@ function dgsApplyLanguageChange(name,translation,attach)
 				if font then
 					dgsSetData(dgsEle,"placeHolderFont",font)
 				end
+				dgsElementData[dgsEle].updateTextRTNextFrame = true
 			else
 				local text = dgsElementData[dgsEle]._translationText
 				if text then
