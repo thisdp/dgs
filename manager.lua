@@ -704,8 +704,28 @@ local dgsDataFunctions = {
 		end,
 		showPos = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
 		masked = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolder = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolderFont = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+		placeHolder = function(dgsEle,key,value,oldValue)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
+			--Multilingual
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationPlaceHolderText = value
+				value = dgsTranslate(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationPlaceHolderText = nil
+			end
+			dgsElementData[dgsEle].placeHolder = tostring(value)
+		end,
+		placeHolderFont = function(dgsEle,key,value,oldValue)
+			dgsElementData[dgsEle].updateTextRTNextFrame = true
+			--Multilingual
+			if type(value) == "table" then
+				dgsElementData[dgsEle]._translationPlaceHolderFont = value
+				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+			else
+				dgsElementData[dgsEle]._translationPlaceHolderFont = nil
+			end
+			dgsElementData[dgsEle].placeHolderFont = value
+		end,
 		placeHolderVisibleWhenFocus = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
 		placeHolderColor = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
 		placeHolderColorcoded = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,

@@ -1129,6 +1129,15 @@ function dgsApplyLanguageChange(name,translation,attach)
 				if font then
 					dgsSetData(dgsEle,"font",font)
 				end
+			elseif dgsType == "dgs-dxedit" then
+				local text = dgsElementData[dgsEle]._translationPlaceHolderText
+				if text then
+					dgsSetData(dgsEle,"placeHolder",text)
+				end
+				local font = dgsElementData[dgsEle]._translationPlaceHolderFont
+				if font then
+					dgsSetData(dgsEle,"placeHolderFont",font)
+				end
 			else
 				local text = dgsElementData[dgsEle]._translationText
 				if text then
