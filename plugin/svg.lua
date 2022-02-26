@@ -325,7 +325,6 @@ function dgsSVGGetRawDocument(svgDoc)
 	return false
 end
 
-
 ------SVG Util
 svgGetColor = function(value,retType)
 	if not value then value = "#ffffff" end
@@ -431,7 +430,6 @@ svgGetPoints = function(value,retType)
 	end
 	return value
 end
-
 
 local svgPathParaCount = {m=2,l=2,h=1,v=1,c=6,s=4,q=4,t=2,a=7,z=0}
 svgGetPath = function(value,retType)
