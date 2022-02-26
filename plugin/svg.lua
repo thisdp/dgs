@@ -13,15 +13,11 @@ function dgsCreateSVG(...)
 		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSVG",2,"number")) end
 		if not(type(pathOrRaw) == "string") then error(dgsGenAsrt(pathOrRaw,"dgsCreateSVG",3,"string")) end
 		svg = svgCreate(w,h,pathOrRaw)
-	elseif select('#',...) == 2 then
+	else
 		local w,h = ...
 		if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSVG",1,"number")) end
 		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSVG",2,"number")) end
 		svg = svgCreate(w,h)
-	else
-		if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateSVG",1,"number")) end
-		if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSVG",2,"number")) end
-		return false
 	end
 	dgsElementData[svg] = {
 		svgDocument = svgGetDocumentXML(svg),
@@ -307,7 +303,7 @@ function dgsSVGCopyNodeContent(svgNode,xmlNode)
 	end
 end
 
-function dgsSVGGetContent(svgDoc)
+function dgsSVGGetRawDocument(svgDoc)
 	local svgDocType = dgsGetType(svgDoc)
 	if svgDocType == "xml-node" then
 		local fName = "tmpSVG"..getTickCount()..".xml"
@@ -320,7 +316,7 @@ function dgsSVGGetContent(svgDoc)
 		fileDelete(fName)
 		return content
 	elseif svgDocType == "svg" then
-		return dgsSVGGetContent(dgsElementData[svgDoc] and dgsElementData[svgDoc].svgDocument or svgGetDocumentXML(svgDoc))
+		return dgsSVGGetRawDocument(dgsElementData[svgDoc] and dgsElementData[svgDoc].svgDocument or svgGetDocumentXML(svgDoc))
 	end
 	return false
 end

@@ -900,7 +900,7 @@
 	
 	<export function="dgsCreateSVG" type="client" />
 	<export function="dgsSVGGetDocument" type="client" />
-	<export function="dgsSVGGetContent" type="client" />
+	<export function="dgsSVGGetRawDocument" type="client" />
 	<export function="dgsSVGCreateNode" type="client" />
 	<export function="dgsSVGDestroyNode" type="client" />
 	<export function="dgsSVGNodeSetAttribute" type="client" />
