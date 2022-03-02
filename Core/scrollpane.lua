@@ -414,16 +414,32 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local relSizX,relSizY = w-xthick,h-ythick
 	local maxX,maxY = maxSize[1]-relSizX,maxSize[2]-relSizY
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-	local _OffsetX = -maxX*dgsElementData[scrollbar[2]].position*0.01
-	local _OffsetY = -maxY*dgsElementData[scrollbar[1]].position*0.01
-	local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-	local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-	local OffsetX = mathLerp(xMoveHardness,eleData.horizontalMoveOffset,_OffsetX)
-	local OffsetY = mathLerp(yMoveHardness,eleData.verticalMoveOffset,_OffsetY)
-	eleData.horizontalMoveOffset = OffsetX
-	eleData.verticalMoveOffset = OffsetY
-	if OffsetX > 0 then OffsetX = 0 end
-	if OffsetY > 0 then OffsetY = 0 end
+	
+	local _OffsetX = -maxX*dgsElementData[ scrollbar[2] ].position*0.01
+	local OffsetX = eleData.horizontalMoveOffset
+	if eleData.horizontalMoveOffset ~= _OffsetX then
+		local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+		OffsetX = mathLerp(xMoveHardness,OffsetX,_OffsetX)
+		if _OffsetX-OffsetX <= 0.5 and _OffsetX-OffsetX >= -0.5 then
+			OffsetX = _OffsetX
+		end
+		if OffsetX >= 0 then OffsetX = 0 end
+		eleData.horizontalMoveOffset = OffsetX
+		OffsetX = OffsetX-OffsetX%1
+	end
+	local _OffsetY = -maxY*dgsElementData[ scrollbar[1] ].position*0.01
+	local OffsetY = eleData.verticalMoveOffset
+	if eleData.verticalMoveOffset ~= _OffsetY then
+		local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
+		OffsetY = mathLerp(yMoveHardness,OffsetY,_OffsetY)
+		if _OffsetY-OffsetY <= 0.5 and _OffsetY-OffsetY >= -0.5 then
+			OffsetY = _OffsetY
+		end
+		if OffsetY >= 0 then OffsetY = 0 end
+		eleData.verticalMoveOffset = OffsetY
+		OffsetY = OffsetY-OffsetY%1
+	end
+	
 	------------------------------------
 	if eleData.functionRunBefore then
 		local fnc = eleData.functions
