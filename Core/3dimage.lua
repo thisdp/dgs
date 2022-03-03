@@ -1,4 +1,30 @@
 dgsRegisterType("dgs-dx3dimage","dgsType3D","dgsTypeScreen3D")
+dgsRegisterProperties("dgs-dx3dimage",{
+	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	imageSize = 			{	{ PArg.Number, PArg.Number }	},
+	UVPos = 				{	{ PArg.Number, PArg.Number }	},
+	UVSize = 				{	{ PArg.Number, PArg.Number }	},
+	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
+	color = 				{	PArg.Number		},
+	rotation = 				{	PArg.Number		},
+	maxDistance = 			{	PArg.Number		},
+	fadeDistance = 			{	PArg.Number		},
+	dimension = 			{	PArg.Number		},
+	interior = 				{	PArg.Number		},
+	subPixelPositioning = 	{	PArg.Bool		},
+	fixImageSize = 			{	PArg.Bool		},
+	canBeBlocked = 			{	PArg.Bool, {
+											checkBuildings = PArg.Nil+PArg.Bool,
+											checkVehicles = PArg.Nil+PArg.Bool,
+											checkPeds = PArg.Nil+PArg.Bool,
+											checkObjects = PArg.Nil+PArg.Bool,
+											checkDummies = PArg.Nil+PArg.Bool,
+											seeThroughStuff = PArg.Nil+PArg.Bool,
+											ignoreSomeObjectsForCamera = PArg.Nil+PArg.Bool,
+											}
+							},
+})
+
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage
