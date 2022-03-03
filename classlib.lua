@@ -1640,7 +1640,7 @@ class {
 				end,
 				unbindFromColorPicker = gObjFnc("dgsUnbindFromColorPicker",true),
 			}
-		}
+		},
 		dgsEdit = {
 			default = {
 				bindToColorPicker = function(self,colorPicker,...)
@@ -1648,7 +1648,7 @@ class {
 				end,
 				unbindFromColorPicker = gObjFnc("dgsUnbindFromColorPicker",true),
 			}
-		}
+		},
 		dgsLabel = {
 			default = {
 				bindToColorPicker = function(self,colorPicker,...)
