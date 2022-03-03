@@ -401,9 +401,9 @@ end
 
 function dgsRemoveEventHandler(eventName,element,fncName)
 	local eventHandlers = dgsElementData[element].eventHandlers
-	if not eventHandlers[element] then return true end
-	if not eventHandlers[element][eventName] then return true end
-	eventHandlers[element][eventName][fncName] = nil	--Remove event handler
+	if not eventHandlers then return true end
+	if not eventHandlers[eventName] then return true end
+	eventHandlers[eventName][fncName] = nil	--Remove event handler
 	return removeEventHandler(eventName,element,_G[fncName])
 end
 --------------------------------Table Utility
