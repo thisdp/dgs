@@ -30,7 +30,7 @@ function dgsCreateSVG(...)
 end
 
 function dgsSVGGetDocument(svg)
-	if not(dgsIsType(dgsEle,"svg")) then error(dgsGenAsrt(dgsEle,"dgsSVGGetDocument",1,"svg")) end
+	if not(dgsIsType(svg,"svg")) then error(dgsGenAsrt(svg,"dgsSVGGetDocument",1,"svg")) end
 	return dgsElementData[svg] and dgsElementData[svg].svgDocument or svgGetDocumentXML(svg)
 end
 
