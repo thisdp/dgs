@@ -1641,6 +1641,22 @@ class {
 				unbindFromColorPicker = gObjFnc("dgsUnbindFromColorPicker",true),
 			}
 		}
+		dgsEdit = {
+			default = {
+				bindToColorPicker = function(self,colorPicker,...)
+					return call(dgsOOP.dgsRes,"dgsBindToColorPicker",self.dgsElement,colorPicker.dgsElement,...)
+				end,
+				unbindFromColorPicker = gObjFnc("dgsUnbindFromColorPicker",true),
+			}
+		}
+		dgsLabel = {
+			default = {
+				bindToColorPicker = function(self,colorPicker,...)
+					return call(dgsOOP.dgsRes,"dgsBindToColorPicker",self.dgsElement,colorPicker.dgsElement,...)
+				end,
+				unbindFromColorPicker = gObjFnc("dgsUnbindFromColorPicker",true),
+			}
+		}
 	}
 }
 
