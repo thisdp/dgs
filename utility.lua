@@ -400,6 +400,8 @@ function dgsAddEventHandler(eventName,element,fncName,...)
 end
 
 function dgsRemoveEventHandler(eventName,element,fncName)
+	if not eventHandlers[element] then return true end
+	if not eventHandlers[element][eventName] then return true end
 	eventHandlers[element][eventName][fncName] = nil	--Remove event handler
 	return removeEventHandler(eventName,element,_G[fncName])
 end
