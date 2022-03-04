@@ -58,6 +58,7 @@ LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFathe
 --
 --Element Data System
 dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
+dgsElementPropertyList = {}					----The Registered exported property list
 --
 --Element Type
 dgsElementType = {}
@@ -854,6 +855,53 @@ local dgsDataFunctions = {
 		end,
 	},
 }
+
+
+--[[
+{}: table with item checked
+1:nil
+2:number
+4:bool
+8.string
+16.table without item checked
+32.font
+64.material
+]]
+PArg = {
+	Nil = 2^0;
+	Number = 2^1;
+	Bool = 2^2;
+	String = 2^3;
+	Table = 2^4;
+	Font = 2^5;
+	Material = 2^6;
+}
+
+function dgsRegisterProperty(dgsElementType,propertyName,isReadOnly,...)
+	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsRegisterProperty",1,"string")) end
+	if not(type(propertyName) == "string") then error(dgsGenAsrt(propertyName,"dgsRegisterProperty",2,"string")) end
+	if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
+	dgsElementPropertyList[dgsElementType][propertyName] = {readOnly = isReadOnly,...}
+	return true
+end
+
+function dgsRegisterProperties(dgsElementType,propertyList)
+	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsRegisterProperties",1,"string")) end
+	if not(type(propertyList) == "table") then error(dgsGenAsrt(propertyList,"dgsRegisterProperties",2,"table")) end
+	if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
+	for propertyName, propertySyntax in pairs(propertyList) do
+		dgsElementPropertyList[dgsElementType][propertyName] = propertySyntax
+	end
+	return true
+end
+
+function dgsCheckProperty(dgsElementType,propertyName)
+
+end
+
+function dgsGetRegisterProperties(dgsElementType)
+
+end
 
 function dgsGetData(dgsEle,key)
 	return dgsElementData[dgsEle] and dgsElementData[dgsEle][key] or false

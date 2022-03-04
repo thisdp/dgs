@@ -1,4 +1,22 @@
 dgsRegisterType("dgs-dxlabel")
+dgsRegisterProperties("dgs-dxlabel",{
+	absPos = 				{	{ PArg.Number, PArg.Number }	},
+	absSize = 				{	{ PArg.Number, PArg.Number }	},
+	rltPos = 				{	{ PArg.Number, PArg.Number }	},
+	rltSize = 				{	{ PArg.Number, PArg.Number }	},
+	textSize = 				{	{ PArg.Number, PArg.Number }	},
+	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
+	alignment = 			{	{ PArg.String, PArg.String }	},
+	textOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }	},
+	textColor = 			{	PArg.Number		},
+	rotation = 				{	PArg.Number		},
+	subPixelPositioning = 	{	PArg.Bool		},
+	clip = 					{	PArg.Bool		},
+	wordBreak = 			{	PArg.Bool		},
+	colorCoded = 			{	PArg.Bool		},
+})
+
 --Dx Functions
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
@@ -60,8 +78,6 @@ function dgsCreateLabel(...)
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[label] = {
 		alignment = {hAlign or "left",vAlign or "top"},
-		clip = false,
-		colorCoded = false,
 		font = style.font or systemFont,
 		rotation = 0,
 		rotationCenter = {0, 0},
@@ -70,6 +86,8 @@ function dgsCreateLabel(...)
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
 		textOffset = {0,0,false},
+		clip = false,
+		colorCoded = false,
 		wordBreak = false,
 	}
 	dgsSetParent(label,parent,true,true)
