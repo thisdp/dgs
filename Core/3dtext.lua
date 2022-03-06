@@ -1,4 +1,31 @@
 dgsRegisterType("dgs-dx3dtext","dgsBasic","dgsType3D","dgsTypeScreen3D")
+dgsRegisterProperties("dgs-dx3dtext",{
+	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	color = 				{	PArg.Number		},
+	font = 					{	PArg.Font+PArg.String	},
+	alignment = 			{	{PArg.String,PArg.String}	},
+	fixTextSize = 			{	PArg.Bool		},
+	isBlocked = 			{	PArg.Bool		},
+	isOnScreen = 			{	PArg.Bool		},
+	maxDistance = 			{	PArg.Number		},
+	fadeDistance = 			{	PArg.Number		},
+	dimension = 			{	PArg.Number		},
+	interior = 				{	PArg.Number		},
+	text = 					{	PArg.String		},
+	textOffset = 			{	{PArg.Number,PArg.Number}	},
+	textSize = 			{	{PArg.Number,PArg.Number}	},
+	interior = 				{	PArg.Number		},
+	canBeBlocked = 			{	PArg.Bool, {
+											checkBuildings = PArg.Nil+PArg.Bool,
+											checkVehicles = PArg.Nil+PArg.Bool,
+											checkPeds = PArg.Nil+PArg.Bool,
+											checkObjects = PArg.Nil+PArg.Bool,
+											checkDummies = PArg.Nil+PArg.Bool,
+											seeThroughStuff = PArg.Nil+PArg.Bool,
+											ignoreSomeObjectsForCamera = PArg.Nil+PArg.Bool,
+											}
+							},
+})
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawText = dxDrawText

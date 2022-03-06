@@ -1,4 +1,9 @@
 dgsRegisterType("dgs-dxline","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxline",{
+	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	size = 					{	{PArg.Number,PArg.Number}		},
+	color = 				{	PArg.Number		},
+})
 --Dx Functions
 local dxDrawLine = dxDrawLine
 --

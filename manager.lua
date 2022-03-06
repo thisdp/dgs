@@ -879,6 +879,7 @@ end
 16.table without item checked
 32.font
 64.material
+
 ]]
 PArg = {
 	Nil = 2^0;
@@ -888,6 +889,7 @@ PArg = {
 	Table = 2^4;
 	Font = 2^5;
 	Material = 2^6;
+	DgsElement = 2^8;
 }
 
 function dgsRegisterProperty(dgsElementType,propertyName,propertyArgTemplate)

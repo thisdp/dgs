@@ -1,4 +1,23 @@
 dgsRegisterType("dgs-dxcheckbox","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxcheckbox",{
+	alignment = 			{	{ PArg.String, PArg.String }	},
+	clip = 					{	PArg.Bool	},
+	color_i =				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	color_f =				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	color_t =				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	image_i =				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	image_f =				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	image_t =				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	colorCoded = 			{	PArg.Bool	},
+	font = 					{	PArg.Font+PArg.String	},
+	state = 					{	PArg.Bool	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	textColor = 			{	PArg.Number	},
+	textPadding = 			{	PArg.Number	},
+	textSize = 				{	{ PArg.Number, PArg.Number }	},
+	buttonSize = 				{	{ PArg.Number, PArg.Number }	},
+	wordBreak = 			{	PArg.Bool	},
+})
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

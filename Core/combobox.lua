@@ -1,5 +1,43 @@
 dgsRegisterType("dgs-dxcombobox","dgsBasic","dgsType2D")
 dgsRegisterType("dgs-dxcombobox-Box","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxcombobox-Box",{
+	arrow = 				{	PArg.Material	},
+	alignment = 			{	{ PArg.String, PArg.String }	},
+	autoHideAfterSelected = {	PArg.Bool	},
+	autoSort = 				{	PArg.Bool	},
+	clip = 					{	PArg.Bool	},
+	myBox = 				{	PArg.DgsElement	},
+	captionEdit = 			{	PArg.DgsElement	},
+	caption = 				{	PArg.String	},
+	scrollBarThick = 		{	PArg.Number	},
+	color = 				{	PArg.Number	},
+	bgColor = 				{	PArg.Number	},
+	bgImage = 				{	PArg.Material},
+	image = 				{	{PArg.Material,PArg.Material,PArg.Material}},
+	colorcoded = 			{	PArg.Bool	},
+	font = 					{	PArg.Font	},
+	state = 				{	PArg.Bool	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	textColor = 			{	PArg.Number	},
+	textPadding = 			{	PArg.Number	},
+	textSize = 				{	{ PArg.Number, PArg.Number }	},
+	textBox = 				{	PArg.Bool	},
+	wordBreak = 			{	PArg.Bool	},
+	itemAlignment = 		{ {PArg.Number,PArg.Number} },
+	itemTextPadding = 		{ {PArg.Number,PArg.Number} },
+	itemColor = 			{ {PArg.Number,PArg.Number,PArg.Number} },
+	itemData = 				{ PArg.Table },
+	itemImage = 			{	{PArg.Material,PArg.Material,PArg.Material}},
+	itemMoveOffset = 		{	PArg.Number},
+	itemTextColor= 			{	PArg.Number},
+	itemTextSize= 			{	PArg.Number},
+	listState= 				{	PArg.Number},
+	moveHardness= 			{	PArg.Number},
+	scrollbar= 				{	PArg.DgsElement},
+	myCombo= 				{	PArg.DgsElement},
+	select= 				{	PArg.Number},
+	buttonLen = 			{	{ PArg.Number, PArg.Bool }	},
+})
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

@@ -1,4 +1,10 @@
 dgsRegisterType("dgs-dxdetectarea","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxdetectarea",{
+	checkFunction = { },
+	checkFunctionImage = { PArg.Material},
+	debugMode = {PArg.Bool},
+	debugTexture = {PArg.Material},
+})
 local loadstring = loadstring
 --Dx Functions
 local dxDrawImage = dxDrawImage
