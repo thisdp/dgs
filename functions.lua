@@ -602,13 +602,6 @@ function dgsGetInputMode(...) return guiGetInputMode(...) end
 function dgsGetBrowser(b) return b end
 function dgsGetRootElement() return resourceRoot end
 
-function GlobalEditMemoBlurCheck()
-	local dxChild = source == GlobalEdit and dgsElementData[source].linkedDxEdit or dgsElementData[source].linkedDxMemo
-	if isElement(dxChild) and MouseData.focused == dxChild then
-		dgsBlur(dxChild,true)
-	end
-end
-
 function dgsFocus(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsFocus",1,"dgs-dxelement")) end
 	local lastFront = MouseData.focused

@@ -1,4 +1,9 @@
 dgsRegisterType("dgs-dxbrowser","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxbrowser",{
+	color = 				{	PArg.Number		},
+	isTransparent = 		{	PArg.Bool		},
+	isLocal = 				{	PArg.Bool		},
+})
 --Dx Functions
 local dxDrawImage = dxDrawImage
 --DGS Functions

@@ -6,7 +6,6 @@
 	<script src="server.lua" type="server" />
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
-	<script src="functions.lua" type="client" />
 	<script src="styleManager/styleManager.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dline.lua" type="client" />
@@ -36,6 +35,7 @@
 	<script src="Core/switchbutton.lua" type="client" />
 	<script src="Core/window.lua" type="client" />
 	<script src="Core/customCursor.lua" type="client" />
+	<script src="functions.lua" type="client" />
 	
 	<script src="client.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />

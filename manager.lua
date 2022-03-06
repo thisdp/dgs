@@ -862,7 +862,13 @@ local dgsDataFunctions = {
 		end,
 	},
 }
-
+--------------Edit/Memo Blur Check
+function GlobalEditMemoBlurCheck()
+	local dxChild = source == GlobalEdit and dgsElementData[source].linkedDxEdit or dgsElementData[source].linkedDxMemo
+	if isElement(dxChild) and MouseData.focused == dxChild then
+		dgsBlur(dxChild,true)
+	end
+end
 
 --[[
 {}: table with item checked
