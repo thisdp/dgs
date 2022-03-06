@@ -139,7 +139,7 @@ function dgsIsAniming(dgsEle,property)
 		for i=1,#animQueue do
 			if animQueue[i][1] == dgsEle then
 				for p=1,#property do
-					if animQueue[index][2] == property[p] then
+					if animQueue[i][2] == property[p] then
 						return true
 					end
 				end
