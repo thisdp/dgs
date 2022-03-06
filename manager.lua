@@ -525,6 +525,9 @@ local dgsDataFunctions = {
 		leading = function(dgsEle,key,value,oldValue)
 			configGridList(dgsEle)
 		end,
+		scrollBarCoverColumn = function(dgsEle,key,value,oldValue)
+			configGridList(dgsEle)
+		end,
 		rowData = function(dgsEle,key,value,oldValue)
 			if dgsElementData[dgsEle].autoSort then
 				dgsElementData[dgsEle].nextRenderSort = true
