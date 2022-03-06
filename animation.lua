@@ -33,11 +33,6 @@ function dgsAnimTo(...)
 		end
 	else
 		dgsStopAniming(dgsEle,property)
-		for i=1,#animQueue do
-			if animQueue[i][1] == dgsEle and animQueue[i][2] == property then --Confirm
-				error(dgsGenAsrt(property,"dgsAnimTo",2,_,_,"found running animation on '"..property.."', stop it before using this function."))
-			end
-		end
 		local animTable = {
 			[-1]=sourceResourceRoot,
 			[0]=nil, --Result
