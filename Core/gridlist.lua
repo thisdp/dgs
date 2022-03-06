@@ -147,6 +147,7 @@ function dgsCreateGridList(...)
 		scrollBarState = {nil,nil},
 		scrollFloor = {false,false},--move offset ->int or float
 		scrollSize = 60,			--60 pixels
+		scrollBarCoverColumn = true,
 		sectionColumnOffset = style.sectionColumnOffset,
 		sectionFont = systemFont,
 		selectedColumn = -1,
@@ -2337,9 +2338,14 @@ function configGridList(gridlist)
 	--end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
-	dgsSetPosition(scrollbar[1],scbX,0,false)
+	
+	local scb1Y,scb1H = 0,relSizY
+	if not dgsElementData[gridlist].scrollBarCoverColumn then
+		scb1Y,scb1H = scb1Y+columnHeight,scb1H-columnHeight
+	end
+	dgsSetPosition(scrollbar[1],scbX,scb1Y,false)
 	dgsSetPosition(scrollbar[2],0,scbY,false)
-	dgsSetSize(scrollbar[1],scbThick,relSizY,false)
+	dgsSetSize(scrollbar[1],scbThick,scb1H,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].position
 	local scroll2 = dgsElementData[scrollbar[2]].position
