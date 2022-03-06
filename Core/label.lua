@@ -1,16 +1,16 @@
 dgsRegisterType("dgs-dxlabel","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxlabel",{
-	textSize = 				{	{ PArg.Number, PArg.Number }	},
-	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
 	alignment = 			{	{ PArg.String, PArg.String }	},
-	textOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
-	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }	},
-	textColor = 			{	PArg.Number		},
-	rotation = 				{	PArg.Number		},
-	subPixelPositioning = 	{	PArg.Bool		},
 	clip = 					{	PArg.Bool		},
-	wordBreak = 			{	PArg.Bool		},
 	colorCoded = 			{	PArg.Bool		},
+	rotation = 				{	PArg.Number		},
+	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }	},
+	subPixelPositioning = 	{	PArg.Bool		},
+	textColor = 			{	PArg.Number		},
+	textOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
+	textSize = 				{	{ PArg.Number, PArg.Number }	},
+	wordBreak = 			{	PArg.Bool		},
 })
 
 --Dx Functions
