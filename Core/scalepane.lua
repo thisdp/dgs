@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxscalepane")
+dgsRegisterType("dgs-dxscalepane","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawImageSection = dxDrawImageSection

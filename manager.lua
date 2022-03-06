@@ -58,6 +58,7 @@ LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFathe
 --
 --Element Data System
 dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
+--Property List
 dgsElementPropertyList = {}					----The Registered exported property list
 --
 --Element Type
@@ -76,6 +77,7 @@ addEventHandler("onDgsPluginCreate",resourceRoot,function(theResource)
 		end
 	end,false)
 end)
+
 --Layer System
 function dgsSetLayer(dgsEle,layer,forceDetatch)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetLayer",1,"dgs-dxelement")) end
@@ -450,16 +452,18 @@ end
 
 function dgsRegisterDeprecatedFunction(fncNameOld,fncNameNew)
 	_G[fncNameOld] = function(...)
-		if not getElementData(localPlayer,"DGS-DEBUG-C") then
-			outputDebugString("Deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'. See information below, or run again with command /debugdgs c",2)
-			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"FunctionCompatibility",fncNameOld,fncNameNew)
+		if not getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then
+			if not getElementData(localPlayer,"DGS-DEBUG-C") then
+				outputDebugString("Deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'. See information below, or run again with command /debugdgs c",2)
+				if getElementData(localPlayer,"DGS-DEBUG") == 3 then
+					triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"FunctionCompatibility",fncNameOld,fncNameNew)
+				end
+			else
+				if getElementData(localPlayer,"DGS-DEBUG") == 3 then
+					triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"FunctionCompatibility",fncNameOld,fncNameNew)
+				end
+				error("Found deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'")
 			end
-		else
-			if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-				triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"FunctionCompatibility",fncNameOld,fncNameNew)
-			end
-			error("Found deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'")
 		end
 		return _G[fncNameNew](...)
 	end
@@ -877,20 +881,33 @@ PArg = {
 	Material = 2^6;
 }
 
-function dgsRegisterProperty(dgsElementType,propertyName,isReadOnly,...)
+function dgsRegisterProperty(dgsElementType,propertyName,propertyArgTemplate)
 	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsRegisterProperty",1,"string")) end
 	if not(type(propertyName) == "string") then error(dgsGenAsrt(propertyName,"dgsRegisterProperty",2,"string")) end
-	if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
-	dgsElementPropertyList[dgsElementType][propertyName] = {readOnly = isReadOnly,...}
+	if not(type(propertyArgTemplate) == "table") then error(dgsGenAsrt(propertyArgTemplate,"dgsRegisterProperty",3,"table")) end
+	if _G[dgsElementType] then
+		for eleType in pairs(_G[dgsElementType]) do
+			dgsRegisterProperty(eleType,propertyName,propertyArgTemplate)
+		end
+	else
+		if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
+		dgsElementPropertyList[dgsElementType][propertyName] = propertyArgTemplate
+	end
 	return true
 end
 
 function dgsRegisterProperties(dgsElementType,propertyList)
 	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsRegisterProperties",1,"string")) end
 	if not(type(propertyList) == "table") then error(dgsGenAsrt(propertyList,"dgsRegisterProperties",2,"table")) end
-	if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
-	for propertyName, propertySyntax in pairs(propertyList) do
-		dgsElementPropertyList[dgsElementType][propertyName] = propertySyntax
+	if _G[dgsElementType] then
+		for eleType in pairs(_G[dgsElementType]) do
+			dgsRegisterProperties(eleType,propertyList)
+		end
+	else
+		if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
+		for propertyName,propertyArgTemplate in pairs(propertyList) do
+			dgsElementPropertyList[dgsElementType][propertyName] = propertyArgTemplate
+		end
 	end
 	return true
 end
@@ -899,8 +916,18 @@ function dgsCheckProperty(dgsElementType,propertyName)
 
 end
 
-function dgsGetRegisterProperties(dgsElementType)
-
+function dgsGetRegisteredProperties(dgsElementType,withArgTemplate)
+	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsGetRegisteredProperties",1,"string")) end
+	if not dgsElementPropertyList[dgsElementType] then return false end
+	if withArgTemplate then
+		return dgsElementPropertyList[dgsElementType]
+	else
+		local propertyList = {}
+		for propType in pairs(dgsElementPropertyList[dgsElementType]) do
+			propertyList[#propertyList+1] = propType
+		end
+		return propertyList
+	end
 end
 
 function dgsGetData(dgsEle,key)
@@ -990,6 +1017,7 @@ local compatibility = {
 }
 function checkCompatibility(dgsEle,key,sResRoot)
 	local eleTyp = dgsGetType(dgsEle)
+	if getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then return (compatibility[eleTyp] and compatibility[eleTyp][key]) or compatibility[key] or key end
 	if compatibility[eleTyp] and compatibility[eleTyp][key] then
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
 			outputDebugString("[DGS]Deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..", replace with '"..compatibility[eleTyp][key].."'. See information below, or run again with command /debugdgs c",4,254,128,0)

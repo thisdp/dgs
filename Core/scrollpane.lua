@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxscrollpane")
+dgsRegisterType("dgs-dxscrollpane","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawRectangle = dxDrawRectangle

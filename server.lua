@@ -1,16 +1,16 @@
 ﻿-----------Config Loader
 dgsConfig = {}
-dgsConfig.updateCheck				= true			-- Enable:true;Disable:false
-dgsConfig.updateCheckInterval		= 120			-- Minutes
-dgsConfig.updateCheckNoticeInterval	= 120			-- Minutes
-dgsConfig.updateSystemDisabled		= false			-- Minutes
-dgsConfig.backupMeta				= true			-- Backup meta.xml
-dgsConfig.backupStyleMeta			= true			-- Backup style files meta index from meta.xml
-dgsConfig.g2d						= true			-- GUI To DGS command line
-dgsConfig.enableBuiltInCMD			= true			-- Enable DGS Built-in CMD /dgscmd
-dgsConfig.enableServerConsole		= false			-- Enable DGS Built Server Console
-dgsConfig.updateCommand				= "updatedgs"	-- Enable DGS Built Server Console
-dgsConfig.enableTestFile			= true			-- Loads DGS Test File (If you want to save some bytes of memory, disable this by set to false)
+dgsConfig.updateCheck					= true			-- Enable:true;Disable:false
+dgsConfig.updateCheckInterval			= 120			-- Minutes
+dgsConfig.updateCheckNoticeInterval		= 120			-- Minutes
+dgsConfig.updateSystemDisabled			= false			-- Disable update system
+dgsConfig.backupMeta					= true			-- Backup meta.xml
+dgsConfig.backupStyleMeta				= true			-- Backup style files meta index from meta.xml
+dgsConfig.g2d							= true			-- GUI To DGS command line
+dgsConfig.enableBuiltInCMD				= true			-- Enable DGS Built-in CMD /dgscmd
+dgsConfig.updateCommand					= "updatedgs"	-- Command of update dgs
+dgsConfig.enableTestFile				= true			-- Loads DGS Test File (If you want to save some bytes of memory, disable this by set to false)
+dgsConfig.disableCompatibilityCheck 	= false			-- Disable compatibility check warnings
 
 function loadConfig()
 	if fileExists("config.txt") then
@@ -30,7 +30,7 @@ function loadConfig()
 		end
 	end
 	setElementData(resourceRoot,"allowCMD",dgsConfig.enableBuiltInCMD)
-	setElementData(resourceRoot,"enableServerConsole",dgsConfig.enableBuiltInCMD)
+	setElementData(resourceRoot,"DGS-disableCompatibilityCheck",dgsConfig.disableCompatibilityCheck)
 	if dgsConfig.g2d then
 		outputDebugString("[DGS]G2D is enabled!")
 	end

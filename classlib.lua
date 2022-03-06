@@ -525,10 +525,87 @@ class {
 }
 
 ----------------------------------------------------------
-----------------------------------------------------DGS 2D
+-------------------------------------------------DGS Basic
 ----------------------------------------------------------
 class {
 	extends = "dgsRoot";
+	type = "dgsBasic";
+	preInstantiate = nil;
+	public = {
+		__index=function(self,key)
+			if key == "parent" then
+				local parent = call(dgsOOP.dgsRes,"dgsGetParent",self.dgsElement,key)
+				return parent and dgsGetInstance(parent) or false
+			elseif key == "children" then
+				return self:getChildren()
+			return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
+		end,
+		__newindex=function(self,key,value)
+			if key == "parent" then
+				local targetEle
+				if type(value) == "table" then targetEle = value.dgsElement end
+				return call(dgsOOP.dgsRes,"dgsSetParent",self.dgsElement,targetEle)
+			return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,key,value) and self or false
+		end,
+		getParent = gObjFnc("dgsGetParent"),
+		setParent = function(self,parent)
+			if type(parent) == "table" and isElement(parent.dgsElement) then parent = parent.dgsElement	end
+			return call(dgsOOP.dgsRes,"dgsSetParent",self.dgsElement,parent) and self or false
+		end,
+		getChild = gObjFnc("dgsGetChild"),
+		getChildren = gObjFnc("dgsGetChildren"),
+		getType = gObjFnc("dgsGetType"),
+		getProperty = gObjFnc("dgsGetProperty"),
+		setProperty = gObjFnc("dgsSetProperty",true),
+		getProperties = function(self,...) return call(dgsOOP.dgsRes,"dgsGetProperties",self.dgsElement,...) end,
+		setProperties = gObjFnc("dgsSetProperties",true),
+		getVisible = gObjFnc("dgsGetVisible"),
+		setVisible = gObjFnc("dgsSetVisible",true),
+		getEnabled = gObjFnc("dgsGetEnabled"),
+		setEnabled = gObjFnc("dgsSetEnabled",true),
+		blur = gObjFnc("dgsBlur",true),
+		focus = gObjFnc("dgsFocus",true),
+		getAlpha = gObjFnc("dgsGetAlpha"),
+		setAlpha = gObjFnc("dgsSetAlpha",true),
+		getFont = gObjFnc("dgsGetFont"),
+		setFont = gObjFnc("dgsSetFont",true),
+		getText = gObjFnc("dgsGetText"),
+		setText = gObjFnc("dgsSetText",true),
+		simulateClick = gObjFnc("dgsSimulateClick",true),
+		animTo = gObjFnc("dgsAnimTo",true),
+		isAniming = gObjFnc("dgsIsAniming"),
+		stopAniming = gObjFnc("dgsStopAniming",true),
+		alphaTo = gObjFnc("dgsAlphaTo",true),
+		isAlphaing = gObjFnc("dgsIsAlphaing"),
+		stopAlphaing = gObjFnc("dgsStopAlphaing",true),
+		getPostGUI = gObjFnc("dgsGetPostGUI"),
+		setPostGUI = gObjFnc("dgsSetPostGUI",true),
+		detachFromGridList = gObjFnc("dgsDetachFromGridList",true),
+		getAttachedGridList = gObjFnc("dgsGetAttachedGridList",true),
+		attachToGridList = gObjFnc("dgsAttachToGridList",true),
+		destroy = function(self) return destroyElement(self.dgsElement) end;
+		isElement = gObjFnc("isElement",true);
+		getElement = function(self) return self.dgsElement end,
+		addMoveHandler = gObjFnc("dgsAddMoveHandler",true),
+		removeMoveHandler = gObjFnc("dgsRemoveMoveHandler",true),
+		isMoveHandled = gObjFnc("dgsIsMoveHandled"),
+		attachToTranslation = gObjFnc("dgsAttachToTranslation",true),
+		detachFromTranslation = gObjFnc("dgsDetachFromTranslation",true),
+		getTranslationName = gObjFnc("dgsGetTranslationName"),
+		addDragHandler = gObjFnc("dgsAddDragHandler",true),
+		removeDragHandler = gObjFnc("dgsRemoveDragHandler",true),
+		addDropHandler = gObjFnc("dgsAddDropHandler",true),
+		removeDropHandler = gObjFnc("dgsRemoveDropHandler",true),
+	};
+	default = {
+
+	};
+}
+----------------------------------------------------------
+----------------------------------------------------DGS 2D
+----------------------------------------------------------
+class {
+	extends = "dgsBasic";
 	type = "dgs2D";
 	preInstantiate = nil;
 	public = {
@@ -1186,7 +1263,7 @@ class {
 
 --------------------------TabPanel
 class {
-	extends = "dgs2D";
+	extends = "dgsBasic";
 	type = "dgsTabPanel";
 	dgsType = "dgs-dxtabpanel";
 	preInstantiate = function(parent,x,y,w,h,rlt,...)
@@ -1278,7 +1355,7 @@ dgsOOP.position3D = {
 }
 
 class {
-	extends = "dgsRoot";
+	extends = "dgsBasic";
 	type = "dgs3D";
 	public = {
 		__index=function(self,key)

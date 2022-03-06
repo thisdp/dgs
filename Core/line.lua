@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxline")
+dgsRegisterType("dgs-dxline","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawLine = dxDrawLine
 --

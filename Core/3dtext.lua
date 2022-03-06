@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dx3dtext","dgsType3D","dgsTypeScreen3D")
+dgsRegisterType("dgs-dx3dtext","dgsBasic","dgsType3D","dgsTypeScreen3D")
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawText = dxDrawText

@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxbrowser")
+dgsRegisterType("dgs-dxbrowser","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 --DGS Functions

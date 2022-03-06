@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dx3dinterface","dgsType3D","dgsTypeWorld3D")
+dgsRegisterType("dgs-dx3dinterface","dgsBasic","dgsType3D","dgsTypeWorld3D")
 local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.acos,math.deg
 local assert = assert
 local type = type

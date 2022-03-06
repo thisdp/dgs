@@ -193,9 +193,7 @@ function onAnimQueueProcess()
 					end
 				end
 				dbgResult,dbgErr = pcall(dgsSetProperty,dgsEle,property,animItem[0])
-				--iprint(property,animItem[0],rProgress)
 				if not dbgResult then
-					iprint(dbgErr,property,animItem[0])
 					outputDebugString("DGS runtime error: Animation",4,255,180,100)
 					if animItem[-1] and animItem[-2] then
 						local debugContext = animItem[-2] 
@@ -233,13 +231,15 @@ function dgsMoveTo(...)
 	else
 		if type(select(5,...)) == "boolean" then
 			dgsEle,x,y,relative,moveType,easing,duration,delay = ...
-			if not getElementData(localPlayer,"DGS-DEBUG-C") then
-				outputDebugString("Deprecated usage of @'dgsMoveTo' at argument 5, 'moveType' is no longer supported, use '/debugdgs c' to find",2)
-				if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-					triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"ArgumentCompatibility",5,"'moveType' is no longer supported")
+			if not getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then
+				if not getElementData(localPlayer,"DGS-DEBUG-C") then
+					outputDebugString("Deprecated usage of @'dgsMoveTo' at argument 5, 'moveType' is no longer supported, use '/debugdgs c' to find",2)
+					if getElementData(localPlayer,"DGS-DEBUG") == 3 then
+						triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"ArgumentCompatibility",5,"'moveType' is no longer supported")
+					end
+				else
+					error("Found deprecated usage of @'dgsMoveTo' at argument 5, 'moveType' is no longer supported")
 				end
-			else
-				error("Found deprecated usage of @'dgsMoveTo' at argument 5, 'moveType' is no longer supported")
 			end
 		else
 			dgsEle,x,y,relative,easing,duration,delay,reversedProgress = ...
@@ -285,13 +285,15 @@ function dgsSizeTo(...)
 	else
 		if type(select(5,...)) == "boolean" then
 			dgsEle,w,h,relative,moveType,easing,duration,delay = ...
-			if not getElementData(localPlayer,"DGS-DEBUG-C") then
-				outputDebugString("Deprecated usage of @'dgsSizeTo' at argument 5, 'moveType' is no longer supported, use '/debugdgs c' to find",2)
-				if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-					triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"ArgumentCompatibility",5,"'moveType' is no longer supported")
+			if not getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then
+				if not getElementData(localPlayer,"DGS-DEBUG-C") then
+					outputDebugString("Deprecated usage of @'dgsSizeTo' at argument 5, 'moveType' is no longer supported, use '/debugdgs c' to find",2)
+					if getElementData(localPlayer,"DGS-DEBUG") == 3 then
+						triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"ArgumentCompatibility",5,"'moveType' is no longer supported")
+					end
+				else
+					error("Found deprecated usage of @'dgsSizeTo' at argument 5, 'moveType' is no longer supported")
 				end
-			else
-				error("Found deprecated usage of @'dgsSizeTo' at argument 5, 'moveType' is no longer supported")
 			end
 		else
 			dgsEle,w,h,relative,easing,duration,delay,reversedProgress = ...
@@ -335,13 +337,15 @@ function dgsAlphaTo(...)
 	else
 		if type(select(3,...)) == "boolean" then
 			dgsEle,alpha,moveType,easing,duration,delay,reversedProgress = ...
-			if not getElementData(localPlayer,"DGS-DEBUG-C") then
-				outputDebugString("Deprecated usage of @'dgsAlphaTo' at argument 3, 'moveType' is no longer supported, use '/debugdgs c' to find",2)
-				if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-					triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"ArgumentCompatibility",3,"'moveType' is no longer supported")
+			if not getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then
+				if not getElementData(localPlayer,"DGS-DEBUG-C") then
+					outputDebugString("Deprecated usage of @'dgsAlphaTo' at argument 3, 'moveType' is no longer supported, use '/debugdgs c' to find",2)
+					if getElementData(localPlayer,"DGS-DEBUG") == 3 then
+						triggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"ArgumentCompatibility",3,"'moveType' is no longer supported")
+					end
+				else
+					error("Found deprecated usage of @'dgsAlphaTo' at argument 3, 'moveType' is no longer supported")
 				end
-			else
-				error("Found deprecated usage of @'dgsAlphaTo' at argument 3, 'moveType' is no longer supported")
 			end
 		else
 			dgsEle,alpha,easing,duration,delay,reversedProgress = ...

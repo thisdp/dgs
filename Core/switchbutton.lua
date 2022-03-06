@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxswitchbutton")
+dgsRegisterType("dgs-dxswitchbutton","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawImageSection = dxDrawImageSection

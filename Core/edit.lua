@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxedit")
+dgsRegisterType("dgs-dxedit","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage

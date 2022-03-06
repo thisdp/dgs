@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxlayout")
+dgsRegisterType("dgs-dxlayout","dgsBasic","dgsType2D")
 builtinLayoutStyle = {
 	horizontal = {
 		onItemAdd = function(layout,item,id,updateOnly)

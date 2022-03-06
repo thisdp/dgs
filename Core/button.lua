@@ -1,7 +1,5 @@
-dgsRegisterType("dgs-dxbutton")
+dgsRegisterType("dgs-dxbutton","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxbutton",{
-	absPos = 				{	{ PArg.Number, PArg.Number }	},
-	absSize = 				{	{ PArg.Number, PArg.Number }	},
 	alignment = 			{	{ PArg.String, PArg.String }	},
 	clickOffset = 			{	{ PArg.Number, PArg.Number }	},
 	clickType = 			{	PArg.Number	},
@@ -15,8 +13,6 @@ dgsRegisterProperties("dgs-dxbutton",{
 	iconOffset = 			{	{ PArg.Number, PArg.Number }	},
 	iconSize = 				{	{ PArg.Number, PArg.Number, PArg.String+PArg.Bool }	},
 	image = 				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	rltPos = 				{	{ PArg.Number, PArg.Number }	},
-	rltSize = 				{	{ PArg.Number, PArg.Number }	},
 	rotation = 				{	PArg.Number	},
 	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},

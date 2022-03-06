@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxwindow")
+dgsRegisterType("dgs-dxwindow","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

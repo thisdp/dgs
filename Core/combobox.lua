@@ -1,5 +1,5 @@
-dgsRegisterType("dgs-dxcombobox")
-dgsRegisterType("dgs-dxcombobox-Box")
+dgsRegisterType("dgs-dxcombobox","dgsBasic","dgsType2D")
+dgsRegisterType("dgs-dxcombobox-Box","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxscrollbar")
+dgsRegisterType("dgs-dxscrollbar","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage

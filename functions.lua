@@ -857,6 +857,18 @@ function dgsDetachFromAutoDestroy(element,dgsEle)
 	return true
 end
 -------------------------
+dgsRegisterProperties("dgsBasic",{
+	visible =				{ PArg.Bool },
+	enabled =				{ PArg.Bool },
+	alpha =					{ PArg.Number },
+})
+dgsRegisterProperties("dgsType2D",{
+	absPos = 				{	{ PArg.Number, PArg.Number }	},
+	absSize = 				{	{ PArg.Number, PArg.Number }	},
+	rltPos = 				{	{ PArg.Number, PArg.Number }	},
+	rltSize = 				{	{ PArg.Number, PArg.Number }	},
+	relative = 				{	{ PArg.Bool, PArg.Bool }	},
+})
 addEventHandler("onDgsCreate",root,function(theResource)
 	local style
 	local res = theResource or "global"

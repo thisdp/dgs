@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxradiobutton")
+dgsRegisterType("dgs-dxradiobutton","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

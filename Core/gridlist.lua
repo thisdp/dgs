@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxgridlist")
+dgsRegisterType("dgs-dxgridlist","dgsBasic","dgsType2D")
 local loadstring = loadstring
 --Dx Functions
 local dxDrawImage = dxDrawImage

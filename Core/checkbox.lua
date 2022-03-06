@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dxcheckbox")
+dgsRegisterType("dgs-dxcheckbox","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

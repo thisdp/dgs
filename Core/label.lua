@@ -1,9 +1,5 @@
-dgsRegisterType("dgs-dxlabel")
+dgsRegisterType("dgs-dxlabel","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxlabel",{
-	absPos = 				{	{ PArg.Number, PArg.Number }	},
-	absSize = 				{	{ PArg.Number, PArg.Number }	},
-	rltPos = 				{	{ PArg.Number, PArg.Number }	},
-	rltSize = 				{	{ PArg.Number, PArg.Number }	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
 	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
 	alignment = 			{	{ PArg.String, PArg.String }	},

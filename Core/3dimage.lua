@@ -1,4 +1,4 @@
-dgsRegisterType("dgs-dx3dimage","dgsType3D","dgsTypeScreen3D")
+dgsRegisterType("dgs-dx3dimage","dgsBasic","dgsType3D","dgsTypeScreen3D")
 dgsRegisterProperties("dgs-dx3dimage",{
 	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	imageSize = 			{	{ PArg.Number, PArg.Number }	},
