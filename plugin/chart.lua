@@ -24,7 +24,7 @@ chartProcessFunction = {
 			dgsSetData(chart,"gridHorizontal",{})
 			dgsSetData(chart,"gridVertical",{})
 			dgsSetData(chart,"enableGridHorizontal",true)
-			dgsSetData(chart,"enableGridVertical",false)
+			dgsSetData(chart,"enableGridVertical",true)
 			dgsSetData(chart,"renderer",customRenderer)
 			dgsSetData(chart,"axisLineColor",tocolor(255,255,255,255))
 			dgsSetData(chart,"axisLineWidth",2)
