@@ -542,6 +542,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			local _mx,_my,rt,disableOutline
 			local daDebugColor,daDebugTexture = 0xFFFFFF,nil
 			local dgsRendererFunction = dgsRenderer[eleType]
+								print(getTickCount())
 			if dgsRendererFunction then
 				local _hitElement
 				if checkDisabledElement then
@@ -551,11 +552,11 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 							local daEleData = dgsElementData[collider]
 							local checkPixel = daEleData.checkFunction
 							if checkPixel then
-								local _mx,_my = (mx-xRT)/w,(my-yNRT)/h
+								local _mx,_my = (mx-xRT)/w,(my-yRT)/h
 								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
 									if type(checkPixel) == "function" then
 										local checkFnc = daEleData.checkFunction
-										if checkFnc((mx-xRT)/w,(my-yNRT)/h,mx,my) then
+										if checkFnc((mx-xRT)/w,(my-yRT)/h,mx,my) then
 											if enabledInherited then
 												MouseData.hit = source
 											end

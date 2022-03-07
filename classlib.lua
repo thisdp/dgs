@@ -582,9 +582,6 @@ class {
 		stopAlphaing = gObjFnc("dgsStopAlphaing",true),
 		getPostGUI = gObjFnc("dgsGetPostGUI"),
 		setPostGUI = gObjFnc("dgsSetPostGUI",true),
-		detachFromGridList = gObjFnc("dgsDetachFromGridList",true),
-		getAttachedGridList = gObjFnc("dgsGetAttachedGridList",true),
-		attachToGridList = gObjFnc("dgsAttachToGridList",true),
 		destroy = function(self) return destroyElement(self.dgsElement) end;
 		isElement = gObjFnc("isElement",true);
 		getElement = function(self) return self.dgsElement end,
@@ -703,7 +700,7 @@ class {
 		setPostGUI = gObjFnc("dgsSetPostGUI",true),
 		detachFromGridList = gObjFnc("dgsDetachFromGridList",true),
 		getAttachedGridList = gObjFnc("dgsGetAttachedGridList",true),
-		attachToGridList = gObjFnc("dgsAttachToGridList",true),
+		attachToGridList = function(self,targetGridList,...) return call(dgsOOP.dgsRes,"dgsAttachToGridList",self.dgsElement,targetGridList.dgsElement,...) and self or false end,
 		center = gObjFnc("dgsCenterElement",true),
 		destroy = function(self) return destroyElement(self.dgsElement) end;
 		isElement = gObjFnc("isElement",true);
