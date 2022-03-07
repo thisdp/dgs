@@ -538,6 +538,7 @@ class {
 				return parent and dgsGetInstance(parent) or false
 			elseif key == "children" then
 				return self:getChildren()
+			end
 			return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
 		end,
 		__newindex=function(self,key,value)
@@ -545,6 +546,7 @@ class {
 				local targetEle
 				if type(value) == "table" then targetEle = value.dgsElement end
 				return call(dgsOOP.dgsRes,"dgsSetParent",self.dgsElement,targetEle)
+			end
 			return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,key,value) and self or false
 		end,
 		getParent = gObjFnc("dgsGetParent"),
