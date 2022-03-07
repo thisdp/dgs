@@ -1022,6 +1022,9 @@ local compatibility = {
 	["dgs-dx3dinterface"] = {
 		rotation = "roll",
 	},
+	["dgs-dxedit"] = {
+		placeHolderColorcoded = "placeHolderColorCoded",
+	}
 	hitoutofparent = "childOutsideHit",
 	wordbreak = "wordBreak",
 	colorcoded = "colorCoded",

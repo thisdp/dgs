@@ -262,7 +262,7 @@
 		typingSound = false,
 		typingSoundVolume = 1,
 		placeHolder = "",
-		placeHolderColorcoded = false,
+		placeHolderColorCoded = false,
 		placeHolderOffset = {0,0},
 		placeHolderTextSize = false,	---Use textSize if set to false/nil
 		placeHolderIgnoreRenderTarget = false,

@@ -1,48 +1,41 @@
 dgsRegisterType("dgs-dxedit","dgsBasic","dgsType2D")
-dgsRegisterProperties("dgs-dxdetectarea",{
-	alignment = {{PArg.Number,PArg.Number}},
-	allowCopy = {PArg.Bool},
-	autoComplete = {{}},
-	autoCompleteSkip = {PArg.Bool},
-	autoCompleteShow = {{}},
-	bgColor = {PArg.Number},
-	bgColorBlur = {PArg.Number},
-	bgImage = {PArg.Material},
-	bgImageBlur = {PArg.Material},
-	caretColor = {PArg.Number},
-	caretHeight = {PArg.Number},
-	caretOffset = {PArg.Number},
-	caretPos = {PArg.Number},
-	caretStyle = {PArg.Number},
-	caretThick = {PArg.Number},
-	caretWidth = {PArg.Number},
-	edit = {PArg.DgsElement},
-	clearSelection = {PArg.Bool},
-	enableTabSwitch = {PArg.Bool},
-	font = {PArg.Font},
-	masked = {PArg.Bool},
-	maskeText = {PArg.String},
-	maskeLength = {PArg.Number},
-	padding = {{PArg.Number,PArg.Number}},
-	placeholder = {PArg.String},
-	placeholderColor = {PArg.Number},
-	placeHolderColorcoded = {PArg.Number},
-	placeHolderFont = {PArg.Font},
-	placeHolderIgnoreRenderTarget = {PArg.Bool},
-	placeHolderOffset = {{PArg.Number,PArg.Number}},
-	placeHolderVisibleWhenFocus = {PArg.Bool},
-	readOnly = {PArg.Bool},
-	readOnlyCaretShow = {PArg.Bool},
-	renderTarget = {},
-	selectColorBlur = {PArg.Number},
-	selectColor = {PArg.Number},
-	selectForm = {{PArg.Number,PArg.Number}},
-	showPos = {PArg.Number},
-	text = {PArg.String},
-	textColor = {PArg.Number},
-	textSize = {{PArg.Number,PArg.Number}},
-	typingSound = {PArg.String},
-	typingSoundVolume = {PArg.Number},
+dgsRegisterProperties("dgs-dxedit",{
+	alignment = 					{	{ PArg.Number, PArg.Number }	},
+	allowCopy = 					{	PArg.Bool	},
+	autoCompleteSkip = 				{	PArg.Bool	},
+	bgColor = 						{	PArg.Number	},
+	bgColorBlur = 					{	PArg.Number	},
+	bgImage = 						{	PArg.Material+PArg.Nil	},
+	bgImageBlur = 					{	PArg.Material+PArg.Nil	},
+	caretColor = 					{	PArg.Number	},
+	caretHeight = 					{	PArg.Number	},
+	caretOffset = 					{	PArg.Number	},
+	caretStyle = 					{	PArg.Number	},
+	caretThick = 					{	PArg.Number	},
+	caretWidth = 					{	PArg.Number	},
+	clearSelection = 				{	PArg.Bool	},
+	enableTabSwitch = 				{	PArg.Bool	},
+	font = 							{	PArg.Font+PArg.String	},
+	masked = 						{	PArg.Bool	},
+	maskeText = 					{	PArg.String	},
+	maskeLength = 					{	PArg.Number	},
+	padding = 						{	{ PArg.Number, PArg.Number }	},
+	placeHolder = 					{	PArg.String	},
+	placeHolderColor = 				{	PArg.Number	},
+	placeHolderColorCoded = 		{	PArg.Bool	},
+	placeHolderFont = 				{	PArg.Font	},
+	placeHolderIgnoreRenderTarget = {	PArg.Bool	},
+	placeHolderOffset = 			{	{ PArg.Number, PArg.Number }	},
+	placeHolderVisibleWhenFocus = 	{	PArg.Bool	},
+	readOnly = 						{	PArg.Bool	},
+	readOnlyCaretShow = 			{	PArg.Bool	},
+	selectColorBlur = 				{	PArg.Number	},
+	selectColor = 					{	PArg.Number	},
+	text = 							{	PArg.String	},
+	textColor = 					{	PArg.Number	},
+	textSize = 						{	{ PArg.Number, PArg.Number }	},
+	typingSound = 					{	PArg.String	},
+	typingSoundVolume = 			{	PArg.Number	},
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine
@@ -151,7 +144,7 @@ function dgsCreateEdit(...)
 		placeHolderFont = systemFont,
 		placeHolderVisibleWhenFocus = false,
 		placeHolderColor = style.placeHolderColor,
-		placeHolderColorcoded = style.placeHolderColorcoded,
+		placeHolderColorCoded = style.placeHolderColorCoded,
 		placeHolderOffset = style.placeHolderOffset,
 		placeHolderTextSize = style.placeHolderTextSize,
 		placeHolderIgnoreRenderTarget = style.placeHolderIgnoreRenderTarget,
@@ -1208,7 +1201,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			if isPlaceHolderShown then
 				local pColor = eleData.placeHolderColor
 				local pFont = eleData.placeHolderFont
-				local pColorcoded = eleData.placeHolderColorcoded
+				local pColorCoded = eleData.placeHolderColorCoded
 				local pHolderTextSizeX,pHolderTextSizeY
 				local placeHolderTextSize = eleData.placeHolderTextSize
 				if placeHolderTextSize then
@@ -1251,7 +1244,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if isPlaceHolderShown then
 			local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
 			local pFont = eleData.placeHolderFont
-			local pColorcoded = eleData.placeHolderColorcoded
+			local pColorCoded = eleData.placeHolderColorCoded
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			dxDrawText(placeHolder,px+textX_Left+placeHolderOffset[1],py+placeHolderOffset[2],px+textX_Right-posFix+placeHolderOffset[1],py+h-sidelength+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,isPostGUI,pColorcoded)
 		end
