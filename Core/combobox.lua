@@ -13,7 +13,7 @@ dgsRegisterProperties("dgs-dxcombobox",{
 	bgImage = 				{	PArg.Material	},
 	image = 				{	{ PArg.Material,PArg.Material,PArg.Material }	},
 	colorCoded = 			{	PArg.Bool	},
-	font = 					{	PArg.Font+Parg.String	},
+	font = 					{	PArg.Font+PArg.String	},
 	state = 				{	PArg.Bool	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	textColor = 			{	PArg.Number	},
