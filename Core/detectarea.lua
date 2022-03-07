@@ -19,7 +19,14 @@ local dgsSetData = dgsSetData
 local assert = assert
 local type = type
 
-detectAreaBuiltIn = {}
+detectAreaBuiltIn = {
+	default = [[
+		return true
+	]],
+	circle = [[
+		return math.sqrt((mxRlt-0.5)^2+(myRlt-0.5)^2)<0.5
+	]],
+}
 function dgsCreateDetectArea(...)
 	local x,y,w,h,relative,parent
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
@@ -61,14 +68,6 @@ end
 detectAreaPreDefine = [[
 	local args = {...}
 	local mxRlt,myRlt,mxAbs,myAbs = args[1],args[2],args[3],args[4]
-]]
-
-detectAreaBuiltIn.default = [[
-	return true
-]]
-
-detectAreaBuiltIn.circle = [[
-	return math.sqrt((mxRlt-0.5)^2+(myRlt-0.5)^2)<0.5
 ]]
 
 function dgsDetectAreaDefaultFunction(mxRlt,myRlt,mxAbs,myAbs)
