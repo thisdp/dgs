@@ -111,15 +111,10 @@ chartProcessFunction = {
 			local axisYScaler = eleData.axisYScaler
 			if not axisYScaler then
 				for id=1,#datasets do
-					minData = datasets[id][1][1]
-					maxData = datasets[id][1][1]
+					minData,maxData = datasets[id][1][1],datasets[id][1][1]
 					for i=2,#datasets[id][1] do
-						if minData > datasets[id][1][i] then
-							minData = datasets[id][1][i]
-						end
-						if maxData < datasets[id][1][i] then
-							maxData = datasets[id][1][i]
-						end
+						if minData > datasets[id][1][i] then minData = datasets[id][1][i] end
+						if maxData < datasets[id][1][i] then maxData = datasets[id][1][i] end
 					end
 				end
 			else
