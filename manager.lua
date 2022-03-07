@@ -1025,6 +1025,20 @@ local compatibility = {
 	["dgs-dxedit"] = {
 		placeHolderColorcoded = "placeHolderColorCoded",
 	}
+	["dgs-dxcheckbox"] = {
+		image_f = "imageUnchecked",
+		image_t = "imageChecked",
+		image_i = "imageIndeterminate",
+		color_f = "colorUnchecked",
+		color_t = "colorChecked",
+		color_i = "colorIndeterminate",
+	},
+	["dgs-dxradiobutton"] = {
+		image_f = "imageUnchecked",
+		image_t = "imageChecked",
+		color_f = "colorUnchecked",
+		color_t = "colorChecked",
+	},
 	hitoutofparent = "childOutsideHit",
 	wordbreak = "wordBreak",
 	colorcoded = "colorCoded",

@@ -2,12 +2,12 @@ dgsRegisterType("dgs-dxcheckbox","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxcheckbox",{
 	alignment = 			{	{ PArg.String, PArg.String }	},
 	clip = 					{	PArg.Bool	},
-	color_i =				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	color_f =				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	color_t =				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	image_i =				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	image_f =				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	image_t =				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	colorIndeterminate =	{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	colorUnchecked =		{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	colorChecked =			{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	imageIndeterminate =	{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	imageUnchecked =		{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	imageChecked =			{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	colorCoded = 			{	PArg.Bool	},
 	font = 					{	PArg.Font+PArg.String	},
 	state = 				{	PArg.Bool	},
@@ -93,40 +93,40 @@ function dgsCreateCheckBox(...)
 	local systemFont = style.systemFontElement
 	
 	style = style.checkbox
-	local imageUnchecked = style.image_f
+	local imageUnchecked = style.imageUnchecked
 	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
 	hImageF = hImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[2])
 	cImageF = cImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[3])
-	local colorUnchecked = style.color_f
+	local colorUnchecked = style.colorUnchecked
 	nColorF = nColorF or colorUnchecked[1]
 	hColorF = hColorF or colorUnchecked[2]
 	cColorF = cColorF or colorUnchecked[3]
 
-	local imageChecked = style.image_t
+	local imageChecked = style.imageChecked
 	nImageT = nImageT or dgsCreateTextureFromStyle(using,res,imageChecked[1])
 	hImageT = hImageT or dgsCreateTextureFromStyle(using,res,imageChecked[2])
 	cImageT = cImageT or dgsCreateTextureFromStyle(using,res,imageChecked[3])
-	local colorChecked = style.color_t
+	local colorChecked = style.colorChecked
 	nColorT = nColorT or colorChecked[1]
 	hColorT = hColorT or colorChecked[2]
 	cColorT = cColorT or colorChecked[3]
 
-	local imageIndeterminate = style.image_i
+	local imageIndeterminate = style.imageIndeterminate
 	nImageN = nImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[1])
 	hImageN = hImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[2])
 	cImageN = cImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[3])
-	local colorIndeterminate = style.color_i
+	local colorIndeterminate = style.colorIndeterminate
 	nColorN = nColorN or colorIndeterminate[1]
 	hColorN = hColorN or colorIndeterminate[2]
 	cColorN = cColorN or colorIndeterminate[3]
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[cb] = {
-		image_i = {nImageN,hImageN,cImageN},
-		image_t = {nImageT,hImageT,cImageT},
-		image_f = {nImageF,hImageF,cImageF},
-		color_i = {nColorN,hColorN,cColorN},
-		color_t = {nColorT,hColorT,cColorT},
-		color_f = {nColorF,hColorF,cColorF},
+		imageIndeterminate = {nImageN,hImageN,cImageN},
+		imageChecked = {nImageT,hImageT,cImageT},
+		imageUnchecked = {nImageF,hImageF,cImageF},
+		colorIndeterminate = {nColorN,hColorN,cColorN},
+		colorChecked = {nColorT,hColorT,cColorT},
+		colorUnchecked = {nColorF,hColorF,cColorF},
 		cbParent = dgsIsType(parent) and parent or resourceRoot,
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
@@ -201,8 +201,8 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	local image_f,image_t,image_i = eleData.image_f,eleData.image_t,eleData.image_i
-	local color_f,color_t,color_i = eleData.color_f,eleData.color_t,eleData.color_i
+	local imageUnchecked,imageChecked,imageIndeterminate = eleData.imageUnchecked,eleData.imageChecked,eleData.imageIndeterminate
+	local colorUnchecked,colorChecked,colorIndeterminate = eleData.colorUnchecked,eleData.colorChecked,eleData.colorIndeterminate
 	local image,color
 	local _buttonSize = eleData.buttonSize
 	local buttonSizeX,buttonSizeY
@@ -214,11 +214,11 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		buttonSizeY = buttonSizeX
 	end
 	if eleData.state == true then
-		image,color = image_t,color_t
+		image,color = imageChecked,colorChecked
 	elseif eleData.state == false then
-		image,color = image_f,color_f
+		image,color = imageUnchecked,colorUnchecked
 	else
-		image,color = image_i,color_i
+		image,color = imageIndeterminate,colorIndeterminate
 	end
 	local colorimgid = 1
 	if MouseData.entered == source then
