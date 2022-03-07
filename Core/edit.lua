@@ -1,6 +1,6 @@
 dgsRegisterType("dgs-dxedit","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxedit",{
-	alignment = 					{	{ PArg.Number, PArg.Number }	},
+	alignment = 					{	{ PArg.String, PArg.String }	},
 	allowCopy = 					{	PArg.Bool	},
 	autoCompleteSkip = 				{	PArg.Bool	},
 	bgColor = 						{	PArg.Number	},

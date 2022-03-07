@@ -724,6 +724,9 @@ class {
 		removeDragHandler = gObjFnc("dgsRemoveDragHandler",true),
 		addDropHandler = gObjFnc("dgsAddDropHandler",true),
 		removeDropHandler = gObjFnc("dgsRemoveDropHandler",true),
+		applyDetectArea = function(self,da) return call(dgsOOP.dgsRes,"dgsApplyDetectArea",self.dgsElement,da.dgsElement) end,
+		removeDetectArea = gObjFnc("dgsRemoveDetectArea",true),
+		getDetectArea = gObjFnc("dgsGetDetectArea",true),
 	};
 	default = {
 
@@ -832,7 +835,7 @@ class {
 	type = "dgsDetectArea";
 	dgsType = "dgs-dxdetectarea";
 	preInstantiate = function(parent,x,y,w,h,rlt,...)
-		return call(dgsOOP.dgsRes,"dgsCreateDetectArea",x,y,w,h,text,rlt,parent.dgsElement,...)
+		return call(dgsOOP.dgsRes,"dgsCreateDetectArea",x,y,w,h,rlt,parent.dgsElement,...)
 	end;
 	public = {
 		setFunction = gObjFnc("dgsDetectAreaSetFunction",true),

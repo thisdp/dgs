@@ -101,6 +101,7 @@ function dgsDetectAreaSetDebugModeEnabled(detectarea,state,alpha)
 	elseif isElement(dgsElementData[detectarea].debugTexture) then
 		destroyElement(dgsElementData[detectarea].debugTexture)
 	end
+	return true
 end
 
 function dgsDetectAreaGetDebugModeEnabled(detectarea)

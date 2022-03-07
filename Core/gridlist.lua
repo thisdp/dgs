@@ -1,4 +1,23 @@
 dgsRegisterType("dgs-dxgridlist","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxedit",{
+	alignment = 			{	{ PArg.String, PArg.String }	},
+	clip = 					{	PArg.Bool	},
+	colorIndeterminate =	{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	colorUnchecked =		{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	colorChecked =			{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	imageIndeterminate =	{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	imageUnchecked =		{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	imageChecked =			{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	colorCoded = 			{	PArg.Bool	},
+	font = 					{	PArg.Font+PArg.String	},
+	state = 				{	PArg.Bool	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	textColor = 			{	PArg.Number	},
+	textPadding = 			{	PArg.Number	},
+	textSize = 				{	{ PArg.Number, PArg.Number }	},
+	buttonSize = 			{	{ PArg.Number, PArg.Number }	},
+	wordBreak = 			{	PArg.Bool	},
+})
 local loadstring = loadstring
 --Dx Functions
 local dxDrawImage = dxDrawImage
