@@ -1,6 +1,7 @@
 dgsRegisterType("dgs-dxdetectarea","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxdetectarea",{
-	debugTexture = {PArg.Material},
+	checkFunctionImage = 	{	PArg.Material	},
+	debugMode = 			{	PArg.Bool	},
 })
 local loadstring = loadstring
 --Dx Functions
@@ -18,7 +19,14 @@ local dgsSetData = dgsSetData
 local assert = assert
 local type = type
 
-detectAreaBuiltIn = {}
+detectAreaBuiltIn = {
+	default = [[
+		return true
+	]],
+	circle = [[
+		return math.sqrt((mxRlt-0.5)^2+(myRlt-0.5)^2)<0.5
+	]],
+}
 function dgsCreateDetectArea(...)
 	local x,y,w,h,relative,parent
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
@@ -62,14 +70,6 @@ detectAreaPreDefine = [[
 	local mxRlt,myRlt,mxAbs,myAbs = args[1],args[2],args[3],args[4]
 ]]
 
-detectAreaBuiltIn.default = [[
-	return true
-]]
-
-detectAreaBuiltIn.circle = [[
-	return math.sqrt((mxRlt-0.5)^2+(myRlt-0.5)^2)<0.5
-]]
-
 function dgsDetectAreaDefaultFunction(mxRlt,myRlt,mxAbs,myAbs)
 	return true
 end
@@ -101,6 +101,7 @@ function dgsDetectAreaSetDebugModeEnabled(detectarea,state,alpha)
 	elseif isElement(dgsElementData[detectarea].debugTexture) then
 		destroyElement(dgsElementData[detectarea].debugTexture)
 	end
+	return true
 end
 
 function dgsDetectAreaGetDebugModeEnabled(detectarea)
@@ -138,22 +139,12 @@ function dgsDetectAreaUpdateDebugView(detectarea)
 	end
 	return true
 end
-
-function dgsDetectAreaAttachToElement(da,ele)
-	local fnc = function(source,mx,my,x,y,w,h)
-		if mx >= x and mx <= x+w and my >= y and my <= y+h then
-			return source
-		end
-	end
-	dgsSetData(ele,"dgsCollider",fnc)
-end
-
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local color = 0xFFFFFFFF
-	if enabledInherited[1] and mx then
+	if enabledInherited and mx then
 		local checkPixel = eleData.checkFunction
 		if checkPixel then
 			local _mx,_my = (mx-x)/w,(my-y)/h

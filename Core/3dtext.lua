@@ -1,20 +1,6 @@
 dgsRegisterType("dgs-dx3dtext","dgsBasic","dgsType3D","dgsTypeScreen3D")
 dgsRegisterProperties("dgs-dx3dtext",{
-	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	color = 				{	PArg.Number		},
-	font = 					{	PArg.Font+PArg.String	},
-	alignment = 			{	{PArg.String,PArg.String}	},
-	fixTextSize = 			{	PArg.Bool		},
-	isBlocked = 			{	PArg.Bool		},
-	isOnScreen = 			{	PArg.Bool		},
-	maxDistance = 			{	PArg.Number		},
-	fadeDistance = 			{	PArg.Number		},
-	dimension = 			{	PArg.Number		},
-	interior = 				{	PArg.Number		},
-	text = 					{	PArg.String		},
-	textOffset = 			{	{PArg.Number,PArg.Number}	},
-	textSize = 			{	{PArg.Number,PArg.Number}	},
-	interior = 				{	PArg.Number		},
+	alignment = 			{	{ PArg.String, PArg.String }	},
 	canBeBlocked = 			{	PArg.Bool, {
 											checkBuildings = PArg.Nil+PArg.Bool,
 											checkVehicles = PArg.Nil+PArg.Bool,
@@ -25,6 +11,20 @@ dgsRegisterProperties("dgs-dx3dtext",{
 											ignoreSomeObjectsForCamera = PArg.Nil+PArg.Bool,
 											}
 							},
+	color = 				{	PArg.Number	},
+	colorCoded = 			{	PArg.Bool	},
+	dimension = 			{	PArg.Number	},
+	fadeDistance = 			{	PArg.Number	},
+	fixTextSize = 			{	PArg.Bool	},
+	font = 					{	PArg.Font+PArg.String	},
+	interior = 				{	PArg.Number	},
+	isBlocked = 			{	PArg.Bool, readOnly = true	},
+	isOnScreen = 			{	PArg.Bool, readOnly = true	},
+	maxDistance = 			{	PArg.Number	},
+	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	text = 					{	PArg.String	},
+	textOffset = 			{	{ PArg.Number, PArg.Number }	},
+	textSize = 				{	{ PArg.Number, PArg.Number }	},
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine

@@ -84,29 +84,29 @@ function dgsCreateRadioButton(...)
 	local systemFont = style.systemFontElement
 	
 	style = style.radiobutton
-	local imageUnchecked = style.image_f
+	local imageUnchecked = style.imageUnchecked
 	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
 	hImageF = hImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[2])
 	cImageF = cImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[3])
-	local colorUnchecked = style.color_f
+	local colorUnchecked = style.colorUnchecked
 	nColorF = nColorF or colorUnchecked[1]
 	hColorF = hColorF or colorUnchecked[2]
 	cColorF = cColorF or colorUnchecked[3]
-	local imageChecked = style.image_t
+	local imageChecked = style.imageChecked
 	nImageT = nImageT or dgsCreateTextureFromStyle(using,res,imageChecked[1])
 	hImageT = hImageT or dgsCreateTextureFromStyle(using,res,imageChecked[2])
 	cImageT = cImageT or dgsCreateTextureFromStyle(using,res,imageChecked[3])
-	local colorChecked = style.color_t
+	local colorChecked = style.colorChecked
 	nColorT = nColorT or colorChecked[1]
 	hColorT = hColorT or colorChecked[2]
 	cColorT = cColorT or colorChecked[3]
 	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
 	dgsElementData[rb] = {
 		renderBuffer = {},
-		image_f = {nImageF,hImageF,cImageF},
-		color_f = {nColorF,hColorF,cColorF},
-		image_t = {nImageT,hImageT,cImageT},
-		color_t = {nColorT,hColorT,cColorT},
+		imageUnchecked = {nImageF,hImageF,cImageF},
+		colorUnchecked = {nColorF,hColorF,cColorF},
+		imageChecked = {nImageT,hImageT,cImageT},
+		colorChecked = {nColorT,hColorT,cColorT},
 		rbParent = dgsIsType(parent) and parent or resourceRoot,
 		text = tostring(text or ""),
 		textColor = textColor or style.textColor,
@@ -188,8 +188,8 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	local image_f,image_t = eleData.image_f,eleData.image_t
-	local color_f,color_t = eleData.color_f,eleData.color_t
+	local imageUnchecked,imageChecked = eleData.imageUnchecked,eleData.imageChecked
+	local colorUnchecked,colorChecked = eleData.colorUnchecked,eleData.colorChecked
 	local rbParent = eleData.rbParent
 	local image,color
 	local _buttonSize = eleData.buttonSize
@@ -202,9 +202,9 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		buttonSizeY = buttonSizeX
 	end
 	if dgsElementData[rbParent].RadioButton == source then
-		image,color = image_t,color_t
+		image,color = imageChecked,colorChecked
 	else
-		image,color = image_f,color_f
+		image,color = imageUnchecked,colorUnchecked
 	end
 	local colorimgid = 1
 	if MouseData.entered == source then

@@ -538,6 +538,7 @@ class {
 				return parent and dgsGetInstance(parent) or false
 			elseif key == "children" then
 				return self:getChildren()
+			end
 			return call(dgsOOP.dgsRes,"dgsGetProperty",self.dgsElement,key)
 		end,
 		__newindex=function(self,key,value)
@@ -545,6 +546,7 @@ class {
 				local targetEle
 				if type(value) == "table" then targetEle = value.dgsElement end
 				return call(dgsOOP.dgsRes,"dgsSetParent",self.dgsElement,targetEle)
+			end
 			return call(dgsOOP.dgsRes,"dgsSetProperty",self.dgsElement,key,value) and self or false
 		end,
 		getParent = gObjFnc("dgsGetParent"),
@@ -580,9 +582,6 @@ class {
 		stopAlphaing = gObjFnc("dgsStopAlphaing",true),
 		getPostGUI = gObjFnc("dgsGetPostGUI"),
 		setPostGUI = gObjFnc("dgsSetPostGUI",true),
-		detachFromGridList = gObjFnc("dgsDetachFromGridList",true),
-		getAttachedGridList = gObjFnc("dgsGetAttachedGridList",true),
-		attachToGridList = gObjFnc("dgsAttachToGridList",true),
 		destroy = function(self) return destroyElement(self.dgsElement) end;
 		isElement = gObjFnc("isElement",true);
 		getElement = function(self) return self.dgsElement end,
@@ -701,7 +700,7 @@ class {
 		setPostGUI = gObjFnc("dgsSetPostGUI",true),
 		detachFromGridList = gObjFnc("dgsDetachFromGridList",true),
 		getAttachedGridList = gObjFnc("dgsGetAttachedGridList",true),
-		attachToGridList = gObjFnc("dgsAttachToGridList",true),
+		attachToGridList = function(self,targetGridList,...) return call(dgsOOP.dgsRes,"dgsAttachToGridList",self.dgsElement,targetGridList.dgsElement,...) and self or false end,
 		center = gObjFnc("dgsCenterElement",true),
 		destroy = function(self) return destroyElement(self.dgsElement) end;
 		isElement = gObjFnc("isElement",true);
@@ -722,6 +721,9 @@ class {
 		removeDragHandler = gObjFnc("dgsRemoveDragHandler",true),
 		addDropHandler = gObjFnc("dgsAddDropHandler",true),
 		removeDropHandler = gObjFnc("dgsRemoveDropHandler",true),
+		applyDetectArea = function(self,da) return call(dgsOOP.dgsRes,"dgsApplyDetectArea",self.dgsElement,da.dgsElement) end,
+		removeDetectArea = gObjFnc("dgsRemoveDetectArea",true),
+		getDetectArea = gObjFnc("dgsGetDetectArea",true),
 	};
 	default = {
 
@@ -830,7 +832,7 @@ class {
 	type = "dgsDetectArea";
 	dgsType = "dgs-dxdetectarea";
 	preInstantiate = function(parent,x,y,w,h,rlt,...)
-		return call(dgsOOP.dgsRes,"dgsCreateDetectArea",x,y,w,h,text,rlt,parent.dgsElement,...)
+		return call(dgsOOP.dgsRes,"dgsCreateDetectArea",x,y,w,h,rlt,parent.dgsElement,...)
 	end;
 	public = {
 		setFunction = gObjFnc("dgsDetectAreaSetFunction",true),

@@ -1,13 +1,13 @@
 dgsRegisterType("dgs-dx3dline","dgsBasic","dgsType3D","dgsTypeWorld3D")
 dgsRegisterProperties("dgs-dx3dline",{
-	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	size = 			{	{PArg.Number,PArg.Number}		},
 	color = 				{	PArg.Number		},
-	faceTo = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	faceRelativeTo = 		{	PArg.String		},
-	maxDistance = 			{	PArg.Number		},
+	dimension = 			{	PArg.Number		},
 	fadeDistance = 			{	PArg.Number		},
-	resolution = 			{	{PArg.Number,PArg.Number}		},
+	interior = 				{	PArg.Number		},
+	maxDistance = 			{	PArg.Number		},
+	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	rotation = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	width = 				{	PArg.Number		},
 })
 --Dx Functions
 local dxDrawLine3D = dxDrawLine3D

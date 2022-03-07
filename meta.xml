@@ -7,6 +7,7 @@
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
 	<script src="styleManager/styleManager.lua" type="client" />
+	<script src="functions.lua" type="client" />
 	<script src="Core/3dinterface.lua" type="client" />
 	<script src="Core/3dline.lua" type="client" />
 	<script src="Core/3dtext.lua" type="client" />
@@ -35,7 +36,6 @@
 	<script src="Core/switchbutton.lua" type="client" />
 	<script src="Core/window.lua" type="client" />
 	<script src="Core/customCursor.lua" type="client" />
-	<script src="functions.lua" type="client" />
 	
 	<script src="client.lua" type="client" />
 	<script src="dgsExportedFunction.lua" type="client" />
@@ -101,16 +101,16 @@
 
 	<!--(Default Style)-->
 	<file src="styleManager/Default/Images/combobox/arrow.fx" />
-	<file src="styleManager/Default/Images/checkbox/cb_t.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_f.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_i.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_t_s.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_f_s.png" />
-	<file src="styleManager/Default/Images/checkbox/cb_i_s.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_t_s.png" />
-	<file src="styleManager/Default/Images/radiobutton/rb_f_s.png" />
+	<file src="styleManager/Default/Images/checkbox/cbChecked.png" />
+	<file src="styleManager/Default/Images/checkbox/cbUnchecked.png" />
+	<file src="styleManager/Default/Images/checkbox/cbIndeterminate.png" />
+	<file src="styleManager/Default/Images/checkbox/cbChecked_s.png" />
+	<file src="styleManager/Default/Images/checkbox/cbUnchecked_s.png" />
+	<file src="styleManager/Default/Images/checkbox/cbIndeterminate_s.png" />
+	<file src="styleManager/Default/Images/radiobutton/rbChecked.png" />
+	<file src="styleManager/Default/Images/radiobutton/rbUnchecked.png" />
+	<file src="styleManager/Default/Images/radiobutton/rbChecked_s.png" />
+	<file src="styleManager/Default/Images/radiobutton/rbUnchecked_s.png" />
 	<file src="styleManager/Default/Images/scrollbar/scrollbar_arrow.png" />
 	<file src="styleManager/Default/Images/cursor/CursorText.png" />
 	<file src="styleManager/Default/Images/cursor/CursorMove.png" />

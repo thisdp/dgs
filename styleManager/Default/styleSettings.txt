@@ -107,36 +107,36 @@
 	checkbox = {
 	---Color
 		textColor = tocolor(255,255,255,255),	--Text Color
-		color_f = {	--Default image color when state is false ( unchecked )
+		colorUnchecked = {	--Default image color when state is false ( unchecked )
 			tocolor(255,255,255,255),	--Normal
 			tocolor(255,255,255,255),	--Hover
 			tocolor(180,180,180,255),	--Click
 		},
-		color_i = {	--Default image color when state is nil ( indeterminate )
+		colorIndeterminate = {	--Default image color when state is nil ( indeterminate )
 			tocolor(255,255,255,255),	--Normal
 			tocolor(255,255,255,255),	--Hover
 			tocolor(180,180,180,255),	--Click
 		},
-		color_t = {	--Default image color when state is true ( checked )
+		colorChecked = {	--Default image color when state is true ( checked )
 			tocolor(255,255,255,255),	--Normal
 			tocolor(255,255,255,255),	--Hover
 			tocolor(180,180,180,255),	--Click
 		},
 	---Image
-		image_f = {	--Default image when state is false ( unchecked )
-			{"Images/checkbox/cb_f.png"},	--Normal
-			{"Images/checkbox/cb_f_s.png"},	--Hover
-			{"Images/checkbox/cb_f.png"},	--Click
+		imageUnchecked = {	--Default image when state is false ( unchecked )
+			{"Images/checkbox/cbUnchecked.png"},	--Normal
+			{"Images/checkbox/cbUnchecked_s.png"},	--Hover
+			{"Images/checkbox/cbUnchecked.png"},	--Click
 		},
-		image_i = {	--Default image when state is nil ( indeterminate )
-			{"Images/checkbox/cb_i.png"},	--Normal
-			{"Images/checkbox/cb_i_s.png"},	--Hover
-			{"Images/checkbox/cb_i.png"},	--Click
+		imageIndeterminate = {	--Default image when state is nil ( indeterminate )
+			{"Images/checkbox/cbIndeterminate.png"},	--Normal
+			{"Images/checkbox/cbIndeterminate_s.png"},	--Hover
+			{"Images/checkbox/cbIndeterminate.png"},	--Click
 		},
-		image_t = {	--Default image when state is true ( checked )
-			{"Images/checkbox/cb_t.png"},	--Normal
-			{"Images/checkbox/cb_t_s.png"},	--Hover
-			{"Images/checkbox/cb_t.png"},	--Click
+		imageChecked = {	--Default image when state is true ( checked )
+			{"Images/checkbox/cbChecked.png"},	--Normal
+			{"Images/checkbox/cbChecked_s.png"},	--Hover
+			{"Images/checkbox/cbChecked.png"},	--Click
 
 		},
 	---Values
@@ -203,26 +203,26 @@
 	radiobutton = {
 	---Color
 		textColor = tocolor(255,255,255,255),	--Text Color
-		color_f = {	--Default image color when state is false ( unselected )
+		colorUnchecked = {	--Default image color when state is false ( unselected )
 			tocolor(255,255,255,255),	--Normal
 			tocolor(255,255,255,255),	--Hover
 			tocolor(180,180,180,255),	--Click
 		},
-		color_t = {	--Default image color when state is true ( selected )
+		colorChecked = {	--Default image color when state is true ( selected )
 			tocolor(255,255,255,255),	--Normal
 			tocolor(255,255,255,255),	--Hover
 			tocolor(180,180,180,255),	--Click
 		},
 	---Image
-		image_f = {	--Default image when state is false ( unchecked )
-			{"Images/radiobutton/rb_f.png"},		--Normal
-			{"Images/radiobutton/rb_f_s.png"},	--Hover
-			{"Images/radiobutton/rb_f.png"},		--Click
+		imageUnchecked = {	--Default image when state is false ( unchecked )
+			{"Images/radiobutton/rbUnchecked.png"},		--Normal
+			{"Images/radiobutton/rbUnchecked_s.png"},	--Hover
+			{"Images/radiobutton/rbUnchecked.png"},		--Click
 		},
-		image_t = {	--Default image when state is true ( checked )
-			{"Images/radiobutton/rb_t.png"},		--Normal
-			{"Images/radiobutton/rb_t_s.png"},	--Hover
-			{"Images/radiobutton/rb_t.png"},		--Click
+		imageChecked = {	--Default image when state is true ( checked )
+			{"Images/radiobutton/rbChecked.png"},		--Normal
+			{"Images/radiobutton/rbChecked_s.png"},	--Hover
+			{"Images/radiobutton/rbChecked.png"},		--Click
 		},
 	---Values
 		font = false,	--Using systemFont ( and usage is the same as system font )
@@ -262,7 +262,7 @@
 		typingSound = false,
 		typingSoundVolume = 1,
 		placeHolder = "",
-		placeHolderColorcoded = false,
+		placeHolderColorCoded = false,
 		placeHolderOffset = {0,0},
 		placeHolderTextSize = false,	---Use textSize if set to false/nil
 		placeHolderIgnoreRenderTarget = false,

@@ -78,7 +78,7 @@ addEventHandler("onDgsPluginCreate",resourceRoot,function(theResource)
 	end,false)
 end)
 
---Layer System
+--------------------------------------------------------Layer System
 function dgsSetLayer(dgsEle,layer,forceDetatch)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetLayer",1,"dgs-dxelement")) end
 	if dgsElementType[dgsEle] == "dgs-dxtab" then return false end
@@ -137,6 +137,22 @@ function dgsGetLayerElements(layer)
 	return #LayerCastTable[layer] or false
 end
 
+function dgsGetDxGUINoParent(alwaysBottom) return alwaysBottom and BottomFatherTable or CenterFatherTable end
+
+function dgsGetDxGUIFromResource(res)
+	local res = res or sourceResource
+	if res then
+		local serialized,cnt = {},0
+		for k,v in pairs(boundResource[res] or {}) do
+			cnt = cnt+1
+			serialized[cnt] = k
+		end
+		return serialized
+	end
+	return false
+end
+
+
 function dgsGetChild(dgsEle,id)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetChild",1,"dgs-dxelement")) end
 	if not(type(id) == "number") then error(dgsGenAsrt(id,"dgsGetChild",2,"number")) end
@@ -155,20 +171,6 @@ function dgsGetParent(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetParent",1,"dgs-dxelement")) end
 	return dgsElementData[dgsEle] and dgsElementData[dgsEle].parent or false
 
-end
-function dgsGetDxGUINoParent(alwaysBottom) return alwaysBottom and BottomFatherTable or CenterFatherTable end
-
-function dgsGetDxGUIFromResource(res)
-	local res = res or sourceResource
-	if res then
-		local serialized,cnt = {},0
-		for k,v in pairs(boundResource[res] or {}) do
-			cnt = cnt+1
-			serialized[cnt] = k
-		end
-		return serialized
-	end
-	return false
 end
 
 function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
@@ -373,6 +375,8 @@ function dgsMoveToBack(dgsEle)
 		end
 	end
 end
+
+------------------------------------------------
 
 ------------------------------------------------Type Manager
 dgsType,dgsPluginType = {},{}
@@ -1023,6 +1027,23 @@ local compatibility = {
 	},
 	["dgs-dx3dinterface"] = {
 		rotation = "roll",
+	},
+	["dgs-dxedit"] = {
+		placeHolderColorcoded = "placeHolderColorCoded",
+	},
+	["dgs-dxcheckbox"] = {
+		image_f = "imageUnchecked",
+		image_t = "imageChecked",
+		image_i = "imageIndeterminate",
+		color_f = "colorUnchecked",
+		color_t = "colorChecked",
+		color_i = "colorIndeterminate",
+	},
+	["dgs-dxradiobutton"] = {
+		image_f = "imageUnchecked",
+		image_t = "imageChecked",
+		color_f = "colorUnchecked",
+		color_t = "colorChecked",
 	},
 	hitoutofparent = "childOutsideHit",
 	wordbreak = "wordBreak",

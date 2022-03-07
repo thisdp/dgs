@@ -551,11 +551,11 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 							local daEleData = dgsElementData[collider]
 							local checkPixel = daEleData.checkFunction
 							if checkPixel then
-								local _mx,_my = (mx-xRT)/w,(my-yNRT)/h
+								local _mx,_my = (mx-xNRT)/w,(my-yNRT)/h
 								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
 									if type(checkPixel) == "function" then
 										local checkFnc = daEleData.checkFunction
-										if checkFnc((mx-xRT)/w,(my-yNRT)/h,mx,my) then
+										if checkFnc((mx-xNRT)/w,(my-yNRT)/h,mx,my) then
 											if enabledInherited then
 												MouseData.hit = source
 											end
@@ -597,11 +597,11 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 							local daEleData = dgsElementData[collider]
 							local checkPixel = daEleData.checkFunction
 							if checkPixel then
-								local _mx,_my = (mx-xRT)/w,(my-yNRT)/h
+								local _mx,_my = (mx-xNRT)/w,(my-yNRT)/h
 								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
 									if type(checkPixel) == "function" then
 										local checkFnc = daEleData.checkFunction
-										if checkFnc((mx-xRT)/w,(my-yNRT)/h,mx,my) then
+										if checkFnc((mx-xNRT)/w,(my-yNRT)/h,mx,my) then
 											MouseData.hit = source
 											daDebugColor = 0xFF0000
 										end
@@ -644,9 +644,9 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 					end
 				end
 				if debugMode then
-					dgsElementData[source].debugData = {xRT,yNRT,w,h,xNRT,yNRT}
+					dgsElementData[source].debugData = {xNRT,yNRT,w,h,xNRT,yNRT}
 					if daDebugTexture then
-						__dxDrawImage(xRT,yNRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI)
+						__dxDrawImage(xRT,yRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI)
 					end
 				end
 				rndtgt = rt or rndtgt
@@ -2305,3 +2305,114 @@ addEventHandler("onDgsSizeChange",root,function(oldSizeAbsx,oldSizeAbsy)
 		end
 	end
 end)
+
+-------------------------onCreateHandler
+dgsRegisterProperties("dgsBasic",{
+	visible =				{ PArg.Bool },
+	enabled =				{ PArg.Bool },
+	alpha =					{ PArg.Number },
+})
+dgsRegisterProperties("dgsType2D",{
+	absPos = 				{	{ PArg.Number, PArg.Number }	},
+	absSize = 				{	{ PArg.Number, PArg.Number }	},
+	rltPos = 				{	{ PArg.Number, PArg.Number }	},
+	rltSize = 				{	{ PArg.Number, PArg.Number }	},
+	relative = 				{	{ PArg.Bool, PArg.Bool }	},
+})
+addEventHandler("onDgsCreate",root,function(theResource)
+	local style
+	local res = theResource or "global"
+	if styleManager.styles[res] and styleManager.styles[res].using then
+		local _style = styleManager.styles[res]
+		local _using = styleManager.styles[res].using
+		if _style.loaded[_using] then
+			style = _style.loaded[_using]
+		else
+			style = styleManager.styles.global
+			style = style.loaded[style.using]
+		end
+	else
+		style = styleManager.styles.global
+		style = style.loaded[style.using]
+	end
+	
+	if not dgsElementData[source] then dgsElementData[source] = {} end
+	local eleData = dgsElementData[source]
+	eleData.positionAlignment = {nil,nil}
+	eleData.contentPositionAlignment = {nil,nil}
+	eleData.visible = true
+	eleData.enabled = true
+	--eleData.ignoreParentTitle = false
+	eleData.alpha = 1
+	--eleData.childOutsideHit = false
+	eleData.PixelInt = true
+	eleData.functionRunBefore = true --true : after render; false : before render
+	eleData.disabledColor = style.disabledColor
+	eleData.disabledColorPercent = style.disabledColorPercent
+	--eleData.postGUI = nil
+	--eleData.outline = false
+	eleData.changeOrder = style.changeOrder --Change the order when "bring to front" or clicked
+	--eleData.attachedTo = false
+	--eleData.attachedBy = false
+	--eleData.enableFullEnterLeaveCheck = false
+	--eleData.clickCoolDown = false
+	--eleData.clickingSound = false
+	--eleData.clickingSoundVolume = false
+	eleData.cursorPosition = {[0]=0}
+	if not eleData.children then eleData.children = {} end
+	insertResource(theResource,source)
+	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
+	addEventHandler("onDgsBlur",source,function()
+		dgsElementData[this].isFocused = false
+	end,getPropagated)
+
+	addEventHandler("onDgsFocus",source,function()
+		dgsElementData[this].isFocused = true
+	end,getPropagated)
+end,true)
+
+function dgsClear(theType,res)
+	if res == true then
+		if not theType then
+			for theRes,guiTable in pairs(boundResource) do
+				for dgsEle in pairs(guiTable) do
+					if isElement(dgsEle) then destroyElement(dgsEle) end
+				end
+				boundResource[theRes] = nil
+			end
+			return true
+		else
+			for theRes,guiTable in pairs(boundResource) do
+				for dgsEle in pairs(guiTable) do
+					if dgsElementType[dgsEle] == theType then
+						if isElement(dgsEle) then
+							boundResource[theRes][dgsEle] = nil
+							destroyElement(dgsEle)
+						end
+					end
+				end
+			end
+			return true
+		end
+	else
+		local res = res or sourceResource
+		if not theType then
+			for dgsEle in pairs(boundResource[res]) do
+				if isElement(dgsEle) then destroyElement(dgsEle) end
+			end
+			boundResource[res] = nil
+			return true
+		else
+			for dgsEle in pairs(boundResource[res]) do
+				if dgsElementType[dgsEle] == theType then
+					if isElement(dgsEle) then
+						boundResource[res][dgsEle] = nil
+						destroyElement(dgsEle)
+					end
+				end
+			end
+			return true
+		end
+	end
+	return false
+end
