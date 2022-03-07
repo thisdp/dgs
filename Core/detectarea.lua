@@ -138,16 +138,6 @@ function dgsDetectAreaUpdateDebugView(detectarea)
 	end
 	return true
 end
-
-function dgsDetectAreaAttachToElement(da,ele)
-	local fnc = function(source,mx,my,x,y,w,h)
-		if mx >= x and mx <= x+w and my >= y and my <= y+h then
-			return source
-		end
-	end
-	dgsSetData(ele,"dgsCollider",fnc)
-end
-
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
