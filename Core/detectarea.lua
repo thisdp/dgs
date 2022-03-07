@@ -143,7 +143,7 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local color = 0xFFFFFFFF
-	if enabledInherited[1] and mx then
+	if enabledInherited and mx then
 		local checkPixel = eleData.checkFunction
 		if checkPixel then
 			local _mx,_my = (mx-x)/w,(my-y)/h
