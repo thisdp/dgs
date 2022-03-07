@@ -1,4 +1,27 @@
 dgsRegisterType("dgs-dxselector","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxselector",{
+alignment = {{PArg.Number,PArg.Number}},
+clip = {PArg.Bool},
+colorcoded = {PArg.Number},
+enableScroll = {PArg.Bool},
+font = {PArg.Font},
+isHorizontal = {PArg.Bool},
+isReversed = {PArg.Bool},
+itemData = {PArg.Table},
+itemTextColor = {PArg.Number},
+itemTextSize = {{PArg.Number,PArg.Number}},
+placeHolder = {PArg.String},
+select = {PArg.Number},
+selectorSize = {{PArg.Number,PArg.Number}},
+selectorText = {PArg.String},
+selectorTextColor = {PArg.Number},
+selectorTextSize = {{PArg.Number,PArg.Number}},
+shadow = {{PArg.Number,PArg.Number}},
+subPixelPositioning = {PArg.Bool},
+text = {PArg.String},
+textColor = {PArg.Number},
+textSize = {{PArg.Number,PArg.Number}},
+})
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

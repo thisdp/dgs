@@ -1,4 +1,31 @@
 dgsRegisterType("dgs-dxswitchbutton","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxswitchbutton",{
+clickType = {PArg.Number},
+clip = {PArg.Bool},
+cursorMoveSpeed = {PArg.Number},
+cursorWidth = {PArg.Number},
+cursorLength = {PArg.Number},
+colorcoded = {PArg.Number},
+colorOn = {{PArg.Number,PArg.Number,PArg.Number}},
+colorOff = {{PArg.Number,PArg.Number,PArg.Number}},
+cursorColor = {{PArg.Number,PArg.Number,PArg.Number}},
+cursorImage = {{PArg.Material,PArg.Material,PArg.Material}},
+font = {PArg.Font},
+imageOn = {{PArg.Material,PArg.Material,PArg.Material}},
+imageOff = {{PArg.Material,PArg.Material,PArg.Material}},
+shadow = {{PArg.Number,PArg.Number,PArg.Number,PArg.Bool}},
+state = {PArg.Bool},
+stateAnim = {PArg.Number},
+style = {PArg.Bool},
+textOn = {PArg.String},
+textOff = {PArg.String},
+textColorOn = {PArg.Number},
+textColorOff = {PArg.Number},
+textSize = {{PArg.Number,PArg.Number}},
+troughWidth = {PArg.Number},
+wordBreak = {PArg.Bool},
+
+})
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawImageSection = dxDrawImageSection

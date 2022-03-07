@@ -1,4 +1,34 @@
 dgsRegisterType("dgs-dxmemo","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxmemo",{
+	allowCopy = {PArg.Bool},
+	padding = {{PArg.Number,PArg.Number}},
+	bgColor =  {PArg.Number},
+	bgColorBlur = {PArg.Number},
+	bgImage =  {PArg.Material},
+	bgImageBlur =  {PArg.Material},
+	caretColor = {PArg.Number},
+	caretHeight = {PArg.Number},
+	caretOffset = {{PArg.Number,PArg.Number}},
+	caretPos	= {{PArg.Number,PArg.Number}},
+	caretStyle  = {PArg.Number},
+	caretThick  = {PArg.Number},
+	font  = {PArg.Font},
+	readOnly = {PArg.Bool},
+	readOnlyCaretShow = {PArg.Bool},
+	scrollbars = {{PArg.Number,PArg.Number}},
+	scrollBarThick = {PArg.Number},
+	scrollSize = {PArg.Number},
+	selectColorBlur = {PArg.Number},
+	selectColor = {PArg.Number},
+	selectFrom = {PArg.Number},
+	showLine = {PArg.Number},
+	showPos = {PArg.Number},
+	text = {PArg.String},
+	textColor = {PArg.Number},
+	textLength = {PArg.Number},
+	textSize = {{PArg.Number,PArg.Number}},
+	wordWrap = {PArg.Bool+PArg.Number},
+})
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage

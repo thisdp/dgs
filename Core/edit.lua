@@ -2,9 +2,9 @@ dgsRegisterType("dgs-dxedit","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxdetectarea",{
 	alignment = {{PArg.Number,PArg.Number}},
 	allowCopy = {PArg.Bool},
-	autoComplete = {{}},
+	autoComplete = {PArg.Table},
 	autoCompleteSkip = {PArg.Bool},
-	autoCompleteShow = {{}},
+	autoCompleteShow = {PArg.Table},
 	bgColor = {PArg.Number},
 	bgColorBlur = {PArg.Number},
 	bgImage = {PArg.Material},
@@ -41,8 +41,6 @@ dgsRegisterProperties("dgs-dxdetectarea",{
 	text = {PArg.String},
 	textColor = {PArg.Number},
 	textSize = {{PArg.Number,PArg.Number}},
-	typingSound = {PArg.String},
-	typingSoundVolume = {PArg.Number},
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine

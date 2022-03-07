@@ -1,5 +1,35 @@
 dgsRegisterType("dgs-dxtab","dgsBasic")
 dgsRegisterType("dgs-dxtabpanel","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxtab",{
+bgColor = {PArg.Number},
+bgImage = {PArg.Material},
+font = {PArg.Font},
+id = {PArg.Number},
+tabColor  = {PArg.Number},
+tabImage = {PArg.Material},
+text = {PArg.String},
+textColor  = {PArg.Number},
+textSize  = {{PArg.Number,PArg.Number}},
+	
+})
+dgsRegisterProperties("dgs-dxtabpanel",{
+bgColor = {PArg.Number},
+bgImage = {PArg.Material},
+font = {PArg.Font},
+tabHeight = {{PArg.Number,PArg.Bool}},
+tabAlignment = {PArg.String},
+tabOffset = {{PArg.Number,PArg.Bool}},
+tabPadding = {{PArg.Number,PArg.Bool}},
+tabGapSize = {{PArg.Number,PArg.Bool}},
+tabLengthAll = {PArg.Number},
+showPos = {PArg.Bool},
+scrollSpeed = {{PArg.Number,PArg.Bool}},
+tabMaxWidth = {{PArg.Number,PArg.Bool}},
+tabMinWidth = {{PArg.Number,PArg.Bool}},
+selected = {PArg.Number},
+preSelect = {PArg.Number},
+	
+})
 --Dx Functions
 local __dxDrawImage = __dxDrawImage
 local dxDrawImage = dxDrawImage

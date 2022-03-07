@@ -890,6 +890,8 @@ PArg = {
 	Font = 2^5;
 	Material = 2^6;
 	DgsElement = 2^8;
+	GuiElement = 2^9;
+	Function = 2^10;
 }
 
 function dgsRegisterProperty(dgsElementType,propertyName,propertyArgTemplate)

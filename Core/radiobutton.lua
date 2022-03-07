@@ -1,4 +1,21 @@
 dgsRegisterType("dgs-dxradiobutton","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxradiobutton",{
+alignment = {{PArg.Number,PArg.Number}},
+clip = {PArg.Bool},  
+color_f = {PArg.Number},
+color_t = {PArg.Number},
+colorCoded = {PArg.Number},
+font = {PArg.Font},
+image_f = {PArg.Material},
+image_t = {PArg.Material},
+shadow = {{PArg.Number,PArg.Number}},
+text = {PArg.String}, 
+textColor = {PArg.Number},
+textPadding = {PArg.Number},
+wordBreak = {PArg.Bool},
+textSize = {{PArg.Number,PArg.Number}},
+RadioButton = {PArg.Number},
+})
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText

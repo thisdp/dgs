@@ -1,4 +1,26 @@
 dgsRegisterType("dgs-dxwindow","dgsBasic","dgsType2D")
+dgsRegisterProperties("dgs-dxwindow",{
+alignment = {{PArg.Number,PArg.Number}},
+borderSize = {PArg.Number},
+color = {PArg.Number},
+colorcoded = {PArg.Number},
+font = {PArg.Font},
+ignoreTitle = {PArg.Font},
+image = {PArg.Material},
+maxSize = {{PArg.Number,PArg.Number}},
+minSize = {{PArg.Number,PArg.Number}},
+movable = {PArg.Bool},
+moveType = {PArg.Bool},
+sizable = {PArg.Bool},
+text = {PArg.String},
+textColor = {PArg.Number},
+textSize = {{PArg.Number,PArg.Number}},
+titleColor = {PArg.Number},
+titleColorBlur = {PArg.Number},
+titleHeight = {PArg.Number},
+titleImage = {PArg.Material},
+
+})
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
