@@ -1024,7 +1024,7 @@ local compatibility = {
 	},
 	["dgs-dxedit"] = {
 		placeHolderColorcoded = "placeHolderColorCoded",
-	}
+	},
 	["dgs-dxcheckbox"] = {
 		image_f = "imageUnchecked",
 		image_t = "imageChecked",
