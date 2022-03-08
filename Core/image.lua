@@ -1,12 +1,12 @@
 dgsRegisterType("dgs-dximage","dgsBasic","dgsType2D")
 dgsRegisterProperties('dgs-dximage',{
-	image = {PArg.Material},
-	color = {PArg.Number},
-	rotationCenter = {PArg.Number},
-	rotation = {PArg.Number},
-	shadow = {{PArg.Number,PArg.Number,PArg.Number}},
-	UVSize = {{PArg.Number,PArg.Number,PArg.Bool}},
-	UVPos = {{PArg.Number,PArg.Number,PArg.Bool}},
+	image = 			{	PArg.Material+PArg.String+PArg.Nil	},
+	color = 			{	PArg.Number	},
+	rotationCenter = 	{	PArg.Number, PArg.Number, PArg.Bool	},
+	rotation = 			{	PArg.Number	},
+	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil }	},
+	UVSize = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
+	UVPos = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 })
 --Dx Functions
 local dxDrawImage = dxDrawImage
