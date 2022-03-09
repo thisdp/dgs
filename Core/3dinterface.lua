@@ -1,17 +1,17 @@
 dgsRegisterType("dgs-dx3dinterface","dgsBasic","dgsType3D","dgsTypeWorld3D")
 dgsRegisterProperties("dgs-dx3dinterface",{
-	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	size = 					{	{ PArg.Number, PArg.Number}		},
+	blendMode = 			{	PArg.String		},
 	color = 				{	PArg.Number		},
+	dimension = 			{	PArg.Number		},
 	faceTo = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	faceRelativeTo = 		{	PArg.String		},
-	maxDistance = 			{	PArg.Number		},
 	fadeDistance = 			{	PArg.Number		},
-	roll = 					{	PArg.Number		},
 	interior = 				{	PArg.Number		},
-	dimension = 			{	PArg.Number		},
-	blendMode = 			{	PArg.String		},
+	maxDistance = 			{	PArg.Number		},
+	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	resolution = 			{	{ PArg.Number,PArg.Number }		},
+	roll = 					{	PArg.Number		},
+	size = 					{	{ PArg.Number, PArg.Number}		},
 })
 local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.acos,math.deg
 local assert = assert

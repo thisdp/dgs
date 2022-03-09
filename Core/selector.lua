@@ -16,7 +16,7 @@ dgsRegisterProperties("dgs-dxselector",{
 	selectorImageColorRight = 	{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	selectorImageRight = 		{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }	},
 	selectorSize = 				{	{ PArg.Number, PArg.Number, PArg.Bool }	},
-	selectorText = 				{	{ PArg.String	},
+	selectorText = 				{	{ PArg.String, PArg.String }	},
 	selectorTextColor = 		{	PArg.Number	},
 	selectorTextSize = 			{	{ PArg.Number, PArg.Number }	},
 	shadow = 					{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil }	},

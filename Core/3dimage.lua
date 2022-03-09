@@ -1,18 +1,5 @@
 dgsRegisterType("dgs-dx3dimage","dgsBasic","dgsType3D","dgsTypeScreen3D")
 dgsRegisterProperties("dgs-dx3dimage",{
-	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	imageSize = 			{	{ PArg.Number, PArg.Number }	},
-	UVPos = 				{	{ PArg.Number, PArg.Number }	},
-	UVSize = 				{	{ PArg.Number, PArg.Number }	},
-	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
-	color = 				{	PArg.Number		},
-	rotation = 				{	PArg.Number		},
-	maxDistance = 			{	PArg.Number		},
-	fadeDistance = 			{	PArg.Number		},
-	dimension = 			{	PArg.Number		},
-	interior = 				{	PArg.Number		},
-	subPixelPositioning = 	{	PArg.Bool		},
-	fixImageSize = 			{	PArg.Bool		},
 	canBeBlocked = 			{	PArg.Bool, {
 											checkBuildings = PArg.Nil+PArg.Bool,
 											checkVehicles = PArg.Nil+PArg.Bool,
@@ -23,6 +10,19 @@ dgsRegisterProperties("dgs-dx3dimage",{
 											ignoreSomeObjectsForCamera = PArg.Nil+PArg.Bool,
 											}
 							},
+	color = 				{	PArg.Number		},
+	dimension = 			{	PArg.Number		},
+	fadeDistance = 			{	PArg.Number		},
+	fixImageSize = 			{	PArg.Bool		},
+	imageSize = 			{	{ PArg.Number, PArg.Number }	},
+	interior = 				{	PArg.Number		},
+	maxDistance = 			{	PArg.Number		},
+	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	rotation = 				{	PArg.Number		},
+	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
+	subPixelPositioning = 	{	PArg.Bool		},
+	UVPos = 				{	{ PArg.Number, PArg.Number }	},
+	UVSize = 				{	{ PArg.Number, PArg.Number }	},
 })
 
 --Dx Functions
