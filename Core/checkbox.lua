@@ -1,21 +1,21 @@
 dgsRegisterType("dgs-dxcheckbox","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxcheckbox",{
 	alignment = 			{	{ PArg.String, PArg.String }	},
+	buttonSize = 			{	{ PArg.Number, PArg.Number }	},
 	clip = 					{	PArg.Bool	},
+	colorChecked =			{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	colorCoded = 			{	PArg.Bool	},
 	colorIndeterminate =	{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	colorUnchecked =		{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	colorChecked =			{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	font = 					{	PArg.Font+PArg.String	},
+	imageChecked =			{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	imageIndeterminate =	{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	imageUnchecked =		{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	imageChecked =			{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	colorCoded = 			{	PArg.Bool	},
-	font = 					{	PArg.Font+PArg.String	},
-	state = 				{	PArg.Bool	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Number, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	state = 				{	PArg.Bool	},
 	textColor = 			{	PArg.Number	},
 	textPadding = 			{	PArg.Number	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
-	buttonSize = 			{	{ PArg.Number, PArg.Number }	},
 	wordBreak = 			{	PArg.Bool	},
 })
 --Dx Functions
