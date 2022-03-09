@@ -1,11 +1,11 @@
 dgsRegisterType("dgs-dxscrollpane","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxscrollpane",{
-bgColor = {PArg.Number},
-bgImage = {PArg.Material},
-moveHardness = {{PArg.Number,PArg.Number}},
-scrollBarThick = {PArg.Number},
-scrollBarState = {PArg.Bool},
-scrollBarLength = {{PArg.Number,PArg.Bool},{PArg.Number,PArg.Bool}},
+	bgColor = 			{	PArg.Number	},
+	bgImage = 			{	PArg.Material+PArg.Nil	},
+	moveHardness = 		{	{ PArg.Number,PArg.Number }	},
+	scrollBarThick = 	{	PArg.Number	},
+	scrollBarState = 	{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
+	scrollBarLength = 	{	{ PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool }	},
 })
 --Dx Functions
 local dxDrawImage = dxDrawImage
