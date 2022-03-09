@@ -1,34 +1,33 @@
 dgsRegisterType("dgs-dxtab","dgsBasic")
 dgsRegisterType("dgs-dxtabpanel","dgsBasic","dgsType2D")
-dgsRegisterProperties("dgs-dxtab",{
-bgColor = {PArg.Number},
-bgImage = {PArg.Material},
-font = {PArg.Font},
-id = {PArg.Number},
-tabColor  = {PArg.Number},
-tabImage = {PArg.Material},
-text = {PArg.String},
-textColor  = {PArg.Number},
-textSize  = {{PArg.Number,PArg.Number}},
-	
-})
 dgsRegisterProperties("dgs-dxtabpanel",{
-bgColor = {PArg.Number},
-bgImage = {PArg.Material},
-font = {PArg.Font},
-tabHeight = {{PArg.Number,PArg.Bool}},
-tabAlignment = {PArg.String},
-tabOffset = {{PArg.Number,PArg.Bool}},
-tabPadding = {{PArg.Number,PArg.Bool}},
-tabGapSize = {{PArg.Number,PArg.Bool}},
-tabLengthAll = {PArg.Number},
-showPos = {PArg.Bool},
-scrollSpeed = {{PArg.Number,PArg.Bool}},
-tabMaxWidth = {{PArg.Number,PArg.Bool}},
-tabMinWidth = {{PArg.Number,PArg.Bool}},
-selected = {PArg.Number},
-preSelect = {PArg.Number},
-	
+	bgColor = 		{	PArg.Number	},
+	bgImage = 		{	PArg.Material+PArg.Nil },
+	colorCoded = 	{	PArg.Bool	},
+	font = 			{	PArg.Font+PArg.String },
+	tabAlignment = 	{	PArg.String	},
+	tabGapSize = 	{	{ PArg.Number, PArg.Bool }	},
+	tabHeight = 	{	{ PArg.Number, PArg.Bool }	},
+	tabOffset = 	{	{ PArg.Number, PArg.Bool }	},
+	tabPadding = 	{	{ PArg.Number, PArg.Bool }	},
+	scrollSpeed = 	{	{ PArg.Number, PArg.Bool }	},
+	tabMaxWidth = 	{	{ PArg.Number, PArg.Bool }	},
+	tabMinWidth = 	{	{ PArg.Number, PArg.Bool }	},
+	selected = 		{	PArg.Number	},
+	wordBreak = 	{	PArg.Bool	},
+})
+dgsRegisterProperties("dgs-dxtab",{
+	bgColor = 		{	PArg.Number	},
+	bgImage = 		{	PArg.Material+PArg.Nil	},
+	colorCoded = 	{	PArg.Bool	},
+	font = 			{	PArg.Font+PArg.String	},
+	id = 			{	PArg.Number	},
+	tabColor = 		{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	tabImage = 		{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }	},
+	text = 			{	PArg.String	},
+	textColor = 	{	PArg.Number	},
+	textSize = 		{	{ PArg.Number,PArg.Number }	},
+	wordBreak = 	{	PArg.Bool	},
 })
 --Dx Functions
 local __dxDrawImage = __dxDrawImage
