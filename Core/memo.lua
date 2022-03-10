@@ -265,6 +265,7 @@ end
 function dgsMemoGetLineCount(memo,strongLineOnly)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetLineCount",1,"dgs-dxmemo")) end
 	if not strongLineOnly and dgsElementData[memo].wordWrap then
+		if dgsElementData[memo].rebuildMapTableNextFrame then dgsMemoRebuildWordWrapMapTable(memo) end
 		return #dgsElementData[memo].wordWrapMapText
 	end
 	return #dgsElementData[memo].text
