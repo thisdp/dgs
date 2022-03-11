@@ -927,7 +927,7 @@ function dgsRegisterProperties(dgsElementType,propertyList)
 	return true
 end
 
-function dgsCheckProperty(dgsElementType,propertyName)
+function dgsCheckProperty(dgsElementType,propertyName,propertyValue)
 
 end
 
