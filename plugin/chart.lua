@@ -189,6 +189,8 @@ chartProcessFunction = {
 					end
 					dgsSVGNodeSetAttribute(datasets[id][0],"points",points)
 				end
+				local axisLine = eleData.axisLine
+				dgsSVGNodeSetAttribute(axisLine,"points",bPosL,bPosT-gridLineWidth/2,bPosL,bPosB,bPosR+gridLineWidth/2,bPosB)
 			end
 			return true
 		end,
