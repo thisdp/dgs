@@ -610,6 +610,21 @@ function findRotation(x1,y1,x2,y2,offsetFix)
 end
 
 function math.restrict(value,n_min,n_max)
+	if type(value) ~= "number" then
+		local dbInfo = debug.getinfo(2)
+		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.restrict at argument 1, expect a number, got "..type(value),4,255,128,0)
+		return false
+	end
+	if type(n_min) ~= "number" then
+		local dbInfo = debug.getinfo(2)
+		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.restrict at argument 2, expect a number, got "..type(n_min),4,255,128,0)
+		return false
+	end
+	if type(n_max) ~= "number" then
+		local dbInfo = debug.getinfo(2)
+		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.restrict at argument 3, expect a number, got "..type(n_max),4,255,128,0)
+		return false
+	end
 	if value <= n_min then
 		return n_min
 	elseif value >= n_max then
