@@ -334,11 +334,12 @@ end
 
 function GridListTest()
 	gridlist = dgsCreateGridList(500,50,600,600,false)
+	dgsSetProperty(gridlist,"scrollBarCoverColumn",false)
 	dgsSetProperty(gridlist,"clip",false)
 	--dgsSetProperty(gridlist,"leading",10)
 	--dgsSetProperty(gridlist,"mode",true)
-	dgsGridListAddColumn(gridlist,"test1",0.2)
-	dgsGridListAddColumn(gridlist,"test2",0.2)
+	dgsGridListAddColumn(gridlist,"test1",0.6)
+	dgsGridListAddColumn(gridlist,"test2",0.4)
 	dgsGridListAddColumn(gridlist,"test3",0.6)
 	local tick = getTickCount()
 	dgsSetProperty(gridlist,"rowHeight",200)
@@ -357,7 +358,7 @@ function GridListTest()
 		dgsGridListSetItemText(gridlist,row,1,i.."xx")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
 	end
-	dgsGridListAutoSizeColumn(gridlist,1,0,false,true)
+	--dgsGridListAutoSizeColumn(gridlist,1,0,false,true)
 	dgsGridListSetItemFont(gridlist,2,2,"default-bold")
 end
 
@@ -410,7 +411,6 @@ function PasteHandlerTest()
 		end
 	end)
 end
-
 
 local s = [[
 float4 gLightAmbient : LIGHTAMBIENT;
@@ -577,6 +577,7 @@ function TabPanelTest()
 	tab = dgsCreateTab("test1",tabpanel)
 	tab = dgsCreateTab("test2",tabpanel)
 	tab = dgsCreateTab("test3",tabpanel)
+	dgsSetProperty(tabpanel,"shadow",{1,1,tocolor(0,0,0,255)})
 end
 
 function Line2DTest()
@@ -750,8 +751,7 @@ function QRCodeTest()
 	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
 	local roundedRect = dgsCreateRoundRect(300, false, tocolor(255,255,255,255))
 	dgsBlurBoxSetFilter(blurbox,roundedRect)
-	
-	
+
 	local QRCode = dgsRequestQRCode("https://wiki.multitheftauto.com/wiki/Resource:Dgs")
 	local image = dgsCreateImage(200,200,128,128,QRCode,false)
 	local mask = dgsCreateMask(QRCode,"backgroundFilter")
@@ -1029,7 +1029,10 @@ function SVGTest()
 	local d = dgsSVGNodeSetAttribute(path,"d","table")
 	dgsSVGNodeSetAttribute(path,"d",d)
 	local btn1 = dgsCreateImage(200,200,500,500,svg,false)
+	
+	setClipboard(dgsSVGGetRawDocument(svg))
 end
+
 
 function SVGTest_OOP()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
@@ -1059,14 +1062,14 @@ function SVGTest_OOP()
 		:fill("#00FF00")
 		:stroke({width=5,color=0xFF0000})]]
 
-	--setClipboard(dgsSVGGetContent(doc.dgsElement))
+	--setClipboard(dgsSVGGetRawDocument(doc.dgsElement))
 	img = dgsImage(200,200,500,500,svg,false)
 end
 
 function ChartTest()
 	local chart = dgsCreateChart(400,300,600,300,"line",false)
 	dgsChartSetLabels(chart,"Month",{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"})
-	dgsSetProperty(chart,"axisYScaler",{0,100})
+	--dgsSetProperty(chart,"axisYScaler",{0,100})
 	local datasetID = dgsChartAddDataset(chart,"Counts")
 	dgsChartDatasetSetStyle(chart,datasetID,{
 			color = tocolor(255,0,0,255),
@@ -1091,4 +1094,5 @@ function ChartTest()
 	end
 	dgsChartDatasetSetData(chart,datasetID,setdata)
 end
+
 end)
