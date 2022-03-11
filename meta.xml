@@ -234,6 +234,7 @@
 	<export function="dgsGetElementKeeperEnabled" type="client" />
 	<export function="dgsSetDebugTracerEnabled" type="client" />
 	<export function="dgsGetRegisteredProperties" type="client" />
+	<export function="dgsListPropertyType" type="client" />
 	
 	<export function="dgs3DSetPosition" type="client" />
 	<export function="dgs3DGetPosition" type="client" />

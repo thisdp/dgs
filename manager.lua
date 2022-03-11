@@ -886,59 +886,102 @@ end
 
 ]]
 PArg = {
-	Nil = 2^0;
-	Number = 2^1;
-	Bool = 2^2;
-	String = 2^3;
-	Table = 2^4;
-	Font = 2^5;
-	Material = 2^6;
-	Color = 2^7;
+	"Nil",
+	"Number",
+	"Bool",
+	"String",
+	"Table",
+	"Font",
+	"Material",
+	"Color",
 }
+for i=1,#PArg do
+	PArg[ PArg[i] ] = 2^(i-1)
+end
 
-function dgsRegisterProperty(dgsElementType,propertyName,propertyArgTemplate)
-	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsRegisterProperty",1,"string")) end
+function dgsRegisterProperty(eleType,propertyName,propertyArgTemplate)
+	if not(type(eleType) == "string") then error(dgsGenAsrt(eleType,"dgsRegisterProperty",1,"string")) end
 	if not(type(propertyName) == "string") then error(dgsGenAsrt(propertyName,"dgsRegisterProperty",2,"string")) end
 	if not(type(propertyArgTemplate) == "table") then error(dgsGenAsrt(propertyArgTemplate,"dgsRegisterProperty",3,"table")) end
-	if _G[dgsElementType] then
-		for eleType in pairs(_G[dgsElementType]) do
+	if _G[eleType] then
+		for eleType in pairs(_G[eleType]) do
 			dgsRegisterProperty(eleType,propertyName,propertyArgTemplate)
 		end
 	else
-		if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
-		dgsElementPropertyList[dgsElementType][propertyName] = propertyArgTemplate
+		if not dgsElementPropertyList[eleType] then dgsElementPropertyList[eleType] = {} end
+		dgsElementPropertyList[eleType][propertyName] = propertyArgTemplate
 	end
 	return true
 end
 
-function dgsRegisterProperties(dgsElementType,propertyList)
-	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsRegisterProperties",1,"string")) end
+function dgsRegisterProperties(eleType,propertyList)
+	if not(type(eleType) == "string") then error(dgsGenAsrt(eleType,"dgsRegisterProperties",1,"string")) end
 	if not(type(propertyList) == "table") then error(dgsGenAsrt(propertyList,"dgsRegisterProperties",2,"table")) end
-	if _G[dgsElementType] then
-		for eleType in pairs(_G[dgsElementType]) do
+	if _G[eleType] then
+		for eleType in pairs(_G[eleType]) do
 			dgsRegisterProperties(eleType,propertyList)
 		end
 	else
-		if not dgsElementPropertyList[dgsElementType] then dgsElementPropertyList[dgsElementType] = {} end
+		if not dgsElementPropertyList[eleType] then dgsElementPropertyList[eleType] = {} end
 		for propertyName,propertyArgTemplate in pairs(propertyList) do
-			dgsElementPropertyList[dgsElementType][propertyName] = propertyArgTemplate
+			dgsElementPropertyList[eleType][propertyName] = propertyArgTemplate
 		end
 	end
 	return true
 end
 
-function dgsCheckProperty(dgsElementType,propertyName,propertyValue)
+function dgsListPropertyType(propertyTemplateValue)
+	if type(propertyTemplateValue) == "table" then return "table" end
+	local pTypeList = {}
+	local index = 0
+	while(propertyTemplateValue ~= 0) do
+		index = index+1
+		local pType = propertyTemplateValue%2
+		propertyTemplateValue = math.floor(propertyTemplateValue/2)
+		if pType == 1 then
+			pTypeList[#pTypeList+1] = PArg[index]
+		end
+	end
+	return pTypeList
+end
+
+function dgsCheckPropertyByTemplate(propertyTemplate,propretyValue)
 
 end
 
-function dgsGetRegisteredProperties(dgsElementType,withArgTemplate)
-	if not(type(dgsElementType) == "string") then error(dgsGenAsrt(dgsElementType,"dgsGetRegisteredProperties",1,"string")) end
-	if not dgsElementPropertyList[dgsElementType] then return false end
+function dgsCheckProperty(dgsElement,propertyName,propertyValue)
+	local eleType = dgsElementType[dgsElement]
+	local propertyCheck = dgsElementPropertyList[eleType]
+	if not propertyCheck then return true end
+	if propertyCheck[propertyName] then
+		return dgsCheckPropertyByTemplate(propertyCheck[propertyName],propertyValue)
+	else
+		local specialProperties = propertyCheck.__Special
+		if not propertyCheck.__Special then return true end
+		for i=1,#specialProperties do
+			local specialProperty = specialProperties[i]
+			local basis = specialProperty.__Basis
+			if basis then
+				local basisData = dgsElementData[eleType][basis]
+				if basisData then
+					if specialProperty[basisData] then
+						return dgsCheckPropertyByTemplate(specialProperty[basisData][propertyName],propertyValue)
+					end
+				end
+			end
+		end
+	end
+	return true
+end
+
+function dgsGetRegisteredProperties(eleType,withArgTemplate)
+	if not(type(eleType) == "string") then error(dgsGenAsrt(eleType,"dgsGetRegisteredProperties",1,"string")) end
+	if not dgsElementPropertyList[eleType] then return false end
 	if withArgTemplate then
-		return dgsElementPropertyList[dgsElementType]
+		return dgsElementPropertyList[eleType]
 	else
 		local propertyList = {}
-		for propType in pairs(dgsElementPropertyList[dgsElementType]) do
+		for propType in pairs(dgsElementPropertyList[eleType]) do
 			propertyList[#propertyList+1] = propType
 		end
 		return propertyList
