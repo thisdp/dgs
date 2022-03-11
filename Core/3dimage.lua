@@ -10,7 +10,7 @@ dgsRegisterProperties("dgs-dx3dimage",{
 											ignoreSomeObjectsForCamera = PArg.Nil+PArg.Bool,
 											}
 							},
-	color = 				{	PArg.Number		},
+	color = 				{	PArg.Color		},
 	dimension = 			{	PArg.Number		},
 	fadeDistance = 			{	PArg.Number		},
 	fixImageSize = 			{	PArg.Bool		},

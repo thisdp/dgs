@@ -1,6 +1,43 @@
 dgsRegisterType("dgs-dxprogressbar","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxprogressbar",{
+	bgColor = 			{	PArg.Color	},
+	bgImage = 			{	PArg.Material+PArg.Nil	},
+	indicatorColor = 	{	{ PArg.Color, PArg.Color }, PArg.Color	},
+	indicatorImage = 	{	{ PArg.Material+PArg.Nil,PArg.Material+PArg.Nil }, PArg.Material+PArg.Nil	},
+	indicatorMode = 	{	PArg.Bool	},
+	map = 				{	{ PArg.Number, PArg.Number } },
+	padding = 			{	{ PArg.Number, PArg.Number } },
+	progress = 			{	PArg.Number },
+	style = 			{	PArg.String },
 	
+	__Special = 		{	
+		{	__Basis  = "style",
+			["normal-horizontal"] = {},
+			["normal-vertical"] = {},
+			["ring-round"] = {
+				isClockwise = 	{	PArg.Nil+PArg.Bool	},
+				antiAliased = 	{	PArg.Number	},
+				rotation = 		{	PArg.Number	},
+				radius = 		{	PArg.Number	},
+				thickness = 	{	PArg.Number	},
+				bgRotation = 	{	PArg.Nil+PArg.Number	},
+				bgRadius = 		{	PArg.Nil+PArg.Number	},
+				bgThickness = 	{	PArg.Nil+PArg.Number	},
+				bgProgress = 	{	PArg.Nil+PArg.Number	},
+			},
+			["ring-plain"] = {
+				isClockwise = 	{	PArg.Nil+PArg.Bool	},
+				rotation = 		{	PArg.Number	},
+				antiAliased = 	{	PArg.Number	},
+				radius = 		{	PArg.Number	},
+				thickness = 	{	PArg.Number	},
+				bgRotation = 	{	PArg.Nil+PArg.Number	},
+				bgRadius = 		{	PArg.Nil+PArg.Number	},
+				bgThickness = 	{	PArg.Nil+PArg.Number	},
+				bgProgress = 	{	PArg.Nil+PArg.Number	},
+			},
+		},
+	}
 })
 --Dx Functions
 local dxDrawImage = dxDrawImage
@@ -289,10 +326,10 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			eleData.rotation = 0
 			eleData.radius = 0.2
 			eleData.thickness = 0.02
-			eleData.bgRotation = false
-			eleData.bgRadius = false
-			eleData.bgThickness = false
-			eleData.bgProgress = false
+			eleData.bgRotation = nil
+			eleData.bgRadius = nil
+			eleData.bgThickness = nil
+			eleData.bgProgress = nil
 		elseif style == "ring-plain" then
 			eleData.elements = {}
 			eleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-plain"])
@@ -302,10 +339,10 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			eleData.antiAliased = 0.005
 			eleData.radius = 0.2
 			eleData.thickness = 0.02
-			eleData.bgRotation = false
-			eleData.bgRadius = false
-			eleData.bgThickness = false
-			eleData.bgProgress = false
+			eleData.bgRotation = nil
+			eleData.bgRadius = nil
+			eleData.bgThickness = nil
+			eleData.bgProgress = nil
 		end
 		for k,v in pairs(settingTable or {}) do
 			dgsElementData[progressbar][k] = v

@@ -11,7 +11,7 @@ dgsRegisterProperties("dgs-dx3dtext",{
 											ignoreSomeObjectsForCamera = PArg.Nil+PArg.Bool,
 											}
 							},
-	color = 				{	PArg.Number	},
+	color = 				{	PArg.Color	},
 	colorCoded = 			{	PArg.Bool	},
 	dimension = 			{	PArg.Number	},
 	fadeDistance = 			{	PArg.Number	},

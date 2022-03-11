@@ -1,28 +1,30 @@
 dgsRegisterType("dgs-dxtab","dgsBasic")
 dgsRegisterType("dgs-dxtabpanel","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxtabpanel",{
-	bgColor = 		{	PArg.Number	},
+	bgColor = 		{	PArg.Color	},
 	bgImage = 		{	PArg.Material+PArg.Nil },
 	colorCoded = 	{	PArg.Bool	},
 	font = 			{	PArg.Font+PArg.String },
+	scrollSpeed = 	{	{ PArg.Number, PArg.Bool }	},
+	selected = 		{	PArg.Number	},
+	shadow = 		{	{ PArg.Number, PArg.Number, PArg.Color }, PArg.Nil	},
 	tabAlignment = 	{	PArg.String	},
 	tabGapSize = 	{	{ PArg.Number, PArg.Bool }	},
 	tabHeight = 	{	{ PArg.Number, PArg.Bool }	},
-	tabOffset = 	{	{ PArg.Number, PArg.Bool }	},
-	tabPadding = 	{	{ PArg.Number, PArg.Bool }	},
-	scrollSpeed = 	{	{ PArg.Number, PArg.Bool }	},
 	tabMaxWidth = 	{	{ PArg.Number, PArg.Bool }	},
 	tabMinWidth = 	{	{ PArg.Number, PArg.Bool }	},
-	selected = 		{	PArg.Number	},
+	tabOffset = 	{	{ PArg.Number, PArg.Bool }	},
+	tabPadding = 	{	{ PArg.Number, PArg.Bool }	},
 	wordBreak = 	{	PArg.Bool	},
 })
 dgsRegisterProperties("dgs-dxtab",{
-	bgColor = 		{	PArg.Number	},
+	bgColor = 		{	PArg.Color	},
 	bgImage = 		{	PArg.Material+PArg.Nil	},
 	colorCoded = 	{	PArg.Bool	},
 	font = 			{	PArg.Font+PArg.String	},
 	id = 			{	PArg.Number	},
-	tabColor = 		{	{ PArg.Number, PArg.Number, PArg.Number }	},
+	shadow = 		{	{ PArg.Number, PArg.Number, PArg.Color }, PArg.Nil	},
+	tabColor = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	tabImage = 		{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }	},
 	text = 			{	PArg.String	},
 	textColor = 	{	PArg.Number	},
@@ -385,6 +387,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	
 	local font = eleData.font or systemFont
 	local colorCoded = eleData.colorCoded
+	local shadow = eleData.shadow
 	local wordBreak = eleData.wordBreak
 	local tabAlignment = eleData.tabAlignment
 	if selected == -1 then
@@ -417,9 +420,10 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local t = tabs[d]
 				local tabData = dgsElementData[t]
 				if tabData.visible then
-					local twordBreak,tcolorCoded = tabData.wordBreak,tabData.colorCoded
+					local twordBreak,tcolorCoded,tshadow = tabData.wordBreak,tabData.colorCoded,tabData.shadow
 					if twordBreak == nil then twordBreak = wordBreak end
 					if tcolorCoded == nil then tcolorCoded = colorCoded end
+					if tshadow == nil then tshadow = shadow end
 					local width = tabData.width+tabPadding*2
 					if tabX+width >= 0 and tabX <= w then
 						local tabImage = tabData.tabImage
@@ -504,11 +508,12 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][3] = 0
 						textRenderBuffer[textRenderBuffer.count][4] = width+tabX
 						textRenderBuffer[textRenderBuffer.count][5] = height
-						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(type(tabTextColor) == "table" and tabTextColor[selState] or tabTextColor,parentAlpha)
+						textRenderBuffer[textRenderBuffer.count][6] = type(tabTextColor) == "table" and tabTextColor[selState] or tabTextColor
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
 						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
 						textRenderBuffer[textRenderBuffer.count][10] = colorCoded	--Color Coded
+						textRenderBuffer[textRenderBuffer.count][11] = tshadow	--Shadow
 						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
 							MouseData.hit = t
@@ -522,8 +527,19 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		if eleData.textRT then
 			dxSetBlendMode("modulate_add")
 			dxSetRenderTarget(eleData.textRT,true)
+			local shadow = eleData.shadow
+			if shadow then
+				local shadowOffsetX,shadowOffsetY,shadowColor = shadow[1],shadow[2],shadow[3]
+				for i=1,textRenderBuffer.count do
+					local tRB = textRenderBuffer[i]
+				end
+			end
 			for i=1,textRenderBuffer.count do
 				local tRB = textRenderBuffer[i]
+				local text = tRB[1]
+				if tRB[11] then
+					dxDrawText(tRB[10] and text:gsub("#%x%x%x%x%x%x","") or text,tRB[2]+tRB[11][1],tRB[3]+tRB[11][2],tRB[4],tRB[5],tRB[11][3],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,false,true)
+				end
 				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],true)
 			end		
 		end

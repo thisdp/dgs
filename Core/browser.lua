@@ -1,6 +1,6 @@
 dgsRegisterType("dgs-dxbrowser","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxbrowser",{
-	color = 				{	PArg.Number		},
+	color = 				{	PArg.Color		},
 	isTransparent = 		{	PArg.Bool		},
 	isLocal = 				{	PArg.Bool		},
 })

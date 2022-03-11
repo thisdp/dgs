@@ -1,6 +1,6 @@
 dgsRegisterType("dgs-dxscrollpane","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxscrollpane",{
-	bgColor = 			{	PArg.Number	},
+	bgColor = 			{	PArg.Color	},
 	bgImage = 			{	PArg.Material+PArg.Nil	},
 	moveHardness = 		{	{ PArg.Number,PArg.Number }	},
 	scrollBarThick = 	{	PArg.Number	},

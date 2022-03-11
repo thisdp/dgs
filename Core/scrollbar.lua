@@ -1,9 +1,9 @@
 dgsRegisterType("dgs-dxscrollbar","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxscrollbar",{
 	arrowWidth = 		{	{ PArg.Number,PArg.Bool }	},
-	arrowColor = 		{	PArg.Number	},
+	arrowColor = 		{	PArg.Color	},
 	arrowImage = 		{	PArg.Material+PArg.Nil	},
-	cursorColor = 		{	PArg.Number	},
+	cursorColor = 		{	PArg.Color	},
 	cursorImage = 		{	PArg.Material+PArg.Nil	},
 	cursorWidth = 		{	{ PArg.Number,PArg.Bool }	},
 	grades = 			{	PArg.Number+PArg.Bool	},
@@ -16,7 +16,7 @@ dgsRegisterProperties("dgs-dxscrollbar",{
 	position = 			{	PArg.Number	},
 	scrollArrow = 		{	PArg.Bool	},
 	troughClickAction = {	PArg.String	},
-	troughColor = 		{	{ PArg.Number,PArg.Number }	},
+	troughColor = 		{	{ PArg.Color,PArg.Color }	},
 	troughWidth = 		{	{ PArg.Number,PArg.Bool }	},
 	troughImage = 		{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	wheelReversed = 	{	PArg.Bool	},

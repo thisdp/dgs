@@ -1,7 +1,7 @@
 dgsRegisterType("dgs-dx3dinterface","dgsBasic","dgsType3D","dgsTypeWorld3D")
 dgsRegisterProperties("dgs-dx3dinterface",{
 	blendMode = 			{	PArg.String		},
-	color = 				{	PArg.Number		},
+	color = 				{	PArg.Color		},
 	dimension = 			{	PArg.Number		},
 	faceTo = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	faceRelativeTo = 		{	PArg.String		},

@@ -2,7 +2,7 @@ dgsRegisterType("dgs-dxline","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxline",{
 	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	size = 					{	{PArg.Number,PArg.Number}		},
-	color = 				{	PArg.Number		},
+	color = 				{	PArg.Color		},
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine
