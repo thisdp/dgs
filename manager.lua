@@ -930,8 +930,8 @@ function dgsRegisterProperties(eleType,propertyList)
 	return true
 end
 
-function dgsListPropertyType(propertyTemplateValue)
-	if type(propertyTemplateValue) == "table" then return "table" end
+function dgsListPropertyTypes(propertyTemplateValue)
+	if type(propertyTemplateValue) ~= "number" then return type(propertyTemplateValue) end
 	local pTypeList = {}
 	local index = 0
 	while(propertyTemplateValue ~= 0) do
