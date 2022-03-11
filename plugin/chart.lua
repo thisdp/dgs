@@ -105,6 +105,9 @@ chartProcessFunction = {
 			local bPosB = h-(eleData.chartPadding[5] and eleData.chartPadding[2]*h or eleData.chartPadding[2])
 			local bPosL = eleData.chartPadding[5] and eleData.chartPadding[3]*w or eleData.chartPadding[3]
 			local bPosR = w-(eleData.chartPadding[5] and eleData.chartPadding[4]*w or eleData.chartPadding[4])
+			--Update Axis Line
+			local axisLine = eleData.axisLine
+			dgsSVGNodeSetAttribute(axisLine,"points",bPosL,bPosT-gridLineWidth/2,bPosL,bPosB,bPosR+gridLineWidth/2,bPosB)
 			--Draw Grid
 			--Find the Min/Max
 			local minData,maxData
@@ -145,7 +148,7 @@ chartProcessFunction = {
 						table.remove(gridHorizontal,#gridHorizontal)
 					end
 				end
-
+				--Update Horizontal Grid
 				for i=1,#gridHorizontal do
 					dgsSVGNodeSetAttributes(gridHorizontal[i],{
 						x1=bPosL,
@@ -169,6 +172,7 @@ chartProcessFunction = {
 						table.remove(gridVertical,#gridVertical)
 					end
 				end
+				--Update Vertical Grid
 				for i=1,#gridVertical do
 					dgsSVGNodeSetAttributes(gridVertical[i],{
 						x1=bPosL+i/(labels-1)*(bPosR-bPosL),
@@ -179,6 +183,7 @@ chartProcessFunction = {
 						["stroke-width"] = gridLineWidth,
 					})
 				end
+				--Update Sample Line
 				for id=1,#datasets do
 					local points = {}
 					for i=1,labels do
@@ -189,8 +194,6 @@ chartProcessFunction = {
 					end
 					dgsSVGNodeSetAttribute(datasets[id][0],"points",points)
 				end
-				local axisLine = eleData.axisLine
-				dgsSVGNodeSetAttribute(axisLine,"points",bPosL,bPosT-gridLineWidth/2,bPosL,bPosB,bPosR+gridLineWidth/2,bPosB)
 			end
 			return true
 		end,
