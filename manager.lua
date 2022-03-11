@@ -883,7 +883,7 @@ end
 16.table without item checked
 32.font
 64.material
-
+128.color
 ]]
 PArg = {
 	"Nil",
@@ -946,7 +946,7 @@ function dgsListPropertyTypes(propertyTemplateValue)
 end
 
 function dgsCheckPropertyByTemplate(propertyTemplate,propretyValue)
-
+	-- todo
 end
 
 function dgsCheckProperty(dgsElement,propertyName,propertyValue)
