@@ -105,6 +105,9 @@ chartProcessFunction = {
 			local bPosB = h-(eleData.chartPadding[5] and eleData.chartPadding[2]*h or eleData.chartPadding[2])
 			local bPosL = eleData.chartPadding[5] and eleData.chartPadding[3]*w or eleData.chartPadding[3]
 			local bPosR = w-(eleData.chartPadding[5] and eleData.chartPadding[4]*w or eleData.chartPadding[4])
+			
+			local gridLineWidth = eleData.gridLineWidth
+				
 			--Update Axis Line
 			local axisLine = eleData.axisLine
 			dgsSVGNodeSetAttribute(axisLine,"points",bPosL,bPosT-gridLineWidth/2,bPosL,bPosB,bPosR+gridLineWidth/2,bPosB)
@@ -129,7 +132,6 @@ chartProcessFunction = {
 				renderBuffer.yScale[1] = minData
 				renderBuffer.yScale[2] = maxData
 				local gridLineColor = eleData.gridLineColor
-				local gridLineWidth = eleData.gridLineWidth
 				local gridHorizontal = eleData.gridHorizontal
 				local range = (maxData-minData)*1.2
 				local delta = (maxData-minData)*0.1
