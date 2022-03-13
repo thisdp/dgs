@@ -2774,7 +2774,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 			end
 			local preHitElement = MouseData.hit
-			for i=eleData.FromTo[1],eleData.FromTo[2] do
+			for i=eleData.FromTo[2],eleData.FromTo[1],-1 do
 				for id = cPosStart,cPosEnd do
 					local item = elementBuffer[i][id]
 					if item and item[1] then
