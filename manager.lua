@@ -339,7 +339,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 	lastFront = dgsEle
 	if mouse == "left" then
 		MouseData.clickl = dgsEle
-		if MouseData.hitData3D[0] and MouseData.hitData3D[5] then
+		if not MouseData.hitData2D[0] and MouseData.hitData3D[0] and MouseData.hitData3D[5] then
 			MouseData.lock3DInterface = MouseData.hitData3D[5]
 		end
 		MouseData.clickData = nil

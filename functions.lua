@@ -661,6 +661,7 @@ end
 
 function dgsGetCursorPosition(rltEle,rlt,forceOnScreen,onSurface)
 	if dgsGetCursorVisible() then
+		iprint(MouseData.lock3DInterface )
 		if MouseData.lock3DInterface and not forceOnScreen then
 			local absX,absY = dgsElementData[MouseData.lock3DInterface].cursorPosition[1],dgsElementData[MouseData.lock3DInterface].cursorPosition[2]
 			local resolution = dgsElementData[MouseData.lock3DInterface].resolution

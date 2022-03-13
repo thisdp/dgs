@@ -190,7 +190,6 @@ function dgsCoreRender()
 		end
 		--
 		MouseData.hitData3D[0] = false
-		MouseData.hitData2D[0] = false
 		MouseData.topScrollable = false
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
@@ -216,6 +215,7 @@ function dgsCoreRender()
 		local hit3D = MouseData.hit
 		MouseData.hit = false
 
+		MouseData.hitData2D[0] = false
 		for i=1,bottomTableSize do
 			local v = BottomFatherTable[i]
 			local eleData = dgsElementData[v]
@@ -233,8 +233,13 @@ function dgsCoreRender()
 			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
 		end
 		local hit2D = MouseData.hit
+		
 		if hit2D then
 			MouseData.cursorPos = dgsElementData[hit2D].cursorPosition
+			MouseData.hitData2D[0] = true
+			MouseData.hitData2D[1] = MouseData.cursorPos[1]
+			MouseData.hitData2D[2] = MouseData.cursorPos[2]
+			MouseData.hitData2D[3] = hit2D
 		elseif hit3D then
 			MouseData.cursorPos = dgsElementData[hit3D].cursorPosition
 		end
