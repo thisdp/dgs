@@ -1252,7 +1252,7 @@ class {
 
 --------------------------Tab
 class {
-	extends = "dgs2D";
+	extends = "dgsBasic";
 	type = "dgsTab";
 	dgsType = "dgs-dxtab";
 	preInstantiate = function(parent,text,...)
@@ -1265,7 +1265,7 @@ class {
 
 --------------------------TabPanel
 class {
-	extends = "dgsBasic";
+	extends = "dgs2D";
 	type = "dgsTabPanel";
 	dgsType = "dgs-dxtabpanel";
 	preInstantiate = function(parent,x,y,w,h,rlt,...)
