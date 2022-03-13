@@ -13,6 +13,7 @@ dgsRegisterProperties("dgs-dxcheckbox",{
 	imageUnchecked =		{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	state = 				{	PArg.Bool	},
+	text = 					{	PArg.String	},
 	textColor = 			{	PArg.Number	},
 	textPadding = 			{	PArg.Number	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
