@@ -1220,9 +1220,8 @@ boundResource = {}
 dgsEasingFunction = {}
 dgsEasingFunctionOrg = {}
 SEInterface = [[
-local args = {...};
-local progress,setting,self = args[1],args[2],args[3];
-local propertyTable = dgsElementData[self];
+local progress,setting,self = ...
+local propertyTable = dgsElementData[self]
 ]]
 function dgsAddEasingFunction(name,str,isOverWrite)
 	if not(type(name) == "string") then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,"string")) end
