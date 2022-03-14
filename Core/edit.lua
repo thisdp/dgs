@@ -31,7 +31,7 @@ dgsRegisterProperties("dgs-dxedit",{
 	readOnlyCaretShow = 			{	PArg.Bool	},
 	selectColorBlur = 				{	PArg.Color	},
 	selectColor = 					{	PArg.Color	},
-	text = 							{	PArg.String	},
+	text = 							{	PArg.Text	},
 	textColor = 					{	PArg.Color	},
 	textSize = 						{	{ PArg.Number, PArg.Number }	},
 	typingSound = 					{	PArg.String	},

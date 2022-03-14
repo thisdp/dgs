@@ -894,6 +894,7 @@ PArg = {
 	"Font",
 	"Material",
 	"Color",
+	"Text",
 }
 for i=1,#PArg do
 	PArg[ PArg[i] ] = 2^(i-1)

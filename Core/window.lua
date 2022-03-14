@@ -13,7 +13,7 @@ dgsRegisterProperties("dgs-dxwindow",{
 	movable = 			{	PArg.Bool	},
 	sizable = 			{	PArg.Bool	},
 	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
-	text = 				{	PArg.String	},
+	text = 				{	PArg.Text	},
 	textColor = 		{	PArg.Color	},
 	textSize = 			{	{ PArg.Number,PArg.Number }	},
 	titleColor = 		{	PArg.Color	},

@@ -21,7 +21,7 @@ dgsRegisterProperties("dgs-dxselector",{
 	selectorTextSize = 			{	{ PArg.Number, PArg.Number }	},
 	shadow = 					{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }	},
 	subPixelPositioning = 		{	PArg.Bool	},
-	text = 						{	PArg.String	},
+	text = 						{	PArg.Text	},
 	textColor = 				{	PArg.Color	},
 	textSize = 					{	{ PArg.Number,PArg.Number }	},
 })

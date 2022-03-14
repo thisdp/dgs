@@ -6,7 +6,7 @@ dgsRegisterProperties("dgs-dxcombobox",{
 	autoHideAfterSelected = {	PArg.Bool	},
 	autoSort = 				{	PArg.Bool	},
 	clip = 					{	PArg.Bool	},
-	caption = 				{	PArg.String	},
+	caption = 				{	PArg.Text	},
 	scrollBarThick = 		{	PArg.Number	},
 	color = 				{	PArg.Color	},
 	bgColor = 				{	PArg.Color	},

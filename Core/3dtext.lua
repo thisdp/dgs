@@ -22,7 +22,7 @@ dgsRegisterProperties("dgs-dx3dtext",{
 	isOnScreen = 			{	PArg.Bool, readOnly = true	},
 	maxDistance = 			{	PArg.Number	},
 	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	text = 					{	PArg.String	},
+	text = 					{	PArg.Text	},
 	textOffset = 			{	{ PArg.Number, PArg.Number }	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
 })

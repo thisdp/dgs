@@ -7,7 +7,7 @@ dgsRegisterProperties("dgs-dxlabel",{
 	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	subPixelPositioning = 	{	PArg.Bool	},
-	text = 					{	PArg.String	},
+	text = 					{	PArg.Text	},
 	textColor = 			{	PArg.Color	},
 	textOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},

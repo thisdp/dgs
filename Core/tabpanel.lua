@@ -26,7 +26,7 @@ dgsRegisterProperties("dgs-dxtab",{
 	shadow = 		{	{ PArg.Number, PArg.Number, PArg.Color }, PArg.Nil	},
 	tabColor = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	tabImage = 		{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }	},
-	text = 			{	PArg.String	},
+	text = 			{	PArg.Text	},
 	textColor = 	{	PArg.Number	},
 	textSize = 		{	{ PArg.Number,PArg.Number }	},
 	wordBreak = 	{	PArg.Bool	},
