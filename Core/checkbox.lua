@@ -14,7 +14,7 @@ dgsRegisterProperties("dgs-dxcheckbox",{
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	state = 				{	PArg.Bool	},
 	text = 					{	PArg.Text	},
-	textColor = 			{	PArg.Number	},
+	textColor = 			{	PArg.Color	},
 	textPadding = 			{	PArg.Number	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
 	wordBreak = 			{	PArg.Bool	},
