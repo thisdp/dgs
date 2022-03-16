@@ -2,7 +2,7 @@ dgsRegisterType("dgs-dximage","dgsBasic","dgsType2D")
 dgsRegisterProperties('dgs-dximage',{
 	image = 			{	PArg.Material+PArg.String+PArg.Nil	},
 	color = 			{	PArg.Color	},
-	rotationCenter = 	{	PArg.Number, PArg.Number, PArg.Bool	},
+	rotationCenter = 	{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	rotation = 			{	PArg.Number	},
 	shadow = 			{	{ PArg.Number, PArg.Number, PArg.vsw, PArg.Bool+PArg.Nil }, PArg.Nil	},
 	UVSize = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
