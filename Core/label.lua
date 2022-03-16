@@ -165,10 +165,11 @@ function dgsLabelGetTextSize(label)
 	local font = eleData.font or systemFont
 	local textSizeX = eleData.textSize[1]
 	local textSizeY = eleData.textSize[2]
+	local absSize = eleData.absSize
 	local text = eleData.text
 	local colorCoded = eleData.colorCoded
 	local wordBreak = eleData.wordBreak
-    return dxGetTextSize(text, textSizeX, textSizeY, font, wordBreak,colorCoded)
+    return dxGetTextSize(text,absSize[1],textSizeX,textSizeY,font,wordBreak,colorCoded)
 end
 
 ----------------------------------------------------------------
