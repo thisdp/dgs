@@ -1106,7 +1106,7 @@ function dgsGridListClearColumn(gridlist,notResetSelected,notResetScrollBar)
 		dgsSetData(gridlist,"columnMoveOffset",0)
 		dgsSetData(gridlist,"columnMoveOffsetTemp",0)
 		dgsSetData(scrollbars[2],"length",{0,true})
-		dgsSetData(scrollbars[2],"position",0)
+		dgsSetData(scrollbars[2],"scrollPosition",0)
 		dgsSetVisible(scrollbars[2],false)
 	end
 	if not notResetSelected then
@@ -1467,7 +1467,7 @@ function dgsGridListClearRow(gridlist,notResetSelected,notResetScrollBar)
 		dgsSetData(gridlist,"rowMoveOffset",0)
 		dgsSetData(gridlist,"rowMoveOffsetTemp",0)
 		dgsSetData(scrollbars[1],"length",{0,true})
-		dgsSetData(scrollbars[1],"position",0)
+		dgsSetData(scrollbars[1],"scrollPosition",0)
 		dgsSetVisible(scrollbars[1],false)
 	end
 	if not notResetSelected then
@@ -2378,10 +2378,10 @@ function configGridList(gridlist)
 	local rowShowRange = relSizY-columnHeight
 	local columnShowRange = relSizX
 	--if scbStateH and scbStateH ~= oriScbStateH then
-		--dgsSetData(scrollbar[2],"position",0)
+		--dgsSetData(scrollbar[2],"scrollPosition",0)
 	--end
 	--if scbStateV and scbStateV ~= oriScbStateV  then
-		--dgsSetData(scrollbar[1],"position",0)
+		--dgsSetData(scrollbar[1],"scrollPosition",0)
 	--end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
@@ -2394,8 +2394,8 @@ function configGridList(gridlist)
 	dgsSetPosition(scrollbar[2],0,scbY,false)
 	dgsSetSize(scrollbar[1],scbThick,scb1H,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
-	local scroll1 = dgsElementData[scrollbar[1]].position
-	local scroll2 = dgsElementData[scrollbar[2]].position
+	local scroll1 = dgsElementData[scrollbar[1]].scrollPosition
+	local scroll2 = dgsElementData[scrollbar[2]].scrollPosition
 	dgsSetData(gridlist,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
 
 	local scbLengthVrt = eleData.scrollBarLength[1]
@@ -2808,7 +2808,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local column_x = columnOffset
 		local allColumnWidth = columnData[columnCount][2]+columnData[columnCount][3]
 		local scrollbar = eleData.scrollbars[2]
-		local scrollPos = dgsElementData[scrollbar].position*0.01
+		local scrollPos = dgsElementData[scrollbar].scrollPosition*0.01
 		local mouseSelectColumn = -1
 		local does = false
 		for id = 1,#columnData do

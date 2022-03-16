@@ -13,7 +13,7 @@ dgsRegisterProperties("dgs-dxscrollbar",{
 	locked = 			{	PArg.Bool	},
 	map = 				{	{ PArg.Number,PArg.Number }	},
 	multiplier = 		{	{ PArg.Number,PArg.Bool }	},
-	position = 			{	PArg.Number	},
+	scrollPosition = 	{	PArg.Number	},
 	scrollArrow = 		{	PArg.Bool	},
 	troughClickAction = {	PArg.String	},
 	troughColor = 		{	{ PArg.Color,PArg.Color }	},
@@ -113,7 +113,7 @@ function dgsCreateScrollBar(...)
 		map = {0,100},
 		minLength = 5,
 		multiplier = {1,false},
-		position = 0,
+		scrollPosition = 0,
 		scrollArrow = style.scrollArrow,
 		troughColor = troughColor or style.troughColor,
 		troughImage = troughImage,
@@ -145,12 +145,12 @@ function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
 	if pos < 0 then pos = 0 end
 	if pos > 100 then pos = 100 end
 	dgsSetData(scrollbar,"moveType","fast")
-	return dgsSetData(scrollbar,"position",pos)
+	return dgsSetData(scrollbar,"scrollPosition",pos)
 end
 
 function dgsScrollBarGetScrollPosition(scrollbar,isGrade,isAbsolute)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetScrollPosition",1,"dgs-dxscrollbar")) end
-	local pos = dgsElementData[scrollbar].position
+	local pos = dgsElementData[scrollbar].scrollPosition
 	local scaler = dgsElementData[scrollbar].map
 	if not isAbsolute then
 		pos = pos/100*(scaler[2]-scaler[1])+scaler[1]
@@ -201,11 +201,11 @@ function scrollScrollBar(scrollbar,button,speed)
 	else
 		slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1]) or 0)*2
 	end
-	local pos = dgsElementData[scrollbar].position
+	local pos = dgsElementData[scrollbar].scrollPosition
 	local wheelReversed = dgsElementData[scrollbar].wheelReversed and -1 or 1
 	local offsetPos = (rltPos and multiplier*slotRange or multiplier)/slotRange*100*(speed or 1)
 	local gpos = button and pos+offsetPos*wheelReversed or pos-offsetPos*wheelReversed
-	dgsSetData(scrollbar,"position",mathClamp(gpos,0,100))
+	dgsSetData(scrollbar,"scrollPosition",mathClamp(gpos,0,100))
 end
 
 function dgsScrollBarSetCursorLength(scrollbar,length,relative)
@@ -327,7 +327,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		tempTroughImage_1,tempTroughImage_2 = troughImage,troughImage
 	end
 
-	local pos = eleData.position
+	local pos = eleData.scrollPosition
 	local length,lrlt = eleData.length[1],eleData.length[2]
 	local cursorColor = eleData.cursorColor
 	local arrowColor = eleData.arrowColor
@@ -444,20 +444,20 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 			if MouseData.clickl == source then
 				colorImageIndex[MouseData.scbClickData] = 3
 				if MouseData.scbClickData == 3 then
-					local position = 0
+					local scrollPosition = 0
 					local mvx,mvy = MouseData.MoveScroll[1],MouseData.MoveScroll[2]
 					local ax,ay = dgsGetPosition(source,false)
 					if csRange ~= 0 then
 						if isHorizontal then
 							local gx = (mx-mvx-ax)/csRange
-							position = (gx < 0 and 0) or (gx > 1 and 1) or gx
+							scrollPosition = (gx < 0 and 0) or (gx > 1 and 1) or gx
 						else
 							local gy = (my-mvy-ay)/csRange
-							position = (gy < 0 and 0) or (gy > 1 and 1) or gy
+							scrollPosition = (gy < 0 and 0) or (gy > 1 and 1) or gy
 						end
 					end
 					dgsSetData(source,"moveType","fast")
-					dgsSetData(source,"position",position*100)
+					dgsSetData(source,"scrollPosition",scrollPosition*100)
 				end
 			else
 				colorImageIndex[MouseData.scbClickData] = 2

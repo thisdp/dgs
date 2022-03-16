@@ -1432,8 +1432,8 @@ function dgsCheckHit(hits,cursorShowing)
 				local ythick = dgsElementData[scrollbar[2]].visible and scbThick or 0
 				local resolution = eleData.resolution
 				local relSizX,relSizY = (w-xthick)/scale[1],(h-ythick)/scale[2]
-				local xScroll = dgsElementData[scrollbar[2]].position*0.01
-				local yScroll = dgsElementData[scrollbar[1]].position*0.01
+				local xScroll = dgsElementData[scrollbar[2]].scrollPosition*0.01
+				local yScroll = dgsElementData[scrollbar[1]].scrollPosition*0.01
 				local renderOffsetX = -(resolution[1]-relSizX)*xScroll
 				local renderOffsetY = -(resolution[2]-relSizY)*yScroll
 				
@@ -1553,7 +1553,7 @@ function onClientMouseTriggered()
 				if troughClickAction == "step" then
 					scrollScrollBar(scrollbar,MouseData.scbClickData == 4,2)
 				elseif troughClickAction == "jump" then
-					dgsSetProperty(scrollbar,"position",mathClamp(MouseData.scbEnterRltPos,0,1)*100)
+					dgsSetProperty(scrollbar,"scrollPosition",mathClamp(MouseData.scbEnterRltPos,0,1)*100)
 				end
 			end
 		elseif dgsType == "dgs-dxselector" then
@@ -1957,7 +1957,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 						slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1])*2 or 0)
 					end
 					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
-					checkScrollBar(dgsEle,eleData.position*0.01*(slotRange-cursorRange),isHorizontal)
+					checkScrollBar(dgsEle,eleData.scrollPosition*0.01*(slotRange-cursorRange),isHorizontal)
 				elseif guitype == "dgs-dxradiobutton" then
 					dgsRadioButtonSetSelected(dgsEle,true)
 				elseif guitype == "dgs-dxcheckbox" then

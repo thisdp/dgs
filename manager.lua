@@ -484,7 +484,7 @@ local dgsDataFunctions = {
 				dgsElementData[dgsEle].length = {dgsElementData[dgsEle].minLength,false}
 			end
 		end,
-		position = function(dgsEle,key,value,oldValue)
+		scrollPosition = function(dgsEle,key,value,oldValue)
 			if oldValue then
 				if not dgsElementData[dgsEle].locked then
 					local grades = dgsElementData[dgsEle].grades
@@ -506,7 +506,7 @@ local dgsDataFunctions = {
 		end,
 		grades = function(dgsEle,key,value,oldValue)
 			if value then
-				local currentGrade = dgsElementData[dgsEle].position/100*value+0.5
+				local currentGrade = dgsElementData[dgsEle].scrollPosition/100*value+0.5
 				dgsSetData(dgsEle,"currentGrade",currentGrade-currentGrade%1)
 			else
 				dgsSetData(dgsEle,"currentGrade",false)
@@ -1066,6 +1066,9 @@ local compatibility = {
 	1,
 	["dgs-dxprogressbar"] = {
 		isReverse = "isClockWise",
+	},
+	["dgs-scrollbar"] = {
+		position = "scrollPosition",
 	},
 	["dgs-dx3dinterface"] = {
 		rotation = "roll",

@@ -181,8 +181,8 @@ function configScalePane(scalepane)
 	dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
 	dgsSetSize(scrollbar[1],scbThick,relSizY,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
-	local scroll1 = dgsElementData[scrollbar[1]].position
-	local scroll2 = dgsElementData[scrollbar[2]].position
+	local scroll1 = dgsElementData[scrollbar[1]].scrollPosition
+	local scroll2 = dgsElementData[scrollbar[2]].scrollPosition
 	local lengthVertical = relSizY/scaleBoundingY
 	local lengthHorizontal = relSizX/scaleBoundingX
 	lengthVertical = lengthVertical < 1 and lengthVertical or 1
@@ -327,8 +327,8 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	local relSizX,relSizY = w-xthick,h-ythick
 	local resolX,resolY = resolution[1],resolution[2]
 	
-	local _xScroll = dgsElementData[scrollbar[2]].position*0.01
-	local _yScroll = dgsElementData[scrollbar[1]].position*0.01
+	local _xScroll = dgsElementData[scrollbar[2]].scrollPosition*0.01
+	local _yScroll = dgsElementData[scrollbar[1]].scrollPosition*0.01
 	local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
 	local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
 	local xScroll = mathLerp(xMoveHardness,eleData.horizontalMoveOffsetTemp,_xScroll)

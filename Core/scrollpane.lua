@@ -220,10 +220,10 @@ function configScrollPane(scrollpane)
 	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
 	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
 	if scbStateH and scbStateH ~= oriScbStateH then
-		dgsSetData(scrollbar[2],"position",0)
+		dgsSetData(scrollbar[2],"scrollPosition",0)
 	end
 	if scbStateV and scbStateV ~= oriScbStateV then
-		dgsSetData(scrollbar[1],"position",0)
+		dgsSetData(scrollbar[1],"scrollPosition",0)
 	end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
@@ -233,8 +233,8 @@ function configScrollPane(scrollpane)
 	dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
 	dgsSetSize(scrollbar[1],scbThick,relSizY,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
-	local scroll1 = dgsElementData[scrollbar[1]].position
-	local scroll2 = dgsElementData[scrollbar[2]].position
+	local scroll1 = dgsElementData[scrollbar[1]].scrollPosition
+	local scroll2 = dgsElementData[scrollbar[2]].scrollPosition
 	local lengthVertical = relSizY/childBounding[2]
 	local lengthHorizontal = relSizX/childBounding[1]
 	lengthVertical = lengthVertical < 1 and lengthVertical or 1
@@ -332,8 +332,8 @@ function dgsScrollPaneGetViewOffset(scrollpane)
 	local size = eleData.absSize
 	local scrollbar = eleData.scrollbars
 	local scbThick = eleData.scrollBarThick
-	local OffsetX = -(size[1]-eleData.maxChildSize[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0))*dgsElementData[scrollbar[1]].position*0.01
-	local OffsetY = -(size[2]-eleData.maxChildSize[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0))*dgsElementData[scrollbar[2]].position*0.01
+	local OffsetX = -(size[1]-eleData.maxChildSize[1]-(dgsElementData[scrollbar[1]].visible and scbThick or 0))*dgsElementData[scrollbar[1]].scrollPosition*0.01
+	local OffsetY = -(size[2]-eleData.maxChildSize[2]-(dgsElementData[scrollbar[2]].visible and scbThick or 0))*dgsElementData[scrollbar[2]].scrollPosition*0.01
 	if OffsetX < 0 then
 		OffsetX = 0
 	end
@@ -423,7 +423,7 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local maxX,maxY = maxSize[1]-relSizX,maxSize[2]-relSizY
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 	
-	local _OffsetX = -maxX*dgsElementData[ scrollbar[2] ].position*0.01
+	local _OffsetX = -maxX*dgsElementData[ scrollbar[2] ].scrollPosition*0.01
 	local OffsetX = eleData.horizontalMoveOffset
 	if eleData.horizontalMoveOffset ~= _OffsetX then
 		local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
@@ -435,7 +435,7 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		eleData.horizontalMoveOffset = OffsetX
 		OffsetX = OffsetX-OffsetX%1
 	end
-	local _OffsetY = -maxY*dgsElementData[ scrollbar[1] ].position*0.01
+	local _OffsetY = -maxY*dgsElementData[ scrollbar[1] ].scrollPosition*0.01
 	local OffsetY = eleData.verticalMoveOffset
 	if eleData.verticalMoveOffset ~= _OffsetY then
 		local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
