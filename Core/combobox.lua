@@ -8,7 +8,7 @@ dgsRegisterProperties("dgs-dxcombobox",{
 	clip = 					{	PArg.Bool	},
 	caption = 				{	PArg.Text	},
 	scrollBarThick = 		{	PArg.Number	},
-	color = 				{	PArg.Color	},
+	color = 				{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	bgColor = 				{	PArg.Color	},
 	bgImage = 				{	PArg.Material	},
 	image = 				{	{ PArg.Material,PArg.Material,PArg.Material }	},
