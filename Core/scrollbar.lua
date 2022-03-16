@@ -1,7 +1,7 @@
 dgsRegisterType("dgs-dxscrollbar","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxscrollbar",{
 	arrowWidth = 		{	{ PArg.Number,PArg.Bool }	},
-	arrowColor = 		{	PArg.Color	},
+	arrowColor = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	arrowImage = 		{	PArg.Material+PArg.Nil	},
 	cursorColor = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	cursorImage = 		{	PArg.Material+PArg.Nil	},
