@@ -142,23 +142,6 @@ function dgsLabelGetVerticalAlign(label)
 	return alignment[2]
 end
 
-function dgsLabelGetTextExtent(label)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetTextExtent",1,"dgs-dxlabel")) end
-	local eleData = dgsElementData[label]
-	local font = eleData.font or systemFont
-	local textSizeX = eleData.textSize[1]
-	local text = eleData.text
-	local colorCoded = eleData.colorCoded
-	return dxGetTextWidth(text,textSizeX,font,colorCoded)
-end
-
-function dgsLabelGetFontHeight(label)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetFontHeight",1,"dgs-dxlabel")) end
-	local font = dgsElementData[label].font or systemFont
-	local textSizeY = dgsElementData[label].textSize[2]
-	return dxGetFontHeight(textSizeY,font)
-end
-
 function dgsLabelGetTextSize(label)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetTextSize",1,"dgs-dxlabel")) end
 	local eleData = dgsElementData[label]
@@ -171,6 +154,8 @@ function dgsLabelGetTextSize(label)
 	local wordBreak = eleData.wordBreak
     return dxGetTextSize(text,absSize[1],textSizeX,textSizeY,font,wordBreak,colorCoded)
 end
+dgsRegisterDeprecatedFunction("dgsLabelGetTextExtent","dgsLabelGetTextSize")
+dgsRegisterDeprecatedFunction("dgsLabelGetFontHeight","dgsLabelGetTextSize")
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
