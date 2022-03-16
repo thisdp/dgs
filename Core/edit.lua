@@ -12,7 +12,7 @@ dgsRegisterProperties("dgs-dxedit",{
 	caretOffset = 					{	PArg.Number	},
 	caretStyle = 					{	PArg.Number	},
 	caretThick = 					{	PArg.Number	},
-	caretWidth = 					{	PArg.Number	},
+	caretWidth = 					{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	clearSelection = 				{	PArg.Bool	},
 	enableTabSwitch = 				{	PArg.Bool	},
 	font = 							{	PArg.Font+PArg.String	},
