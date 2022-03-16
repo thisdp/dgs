@@ -3,7 +3,7 @@ dgsRegisterProperties("dgs-dxscrollbar",{
 	arrowWidth = 		{	{ PArg.Number,PArg.Bool }	},
 	arrowColor = 		{	PArg.Color	},
 	arrowImage = 		{	PArg.Material+PArg.Nil	},
-	cursorColor = 		{	PArg.Color	},
+	cursorColor = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	cursorImage = 		{	PArg.Material+PArg.Nil	},
 	cursorWidth = 		{	{ PArg.Number,PArg.Bool }	},
 	grades = 			{	PArg.Number+PArg.Bool	},
