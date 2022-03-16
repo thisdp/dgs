@@ -159,6 +159,18 @@ function dgsLabelGetFontHeight(label)
 	return dxGetFontHeight(textSizeY,font)
 end
 
+function dgsLabelGetTextSize(label)
+	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetTextSize",1,"dgs-dxlabel")) end
+	local eleData = dgsElementData[label]
+	local font = eleData.font or systemFont
+	local textSizeX = eleData.textSize[1]
+	local textSizeY = eleData.textSize[2]
+	local text = eleData.text
+	local colorCoded = eleData.colorCoded
+	local wordBreak = eleData.wordBreak
+    return dxGetTextSize(text, textSizeX, textSizeY, font, wordBreak,colorCoded)
+end
+
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

@@ -586,6 +586,7 @@
 	<export function="dgsLabelGetVerticalAlign" type="client" />
 	<export function="dgsLabelGetTextExtent" type="client" />
 	<export function="dgsLabelGetFontHeight" type="client" />
+	<export function="dgsLabelGetTextSize" type="client" />
 	
 	<export function="dgsCreateLayout" type="client" />
 	<export function="dgsLayoutAddItem" type="client" />
