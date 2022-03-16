@@ -12,7 +12,7 @@ dgsRegisterProperties("dgs-dxradiobutton",{
 	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }	},
 	text = 				{	PArg.Text	}, 
 	textColor = 		{	PArg.Color	},
-	textPadding = 		{	PArg.Number	},
+	textPadding = 		{	{ PArg.Number, PArg.Bool	},
 	textSize = 			{	{ PArg.Number,PArg.Number }	},
 	wordBreak = 		{	PArg.Bool	},
 })
