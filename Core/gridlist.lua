@@ -1,7 +1,7 @@
 dgsRegisterType("dgs-dxgridlist","dgsBasic","dgsType2D")
 dgsRegisterProperties('dgs-dxgridlist',{
 	autoSort = 				{	PArg.Bool	},
-	backgroundOffset = 		{	{ PArg.Number, PArg.Number }	},
+	backgroundOffset = 		{	PArg.Number	},
 	bgColor = 				{	PArg.Color	},
 	bgImage = 				{	PArg.Number	},
 	clip = 					{	PArg.Bool 	},
@@ -179,7 +179,7 @@ function dgsCreateGridList(...)
 		preSelectLastFrame = {-1,-1},
 		rowColor = {cColorR,hColorR,sColorR},	--Normal/Hover/Selected
 		rowData = {},
-		rowHeight = style.rowHeight,
+		rowHeight = style.rowHeight,	--_RowHeight
 		rowImage = {nImageR,hImageR,sImageR},	--Normal/Hover/Selected
 		rowMoveOffset = 0,
 		rowMoveOffsetTemp = 0,
@@ -279,7 +279,7 @@ function checkGridListScrollBar(scb,new,old)
 		local scbThick = eleData.scrollBarThick
 		if source == scrollbars[1] then
 			local scbThickH = dgsElementData[scrollbars[2]].visible and scbThick or 0
-			local rowLength = #eleData.rowData*(eleData.rowHeight+eleData.leading)
+			local rowLength = #eleData.rowData*(eleData.rowHeight+eleData.leading)--_RowHeight
 			local temp = -new*(rowLength-sy+scbThickH+eleData.columnHeight)/100
 			if temp <= 0 then
 				local temp = eleData.scrollFloor[1] and temp-temp%1 or temp
@@ -632,7 +632,7 @@ function dgsGridListScrollTo(gridlist,r,c,smoothMove)
 		local rNInRange = rIsNum and not (r>=1 and r<=rLen)
 		if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListScrollTo",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
 		local scb = eleData.scrollbars[2]
-		local rHeight = eleData.rowHeight
+		local rHeight = eleData.rowHeight--_RowHeight
 		local leading = eleData.leading
 		local rHeightLeadingTemp = rHeight+leading
 		local sy = eleData.absSize[2]
@@ -1733,7 +1733,7 @@ function dgsGridListSetItemImage(gridlist,r,c,image,color,offx,offy,w,h,relative
 		imageData[3] = offx or imageData[3] or 0
 		imageData[4] = offy or imageData[4] or 0
 		imageData[5] = w or imageData[5] or relative and 1 or dgsGridListGetColumnWidth(gridlist,c,false)
-		imageData[6] = h or imageData[6] or relative and 1 or eleData.rowHeight
+		imageData[6] = h or imageData[6] or relative and 1 or eleData.rowHeight--_RowHeight
 		imageData[7] = relative or false
 		rData[r][c][7] = imageData
 		return true
@@ -2325,8 +2325,8 @@ end
 function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local eleData = dgsElementData[gridlist]
 	local rowMoveOffset = rowMoveOffset or eleData.rowMoveOffsetTemp
-	local rowHeight = eleData.rowHeight
-	local rowHeightLeadingTemp = rowHeight + eleData.leading
+	local rowHeight = eleData.rowHeight--_RowHeight
+	local rowHeightLeadingTemp = rowHeight + eleData.leading--_RowHeight
 	local scrollbar = eleData.scrollbars[2]
 	local scbThickH = dgsElementData[scrollbar].visible and eleData.scrollBarThick or 0
 	local h = eleData.absSize[2]
@@ -2335,13 +2335,13 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	if eleData.mode then
 		local temp1 = rowMoveOffset/rowHeightLeadingTemp
 		local whichRowToStart = -(temp1-temp1%1)+1
-		local temp2 = (h-columnHeight-scbThickH+rowHeight)/rowHeightLeadingTemp
+		local temp2 = (h-columnHeight-scbThickH+rowHeight)/rowHeightLeadingTemp--_RowHeight
 		local whichRowToEnd = whichRowToStart+(temp2-temp2%1)-2
 		eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
 	else
 		local temp1 = (rowMoveOffset+rowHeight)/rowHeightLeadingTemp
 		local whichRowToStart = -(temp1-temp1%1)+1
-		local temp2 = (h-columnHeight-scbThickH+rowHeight*2)/rowHeightLeadingTemp
+		local temp2 = (h-columnHeight-scbThickH+rowHeight*2)/rowHeightLeadingTemp--_RowHeight
 		local whichRowToEnd = whichRowToStart+(temp2-temp2%1)-1
 		eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
 	end
@@ -2351,10 +2351,10 @@ function configGridList(gridlist)
 	local eleData = dgsElementData[gridlist]
 	local scrollbar = eleData.scrollbars
 	local w,h = eleData.absSize[1],eleData.absSize[2]
-	local columnHeight,rowHeight,leading = eleData.columnHeight,eleData.rowHeight,eleData.leading
+	local columnHeight,rowHeight,leading = eleData.columnHeight,eleData.rowHeight,eleData.leading--_RowHeight
 	local scbThick = eleData.scrollBarThick
 	local columnWidth = dgsGridListGetColumnAllWidth(gridlist,#eleData.columnData,false,true)
-	local rowLength = #eleData.rowData*(rowHeight+leading)
+	local rowLength = #eleData.rowData*(rowHeight+leading)--_RowHeight
 	local scbX,scbY = w-scbThick,h-scbThick
 	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
@@ -2485,7 +2485,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnCount,rowCount = #columnData,#rowData
 	local columnTextColor = eleData.columnTextColor
 	local columnWordBreak = eleData.columnWordBreak
-	local rowHeight = eleData.rowHeight
+	local rowHeight = eleData.rowHeight--_RowHeight
 	local rowTextPosOffset = eleData.rowTextPosOffset
 	local rowWordBreak = eleData.rowWordBreak
 	local columnTextPosOffset = eleData.columnTextPosOffset
@@ -2496,7 +2496,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local scbThickV,scbThickH = dgsElementData[scb1].visible and scbThick or 0,dgsElementData[scb2].visible and scbThick or 0
 	local colorCoded = eleData.colorCoded
 	local shadow = eleData.rowShadow
-	local rowHeightLeadingTemp = rowHeight+leading
+	local rowHeightLeadingTemp = rowHeight+leading--_RowHeight
 	--Smooth Row
 	local _rowMoveOffset = eleData.rowMoveOffset
 	local rowMoveOffset = _rowMoveOffset
@@ -2611,10 +2611,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local preSelectLastFrame = eleData.preSelectLastFrame
 		local preSelect = eleData.preSelect
 		if mouseInsideRow then
-			local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset
-			local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp
+			local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset--_RowHeight
+			local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp--_RowHeight
 			local sid = (tempID-tempID%1)+eleData.FromTo[1]+1
-			if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then
+			if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then--_RowHeight
 				eleData.oPreSelect = sid
 				if rowData[sid][-2] ~= false then
 					preSelect[1],preSelect[2] = sid,mouseSelectColumn
@@ -2649,8 +2649,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					if not elementBuffer[i] then elementBuffer[i] = {} end
 					local lc_rowData = rowData[i]
 					local image,columnOffset,isSection,color = lc_rowData[-3] or eleData.rowImage,lc_rowData[-4] or eleData.columnOffset,lc_rowData[-5],lc_rowData[0] or eleData.rowColor
-					local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading
-					local rowpos_1 = rowpos-rowHeight
+					local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading--_RowHeight
+					local rowpos_1 = rowpos-rowHeight--_RowHeight
 					local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1,sW,rowpos
 					--[[if eleData.PixelInt then
 						_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
@@ -2701,9 +2701,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						end
 						local itemUsingBGColor,itemUsingBGImage = itemBGColor[rowState] or color[rowState],itemBGImage[rowState] or image[rowState]
 						if itemUsingBGImage then
-							dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)
+							dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
 						else
-							dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGColor,false)
+							dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGColor,false)--_RowHeight
 						end
 						elementBuffer[i][id] = elementBuffer[i][id] or {}
 						local currentElementBuffer = elementBuffer[i][id]
@@ -2715,9 +2715,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if currentRowData[7] then
 								local imageData = currentRowData[7]
 								local imagex = _x+(imageData[7] and imageData[3]*columnWidth or imageData[3])
-								local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])
+								local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
 								local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
-								local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]
+								local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
 								if isElement(imageData[1]) then
 									dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
 								else
@@ -2727,7 +2727,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
 							if currentRowData[12] then
 								local itemTextOffsetX = currentRowData[12][3] and columnWidth*currentRowData[12][1] or currentRowData[12][1]
-								local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]
+								local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]--_RowHeight
 								textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
 							end
 							textBufferCnt = textBufferCnt+1
@@ -2800,7 +2800,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 
 	elseif columnCount >= 1 then --NO RT
 		local whichColumnToStart,whichColumnToEnd = -1,-1
-		local _rowMoveOffset = (1-eleData.FromTo[1])*rowHeightLeadingTemp
+		local _rowMoveOffset = (1-eleData.FromTo[1])*rowHeightLeadingTemp--_RowHeight
 		local cpos = {}
 		local multiplier = eleData.columnRelative and (w-scbThickV) or 1
 		local ypcolumn = cy+columnHeight
@@ -2871,9 +2871,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local preSelect = eleData.preSelect
 		if MouseData.entered == source then		-------PreSelect
 			if mouseInsideRow then
-				local tempID = (my-cy-columnHeight)/rowHeightLeadingTemp-1
+				local tempID = (my-cy-columnHeight)/rowHeightLeadingTemp-1--_RowHeight
 				sid = (tempID-tempID%1)+eleData.FromTo[1]+1
-				if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+_rowMoveOffset then
+				if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+_rowMoveOffset then--_RowHeight
 					eleData.oPreSelect = sid
 					if rowData[sid][-2] ~= false then
 						preSelect[1],preSelect[2] = sid,mouseSelectColumn
@@ -2907,8 +2907,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local color = lc_rowData[0]
 			local columnOffset = lc_rowData[-4]
 			local isSection = lc_rowData[-5]
-			local rowpos = i*rowHeight+(i-1)*leading
-			local _x,_y,_sx,_sy = column_x+columnOffset,_y+rowpos-rowHeight,_sx,_y+rowpos
+			local rowpos = i*rowHeight+(i-1)*leading--_RowHeight
+			local _x,_y,_sx,_sy = column_x+columnOffset,_y+rowpos-rowHeight,_sx,_y+rowpos--_RowHeight
 			if eleData.PixelInt then
 				_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
 			end
@@ -2956,9 +2956,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 				local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
 				if itemUsingBGImage then
-					dxDrawImage(_bgX,_y,columnWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)
+					dxDrawImage(_bgX,_y,columnWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)--_RowHeight
 				else
-					dxDrawRectangle(_bgX,_y,columnWidth,rowHeight,itemUsingBGColor,isPostGUI)
+					dxDrawRectangle(_bgX,_y,columnWidth,rowHeight,itemUsingBGColor,isPostGUI)--_RowHeight
 				end
 				if text ~= "" then
 					local colorCoded = currentRowData[3] == nil and colorCoded or currentRowData[3]
@@ -2974,7 +2974,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
 					if currentRowData[12] then
 						local itemTextOffsetX = currentRowData[12][3] and columnWidth*currentRowData[12][1] or currentRowData[12][1]
-						local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]
+						local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]--_RowHeight
 						textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
 					end
 					local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
