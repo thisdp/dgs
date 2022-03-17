@@ -13,8 +13,6 @@ dgsRegisterProperties("dgs-dxbutton",{
 	iconOffset = 			{	{ PArg.Number, PArg.Number }	},
 	iconSize = 				{	{ PArg.Number, PArg.Number, PArg.String+PArg.Bool }	},
 	image = 				{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	rotation = 				{	PArg.Number	},
-	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	subPixelPositioning = 	{	PArg.Bool	},
 	text = 					{	PArg.Text	},
