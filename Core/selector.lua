@@ -9,7 +9,7 @@ dgsRegisterProperties("dgs-dxselector",{
 	isReversed = 				{	PArg.Bool	},
 	itemTextColor = 			{	PArg.Color	},
 	itemTextSize = 				{	{ PArg.Number, PArg.Number }	},
-	placeHolder = 				{	{ PArg.String, PArg.String }	},
+	placeHolder = 				{	PArg.String	},
 	select = 					{	PArg.Number	},
 	selectorImageColorLeft = 	{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	selectorImageLeft = 		{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }	},
