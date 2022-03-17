@@ -118,7 +118,7 @@ function dgsCreateRadioButton(...)
 		clip = false,
 		wordBreak = false,
 		colorCoded = false,
-		alignment = {left,"center"},
+		alignment = {"left","center"},
 	}
 	dgsSetParent(rb,parent,true,true)
 	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or resource])
