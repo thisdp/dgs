@@ -18,7 +18,7 @@ dgsRegisterProperties("dgs-dxedit",{
 	font = 							{	PArg.Font+PArg.String	},
 	masked = 						{	PArg.Bool	},
 	maskText = 						{	PArg.String	},
-	maskLength = 					{	PArg.Number	},
+	maxLength = 					{	PArg.Number	},
 	padding = 						{	{ PArg.Number, PArg.Number }	},
 	placeHolder = 					{	PArg.String	},
 	placeHolderColor = 				{	PArg.Color	},
