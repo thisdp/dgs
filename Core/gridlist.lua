@@ -31,7 +31,7 @@ dgsRegisterProperties('dgs-dxgridlist',{
 	rowImage = 				{	PArg.Material	},
 	rowMoveOffset= 			{	PArg.Number	},
 	rowShadow = 			{	{PArg.Number, PArg.Number, PArg.Number }, PArg.Nil	},
-	rowTextColor = 			{	{PArg.Color, PArg.Color, PArg.Color }	},
+	rowTextColor = 			{	{ PArg.Color, PArg.Color,PArg.Color }, PArg.Color	},
 	rowTextPosOffset = 		{	{PArg.Number, PArg.Number }	},
 	rowTextSize = 			{	{PArg.Number, PArg.Number }	},
 	rowWordBreak = 			{	PArg.Bool	},
