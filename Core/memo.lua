@@ -7,7 +7,7 @@ dgsRegisterProperties("dgs-dxmemo",{
 	bgImageBlur =  		{	PArg.Material+PArg.Nil	},
 	caretColor = 		{	PArg.Color	},
 	caretHeight = 		{	PArg.Number	},
-	caretOffset = 		{	{ PArg.Number, PArg.Number }	},
+	caretOffset = 		{	PArg.Number	},
 	caretPos	= 		{	{ PArg.Number, PArg.Number }	},
 	caretStyle  = 		{	PArg.Number	},
 	caretThick  = 		{	PArg.Number	},
