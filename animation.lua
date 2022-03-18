@@ -1,5 +1,4 @@
 ---------------Speed Up
-local assert = assert
 local type = type
 local tonumber = tonumber
 local triggerEvent = triggerEvent

@@ -2,7 +2,7 @@
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="DGS Community" version="3.513" />
 	<file src="html/media.html" />
 	<file src="styleManager/styleMapper.lua"/>
-	<script src="lua.lua" type="shared" />
+	<script src="lua.lua" type="server" />
 	<script src="server.lua" type="server" />
 	<script src="utility.lua" type="client" />
 	<script src="manager.lua" type="client" />
