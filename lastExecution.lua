@@ -6,7 +6,7 @@ function verifyFile(fName,exportContent)
 		local _hash,_size,_content = hashFile(fName,exportContent)
 		local localFileInfo = {_hash,_size}
 		local targetFileInfo = DGSFileInfo[fName]
-		if localFileInfo[1] ~= targetFileInfo[1] or localFileInfo[2] ~= fData[2] then
+		if localFileInfo[1] ~= targetFileInfo[1] or localFileInfo[2] ~= targetFileInfo[2] then
 			return false,localFileInfo
 		end
 		return true,_content
@@ -25,5 +25,6 @@ function verifyFiles()
 	if table.count(mismatched) > 0 then
 		triggerServerEvent("DGSI_AbnormalDetected",localPlayer,mismatched)
 	end
+	collectgarbage()
 end
 addEventHandler("onDgsStart",resourceRoot,verifyFiles)
