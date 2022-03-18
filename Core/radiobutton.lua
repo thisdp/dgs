@@ -1,7 +1,7 @@
 dgsRegisterType("dgs-dxradiobutton","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxradiobutton",{
 	alignment = 		{	{ PArg.String, PArg.String }	},
-	buttonSize = 			{	{ PArg.Number, PArg.Number }	},
+	buttonSize = 		{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	clip = 				{	PArg.Bool	},  
 	colorChecked = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	colorCoded = 		{	PArg.Bool	},
