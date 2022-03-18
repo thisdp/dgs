@@ -124,7 +124,7 @@ function dgsGetPosition(dgsEle,bool,includeParent,rndSuspend,includeSide)
 			absPosX,absPosY = absPos[1],absPos[2]
 		end
 		guielex,guieley,startElement,brokenElement = getParentLocation(dgsEle,rndSuspend,absPosX,absPosY,includeSide)
-		assert(not brokenElement,"Bad argument @'dgsGetPosition', Found an infinite loop under "..tostring(brokenElement).."("..dgsGetType(brokenElement).."), start from element "..tostring(startElement).."("..dgsGetType(startElement)..")")
+		if brokenElement then error("Bad argument @'dgsGetPosition', Found an infinite loop under "..tostring(brokenElement).."("..dgsGetType(brokenElement).."), start from element "..tostring(startElement).."("..dgsGetType(startElement)..")") end
 		if relative then
 			return guielex/sW,guieley/sH
 		else
