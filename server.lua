@@ -86,38 +86,22 @@ function hashFile(fName)
 	return hash("sha256",fContent),fSize
 end
 
-addEvent("DGSI_AbnormalDetected",true)
-addEvent("DGSI_RequestFileInfo",true)
-DGSRecordedFiles = {}
 function verifyFile()
 	local xml = xmlLoadFile("meta.xml")
 	local children = xmlNodeGetChildren(xml)
+	local DGSRecordedFiles = {}
 	for index,child in ipairs(children) do
 		local nodeName = xmlNodeGetName(child)
-		if nodeName == "script" then
-			local typ = xmlNodeGetAttribute(child,"type") or "server"
-			if typ == "client" then
-				local cache = xmlNodeGetAttribute(child,"cache")
-				if cache ~= "false" then
-					local src = xmlNodeGetAttribute(child,"src")
-					DGSRecordedFiles[src] = {hashFile(src)}
-				end
-			end
-		elseif nodeName == "file" then
-			local cache = xmlNodeGetAttribute(child,"cache")
-			if cache ~= "false" then
-				local src = xmlNodeGetAttribute(child,"src")
-				DGSRecordedFiles[src] = {hashFile(src)}
-			end
+		if nodeName == "file" then
+			local src = xmlNodeGetAttribute(child,"src")
+			DGSRecordedFiles[src] = {hashFile(src)}
 		end
 	end
+	setElementData(resourceRoot,"DGSI_FileInfo",DGSRecordedFiles)
 end
 verifyFile()
 
-addEventHandler("DGSI_RequestFileInfo",root,function()
-	triggerClientEvent(client,"DGSI_ReceiveFileInfo",client,DGSRecordedFiles)
-end)
-
+addEvent("DGSI_AbnormalDetected",true)
 addEventHandler("DGSI_AbnormalDetected",root,function(fData)
 	local pName = getPlayerName(client)
 	for fName,fData in pairs(fData) do

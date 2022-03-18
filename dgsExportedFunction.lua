@@ -517,23 +517,26 @@ end
 setElementData(root,"__DGSRes",getThisResource(),false)
 addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)
 
-OOPClassString = ""
-function loadOOPClass()
-	local OOPFile = fileOpen("classlib.lua")
-	local str = fileRead(OOPFile,fileGetSize(OOPFile))
-	fileClose(OOPFile)
+OOPImportCache = nil
+OOPImportTimer = nil
+
+function dgsImportOOPClass()
+	if OOPImportCache then return OOPImportCache end
+	local matched,content = verifyFile("classlib.lua",true)
+	if not matched then return outputChatBox("[DGS] Failed to load classlib.lua (File mismatch)",255,0,0) end
+	local str = content
 	if fileExists("customOOP.lua") then
-		local customOOPFileList = fileOpen("customOOP.lua")
-		local s = fileRead(customOOPFileList,fileGetSize(customOOPFileList)):gsub("\r\n","\n")
+		local matched,content = verifyFile("customOOP.lua",true)
+		if not matched then outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)",255,0,0) end
+		local s = content:gsub("\r\n","\n")
 		local list = split(s,"\n")
 		for i=1,#list do
 			if fileExists(list[i]) then
-				local customOOPCode = fileOpen(list[i])
-				local s = fileRead(customOOPCode,fileGetSize(customOOPCode))
-				fileClose(customOOPCode)
-				local f,e = loadstring(s)
+				local matched,content = verifyFile(list[i],true)
+				if not matched then outputChatBox("[DGS] Failed to load "..list[i].." (File mismatch)",255,0,0) end
+				local f,e = loadstring(content)
 				if f then
-					str = str.."\n"..s
+					str = str.."\n"..content
 				else
 					outputDebugString("[DGS]Failed to load custom OOP script ("..list[i]..":"..e..")",1)
 				end
@@ -541,12 +544,12 @@ function loadOOPClass()
 				outputDebugString("[DGS]Failed to load custom OOP script (Could not find "..list[i]..")",1)
 			end
 		end
-		fileClose(customOOPFileList)
 	end
-	OOPClassString = str
-end
-loadOOPClass()
-
-function dgsImportOOPClass()
-	return OOPClassString
+	OOPImportCache = str
+	OOPImportTimer = setTimer(function()
+		OOPImportCache = nil
+		OOPImportTimer = nil
+		collectgarbage()
+	end,1000,1) --Clear cache
+	return OOPImportCache
 end

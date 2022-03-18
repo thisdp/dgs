@@ -510,12 +510,12 @@ function table.shallowCopy(obj)
 end
 
 --------------------------------File Utility
-function hashFile(fName)
+function hashFile(fName,exportContent)
 	local f = fileOpen(fName,true)
 	local fSize = fileGetSize(f)
 	local fContent = fileRead(f,fSize)
 	fileClose(f)
-	return hash("sha256",fContent),fSize
+	return hash("sha256",fContent),fSize,exportContent and fContent or nil
 end
 
 function fileGetContent(fName)
