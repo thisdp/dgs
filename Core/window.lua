@@ -11,6 +11,7 @@ dgsRegisterProperties("dgs-dxwindow",{
 	maxSize = 			{	{ PArg.Number,PArg.Number }	},
 	minSize = 			{	{ PArg.Number,PArg.Number }	},
 	movable = 			{	PArg.Bool	},
+	noCloseButton = 	{	PArg.Bool	},
 	sizable = 			{	PArg.Bool	},
 	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
 	text = 				{	PArg.Text	},
