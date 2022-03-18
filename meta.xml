@@ -127,7 +127,6 @@
 	<!--(Custom Style 2) -->
 
 	<!--&Add Your Styles Here-->
-	<script src="lastExecution.lua" type="client" />
 
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
