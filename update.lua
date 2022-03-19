@@ -78,7 +78,7 @@ end
 addCommandHandler(dgsConfig.updateCommand,function(player)
 	if not checkServerVersion(player) then return end
 	local account = getPlayerAccount(player)
-	local isPermit = hasObjectPermissionTo(player,"command."..dgsConfig.updateCommand)
+	local isPermit = hasObjectPermissionTo(player,"command."..dgsConfig.updateCommand,false)
 	if not isPermit then
 		local accName = getAccountName(account)
 		local adminGroup = aclGetGroup("Admin")
