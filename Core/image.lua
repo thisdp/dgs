@@ -4,7 +4,7 @@ dgsRegisterProperties('dgs-dximage',{
 	color = 			{	PArg.Color	},
 	rotationCenter = 	{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	rotation = 			{	PArg.Number	},
-	shadow = 			{	{ PArg.Number, PArg.Number, PArg.vsw, PArg.Bool+PArg.Nil }, PArg.Nil	},
+	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
 	UVSize = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	UVPos = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 })

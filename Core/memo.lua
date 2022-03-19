@@ -18,6 +18,7 @@ dgsRegisterProperties("dgs-dxmemo",{
 	readOnlyCaretShow = {	PArg.Bool	},
 	scrollBarState = 	{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
 	scrollBarThick = 	{	PArg.Number	},
+	scrollBarLength = 	{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
 	scrollSize = 		{	PArg.Number	},
 	selectColor = 		{	PArg.Color	},
 	selectColorBlur = 	{	PArg.Color	},
