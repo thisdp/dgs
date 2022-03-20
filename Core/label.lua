@@ -3,6 +3,7 @@ dgsRegisterProperties("dgs-dxlabel",{
 	alignment = 			{	{ PArg.String, PArg.String }	},
 	clip = 					{	PArg.Bool	},
 	colorCoded = 			{	PArg.Bool	},
+	font = 					{	PArg.Font+PArg.String	},
 	rotation = 				{	PArg.Number	},
 	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
