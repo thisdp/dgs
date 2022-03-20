@@ -5,7 +5,7 @@ dgsRegisterProperties("dgs-dxscrollpane",{
 	moveHardness = 		{	{ PArg.Number,PArg.Number }	},
 	scrollBarThick = 	{	PArg.Number	},
 	scrollBarState = 	{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
-	scrollBarLength = 	{	{ PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool }	},
+	scrollBarLength = 	{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
 })
 --Dx Functions
 local dxDrawImage = dxDrawImage
