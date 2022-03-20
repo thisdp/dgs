@@ -82,6 +82,7 @@ local addEvent = addEvent
 for i=1,#events do
 	addEvent(events[i],true)
 end
+events = nil
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.find,string.format,byte
 local utf8Len,utf8Byte,utf8Sub = utf8.len,utf8.byte,utf8.sub
@@ -1340,6 +1341,6 @@ function verifyFiles()
 	if table.count(mismatched) > 0 then
 		triggerServerEvent("DGSI_AbnormalDetected",localPlayer,mismatched)
 	end
-	collectgarbage()
+	setTimer(collectgarbage,1000,1)
 end
 addEventHandler("onDgsStart",resourceRoot,verifyFiles)
