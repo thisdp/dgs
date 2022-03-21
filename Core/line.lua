@@ -62,7 +62,7 @@ function dgsLineAddItem(line,sx,sy,ex,ey,width,color,isRelative)
 	local lData = dgsElementData[line].lineData
 	local lIndex = #lData+1
 	lData[lIndex] = {
-		sx,sy,ex,ey,width or lData.width,color or lData.color,isRelative or false
+		sx,sy,ex,ey,width or lData.lineWidth,color or lData.color,isRelative or false
 	}
 	return lIndex
 end
