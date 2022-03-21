@@ -7,7 +7,7 @@ dgsRegisterProperties("dgs-dx3dline",{
 	maxDistance = 			{	PArg.Number		},
 	position = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
 	rotation = 				{	{ PArg.Number, PArg.Number, PArg.Number }	},
-	width = 				{	PArg.Number		},
+	lineWidth = 			{	PArg.Number		},
 })
 --Dx Functions
 local dxDrawLine3D = dxDrawLine3D
@@ -20,7 +20,7 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 
 function dgsCreate3DLine(...)
-	local x,y,z,color,width,maxDistance
+	local x,y,z,color,lineWidth,maxDistance
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
@@ -29,11 +29,11 @@ function dgsCreate3DLine(...)
 		rx = argTable.rx or argTable[4]
 		ry = argTable.ry or argTable[5]
 		rz = argTable.rz or argTable[6]
-		width = argTable.width or argTable[7]
+		lineWidth = argTable.lineWidth or argTable[7]
 		color = argTable.color or argTable[8]
 		maxDistance = argTable.maxDistance or argTable[9]
 	else
-		x,y,z,rx,ry,rz,width,color,maxDistance = ...
+		x,y,z,rx,ry,rz,lineWidth,color,maxDistance = ...
 	end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreate3DLine",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreate3DLine",2,"number")) end
@@ -49,7 +49,7 @@ function dgsCreate3DLine(...)
 		fadeDistance = maxDistance or 80,
 		dimension = -1,
 		interior = -1,
-		width = width or 1,
+		lineWidth = lineWidth or 1,
 		lineData = {},
 	}
 	triggerEvent("onDgsCreate",line3d,sourceResource)
@@ -77,7 +77,7 @@ function dgs3DLineAddItem(line,sx,sy,sz,ex,ey,ez,width,color,isRelative)
 	local lData = dgsElementData[line].lineData
 	local lIndex = #lData+1
 	lData[lIndex] = {
-		sx,sy,sz,ex,ey,ez,width or lData.width,color or lData.color,isRelative or false
+		sx,sy,sz,ex,ey,ez,width or lData.lineWidth,color or lData.color,isRelative or false
 	}
 	return lIndex
 end
@@ -218,7 +218,7 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 	local rotTable = eleData.rotation
 	local wx,wy,wz = posTable[1],posTable[2],posTable[3]
 	local wrx,wry,wrz = 0,0,0
-	local width = eleData.width
+	local lineWidth = eleData.lineWidth
 	local color = eleData.color
 	local isRender = true
 	if attachTable then
@@ -272,7 +272,7 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 				if isRelative then
 					endX,endY,endZ = endX*m11+endY*m21+endZ*m31+wx,endX*m12+endY*m22+endZ*m32+wy,endX*m13+endY*m23+endZ*m33+wz
 				end
-				dxDrawLine3D(startX,startY,startZ,endX,endY,endZ,applyColorAlpha(lineItem[8] or color,fadeMulti),lineItem[7] or width)
+				dxDrawLine3D(startX,startY,startZ,endX,endY,endZ,applyColorAlpha(lineItem[8] or color,fadeMulti),lineItem[7] or lineWidth)
 			end
 			return true
 		end
