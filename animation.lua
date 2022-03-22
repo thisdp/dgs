@@ -67,14 +67,37 @@ function dgsStopAniming(...)
 	local stopTick = getTickCount()
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
-		dgsEle = argTable.ele or argTable.dgsEle or argTable.element or argTable.dgsElement or argTable.source or argTable[1]
+		dgsEle = argTable.ele or argTable.dgsEle or argTable.element or argTable.dgsElement or argTable.source or argTable.index or argTable[1]
 		property = argTable.property or argTable[2]
 	else
 		dgsEle,property = ...
 	end
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopAniming",1,"dgs-dxelement")) end
-	if type(property) == "string" then
-		for index=1,#animQueue do
+	if not(dgsIsType(dgsEle) or type(dgsEle) == "number") then error(dgsGenAsrt(dgsEle,"dgsStopAniming",1,"dgs-dxelement/number")) end
+	if type(dgsEle) == "number" then
+	--Kill the specific animation
+		local index = 1
+		while index <= #animQueue do
+			local anim = animQueue[index]
+			if anim[-2] == dgsEle  then --Confirm by unique animation ID
+				local theEle = anim[1]
+				table.remove(animQueue,index)	--Remove
+				triggerEvent("onDgsStopAniming",theEle,anim[-2],property,anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
+				if property == "rltPos" or property == "absPos" then
+					triggerEvent("onDgsStopMoving",theEle,anim[-2])
+				elseif property == "rltSize" or property == "absSize" then
+					triggerEvent("onDgsStopSizing",theEle,anim[-2])
+				elseif property == "alpha" then
+					triggerEvent("onDgsStopAlphaing",theEle,anim[-2])
+				end
+				return true
+			else
+				index = index+1
+			end
+		end
+	elseif type(property) == "string" then
+		--Kill all animations of the specific property
+		local index = 1
+		while index <= #animQueue do
 			local anim = animQueue[index]
 			if anim[1] == dgsEle and anim[2] == property then --Confirm
 				table.remove(animQueue,index)	--Remove
@@ -86,9 +109,11 @@ function dgsStopAniming(...)
 				elseif property == "alpha" then
 					triggerEvent("onDgsStopAlphaing",dgsEle,anim[-2])
 				end
-				return true
+			else
+				index = index+1
 			end
 		end
+		return true
 	elseif type(property) == "table" then
 		local index = 1
 		while index <= #animQueue do
