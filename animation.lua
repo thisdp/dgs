@@ -72,6 +72,8 @@ function dgsStopAniming(...)
 	if type(property) == "string" then
 		for i=1,#animQueue do
 			if animQueue[i][1] == dgsEle and animQueue[i][2] == property then --Confirm
+				triggerEvent("onDgsStopAniming",dgsEle,property,animQueue[i][3],animQueue[i][4],animQueue[i][5],animQueue[i][7],animQueue[i][6],stopTick)
+				table.remove(animQueue,i)	--Remove
 				if property == "rltPos" or property == "absPos" then
 					triggerEvent("onDgsStopMoving",dgsEle)
 				elseif property == "rltSize" or property == "absSize" then
@@ -79,8 +81,6 @@ function dgsStopAniming(...)
 				elseif property == "alpha" then
 					triggerEvent("onDgsStopAlphaing",dgsEle)
 				end
-				triggerEvent("onDgsStopAniming",dgsEle,property,animQueue[i][3],animQueue[i][4],animQueue[i][5],animQueue[i][7],animQueue[i][6],stopTick)
-				table.remove(animQueue,i)	--Remove
 				return true
 			end
 		end
@@ -90,6 +90,8 @@ function dgsStopAniming(...)
 			if animQueue[index][1] == dgsEle then --Confirm
 				for i=1,#property do
 					if animQueue[index][2] == property[i] then
+						triggerEvent("onDgsStopAniming",dgsEle,property[i],animQueue[index][3],animQueue[index][4],animQueue[index][5],animQueue[index][7],animQueue[index][6],stopTick)
+						table.remove(animQueue,index)	--Remove
 						if property[i] == "rltPos" or property[i] == "absPos" then
 							triggerEvent("onDgsStopMoving",dgsEle)
 						elseif property[i] == "rltSize" or property[i] == "absSize" then
@@ -97,8 +99,6 @@ function dgsStopAniming(...)
 						elseif property[i] == "alpha" then
 							triggerEvent("onDgsStopAlphaing",dgsEle)
 						end
-						triggerEvent("onDgsStopAniming",dgsEle,property[i],animQueue[index][3],animQueue[index][4],animQueue[index][5],animQueue[index][7],animQueue[index][6],stopTick)
-						table.remove(animQueue,index)	--Remove
 						break
 					end
 				end
