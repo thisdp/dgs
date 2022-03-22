@@ -4,6 +4,7 @@ local tonumber = tonumber
 local triggerEvent = triggerEvent
 local isElement = isElement
 local getEasingValue = getEasingValue
+local animationID = 0
 
 function dgsAnimTo(...)
 	local dgsEle,property,targetValue,easing,duration,delay,reversedProgress,splitTable
@@ -27,17 +28,20 @@ function dgsAnimTo(...)
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAnimTo",4,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAnimTo",5,"number")) end
 	if type(dgsEle) == "table" then
+		local animIDs = {}
 		for i=1,#dgsEle do
-			dgsAnimTo(dgsEle[i],property,targetValue,easing,duration,delay,reversedProgress,splitTable)
+			animIDs[i] = dgsAnimTo(dgsEle[i],property,targetValue,easing,duration,delay,reversedProgress,splitTable)
 		end
+		return animIDs
 	else
-		dgsStopAniming(dgsEle,property)
+		animationID = animationID+1
 		local animTable = {
+			[-2]=animationID,
 			[-1]=sourceResourceRoot,
 			[0]=nil, --Result
 			[1]=dgsEle,
 			[2]=property,
-			[3]=dgsElementData[dgsEle][property],
+			[3]=nil, --Start Value
 			[4]=targetValue,
 			[5]=easing,
 			[6]=duration,
@@ -54,8 +58,8 @@ function dgsAnimTo(...)
 		end
 		--
 		table.insert(animQueue,animTable)
+		return animationID
 	end
-	return true
 end
 
 function dgsStopAniming(...)
@@ -70,16 +74,17 @@ function dgsStopAniming(...)
 	end
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopAniming",1,"dgs-dxelement")) end
 	if type(property) == "string" then
-		for i=1,#animQueue do
-			if animQueue[i][1] == dgsEle and animQueue[i][2] == property then --Confirm
-				triggerEvent("onDgsStopAniming",dgsEle,property,animQueue[i][3],animQueue[i][4],animQueue[i][5],animQueue[i][7],animQueue[i][6],stopTick)
-				table.remove(animQueue,i)	--Remove
+		for index=1,#animQueue do
+			local anim = animQueue[index]
+			if anim[1] == dgsEle and anim[2] == property then --Confirm
+				table.remove(animQueue,index)	--Remove
+				triggerEvent("onDgsStopAniming",dgsEle,anim[-2],property,anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
 				if property == "rltPos" or property == "absPos" then
-					triggerEvent("onDgsStopMoving",dgsEle)
+					triggerEvent("onDgsStopMoving",dgsEle,anim[-2])
 				elseif property == "rltSize" or property == "absSize" then
-					triggerEvent("onDgsStopSizing",dgsEle)
+					triggerEvent("onDgsStopSizing",dgsEle,anim[-2])
 				elseif property == "alpha" then
-					triggerEvent("onDgsStopAlphaing",dgsEle)
+					triggerEvent("onDgsStopAlphaing",dgsEle,anim[-2])
 				end
 				return true
 			end
@@ -87,17 +92,18 @@ function dgsStopAniming(...)
 	elseif type(property) == "table" then
 		local index = 1
 		while index <= #animQueue do
-			if animQueue[index][1] == dgsEle then --Confirm
+			local anim = animQueue[index]
+			if anim[1] == dgsEle then --Confirm
 				for i=1,#property do
-					if animQueue[index][2] == property[i] then
-						triggerEvent("onDgsStopAniming",dgsEle,property[i],animQueue[index][3],animQueue[index][4],animQueue[index][5],animQueue[index][7],animQueue[index][6],stopTick)
+					if anim[2] == property[i] then
 						table.remove(animQueue,index)	--Remove
+						triggerEvent("onDgsStopAniming",dgsEle,anim[-2],property[i],anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
 						if property[i] == "rltPos" or property[i] == "absPos" then
-							triggerEvent("onDgsStopMoving",dgsEle)
+							triggerEvent("onDgsStopMoving",dgsEle,anim[-2])
 						elseif property[i] == "rltSize" or property[i] == "absSize" then
-							triggerEvent("onDgsStopSizing",dgsEle)
+							triggerEvent("onDgsStopSizing",dgsEle,anim[-2])
 						elseif property[i] == "alpha" then
-							triggerEvent("onDgsStopAlphaing",dgsEle)
+							triggerEvent("onDgsStopAlphaing",dgsEle,anim[-2])
 						end
 						break
 					end
@@ -109,16 +115,16 @@ function dgsStopAniming(...)
 	else
 		local index = 1
 		while index <= #animQueue do
-			if animQueue[index][1] == dgsEle then --Confirm
-				local anim = animQueue[index]
-				triggerEvent("onDgsStopAniming",dgsEle,anim[2],anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
+			local anim = animQueue[index]
+			if anim[1] == dgsEle then --Confirm
 				table.remove(animQueue,index)	--Remove
+				triggerEvent("onDgsStopAniming",dgsEle,anim[-2],anim[2],anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
 				if anim[2] == "rltPos" or anim[2] == "absPos" then
-					triggerEvent("onDgsStopMoving",dgsEle)
+					triggerEvent("onDgsStopMoving",dgsEle,anim[-2])
 				elseif anim[2] == "rltSize" or anim[2] == "absSize" then
-					triggerEvent("onDgsStopSizing",dgsEle)
+					triggerEvent("onDgsStopSizing",dgsEle,anim[-2])
 				elseif anim[2] == "alpha" then
-					triggerEvent("onDgsStopAlphaing",dgsEle)
+					triggerEvent("onDgsStopAlphaing",dgsEle,anim[-2])
 				end
 			else
 				index = index+1
@@ -164,8 +170,10 @@ function onAnimQueueProcess()
 		animItem = animQueue[animIndex]
 		dgsEle = animItem[1]
 		if isElement(dgsEle) then
-			property,startValue,targetValue,easing,duration,startTick,reversedProgress,splitTable = animItem[2],animItem[3],animItem[4],animItem[5],animItem[6],animItem[7],animItem[8],animItem[9]
+			startTick = animItem[7]
 			if rTick >= startTick then
+				if animItem[3] == nil then animItem[3] = dgsElementData[dgsEle][ animItem[2] ] end
+				property,startValue,targetValue,easing,duration,reversedProgress,splitTable = animItem[2],animItem[3],animItem[4],animItem[5],animItem[6],animItem[8],animItem[9]
 				rProgress = (rTick-startTick)/duration
 				if rProgress >= 1 then rProgress = 1 end
 				if reversedProgress then rProgress = 1-rProgress end
