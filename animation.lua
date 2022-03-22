@@ -110,15 +110,16 @@ function dgsStopAniming(...)
 		local index = 1
 		while index <= #animQueue do
 			if animQueue[index][1] == dgsEle then --Confirm
-				if animQueue[index][2] == "rltPos" or animQueue[index][2] == "absPos" then
+				local anim = animQueue[index]
+				triggerEvent("onDgsStopAniming",dgsEle,anim[2],anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
+				table.remove(animQueue,index)	--Remove
+				if anim[2] == "rltPos" or anim[2] == "absPos" then
 					triggerEvent("onDgsStopMoving",dgsEle)
-				elseif animQueue[index][2] == "rltSize" or animQueue[index][2] == "absSize" then
+				elseif anim[2] == "rltSize" or anim[2] == "absSize" then
 					triggerEvent("onDgsStopSizing",dgsEle)
-				elseif animQueue[index][2] == "alpha" then
+				elseif anim[2] == "alpha" then
 					triggerEvent("onDgsStopAlphaing",dgsEle)
 				end
-				triggerEvent("onDgsStopAniming",dgsEle,animQueue[index][2],animQueue[index][3],animQueue[index][4],animQueue[index][5],animQueue[index][7],animQueue[index][6],stopTick)
-				table.remove(animQueue,index)	--Remove
 			else
 				index = index+1
 			end
