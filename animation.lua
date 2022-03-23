@@ -236,7 +236,7 @@ function onAnimQueueProcess()
 					end
 				end
 				if rProgress == 1 then
-					dgsStopAniming(dgsEle,property)
+					dgsStopAniming(animItem[-2])
 				else
 					animIndex = animIndex+1
 				end
