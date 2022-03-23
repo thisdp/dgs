@@ -6,7 +6,7 @@ dgsRegisterProperties("dgs-dxlabel",{
 	font = 					{	PArg.Font+PArg.String	},
 	rotation = 				{	PArg.Number	},
 	rotationCenter = 		{	{ PArg.Number, PArg.Number }	},
-	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	subPixelPositioning = 	{	PArg.Bool	},
 	text = 					{	PArg.Text	},
 	textColor = 			{	PArg.Color	},
@@ -207,8 +207,10 @@ dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		if shadowoffx and shadowoffy and shadowc then
 			local shadowc = applyColorAlpha(shadowc,parentAlpha)
 			local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
-			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordBreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
-			if shadowIsOutline == true or shadowIsOutline == 1 then
+			if not shadowIsOutline then
+				dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordBreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
+			elseif shadowIsOutline == true or shadowIsOutline == 1 then
+				dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordBreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordBreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordBreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
 				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,shadowfont,alignment[1],alignment[2],clip,wordBreak,isPostGUI,false,subPixelPos,rotation,rotationCenter[1],rotationCenter[2])
