@@ -146,7 +146,6 @@ function dgsGetElementsInLayer(layer)
 		return CenterFatherTable
 	end
 end
-dgsRegisterDeprecatedFunction("dgsGetDxGUINoParent","dgsGetElementsInLayer")
 
 function dgsGetElementsFromResource(res)
 	local res = res or sourceResource
@@ -160,7 +159,6 @@ function dgsGetElementsFromResource(res)
 	end
 	return false
 end
-dgsRegisterDeprecatedFunction("dgsGetDxGUIFromResource","dgsGetElementsFromResource")
 
 function dgsGetChild(dgsEle,id)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetChild",1,"dgs-dxelement")) end
@@ -1513,3 +1511,9 @@ addEventHandler("onClientResourceStop",root,function(res)
 		end
 	end
 end)
+
+
+---
+
+dgsRegisterDeprecatedFunction("dgsGetDxGUINoParent","dgsGetElementsInLayer")
+dgsRegisterDeprecatedFunction("dgsGetDxGUIFromResource","dgsGetElementsFromResource")
