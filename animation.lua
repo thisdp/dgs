@@ -81,6 +81,7 @@ function dgsStopAniming(...)
 			if anim[-2] == dgsEle  then --Confirm by unique animation ID
 				local theEle = anim[1]
 				table.remove(animQueue,index)	--Remove
+				local property = anim[2]
 				triggerEvent("onDgsStopAniming",theEle,anim[-2],property,anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
 				if property == "rltPos" or property == "absPos" then
 					triggerEvent("onDgsStopMoving",theEle,anim[-2])
