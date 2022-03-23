@@ -194,8 +194,10 @@
 	<export function="dgsIsMouseWithinGUI" type="client" />
 	<export function="dgsGetMouseEnterGUI" type="client" />
 	<export function="dgsGetMouseLeaveGUI" type="client" />
+	
 	<export function="dgsGetDxGUIFromResource" type="client" />
 	<export function="dgsGetDxGUINoParent" type="client" />
+	
 	<export function="dgsGetElementsInLayer" type="client" />
 	<export function="dgsGetElementsFromResource" type="client" />
 	<export function="dgsGetFocusedGUI" type="client" />
