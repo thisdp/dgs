@@ -137,9 +137,18 @@ function dgsGetLayerElements(layer)
 	return #LayerCastTable[layer] or false
 end
 
-function dgsGetDxGUINoParent(alwaysBottom) return alwaysBottom and BottomFatherTable or CenterFatherTable end
+function dgsGetElementsInLayer(layer)
+	if layer == true or layer:lower() == "bottom" then
+		return BottomFatherTable
+	elseif layer:lower() == "top" then
+		return TopFatherTable
+	else
+		return CenterFatherTable
+	end
+end
+dgsRegisterDeprecatedFunction("dgsGetDxGUINoParent","dgsGetElementsInLayer")
 
-function dgsGetDxGUIFromResource(res)
+function dgsGetElementsFromResource(res)
 	local res = res or sourceResource
 	if res then
 		local serialized,cnt = {},0
@@ -151,7 +160,7 @@ function dgsGetDxGUIFromResource(res)
 	end
 	return false
 end
-
+dgsRegisterDeprecatedFunction("dgsGetDxGUIFromResource","dgsGetElementsFromResource")
 
 function dgsGetChild(dgsEle,id)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetChild",1,"dgs-dxelement")) end

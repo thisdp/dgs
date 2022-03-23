@@ -196,6 +196,8 @@
 	<export function="dgsGetMouseLeaveGUI" type="client" />
 	<export function="dgsGetDxGUIFromResource" type="client" />
 	<export function="dgsGetDxGUINoParent" type="client" />
+	<export function="dgsGetElementsInLayer" type="client" />
+	<export function="dgsGetElementsFromResource" type="client" />
 	<export function="dgsGetFocusedGUI" type="client" />
 	<export function="dgsClear" type="client" />
 	<export function="dgsSetRenderSetting" type="client" />
