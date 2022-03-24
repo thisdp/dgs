@@ -125,8 +125,8 @@ function dgsRemoveFromBackEndRenderList(dgsEle)
 	return true
 end
 
-addEventHandler("onClientRestore",root,function(isRTCleared)
-	if isRTCleared then dgsRenderInfo.RTRestoreNeed = true end
+addEventHandler("onClientRestore",root,function()
+	dgsRenderInfo.RTRestoreNeed = true
 end)
 
 function dgsCoreRender()
