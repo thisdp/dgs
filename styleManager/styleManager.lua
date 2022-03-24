@@ -72,10 +72,11 @@ function newSvg(styleName, res, svg, width, height)
 	return svg
 end
 
-function newTexture(styleName,res,texture)
-	if not isElement(texture) then
-		texture = dxCreateTexture(texture,false)
-		dgsSetData(texture,"path",texture)
+function newTexture(styleName,res,texturePath)
+	local texture = texturePath
+	if not isElement(texturePath) then
+		texture = dxCreateTexture(texturePath,false)
+		dgsSetData(texture,"path",texturePath)
 		dgsAddEventHandler("onClientElementDestroy",texture,"deleteTexture")
 	end
 	local res = res or "global"
@@ -139,7 +140,7 @@ function getStyleFilePath(styleName,res,path)
 	res = res or sourceResource or "global"
 	styleName = styleName or "Default"
 	local testPath = styleManager.styles[res].mapper[styleName].."/"..path
-	return fileExists(testPath) and testPath or false
+	return fileExists(testPath) and testPath or path
 end
 ------------------------------------
 function dgsScanGlobalStyle()
@@ -164,7 +165,7 @@ function dgsCreateFontFromStyle(styleName,res,theTable)
 		res = res or sourceResource or "global"
 		local filePath,size,isBold,quality = theTable[1],theTable[2] or 9,theTable[3] or false,theTable[4] or "proof"
 		if filePath then
-			local thePath = not isElement(filePath) and getStyleFilePath(styleName,res,filePath) or filePath
+			local thePath = filePath
 			local isFontSharing = styleManager.styles[res].loaded[styleName].sharedFont
 			if isFontSharing then
 				styleManager.styles[res].loaded[styleName].shared.font = styleManager.styles[res].loaded[styleName].shared.font or {}
@@ -189,7 +190,7 @@ function dgsCreateTextureFromStyle(styleName,res,theTable)
 		local filePath,textureType,shaderSettings = theTable[1],theTable[2],theTable[3]
 		if filePath then
 			textureType = textureType or "image"
-			local thePath = not isElement(filePath) and getStyleFilePath(styleName,res,filePath) or filePath
+			local thePath = filePath
 			if textureType == "image" then
 				local isTextureSharing = styleManager.styles[res].loaded[styleName].sharedTexture
 				if isTextureSharing then
@@ -266,24 +267,41 @@ function dgsLoadStyle(styleName,res)
 		end
 		setfenv(fnc,styleSecEnv)
 		local newStyle = fnc()
-		if styleName ~= "Default" then
-			local gStyle = table.deepcopy(styleManager.styles.global.loaded.Default)
-			for dgsType,settings in pairs(gStyle) do
-				if newStyle[dgsType] then
-					if type(settings) == "table" then
-						for dgsProperty,value in pairs(settings) do
-							if newStyle[dgsType][dgsProperty] ~= nil then
-								gStyle[dgsType] = gStyle[dgsType] or {}
-								gStyle[dgsType][dgsProperty] = newStyle[dgsType][dgsProperty]
+		local gStyle
+		if styleName == "Default" then
+			gStyle = newStyle
+		else
+			gStyle = table.deepcopy(styleManager.styles.global.loaded.Default)
+		end
+		for dgsType,settings in pairs(gStyle) do
+			if newStyle[dgsType] then
+				if type(settings) == "table" then
+					for dgsProperty,value in pairs(settings) do
+						if newStyle[dgsType][dgsProperty] ~= nil then
+							gStyle[dgsType] = gStyle[dgsType] or {}
+							if type(newStyle[dgsType][dgsProperty]) == "table" then
+								for i=1,#newStyle[dgsType][dgsProperty] do
+									if type(newStyle[dgsType][dgsProperty][i]) == "table" then
+										if type(newStyle[dgsType][dgsProperty][i][1]) == "string" then
+											newStyle[dgsType][dgsProperty][i][1] = getStyleFilePath(styleName,res,newStyle[dgsType][dgsProperty][i][1])
+										end
+									else
+										if type(newStyle[dgsType][dgsProperty][1]) == "string" then
+											newStyle[dgsType][dgsProperty][1] = getStyleFilePath(styleName,res,newStyle[dgsType][dgsProperty][1])
+										end
+									end
+								end
 							end
+							gStyle[dgsType][dgsProperty] = newStyle[dgsType][dgsProperty]
+							
 						end
-					elseif newStyle[dgsType] ~= nil then
-						gStyle[dgsType] = newStyle[dgsType]
 					end
+				elseif newStyle[dgsType] ~= nil then
+					gStyle[dgsType] = newStyle[dgsType]
 				end
 			end
-			newStyle = gStyle
 		end
+		newStyle = gStyle
 		styleManager.styles[res].loaded[styleName] = newStyle
 		styleManager.styles[res].loaded[styleName].shared = {}
 		styleManager.styles[res].loaded[styleName].created = {}
