@@ -1240,8 +1240,8 @@ function configMemo(memo)
 	local scbTakes2 = scbStateH and scbThick or 0
 	dgsSetPosition(scrollbar[1],size[1]-scbThick,0,false)
 	dgsSetPosition(scrollbar[2],0,size[2]-scbThick,false)
-	dgsSetSize(scrollbar[1],scbThick,size[2]-padding[2]*2-scbTakes2,false)
-	dgsSetSize(scrollbar[2],size[1]-padding[1]*2-scbTakes1,scbThick,false)
+	dgsSetSize(scrollbar[1],scbThick,size[2]-scbTakes2,false)
+	dgsSetSize(scrollbar[2],size[1]-scbTakes1,scbThick,false)
 
 	local scbLengthVrt = eleData.scrollBarLength[1]
 	local higLen = 1-(textCnt-canHold)/textCnt
