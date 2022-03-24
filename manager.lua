@@ -1195,7 +1195,7 @@ function dgsSetProperties(dgsEle,theTable)
 			dgsSetProperty(dgsEle,key,value)
 		end
 	end
-	return success
+	return true
 end
 
 function dgsGetProperties(dgsEle,properties)
