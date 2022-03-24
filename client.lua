@@ -126,7 +126,7 @@ function dgsRemoveFromBackEndRenderList(dgsEle)
 end
 
 addEventHandler("onClientRestore",root,function()
-	dgsRenderInfo.RTRestoreNeed = true
+	dgsRenderInfo.RTRestoreNeed = true	--RT is not working when minimized, force to restore the draw result is needed.
 end)
 
 function dgsCoreRender()
