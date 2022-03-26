@@ -125,7 +125,7 @@ function dgsCreateEdit(...)
 	local systemFont = style.systemFontElement
 	
 	style = style.edit
-	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[edit] = {
 		text = "",
 		bgColor = bgColor or style.bgColor,
