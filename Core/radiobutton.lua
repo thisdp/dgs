@@ -100,7 +100,7 @@ function dgsCreateRadioButton(...)
 	nColorT = nColorT or colorChecked[1]
 	hColorT = hColorT or colorChecked[2]
 	cColorT = cColorT or colorChecked[3]
-	local textSizeX,textSizeY = tonumber(scalex) or style.textSize[1], tonumber(scaley) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[rb] = {
 		renderBuffer = {},
 		imageUnchecked = {nImageF,hImageF,cImageF},
