@@ -938,7 +938,6 @@ function dgsGridListRemoveColumn(gridlist,c)
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListRemoveColumn",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
 	local c = c-c%1
 	local oldLen = cData[c][3]
-	tableRemove(cData,c)
 	local lastColumnLen = 0
 	for i=1,cLen do
 		if i >= c then
@@ -946,6 +945,7 @@ function dgsGridListRemoveColumn(gridlist,c)
 			lastColumnLen = cData[i][3]+cData[i][2]
 		end
 	end
+	tableRemove(cData,c)
 	dgsElementData[gridlist].configNextFrame = true
 	return true
 end
