@@ -2831,13 +2831,15 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 			end
 			local preHitElement = MouseData.hit
-			for i=eleData.FromTo[2],eleData.FromTo[1],-1 do
-				for id = cPosStart,cPosEnd do
-					local item = elementBuffer[i][id]
-					if item and item[1] then
-						local offx,offy = item[2],item[3]
-						for a=1,#item[1] do
-							renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowTextRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
+			if cPosStart and cPosEnd then
+				for i=eleData.FromTo[2],eleData.FromTo[1],-1 do
+					for id = cPosStart,cPosEnd do
+						local item = elementBuffer[i][id]
+						if item and item[1] then
+							local offx,offy = item[2],item[3]
+							for a=1,#item[1] do
+								renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowTextRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
+							end
 						end
 					end
 				end
