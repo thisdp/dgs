@@ -116,6 +116,8 @@ function dgsCreateScrollBar(...)
 		multiplier = {1,false},
 		scrollPosition = 0,
 		scrollArrow = style.scrollArrow,
+		bgImage = nil,
+		bgColor = nil,
 		troughColor = troughColor or style.troughColor,
 		troughImageSectionMode = false,
 		troughImage = troughImage,
@@ -372,6 +374,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	local cursorWidth,troughWidth,arrowWidth = eleData.cursorWidth,eleData.troughWidth,eleData.arrowWidth
 	local imgRot = eleData.imageRotation
 	local troughPadding,cursorPadding,arrowPadding
+	
 	if isHorizontal then
 		troughWidth = troughWidth[2] and troughWidth[1]*h or troughWidth[1]
 		cursorWidth = cursorWidth[2] and cursorWidth[1]*h or cursorWidth[1]
@@ -471,6 +474,13 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart1_1,troughPart1_2 = x+arrowWidth,cursorCenter
 		local troughPart2_1,troughPart2_2 = x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter
 		local imgRotHorz = imgRot[1]
+		if eleData.bgColor then
+			if eleData.bgImage then
+				dxDrawImage(x,y,w,h,eleData.bgImage,imgRotHorz[3],0,0,eleData.bgColor,isPostGUI,rndtgt)
+			else
+				dxDrawRectangle(x,y,w,h,eleData.bgColor,isPostGUI,rndtgt)
+			end
+		end
 		if tempTroughImage_1 then
 			if eleData.troughImageSectionMode then
 				local sx,sy = dxGetMaterialSize(tempTroughImage_1)
@@ -513,6 +523,13 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart1_1,troughPart1_2 = y+arrowWidth,cursorCenter
 		local troughPart2_1,troughPart2_2 = y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter
 		local imgRotVert = imgRot[2]
+		if eleData.bgColor then
+			if eleData.bgImage then
+				dxDrawImage(x,y,w,h,eleData.bgImage,imgRotVert[3],0,0,eleData.bgColor,isPostGUI,rndtgt)
+			else
+				dxDrawRectangle(x,y,w,h,eleData.bgColor,isPostGUI,rndtgt)
+			end
+		end
 		if tempTroughImage_1 then
 			if eleData.troughImageSectionMode then
 				local sx,sy = dxGetMaterialSize(tempTroughImage_2)
