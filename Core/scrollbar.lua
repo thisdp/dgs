@@ -1,26 +1,27 @@
 dgsRegisterType("dgs-dxscrollbar","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxscrollbar",{
-	arrowWidth = 		{	{ PArg.Number,PArg.Bool }	},
-	arrowColor = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
-	arrowImage = 		{	PArg.Material+PArg.Nil	},
-	cursorColor = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
-	cursorImage = 		{	PArg.Material+PArg.Nil	},
-	cursorWidth = 		{	{ PArg.Number,PArg.Bool }	},
-	grades = 			{	PArg.Number+PArg.Bool	},
-	image = 			{	PArg.Material+PArg.Nil	},
-	imageRotation = 	{	{	{ PArg.Number, PArg.Number,PArg.Number }, { PArg.Number, PArg.Number, PArg.Number }	}	},
-	length = 			{	{ PArg.Number, PArg.Bool }	},
-	locked = 			{	PArg.Bool	},
-	map = 				{	{ PArg.Number,PArg.Number }	},
-	multiplier = 		{	{ PArg.Number,PArg.Bool }	},
-	scrollPosition = 	{	PArg.Number	},
-	scrollArrow = 		{	PArg.Bool	},
-	troughClickAction = {	PArg.String	},
-	troughColor = 		{	{ PArg.Color,PArg.Color }	},
-	troughWidth = 		{	{ PArg.Number,PArg.Bool }	},
-	troughImage = 		{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	wheelReversed = 	{	PArg.Bool	},
-	isHorizontal = 		{	PArg.Bool	},
+	arrowWidth = 				{	{ PArg.Number,PArg.Bool }	},
+	arrowColor = 				{	{ PArg.Color, PArg.Color, PArg.Color }	},
+	arrowImage = 				{	PArg.Material+PArg.Nil	},
+	cursorColor = 				{	{ PArg.Color, PArg.Color, PArg.Color }	},
+	cursorImage = 				{	PArg.Material+PArg.Nil	},
+	cursorWidth = 				{	{ PArg.Number,PArg.Bool }	},
+	grades = 					{	PArg.Number+PArg.Bool	},
+	image = 					{	PArg.Material+PArg.Nil	},
+	imageRotation = 			{	{	{ PArg.Number, PArg.Number,PArg.Number }, { PArg.Number, PArg.Number, PArg.Number }	}	},
+	length = 					{	{ PArg.Number, PArg.Bool }	},
+	locked = 					{	PArg.Bool	},
+	map = 						{	{ PArg.Number,PArg.Number }	},
+	multiplier = 				{	{ PArg.Number,PArg.Bool }	},
+	scrollPosition = 			{	PArg.Number	},
+	scrollArrow = 				{	PArg.Bool	},
+	troughClickAction = 		{	PArg.String	},
+	troughColor = 				{	{ PArg.Color,PArg.Color }	},
+	troughWidth = 				{	{ PArg.Number,PArg.Bool }	},
+	troughImage = 				{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
+	troughImageSectionMode = 	{	PArg.Bool	},
+	wheelReversed = 			{	PArg.Bool	},
+	isHorizontal = 				{	PArg.Bool	},
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine
@@ -116,6 +117,7 @@ function dgsCreateScrollBar(...)
 		scrollPosition = 0,
 		scrollArrow = style.scrollArrow,
 		troughColor = troughColor or style.troughColor,
+		troughImageSectionMode = false,
 		troughImage = troughImage,
 		troughClickAction = "none",
 		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
@@ -469,8 +471,30 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart1_1,troughPart1_2 = x+arrowWidth,cursorCenter
 		local troughPart2_1,troughPart2_2 = x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter
 		local imgRotHorz = imgRot[1]
-		if tempTroughImage_1 then dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) else dxDrawRectangle(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughColor[1],isPostGUI) end
-		if tempTroughImage_2 then dxDrawImage(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) else dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI) end
+		if tempTroughImage_1 then
+			if eleData.troughImageSectionMode then
+				local sx,sy = dxGetMaterialSize(tempTroughImage_1)
+				if not sx or not sy then sx,sy = 0,0 end
+				local percent = cursorCenter/slotRange
+				dxDrawImageSection(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,0,0,sx*percent,sy,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
+			else
+				dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
+			end
+		else
+			dxDrawRectangle(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughColor[1],isPostGUI)
+		end
+		if tempTroughImage_2 then
+			if eleData.troughImageSectionMode then
+				local sx,sy = dxGetMaterialSize(tempTroughImage_2)
+				if not sx or not sy then sx,sy = 0,0 end
+				local percent = cursorCenter/slotRange
+				dxDrawImageSection(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,sx*percent,0,sx*(1-percent),sy,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
+			else
+				dxDrawImage(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
+			end
+		else
+			dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI)
+		end
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x,y+arrowPadding,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
@@ -489,8 +513,30 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart1_1,troughPart1_2 = y+arrowWidth,cursorCenter
 		local troughPart2_1,troughPart2_2 = y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter
 		local imgRotVert = imgRot[2]
-		if tempTroughImage_1 then dxDrawImage(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt) else dxDrawRectangle(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughColor[1],isPostGUI) end
-		if tempTroughImage_2 then dxDrawImage(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt) else dxDrawRectangle(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughColor[2],isPostGUI) end
+		if tempTroughImage_1 then
+			if eleData.troughImageSectionMode then
+				local sx,sy = dxGetMaterialSize(tempTroughImage_2)
+				if not sx or not sy then sx,sy = 0,0 end
+				local percent = cursorCenter/slotRange
+				dxDrawImageSection(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,0,0,sx,sy*percent,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
+			else
+				dxDrawImage(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
+			end
+		else
+			dxDrawRectangle(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughColor[1],isPostGUI)
+		end
+		if tempTroughImage_2 then
+			if eleData.troughImageSectionMode then
+				local sx,sy = dxGetMaterialSize(tempTroughImage_2)
+				if not sx or not sy then sx,sy = 0,0 end
+				local percent = cursorCenter/slotRange
+				dxDrawImageSection(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,0,sy*percent,sx,sy*(1-percent),tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
+			else
+				dxDrawImage(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
+			end
+		else
+			dxDrawRectangle(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughColor[2],isPostGUI)
+		end
 		if scrollArrow then
 			if tempArrowBgColor then
 				dxDrawRectangle(x+arrowPadding,y,arrowWidth,arrowWidth,tempArrowBgColor[colorImageIndex[1]],isPostGUI)
