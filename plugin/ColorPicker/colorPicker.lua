@@ -747,15 +747,15 @@ end
 function HLDiskChange()
 	local cx,cy = dgsGetCursorPosition()
 	local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
-	local clickRadius = (CenDisX^2+CenDisY^2)^0.5*2
-	clickRadius = clickRadius<=1 and clickRadius or 1
+	local clickRadius = (CenDisX^2+CenDisY^2)^0.5
+	clickRadius = clickRadius <= 0.5 and clickRadius or 0.5
 	dgsColorPickerSetColor(source,rot,_,(1-clickRadius)*100,_,"HSL")
 end
 
 function HLToRR(H,L)
 	local H = math.rad(H)
 	local L = 0.5-L/100/2
-	local x,y = math.cos(H)*L,math.sin(H)*L
+	local x,y = math.cos(H)*L*2,math.sin(H)*L*2
 	return x+0.5,y+0.5
 end
 
