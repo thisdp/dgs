@@ -790,6 +790,8 @@ class {
 		getSelectedItem = gObjFnc("dgsComboBoxGetSelectedItem"),
 		setItemColor = gObjFnc("dgsComboBoxSetItemColor",true),
 		getItemColor = gObjFnc("dgsComboBoxGetItemColor"),
+		setItemData = gObjFnc("dgsComboBoxSetItemData",true),
+		getItemData = gObjFnc("dgsComboBoxGetItemData"),
 		setItemFont = gObjFnc("dgsComboBoxSetItemFont",true),
 		getItemFont = gObjFnc("dgsComboBoxGetItemFont"),
 		setItemImage = gObjFnc("dgsComboBoxSetItemImage",true),
