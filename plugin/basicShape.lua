@@ -52,22 +52,22 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	float2 fixedPos = tex-center;
 	float2 corner[] = {center-nRadius.x,center-nRadius.y,center-nRadius.z,center-nRadius.w};
 	//LTCorner
-	if(-fixedPos.x >= corner[0].x && -fixedPos.y >= corner[0].y){
+	if(-fixedPos.x >= corner[0].x && -fixedPos.y >= corner[0].y && -fixedPos.x >= 0 ){
 		float dis = distance(-fixedPos,corner[0]);
 		alp = 1-(dis-nRadius.x+aA)/aA;
 	}
 	//RTCorner
-	if(fixedPos.x >= corner[1].x && -fixedPos.y >= corner[1].y){
+	if(fixedPos.x >= corner[1].x && -fixedPos.y >= corner[1].y && fixedPos.x >= 0 ){
 		float dis = distance(float2(fixedPos.x,-fixedPos.y),corner[1]);
 		alp = 1-(dis-nRadius.y+aA)/aA;
 	}
 	//RBCorner
-	if(fixedPos.x >= corner[2].x && fixedPos.y >= corner[2].y){
+	if(fixedPos.x >= corner[2].x && fixedPos.y >= corner[2].y && fixedPos.y >= 0){
 		float dis = distance(float2(fixedPos.x,fixedPos.y),corner[2]);
 		alp = 1-(dis-nRadius.z+aA)/aA;
 	}
 	//LBCorner
-	if(-fixedPos.x >= corner[3].x && fixedPos.y >= corner[3].y){
+	if(-fixedPos.x >= corner[3].x && fixedPos.y >= corner[3].y && fixedPos.y >= 0 && -fixedPos.x >= 0){
 		float dis = distance(float2(-fixedPos.x,fixedPos.y),corner[3]);
 		alp = 1-(dis-nRadius.w+aA)/aA;
 	}
@@ -108,22 +108,22 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	corner[3] = center-nRadiusHalf.w;
 	//LTCorner
 	float nAlp = 0;
-	if(-fixedPos.x >= corner[0].x && -fixedPos.y >= corner[0].y){
+	if(-fixedPos.x >= corner[0].x && -fixedPos.y >= corner[0].y && -fixedPos.x >= 0){
 		float dis = distance(-fixedPos,corner[0]);
 		nAlp = (dis-nRadiusHalf.x+aA)/aA;
 	}
 	//RTCorner
-	if(fixedPos.x >= corner[1].x && -fixedPos.y >= corner[1].y){
+	if(fixedPos.x >= corner[1].x && -fixedPos.y >= corner[1].y && fixedPos.x >= 0){
 		float dis = distance(float2(fixedPos.x,-fixedPos.y),corner[1]);
 		nAlp = (dis-nRadiusHalf.y+aA)/aA;
 	}
 	//RBCorner
-	if(fixedPos.x >= corner[2].x && fixedPos.y >= corner[2].y){
+	if(fixedPos.x >= corner[2].x && fixedPos.y >= corner[2].y && fixedPos.y >= 0){
 		float dis = distance(float2(fixedPos.x,fixedPos.y),corner[2]);
 		nAlp = (dis-nRadiusHalf.z+aA)/aA;
 	}
 	//LBCorner
-	if(-fixedPos.x >= corner[3].x && fixedPos.y >= corner[3].y){
+	if(-fixedPos.x >= corner[3].x && fixedPos.y >= corner[3].y && fixedPos.y >= 0 && -fixedPos.x >= 0){
 		float dis = distance(float2(-fixedPos.x,fixedPos.y),corner[3]);
 		nAlp = (dis-nRadiusHalf.w+aA)/aA;
 	}
