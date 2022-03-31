@@ -103,7 +103,7 @@ function dgsCreateSwitchButton(...)
 		textColorOn = tonumber(textColorOn) or style.textColorOn,
 		textColorOff = tonumber(textColorOff) or style.textColorOff,
 		textSize = {textSizeX,textSizeY},
-		shadow = {nil,nil,nil},
+		shadow = nil,
 		font = style.font or systemFont,
 		textOffset = {0.25,true},
 		state = state and true or false,
@@ -176,8 +176,6 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	local imageOn,imageOff = eleData.imageOn,eleData.imageOff
-	local colorOn,colorOff = eleData.colorOn,eleData.colorOff
 	local isReverse = eleData.isReverse and true or false
 	local textColor,text
 	local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
@@ -194,27 +192,31 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local troughWidth = eleData.troughWidth[2] and h*eleData.troughWidth[1] or eleData.troughWidth[1]
 	local animProgress = (-eleData.stateAnim+1)*0.5
 	local cursorX,cursorY,cursorW,cursorH = x+animProgress*(w-cursorLength),y+h/2-cursorWidth/2,cursorLength,cursorWidth
-	if MouseData.entered == v then
+	if MouseData.entered == source then
 		local isHitCursor = mx >= cursorX and mx <= cursorX+cursorLength
 		colorImgBgID = 2
 		if isHitCursor then
 			colorImgID = 2
 		end
-		if eleData.clickType == 1 and MouseData.clickl == v then
+		if eleData.clickType == 1 and MouseData.clickl == source then
 			colorImgBgID = 3
 			colorImgID = isHitCursor and 3 or colorImgID
-		elseif eleData.clickType == 2 and MouseData.clickr == v then
+		elseif eleData.clickType == 2 and MouseData.clickr == source then
 			colorImgBgID = 3
 			colorImgID = isHitCursor and 3 or colorImgID
 		else
-			if MouseData.clickl == v or MouseData.clickr == v then
+			if MouseData.clickl == source or MouseData.clickr == source then
 				colorImgBgID = 3
 				colorImgID = isHitCursor and 3 or colorImgID
 			end
 		end
 	end
-	local cursorImage = eleData.cursorImage[colorImgID]
-	local cursorColor = eleData.cursorColor[colorImgID]
+	local cursorImage = type(eleData.cursorImage) ~= "table" and eleData.cursorImage or (eleData.cursorImage[colorImgID] or eleData.cursorImage[1])
+	local cursorColor = type(eleData.cursorColor) ~= "table" and eleData.cursorColor or (eleData.cursorColor[colorImgID] or eleData.cursorColor[1])
+	local imageOn = type(eleData.imageOn) ~= "table" and eleData.imageOn or (eleData.imageOn[colorImgID] or eleData.imageOn[1])
+	local imageOff = type(eleData.imageOff) ~= "table" and eleData.imageOff or (eleData.imageOff[colorImgID] or eleData.imageOff[1])
+	local colorOn = type(eleData.colorOn) ~= "table" and eleData.colorOn or (eleData.colorOn[colorImgID] or eleData.colorOn[1])
+	local colorOff = type(eleData.colorOff) ~= "table" and eleData.colorOff or (eleData.colorOff[colorImgID] or eleData.colorOff[1])
 	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
 			color = applyColorAlpha(eleData.disabledColor,parentAlpha)
@@ -226,35 +228,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	else
 		cursorColor = applyColorAlpha(cursorColor,parentAlpha)
 	end
-	if not style then
-		local color = colorOn[colorImgID]+(colorOff[colorImgID]-colorOn[colorImgID])*animProgress
-		if not enabledInherited and not enabledSelf then
-			if type(eleData.disabledColor) == "number" then
-				color = applyColorAlpha(eleData.disabledColor,parentAlpha)
-			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(color,true)
-				local average = (r+g+b)/3*eleData.disabledColorPercent
-				color = tocolor(average,average,average,a*parentAlpha)
-			end
-		else
-			color = applyColorAlpha(color,parentAlpha)
-		end
-		local xOn,yOn,wOn,hOn = x,y,w,h
-		yOn = yOn+hOn/2-troughWidth/2 -- todo
-		hOn = troughWidth
-		if animProgress == 0 then
-			local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOn[colorImgBgID],0,0,0,colorOn[colorImgID],isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,colorOn[colorImgID],isPostGUI)
-		elseif animProgress == 1 then
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOff[colorImgBgID],0,0,0,colorOff[colorImgID],isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,colorOff[colorImgID],isPostGUI)
-		else
-			local offColor = applyColorAlpha(colorOff[colorImgID],animProgress)
-			local onColor = applyColorAlpha(colorOn[colorImgID],1-animProgress)
-			local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOn[colorImgBgID],0,0,0,onColor,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,onColor,isPostGUI)
-			local _empty = imageOff[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOff[colorImgBgID],0,0,0,offColor,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,offColor,isPostGUI)
-		end
-	elseif style == 1 then
-		local colorOff = colorOff[colorImgID]
-		local colorOn = colorOn[colorImgID]
+	if style == 1 then
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
@@ -283,11 +257,9 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		hOn = troughWidth
 		yOff = yOff+hOff/2-troughWidth/2
 		hOff = troughWidth
-		local _empty = imageOn[colorImgBgID] and dxDrawImage(xOn,yOn,wOn,hOn,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt) or dxDrawRectangle(xOn,yOn,wOn,hOn,colorOn,isPostGUI)
-		local _empty = imageOff[colorImgBgID] and dxDrawImage(xOff,yOff,wOff,hOff,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt) or dxDrawRectangle(xOff,yOff,wOff,hOff,colorOff,isPostGUI)
+		dxDrawImage(xOn,yOn,wOn,hOn,imageOn,0,0,0,colorOn,isPostGUI,rndtgt)
+		dxDrawImage(xOff,yOff,wOff,hOff,imageOff,0,0,0,colorOff,isPostGUI,rndtgt)
 	elseif style == 2 then
-		local colorOff = colorOff[colorImgID]
-		local colorOn = colorOn[colorImgID]
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
@@ -317,53 +289,67 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		hOn = troughWidth
 		yOff = yOff+hOff/2-troughWidth/2
 		hOff = troughWidth
-		if imageOn[colorImgBgID] then
-			local onMaterialX,onMaterialY = dxGetMaterialSize(imageOn[colorImgBgID])
-			dxDrawImageSection(xOn,yOn,wOn,hOn,(xOn-x)/w*onMaterialX,0,wOn/w*onMaterialX,onMaterialY,imageOn[colorImgBgID],0,0,0,colorOn,isPostGUI,rndtgt)
+		if imageOn then
+			local onMaterialX,onMaterialY = dxGetMaterialSize(imageOn)
+			dxDrawImageSection(xOn,yOn,wOn,hOn,(xOn-x)/w*onMaterialX,0,wOn/w*onMaterialX,onMaterialY,imageOn,0,0,0,colorOn,isPostGUI,rndtgt)
 		else
 			dxDrawRectangle(xOn,yOn,wOn,hOn,colorOn,isPostGUI)
 		end
-		if imageOff[colorImgBgID] then
-			local offMaterialX,offMaterialY = dxGetMaterialSize(imageOff[colorImgBgID])
-			dxDrawImageSection(xOff,yOff,wOff,hOff,(xOff-x)/w*offMaterialX,0,wOff/w*offMaterialX,offMaterialY,imageOff[colorImgBgID],0,0,0,colorOff,isPostGUI,rndtgt)
+		if imageOff then
+			local offMaterialX,offMaterialY = dxGetMaterialSize(imageOff)
+			dxDrawImageSection(xOff,yOff,wOff,hOff,(xOff-x)/w*offMaterialX,0,wOff/w*offMaterialX,offMaterialY,imageOff,0,0,0,colorOff,isPostGUI,rndtgt)
 		else
 			dxDrawRectangle(xOff,yOff,wOff,hOff,colorOff,isPostGUI)
 		end
+	elseif style == 3 then
+		local color = colorOn+(colorOff-colorOn)*animProgress
+		if not enabledInherited and not enabledSelf then
+			if type(eleData.disabledColor) == "number" then
+				color = applyColorAlpha(eleData.disabledColor,parentAlpha)
+			elseif eleData.disabledColor == true then
+				local r,g,b,a = fromcolor(color,true)
+				local average = (r+g+b)/3*eleData.disabledColorPercent
+				color = tocolor(average,average,average,a*parentAlpha)
+			end
+		else
+			color = applyColorAlpha(color,parentAlpha)
+		end
+		local xOn,yOn,wOn,hOn = x,y,w,h
+		yOn = yOn+hOn/2-troughWidth/2 -- todo
+		hOn = troughWidth
+		if animProgress == 0 then
+			dxDrawImage(xOn,yOn,wOn,hOn,imageOn,0,0,0,colorOn,isPostGUI,rndtgt)
+		elseif animProgress == 1 then
+			dxDrawImage(xOn,yOn,wOn,hOn,imageOff,0,0,0,colorOff,isPostGUI,rndtgt)
+		else
+			local offColor = applyColorAlpha(colorOff,animProgress)
+			local onColor = applyColorAlpha(colorOn,1-animProgress)
+			dxDrawImage(xOn,yOn,wOn,hOn,imageOn,0,0,0,onColor,isPostGUI,rndtgt)
+			dxDrawImage(xOn,yOn,wOn,hOn,imageOff,0,0,0,offColor,isPostGUI,rndtgt)
+		end
 	end
-	
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-			
+
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip
 	local wordBreak = eleData.wordBreak
 	local colorCoded = eleData.colorCoded
-	local shadow = eleData.shadow
 	local textX,textY,textWX,textHY = x+w*0.5+xAdd-cursorLength,y,x+w*0.5+xAdd+cursorLength,y+h
+	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
+	local shadow = eleData.shadow
 	if shadow then
-		local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
-		if shadowoffx and shadowoffy and shadowc then
-			local shadowc = applyColorAlpha(shadowc,parentAlpha)
-			local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
-			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textWX+shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
-			if shadowIsOutline then
-				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textWX-shadowoffx,textHY+shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
-				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textWX-shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
-				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textWX+shadowoffx,textHY-shadowoffy,shadowc,txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI)
-			end
-		end
+		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
+		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	dxDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI,colorCoded)
+	dxDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	----Cursor
-	if cursorImage then
-		dxDrawImage(cursorX,cursorY,cursorW,cursorH,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(cursorX,cursorY,cursorW,cursorH,cursorColor,isPostGUI)
-	end
+	dxDrawImage(cursorX,cursorY,cursorW,cursorH,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)
 
 	local state = eleData.state and 1 or -1
 	if eleData.stateAnim ~= state then

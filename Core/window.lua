@@ -296,16 +296,8 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local color = applyColorAlpha(eleData.color,parentAlpha)
 	local titimg,titleColor,titsize = eleData.titleImage,eleData.isFocused and eleData.titleColor or (eleData.titleColorBlur or eleData.titleColor),eleData.titleHeight
 	titleColor = applyColorAlpha(titleColor,parentAlpha)
-	if img then
-		dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y+titsize,w,h-titsize,color,isPostGUI)
-	end
-	if titimg then
-		dxDrawImage(x,y,w,titsize,titimg,0,0,0,titleColor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y,w,titsize,titleColor,isPostGUI)
-	end
+	dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,isPostGUI,rndtgt)
+	dxDrawImage(x,y,w,titsize,titimg,0,0,0,titleColor,isPostGUI,rndtgt)
 	local alignment = eleData.alignment
 
 	local style = styleManager.styles[eleData.resource or "global"]

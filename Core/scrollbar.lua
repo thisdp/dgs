@@ -27,7 +27,6 @@ dgsRegisterProperties("dgs-dxscrollbar",{
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage
-local dxDrawRectangle = dxDrawRectangle
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsGetType = dgsGetType
@@ -476,35 +475,23 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		local troughPart2_1,troughPart2_2 = x+arrowWidth+cursorCenter,w-2*arrowWidth-cursorCenter
 		local imgRotHorz = imgRot[1]
 		if eleData.bgColor then
-			if eleData.bgImage then
-				dxDrawImage(x,y,w,h,eleData.bgImage,imgRotHorz[3],0,0,eleData.bgColor,isPostGUI,rndtgt)
-			else
-				dxDrawRectangle(x,y,w,h,eleData.bgColor,isPostGUI,rndtgt)
-			end
+			dxDrawImage(x,y,w,h,eleData.bgImage,imgRotHorz[3],0,0,eleData.bgColor,isPostGUI,rndtgt)
 		end
-		if tempTroughImage_1 then
-			if eleData.troughImageSectionMode then
-				local sx,sy = dxGetMaterialSize(tempTroughImage_1)
-				if not sx or not sy then sx,sy = 0,0 end
-				local percent = cursorCenter/slotRange
-				dxDrawImageSection(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,0,0,sx*percent,sy,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
-			else
-				dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
-			end
+		if eleData.troughImageSectionMode then
+			local sx,sy = dxGetMaterialSize(tempTroughImage_1)
+			if not sx or not sy then sx,sy = 0,0 end
+			local percent = cursorCenter/slotRange
+			dxDrawImageSection(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,0,0,sx*percent,sy,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
 		else
-			dxDrawRectangle(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughColor[1],isPostGUI)
+			dxDrawImage(troughPart1_1,y+troughPadding,troughPart1_2,troughWidth,tempTroughImage_1,imgRotHorz[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
 		end
-		if tempTroughImage_2 then
-			if eleData.troughImageSectionMode then
-				local sx,sy = dxGetMaterialSize(tempTroughImage_2)
-				if not sx or not sy then sx,sy = 0,0 end
-				local percent = cursorCenter/slotRange
-				dxDrawImageSection(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,sx*percent,0,sx*(1-percent),sy,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
-			else
-				dxDrawImage(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
-			end
+		if eleData.troughImageSectionMode then
+			local sx,sy = dxGetMaterialSize(tempTroughImage_2)
+			if not sx or not sy then sx,sy = 0,0 end
+			local percent = cursorCenter/slotRange
+			dxDrawImageSection(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,sx*percent,0,sx*(1-percent),sy,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
 		else
-			dxDrawRectangle(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughColor[2],isPostGUI)
+			dxDrawImage(troughPart2_1,y+troughPadding,troughPart2_2,troughWidth,tempTroughImage_2,imgRotHorz[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
 		end
 		if scrollArrow then
 			if tempArrowBgColor then
@@ -514,46 +501,30 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 			dxDrawImage(x,y+arrowPadding,arrowWidth,arrowWidth,arrowImage,imgRotHorz[1],0,0,tempArrowColor[colorImageIndex[1]],isPostGUI,rndtgt)
 			dxDrawImage(x+w-arrowWidth,y+arrowPadding,arrowWidth,arrowWidth,arrowImage,imgRotHorz[1]+180,0,0,tempArrowColor[colorImageIndex[5]],isPostGUI,rndtgt)
 		end
-		if cursorImage then
-			dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,cursorImage,imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[3]],isPostGUI,rndtgt)
-		else
-			dxDrawRectangle(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,tempCursorColor[colorImageIndex[3]],isPostGUI)
-		end
+		dxDrawImage(x+arrowWidth+pos*0.01*csRange,y+cursorPadding,cursorRange,cursorWidth,cursorImage,imgRotHorz[2],0,0,tempCursorColor[colorImageIndex[3]],isPostGUI,rndtgt)
 	else
 		local cursorCenter = pos*0.01*csRange+cursorRange/2
 		local troughPart1_1,troughPart1_2 = y+arrowWidth,cursorCenter
 		local troughPart2_1,troughPart2_2 = y+arrowWidth+cursorCenter,h-2*arrowWidth-cursorCenter
 		local imgRotVert = imgRot[2]
 		if eleData.bgColor then
-			if eleData.bgImage then
-				dxDrawImage(x,y,w,h,eleData.bgImage,imgRotVert[3],0,0,eleData.bgColor,isPostGUI,rndtgt)
-			else
-				dxDrawRectangle(x,y,w,h,eleData.bgColor,isPostGUI,rndtgt)
-			end
+			dxDrawImage(x,y,w,h,eleData.bgImage,imgRotVert[3],0,0,eleData.bgColor,isPostGUI,rndtgt)
 		end
-		if tempTroughImage_1 then
-			if eleData.troughImageSectionMode then
-				local sx,sy = dxGetMaterialSize(tempTroughImage_2)
-				if not sx or not sy then sx,sy = 0,0 end
-				local percent = cursorCenter/slotRange
-				dxDrawImageSection(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,0,0,sx,sy*percent,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
-			else
-				dxDrawImage(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
-			end
+		if eleData.troughImageSectionMode then
+			local sx,sy = dxGetMaterialSize(tempTroughImage_1)
+			if not sx or not sy then sx,sy = 0,0 end
+			local percent = cursorCenter/slotRange
+			dxDrawImageSection(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,0,0,sx,sy*percent,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
 		else
-			dxDrawRectangle(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughColor[1],isPostGUI)
+			dxDrawImage(x+troughPadding,troughPart1_1,troughWidth,troughPart1_2,tempTroughImage_1,imgRotVert[3],0,0,tempTroughColor[1],isPostGUI,rndtgt)
 		end
-		if tempTroughImage_2 then
-			if eleData.troughImageSectionMode then
-				local sx,sy = dxGetMaterialSize(tempTroughImage_2)
-				if not sx or not sy then sx,sy = 0,0 end
-				local percent = cursorCenter/slotRange
-				dxDrawImageSection(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,0,sy*percent,sx,sy*(1-percent),tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
-			else
-				dxDrawImage(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
-			end
+		if eleData.troughImageSectionMode then
+			local sx,sy = dxGetMaterialSize(tempTroughImage_2)
+			if not sx or not sy then sx,sy = 0,0 end
+			local percent = cursorCenter/slotRange
+			dxDrawImageSection(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,0,sy*percent,sx,sy*(1-percent),tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
 		else
-			dxDrawRectangle(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughColor[2],isPostGUI)
+			dxDrawImage(x+troughPadding,troughPart2_1,troughWidth,troughPart2_2,tempTroughImage_2,imgRotVert[3],0,0,tempTroughColor[2],isPostGUI,rndtgt)
 		end
 		if scrollArrow then
 			if tempArrowBgColor then
@@ -563,11 +534,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 			dxDrawImage(x+arrowPadding,y,arrowWidth,arrowWidth,arrowImage,imgRotVert[1],0,0,tempArrowColor[colorImageIndex[1]],isPostGUI,rndtgt)
 			dxDrawImage(x+arrowPadding,y+h-arrowWidth,arrowWidth,arrowWidth,arrowImage,imgRotVert[1]+180,0,0,tempArrowColor[colorImageIndex[5]],isPostGUI,rndtgt)
 		end
-		if cursorImage then
-			dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,cursorImage,imgRotVert[2],0,0,tempCursorColor[colorImageIndex[3]],isPostGUI,rndtgt)
-		else
-			dxDrawRectangle(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,tempCursorColor[colorImageIndex[3]],isPostGUI)
-		end
+		dxDrawImage(x+cursorPadding,y+arrowWidth+pos*0.01*csRange,cursorWidth,cursorRange,cursorImage,imgRotVert[2],0,0,tempCursorColor[colorImageIndex[3]],isPostGUI,rndtgt)
 	end
 	return rndtgt,false,mx,my,0,0
 end

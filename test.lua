@@ -1,149 +1,392 @@
 local loadstring = loadstring
 addEventHandler("onClientResourceStart",resourceRoot,function()
 ------------Full demo
-function createFullDemo()
+function createFullDemoOOP()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
 	DGSOOPFnc()
-	local window = dgsWindow(0,0,600,600,"DGS Full Demo",false)
-	window.position.relative = false
-	window.position.x = 400
-	--Color Picker
-	local cp = window:
-		dgsColorPicker("HSVRing",300,0,200,200)
-	local rSel = window
-		:dgsComponentSelector(515,10,10,90,false)
-	rSel:bindToColorPicker(cp,"RGB","R",true,true)
-	local gSel = window
-		:dgsComponentSelector(545,10,10,90,false)
-	gSel:bindToColorPicker(cp,"RGB","G",true,true)
-	local bSel = window
-		:dgsComponentSelector(575,10,10,90,false)
-	bSel:bindToColorPicker(cp,"RGB","B",true,true)
-
-	local hSel = window
-		:dgsComponentSelector(515,110,10,90,false)
-	hSel:bindToColorPicker(cp,"HSV","H",true,true)
-	local sSel = window
-		:dgsComponentSelector(545,110,10,90,false)
-	sSel:bindToColorPicker(cp,"HSV","S",true,true)
-	local vSel = window
-		:dgsComponentSelector(575,110,10,90,false)
-	vSel:bindToColorPicker(cp,"HSV","V",true,true)
-
-	local button = window:dgsButton(10,210,80,50,"Test Button",false)
-	button.textColor = {tocolor(255,0,0,255),tocolor(255,255,0,255),tocolor(255,0,255,255)}
-	local switchButton1 = window:dgsSwitchButton(100,210,60,20,"On","Off",false)
-	local switchButton2 = window:dgsSwitchButton(100,240,60,20,"On","Off",true)
-	local texture = dxCreateTexture("test.png")
-	switchButton2.imageOn = {texture,texture,texture}
-	switchButton2.imageOff = {texture,texture,texture}
-	switchButton1:setText("123")
-	switchButton2.style = 2
-	switchButton2.isReverse = nil
-	local gridlist = window
-		:dgsGridList(0,0,290,200,false)
-		:setMultiSelectionEnabled(true)
-		:setProperty("rowTextSize",{1.2,1.2})
-		:setProperty("rowHeight",20)
-		:setProperty("clip",true)
-		:setProperty("rowWordBreak",true)
-		:setProperty("rowShadow",{1,1,tocolor(0,0,0,255)})
-		:setSelectionMode(3)
-		:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
-		:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
-	for i=1,10 do
-		gridlist:addColumn("Column "..i,0.5)
-	end
-	for i=1,100 do
-		gridlist:addRow(i,i,string.rep("x",math.random(1,40)))
-		--[[if i%5 == 0 then
-			gridlist:setRowAsSection(i,true)
-		end]]
-	end
-	gridlist.alpha = 1
-	dgsGridListSetItemColor(gridlist.dgsElement,-1,2,{tocolor(255,0,0,255),tocolor(0,255,0,255),tocolor(255,255,0,255)})
-	dgsGridListScrollTo(gridlist.dgsElement,50,1)
-	dgsGridListSetItemAlignment(gridlist.dgsElement,1,1,"center")
-	dgsGridListSetColumnAlignment(gridlist.dgsElement,1,"left")
-
-	local selector = window:dgsSelector(180,210,100,20,false)
-	for i=1,100 do
-		selector:addItem(i)
-	end
-
-	local combobox = window:dgsComboBox(10,270,150,30,"test",false)
-	combobox:setEditEnabled(true)
-	for i=1,100 do
-		combobox:addItem(i)
-	end
-	local tabPanel = window
-		:dgsTabPanel(290,210,280,220,false)
-	local tab1 = tabPanel:dgsTab("Tab1")
-	local memo = tab1
-		:dgsMemo(10,10,260,100,"This is a memo for demo",false)
-	local edit1 = tab1
-		:dgsEdit(10,120,260,30,"",false)
-		:setPlaceHolder("I am the place holder, and this edit is for demo")
-	local edit2 = tab1
-		:dgsEdit(10,160,260,30,"This is a edit for demo",false)
-	local tab2 = tabPanel:dgsTab("Tab2")
-	local scp = tab2:dgsScrollPane(0,0,1,1,true)
-	local memo2 = scp
-		:dgsMemo(10,10,260,1000,"This is a memo for demo",false)
-	local edit3 = scp
-		:dgsEdit(10,120,2600,30,"",false)
-		:setPlaceHolder("I am the place holder, and this edit is for demo")
-
-	-------------Progress Bar
-	local progressBar_V = window
-		:dgsProgressBar(10,440,20,125,false)
-		:setStyle("normal-vertical")
-		:setProperty("functions",[[
-			local progress = dgsGetProperty(self,"progress")
-			dgsSetProperty(self,"progress",(progress+0.5)%100)
-			return true
-		]])
-	local progressBar_H = window
-		:dgsProgressBar(35,545,125,20,false)
-		:setStyle("normal-horizontal")
-		:setProperty("functions",[[
-			local progress = dgsGetProperty(self,"progress")
-			dgsSetProperty(self,"progress",(progress+0.5)%100)
-			return true
-		]])
-
-	local progressBar_RR = window
-		:dgsProgressBar(45,440,100,100,false)
-		:setStyle("ring-round")
-		:setProperty("functions",[[
-			local progress = dgsGetProperty(self,"progress")
-			dgsSetProperty(self,"progress",(progress+0.5)%100)
-			return true
-		]])
-		:setProperty("radius",0.4)
-		:setProperty("thickness",0.05)
-	local progressBar_RP = window
-		:dgsProgressBar(145,440,100,100,false)
-		:setStyle("ring-plain")
-		:setProperty("functions",[[
-			local progress = dgsGetProperty(self,"progress")
-			dgsSetProperty(self,"progress",(progress+0.5)%100)
-			return true
-		]])
-		:setProperty("radius",0.4)
-		:setProperty("thickness",0.05)
-	---------------------
-	local RadioButton1 = window:dgsRadioButton(10,380,180,30,"This is a radio button for demo",false)
-	local RadioButton2 = window:dgsRadioButton(10,410,180,30,"This is a radio button for demo",false)
-	local CheckBox1 = window:dgsCheckBox(10,320,180,30,"This is a check box for demo",true,false)
-	local CheckBox2 = window:dgsCheckBox(10,350,180,30,"This is a check box for demo",false,false)
-		:on("dgsMouseClick",function(button,state,x,y,isCoolDown)
-			print(getTickCount(),isCoolDown)
-		end)
-		:setProperty("clickCoolDown",1000)
+	local demoUI = { page = {} }
 	
-	RadioButton1:setVisible(false)
-	RadioButton1:bringToFront()
+	local demoFunction = {
+		["Button"] = function(parent)
+			local nBtn = parent:dgsButton(10,10,120,60,"Normal\nButton",false)
+			local tBtn = parent:dgsButton(140,10,120,60,"Button\nTransition",false)
+				:setProperty("colorTransitionPeriod",100)
+			if dgsCreateRoundRect then
+				local rndRect = dgsCreateRoundRect(10,false,tocolor(255,255,255,255))
+				dgsRoundRectSetColorOverwritten(rndRect,false)
+				local rndBtn = parent:dgsButton(270,10,120,60,"Button\nRounded",false)
+					:setProperty("image",rndRect)
+				local rndtBtn = parent:dgsButton(400,10,120,60,"Button\nRounded\nTransition",false)
+					:setProperty("image",rndRect)
+					:setProperty("colorTransitionPeriod",100)
+			end
+			if dgsCreateCircle then
+				local circle = dgsCreateCircle(0.49,0)
+				dgsCircleSetColorOverwritten(circle,false)
+				local cirBtn = parent:dgsButton(530,10,60,60,"Button\nCircle",false)
+					:setProperty("image",circle)
+			end
+			local sBtn0 = parent:dgsButton(10,80,120,60,"Button\nShadow",false)
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
+			local sBtn1 = parent:dgsButton(140,80,120,60,"Button\nShadow1",false)
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255),1})
+			local sBtn2 = parent:dgsButton(270,80,120,60,"Button\nShadow2",false)
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255),2})
+			local sBtn2 = parent:dgsButton(400,80,120,60,"Button\nText\nColor",false)
+				:setProperty("textColor",{tocolor(255,255,255,255),tocolor(255,0,0,255),tocolor(0,255,255,255)})
+		end,
+		["ColorPicker"] = dgsCreateColorPicker and function(parent)
+			--Color Picker HSVRing
+			local cpRing = parent:dgsColorPicker("HSVRing",200,40,200,200)
+			local rSel = parent:dgsComponentSelector(40,260,150,10,true)
+				:bindToColorPicker(cpRing,"RGB","R",true)
+			local rSelEdit = parent:dgsEdit(200,255,40,20)
+				:bindToColorPicker(cpRing,"RGB","R",true)
+			local gSel = parent:dgsComponentSelector(40,290,150,10,true)
+				:bindToColorPicker(cpRing,"RGB","G",true)
+			local gSelEdit = parent:dgsEdit(200,285,40,20)
+				:bindToColorPicker(cpRing,"RGB","G",true)
+			local bSel = parent:dgsComponentSelector(40,320,150,10,true)
+				:bindToColorPicker(cpRing,"RGB","B",true)
+			local bSelEdit = parent:dgsEdit(200,315,40,20)
+				:bindToColorPicker(cpRing,"RGB","B",true)
+			local hSel = parent:dgsComponentSelector(280,260,150,10,true)
+				:bindToColorPicker(cpRing,"HSV","H",true)
+			local hSelEdit = parent:dgsEdit(440,255,40,20)
+				:bindToColorPicker(cpRing,"HSV","H",true)
+			local sSel = parent:dgsComponentSelector(280,290,150,10,true)
+				:bindToColorPicker(cpRing,"HSV","S",true)
+			local sSelEdit = parent:dgsEdit(440,285,40,20)
+				:bindToColorPicker(cpRing,"HSV","S",true)
+			local vSel = parent:dgsComponentSelector(280,320,150,10,true)
+				:bindToColorPicker(cpRing,"HSV","V",true)
+			local vSelEdit = parent:dgsEdit(440,315,40,20)
+				:bindToColorPicker(cpRing,"HSV","V",true)
+			local aSel = parent:dgsComponentSelector(40,350,390,10,true)
+				:bindToColorPicker(cpRing,"RGB","A")
+			local aSelEdit = parent:dgsEdit(440,345,40,20)
+				:bindToColorPicker(cpRing,"RGB","A",true)
+			local demo = parent:dgsImage(530,255,80,80,_,false)
+			local rgbaSelEdit = parent:dgsEdit(530,345,80,20)
+				:bindToColorPicker(cpRing,"#RGBAHEX","RGBA",true)
+			cpRing:on("dgsColorPickerChange",function(oldRGB,oldHSL,oldHSV,oldAlp)
+				local R,G,B,A = cpRing:getColor("RGB")
+				demo:setProperty("color",tocolor(R,G,B,A))
+			end)
+		end,
+		["ComboBox"] = function(parent)
+			local nCombobox = parent:dgsComboBox(10,10,150,30,"ComboBox1",false)
+				:setBoxHeight(200)
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
+				:setProperty("itemTextColor",{tocolor(255,255,255,255),tocolor(255,0,0,255),tocolor(0,255,255,255)})
+			for i=1,100 do
+				nCombobox:addItem(i)
+			end
+			
+			local cCombobox = parent:dgsComboBox(180,10,150,30,"ComboBox2",false)
+				:setEditEnabled(true)
+				:setBoxHeight(200)
+			for i=1,100 do
+				cCombobox:addItem(i)
+			end
+			
+			local strangeComboboxA = parent:dgsComboBox(360,10,60,30,"ComboBox2",false)
+				:setProperty("textBox",false)
+				:setBoxHeight(200)
+			for i=1,100 do
+				strangeComboboxA:addItem(i)
+			end
+			
+			local strangeComboboxB = parent:dgsComboBox(450,10,150,30,"ComboBox2",false)
+				:setProperty("buttonLen",{2,true})
+				:setBoxHeight(200)
+			for i=1,100 do
+				strangeComboboxB:addItem(i)
+			end
+		end,
+		["Image"] = function(parent)
+			local nImage = parent:dgsImage(10,10,100,100,_,false)
+			local pImage = parent:dgsImage(120,10,100,100,"styleManager/Default/Images/cursor/CursorMove.png",false)
+			local texture = dxCreateTexture("styleManager/Default/Images/cursor/CursorArrow.png")
+			local tImage = parent:dgsImage(230,10,100,100,texture,false)
+			
+			if dgsCreateRoundRect then
+				local rndRect = dgsCreateRoundRect(10,false,tocolor(255,255,255,255))
+				dgsRoundRectSetColorOverwritten(rndRect,false)
+				local rndImage = parent:dgsImage(10,120,100,100,rndRect,false)
+					:setProperty("color",tocolor(86,98,246,255))
+			end
+			if dgsCreateCircle then
+				local circle = dgsCreateCircle(0.49,0)
+				dgsCircleSetColorOverwritten(circle,false)
+				local cirImage = parent:dgsImage(120,120,100,100,circle,false)
+					:setProperty("color",tocolor(118,47,156,255))
+			end
+		end,
+		["Label"] = function(parent)
+			local nLabel = parent:dgsLabel(10,10,200,20,"This is a DGS Label",false)
+			local ccLabel = parent:dgsLabel(10,40,200,20,"This is a #FF0000DGS #FFFFFFLabel with #00FF00Color #00FFFFCode",false)
+				:setProperty("colorCoded",true)
+			local sLabel1 = parent:dgsLabel(10,70,200,20,"This is a DGS Label with shadow",false)
+				:setProperty("shadow",{1,1,tocolor(128,128,128,255)})
+			local sLabel2 = parent:dgsLabel(10,100,200,20,"This is a DGS Label with shadow outline 1",false)
+				:setProperty("shadow",{1,1,tocolor(128,128,128,255),1})
+			local sLabel3 = parent:dgsLabel(10,130,200,20,"This is a DGS Label with shadow outline 2",false)
+				:setProperty("shadow",{1,1,tocolor(128,128,128,255),2})
+			local wbLabel = parent:dgsLabel(10,160,240,20,"This is a DGS Label with word break, this can not be used together with colorCoded",false)
+				:setProperty("wordBreak",true)
+			local rLabel = parent:dgsLabel(10,220,200,20,"Do you want a rotation?",false)
+				:setProperty("rotation",45)
+				:setProperty("rotationCenter",{10,10})
+		end,
+		["Memo"] = function(parent)
+			local memo = parent
+				:dgsMemo(10,10,630,555,"",false)
+				:setText(dgsImportOOPClass())
+				:setCaretPosition(10,20)
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
+		end,
+		["Edit"] = function(parent)
+			--Normal
+			local edit = parent:dgsEdit(50,40,400,40,"DGS Edit Box",false)
+				:setProperty("textSize",{1.3,1.3})
+			--Caret
+			local edit2 = parent:dgsEdit(50,120,400,40,"DGS Edit Box",false)
+				:setProperty("textSize",{1.3,1.3})
+				:setProperty("caretStyle",1)
+			--PlaceHolder With AutoComplete
+			local edit3 = parent:dgsEdit(50,200,400,40,"",false)
+				:setProperty("textSize",{1.3,1.3})
+				:setProperty("placeHolder","Type 'Hello'")
+				:addAutoComplete("HelloWorld",true)
+			--Alignment
+			local edit4 = parent:dgsEdit(50,280,400,40,"DGS Edit Box",false)
+				:setProperty("textSize",{1.3,1.3})
+				:setProperty("alignment",{"center", "center"})
+			--dgsEditSetMasked (edit4, true)
+		end,
+		["GridList"] = function(parent)
+			local gridlist = parent
+				:dgsGridList(10,10,630,250,false)
+				:setMultiSelectionEnabled(true)
+				:setProperty("columnShadow",{1,1,tocolor(0,0,0,255),2})
+				:setProperty("rowTextSize",{1.2,1.2})
+				:setProperty("rowHeight",20)
+				:setProperty("clip",true)
+				:setProperty("rowWordBreak",true)
+				:setProperty("rowShadow",{1,1,tocolor(0,0,0,255),2})
+				:setSelectionMode(3)
+				:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
+				:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
+			for i=1,10 do
+				gridlist:addColumn("Column "..i,0.5)
+			end
+			for i=1,100 do
+				gridlist:addRow(i,i,string.rep("x",math.random(1,40)))
+			end
+			gridlist
+				:setItemColor(-1,2,{tocolor(255,0,0,255),tocolor(0,255,0,255),tocolor(255,255,0,255)})
+				:scollTo(50,1)
+				:setItemAlignment(1,1,"center")
+				:setColumnAlignment(1,"left")
+				
+			
+			local gridlistAttach = parent
+				:dgsGridList(10,270,630,250,false)
+				:setMultiSelectionEnabled(true)
+				:setProperty("rowHeight",40)
+				:setProperty("clip",true)
+			gridlistAttach:addColumn("Column1",0.5)
+			gridlistAttach:addColumn("Column2",0.5)
+			for i=1,10 do
+				gridlistAttach:addRow(_,"Row "..i)
+				local edit = dgsEdit(10,10,40,20,i,false)
+				edit:attachToGridList(gridlistAttach,i,2)
+			end
+		end,
+		["ProgressBar"] = function(parent)
+			local autoProgress = [[
+					local progress = dgsGetProperty(self,"progress")
+					dgsSetProperty(self,"progress",(progress+0.5)%100)
+					return true
+				]]
+			local progressBar_V1 = parent
+				:dgsProgressBar(40,40,40,200,false)
+				:setStyle("normal-vertical")
+				:setProperty("functions",autoProgress)
+			local progressBar_V2 = parent
+				:dgsProgressBar(120,40,40,200,false)
+				:setStyle("normal-vertical")
+				:setProperty("functions",autoProgress)
+				:setProperty("indicatorColor",{tocolor(65,113,170,255),tocolor(221,80,68,255)})
+			local progressBar_H1 = parent
+				:dgsProgressBar(200,40,200,40,false)
+				:setStyle("normal-horizontal")
+				:setProperty("functions",autoProgress)
+			local progressBar_H2 = parent
+				:dgsProgressBar(200,120,200,40,false)
+				:setStyle("normal-horizontal")
+				:setProperty("functions",autoProgress)
+				:setProperty("indicatorColor",{tocolor(65,113,170,255),tocolor(221,80,68,255)})
+			if dgsCreateRoundRect then
+				local rndRect1 = dgsCreateRoundRect(10,false,tocolor(255,255,255,255))
+				local rndRect2 = dgsCreateRoundRect(8,false,tocolor(255,255,255,255))
+				dgsRoundRectSetColorOverwritten(rndRect1,false)
+				dgsRoundRectSetColorOverwritten(rndRect2,false)
+				local progressBar_H3 = parent
+					:dgsProgressBar(200,200,200,40,false)
+					:setStyle("normal-horizontal")
+					:setProperty("functions",autoProgress)
+					:setProperty("bgImage",rndRect1)
+					:setProperty("indicatorImage",rndRect2)
+			end
+			local progressBar_RR = parent
+				:dgsProgressBar(40,280,200,200,false)
+				:setStyle("ring-round")
+				:setProperty("functions",autoProgress)
+				:setProperty("radius",0.4)
+				:setProperty("thickness",0.05)
+			local progressBar_RP = parent
+				:dgsProgressBar(260,280,200,200,false)
+				:setStyle("ring-plain")
+				:setProperty("functions",autoProgress)
+				:setProperty("radius",0.4)
+				:setProperty("thickness",0.05)
+		end,
+		["RadioButton"] = function(parent)
+			local RadioButton1 = parent:dgsRadioButton(10,10,180,30,"This is a radio button for demo",false)
+			local RadioButton2 = parent:dgsRadioButton(10,50,180,30,"This is a #FF0000radio #00FF00button #FFFFFFfor #0000FFdemo",false)
+				:setProperty("colorCoded",true)
+			local RadioButton3 = parent:dgsRadioButton(10,90,180,30,"This is a is a bigger radio button",false)
+				:setProperty("buttonSize",{1,true})
+			local RadioButton4 = parent:dgsRadioButton(10,130,180,30,"This is a is a farther radio button",false)
+				:setProperty("textPadding",{0.5,true})
+		end,
+		["CheckBox"] = function(parent)
+			local CheckBox1 = parent:dgsCheckBox(10,10,180,30,"This is a check box for demo",false)
+			local CheckBox2 = parent:dgsCheckBox(10,50,180,30,"This is a #FF0000check #00FF00box #FFFFFFfor #0000FFdemo",false)
+				:setProperty("colorCoded",true)
+			local CheckBox3 = parent:dgsCheckBox(10,90,180,30,"This is a is a bigger check box",false)
+				:setProperty("buttonSize",{1,true})
+			local CheckBox4 = parent:dgsCheckBox(10,130,180,30,"This is a is a farther check box",false)
+				:setProperty("textPadding",{0.5,true})
+		end,
+		["ScrollBar"] = function(parent)
+			local scbV = parent:dgsScrollBar(10,10,30,400,false,false)
+			local scbH = parent:dgsScrollBar(50,10,400,30,true,false)
+			local scbHDiff = parent:dgsScrollBar(50,50,400,30,true,false)
+				:setProperty("troughWidth",{10,false})
+				:setProperty("arrowWidth",{20,false})
+			local scbHNoArrow = parent:dgsScrollBar(50,90,400,30,true,false)
+				:setProperty("scrollArrow",false)
+			if dgsCreateCircle then
+				local circle = dgsCreateCircle(0.49,0)
+				local rndRectR = dgsCreateRoundRect({{0,false},{15,false},{15,false},{0,false}},tocolor(255,255,255,255))
+				local rndRectL = dgsCreateRoundRect({{15,false},{0,false},{0,false},{15,false}},tocolor(255,255,255,255))
+				dgsRoundRectSetColorOverwritten(rndRectL,false)
+				dgsRoundRectSetColorOverwritten(rndRectR,false)
+				dgsCircleSetColorOverwritten(circle,false)
+				local scbHCir = parent:dgsScrollBar(50,130,400,30,true,false)
+					:setProperty("scrollArrow",false)
+					:setProperty("cursorImage",circle)
+					:setProperty("troughImage",{rndRectL,rndRectR})
+			end
+		end,
+		["ScrollPane"] = function(parent)
+			local scp = parent:dgsScrollPane(10,10,630,555,false)
+			for row=0,10 do
+				for column=0,10 do
+					scp:dgsButton(row*80,column*80,70,70,row.."-"..column,false)
+				end
+			end
+		end,
+		["SwitchButton"] = function(parent)
+			local switchBtn = parent:dgsSwitchButton(10,10,100,30,"on","off",false)
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255),2})
+			local switchBtnR = parent:dgsSwitchButton(120,10,100,30,"on","off",false)
+				:setProperty("isReverse",true)
+			local switchBtnM = parent:dgsSwitchButton(230,10,100,30,"on","off",false)
+				:setProperty("style",3)
+			local switchBtnT = parent:dgsSwitchButton(10,50,100,30,"on","off",false)
+				:setProperty("troughWidth",{20,false})
+			local switchBtnC = parent:dgsSwitchButton(120,50,100,30,"on","off",false)
+				:setProperty("cursorWidth",{20,false})
+		end,
+		["TabPanel"] = function(parent)
+			local tabPanelA = parent
+				:dgsTabPanel(10,10,630,250,false)
+			local tab1 = tabPanelA:dgsTab("Tab1")
+			tab1:dgsLabel(10,10,100,20,"This is tab 1",false)
+				:setProperty("textSize",{1.5,1.5})
+			local tab2 = tabPanelA:dgsTab("Tab2")
+			tab2:dgsLabel(10,10,100,20,"This is tab 2",false)
+				:setProperty("textSize",{1.5,1.5})
+			
+			local tabPanelB = parent
+				:dgsTabPanel(10,280,630,250,false)
+				:setProperty("tabAlignment","center")
+				:setProperty("tabHeight",{40,false})
+			local tab1 = tabPanelB:dgsTab("Tab1")
+				:setProperty("textSize",{2,2})
+			tab1:dgsLabel(10,10,100,20,"This is tab 1",false)
+				:setProperty("textSize",{1.5,1.5})
+			local tab2 = tabPanelB:dgsTab("Tab2")
+				:setProperty("textSize",{2,2})
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255),2})
+			tab2:dgsLabel(10,10,100,20,"This is tab 2",false)
+				:setProperty("textSize",{1.5,1.5})
+		end,
+		["Selector"] = function(parent)
+			local selectorA = parent:dgsSelector(10,10,100,20,false)
+			for i=1,50 do
+				selectorA:addItem(i)
+			end
+			local selectorB = parent:dgsSelector(10,40,100,20,false)
+			local selectorC = parent:dgsSelector(10,70,100,20,false)
+				:setProperty("selectorImageColorLeft",{tocolor(200,20,20,255),tocolor(250,20,20,255),tocolor(150,50,50,255)})
+				:setProperty("selectorImageColorRight",{tocolor(20,200,20,255),tocolor(20,250,20,255),tocolor(50,150,50,255)})
+			for i=1,50 do
+				selectorC:addItem(i)
+			end
+			local selectorD = parent:dgsSelector(10,100,100,20,false)
+				:setProperty("selectorText",{"-","+"})
+			for i=1,50 do
+				selectorD:addItem(i)
+			end
+		end,
+	}
+	demoUI.window = dgsWindow(0,0,800,600,"DGS Full Demo",false)
+		:setProperty("textSize",{1.5,1.5})
+	demoUI.window.position.relative = false
+	demoUI.window.position.x = sW/2-400
+	demoUI.window.position.y = sH/2-300
+	demoUI.demoList = demoUI.window:dgsGridList(0,0,150,600-25,false)
+		:setProperties({
+			columnHeight = 0,
+			rowHeight = 25,
+			rowTextSize = {1.5,1.5},
+			sortEnabled = false,
+		})
+	demoUI.demoList:addColumn("",1)
+	for i,name in pairs(table.getKeys(demoFunction)) do
+		demoUI.demoList:addRow(_,name)
+		demoUI.page[i] = demoUI.window:dgsLabel(150,0,800-150,600-25,"",false)
+			:setVisible(false)
+		demoFunction[name](demoUI.page[i])
+	end
+	demoUI.demoList:on("dgsGridListSelect",function(r,c,oldr,oldc)
+		if oldr ~= -1 then
+			if demoUI.page[oldr] then
+				demoUI.page[oldr]:setVisible(false)
+			end
+		end
+		if r ~= -1 then
+			if demoUI.page[r] then
+				demoUI.page[r]:setVisible(true)
+			end
+		end
+	end)
+	
 end
 
 function ProgressBarTest()
@@ -201,42 +444,11 @@ function MemoTest()
 	Test UTF8: 你好]])
 	dgsMemoSetCaretPosition(memo,10,20)
 	dgsSetProperty(memo,"shadow",{1,1,tocolor(0,0,0,255)})
-end
-
-function EditTest() --Test Tab Switch for edit.
-	edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	setTimer(function()
-		dgsEditSetMaxLength(edit,10,true)
-	end,1000,1)
-	edit2 = dgsCreateEdit(0.3,0.4,0.2,0.05,"123123",true)
-	edit3 = dgsCreateEdit(0.3,0.5,0.2,0.05,"123123",true)
-	edit4 = dgsCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
-	dgsSetProperty(edit2,"textSize",{1.3,1.3})
-	dgsSetProperty(edit2,"caretStyle",1)
-	--dgsEditSetReadOnly(edit4,true)
-	dgsBringToFront(edit,"left")
-	dgsEditSetCaretPosition(edit, 1)
-	dgsSetProperty(edit2,"placeHolder","Type something if you want to tell me")
-	dgsSetProperty(edit2,"placeHolderIgnoreRenderTarget",true)
-	dgsEditAddAutoComplete(edit3,"mypass",false)
-	dgsSetProperty(edit,"bgColor",tocolor(255,255,255,0))
-	dgsSetProperty(edit,"bgColorBlur",tocolor(255,255,255,100))
-	dgsSetProperty(edit4, "alignment", {"center", "center"})
-	dgsEditSetMasked (edit4, true)
+		guiMoveToBack(guiCreateLabel(0,0,100,100,"a",false))
+	end,5000,1)
 end
 
-function EditAutoCompleteText()
-	dgsEditAutoCompleteAddParameterFunction("resource",[[
-		local input = ...
-		for resName,res in pairs(getElementData(root,"DGSI_Resources")) do
-			if input:lower() == resName:sub(1,input:len()):lower() then
-				return resName
-			end
-		end
-	]])
-	edit = dgsCreateEdit(0.3,0.6,0.2,0.05,"123123",true)
-	dgsEditAddAutoComplete(edit,{"start","resource"},false,true)
-end
 --[[
 local arabicUnicode = {{0x0600,0x06FF},{0x08A0,0x08FF},{0x0750,0x077F},{0xFB50,0xFDFF},{0xFE70,0xFEFF},{0x1EE00,0x1EEFF}}
 local arabicPattern = ""
@@ -412,53 +624,6 @@ function PasteHandlerTest()
 	end)
 end
 
-local s = [[
-float4 gLightAmbient : LIGHTAMBIENT;
-float4 gLightDiffuse : LIGHTDIFFUSE;
-float4 gLightSpecular : LIGHTSPECULAR;
-float3 gLightDirection : LIGHTDIRECTION;
-float4 gGlobalAmbient       < string renderState="AMBIENT"; >;                    //  = 139,
-float4 gMaterialAmbient     < string materialState="Ambient"; >;
-float4 gMaterialDiffuse     < string materialState="Diffuse"; >;
-float4 gMaterialSpecular    < string materialState="Specular"; >;
-float4 gMaterialEmissive    < string materialState="Emissive"; >;
-float gMaterialSpecPower    < string materialState="Power"; >;
-texture sourceTexture;
-
-SamplerState mySampler{
-	Texture = sourceTexture;
-};
-
-struct PSInput{
-	float4 Position : POSITION0;
-	float4 Diffuse : COLOR0;
-	float2 TexCoord : TEXCOORD0;
-};
-
-float4 PixelShaderFunction(PSInput input) : COLOR0{
-	float4 color = tex2D(mySampler,input.TexCoord);
-	if (input.TexCoord.x < 0.5){
-		float4 amb = 0;
-		amb.xyz = gMaterialSpecular.xyz;
-		color = color-amb*gMaterialSpecPower;
-	}
-	return color;
-}
-
-technique texRelight{
-  pass P0  {
-    PixelShader  = compile ps_2_0 PixelShaderFunction();
-  }
-}
-]]
-function _3DInterfaceTest()
-	local shader = dxCreateShader(s)
-	material = dgsCreate3DInterface(4,0,5,4,4,600,600,tocolor(255,255,255,255),1,2,0,_,0)
-	dgsSetProperty(material,"faceTo",{-10,-10,0})
-	--dgsSetProperty(material,"filterShader",shader)
-	edit1 = dgsCreateMemo(0,0,1,0.5,"123",true,material)
-end
-
 function _3DInterfaceAttachTest()
 	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
 	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
@@ -612,7 +777,6 @@ function dragNdropStatic()
 		iprint("Drop","Data:",data)
 	end,false)
 end
-
 --Dynamic Example
 function dragNdropDynamic()
 	local btn1 = dgsCreateButton(200,200,200,200,"Button1",false)
@@ -622,7 +786,7 @@ function dragNdropDynamic()
 		dgsSendDragNDropData({"From Button 1",getTickCount()})
 	end,false)
 	addEventHandler("onDgsDrag",btn2,function(data)
-		dgsSendDragNDropData({"From Button 1",getTickCount()})
+		dgsSendDragNDropData({"From Button 2",getTickCount()})
 	end,false)
 
 	addEventHandler("onDgsDrop",btn3,function(data)
@@ -780,43 +944,6 @@ function BlurBoxTest()
 	dgsBlurBoxSetIntensity(blurbox,1)
 	dgsBlurBoxSetLevel(blurbox,15)
 	--local text = dgsCreate3DImage(0,0,4,blurbox,tocolor(0,128,255,128),128,128)
-end
-
----------------Color Picker
-function testColorPicker()
-	material = dgsCreate3DInterface(0,0,4,4,2,800,500,tocolor(255,255,255,255),1,0,0,_,0)
-	colorPicker_HLDisk = dgsCreateColorPicker("HLDisk",50,50,200,200,false,material)
-	colorPicker_HSDisk = dgsCreateColorPicker("HSDisk",250,50,200,200,false,material)
-	colorPicker_HSLSquare = dgsCreateColorPicker("HSLSquare",50,250,200,200,false,material)
-	colorPicker_HSVRing = dgsCreateColorPicker("HSVRing",250,250,200,200,false,material)
-	r = dgsColorPickerCreateComponentSelector(500,200,200,10,true,false,material)
-	dgsBindToColorPicker(r,colorPicker_HSVRing,"RGB","R",true,true)
-	g = dgsColorPickerCreateComponentSelector(500,220,200,10,true,false,material)
-	dgsBindToColorPicker(g,colorPicker_HSVRing,"RGB","G",true,true)
-	b = dgsColorPickerCreateComponentSelector(500,240,200,10,true,false,material)
-	dgsBindToColorPicker(b,colorPicker_HSVRing,"RGB","B",true,true)
-
-	H = dgsColorPickerCreateComponentSelector(750,200,200,10,true,false,material)
-	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSL","H",true,true)
-	S = dgsColorPickerCreateComponentSelector(750,220,200,10,true,false,material)
-	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSL","S",true,true)
-	L = dgsColorPickerCreateComponentSelector(750,240,200,10,true,false,material)
-	dgsBindToColorPicker(L,colorPicker_HSVRing,"HSL","L",true,true)
-
-	H = dgsColorPickerCreateComponentSelector(1000,200,200,10,true,false,material)
-	dgsBindToColorPicker(H,colorPicker_HSVRing,"HSV","H",true,true)
-	S = dgsColorPickerCreateComponentSelector(1000,220,200,10,true,false,material)
-	dgsBindToColorPicker(S,colorPicker_HSVRing,"HSV","S",true,true)
-	V = dgsColorPickerCreateComponentSelector(1000,240,200,10,true,false,material)
-	dgsBindToColorPicker(V,colorPicker_HSVRing,"HSV","V",true,true)
-
-	A = dgsColorPickerCreateComponentSelector(500,260,500,10,true,false,material)
-	dgsBindToColorPicker(A,colorPicker_HSVRing,"RGB","A",_,true)
-	dgsCreateButton(0,0,100,100,"test",false,material)
-	--[[
-	local tex = dxCreateTexture("example.bmp")
-	dgsColorPickerSetComponentSelectorMask(A,tex)
-	]]
 end
 
 function ScreenSourceTest()
@@ -1067,9 +1194,14 @@ function SVGTest_OOP()
 end
 
 function ChartTest()
-	local chart = dgsCreateChart(400,300,600,300,"line",false)
+	material = dgsCreate3DInterface(0,0,4,4,2,600,300,tocolor(255,255,255,255),1,0,0,_,0)
+	local chart = dgsCreateChart(0,0,600,300,"line",false,material)
 	dgsChartSetLabels(chart,"Month",{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"})
-	--dgsSetProperty(chart,"axisYScaler",{0,100})
+	dgsSetProperty(chart,"axisYScaler",{0,100})
+	dgsSetProperty(chart,"gridLineWidth",2)
+	dgsSetProperty(chart,"axisLineWidth",4)
+	dgsSetProperty(chart,"axisTextOffsetFromGrid",10)
+	dgsSetProperty(chart,"chartPadding",{40,40,40,40,false}) --Top Botton Left Right
 	local datasetID = dgsChartAddDataset(chart,"Counts")
 	dgsChartDatasetSetStyle(chart,datasetID,{
 			color = tocolor(255,0,0,255),

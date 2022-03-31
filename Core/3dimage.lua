@@ -24,6 +24,10 @@ dgsRegisterProperties("dgs-dx3dimage",{
 	UVPos = 				{	{ PArg.Number, PArg.Number }	},
 	UVSize = 				{	{ PArg.Number, PArg.Number }	},
 })
+--[[
+dgsRegisterCreationArgList("dgs-dx3dimage",{
+
+})]]
 
 --Dx Functions
 local dxDrawLine = dxDrawLine

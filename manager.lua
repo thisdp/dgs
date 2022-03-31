@@ -230,40 +230,19 @@ function blurEditMemo()
 	local dgsType = dgsGetType(MouseData.focused)
 	if dgsType == "dgs-dxedit" then
 		guiBlur(GlobalEdit)
+		dgsElementData[GlobalEdit].linkedDxEdit = nil
 	elseif dgsType == "dgs-dxmemo" then
 		guiBlur(GlobalMemo)
+		dgsElementData[GlobalEdit].linkedDxMemo = nil
 	end
 end
 
-function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
+function dgsBringToFront(dgsEle,mouse,dontMoveParent)
 	local eleType = dgsIsType(dgsEle)
 	if not(eleType) then error(dgsGenAsrt(dgsEle,"dgsBringToFront",1,"dgs-dxelement")) end
 	local parent = dgsElementData[dgsEle].parent	--Get Parent
 	local lastFront = MouseData.focused
-	if not dontChangeData then
-		MouseData.focused = dgsEle
-		if dgsGetType(dgsEle) == "dgs-dxedit" then
-			MouseData.editCursor = true
-			resetTimer(MouseData.EditMemoTimer)
-			guiFocus(GlobalEdit)
-			dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
-		elseif dgsElementType[dgsEle] == "dgs-dxmemo" then
-			MouseData.editCursor = true
-			resetTimer(MouseData.EditMemoTimer)
-			guiFocus(GlobalMemo)
-			dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
-		elseif dgsEle ~= lastFront then
-			local dgsType = dgsGetType(lastFront)
-			if dgsType == "dgs-dxedit" then
-				guiBlur(GlobalEdit)
-			elseif dgsType == "dgs-dxmemo" then
-				guiBlur(GlobalMemo)
-			end
-		end
-		if isElement(lastFront) and dgsElementData[lastFront].clearSelection then
-			dgsSetData(lastFront,"selectfrom",dgsElementData[lastFront].cursorpos)
-		end
-	end
+	dgsFocus(dgsEle)
 	if dgsElementData[dgsEle].changeOrder then
 		if not isElement(parent) then
 			if dgsTypeScreen3D[eleType] then
@@ -342,7 +321,6 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontChangeData)
 			end
 		end
 	end
-	dgsFocus(dgsEle)
 	lastFront = dgsEle
 	if mouse == "left" then
 		MouseData.clickl = dgsEle

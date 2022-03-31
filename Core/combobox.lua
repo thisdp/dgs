@@ -36,7 +36,6 @@ dgsRegisterProperties("dgs-dxcombobox",{
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
-local dxDrawRectangle = dxDrawRectangle
 local dxSetShaderValue = dxSetShaderValue
 local dxSetRenderTarget = dxSetRenderTarget
 local dxSetBlendMode = dxSetBlendMode
@@ -140,7 +139,7 @@ function dgsCreateComboBox(...)
 		itemTextColor = textColor or style.itemTextColor,
 		textSize = {textScaleX or style.textSize[1],textScaleY or style.textSize[2]},
 		itemTextSize = {textScaleX or style.itemTextSize[1],textScaleY or style.itemTextSize[2]},
-		shadow = false,
+		shadow = nil,
 		font = style.font or systemFont,
 		bgColor = style.bgColor,
 		bgImage = dgsCreateTextureFromStyle(using,res,style.bgImage),
@@ -213,7 +212,7 @@ function dgsCreateComboBox(...)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar,"checkComboBoxScrollBar",false)
 	dgsAddEventHandler("onDgsComboBoxStateChange",combobox,"dgsComboBoxCheckState",false)
 	dgsAddEventHandler("onDgsBlur",box,"closeComboBoxWhenBoxBlur",false)
-	dgsAddEventHandler("onDgsBlur",scrollbar,"closeComboBoxWhenScrolBarBlur",false)
+	dgsAddEventHandler("onDgsBlur",scrollbar,"closeComboBoxWhenScrollBarBlur",false)
 	dgsAddEventHandler("onDgsSizeChange",combobox,"updateBoxSizeWhenComboBoxResize",false)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
@@ -258,7 +257,7 @@ function closeComboBoxWhenBoxBlur(nextFocused)
 	end
 end
 
-function closeComboBoxWhenScrolBarBlur(nextFocused)
+function closeComboBoxWhenScrollBarBlur(nextFocused)
 	local combobox = dgsElementData[source].myCombo
 	local box = dgsElementData[combobox].myBox
 	if nextFocused ~= combobox and nextFocused ~= box then
@@ -329,6 +328,7 @@ function dgsComboBoxSetEditEnabled(combobox,enabled)
 		destroyElement(captionEdit)
 		dgsSetData(combobox,"captionEdit",false)
 	end
+	return true
 end
 
 
@@ -372,6 +372,8 @@ function dgsComboBoxAddItem(combobox,text)
 	end
 
 	local tab = {
+		[-8] = nil,										--multi Data
+		[-7] = nil,										--single Data
 		[-6] = nil,										--built-in image {[1]=image,[2]=color,[3]=offsetX,[4]=offsetY,[5]=width,[6]=height,[7]=relative}
 		[-5] = dgsElementData[combobox].colorCoded,		--use color code
 		[-4] = dgsElementData[combobox].font,			--font
@@ -429,11 +431,11 @@ function dgsComboBoxSetItemData(combobox,i,data,...)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	if select("#",...) == 0 then
-		iData[i][-1] = data
+		iData[i][-7] = data
 		return true
 	else
-		iData[i][-2] = iData[i][-2] or {}
-		iData[i][-2][data] = ...
+		iData[i][-8] = iData[i][-8] or {}
+		iData[i][-8][data] = ...
 		return true
 	end
 	return false
@@ -448,9 +450,9 @@ function dgsComboBoxGetItemData(combobox,i,key)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	if not key then
-		return itemData[i][-1]
+		return itemData[i][-7]
 	else
-		return (itemData[i][-2] or {})[key] or false
+		return (itemData[i][-8] or {})[key] or false
 	end
 	return false
 end
@@ -882,19 +884,11 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	local bgColor = eleData.bgColor and applyColorAlpha(eleData.bgColor,parentAlpha) or finalcolor
 	local bgImage = eleData.bgImage
-	if imgs[selectState] then
-		dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[selectState],0,0,0,finalcolor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x+w-buttonLen,y,buttonLen,h,finalcolor,isPostGUI)
-	end
+	dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[selectState],0,0,0,finalcolor,isPostGUI,rndtgt)
 	local arrowColor = eleData.arrowColor
 	local arrowOutSideColor = eleData.arrowOutSideColor
 	local textBoxLen = w-buttonLen
-	if bgImage then
-		dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y,textBoxLen,h,bgColor,isPostGUI)
-	end
+	dxDrawImage(x,y,textBoxLen,h,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	local arrow = eleData.arrow
 	local listState = eleData.listState
 	if eleData.listStateAnim ~= listState then
@@ -927,7 +921,8 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local systemFont = style.systemFontElement
 		
 		local font = item[-4] or eleData.font or systemFont
-		local textColor = item[-2] or eleData.textColor
+		local tColor = item[-2] or eleData.textColor
+		local textColor = type(tColor) ~= "table" and tColor or tColor[1]
 		local rb = eleData.alignment
 		local txtSizX,txtSizY = item[-3] and item[-3][1] or eleData.textSize[1],item[-3] and (item[-3][2] or item[-3][1]) or eleData.textSize[2] or eleData.textSize[1]
 		local colorCoded = item[-5] or eleData.colorCoded
@@ -940,17 +935,15 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local imagey = y+(image[7] and image[4]*h or image[4])
 			local imagew = image[7] and image[5]*textBoxLen or image[5]
 			local imageh = image[7] and image[6]*h or image[6]
-			if isElement(image[1]) then
-				dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI,rndtgt)
-			else
-				dxDrawRectangle(imagex,imagey,imagew,imageh,applyColorAlpha(image[2],parentAlpha),isPostGUI)
-			end
+			dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI,rndtgt)
 		end
 		local nx,ny,nw,nh = x+itemTextPadding[1],y,x+textBoxLen-itemTextPadding[2],y+h
+		local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 		if shadow then
-			dxDrawText(text:gsub("#%x%x%x%x%x%x",""),nx-shadow[1],ny-shadow[2],nw-shadow[1],nh-shadow[2],applyColorAlpha(shadow[3],parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordBreak,isPostGUI)
+			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
+			shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 		end
-		dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordBreak,isPostGUI,colorCoded)
+		dxDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	end
 	if eleData.nextRenderSort then
 		dgsComboBoxSort(source)
@@ -1007,7 +1000,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		for i=DataTab.FromTo[1],DataTab.FromTo[2] do
 			local item = itemData[i]
 			local textSize = item[-3]
-			local textColor = item[-2]
+			local tColor = item[-2]
 			local image = item[-1]
 			local color = item[0]
 			local font = item[-4]
@@ -1015,12 +1008,9 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			local itemState = 1
 			itemState = i == preSelect and 2 or itemState
 			itemState = i == Select and 3 or itemState
+			local textColor = type(tColor) ~= "table" and tColor or (tColor[itemState] or tColor[1])
 			local rowpos = (i-1)*itemHeight
-			if image[itemState] then
-				dxDrawImage(0,rowpos+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,color[itemState],false,rndtgt)
-			else
-				dxDrawRectangle(0,rowpos+itemMoveOffset,w,itemHeight,color[itemState])
-			end
+			dxDrawImage(0,rowpos+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,color[itemState],false,rndtgt)
 			local rowImage = item[-6]
 			if rowImage then
 				local itemWidth = dgsElementData[scrollbar].visible and w-dgsElementData[scrollbar].absSize[1] or w
@@ -1028,11 +1018,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 				local imagey = (rowpos+itemMoveOffset) + (rowImage[7] and rowImage[4]*itemHeight or rowImage[4])
 				local imagew = rowImage[7] and rowImage[5]*itemWidth or rowImage[5]
 				local imageh = rowImage[7] and rowImage[6]*itemHeight or rowImage[6]
-				if isElement(rowImage[1]) then
-					dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2],false,rndtgt)
-				else
-					dxDrawRectangle(imagex,imagey,imagew,imageh,rowImage[2])
-				end
+				dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2],false,rndtgt)
 			end
 			local _y,_sx,_sy = rowpos+itemMoveOffset,w-itemTextPadding[2],rowpos+itemHeight+itemMoveOffset
 			local text = itemData[i][1]
@@ -1058,12 +1044,14 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			dxSetRenderTarget(DataTab.textRT,true)
 			dxSetBlendMode("modulate_add")
 			local tRB
+			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
+			if shadow then
+				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
+				shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
+			end
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
-				if shadow then
-					dxDrawText(tRB[1]:gsub("#%x%x%x%x%x%x",""),tRB[2]-shadow[1],tRB[3]-shadow[2],tRB[4]-shadow[1],tRB[5]-shadow[2],tRB[6],tRB[7],tRB[8],tRB[9],tRB[10],tRB[11],tRB[12],tRB[13])
-				end
-				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],tRB[10],tRB[11],tRB[12],tRB[13],false,tRB[14])
+				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],tRB[10],tRB[11],tRB[12],tRB[13],false,tRB[14],subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 		end
 		dxSetRenderTarget(rndtgt)

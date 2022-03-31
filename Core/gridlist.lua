@@ -50,7 +50,6 @@ local loadstring = loadstring
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
-local dxDrawRectangle = dxDrawRectangle
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
@@ -674,6 +673,7 @@ function dgsGridListScrollTo(gridlist,r,c,smoothMove)
 			dgsGridListSetScrollPosition(gridlist,_,scrollPos)
 		end
 	end
+	return true
 end
 
 -----------------------------Column
@@ -2168,7 +2168,7 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 			rData[r][c][2] = {colors[1],colors[2],colors[3]}
 		end
 	end
-	return false
+	return true
 end
 
 function dgsGridListGetItemColor(gridlist,r,c,notSplitColor)
@@ -2476,11 +2476,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local font = eleData.font or systemFont
 	local columnHeight = eleData.columnHeight
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-	if bgImage then
-		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y+columnHeight,w,h-columnHeight,bgColor,isPostGUI)
-	end
+	dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	local columnData,rowData = eleData.columnData,eleData.rowData
 	local columnCount,rowCount = #columnData,#rowData
 	local columnTextColor = eleData.columnTextColor
@@ -2550,12 +2546,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnPos = renderBuffer.columnPos
 	local columnEndPos = renderBuffer.columnEndPos
 	local columnShadow = eleData.columnShadow
-
-	if columnImage then
-		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y,w,columnHeight,columnColor,isPostGUI)
-	end
+	dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
 	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline
 	if not eleData.mode then
 		dxSetRenderTarget(eleData.columnTextRT,true)
@@ -2591,50 +2582,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
 						local iconTextPosL = textPosL-iconWidth
 						local iconTextPosR = textPosR-iconWidth
-						if columnShadow then
-							if not shadowIsOutline then
-								dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-							elseif shadowIsOutline == true or shadowIsOutline == 1 then
-								dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-							elseif shadowIsOutline == 2 then
-								dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL,textPosT+shadowOffsetY,iconTextPosR,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT,iconTextPosR-shadowOffsetX,textPosB,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL,textPosT-shadowOffsetY,iconTextPosR,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-								dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT,iconTextPosR+shadowOffsetX,textPosB,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
-							end
-						end
-						dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true)
+						dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
 					end
-					if columnShadow then
-						local text = data[1]
-						if _columnTextColorCoded then
-							text = text:gsub("#%x%x%x%x%x%x","") or text
-						end
-						if not shadowIsOutline then
-							dxDrawText(text,textPosL+shadowOffsetX,textPosT+shadowOffsetY,textPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-						elseif shadowIsOutline == true or shadowIsOutline == 1 then
-							dxDrawText(text,textPosL+shadowOffsetX,textPosT+shadowOffsetY,textPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL-shadowOffsetX,textPosT+shadowOffsetY,textPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL-shadowOffsetX,textPosT-shadowOffsetY,textPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL+shadowOffsetX,textPosT-shadowOffsetY,textPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-						elseif shadowIsOutline == 2 then
-							dxDrawText(text,textPosL+shadowOffsetX,textPosT+shadowOffsetY,textPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL-shadowOffsetX,textPosT+shadowOffsetY,textPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL-shadowOffsetX,textPosT-shadowOffsetY,textPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL+shadowOffsetX,textPosT-shadowOffsetY,textPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL,textPosT+shadowOffsetY,textPosR,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL-shadowOffsetX,textPosT,textPosR-shadowOffsetX,textPosB,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL,textPosT-shadowOffsetY,textPosR,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-							dxDrawText(text,textPosL+shadowOffsetX,textPosT,textPosR+shadowOffsetX,textPosB,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,false,true)
-						end
-					end
-					dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextColorCoded,true)
+					dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextColorCoded,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
 				end
 				if mouseInsideGridList and mouseSelectColumn == -1 then
 					if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
@@ -2738,11 +2688,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							backgroundWidth = w-_x
 						end
 						local itemUsingBGColor,itemUsingBGImage = itemBGColor[rowState] or color[rowState],itemBGImage[rowState] or image[rowState]
-						if itemUsingBGImage then
-							dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
-						else
-							dxDrawRectangle(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGColor,false)--_RowHeight
-						end
+						dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
 						elementBuffer[i][id] = elementBuffer[i][id] or {}
 						local currentElementBuffer = elementBuffer[i][id]
 						currentElementBuffer[1] = currentRowData[10]
@@ -2756,11 +2702,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
 								local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
 								local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
-								if isElement(imageData[1]) then
-									dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
-								else
-									dxDrawRectangle(imagex,imagey,imagew,imageh,imageData[2],false)
-								end
+								dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
 							end
 							local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
 							if currentRowData[12] then
@@ -2799,29 +2741,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local text = line[1]
 				local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
 				local clr,tSclx,tScly,tFnt,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11]
-				if rowShadow then
-					if tClrCode then
-						text = text:gsub("#%x%x%x%x%x%x","") or text
-					end
-					if not shadowIsOutline then
-						dxDrawText(text,psx+shadowOffsetX,psy+shadowOffsetY,pex+shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-					elseif shadowIsOutline == true or shadowIsOutline == 1 then
-						dxDrawText(text,psx+shadowOffsetX,psy+shadowOffsetY,pex+shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx-shadowOffsetX,psy+shadowOffsetY,pex-shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx-shadowOffsetX,psy-shadowOffsetY,pex-shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx+shadowOffsetX,psy-shadowOffsetY,pex+shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-					elseif shadowIsOutline == 2 then
-						dxDrawText(text,psx+shadowOffsetX,psy+shadowOffsetY,pex+shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx-shadowOffsetX,psy+shadowOffsetY,pex-shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx-shadowOffsetX,psy-shadowOffsetY,pex-shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx+shadowOffsetX,psy-shadowOffsetY,pex+shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx,psy+shadowOffsetY,pex,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx-shadowOffsetX,psy,pex-shadowOffsetX,pey,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx,psy-shadowOffsetY,pex,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-						dxDrawText(text,psx+shadowOffsetX,psy,pex+shadowOffsetX,pey,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,false,true)
-					end
-				end
-				dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true)
+				dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
 			end
 			
 			dxSetBlendMode("blend")
@@ -2908,50 +2828,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
 				local iconTextPosL = textPosL-iconWidth
 				local iconTextPosR = textPosR-iconWidth
-				if columnShadow then
-					if not shadowIsOutline then
-						dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-					elseif shadowIsOutline == true or shadowIsOutline == 1 then
-						dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-					elseif shadowIsOutline == 2 then
-						dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT+shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT-shadowOffsetY,iconTextPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL,textPosT+shadowOffsetY,iconTextPosR,textPosB+shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL-shadowOffsetX,textPosT,iconTextPosR-shadowOffsetX,textPosB,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL,textPosT-shadowOffsetY,iconTextPosR,textPosB-shadowOffsetY,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-						dxDrawText(sortIcon,iconTextPosL+shadowOffsetX,textPosT,iconTextPosR+shadowOffsetX,textPosB,shadowColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
-					end
-				end
-				dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true)
+				dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
 			end
-			if columnShadow then
-				local text = data[1]
-				if _columnTextColorCoded then
-					text = text:gsub("#%x%x%x%x%x%x","") or text
-				end
-				if not shadowIsOutline then
-					dxDrawText(text,textPosL+shadowOffsetX,textPosT+shadowOffsetY,textPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-				elseif shadowIsOutline == true or shadowIsOutline == 1 then
-					dxDrawText(text,textPosL+shadowOffsetX,textPosT+shadowOffsetY,textPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL-shadowOffsetX,textPosT+shadowOffsetY,textPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL-shadowOffsetX,textPosT-shadowOffsetY,textPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL+shadowOffsetX,textPosT-shadowOffsetY,textPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-				elseif shadowIsOutline == 2 then
-					dxDrawText(text,textPosL+shadowOffsetX,textPosT+shadowOffsetY,textPosR+shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL-shadowOffsetX,textPosT+shadowOffsetY,textPosR-shadowOffsetX,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL-shadowOffsetX,textPosT-shadowOffsetY,textPosR-shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL+shadowOffsetX,textPosT-shadowOffsetY,textPosR+shadowOffsetX,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL,textPosT+shadowOffsetY,textPosR,textPosB+shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL-shadowOffsetX,textPosT,textPosR-shadowOffsetX,textPosB,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL,textPosT-shadowOffsetY,textPosR,textPosB-shadowOffsetY,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-					dxDrawText(text,textPosL+shadowOffsetX,textPosT,textPosR+shadowOffsetX,textPosB,shadowColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,false,true)
-				end
-			end
-			dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,_columnTextColorCoded,true)
+			dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,_columnTextColorCoded,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
 			if mouseInsideGridList and mouseSelectColumn == -1 then
 				backgroundWidth = data[2]*multiplier
 				if backgroundWidth+posx-x >= w or whichColumnToEnd == i then
@@ -3052,21 +2931,13 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					columnWidth = w-_x+x-scbThickV
 				end
 				local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
-				if itemUsingBGImage then
-					dxDrawImage(_bgX,_y,columnWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)--_RowHeight
-				else
-					dxDrawRectangle(_bgX,_y,columnWidth,rowHeight,itemUsingBGColor,isPostGUI)--_RowHeight
-				end
+				dxDrawImage(_bgX,_y,columnWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)--_RowHeight
 				if text ~= "" then
 					local colorCoded = currentRowData[3] == nil and colorCoded or currentRowData[3]
 					if currentRowData[7] then
 						local imageData = currentRowData[7]
 						local color = applyColorAlpha(imageData[2],parentAlpha)
-						if isElement(imageData[1]) then
-							dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,color,rndtgt)
-						else
-							dxDrawRectangle(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],color)
-						end
+						dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,color,rndtgt)
 					end
 					local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
 					if currentRowData[12] then
@@ -3105,29 +2976,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local psy = psy-psy%1			--startY
 			local pex = pex-pex%1			--endX
 			local pey = pey-pey%1			--endY
-			if rowShadow then
-				if tClrCode then
-					text = text:gsub("#%x%x%x%x%x%x","") or text
-				end
-				if not shadowIsOutline then
-					dxDrawText(text,psx+shadowOffsetX,psy+shadowOffsetY,pex+shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-				elseif shadowIsOutline == true or shadowIsOutline == 1 then
-					dxDrawText(text,psx+shadowOffsetX,psy+shadowOffsetY,pex+shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx-shadowOffsetX,psy+shadowOffsetY,pex-shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx-shadowOffsetX,psy-shadowOffsetY,pex-shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx+shadowOffsetX,psy-shadowOffsetY,pex+shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-				elseif shadowIsOutline == 2 then
-					dxDrawText(text,psx+shadowOffsetX,psy+shadowOffsetY,pex+shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx-shadowOffsetX,psy+shadowOffsetY,pex-shadowOffsetX,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx-shadowOffsetX,psy-shadowOffsetY,pex-shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx+shadowOffsetX,psy-shadowOffsetY,pex+shadowOffsetX,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx,psy+shadowOffsetY,pex,pey+shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx-shadowOffsetX,psy,pex-shadowOffsetX,pey,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx,psy-shadowOffsetY,pex,pey-shadowOffsetY,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-					dxDrawText(text,psx+shadowOffsetX,psy,pex+shadowOffsetX,pey,shadowColor,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,false,true)
-				end
-			end
-			dxDrawText(line[1],psx,psy,pex,pey,color,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,tClrCode,true)
+			dxDrawText(line[1],psx,psy,pex,pey,color,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")

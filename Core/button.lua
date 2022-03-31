@@ -27,7 +27,6 @@ local dxDrawImage = dxDrawImage
 local dxDrawImageSection = dxDrawImageSection
 local dxDrawText = dxDrawText
 local dxGetFontHeight = dxGetFontHeight
-local dxDrawRectangle = dxDrawRectangle
 local dxGetTextWidth = dxGetTextWidth
 --DGS Functions
 local dgsSetType = dgsSetType
@@ -136,7 +135,6 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local renderBuffer = eleData.renderBuffer
-	local colors,imgs = eleData.color,eleData.image
 	local buttonState = 1
 	if MouseData.entered == source then
 		buttonState = 2
@@ -161,18 +159,20 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	if eleData.currentState ~= buttonState then
 		eleData.currentState = buttonState
 		eleData.currentStateTick = getTickCount()
-		renderBuffer.startColor = renderBuffer.currentColor or colors[eleData.lastState]
+		renderBuffer.startColor = renderBuffer.currentColor or (type(eleData.color) ~= "table" and eleData.color or eleData.color[eleData.lastState])
 	end
+	local bgColor = type(eleData.color) ~= "table" and eleData.color or eleData.color[buttonState] 
+	local bgImage = type(eleData.image) ~= "table" and eleData.image or eleData.image[buttonState]
 	local finalcolor
 	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
 			finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 		elseif eleData.disabledColor == true then
-			local r,g,b,a = fromcolor(colors[1],true)
+			local r,g,b,a = fromcolor(bgColor,true)
 			local average = (r+g+b)/3*eleData.disabledColorPercent
 			finalcolor = tocolor(average,average,average,a*parentAlpha)
 		else
-			local targetColor = colors[buttonState]
+			local targetColor = bgColor
 			if eleData.colorTransitionPeriod > 0 then
 				renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod) -- todo
 				finalcolor = applyColorAlpha(renderBuffer.currentColor,parentAlpha)
@@ -181,7 +181,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			end
 		end
 	else
-		local targetColor = colors[buttonState]
+		local targetColor = bgColor
 		if eleData.colorTransitionPeriod > 0 and getTickCount()-eleData.currentStateTick <= eleData.colorTransitionPeriod then
 			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod) -- todo
 			finalcolor = applyColorAlpha(renderBuffer.currentColor,parentAlpha)
@@ -198,11 +198,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	end
 	------------------------------------
 	if finalcolor/0x1000000%256 >= 1 then	--Optimise when alpha = 0
-		if imgs[buttonState] then
-			dxDrawImage(x,y,w,h,imgs[buttonState],0,0,0,finalcolor,isPostGUI,rndtgt)
-		else
-			dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
-		end
+		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	end
 	local text = eleData.text
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
@@ -223,8 +219,6 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	if iconImage then
 		local iconColor = eleData.iconColor
 		local iconShadow = eleData.iconShadow
-		iconImage = type(iconImage) == "table" and iconImage or {iconImage,iconImage,iconImage}
-		iconColor = type(iconColor) == "table" and iconColor or {iconColor,iconColor,iconColor}
 		local iconSize = eleData.iconSize
 		local fontHeight = dxGetFontHeight(txtSizY,font)
 		local fontWidth = dxGetTextWidth(text,txtSizX,font,colorCoded)
@@ -290,20 +284,22 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			end
 		end
 		posX,posY = posX+x,posY+y
-		if iconImage[buttonState] then
+		iconImage = type(iconImage) ~= "table" and iconImage or iconImage[buttonState]
+		iconColor = type(iconColor) ~= "table" and iconColor or iconColor[buttonState]
+		if iconImage then
 			if iconShadow then
 				local shadowoffx,shadowoffy,shadowc,shadowIsOutline = iconShadow[1],iconShadow[2],iconShadow[3],iconShadow[4]
 				if shadowoffx and shadowoffy and shadowc then
 					local shadowc = applyColorAlpha(shadowc,parentAlpha)
-					dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
 					if shadowIsOutline then
-						dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
-						dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
-						dxDrawImage(posX+shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage[buttonState],0,0,0,shadowc,isPostGUI,rndtgt)
+						dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
+						dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
+						dxDrawImage(posX+shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
 					end
 				end
 			end
-			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
+			dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage,0,0,0,applyColorAlpha(iconColor,parentAlpha),isPostGUI,rndtgt)
 		end
 	end
 
@@ -315,24 +311,14 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		local textX,textY = x+txtoffsetsX,y+txtoffsetsY
 		local shadow = eleData.shadow
+		local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 		if shadow then
-			local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
-			if shadowoffx and shadowoffy and shadowc then
-				local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
-				local shadowc = applyColorAlpha(shadowc,parentAlpha)
-				dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-				if shadowIsOutline then
-					dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-					dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-					dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-				end
-			end
+			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
+			shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 		end
-		local textColor = eleData.textColor
-		if type(textColor) == "table" then
-			textColor = textColor[buttonState] or textColor[1]
-		end
-		dxDrawText(text,textX,textY,textX+w-1,textY+h-1,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded)
+		
+		local textColor = type(eleData.textColor) ~= "table" and eleData.textColor or (eleData.textColor[buttonState] or eleData.textColor[1])
+		dxDrawText(text,textX,textY,textX+w,textY+h,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	end
 
 	return rndtgt,false,mx,my,0,0

@@ -70,11 +70,7 @@ local ProgressBarStyle = {
 		local eleData = dgsElementData[source]
 		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2
 		local iSizXPercent = iSizX*percent
-		if bgImage then
-			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet,rndtgt)
-		else
-			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
-		end
+		dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet,rndtgt)
 		if type(indicatorImage) == "table" then
 			local indicatorColor1,indicatorColor2
 			if type(indicatorColor) == "table" then
@@ -128,11 +124,7 @@ local ProgressBarStyle = {
 		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2
 		local iSizYPercent = iSizY*percent
 		local iSizYPercentRev = iSizY*(1-percent)
-		if bgImage then
-			dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet,rndtgt)
-		else
-			dxDrawRectangle(x,y,w,h,bgColor,rendSet)
-		end
+		dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,rendSet,rndtgt)
 		if type(indicatorImage) == "table" then
 			local indicatorColor1,indicatorColor2
 			if type(indicatorColor) == "table" then

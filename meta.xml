@@ -61,7 +61,11 @@
 
 	<script src="plugin/Effect3D.lua" type="client" />
 
-	<script src="plugin/basicShape.lua" type="client" />
+	<file src="plugin/BasicShape/roundedRectangle.fx" />
+	<file src="plugin/BasicShape/roundedRectangleFrame.fx" />
+	<script src="plugin/BasicShape/roundedRectangle.lua" type="client" />
+	<file src="plugin/BasicShape/circle.fx" />
+	<script src="plugin/BasicShape/circle.lua" type="client" />
 
 	<script src="plugin/QRCode.lua" type="client" />
 	

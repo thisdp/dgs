@@ -282,7 +282,7 @@ function dgsEditCheckAutoComplete()
 					local paramLen = utf8Len(textParam)
 					autoCompleteResult[i] = textParam
 					if eleData.caretPos >= currentStart and eleData.caretPos <= currentStart+paramLen+1 then
-						local acParamFunctionName = acTable[foundAC[1]] and acTable[foundAC[1]][i]
+						local acParamFunctionName = type(acTable[foundAC[1]]) == "table" and acTable[foundAC[1]][i]
 						if acParamFunctionName then
 							local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input) 
 								if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
@@ -1234,11 +1234,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	else
 		finalcolor = bgColor
 	end
-	if bgImage then
-		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y,w,h,finalcolor,isPostGUI)
-	end
+	dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	__dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 	if placeHolderIgnoreRndTgt then
 		if isPlaceHolderShown then

@@ -84,7 +84,7 @@ for i=1,#events do
 end
 events = nil
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
-local gsub,sub,len,find,format,byte = string.gsub,string.sub,string.len,string.find,string.format,byte
+local gsub,sub,len,find,format,byte,char = string.gsub,string.sub,string.len,string.find,string.format,string.byte,string.char
 local utf8Len,utf8Byte,utf8Sub = utf8.len,utf8.byte,utf8.sub
 local setmetatable,ipairs,pairs = setmetatable,ipairs,pairs
 local tableInsert = table.insert
@@ -510,6 +510,14 @@ function table.shallowCopy(obj)
 	return InTable
 end
 
+function table.getKeys(obj)
+	local newTable = {}
+	for k,v in pairs(obj) do
+		newTable[#newTable+1] = k
+	end
+	table.sort(newTable)
+	return newTable
+end
 --------------------------------File Utility
 function hashFile(fName,exportContent)
 	local f = fileOpen(fName,true)
@@ -526,7 +534,50 @@ function fileGetContent(fName)
 	fileClose(f)
 	return str
 end
+--[[
+streamer = setmetatable({
+		readPos = 0,
+		file = nil,
+	},{
+	__index = {
+		read = function(self,bits)
+			fileSetPos(self.file,self.readPos)
+			local str = fileRead(self.file,bits)
+			self.readPos = self.readPos+bits
+			return str
+		end,
+		getSize = function(self)
+			return fileGetSize(self.file)
+		end,
+		seek = function(self,op,bits)
+			if op == "set" then
+				fileSetPos(self.file,bits)
+				self.readPos = bits
+			elseif op == "cur" then
+				self.readPos = self.readPos+bits
+				fileSetPos(self.file,self.readPos)
+			elseif op == "end" then
+				self.readPos = fileGetSize(self.file)+bits
+				fileSetPos(self.file,self.readPos)
+			end
+			return true
+		end,
+		open = function(self,fName)
+			self.file = fileOpen(fName)
+		end,
+		close = function(self)
+			if self.file then fileClose(self.file) end
+		end,
+	}
+})]]
 --------------------------------String Utility
+--[[
+ASCIIBuffer = {}
+for i=0,255 do
+	ASCIIBuffer[char(i)] = i
+	ASCIIBuffer[i] = char(i)
+end]]
+
 function string.split(s,delim)
 	local delimLen = len(delim)
     if type(delim) ~= "string" or delimLen <= 0 then return false end
@@ -993,34 +1044,38 @@ end
 --------------------------------Dx Utility
 dgsDrawType = nil
 function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
-	local dgsBasicType = dgsGetType(image)
-	if dgsBasicType == "table" then
-		__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
-	else
-		local pluginType = dgsGetPluginType(image)
-		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
-			dgsDrawType = "image"
-			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
+	if image then
+		local dgsBasicType = dgsGetType(image)
+		if dgsBasicType == "table" then
+			__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
 		else
-			local blendMode
-			if isInRndTgt and dgsBasicType == "shader" then
-				blendMode = dxGetBlendMode()
-				dxSetBlendMode("blend")
-			end
-			if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
-				if debugMode then
-					local debugTrace = dgsElementData[self].debugTrace
-					local thisTrace = debug.getinfo(2)
-					if debugTrace then
-						local line,file = debugTrace.line,debugTrace.file
-						outputDebugString("dxDrawImage("..thisTrace.source..":"..thisTrace.currentline..") failed at element created at "..file..":"..line,2)
-					else
-						outputDebugString("dxDrawImage("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",2)
+			local pluginType = dgsGetPluginType(image)
+			if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
+				dgsDrawType = "image"
+				dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
+			else
+				local blendMode
+				if isInRndTgt and dgsBasicType == "shader" then
+					blendMode = dxGetBlendMode()
+					dxSetBlendMode("blend")
+				end
+				if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
+					if debugMode then
+						local debugTrace = dgsElementData[self].debugTrace
+						local thisTrace = debug.getinfo(2)
+						if debugTrace then
+							local line,file = debugTrace.line,debugTrace.file
+							outputDebugString("dxDrawImage("..thisTrace.source..":"..thisTrace.currentline..") failed at element created at "..file..":"..line,2)
+						else
+							outputDebugString("dxDrawImage("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",2)
+						end
 					end
 				end
+				if blendMode then dxSetBlendMode(blendMode) end
 			end
-			if blendMode then dxSetBlendMode(blendMode) end
 		end
+	else
+		dxDrawRectangle(posX,posY,width,height,color,isPostGUI)
 	end
 	return true
 end
@@ -1057,15 +1112,36 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 	return true
 end
 
-function dxDrawText(text,...)
+function dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
 	if type(text) ~= "string" then
 		local pluginType = dgsGetPluginType(text)
 		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[text].disableCustomTexture then
 			dgsDrawType = "text"
-			return dgsCustomTexture[pluginType](text,...)
+			return dgsCustomTexture[pluginType](text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		end
 	end
-	if not __dxDrawText(text,...) then
+	if shadowOffsetX then
+		if colorCoded then
+			text = text:gsub("#%x%x%x%x%x%x","") or text
+		end
+		if not shadowIsOutline then
+			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+		elseif shadowIsOutline == true or shadowIsOutline == 1 then
+			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+		elseif shadowIsOutline == 2 then
+			dxDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX,topY+shadowOffsetY,rightX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY,rightX-shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX,topY-shadowOffsetY,rightX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY,rightX+shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+		end
+	end
+	if not __dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing) then
 		if debugMode then
 			local debugTrace = dgsElementData[self].debugTrace
 			local thisTrace = debug.getinfo(2)
@@ -1211,7 +1287,7 @@ addEventHandler("onClientKey",root,function(but,state)
 end)
 
 --------------------------------Dx Utility
---Render Target Assigner
+--Render Target Assigner [Project AI]
 --[[
 RTState:
 	state:
@@ -1283,6 +1359,7 @@ function dgsGetRTAssignState(element)
 	local RTState = dgsElementData[element].RTState or {state=0,RT=nil}
 	return RTState.state
 end]]
+
 --------------------------------DEBUG
 local resourceDebugRegistered = {}
 local debugContextQueue = {}

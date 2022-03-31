@@ -19,7 +19,6 @@ dgsRegisterProperties("dgs-dxradiobutton",{
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
-local dxDrawRectangle = dxDrawRectangle
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsGetType = dgsGetType
@@ -237,18 +236,14 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	else
 		finalcolor = applyColorAlpha(color[colorimgid],parentAlpha)
 	end
-	if image[colorimgid] then
-		dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
-	else
-		dxDrawRectangle(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,finalcolor,isPostGUI)
-	end
-	
+	dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-			
+
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip
@@ -260,21 +255,12 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local alignment = eleData.alignment
 	local px = x+buttonSizeX+textPadding
 	if eleData.PixelInt then px = px-px%1 end
+	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 	local shadow = eleData.shadow
 	if shadow then
-		local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
-		local textX,textY = px,y
-		if shadowoffx and shadowoffy and shadowc then
-			shadowc = applyColorAlpha(shadowc,parentAlpha)
-			local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
-			dxDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-			if shadowIsOutline then
-				dxDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+h+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-				dxDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-				dxDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+h-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-			end
-		end
+		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
+		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded)
+	dxDrawText(eleData.text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	return rndtgt,false,mx,my,0,0
 end

@@ -35,7 +35,6 @@ dgsRegisterProperties("dgs-dxtab",{
 local __dxDrawImage = __dxDrawImage
 local dxDrawImage = dxDrawImage
 local dxDrawText = dxDrawText
-local dxDrawRectangle = dxDrawRectangle
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
@@ -392,11 +391,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local tabAlignment = eleData.tabAlignment
 	if selected == -1 then
 		local color = applyColorAlpha(eleData.bgColor,parentAlpha)
-		if eleData.bgImage then
-			dxDrawImage(x,y+height,w,h-height,eleData.bgImage,0,0,0,color,isPostGUI)
-		else
-			dxDrawRectangle(x,y+height,w,h-height,color,isPostGUI)
-		end
+		dxDrawImage(x,y+height,w,h-height,eleData.bgImage,0,0,0,color,isPostGUI)
 	else
 		local tabOffset = eleData.tabOffset[2] and eleData.tabOffset[1]*w or eleData.tabOffset[1]
 		local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
@@ -449,11 +444,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						else
 							finalcolor = applyColorAlpha(tabColor[selState],parentAlpha)
 						end
-						if tabImage[selState] then
-							dxDrawImage(tabX,0,width,height,tabImage[selState],0,0,0,finalcolor,false,rendt)
-						else
-							dxDrawRectangle(tabX,0,width,height,finalcolor)
-						end
+						dxDrawImage(tabX,0,width,height,tabImage[selState],0,0,0,finalcolor,false,rendt)
 						local textSizeX,textSizeY = tabData.textSize[1],tabData.textSize[2]
 						--[[local iconImage = eleData.iconImage
 						if iconImage then
@@ -534,13 +525,15 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local tRB = textRenderBuffer[i]
 				end
 			end
+			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 			for i=1,textRenderBuffer.count do
 				local tRB = textRenderBuffer[i]
 				local text = tRB[1]
 				if tRB[11] then
-					dxDrawText(tRB[10] and text:gsub("#%x%x%x%x%x%x","") or text,tRB[2]+tRB[11][1],tRB[3]+tRB[11][2],tRB[4],tRB[5],tRB[11][3],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,false,true)
+					shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = tRB[11][1],tRB[11][2],tRB[11][3],tRB[11][4],tRB[11][5]
+					shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 				end
-				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],true)
+				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end		
 		end
 		eleData.preSelect = -1
@@ -554,11 +547,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		local tabEleData = dgsElementData[ tabs[selected] ]
 		local colors = applyColorAlpha(tabEleData.bgColor,parentAlpha)
-		if tabEleData.bgImage then
-			dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
-		else
-			dxDrawRectangle(x,y+height,w,h-height,colors,isPostGUI)
-		end
+		dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
 		local children = tabEleData.children
 		for i=1,#children do
 			renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)

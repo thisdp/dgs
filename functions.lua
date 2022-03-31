@@ -143,7 +143,6 @@ function dgsSetPosition(dgsEle,x,y,bool,isCenterPosition)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPosition",1,"dgs-dxelement")) end
 	if (x and type(x) ~= "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"nil/number")) end
 	if (y and type(y) ~= "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
-	local bool = bool and true or false
 	local pos = bool and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
 	local x,y = x or pos[1],y or pos[2]
 	if isCenterPosition then
@@ -181,7 +180,6 @@ function dgsSetSize(dgsEle,w,h,bool)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSize",1,"dgs-dxelement")) end
 	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
-	local bool = bool and true or false
 	local size = bool and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 	local w,h = w or size[1], h or size[2]
 	calculateGuiPositionSize(dgsEle,_,_,_,w,h,bool or false)
@@ -605,7 +603,6 @@ function dgsGetRootElement() return resourceRoot end
 function dgsFocus(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsFocus",1,"dgs-dxelement")) end
 	local lastFront = MouseData.focused
-	MouseData.focused = dgsEle
 	local eleType = dgsElementType[dgsEle]
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser(dgsEle)
@@ -620,29 +617,25 @@ function dgsFocus(dgsEle)
 		guiFocus(GlobalMemo)
 		dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 	end
-	triggerEvent("onDgsFocus",dgsEle,lastFront)
+	if lastFront and dgsEle ~= lastFront then
+		triggerEvent("onDgsBlur",lastFront,dgsEle)
+	end
 	MouseData.focused = dgsEle
+	triggerEvent("onDgsFocus",dgsEle,lastFront)
 	return true
 end
 
 function dgsBlur(dgsEle,noTriggerGUI)
-	if not dgsEle or not isElement(MouseData.focused) or dgsEle ~= MouseData.focused then return end
+	if not dgsEle then dgsEle = MouseData.focused end
+	if not isElement(dgsEle) or dgsEle ~= MouseData.focused then return true end
 	local eleType = dgsElementType[dgsEle]
+	MouseData.focused = nil
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser()
-	elseif eleType == "dgs-dxedit" then
-		if not noTriggerGUI then
-			guiBlur(GlobalEdit)
-		end
-		dgsElementData[GlobalEdit].linkedDxEdit = nil
-	elseif eleType == "dgs-dxmemo" then
-		if not noTriggerGUI then
-			guiBlur(GlobalMemo)
-		end
-		dgsElementData[GlobalEdit].linkedDxMemo = nil
+	else
+		blurEditMemo()
 	end
 	triggerEvent("onDgsBlur",dgsEle)
-	MouseData.focused = nil
 	return true
 end
 
@@ -1103,6 +1096,42 @@ end)
 addEvent("onDgsCursorMove",true)
 addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)
 
+---------------DGS XML Loader
+function dgsCreateFromXML(xmlFile)
+	if getUserdataType(xmlFile) == "xml-node" then
+		local createdTable = {}
+		local elementIDUsed = {}
+		local tree = function(xmlNode)
+			local eleType = xmlNodeGetName(xmlNode)
+			if eleType ~= "root" then
+				local attrs = xmlNodeGetAttributes(xmlNode)
+				
+				
+				
+				local xmlChildren = xmlNodeGetChildren(xmlNode)
+				for i=1,#xmlChildren do
+					local child = xmlChildren[i]
+					tree(child)
+				end
+			end
+		end
+	elseif type(xmlFile) == "string" then
+		local pathOrStr = xmlFile
+		local xml
+		if not fileExists(pathOrStr) then
+			if not fileExists(":"..getResourceName(sourceResource).."/"..pathOrStr) then
+				xml = xmlLoadString(pathOrStr)
+			else
+				xml = xmlLoadFile(":"..getResourceName(sourceResource).."/"..pathOrStr)
+			end
+		else
+			xml = xmlLoadFile(xmlFile)
+		end
+		local createdTable = dgsCreateFromXML(xml)
+		xmlUnloadFile(xml)
+		return createdTable
+	end
+end
 ---------------DGS 3D Common Functions
 function dgs3DSetPosition(ele3D,x,y,z)
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetPosition",1,"dgs-dx3delement")) end
