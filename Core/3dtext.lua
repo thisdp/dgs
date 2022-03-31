@@ -25,6 +25,7 @@ dgsRegisterProperties("dgs-dx3dtext",{
 	text = 					{	PArg.Text	},
 	textOffset = 			{	{ PArg.Number, PArg.Number }	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine

@@ -1112,7 +1112,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 	return true
 end
 
-function dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
+function dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	if type(text) ~= "string" then
 		local pluginType = dgsGetPluginType(text)
 		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[text].disableCustomTexture then
@@ -1124,22 +1124,23 @@ function dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alig
 		if colorCoded then
 			text = text:gsub("#%x%x%x%x%x%x","") or text
 		end
+		shadowFont = shadowFont or font or "default"
 		if not shadowIsOutline then
-			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		elseif shadowIsOutline == true or shadowIsOutline == 1 then
-			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		elseif shadowIsOutline == 2 then
-			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX,topY+shadowOffsetY,rightX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX-shadowOffsetX,topY,rightX-shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX,topY-shadowOffsetY,rightX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dxDrawText(text,leftX+shadowOffsetX,topY,rightX+shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX,topY+shadowOffsetY,rightX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX-shadowOffsetX,topY,rightX-shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX,topY-shadowOffsetY,rightX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dxDrawText(text,leftX+shadowOffsetX,topY,rightX+shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		end
 	end
 	if not __dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing) then

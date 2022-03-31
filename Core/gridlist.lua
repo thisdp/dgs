@@ -10,7 +10,7 @@ dgsRegisterProperties('dgs-dxgridlist',{
 	columnImage = 			{	PArg.Material	},
 	columnOffset = 			{	PArg.Number	},
 	columnRelative = 		{	PArg.Bool	},
-	columnShadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil }, PArg.Nil	},
+	columnShadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	columnTextColor = 		{	PArg.Color	},
 	columnTextPosOffset = 	{	{ PArg.Number, PArg.Number }	},
 	columnTextSize = 		{	{ PArg.Number, PArg.Number }	},
@@ -30,7 +30,7 @@ dgsRegisterProperties('dgs-dxgridlist',{
 	rowHeight = 			{	PArg.Number	},
 	rowImage = 				{	PArg.Material	},
 	rowMoveOffset= 			{	PArg.Number	},
-	rowShadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil }, PArg.Nil	},
+	rowShadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	rowTextColor = 			{	{ PArg.Color, PArg.Color,PArg.Color }, PArg.Color	},
 	rowTextPosOffset = 		{	{ PArg.Number, PArg.Number }	},
 	rowTextSize = 			{	{ PArg.Number, PArg.Number }	},
@@ -2547,7 +2547,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnEndPos = renderBuffer.columnEndPos
 	local columnShadow = eleData.columnShadow
 	dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
-	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline
+	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 	if not eleData.mode then
 		dxSetRenderTarget(eleData.columnTextRT,true)
 		dxSetBlendMode("modulate_add")
@@ -2557,7 +2557,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local mouseSelectColumn = -1
 		local cPosStart,cPosEnd
 		if columnShadow then
-			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline = columnShadow[1],columnShadow[2],columnShadow[3],columnShadow[4]
+			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],columnShadow[3],columnShadow[4],columnShadow[5]
 		end
 		for id = 1,#columnData do
 			local data = columnData[id]
@@ -2582,9 +2582,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
 						local iconTextPosL = textPosL-iconWidth
 						local iconTextPosR = textPosR-iconWidth
-						dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
+						dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 					end
-					dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextColorCoded,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
+					dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextColorCoded,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 				end
 				if mouseInsideGridList and mouseSelectColumn == -1 then
 					if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
@@ -2734,14 +2734,14 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxSetRenderTarget(eleData.rowTextRT,true)
 			dxSetBlendMode("modulate_add")
 			if rowShadow then
-				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline = rowShadow[1],rowShadow[2],rowShadow[3],rowShadow[4]
+				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],rowShadow[3],rowShadow[4],rowShadow[5]
 			end
 			for a=1,textBufferCnt do
 				local line = textBuffer[a]
 				local text = line[1]
 				local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
 				local clr,tSclx,tScly,tFnt,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11]
-				dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
+				dxDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 			
 			dxSetBlendMode("blend")
@@ -2809,7 +2809,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		local relativeBlack = applyColorAlpha(black,parentAlpha)
 		if columnShadow then
-			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4]
+			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4],columnShadow[5]
 		end
 		for i=whichColumnToStart,whichColumnToEnd or columnCount do
 			local data = columnData[i]
@@ -2828,9 +2828,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
 				local iconTextPosL = textPosL-iconWidth
 				local iconTextPosR = textPosR-iconWidth
-				dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
+				dxDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
-			dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,_columnTextColorCoded,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
+			dxDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,_columnTextColorCoded,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			if mouseInsideGridList and mouseSelectColumn == -1 then
 				backgroundWidth = data[2]*multiplier
 				if backgroundWidth+posx-x >= w or whichColumnToEnd == i then
@@ -2964,7 +2964,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			end
 		end
 		if rowShadow then
-			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline = rowShadow[1],rowShadow[2],applyColorAlpha(rowShadow[3],parentAlpha),rowShadow[4]
+			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],rowShadow[3],rowShadow[4],rowShadow[5]
 		end
 		for i=1,#textBuffer do
 			local line = textBuffer[i]
@@ -2976,7 +2976,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local psy = psy-psy%1			--startY
 			local pex = pex-pex%1			--endX
 			local pey = pey-pey%1			--endY
-			dxDrawText(line[1],psx,psy,pex,pey,color,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline)
+			dxDrawText(line[1],psx,psy,pex,pey,color,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 		end
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")

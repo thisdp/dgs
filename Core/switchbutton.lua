@@ -13,7 +13,7 @@ dgsRegisterProperties("dgs-dxswitchbutton",{
 	font = 				{	PArg.Font+PArg.String	},
 	imageOff = 			{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }	},
 	imageOn = 			{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }	},
-	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
+	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	state = 			{	PArg.Bool	},
 	style = 			{	PArg.Number	},
 	textColorOff = 		{	PArg.Color	},

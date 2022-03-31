@@ -23,6 +23,7 @@ dgsRegisterProperties("dgs-dxmemo",{
 	selectColor = 		{	PArg.Color	},
 	selectColorBlur = 	{	PArg.Color	},
 	selectVisible = 	{	PArg.Bool	},
+	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	--text = 				{	PArg.String	},
 	textColor = 		{	PArg.Color	},
 	textSize = 			{	{ PArg.Number, PArg.Number }	},
@@ -1657,13 +1658,11 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxSetRenderTarget(eleData.textRT,true)
 			dxSetBlendMode("modulate_add")
 			local tRB
-			
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 			if shadow then
 				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 				shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 			end
-			
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
 				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)

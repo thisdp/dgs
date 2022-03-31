@@ -15,7 +15,7 @@ dgsRegisterProperties("dgs-dxcombobox",{
 	colorCoded = 			{	PArg.Bool	},
 	font = 					{	PArg.Font+PArg.String	},
 	state = 				{	PArg.Bool	},
-	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	textColor = 			{	PArg.Color	},
 	textPadding = 			{	{ PArg.Number,PArg.Number }	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},

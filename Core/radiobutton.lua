@@ -9,7 +9,7 @@ dgsRegisterProperties("dgs-dxradiobutton",{
 	font = 				{	PArg.Font+PArg.String	},
 	imageChecked = 		{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	imageUnchecked = 	{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
+	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	text = 				{	PArg.Text	}, 
 	textColor = 		{	PArg.Color	},
 	textPadding = 		{	{ PArg.Number, PArg.Bool }	},

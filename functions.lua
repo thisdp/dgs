@@ -617,11 +617,11 @@ function dgsFocus(dgsEle)
 		guiFocus(GlobalMemo)
 		dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 	end
-	if lastFront and dgsEle ~= lastFront then
+	if isElement(lastFront) and dgsEle ~= lastFront then
 		triggerEvent("onDgsBlur",lastFront,dgsEle)
 	end
 	MouseData.focused = dgsEle
-	triggerEvent("onDgsFocus",dgsEle,lastFront)
+	triggerEvent("onDgsFocus",dgsEle,isElement(lastFront) and lastFront or nil)
 	return true
 end
 
