@@ -214,24 +214,12 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 					local sizeY = textSizeY*textSizeY/distance*50
 					local color = applyColorAlpha(eleData.color,parentAlpha*fadeMulti)
 					local shadow = eleData.shadow
+					local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 					if shadow then
-						local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
-						if shadowoffx and shadowoffy and shadowc then
-							local shadowText = text
-							if colorCoded then
-								shadowText = text:gsub('#%x%x%x%x%x%x','').."\n"
-							end
-							local shadowc = applyColorAlpha(shadowc,parentAlpha*fadeMulti)
-							local shadowoffx,shadowoffy = shadowoffx*antiDistance*50,shadowoffy*antiDistance*50
-							dxDrawText(shadowText,x+shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
-							if shadowIsOutline then
-								dxDrawText(shadowText,x-shadowoffx,y+shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
-								dxDrawText(shadowText,x-shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
-								dxDrawText(shadowText,x+shadowoffx,y-shadowoffy,_,_,shadowc,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,false,subPixelPositioning)
-							end
-						end
+						shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1]*antiDistance*50,shadow[2]*antiDistance*50,shadow[3],shadow[4],shadow[5]
+						shadowColor = applyColorAlpha(shadowColor or white,parentAlpha*fadeMulti)
 					end
-					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorCoded,subPixelPositioning)
+					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 					------------------------------------OutLine
 					local outlineData = eleData.outline
 					if outlineData then
