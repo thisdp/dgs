@@ -1148,9 +1148,9 @@ function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,ali
 			local thisTrace = debug.getinfo(2)
 			if debugTrace then
 				local line,file = debugTrace.line,debugTrace.file
-				outputDebugString("↑Caused by dxDrawText("..thisTrace.source..":"..thisTrace.currentline..") failed at the element("..file..":"..line..")",4,255,200,100)
+				outputDebugString("↑Caused by dgsDrawText("..thisTrace.source..":"..thisTrace.currentline..") failed at the element("..file..":"..line..")",4,255,200,100)
 			else
-				outputDebugString("↑Caused by dxDrawText("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4,255,140,50)
+				outputDebugString("↑Caused by dgsDrawText("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4,255,140,50)
 			end
 		end
 		return false
