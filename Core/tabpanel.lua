@@ -34,7 +34,7 @@ dgsRegisterProperties("dgs-dxtab",{
 --Dx Functions
 local __dxDrawImage = __dxDrawImage
 local dxDrawImage = dxDrawImage
-local dxDrawText = dxDrawText
+local dgsDrawText = dgsDrawText
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
@@ -533,7 +533,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = tRB[11][1],tRB[11][2],tRB[11][3],tRB[11][4],tRB[11][5]
 					shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 				end
-				dxDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end		
 		end
 		eleData.preSelect = -1

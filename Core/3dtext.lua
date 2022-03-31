@@ -29,7 +29,7 @@ dgsRegisterProperties("dgs-dx3dtext",{
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine
-local dxDrawText = dxDrawText
+local dgsDrawText = dgsDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxGetTextWidth = dxGetTextWidth
 --
@@ -220,7 +220,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 						shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1]*antiDistance*50,shadow[2]*antiDistance*50,shadow[3],shadow[4],shadow[5]
 						shadowColor = applyColorAlpha(shadowColor or white,parentAlpha*fadeMulti)
 					end
-					dxDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+					dgsDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 					------------------------------------OutLine
 					local outlineData = eleData.outline
 					if outlineData then

@@ -79,7 +79,7 @@ chartProcessFunction = {
 				local labels = eleData.labels
 				for i=1,#labels do
 					local x,y = posX+bPosL+(i-1)/(#labels-1)*(bPosR-bPosL),posY+bPosB+axisTextOffsetFromGrid
-					dxDrawText(labels[i],x,y,x,y,axisTextColor,axisTextSize[1],axisTextSize[2],axisTextFont,"center","top",false,false,postGUI)
+					dgsDrawText(labels[i],x,y,x,y,axisTextColor,axisTextSize[1],axisTextSize[2],axisTextFont,"center","top",false,false,postGUI)
 				end
 				local renderBuffer = eleData.renderBuffer
 				if renderBuffer.yScale then
@@ -88,7 +88,7 @@ chartProcessFunction = {
 					for i=1,eleData.axisYLines+1 do
 						local x,y = posX+bPosL-axisTextOffsetFromGrid,posY+bPosB-(i-1)/(eleData.axisYLines)*(bPosB-bPosT)
 						local scaleText = (i-1)/(eleData.axisYLines)*range+yMin
-						dxDrawText(scaleText,x,y,x,y,axisTextColor,axisTextSize[1],axisTextSize[2],axisTextFont,"right","center",false,false,postGUI)
+						dgsDrawText(scaleText,x,y,x,y,axisTextColor,axisTextSize[1],axisTextSize[2],axisTextFont,"right","center",false,false,postGUI)
 					end
 				end
 			]])

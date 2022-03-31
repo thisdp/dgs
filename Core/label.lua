@@ -16,7 +16,7 @@ dgsRegisterProperties("dgs-dxlabel",{
 })
 
 --Dx Functions
-local dxDrawText = dxDrawText
+local dgsDrawText = dgsDrawText
 local dxGetFontHeight = dxGetFontHeight
 local dxGetTextWidth = dxGetTextWidth
 --DGS Functions
@@ -199,6 +199,6 @@ dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	dxDrawText(text,x,y,x+w,y+h,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,rotation,x+rotationCenter[1],y+rotationCenter[2],0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	dgsDrawText(text,x,y,x+w,y+h,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,rotation,x+rotationCenter[1],y+rotationCenter[2],0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	return rndtgt,false,mx,my,0,0
 end
