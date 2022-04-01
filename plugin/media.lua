@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxmedia")
 local JS = {
 	clearelement = "clearMedia()",

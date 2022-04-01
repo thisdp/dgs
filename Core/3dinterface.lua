@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dx3dinterface","dgsBasic","dgsType3D","dgsTypeWorld3D")
 dgsRegisterProperties("dgs-dx3dinterface",{
 	blendMode = 			{	PArg.String		},

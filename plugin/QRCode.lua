@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxqrcode")
 QRCodeQueue = {}
 function dgsRequestQRCode(str,w,h)

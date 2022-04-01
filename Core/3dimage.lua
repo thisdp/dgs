@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dx3dimage","dgsBasic","dgsType3D","dgsTypeScreen3D")
 dgsRegisterProperties("dgs-dx3dimage",{
 	canBeBlocked = 			{	PArg.Bool, {

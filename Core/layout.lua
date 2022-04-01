@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxlayout","dgsBasic","dgsType2D")
 builtinLayoutStyle = {
 	horizontal = {

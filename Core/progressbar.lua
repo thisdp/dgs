@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxprogressbar","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxprogressbar",{
 	bgColor = 			{	PArg.Color	},

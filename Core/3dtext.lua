@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dx3dtext","dgsBasic","dgsType3D","dgsTypeScreen3D")
 dgsRegisterProperties("dgs-dx3dtext",{
 	alignment = 			{	{ PArg.String, PArg.String }	},

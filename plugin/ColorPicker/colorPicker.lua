@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxcolorpicker")
 dgsRegisterPluginType("dgs-dxcomponentselector")
 addEvent("onDgsColorPickerChange",true)

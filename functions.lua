@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 local loadstring = loadstring
 ---------------Speed Up
 local tableInsert,tableRemove,tableFind = table.insert,table.remove,table.find

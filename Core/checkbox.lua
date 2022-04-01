@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxcheckbox","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxcheckbox",{
 	alignment = 			{	{ PArg.String, PArg.String }	},

@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxscalepane","dgsBasic","dgsType2D")
 --Dx Functions
 local dxDrawImage = dxDrawImage

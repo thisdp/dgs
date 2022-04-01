@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxdynamicshader")
 dgsGlobalShaderTemplate = {}
 

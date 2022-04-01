@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxsvg")
 local dxDrawImageSection = __dxDrawImageSection
 local dxDrawImage = __dxDrawImage

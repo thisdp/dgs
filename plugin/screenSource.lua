@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxscreensource")
 GlobalScreenSource = false
 GlobalScreenSourceWidthFactor = 1

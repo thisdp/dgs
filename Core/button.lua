@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxbutton","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxbutton",{
 	alignment = 			{	{ PArg.String, PArg.String }	},

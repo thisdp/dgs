@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxmask")
 masks = {
 	circle="plugin/mask/mask-Circle.fx",

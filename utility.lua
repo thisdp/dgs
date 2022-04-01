@@ -1,3 +1,23 @@
+dgsStartUpMemoryMonitor = {}
+function dgsLogLuaMemory()
+	collectgarbage()
+	local columns,rows = getPerformanceStats("Lua memory","",getResourceName(getThisResource()))
+	local debugInfo = debug.getinfo(2)
+	dgsStartUpMemoryMonitor[#dgsStartUpMemoryMonitor+1] = {debugInfo.short_src,rows[1][3]}
+	debugInfo = nil
+	columns = nil
+	rows = nil
+	collectgarbage()
+end
+--[[
+setTimer(function()
+	dgsLogLuaMemory()
+	for i=1,#dgsStartUpMemoryMonitor do
+		iprint(dgsStartUpMemoryMonitor[i])
+	end
+end,1000,1)]]
+
+dgsLogLuaMemory()
 --------------------------------Events
 events = {
 	"onDgsCursorTypeChange",

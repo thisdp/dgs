@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxcanvas")
 local dxDrawImage = dxDrawImage
 g_DGSCanvasIndex = 0

@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxgradient")
 gradientShader = [[
 bool textureLoad = false;

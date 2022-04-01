@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxlabel","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxlabel",{
 	alignment = 			{	{ PArg.String, PArg.String }	},

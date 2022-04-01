@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxcustomrenderer")
 local loadstring = loadstring
 --Dx Functions

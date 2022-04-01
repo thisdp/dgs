@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dximage","dgsBasic","dgsType2D")
 dgsRegisterProperties('dgs-dximage',{
 	image = 			{	PArg.Material+PArg.String+PArg.Nil	},

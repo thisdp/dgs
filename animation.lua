@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 ---------------Speed Up
 local type = type
 local tonumber = tonumber

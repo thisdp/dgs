@@ -1,4 +1,5 @@
-﻿dgsRegisterPluginType("dgs-dxcmd")
+﻿dgsLogLuaMemory()
+dgsRegisterPluginType("dgs-dxcmd")
 cmdBaseWhiteList = {}
 commandHandlers = {}
 

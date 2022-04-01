@@ -1,4 +1,5 @@
-﻿dgs_MyIP = "Unknown"
+﻿dgsLogLuaMemory()
+dgs_MyIP = "Unknown"
 triggerServerEvent("DGSI_RequestIP",resourceRoot)
 addEventHandler("DGSI_ReceiveIP",resourceRoot,function(ip)
 	dgs_MyIP = ip

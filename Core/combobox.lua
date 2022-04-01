@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxcombobox","dgsBasic","dgsType2D")
 dgsRegisterType("dgs-dxcombobox-Box","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxcombobox",{

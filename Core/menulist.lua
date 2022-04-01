@@ -1,4 +1,4 @@
-
+dgsLogLuaMemory()
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage

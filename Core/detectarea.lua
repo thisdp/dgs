@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxdetectarea","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxdetectarea",{
 	checkFunctionImage = 	{	PArg.Material	},

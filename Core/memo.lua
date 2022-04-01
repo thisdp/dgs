@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxmemo","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxmemo",{
 	allowCopy = 		{	PArg.Bool	},

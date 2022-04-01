@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxwindow","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxwindow",{
 	alignment = 			{	{ PArg.String,PArg.String }	},

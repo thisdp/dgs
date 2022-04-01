@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxtab","dgsBasic")
 dgsRegisterType("dgs-dxtabpanel","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxtabpanel",{

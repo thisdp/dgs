@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxgridlist","dgsBasic","dgsType2D")
 dgsRegisterProperties('dgs-dxgridlist',{
 	autoSort = 				{	PArg.Bool	},

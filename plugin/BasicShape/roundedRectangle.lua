@@ -157,3 +157,4 @@ function dgsRoundRectGetBorderOnly(rectShader)
 	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetBorderOnly",1,"plugin dgs-dxroundrectangle")) end
 	return dgsElementData[rectShader].borderOnly
 end
+dgsLogLuaMemory()

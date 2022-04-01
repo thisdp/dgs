@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 local loadstring = loadstring
 -------------------------------------------------Parent/Layer Manager
 --Speed Up

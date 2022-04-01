@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxline","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxline",{
 	color = 				{	PArg.Color		},

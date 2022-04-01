@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxbrowser","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxbrowser",{
 	color = 				{	PArg.Color		},

@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 CursorData = {
 	size = 18,
 	enabled = false,

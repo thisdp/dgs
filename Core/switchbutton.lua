@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxswitchbutton","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxswitchbutton",{
 	clickType = 		{	PArg.Number	},

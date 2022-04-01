@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxradiobutton","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxradiobutton",{
 	alignment = 		{	{ PArg.String, PArg.String }	},

@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterType("dgs-dxscrollbar","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxscrollbar",{
 	arrowWidth = 				{	{ PArg.Number,PArg.Bool }	},
