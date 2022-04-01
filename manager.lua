@@ -238,12 +238,11 @@ function blurEditMemo()
 	end
 end
 
-function dgsBringToFront(dgsEle,mouse,dontMoveParent)
+function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 	local eleType = dgsIsType(dgsEle)
 	if not(eleType) then error(dgsGenAsrt(dgsEle,"dgsBringToFront",1,"dgs-dxelement")) end
 	local parent = dgsElementData[dgsEle].parent	--Get Parent
-	local lastFront = MouseData.focused
-	dgsFocus(dgsEle)
+	if not dontFocus then dgsFocus(dgsEle) end
 	if dgsElementData[dgsEle].changeOrder then
 		if not isElement(parent) then
 			if dgsTypeScreen3D[eleType] then
@@ -280,8 +279,8 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent)
 						tableInsert(children,parents)
 						if dgsElementType[parents] == "dgs-dxscrollpane" then
 							local scrollbar = dgsElementData[parents].scrollbars
-							dgsSetCurrentLayerIndex(scrollbar[1],1)
-							dgsSetCurrentLayerIndex(scrollbar[2],1)
+							dgsBringToFront(scrollbar[1],"left",_,true,false)
+							dgsBringToFront(scrollbar[2],"left",_,true,false)
 						end
 					end
 					parents = uparents
@@ -309,8 +308,8 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent)
 							tableInsert(layerTable,parents)
 							if dgsElementType[parents] == "dgs-dxscrollpane" then
 								local scrollbar = dgsElementData[parents].scrollbars
-								dgsSetCurrentLayerIndex(scrollbar[1],1)
-								dgsSetCurrentLayerIndex(scrollbar[2],1)
+								dgsBringToFront(scrollbar[1],"left",_,true,false)
+								dgsBringToFront(scrollbar[2],"left",_,true,false)
 							end
 						end
 						break
@@ -322,7 +321,6 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent)
 			end
 		end
 	end
-	lastFront = dgsEle
 	if mouse == "left" then
 		MouseData.clickl = dgsEle
 		if not MouseData.hitData2D[0] and MouseData.hitData3D[0] and MouseData.hitData3D[5] then
