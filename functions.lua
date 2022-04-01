@@ -310,8 +310,9 @@ function configPosSize(dgsEle,pos,size)
 end
 
 function calculateGuiPositionSize(dgsEle,x,y,relativep,sx,sy,relatives,notrigger)
-	local eleData = dgsElementData[dgsEle] or {}
-	local parent = dgsGetParent(dgsEle)
+	if not dgsElementData[dgsEle] then dgsElementData[dgsEle] = {} end
+	local eleData = dgsElementData[dgsEle]
+	local parent = eleData.parent
 	local psx,psy = sW,sH
 	local relt = eleData.relative
 	local oldRelativePos,oldRelativeSize
@@ -338,9 +339,11 @@ function calculateGuiPositionSize(dgsEle,x,y,relativep,sx,sy,relatives,notrigger
 		end
 	end
 	if x and y then
-		local absPos = eleData.absPos or {}
+		if not eleData.absPos then eleData.absPos = {} end
+		if not eleData.rltPos then eleData.rltPos = {} end
+		local absPos = eleData.absPos
 		local oldPosAbsx,oldPosAbsy = absPos[1],absPos[2]
-		local rltPos = eleData.rltPos or {}
+		local rltPos = eleData.rltPos
 		local oldPosRltx,oldPosRlty = rltPos[1],rltPos[2]
 		x,y = relativep and x*psx or x,relativep and y*psy or y
 		local abx,aby,relatx,relaty = x,y,x/psx,y/psy
@@ -354,9 +357,11 @@ function calculateGuiPositionSize(dgsEle,x,y,relativep,sx,sy,relatives,notrigger
 		end
 	end
 	if sx and sy then
-		local absSize = eleData.absSize or {}
+		if not eleData.absSize then eleData.absSize = {} end
+		if not eleData.rltSize then eleData.rltSize = {} end
+		local absSize = eleData.absSize
 		local oldSizeAbsx,oldSizeAbsy = absSize[1],absSize[2]
-		local rltSize = eleData.rltSize or {}
+		local rltSize = eleData.rltSize
 		local oldSizeRltx,oldSizeRlty = rltSize[1],rltSize[2]
 		sx,sy = relatives and sx*psx or sx,relatives and sy*(psy-titleOffset) or sy
 		local absx,absy,relatsx,relatsy = sx,sy,sx/psx,sy/(psy-titleOffset)
@@ -445,12 +450,10 @@ function dgsGetFont(dgsEle)
 end
 
 function dgsGetSystemFont(sres)
-
 	local res = sres or sourceResource or "global"
 	local style = styleManager.styles[res]
 	style = style.loaded[style.using]
 	local systemFont = style.systemFontElement
-	
 	return systemFont
 end
 

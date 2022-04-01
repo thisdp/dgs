@@ -308,6 +308,27 @@ function dgsScalePaneGetScrollBarState(scalepane)
 	if not dgsIsType(scalepane,"dgs-dxscalepane") then error(dgsGenAsrt(scalepane,"dgsScalePaneSetScrollBarState",1,"dgs-dxscalepane")) end
 	return dgsElementData[scalepane].scrollBarState[1],dgsElementData[scalepane].scrollBarState[2]
 end
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxscalepane"] = {
+	scrollBarThick = function(dgsEle,key,value,oldValue)
+		configScalePane(dgsEle)
+	end,
+	scrollBarState = function(dgsEle,key,value,oldValue)
+		configScalePane(dgsEle)
+	end,
+	scrollBarOffset = function(dgsEle,key,value,oldValue)
+		configScalePane(dgsEle)
+	end,
+	scrollBarLength = function(dgsEle,key,value,oldValue)
+		configScalePane(dgsEle)
+	end,
+	scale = function(dgsEle,key,value,oldValue)
+		configScalePane(dgsEle)
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

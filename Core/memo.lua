@@ -1494,6 +1494,50 @@ function dgsMemoRebuildTextTable(memo)
 	configMemo(memo)
 end
 
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxmemo"] = {
+	text = function(dgsEle,key,value,oldValue)
+		return handleDxMemoText(dgsEle,value)
+	end,
+	scrollBarThick = function(dgsEle,key,value,oldValue)
+		configMemo(dgsEle)
+	end,
+	scrollBarState = function(dgsEle,key,value,oldValue)
+		configMemo(dgsEle)
+	end,
+	textSize = function(dgsEle,key,value,oldValue)
+		dgsMemoRebuildTextTable(dgsEle)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+	textColor = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+	font = function(dgsEle,key,value,oldValue)
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translationFont = value
+			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translationFont = nil
+		end
+		dgsElementData[dgsEle].font = value
+		
+		dgsMemoRebuildTextTable(dgsEle)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+	wordWrap = function(dgsEle,key,value,oldValue)
+		if value then
+			dgsMemoRebuildWordWrapMapTable(dgsEle)
+		end
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+	showPos = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

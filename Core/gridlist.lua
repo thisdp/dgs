@@ -2248,11 +2248,12 @@ function dgsGridListGetItemBackGroundColor(gridlist,r,c,notSplitColor)
 	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemBackGroundColor",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
 	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemBackGroundColor",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
 	local c,r = c-c%1,r-r%1
-	if rData[r][c][13] then
+	local item = rData[r][c]
+	if item[13] then
 		if notSplitColor then
-			return rData[r][c][13][1],rData[r][c][13][2],rData[r][c][13][3]
+			return item[13][1],item[13][2],item[13][3]
 		else
-			return fromColor(rData[r][c][13][1]),fromColor(rData[r][c][13][2]),fromColor(rData[r][c][13][3])
+			return fromColor(item[13][1]),fromColor(item[13][2]),fromColor(item[13][3])
 		end
 	elseif rData[r][0] then
 		return rData[r][0][1],rData[r][0][2],rData[r][0][3]
@@ -2455,6 +2456,48 @@ function configGridList(gridlist)
 	dgsGridListUpdateRowMoveOffset(gridlist)
 	eleData.configNextFrame = false
 end
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxgridlist"] = {
+	columnHeight = function(dgsEle,key,value,oldValue)
+		configGridList(dgsEle)
+	end,
+	mode = function(dgsEle,key,value,oldValue)
+		configGridList(dgsEle)
+	end,
+	scrollBarThick = function(dgsEle,key,value,oldValue)
+		configGridList(dgsEle)
+	end,
+	scrollBarState = function(dgsEle,key,value,oldValue)
+		configGridList(dgsEle)
+	end,
+	leading = function(dgsEle,key,value,oldValue)
+		configGridList(dgsEle)
+	end,
+	scrollBarCoverColumn = function(dgsEle,key,value,oldValue)
+		configGridList(dgsEle)
+	end,
+	rowData = function(dgsEle,key,value,oldValue)
+		if dgsElementData[dgsEle].autoSort then
+			dgsElementData[dgsEle].nextRenderSort = true
+		end
+	end,
+	rowMoveOffset = function(dgsEle,key,value,oldValue)
+		dgsGridListUpdateRowMoveOffset(dgsEle)
+	end,
+	defaultSortFunctions = function(dgsEle,key,value,oldValue)
+		local sortFunction = dgsElementData[dgsEle].sortFunction
+		local oldDefSortFnc = oldValue
+		local oldUpperSortFnc = gridlistSortFunctions[oldDefSortFnc[1]]
+		local oldLowerSortFnc = gridlistSortFunctions[oldDefSortFnc[2]]
+		local defSortFnc = dgsElementData[dgsEle].defaultSortFunctions
+		local upperSortFnc = gridlistSortFunctions[defSortFnc[1]]
+		local lowerSortFnc = gridlistSortFunctions[defSortFnc[2]]
+		local oldSort = sortFunction == oldLowerSortFnc and lowerSortFnc or upperSortFnc
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

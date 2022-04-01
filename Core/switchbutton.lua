@@ -172,6 +172,15 @@ function dgsSwitchButtonGetText(switchbutton)
 	return dgsElementData[switchbutton].textOn,dgsElementData[switchbutton].textOff
 end
 
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxswitchbutton"] = {
+	state = function(dgsEle,key,value,oldValue)
+		triggerEvent("onDgsSwitchButtonStateChange",dgsEle,value,oldValue)
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

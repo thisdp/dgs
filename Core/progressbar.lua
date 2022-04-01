@@ -458,12 +458,12 @@ float radius = 0.2;
 float thickness = 0.02;
 bool isClockwise = false; //antiClockwise
 
-
 float4 blend(float4 c1, float4 c2){
 	float alp = c1.a+c2.a-c1.a*c2.a;
 	float3 color = (c1.rgb*c1.a*(1.0-c2.a)+c2.rgb*c2.a)/alp;
 	return float4(color,alp);
 }
+
 float4 circleShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float4 result = indicatorColor;
 	float4 bgColor = color;
@@ -549,6 +549,14 @@ technique circleTechnique{
 }
 ]]
 
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxprogressbar"] = {
+	progress = function(dgsEle,key,value,oldValue)
+		triggerEvent("onDgsProgressBarChange",dgsEle,value,oldValue)
+	end
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

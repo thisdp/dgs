@@ -840,6 +840,33 @@ function dgsComboBoxSort(combobox)
 	dgsElementData[combobox].itemData = itemData
 	return true
 end
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxcombobox"] = {
+	scrollBarThick = function(dgsEle,key,value,oldValue)
+		assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
+		local scrollbar = dgsElementData[dgsEle].scrollbar
+		configComboBox(dgsEle)
+	end,
+	listState = function(dgsEle,key,value,oldValue)
+		triggerEvent("onDgsComboBoxStateChange",dgsEle,value == 1 and true or false)
+	end,
+	viewCount = function(dgsEle,key,value,oldValue)
+		dgsComboBoxSetViewCount(dgsEle,value)
+	end,
+	itemHeight = function(dgsEle,key,value,oldValue)
+		if dgsElementData[dgsEle].viewCount then
+			dgsComboBoxSetViewCount(dgsEle,dgsElementData[dgsEle].viewCount)
+		end
+	end,
+	arrow = function (dgsEle,key,value,oldValue)
+		if dgsElementData[oldValue] and dgsElementData[oldValue].styleResource then 
+			destroyElement(oldValue)
+		end
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

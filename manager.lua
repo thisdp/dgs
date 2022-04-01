@@ -361,8 +361,6 @@ function dgsMoveToBack(dgsEle)
 	end
 end
 
-------------------------------------------------
-
 ------------------------------------------------Type Manager
 dgsType,dgsPluginType = {},{}
 
@@ -383,13 +381,11 @@ function dgsRegisterType(typeName,...)
 		if not _G[tag] then _G[tag] = {} end
 		_G[tag][typeName] = typeName
 	end
-	--dgsType[#dgsType+1] = typeName
 	dgsType[typeName] = typeName
 	return true
 end
 
 function dgsRegisterPluginType(typeName)
-	--dgsPluginType[#dgsPluginType+1] = typeName
 	dgsPluginType[typeName] = typeName
 end
 
@@ -459,349 +455,7 @@ function dgsRegisterDeprecatedFunction(fncNameOld,fncNameNew)
 end
 
 ------------------------------------------------Property Manager
-local dgsDataFunctions = {
-	["dgs-dxscrollbar"] = {
-		length = function(dgsEle,key,value,oldValue)
-			local absSize = dgsElementData[dgsEle].absSize
-			local w,h = absSize[1],absSize[2]
-			local isHorizontal = dgsElementData[dgsEle].isHorizontal
-			if (value[2] and value[1]*(isHorizontal and w-h*2 or h-w*2) or value[1]) < dgsElementData[dgsEle].minLength then
-				dgsElementData[dgsEle].length = {dgsElementData[dgsEle].minLength,false}
-			end
-		end,
-		scrollPosition = function(dgsEle,key,value,oldValue)
-			if oldValue then
-				if not dgsElementData[dgsEle].locked then
-					local grades = dgsElementData[dgsEle].grades
-					local scaler = dgsElementData[dgsEle].map
-					local nValue,oValue = value,oldValue
-					if grades then
-						nValue,oValue = nValue/100*grades+0.5,oValue/100*grades+0.5
-						nValue,oValue = nValue-nValue%1,oValue-oValue%1
-						dgsSetData(dgsEle,"currentGrade",nValue)
-						dgsElementData[dgsEle][key] = nValue/grades*100
-					else
-						dgsElementData[dgsEle][key] = nValue
-					end
-					triggerEvent("onDgsElementScroll",dgsEle,dgsEle,dgsElementData[dgsEle][key],oldValue,nValue,oValue)
-				else
-					dgsElementData[dgsEle][key] = oldValue
-				end
-			end
-		end,
-		grades = function(dgsEle,key,value,oldValue)
-			if value then
-				local currentGrade = dgsElementData[dgsEle].scrollPosition/100*value+0.5
-				dgsSetData(dgsEle,"currentGrade",currentGrade-currentGrade%1)
-			else
-				dgsSetData(dgsEle,"currentGrade",false)
-			end
-		end,
-	},
-	["dgs-dxgridlist"] = {
-		columnHeight = function(dgsEle,key,value,oldValue)
-			configGridList(dgsEle)
-		end,
-		mode = function(dgsEle,key,value,oldValue)
-			configGridList(dgsEle)
-		end,
-		scrollBarThick = function(dgsEle,key,value,oldValue)
-			configGridList(dgsEle)
-		end,
-		scrollBarState = function(dgsEle,key,value,oldValue)
-			configGridList(dgsEle)
-		end,
-		leading = function(dgsEle,key,value,oldValue)
-			configGridList(dgsEle)
-		end,
-		scrollBarCoverColumn = function(dgsEle,key,value,oldValue)
-			configGridList(dgsEle)
-		end,
-		rowData = function(dgsEle,key,value,oldValue)
-			if dgsElementData[dgsEle].autoSort then
-				dgsElementData[dgsEle].nextRenderSort = true
-			end
-		end,
-		rowMoveOffset = function(dgsEle,key,value,oldValue)
-			dgsGridListUpdateRowMoveOffset(dgsEle)
-		end,
-		defaultSortFunctions = function(dgsEle,key,value,oldValue)
-			local sortFunction = dgsElementData[dgsEle].sortFunction
-			local oldDefSortFnc = oldValue
-			local oldUpperSortFnc = gridlistSortFunctions[oldDefSortFnc[1]]
-			local oldLowerSortFnc = gridlistSortFunctions[oldDefSortFnc[2]]
-			local defSortFnc = dgsElementData[dgsEle].defaultSortFunctions
-			local upperSortFnc = gridlistSortFunctions[defSortFnc[1]]
-			local lowerSortFnc = gridlistSortFunctions[defSortFnc[2]]
-			local oldSort = sortFunction == oldLowerSortFnc and lowerSortFnc or upperSortFnc
-		end,
-	},
-	["dgs-dxscrollpane"] = {
-		scrollBarThick = function(dgsEle,key,value,oldValue)
-			configScrollPane(dgsEle)
-		end,
-		scrollBarState = function(dgsEle,key,value,oldValue)
-			configScrollPane(dgsEle)
-		end,
-		scrollBarOffset = function(dgsEle,key,value,oldValue)
-			configScrollPane(dgsEle)
-		end,
-		scrollBarLength = function(dgsEle,key,value,oldValue)
-			configScrollPane(dgsEle)
-		end,
-		ignoreParentTitle = function(dgsEle,key,value,oldValue)
-			configPosSize(dgsEle,false,true)
-			configScrollPane(dgsEle)
-		end,
-		ignoreTitle = function(dgsEle,key,value,oldValue)
-			local children = dgsGetChildren(dgsEle)
-			for i=1,#children do
-				if not dgsElementData[children[i]].ignoreParentTitle then
-					configPosSize(children[i],false,true)
-					configScrollPane(children[i])
-				end
-			end
-		end,
-	},
-	["dgs-dxswitchbutton"] = {
-		state = function(dgsEle,key,value,oldValue)
-			triggerEvent("onDgsSwitchButtonStateChange",dgsEle,value,oldValue)
-		end,
-	},
-	["dgs-dxcombobox"] = {
-		scrollBarThick = function(dgsEle,key,value,oldValue)
-			assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
-			local scrollbar = dgsElementData[dgsEle].scrollbar
-			configComboBox(dgsEle)
-		end,
-		listState = function(dgsEle,key,value,oldValue)
-			triggerEvent("onDgsComboBoxStateChange",dgsEle,value == 1 and true or false)
-		end,
-		viewCount = function(dgsEle,key,value,oldValue)
-			dgsComboBoxSetViewCount(dgsEle,value)
-		end,
-		itemHeight = function(dgsEle,key,value,oldValue)
-			if dgsElementData[dgsEle].viewCount then
-				dgsComboBoxSetViewCount(dgsEle,dgsElementData[dgsEle].viewCount)
-			end
-		end,
-		arrow = function (dgsEle,key,value,oldValue)
-			if dgsElementData[oldValue] and dgsElementData[oldValue].styleResource then 
-				destroyElement(oldValue)
-			end
-		end,
-	},
-	["dgs-dxtabpanel"] = {
-		selected = function(dgsEle,key,value,oldValue)
-			local old,new = oldValue,value
-			local tabs = dgsElementData[dgsEle].tabs
-			triggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
-			if isElement(tabs[new]) then
-				triggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
-			end
-		end,
-		tabPadding = function(dgsEle,key,value,oldValue)
-			local width = dgsElementData[dgsEle].absSize[1]
-			local change = value[2] and value[1]*width or value[1]
-			local old = oldValue[2] and oldValue[1]*width or oldValue[1]
-			local tabs = dgsElementData[dgsEle].tabs
-			dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*#tabs*2)
-		end,
-		tabGapSize = function(dgsEle,key,value,oldValue)
-			local width = dgsElementData[dgsEle].absSize[1]
-			local change = value[2] and value[1]*width or value[1]
-			local old = oldValue[2] and oldValue[1]*width or oldValue[1]
-			local tabs = dgsElementData[dgsEle].tabs
-			dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*mathMax((#tabs-1),1))
-		end,
-		tabAlignment = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].showPos = 0
-		end,
-		tabHeight = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].configNextFrame = true
-		end,
-	},
-	["dgs-dxtab"] = {
-		text = function(dgsEle,key,value,oldValue)
-			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationText = value
-				value = dgsTranslate(dgsEle,value,sourceResource)
-			else
-				dgsElementData[dgsEle]._translationText = nil
-			end
-			local tabpanel = dgsElementData[dgsEle].parent
-			local w = dgsElementData[tabpanel].absSize[1]
-			local t_minWid = dgsElementData[tabpanel].tabMinWidth
-			local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-			local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-			local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-			dgsElementData[dgsEle].text = tostring(value)
-			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
-			return triggerEvent("onDgsTextChange",dgsEle)
-		end,
-		textSize = function(dgsEle,key,value,oldValue)
-			local tabpanel = dgsElementData[dgsEle].parent
-			local w = dgsElementData[tabpanel].absSize[1]
-			local t_minWid = dgsElementData[tabpanel].tabMinWidth
-			local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-			local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-			local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
-		end,
-		font = function(dgsEle,key,value,oldValue)
-			--Multilingual
-			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationFont = value
-				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
-			else
-				dgsElementData[dgsEle]._translationFont = nil
-			end
-			dgsElementData[dgsEle].font = value
-			
-			local tabpanel = dgsElementData[dgsEle].parent
-			local w = dgsElementData[tabpanel].absSize[1]
-			local t_minWid = dgsElementData[tabpanel].tabMinWidth
-			local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-			local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-			local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-			dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
-		end,
-		width = function(dgsEle,key,value,oldValue)
-			local tabpanel = dgsElementData[dgsEle].parent
-			dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll+(value-oldValue))
-		end,
-	},
-	["dgs-dxedit"] = {
-		text = function(dgsEle,key,value,oldValue)
-			handleDxEditText(dgsEle,value)
-		end,
-		textSize = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].textFontLen = dxGetTextWidth(dgsElementData[dgsEle].text,value[1],dgsElementData[dgsEle].font)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		textColor = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		font = function(dgsEle,key,value,oldValue)
-			--Multilingual
-			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationFont = value
-				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
-			else
-				dgsElementData[dgsEle]._translationFont = nil
-			end
-			dgsElementData[dgsEle].font = value
-			
-			local eleData = dgsElementData[dgsEle]
-			eleData.textFontLen = dxGetTextWidth(eleData.text,eleData.textSize[1],eleData.font)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		padding = function(dgsEle,key,value,oldValue)
-			configEdit(dgsEle)
-		end,
-		showPos = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		masked = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolder = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-			--Multilingual
-			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationPlaceHolderText = value
-				value = dgsTranslate(dgsEle,value,sourceResource)
-			else
-				dgsElementData[dgsEle]._translationPlaceHolderText = nil
-			end
-			dgsElementData[dgsEle].placeHolder = tostring(value)
-		end,
-		placeHolderFont = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-			--Multilingual
-			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationPlaceHolderFont = value
-				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
-			else
-				dgsElementData[dgsEle]._translationPlaceHolderFont = nil
-			end
-			dgsElementData[dgsEle].placeHolderFont = value
-		end,
-		placeHolderVisibleWhenFocus = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolderColor = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolderColorcoded = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolderOffset = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolderTextSize = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-		placeHolderIgnoreRenderTarget = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
-	},
-	["dgs-dxmemo"] = {
-		text = function(dgsEle,key,value,oldValue)
-			return handleDxMemoText(dgsEle,value)
-		end,
-		scrollBarThick = function(dgsEle,key,value,oldValue)
-			configMemo(dgsEle)
-		end,
-		scrollBarState = function(dgsEle,key,value,oldValue)
-			configMemo(dgsEle)
-		end,
-		textSize = function(dgsEle,key,value,oldValue)
-			dgsMemoRebuildTextTable(dgsEle)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		textColor = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		font = function(dgsEle,key,value,oldValue)
-			--Multilingual
-			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationFont = value
-				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
-			else
-				dgsElementData[dgsEle]._translationFont = nil
-			end
-			dgsElementData[dgsEle].font = value
-			
-			dgsMemoRebuildTextTable(dgsEle)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		wordWrap = function(dgsEle,key,value,oldValue)
-			if value then
-				dgsMemoRebuildWordWrapMapTable(dgsEle)
-			end
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-		showPos = function(dgsEle,key,value,oldValue)
-			dgsElementData[dgsEle].updateTextRTNextFrame = true
-		end,
-	},
-	["dgs-dxprogressbar"] = {
-		progress = function(dgsEle,key,value,oldValue)
-			triggerEvent("onDgsProgressBarChange",dgsEle,value,oldValue)
-		end
-	},
-	["dgs-dx3dinterface"] = {
-		size = function(dgsEle,key,value,oldValue)
-			local temprt = dgsElementData[dgsEle].renderTarget
-			if isElement(temprt) then
-				destroyElement(temprt)
-			end
-			local renderTarget = dxCreateRenderTarget(value[1],value[2],true)
-			dgsSetData(dgsEle,"renderTarget",renderTarget)
-		end
-	},
-	["dgs-dxscalepane"] = {
-		scrollBarThick = function(dgsEle,key,value,oldValue)
-			configScalePane(dgsEle)
-		end,
-		scrollBarState = function(dgsEle,key,value,oldValue)
-			configScalePane(dgsEle)
-		end,
-		scrollBarOffset = function(dgsEle,key,value,oldValue)
-			configScalePane(dgsEle)
-		end,
-		scrollBarLength = function(dgsEle,key,value,oldValue)
-			configScalePane(dgsEle)
-		end,
-		scale = function(dgsEle,key,value,oldValue)
-			configScalePane(dgsEle)
-		end,
-	},
+dgsOnPropertyChange = {
 	["default"] = {
 		text = function(dgsEle,key,value,oldValue)
 			if type(value) == "table" then
@@ -979,16 +633,16 @@ function dgsGetData(dgsEle,key)
 end
 
 function dgsSetData(dgsEle,key,value,nocheck)
-	local dgsType,key = dgsElementType[dgsEle] or "",key or ""
-	if not (isElement(dgsEle) and dgsType) then return false end
+	local dgsType = dgsGetType(dgsEle)
+	if not (isElement(dgsEle) and dgsType and key) then return false end
 	if not dgsElementData[dgsEle] then dgsElementData[dgsEle] = {} end
 	local eleData = dgsElementData[dgsEle]
 	local oldValue = eleData[key]
 	if oldValue == value then return true end
 	eleData[key] = value
 	if nocheck then return true end
-	local dataHandlerList = dgsDataFunctions[dgsType] or dgsDataFunctions.default
-	local dataHandler = dataHandlerList[key] or dgsDataFunctions.default[key]
+	local dataHandlerList = dgsOnPropertyChange[dgsType] or dgsOnPropertyChange.default
+	local dataHandler = dataHandlerList[key] or dgsOnPropertyChange.default[key]
 	if dataHandler then dataHandler(dgsEle,key,value,oldValue) end
 	if eleData.propertyListener and eleData.propertyListener[key] then triggerEvent("onDgsPropertyChange",dgsEle,key,value,oldValue) end
 	return true
@@ -1240,9 +894,6 @@ function dgsEasingFunctionExists(name)
 	return easingBuiltIn[name] or (dgsEasingFunction[name] and true)
 end
 
-------------------------Animations Define
-animGUIList,moveGUIList,sizeGUIList,alphaGUIList = {},{},{},{}
-
 ------------------------DGS Property Saver
 dgsElementKeeper = {}
 function dgsSetElementKeeperEnabled(state)
@@ -1284,12 +935,7 @@ function DGSI_SaveData()
 		screen3d=dgsScreen3DTable,
 	},false)
 	--Animations
-	setElementData(root,"DGSI_Animations",{
-		anim=animGUIList,
-		move=moveGUIList,
-		size=sizeGUIList,
-		alpha=alphaGUIList,
-	},false)
+	setElementData(root,"DGSI_Animations",animQueue,false)
 	--Others
 	setElementData(root,"DGSI_SaveData",true,false)
 end
@@ -1442,11 +1088,7 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_LayerData")
 		
 		--Animations
-		local animData = getElementData(root,"DGSI_Animations") or {}
-		animGUIList = animData.anim
-		moveGUIList = animData.move
-		sizeGUIList = animData.size
-		alphaGUIList = animData.alpha
+		animQueue = getElementData(root,"DGSI_Animations") or {}
 		removeElementData(root,"DGSI_Animations")
 	end
 	--Others
@@ -1465,9 +1107,7 @@ addEventHandler("onClientResourceStop",resourceRoot,function()
 	end,false)
 end,false)
 
-addEventHandler("onClientResourceStart",resourceRoot,function()
-	DGSI_ReadData()
-end,false)
+addEventHandler("onClientResourceStart",resourceRoot,DGSI_ReadData,false)
 
 addEventHandler("onClientResourceStop",root,function(res)
 	if boundResource[res] then
@@ -1489,9 +1129,6 @@ addEventHandler("onClientResourceStop",root,function(res)
 		end
 	end
 end)
-
-
 ---
-
 dgsRegisterDeprecatedFunction("dgsGetDxGUINoParent","dgsGetElementsInLayer")
 dgsRegisterDeprecatedFunction("dgsGetDxGUIFromResource","dgsGetElementsFromResource")

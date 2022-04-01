@@ -1106,6 +1106,69 @@ addEventHandler("onClientGUIChanged",GlobalEdit,function()
 	end
 end,true)
 
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxedit"] = {
+	text = function(dgsEle,key,value,oldValue)
+		handleDxEditText(dgsEle,value)
+	end,
+	textSize = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].textFontLen = dxGetTextWidth(dgsElementData[dgsEle].text,value[1],dgsElementData[dgsEle].font)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+	textColor = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+	font = function(dgsEle,key,value,oldValue)
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translationFont = value
+			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translationFont = nil
+		end
+		dgsElementData[dgsEle].font = value
+		
+		local eleData = dgsElementData[dgsEle]
+		eleData.textFontLen = dxGetTextWidth(eleData.text,eleData.textSize[1],eleData.font)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+	end,
+	padding = function(dgsEle,key,value,oldValue)
+		configEdit(dgsEle)
+	end,
+	showPos = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+	masked = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+	placeHolder = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translationPlaceHolderText = value
+			value = dgsTranslate(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translationPlaceHolderText = nil
+		end
+		dgsElementData[dgsEle].placeHolder = tostring(value)
+	end,
+	placeHolderFont = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].updateTextRTNextFrame = true
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translationPlaceHolderFont = value
+			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translationPlaceHolderFont = nil
+		end
+		dgsElementData[dgsEle].placeHolderFont = value
+	end,
+	placeHolderVisibleWhenFocus = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+	placeHolderColor = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+	placeHolderColorcoded = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+	placeHolderOffset = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+	placeHolderTextSize = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+	placeHolderIgnoreRenderTarget = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateTextRTNextFrame = true end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

@@ -257,6 +257,17 @@ function dgs3DInterfaceGetAttachedOffsets(interface)
 end
 
 ----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dx3dinterface"] = {
+	size = function(dgsEle,key,value,oldValue)
+		local temprt = dgsElementData[dgsEle].renderTarget
+		if isElement(temprt) then destroyElement(temprt) end
+		local renderTarget = dxCreateRenderTarget(value[1],value[2],true)
+		dgsSetData(dgsEle,"renderTarget",renderTarget)
+	end
+}
+----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)

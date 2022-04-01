@@ -404,6 +404,37 @@ function dgsScrollPaneGetScrollBarState(scrollpane)
 	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetScrollBarState",1,"dgs-dxscrollpane")) end
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
 end
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxscrollpane"] = {
+	scrollBarThick = function(dgsEle,key,value,oldValue)
+		configScrollPane(dgsEle)
+	end,
+	scrollBarState = function(dgsEle,key,value,oldValue)
+		configScrollPane(dgsEle)
+	end,
+	scrollBarOffset = function(dgsEle,key,value,oldValue)
+		configScrollPane(dgsEle)
+	end,
+	scrollBarLength = function(dgsEle,key,value,oldValue)
+		configScrollPane(dgsEle)
+	end,
+	ignoreParentTitle = function(dgsEle,key,value,oldValue)
+		configPosSize(dgsEle,false,true)
+		configScrollPane(dgsEle)
+	end,
+	ignoreTitle = function(dgsEle,key,value,oldValue)
+		local children = dgsGetChildren(dgsEle)
+		for i=1,#children do
+			if not dgsElementData[children[i]].ignoreParentTitle then
+				configPosSize(children[i],false,true)
+				configScrollPane(children[i])
+			end
+		end
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

@@ -368,6 +368,91 @@ function dgsSetSelectedTab(tabpanel,id)
 	return false
 end
 
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxtabpanel"] = {
+	selected = function(dgsEle,key,value,oldValue)
+		local old,new = oldValue,value
+		local tabs = dgsElementData[dgsEle].tabs
+		triggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
+		if isElement(tabs[new]) then
+			triggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
+		end
+	end,
+	tabPadding = function(dgsEle,key,value,oldValue)
+		local width = dgsElementData[dgsEle].absSize[1]
+		local change = value[2] and value[1]*width or value[1]
+		local old = oldValue[2] and oldValue[1]*width or oldValue[1]
+		local tabs = dgsElementData[dgsEle].tabs
+		dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*#tabs*2)
+	end,
+	tabGapSize = function(dgsEle,key,value,oldValue)
+		local width = dgsElementData[dgsEle].absSize[1]
+		local change = value[2] and value[1]*width or value[1]
+		local old = oldValue[2] and oldValue[1]*width or oldValue[1]
+		local tabs = dgsElementData[dgsEle].tabs
+		dgsSetData(dgsEle,"tabLengthAll",dgsElementData[dgsEle].tabLengthAll+(change-old)*mathMax((#tabs-1),1))
+	end,
+	tabAlignment = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].showPos = 0
+	end,
+	tabHeight = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].configNextFrame = true
+	end,
+}
+
+dgsOnPropertyChange["dgs-dxtab"] = {
+	text = function(dgsEle,key,value,oldValue)
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translationText = value
+			value = dgsTranslate(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translationText = nil
+		end
+		local tabpanel = dgsElementData[dgsEle].parent
+		local w = dgsElementData[tabpanel].absSize[1]
+		local t_minWid = dgsElementData[tabpanel].tabMinWidth
+		local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
+		local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
+		local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
+		dgsElementData[dgsEle].text = tostring(value)
+		dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+		return triggerEvent("onDgsTextChange",dgsEle)
+	end,
+	textSize = function(dgsEle,key,value,oldValue)
+		local tabpanel = dgsElementData[dgsEle].parent
+		local w = dgsElementData[tabpanel].absSize[1]
+		local t_minWid = dgsElementData[tabpanel].tabMinWidth
+		local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
+		local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
+		local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
+		dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+	end,
+	font = function(dgsEle,key,value,oldValue)
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translationFont = value
+			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translationFont = nil
+		end
+		dgsElementData[dgsEle].font = value
+		
+		local tabpanel = dgsElementData[dgsEle].parent
+		local w = dgsElementData[tabpanel].absSize[1]
+		local t_minWid = dgsElementData[tabpanel].tabMinWidth
+		local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
+		local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
+		local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
+		dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+	end,
+	width = function(dgsEle,key,value,oldValue)
+		local tabpanel = dgsElementData[dgsEle].parent
+		dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll+(value-oldValue))
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

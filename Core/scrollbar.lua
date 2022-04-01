@@ -312,6 +312,48 @@ function dgsScrollBarGetTroughClickAction(scb)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetTroughClickAction",1,"dgs-dxscrollbar")) end
 	return dgsElementData[scrollbar].troughClickAction or "none"
 end
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxscrollbar"] = {
+	length = function(dgsEle,key,value,oldValue)
+		local absSize = dgsElementData[dgsEle].absSize
+		local w,h = absSize[1],absSize[2]
+		local isHorizontal = dgsElementData[dgsEle].isHorizontal
+		if (value[2] and value[1]*(isHorizontal and w-h*2 or h-w*2) or value[1]) < dgsElementData[dgsEle].minLength then
+			dgsElementData[dgsEle].length = {dgsElementData[dgsEle].minLength,false}
+		end
+	end,
+	scrollPosition = function(dgsEle,key,value,oldValue)
+		if oldValue then
+			if not dgsElementData[dgsEle].locked then
+				local grades = dgsElementData[dgsEle].grades
+				local scaler = dgsElementData[dgsEle].map
+				local nValue,oValue = value,oldValue
+				if grades then
+					nValue,oValue = nValue/100*grades+0.5,oValue/100*grades+0.5
+					nValue,oValue = nValue-nValue%1,oValue-oValue%1
+					dgsSetData(dgsEle,"currentGrade",nValue)
+					dgsElementData[dgsEle][key] = nValue/grades*100
+				else
+					dgsElementData[dgsEle][key] = nValue
+				end
+				triggerEvent("onDgsElementScroll",dgsEle,dgsEle,dgsElementData[dgsEle][key],oldValue,nValue,oValue)
+			else
+				dgsElementData[dgsEle][key] = oldValue
+			end
+		end
+	end,
+	grades = function(dgsEle,key,value,oldValue)
+		if value then
+			local currentGrade = dgsElementData[dgsEle].scrollPosition/100*value+0.5
+			dgsSetData(dgsEle,"currentGrade",currentGrade-currentGrade%1)
+		else
+			dgsSetData(dgsEle,"currentGrade",false)
+		end
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
