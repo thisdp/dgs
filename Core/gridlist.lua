@@ -2793,7 +2793,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					enabledInherited = false
 				end
 			end
-			local preHitElement = MouseData.hit
 			if cPosStart and cPosEnd then
 				for i=eleData.FromTo[2],eleData.FromTo[1],-1 do
 					for id = cPosStart,cPosEnd do

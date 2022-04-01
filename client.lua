@@ -708,13 +708,13 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		if eleData.renderEventCall then
 			triggerEvent("onDgsElementRender",source,xRT,yNRT,w,h)
 		end
-		if not eleData.childOutsideHit then
-			if MouseData.hit ~= source then
-				enabledInherited = false
-			end
-		end
 		local childrenCnt = children and #children or 0
 		if childrenCnt ~= 0 then
+			if not eleData.childOutsideHit then
+				if MouseData.hit ~= source then
+					enabledInherited = false
+				end
+			end
 			if dgsChildRenderer[eleType] then
 				dgsChildRenderer[eleType](children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,parentOffsetX,parentOffsetY)
 			elseif dgsChildRenderer[eleType] == nil then

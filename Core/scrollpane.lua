@@ -520,6 +520,11 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	dxSetRenderTarget(newRndTgt,true)
 	local scrollPaneOffsetX, scrollPaneOffsetY = mathCeil(mathAbs(OffsetX)), mathCeil(mathAbs(OffsetY))
 	local children = eleData.children
+	if not eleData.childOutsideHit then
+		if MouseData.hit ~= source then
+			enabledInherited = false
+		end
+	end
 	for i=1, #children do
 		local child = children[i]
 		local childAbsPos = dgsElementData[child].absPos
