@@ -1074,7 +1074,7 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 			end
 		end
 	else
-		dxDrawRectangle(posX,posY,width,height,color,isPostGUI)
+		dxDrawRectangle(posX,posY,width,height,color,postGUI)
 	end
 	return true
 end
