@@ -450,9 +450,9 @@ function dgsComboBoxGetItemData(combobox,i,key)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	if not key then
-		return itemData[i][-7]
+		return iData[i][-7]
 	else
-		return (itemData[i][-8] or {})[key] or false
+		return (iData[i][-8] or {})[key] or false
 	end
 	return false
 end
