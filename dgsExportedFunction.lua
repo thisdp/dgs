@@ -62,6 +62,8 @@ function dgsImportFunction(name,nameAs)
 					isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") and (getElementData(localPlayer,"DGS-DEBUG") == 3)
 				end
 			end,false)
+			local fncCallLoggerDef = {line=-1,file="Unknown",fncName="Unknown"}
+			local fncCallLoggerSelf = {line=-1,file="Unknown",fncName="Unknown"}
 			function DGSCallMT:__index(fncName)
 				if type(fncName) ~= 'string' then fncName = tostring(fncName) end
 				self[fncName] = function(...)
@@ -69,18 +71,28 @@ function dgsImportFunction(name,nameAs)
 					if isElement(dgsRoot) then
 						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
 						if isTraceDebug then
-							local data = debug.getinfo(2) or debug.getinfo(1)
-							functionCallLogger.line=data.currentline
-							functionCallLogger.file=data.source
-							functionCallLogger.fncName=fncName
-							local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
-							if isCreateFunction and isElement(retValue[1]) then
-								call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",functionCallLogger)
+							local data
+							local index = 5
+							repeat
+								data = data or debug.getinfo(index)
+								index = index-1
+								if index == 0 then break end
+							until data and data.source:sub(1,1) == "@"
+							if data then
+								functionCallLogger = fncCallLoggerSelf
+								functionCallLogger.line=data.currentline
+								functionCallLogger.file=data.source
+								functionCallLogger.fncName=fncName
+								local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
+								if isCreateFunction and isElement(retValue[1]) then
+									call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",functionCallLogger)
+								end
+								return unpack(retValue)
+							else
+								functionCallLogger = fncCallLoggerDef
 							end
-							return unpack(retValue)
-						else
-							return call(dgsImportHead.dgsResource, fncName, ...)
 						end
+						return call(dgsImportHead.dgsResource, fncName, ...)
 					else
 						dgsImportHead = nil
 						dgsRoot = nil
