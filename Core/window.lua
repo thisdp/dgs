@@ -1,27 +1,27 @@
 dgsRegisterType("dgs-dxwindow","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxwindow",{
-	alignment = 		{	{ PArg.String,PArg.String }	},
-	borderSize = 		{	PArg.Number	},
-	clip = 				{	PArg.Bool	},
-	color = 			{	PArg.Color	},
-	colorCoded = 		{	PArg.Bool	},
-	font = 				{	PArg.Font+PArg.String	},
-	ignoreTitle = 		{	PArg.Bool	},
-	image = 			{	PArg.Material+PArg.Nil	},
-	maxSize = 			{	{ PArg.Number,PArg.Number }	},
-	minSize = 			{	{ PArg.Number,PArg.Number }	},
-	movable = 			{	PArg.Bool	},
-	noCloseButton = 	{	PArg.Bool	},
-	sizable = 			{	PArg.Bool	},
-	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
-	text = 				{	PArg.Text	},
-	textColor = 		{	PArg.Color	},
-	textSize = 			{	{ PArg.Number,PArg.Number }	},
-	titleColor = 		{	PArg.Color	},
-	titleColorBlur = 	{	PArg.Color	},
-	titleHeight = 		{	PArg.Number	},
-	titleImage = 		{	PArg.Material+PArg.Nil	},
-	wordBreak = 		{	PArg.Bool	},
+	alignment = 			{	{ PArg.String,PArg.String }	},
+	borderSize = 			{	PArg.Number	},
+	clip = 					{	PArg.Bool	},
+	color = 				{	PArg.Color	},
+	colorCoded = 			{	PArg.Bool	},
+	font = 					{	PArg.Font+PArg.String	},
+	ignoreTitle = 			{	PArg.Bool	},
+	image = 				{	PArg.Material+PArg.Nil	},
+	maxSize = 				{	{ PArg.Number,PArg.Number }	},
+	minSize = 				{	{ PArg.Number,PArg.Number }	},
+	movable = 				{	PArg.Bool	},
+	closeButtonEnabled = 	{	PArg.Bool	},
+	sizable = 				{	PArg.Bool	},
+	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
+	text = 					{	PArg.Text	},
+	textColor = 			{	PArg.Color	},
+	textSize = 				{	{ PArg.Number,PArg.Number }	},
+	titleColor = 			{	PArg.Color	},
+	titleColorBlur = 		{	PArg.Color	},
+	titleHeight = 			{	PArg.Number	},
+	titleImage = 			{	PArg.Material+PArg.Nil	},
+	wordBreak = 			{	PArg.Bool	},
 })
 --Dx Functions
 local dxDrawImage = dxDrawImage
@@ -121,7 +121,7 @@ function dgsCreateWindow(...)
 		local closeIconTexture = nil
 
 		if style.closeIconImage and type(style.closeIconImage) == "table" then
-			closeIconTexture =  dgsCreateTextureFromStyle(using,res,style.closeIconImage)
+			closeIconTexture = dgsCreateTextureFromStyle(using,res,style.closeIconImage)
 		end
 		
 		local closeBtn = dgsCreateButton(0,0,40,24,"",false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
@@ -146,6 +146,7 @@ function dgsCreateWindow(...)
 		dgsElementData[closeBtn].alignment = {"center","center"}
 		dgsElementData[closeBtn].ignoreParentTitle = true
 	end
+	dgsElementData[window].closeButtonEnabled = createCloseButton
 	triggerEvent("onDgsCreate",window,sourceResource)
 	return window
 end
@@ -160,6 +161,7 @@ end
 function dgsWindowSetCloseButtonEnabled(window,bool)
 	if not(dgsGetType(window) == "dgs-dxwindow") then error(dgsGenAsrt(window,"dgsWindowSetCloseButtonEnabled",1,"dgs-dxwindow")) end
 	local closeButton = dgsElementData[window].closeButton
+	local closeButtonEnabled = dgsElementData[window].closeButtonEnabled
 	if bool then
 		if not isElement(closeButton) then
 			local cbSize = dgsElementData[window].closeButtonSize
@@ -195,6 +197,7 @@ function dgsWindowSetCloseButtonEnabled(window,bool)
 			return true
 		end
 	end
+	dgsElementData[window].closeButtonEnabled = bool
 	return false
 end
 
@@ -288,6 +291,14 @@ function dgsWindowGetVerticalAlign(window)
 	return alignment[2]
 end
 
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxwindow"] = {
+	closeButtonEnabled = function(dgsEle,key,value,oldValue)
+		dgsWindowSetCloseButtonEnabled(dgsEle,value)
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

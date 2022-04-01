@@ -125,6 +125,5 @@ function dgsConfigureObjectPreview()
 				end
 			end
 		end
-		--return self:_drawRenderTarget()
 	end]]
 end

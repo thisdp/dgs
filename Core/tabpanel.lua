@@ -60,6 +60,7 @@ local tonumber = tonumber
 local type = type
 local mathClamp = math.restrict
 local mathMin = math.min
+local mathMax = math.max
 local mathFloor = math.floor
 local mathInRange = math.inRange
 local tableInsert = table.insert
