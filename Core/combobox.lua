@@ -666,6 +666,7 @@ function configComboBox(combobox,remainBox)
 		dgsSetData(scrollbar,"length",{higLen,true})
 		local verticalScrollSize = eleData.scrollSize/(allHeight-boxsiz[2])
 		dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
+		dgsSetData(scrollbar,"moveType","sync")
 		dgsSetData(combobox,"configNextFrame",false)
 	end
 	---------------Caption edit

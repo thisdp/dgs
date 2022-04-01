@@ -251,6 +251,7 @@ function configScrollPane(scrollpane)
 	dgsSetData(scrollbar[1],"length",length)
 	local verticalScrollSize = eleData.scrollSize/(childBounding[2]-relSizY)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
+	dgsSetData(scrollbar[1],"moveType","sync")
 
 	local scbLengthHoz = eleData.scrollBarLength[2]
 	local widLen = 1-(childBounding[1]-relSizX)/childBounding[1]
@@ -259,6 +260,7 @@ function configScrollPane(scrollpane)
 	dgsSetData(scrollbar[2],"length",length)
 	local horizontalScrollSize = eleData.scrollSize*5/(childBounding[1]-relSizX)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
+	dgsSetData(scrollbar[2],"moveType","sync")
 	dgsSetData(scrollpane,"configNextFrame",false)
 	dgsSetData(scrollpane,"configRTNextFrame",true)
 end

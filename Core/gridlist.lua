@@ -2405,6 +2405,7 @@ function configGridList(gridlist)
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = eleData.scrollSize/(rowLength-rowShowRange)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
+	dgsSetData(scrollbar[1],"moveType","sync")
 
 	local scbLengthHoz = dgsElementData[gridlist].scrollBarLength[2]
 	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
@@ -2412,6 +2413,7 @@ function configGridList(gridlist)
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = eleData.scrollSize*5/(columnWidth-columnShowRange)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
+	dgsSetData(scrollbar[2],"moveType","sync")
 
 	local res = eleData.resource
 	if isElement(eleData.columnRT) then destroyElement(eleData.columnRT) end
