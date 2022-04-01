@@ -1144,7 +1144,7 @@ function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,ali
 			text = text:gsub("#%x%x%x%x%x%x","") or text
 		end
 		shadowFont = shadowFont or font or "default"
-		if not shadowIsOutline then
+		if not shadowIsOutline or shadowIsOutline == 0 then
 			dgsDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		elseif shadowIsOutline == true or shadowIsOutline == 1 then
 			dgsDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
