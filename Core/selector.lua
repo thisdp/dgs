@@ -55,6 +55,7 @@ Selector Data Structure:
 }
 ]]
 function dgsCreateSelector(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent,textColor,scaleX,scaleY,shadowoffsetx,shadowoffsety,shadowcolor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -80,7 +81,7 @@ function dgsCreateSelector(...)
 	local selector = createElement("dgs-dxselector")
 	dgsSetType(selector,"dgs-dxselector")
 		
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -118,7 +119,7 @@ function dgsCreateSelector(...)
 	}
 	dgsSetParent(selector,parent,true,true)
 	calculateGuiPositionSize(selector,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",selector,sourceResource)
+	triggerEvent("onDgsCreate",selector,sRes)
 	return selector
 end
 

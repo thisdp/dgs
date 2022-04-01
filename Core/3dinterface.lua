@@ -24,6 +24,7 @@ function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,roll,w,h,tex,r,g,b,a)
 end
 
 function dgsCreate3DInterface(...)
+	local sRes = sourceResource or resource
 	local x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,roll
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -79,7 +80,7 @@ function dgsCreate3DInterface(...)
 		outputDebugString(err,2)
 	end
 	dgsElementData[interface].renderTarget_parent = renderTarget
-	triggerEvent("onDgsCreate",interface,sourceResource)
+	triggerEvent("onDgsCreate",interface,sRes)
 	if not isElement(renderTarget) then
 		destroyElement(interface)
 		return false

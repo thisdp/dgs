@@ -33,6 +33,7 @@ local tonumber = tonumber
 local type = type
 
 function dgsCreateImage(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,img,relative,parent,color
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -51,7 +52,7 @@ function dgsCreateImage(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateImage",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateImage",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateImage",4,"number")) end
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local image = createElement("dgs-dximage")
 	dgsSetType(image,"dgs-dximage")
 	dgsElementData[image] = {
@@ -66,7 +67,7 @@ function dgsCreateImage(...)
 	dgsSetParent(image,parent,true,true)
 	dgsElementData[image].image = type(img) == "string" and dgsImageCreateTextureExternal(image,res,img) or img
 	calculateGuiPositionSize(image,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",image,res)
+	triggerEvent("onDgsCreate",image,sRes)
 	return image
 end
 

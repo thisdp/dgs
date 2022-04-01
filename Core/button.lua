@@ -47,6 +47,7 @@ local tonumber = tonumber
 local type = type
 
 function dgsCreateButton(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,normalImage,hoveringImage,clickedImage,normalColor,hoveringColor,clickedColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -76,7 +77,7 @@ function dgsCreateButton(...)
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -117,7 +118,7 @@ function dgsCreateButton(...)
 		},
 	}
 	dgsSetParent(button,parent,true,true)
-	dgsAttachToTranslation(button,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(button,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[button]._translationText = text
 		dgsSetData(button,"text",text)
@@ -125,7 +126,7 @@ function dgsCreateButton(...)
 		dgsSetData(button,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(button,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",button,sourceResource)
+	triggerEvent("onDgsCreate",button,sRes)
 	return button
 end
 

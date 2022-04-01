@@ -30,6 +30,7 @@ local type = type
 DGSI_RegisterMaterialType("dgs-dxbrowser","texture")
 
 function dgsCreateBrowser(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent,isLocal,isTransparent,resX,resY,color
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -66,7 +67,7 @@ function dgsCreateBrowser(...)
 	local size = dgsElementData[browser].absSize
 	resizeBrowser(browser,resX or size[1],resY or size[2])
 	dgsElementData[browser].browserSize = {resX or size[1],resY or size[2]}
-	triggerEvent("onDgsCreate",browser,sourceResource)
+	triggerEvent("onDgsCreate",browser,sRes)
 	addEventHandler("onDgsMouseMove",browser,function(x,y)
 		local size = dgsElementData[source].absSize
 		local brosize = dgsElementData[source].browserSize

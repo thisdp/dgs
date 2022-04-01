@@ -42,6 +42,7 @@ local mathAbs = math.abs
 local mathCeil = math.ceil
 
 function dgsCreateScrollPane(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -61,7 +62,7 @@ function dgsCreateScrollPane(...)
 	local scrollpane = createElement("dgs-dxscrollpane")
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -123,7 +124,7 @@ function dgsCreateScrollPane(...)
 	dgsSetData(scrollbar2,"minLength",10)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkScrollPaneScrollBar",false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScrollPaneScrollBar",false)
-	triggerEvent("onDgsCreate",scrollpane,sourceResource)
+	triggerEvent("onDgsCreate",scrollpane,sRes)
 	return scrollpane
 end
 

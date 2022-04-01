@@ -21,6 +21,7 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 
 function dgsCreate3DLine(...)
+	local sRes = sourceResource or resource
 	local x,y,z,color,lineWidth,maxDistance
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -53,7 +54,7 @@ function dgsCreate3DLine(...)
 		lineWidth = lineWidth or 1,
 		lineData = {},
 	}
-	triggerEvent("onDgsCreate",line3d,sourceResource)
+	triggerEvent("onDgsCreate",line3d,sRes)
 	return line3d
 end
 

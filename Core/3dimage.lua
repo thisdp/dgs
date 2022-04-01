@@ -42,6 +42,7 @@ local type = type
 local tableInsert = table.insert
 
 function dgsCreate3DImage(...)
+	local sRes = sourceResource or resource
 	local x,y,z,img,color,width,height,maxDistance
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -82,8 +83,8 @@ function dgsCreate3DImage(...)
 		isBlocked = false,
 		materialInfo = {},
 	}
-	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image3d,sourceResource,img) or img
-	triggerEvent("onDgsCreate",image3d,sourceResource)
+	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image3d,sRes,img) or img
+	triggerEvent("onDgsCreate",image3d,sRes)
 	return image3d
 end
 

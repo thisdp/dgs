@@ -44,6 +44,7 @@ local tonumber = tonumber
 
 --CheckBox State : true->checked; false->unchecked; nil->indeterminate;
 function dgsCreateCheckBox(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,text,state,relative,parent,textColor,scaleX,scaleY,nImageF,hImageF,cImageF,nColorF,hColorF,cColorF,nImageT,hImageT,cImageT,nColorT,hColorT,cColorT,nImageN,hImageN,cImageN,nColorN,hColorN,cColorN
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -87,7 +88,7 @@ function dgsCreateCheckBox(...)
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -142,7 +143,7 @@ function dgsCreateCheckBox(...)
 		alignment = {"left","center"},
 	}
 	dgsSetParent(cb,parent,true,true)
-	dgsAttachToTranslation(cb,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(cb,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[cb]._translationText = text
 		dgsSetData(cb,"text",text)
@@ -151,7 +152,7 @@ function dgsCreateCheckBox(...)
 	end
 	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
 	dgsAddEventHandler("onDgsCheckBoxChange",cb,"dgsCheckBoxCheckState",false)
-	triggerEvent("onDgsCreate",cb,sourceResource)
+	triggerEvent("onDgsCreate",cb,sRes)
 	return cb
 end
 

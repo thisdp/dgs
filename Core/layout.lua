@@ -112,6 +112,7 @@ builtinLayoutStyle = {
 }
 
 function dgsCreateLayout(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,layoutStyle,relative,parent
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -141,7 +142,6 @@ function dgsCreateLayout(...)
 			layoutStyle = tempLayoutStyle
 		end
 	end
-	local res = sourceResource or "global"
 	local layout = createElement("dgs-dxlayout")
 	dgsSetType(layout,"dgs-dxlayout")
 	dgsElementData[layout] = {
@@ -155,7 +155,7 @@ function dgsCreateLayout(...)
 	}
 	dgsSetParent(layout,parent,true,true)
 	calculateGuiPositionSize(layout,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",layout,res)
+	triggerEvent("onDgsCreate",layout,sRes)
 	dgsSetData(layout,"childOutsideHit",true)
 	dgsAddEventHandler("onDgsCreate",layout,"dgsLayoutChildrenCreateHandler")
 	dgsAddEventHandler("onDgsDestroy",layout,"dgsLayoutChildrenDestroyHandler")

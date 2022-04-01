@@ -9,7 +9,7 @@ dgsRegisterProperties("dgs-dxscrollbar",{
 	cursorColor = 				{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	cursorImage = 				{	PArg.Material+PArg.Nil	},
 	cursorWidth = 				{	{ PArg.Number,PArg.Bool }	},
-	grades = 					{	PArg.Number+PArg.Bool	},
+	grades = 					{	PArg.Number	},
 	imageRotation = 			{	{	{ PArg.Number, PArg.Number,PArg.Number }, { PArg.Number, PArg.Number, PArg.Number }	}	},
 	length = 					{	{ PArg.Number, PArg.Bool }	},
 	locked = 					{	PArg.Bool	},
@@ -49,6 +49,7 @@ local mathAbs = math.abs
 local mathClamp = math.restrict
 
 function dgsCreateScrollBar(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,nColorA,hColorA,cColorA,troughColor,nColorC,hColorC,cColorC
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -80,7 +81,7 @@ function dgsCreateScrollBar(...)
 	local scrollbar = createElement("dgs-dxscrollbar")
 	dgsSetType(scrollbar,"dgs-dxscrollbar")
 				
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -107,7 +108,7 @@ function dgsCreateScrollBar(...)
 		cursorColor = {nColorC or style.cursorColor[1],hColorC or style.cursorColor[2],cColorC or style.cursorColor[3]},
 		cursorImage = cursorImage,
 		cursorWidth = style.cursorWidth or {1,true},
-		grades = false,
+		grades = -1,
 		imageRotation = style.imageRotation,
 		isHorizontal = isHorizontal; --vertical or horizonta,
 		length = {30,false},
@@ -135,14 +136,17 @@ function dgsCreateScrollBar(...)
 	}
 	dgsSetParent(scrollbar,parent,true,true)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",scrollbar,sourceResource)
+	triggerEvent("onDgsCreate",scrollbar,sRes)
 	return scrollbar
 end
 
 function dgsScrollBarSetScrollPosition(scrollbar,pos,isGrade,isAbsolute)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetScrollPosition",1,"dgs-dxscrollbar")) end
 	if not(type(pos) == "number") then error(dgsGenAsrt(pos,"dgsScrollBarSetScrollPosition",2,"number")) end
-	pos = isGrade and dgsElementData[scrollbar].grades/grades*100 or pos
+	local grades = dgsElementData[scrollbar].grades
+	if grades and grades <= 0 then
+		pos = isGrade and grades/pos*100 or pos
+	end
 	local scaler = dgsElementData[scrollbar].map
 	if not isAbsolute then
 		pos = (pos-scaler[1])/(scaler[2]-scaler[1])*100
@@ -162,7 +166,7 @@ function dgsScrollBarGetScrollPosition(scrollbar,isGrade,isAbsolute)
 	end
 	if isGrade then
 		local grades = dgsElementData[scrollbar].grades
-		if not grades then return pos end
+		if not grades or grades <= 0 then return pos end
 		pos = mathFloor(pos/100*grades+0.5)
 	end
 	return pos
@@ -332,7 +336,7 @@ dgsOnPropertyChange["dgs-dxscrollbar"] = {
 				local grades = dgsElementData[dgsEle].grades
 				local scaler = dgsElementData[dgsEle].map
 				local nValue,oValue = value,oldValue
-				if grades then
+				if grades and grades > 0 then
 					nValue,oValue = nValue/100*grades+0.5,oValue/100*grades+0.5
 					nValue,oValue = nValue-nValue%1,oValue-oValue%1
 					dgsSetData(dgsEle,"currentGrade",nValue)

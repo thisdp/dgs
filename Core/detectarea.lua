@@ -29,6 +29,7 @@ detectAreaBuiltIn = {
 	]],
 }
 function dgsCreateDetectArea(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -44,7 +45,7 @@ function dgsCreateDetectArea(...)
 	if not x then
 		local detectarea = createElement("dgs-dxdetectarea")
 		dgsSetType(detectarea,"dgs-dxdetectarea")
-		triggerEvent("onDgsCreate",detectarea,sourceResource)
+		triggerEvent("onDgsCreate",detectarea,sRes)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 		dgsSetData(detectarea,"debugTextureSize",{sW/2,sH/2})
 		dgsSetData(detectarea,"debugModeAlpha",128)
@@ -60,7 +61,7 @@ function dgsCreateDetectArea(...)
 		dgsSetData(detectarea,"debugMode",false)
 		dgsSetData(detectarea,"debugModeAlpha",128)
 		calculateGuiPositionSize(detectarea,x,y,relative or false,w,h,relative or false,true)
-		triggerEvent("onDgsCreate",detectarea,sourceResource)
+		triggerEvent("onDgsCreate",detectarea,sRes)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 		return detectarea
 	end

@@ -79,6 +79,7 @@ index:	-3			-2			-1					0					1
 ]]
 
 function dgsCreateComboBox(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,nImage,hImage,cImage,nColor,hColor,cColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -109,7 +110,7 @@ function dgsCreateComboBox(...)
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -177,7 +178,7 @@ function dgsCreateComboBox(...)
 		autoSort = true,
 	}
 	dgsSetParent(combobox,parent,true,true)
-	dgsAttachToTranslation(combobox,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(combobox,resourceTranslation[sRes])
 	if type(caption) == "table" then
 		dgsElementData[combobox]._translationText = caption
 		dgsSetData(combobox,"caption",caption)
@@ -189,13 +190,13 @@ function dgsCreateComboBox(...)
 	dgsElementData[combobox].myBox = box
 	dgsElementData[box].myCombo = combobox
 	local boxsiz = dgsElementData[box].absSize
-	local bgRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sourceResource)
+	local bgRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sRes)
 	if bgRT ~= false then
 		dgsAttachToAutoDestroy(bgRT,combobox,-1)
 	else
 		outputDebugString(err,2)
 	end
-	local textRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sourceResource)
+	local textRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sRes)
 	if textRT ~= false then
 		dgsAttachToAutoDestroy(textRT,combobox,-2)
 	else
@@ -217,7 +218,7 @@ function dgsCreateComboBox(...)
 	dgsAddEventHandler("onDgsSizeChange",combobox,"updateBoxSizeWhenComboBoxResize",false)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
-	triggerEvent("onDgsCreate",combobox,sourceResource)
+	triggerEvent("onDgsCreate",combobox,sRes)
 	dgsSetData(combobox,"childOutsideHit",true)
 	return combobox
 end

@@ -53,6 +53,7 @@ local mathMin = math.min
 local mathMax = math.max
 
 function dgsCreateSwitchButton(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,textOn,textOff,state,relative,parent,textColorOn,textColorOff,scaleX,scaleY
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -79,7 +80,7 @@ function dgsCreateSwitchButton(...)
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -122,19 +123,19 @@ function dgsCreateSwitchButton(...)
 		isReverse = false,
 	}
 	dgsSetParent(switchbutton,parent,true,true)
-	dgsAttachToTranslation(switchbutton,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(switchbutton,resourceTranslation[sRes])
 	if type(textOn) == "table" then
 		dgsElementData[switchbutton]._translationtextOn = textOn
-		textOn = dgsTranslate(switchbutton,textOn,sourceResource)
+		textOn = dgsTranslate(switchbutton,textOn,sRes)
 	end
 	if type(textOff) == "table" then
 		dgsElementData[switchbutton]._translationtextOff = textOff
-		textOff = dgsTranslate(switchbutton,textOff,sourceResource)
+		textOff = dgsTranslate(switchbutton,textOff,sRes)
 	end
 	dgsElementData[switchbutton].textOn = tostring(textOn or "")
 	dgsElementData[switchbutton].textOff = tostring(textOff or "")
 	calculateGuiPositionSize(switchbutton,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",switchbutton,sourceResource)
+	triggerEvent("onDgsCreate",switchbutton,sRes)
 	return switchbutton
 end
 

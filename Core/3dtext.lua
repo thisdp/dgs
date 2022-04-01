@@ -40,6 +40,7 @@ local type = type
 local tableInsert = table.insert
 
 function dgsCreate3DText(...)
+	local sRes = sourceResource or resource
 	local x,y,z,text,color,font,sizeX,sizeY,maxDistance,colorCoded
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -63,7 +64,7 @@ function dgsCreate3DText(...)
 	tableInsert(dgsScreen3DTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -89,14 +90,14 @@ function dgsCreate3DText(...)
 		isBlocked = false,
 		isOnScreen = false,
 	}
-	dgsAttachToTranslation(text3d,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(text3d,resourceTranslation[sRes or getThisResource()])
 	if type(text) == "table" then
 		dgsElementData[text3d]._translationText = text
 		dgsSetData(text3d,"text",text)
 	else
 		dgsSetData(text3d,"text",tostring(text or ""))
 	end
-	triggerEvent("onDgsCreate",text3d,sourceResource)
+	triggerEvent("onDgsCreate",text3d,sRes)
 	return text3d
 end
 

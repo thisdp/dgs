@@ -95,6 +95,7 @@ Selection Mode
 3-> Cell Selection
 ]]
 function dgsCreateGridList(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent,columnHeight,bgColor,columnTextColor,columnColor,cColorR,hColorR,sColorR,bgImage,columnImage,nImageR,hImageR,sImageR
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -124,7 +125,7 @@ function dgsCreateGridList(...)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
 					
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -211,20 +212,20 @@ function dgsCreateGridList(...)
 		},
 	}
 	dgsSetParent(gridlist,parent,true,true)
-	dgsAttachToTranslation(gridlist,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(gridlist,resourceTranslation[sRes or resource])
 	dgsElementData[gridlist].configNextFrame = false
 	calculateGuiPositionSize(gridlist,x,y,relative,w,h,relative,true)
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]
 	local columnRT,rowRT,columnTextRT,rowTextRT
 	if abx*columnHeight ~= 0 then
-		columnRT,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist,sourceResource)
+		columnRT,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist,sRes)
 		if columnRT then
 			dgsAttachToAutoDestroy(columnRT,gridlist,-1)
 		else
 			outputDebugString(err,2)
 		end
-		columnTextRT,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist,sourceResource)
+		columnTextRT,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist,sRes)
 		if columnTextRT then
 			dgsAttachToAutoDestroy(columnTextRT,gridlist,-2)
 		else
@@ -232,13 +233,13 @@ function dgsCreateGridList(...)
 		end
 	end
 	if abx*(aby-columnHeight-scbThick) ~= 0 then
-		rowRT,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist,sourceResource)
+		rowRT,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist,sRes)
 		if rowRT then
 			dgsAttachToAutoDestroy(rowRT,gridlist,-3)
 		else
 			outputDebugString(err,2)
 		end
-		rowTextRT,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist,sourceResource)
+		rowTextRT,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist,sRes)
 		if rowTextRT then
 			dgsAttachToAutoDestroy(rowTextRT,gridlist,-4)
 		else
@@ -266,7 +267,7 @@ function dgsCreateGridList(...)
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(gridlist,"FromTo",{1,0})
 	dgsAddEventHandler("onDgsGridListSelect",gridlist,"dgsGridListCheckSelect",false)
-	triggerEvent("onDgsCreate",gridlist,sourceResource)
+	triggerEvent("onDgsCreate",gridlist,sRes)
 	return gridlist
 end
 

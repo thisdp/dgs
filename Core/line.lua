@@ -13,6 +13,7 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 
 function dgsCreateLine(...)
+	local sRes = sourceResource or resource
 	local x,y,z,color,width
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -40,7 +41,7 @@ function dgsCreateLine(...)
 	}
 	dgsSetParent(line,parent,true,true)
 	calculateGuiPositionSize(line,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",line,sourceResource)
+	triggerEvent("onDgsCreate",line,sRes)
 	return line
 end
 

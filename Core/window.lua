@@ -45,6 +45,7 @@ local type = type
 local applyColorAlpha = applyColorAlpha
 
 function dgsCreateWindow(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,text,relative,textColor,titleHeight,titleImage,titleColor,image,color,borderSize,noCloseButton
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -72,7 +73,7 @@ function dgsCreateWindow(...)
 	local window = createElement("dgs-dxwindow")
 	dgsSetType(window,"dgs-dxwindow")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -103,7 +104,7 @@ function dgsCreateWindow(...)
 		maxSize = {20000,20000},
 	}
 	dgsSetParent(window,nil,true,true)
-	dgsAttachToTranslation(window,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(window,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[window]._translationText = text
 		dgsSetData(window,"text",text)
@@ -148,7 +149,7 @@ function dgsCreateWindow(...)
 		dgsElementData[closeBtn].ignoreParentTitle = true
 	end
 	dgsElementData[window].closeButtonEnabled = createCloseButton
-	triggerEvent("onDgsCreate",window,sourceResource)
+	triggerEvent("onDgsCreate",window,sRes)
 	return window
 end
 

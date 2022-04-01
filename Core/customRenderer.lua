@@ -25,6 +25,7 @@ local createElement = createElement
 --This dgs element is usually used for plugins
 --Note: There will be nothing if you use this dgs element as a child element or a parent element
 function dgsCreateCustomRenderer(customFnc,width,height)
+	local sRes = sourceResource or resource
 	local cr = createElement("dgs-dxcustomrenderer")
 	dgsSetType(cr,"dgs-dxcustomrenderer")
 	if customFnc then
@@ -33,7 +34,7 @@ function dgsCreateCustomRenderer(customFnc,width,height)
 		dgsSetData(cr,"customRenderer",function() return false end)
 	end
 	if width and width > 0 and height and height > 0 then
-		local crRenderTarget,err = dxCreateRenderTarget(width,height,true,cr,sourceResource)
+		local crRenderTarget,err = dxCreateRenderTarget(width,height,true,cr,sRes)
 		if crRenderTarget then
 			dgsAttachToAutoDestroy(crRenderTarget,cr,-1)
 		else
@@ -44,7 +45,7 @@ function dgsCreateCustomRenderer(customFnc,width,height)
 	else
 		dgsSetData(cr,"renderTargetResolution",{0,0})
 	end
-	triggerEvent("onDgsCreate",cr,sourceResource)
+	triggerEvent("onDgsCreate",cr,sRes)
 	return cr
 end
 

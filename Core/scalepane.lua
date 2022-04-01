@@ -33,6 +33,7 @@ local mathLerp = math.lerp
 local mathClamp = math.restrict
 
 function dgsCreateScalePane(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -54,7 +55,7 @@ function dgsCreateScalePane(...)
 	local scalepane = createElement("dgs-dxscalepane")
 	dgsSetType(scalepane,"dgs-dxscalepane")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -123,7 +124,7 @@ function dgsCreateScalePane(...)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkScalePaneScrollBar",false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScalePaneScrollBar",false)
 	configScalePane(scalepane)
-	triggerEvent("onDgsCreate",scalepane,sourceResource)
+	triggerEvent("onDgsCreate",scalepane,sRes)
 	return scalepane
 end
 

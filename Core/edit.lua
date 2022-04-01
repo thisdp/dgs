@@ -92,6 +92,7 @@ local editsCount = 1
 local autoCompleteParameterFunction = {}
 ----
 function dgsCreateEdit(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor,selectMode
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -119,7 +120,7 @@ function dgsCreateEdit(...)
 	local edit = createElement("dgs-dxedit")
 	dgsSetType(edit,"dgs-dxedit")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -216,7 +217,7 @@ function dgsCreateEdit(...)
 	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)
 	dgsAddEventHandler("onDgsMouseMultiClick",edit,"dgsEditCheckMultiClick",false)
 	dgsAddEventHandler("onDgsEditPreSwitch",edit,"dgsEditCheckPreSwitch",false)
-	triggerEvent("onDgsCreate",edit,sourceResource)
+	triggerEvent("onDgsCreate",edit,sRes)
 	return edit
 end
 

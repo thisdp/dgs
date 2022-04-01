@@ -68,6 +68,7 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 
 function dgsCreateTabPanel(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent,tabHeight,bgImage,bgColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -93,7 +94,7 @@ function dgsCreateTabPanel(...)
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -139,7 +140,7 @@ function dgsCreateTabPanel(...)
 	dgsElementData[tabpanel].bgRT = bgRT
 	dgsElementData[tabpanel].textRT = textRT
 	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
-	triggerEvent("onDgsCreate",tabpanel,sourceResource)
+	triggerEvent("onDgsCreate",tabpanel,sRes)
 	return tabpanel
 end
 
@@ -148,6 +149,7 @@ function configTabPanelWhenResize()
 end
 
 function dgsCreateTab(...)
+	local sRes = sourceResource or resource
 	local text,tabpanel,scaleX,scaleY,textColor,bgImage,bgColor,nImage,hImage,cImage,nColor,hColor,cColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -171,7 +173,7 @@ function dgsCreateTab(...)
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
 						
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -219,10 +221,10 @@ function dgsCreateTab(...)
 	}
 	dgsSetParent(tab,tabpanel,true,true)
 	if eleData.selected == -1 then eleData.selected = id end
-	dgsAttachToTranslation(tab,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(tab,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[tab]._translationText = text
-		local wid = mathClamp(dxGetTextWidth(dgsTranslate(tab,text,sourceResource or resource),scaleX or 1,font),minwidth,maxwidth)
+		local wid = mathClamp(dxGetTextWidth(dgsTranslate(tab,text,sRes),scaleX or 1,font),minwidth,maxwidth)
 		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
 		dgsElementData[tab].width = wid
 	else

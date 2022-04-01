@@ -67,7 +67,7 @@ function dgsCreateLabel(...)
 	local label = createElement("dgs-dxlabel")
 	dgsSetType(label,"dgs-dxlabel")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -90,7 +90,7 @@ function dgsCreateLabel(...)
 		wordBreak = nil,
 	}
 	dgsSetParent(label,parent,true,true)
-	dgsAttachToTranslation(label,resourceTranslation[sourceResource or getThisResource()])
+	dgsAttachToTranslation(label,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[label]._translationText = text
 		dgsSetData(label,"text",text)
@@ -98,7 +98,7 @@ function dgsCreateLabel(...)
 		dgsSetData(label,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(label,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",label,sourceResource)
+	triggerEvent("onDgsCreate",label,sRes)
 	return label
 end
 

@@ -858,7 +858,7 @@ function dgsSetTranslationTable(name,tab)
 	if not(not table or type(tab) == "table") then error(dgsGenAsrt(tab,"dgsSetTranslationTable",1,"table/nil")) end
 	if tab then
 		LanguageTranslation[name] = tab
-		LanguageTranslationAttach[name] = LanguageTranslationAttach[name] or {}
+		if not LanguageTranslationAttach[name] then LanguageTranslationAttach[name] = {} end
 		dgsApplyLanguageChange(name,LanguageTranslation[name],LanguageTranslationAttach[name])
 	elseif dgsTranslationTableExists(name) then
 		LanguageTranslation[name] = false

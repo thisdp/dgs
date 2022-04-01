@@ -109,6 +109,7 @@ Map Table Structure:
 }
 ]]
 function dgsCreateMemo(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,bgImage,bgColor
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -135,7 +136,7 @@ function dgsCreateMemo(...)
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -226,7 +227,7 @@ function dgsCreateMemo(...)
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
-	triggerEvent("onDgsCreate",memo,sourceResource)
+	triggerEvent("onDgsCreate",memo,sRes)
 	return memo
 end
 

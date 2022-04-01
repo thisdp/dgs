@@ -41,6 +41,7 @@ local tostring = tostring
 local tonumber = tonumber
 
 function dgsCreateRadioButton(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,nImageF,hImageF,cImageF,nColorF,hColorF,cColorF,nImageT,hImageT,cImageT,nColorT,hColorT,cColorT
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -77,7 +78,7 @@ function dgsCreateRadioButton(...)
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
 			
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -121,13 +122,13 @@ function dgsCreateRadioButton(...)
 		alignment = {"left","center"},
 	}
 	dgsSetParent(rb,parent,true,true)
-	dgsAttachToTranslation(rb,resourceTranslation[sourceResource or resource])
+	dgsAttachToTranslation(rb,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[rb]._translationText = text
-		dgsElementData[rb].text = dgsTranslate(rb,text,sourceResource)
+		dgsElementData[rb].text = dgsTranslate(rb,text,sRes)
 	end
 	calculateGuiPositionSize(rb,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",rb,sourceResource)
+	triggerEvent("onDgsCreate",rb,sRes)
 	return rb
 end
 

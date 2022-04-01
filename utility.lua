@@ -270,8 +270,8 @@ function dxCreateEmptyTexture(width,height,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
-			local sourceResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",width,height)
+			local sResRoot = getResourceRootElement(sRes)
+			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",width,height)
 			texture = dgsPopElement("texture",sRes)
 		end
 	end
@@ -293,8 +293,8 @@ function dxCreateTexture(pathOrData,sRes)
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
 			local textureData = fileGetContent(pathOrData) or pathOrData
-			local sourceResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"texture",textureData)
+			local sResRoot = getResourceRootElement(sRes)
+			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",textureData)
 			texture = dgsPopElement("texture",sRes)
 		end
 	end
@@ -317,8 +317,8 @@ function dxCreateShader(pathOrData,sRes)
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
 			local shaderData = fileGetContent(pathOrData) or pathOrData
-			local sourceResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"shader",shaderData)
+			local sResRoot = getResourceRootElement(sRes)
+			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"shader",shaderData)
 			shader = dgsPopElement("shader",sRes)
 		end
 	end
@@ -349,8 +349,8 @@ function dxCreateFont(creationInfo,sRes)
 	if sRes ~= false then	--Read the data instead of create from path, and create remotely
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
-			local sourceResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"font",pathOrData,size,isbold,quality)
+			local sResRoot = getResourceRootElement(sRes)
+			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"font",pathOrData,size,isbold,quality)
 			font = dgsPopElement("font",sRes)
 		end
 	end
@@ -372,8 +372,8 @@ function dxCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
 	if sRes ~= false then	--Create remotely
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
-			local sourceResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,"rendertarget",w,h,isTransparent)
+			local sResRoot = getResourceRootElement(sRes)
+			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"rendertarget",w,h,isTransparent)
 			rt = dgsPopElement("rendertarget",sRes)
 		end
 	end
@@ -394,8 +394,8 @@ function createElement(eleType,sRes)
 	sRes = sRes or sourceResource
 	if sRes then	--Create remotely
 		if dgsElementKeeper[sRes] then
-			local sourceResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sourceResRoot,eleType)
+			local sResRoot = getResourceRootElement(sRes)
+			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,eleType)
 			ele = dgsPopElement(eleType,sRes)
 		end
 	end
@@ -613,7 +613,7 @@ function string.split(s,delim)
 end
 
 function string.getPath(res,path)
-	if res and res ~= "global" then
+	if res and res ~= "global" and res ~= getThisResource() then
 		path = path:gsub("\\","/")
 		if not path:find(":") then
 			path = ":"..getResourceName(res).."/"..path

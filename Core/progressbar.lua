@@ -236,6 +236,7 @@ local ProgressBarStyle = {
 }
 
 function dgsCreateProgressBar(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -266,7 +267,7 @@ function dgsCreateProgressBar(...)
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
 	
-	local res = sourceResource or "global"
+	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
@@ -291,7 +292,7 @@ function dgsCreateProgressBar(...)
 		mx,my = dxGetMaterialSize(indicatorImage)
 	end
 	dgsElementData[progressbar].indicatorUVSize = {mx,my}
-	triggerEvent("onDgsCreate",progressbar,sourceResource)
+	triggerEvent("onDgsCreate",progressbar,sRes)
 	return progressbar
 end
 
