@@ -992,9 +992,24 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	--Smooth Item
 	local _itemMoveOffset = DataTab.itemMoveOffset
 	local scrollbar = DataTab.scrollbar
-	local itemMoveHardness = dgsElementData[scrollbar].moveType == "slow" and DataTab.moveHardness[1] or DataTab.moveHardness[2]
-	DataTab.itemMoveOffsetTemp = mathLerp(itemMoveHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
-	local itemMoveOffset = DataTab.itemMoveOffsetTemp-DataTab.itemMoveOffsetTemp%1
+	
+	local itemMoveOffset = DataTab.itemMoveOffsetTemp
+	if DataTab.itemMoveOffsetTemp ~= _itemMoveOffset then
+		local mHardness = 1
+		local moveType = dgsElementData[scrollbar].moveType
+		if moveType == "slow" then
+			mHardness = DataTab.moveHardness[1]
+		elseif moveType == "fast" then
+			mHardness = DataTab.moveHardness[2]
+		end
+		itemMoveOffset = mathLerp(mHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
+		if _itemMoveOffset-itemMoveOffset <= 0.5 and _itemMoveOffset-itemMoveOffset >= -0.5 then
+			itemMoveOffset = _itemMoveOffset
+			dgsElementData[scrollbar].moveType = "sync"
+		end
+		DataTab.itemMoveOffsetTemp = itemMoveOffset
+		itemMoveOffset = itemMoveOffset-itemMoveOffset%1
+	end
 
 	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1
 	local whichRowToEnd = whichRowToStart+mathFloor(h/itemHeight)+1
