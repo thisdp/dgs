@@ -280,8 +280,8 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent)
 						tableInsert(children,parents)
 						if dgsElementType[parents] == "dgs-dxscrollpane" then
 							local scrollbar = dgsElementData[parents].scrollbars
-							dgsBringToFront(scrollbar[1],"left",_,true)
-							dgsBringToFront(scrollbar[2],"left",_,true)
+							dgsSetCurrentLayerIndex(scrollbar[1],1)
+							dgsSetCurrentLayerIndex(scrollbar[2],1)
 						end
 					end
 					parents = uparents
@@ -309,8 +309,8 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent)
 							tableInsert(layerTable,parents)
 							if dgsElementType[parents] == "dgs-dxscrollpane" then
 								local scrollbar = dgsElementData[parents].scrollbars
-								dgsBringToFront(scrollbar[1],"left",_,true)
-								dgsBringToFront(scrollbar[2],"left",_,true)
+								dgsSetCurrentLayerIndex(scrollbar[1],1)
+								dgsSetCurrentLayerIndex(scrollbar[2],1)
 							end
 						end
 						break
