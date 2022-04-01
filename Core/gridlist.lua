@@ -2540,12 +2540,19 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local _rowMoveOffset = eleData.rowMoveOffset
 	local rowMoveOffset = _rowMoveOffset
 	if eleData.rowMoveOffsetTemp ~= _rowMoveOffset then
-		local rowMoveHardness = dgsElementData[scb1].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-		eleData.rowMoveOffsetTemp = mathLerp(rowMoveHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
+		local mHardness = 1
+		local moveType = dgsElementData[scb1].moveType
+		if moveType == "slow" then
+			mHardness = eleData.moveHardness[1]
+		elseif moveType == "fast" then
+			mHardness = eleData.moveHardness[2]
+		end
+		eleData.rowMoveOffsetTemp = mathLerp(mHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
 		local rMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
 		dgsGridListUpdateRowMoveOffset(source)
 		if _rowMoveOffset-eleData.rowMoveOffsetTemp <= 0.5 and _rowMoveOffset-eleData.rowMoveOffsetTemp >= -0.5 then
 			eleData.rowMoveOffsetTemp = _rowMoveOffset
+			dgsElementData[scb1].moveType = "sync"
 		end
 		rowMoveOffset = rMoveOffset
 	end
@@ -2553,11 +2560,18 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local _columnMoveOffset = eleData.columnMoveOffset
 	local columnMoveOffset = _columnMoveOffset
 	if eleData.columnMoveOffsetTemp ~= _columnMoveOffset then
-		local columnMoveHardness  = dgsElementData[scb2].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-		eleData.columnMoveOffsetTemp = mathLerp(columnMoveHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
+		local mHardness = 1
+		local moveType = dgsElementData[scb2].moveType
+		if moveType == "slow" then
+			mHardness = eleData.moveHardness[1]
+		elseif moveType == "fast" then
+			mHardness = eleData.moveHardness[2]
+		end
+		eleData.columnMoveOffsetTemp = mathLerp(mHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
 		local cMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
 		if _columnMoveOffset-eleData.columnMoveOffsetTemp <= 0.5 and _columnMoveOffset-eleData.columnMoveOffsetTemp >= -0.5 then
 			eleData.columnMoveOffsetTemp = _columnMoveOffset
+			dgsElementData[scb2].moveType = "sync"
 		end
 		columnMoveOffset = cMoveOffset
 	end

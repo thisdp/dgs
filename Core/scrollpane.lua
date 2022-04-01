@@ -463,10 +463,17 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local _OffsetX = -maxX*dgsElementData[ scrollbar[2] ].scrollPosition*0.01
 	local OffsetX = eleData.horizontalMoveOffset
 	if eleData.horizontalMoveOffset ~= _OffsetX then
-		local xMoveHardness = dgsElementData[ scrollbar[2] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-		OffsetX = mathLerp(xMoveHardness,OffsetX,_OffsetX)
+		local mHardness = 1
+		local moveType = dgsElementData[ scrollbar[2] ].moveType
+		if moveType == "slow" then
+			mHardness = eleData.moveHardness[1]
+		elseif moveType == "fast" then
+			mHardness = eleData.moveHardness[2]
+		end
+		OffsetX = mathLerp(mHardness,OffsetX,_OffsetX)
 		if _OffsetX-OffsetX <= 0.5 and _OffsetX-OffsetX >= -0.5 then
 			OffsetX = _OffsetX
+			dgsElementData[ scrollbar[2] ].moveType = "sync"
 		end
 		if OffsetX >= 0 then OffsetX = 0 end
 		eleData.horizontalMoveOffset = OffsetX
@@ -475,10 +482,17 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local _OffsetY = -maxY*dgsElementData[ scrollbar[1] ].scrollPosition*0.01
 	local OffsetY = eleData.verticalMoveOffset
 	if eleData.verticalMoveOffset ~= _OffsetY then
-		local yMoveHardness = dgsElementData[ scrollbar[1] ].moveType == "slow" and eleData.moveHardness[1] or eleData.moveHardness[2]
-		OffsetY = mathLerp(yMoveHardness,OffsetY,_OffsetY)
+		local mHardness = 1
+		local moveType = dgsElementData[ scrollbar[1] ].moveType
+		if moveType == "slow" then
+			mHardness = eleData.moveHardness[1]
+		elseif moveType == "fast" then
+			mHardness = eleData.moveHardness[2]
+		end
+		OffsetY = mathLerp(mHardness,OffsetY,_OffsetY)
 		if _OffsetY-OffsetY <= 0.5 and _OffsetY-OffsetY >= -0.5 then
 			OffsetY = _OffsetY
+			dgsElementData[ scrollbar[1] ].moveType = "sync"
 		end
 		if OffsetY >= 0 then OffsetY = 0 end
 		eleData.verticalMoveOffset = OffsetY
