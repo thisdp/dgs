@@ -449,12 +449,12 @@ function dgsCoreRender()
 	end
 end
 
-function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visibleInherited,checkElement)
-	local isElementInside = false
+function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visibleInherited)
 	local eleData = dgsElementData[source]
 	local enabledInherited,enabledSelf = enabledInherited and eleData.enabled,eleData.enabled
 	local visible = eleData.visible
 	if visible and visibleInherited and isElement(source) then
+		local parentOffsetX,parentOffsetY
 		local eleType = dgsElementType[source]
 		if eleType == "dgs-dxscrollbar" then
 			local attachedToParent = eleData.attachedToParent
@@ -632,7 +632,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 						end
 					end
 				end
-				rt,disableOutline,_mx,_my,offx,offy = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
+				rt,disableOutline,_mx,_my,parentOffsetX,parentOffsetY = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
 				mx,my = _mx or mx,_my or my
 				if MouseData.hit then
 					if _hitElement and _hitElement ~= MouseData.hit then
@@ -655,7 +655,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 					end
 				end
 				rndtgt = rt or rndtgt
-				OffsetX,OffsetY = offx or OffsetX,offy or OffsetY
+				OffsetX,OffsetY = parentOffsetX or OffsetX,parentOffsetY or OffsetY
 			end
 			------------------------------------
 			if not eleData.functionRunBefore then
@@ -674,44 +674,20 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 					sideColor = applyColorAlpha(sideColor,parentAlpha)
 					local side = outlineData[1]
 					if side == "in" then
-						if outlineData[6] ~= false then
-							dxDrawLine(xRT,yRT+hSideSize,xRT+w,yRT+hSideSize,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[4] ~= false then
-							dxDrawLine(xRT+hSideSize,yRT,xRT+hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[5] ~= false then 
-							dxDrawLine(xRT+w-hSideSize,yRT,xRT+w-hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[7] ~= false then
-							dxDrawLine(xRT,yRT+h-hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI)
-						end
+						if outlineData[6] ~= false then dxDrawLine(xRT,yRT+hSideSize,xRT+w,yRT+hSideSize,sideColor,sideSize,isPostGUI) end
+						if outlineData[4] ~= false then dxDrawLine(xRT+hSideSize,yRT,xRT+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+						if outlineData[5] ~= false then dxDrawLine(xRT+w-hSideSize,yRT,xRT+w-hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+						if outlineData[7] ~= false then dxDrawLine(xRT,yRT+h-hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
 					elseif side == "center" then
-						if outlineData[6] ~= false then
-							dxDrawLine(xRT-hSideSize,yRT,xRT+w+hSideSize,yRT,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[4] ~= false then
-							dxDrawLine(xRT,yRT+hSideSize,xRT,yRT+h-hSideSize,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[5] ~= false then 
-							dxDrawLine(xRT+w,yRT+hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[7] ~= false then
-							dxDrawLine(xRT-hSideSize,yRT+h,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
-						end
+						if outlineData[6] ~= false then dxDrawLine(xRT-hSideSize,yRT,xRT+w+hSideSize,yRT,sideColor,sideSize,isPostGUI) end
+						if outlineData[4] ~= false then dxDrawLine(xRT,yRT+hSideSize,xRT,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
+						if outlineData[5] ~= false then dxDrawLine(xRT+w,yRT+hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
+						if outlineData[7] ~= false then dxDrawLine(xRT-hSideSize,yRT+h,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
 					elseif side == "out" then
-						if outlineData[6] ~= false then
-							dxDrawLine(xRT-sideSize,yRT-hSideSize,xRT+w+sideSize,yRT-hSideSize,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[4] ~= false then
-							dxDrawLine(xRT-hSideSize,yRT,xRT-hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[5] ~= false then 
-							dxDrawLine(xRT+w+hSideSize,yRT,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI)
-						end
-						if outlineData[7] ~= false then
-							dxDrawLine(xRT-sideSize,yRT+h+hSideSize,xRT+w+sideSize,yRT+h+hSideSize,sideColor,sideSize,isPostGUI)
-						end
+						if outlineData[6] ~= false then dxDrawLine(xRT-sideSize,yRT-hSideSize,xRT+w+sideSize,yRT-hSideSize,sideColor,sideSize,isPostGUI) end
+						if outlineData[4] ~= false then dxDrawLine(xRT-hSideSize,yRT,xRT-hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+						if outlineData[5] ~= false then dxDrawLine(xRT+w+hSideSize,yRT,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+						if outlineData[7] ~= false then dxDrawLine(xRT-sideSize,yRT+h+hSideSize,xRT+w+sideSize,yRT+h+hSideSize,sideColor,sideSize,isPostGUI) end
 					end
 				end
 			else
@@ -739,42 +715,16 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		end
 		local childrenCnt = children and #children or 0
 		if childrenCnt ~= 0 then
-			if eleType == "dgs-dxtabpanel" then
+			if dgsChildRenderer[eleType] then
+				dgsChildRenderer[eleType](children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,parentOffsetX,parentOffsetY)
+			elseif dgsChildRenderer[eleType] == nil then
 				for i=1,childrenCnt do
-					local child = children[i]
-					if dgsElementType[child] ~= "dgs-dxtab" then
-						isElementInside = renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
-					end
-				end
-			elseif eleType == "dgs-dxgridlist" then
-				for i=1,childrenCnt do
-					local child = children[i]
-					if not dgsElementData[child].attachedToGridList then
-						isElementInside = renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
-					end
-				end
-			elseif eleType == "dgs-dxscrollpane" then
-				local scrollPaneOffsetX, scrollPaneOffsetY = mathCeil(mathAbs(offx)), mathCeil(mathAbs(offy))
-	
-				for i=1, childrenCnt do
-					local child = children[i]
-					local childAbsPos = dgsElementData[child].absPos
-					local childAbsSize = dgsElementData[child].absSize
-					local childMinX, childMinY, childMaxX, childMaxY = childAbsPos[1], childAbsPos[2], childAbsPos[1] + childAbsSize[1], childAbsPos[2] + childAbsSize[2]
-
-					if (scrollPaneOffsetX + w > childMinX) and (scrollPaneOffsetX <= childMaxX) and (scrollPaneOffsetY + h > childMinY) and (scrollPaneOffsetY < childMaxY) then
-						isElementInside = renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
-					end
-				end
-			else
-				for i=1,childrenCnt do
-					isElementInside = renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,checkElement) or isElementInside
+					renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
 				end
 			end
 		end
 		dxSetBlendMode("blend")
 	end
-	return isElementInside or source == checkElement
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 

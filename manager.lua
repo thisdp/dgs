@@ -29,6 +29,7 @@ dgsRenderSetting = {
 }
 --Render Functions
 dgsRenderer = {}
+dgsChildRenderer = {}
 dgs3DRenderer = {}
 dgsCustomTexture = {}
 dgsBackEndRenderer = {

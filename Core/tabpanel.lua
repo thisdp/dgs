@@ -641,3 +641,15 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	return rndtgt,false,mx,my,0,0
 end
+
+----------------------------------------------------------------
+-------------------------Children Renderer----------------------
+----------------------------------------------------------------
+dgsChildRenderer["dgs-dxtabpanel"] = function(children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+	for i=1,#children do
+		local child = children[i]
+		if dgsElementType[child] ~= "dgs-dxtab" then
+			renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+		end
+	end
+end

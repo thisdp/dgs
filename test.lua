@@ -386,8 +386,8 @@ function createFullDemoOOP()
 			end
 		end
 	end)
-	
 end
+--createFullDemoOOP()
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
@@ -663,7 +663,7 @@ end
 function _3DTextTest()
 	local text = dgsCreate3DText(0,0,4,"DGS 3D Text Test",white)
 	dgsSetProperty(text,"fadeDistance",20)
-	dgsSetProperty(text,"shadow",{1,1,tocolor(0,0,0,255),true})
+	dgsSetProperty(text,"shadow",{1,1,tocolor(0,0,0,255),2})
 	dgsSetProperty(text,"outline",{"out",1,tocolor(255,255,255,255)})
 	dgs3DTextAttachToElement(text,localPlayer,0,5)
 	local label = dgsCreateLabel(0,0,0,0,"",false)

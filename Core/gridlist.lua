@@ -2801,7 +2801,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						if item and item[1] then
 							local offx,offy = item[2],item[3]
 							for a=1,#item[1] do
-								renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowTextRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible,checkElement)
+								renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowTextRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible)
 							end
 						end
 					end
@@ -3024,4 +3024,16 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	return rndtgt,false,mx,my,0,0
+end
+
+----------------------------------------------------------------
+-------------------------Children Renderer----------------------
+----------------------------------------------------------------
+dgsChildRenderer["dgs-dxgridlist"] = function(children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+	for i=1,#children do
+		local child = children[i]
+		if not dgsElementData[child].attachedToGridList then
+			renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+		end
+	end
 end

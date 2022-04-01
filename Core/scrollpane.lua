@@ -37,6 +37,8 @@ local tocolor = tocolor
 local type = type
 local mathLerp = math.lerp
 local mathClamp = math.restrict
+local mathAbs = math.abs
+local mathCeil = math.ceil
 
 function dgsCreateScrollPane(...)
 	local x,y,w,h,relative,parent
@@ -438,13 +440,17 @@ dgsOnPropertyChange["dgs-dxscrollpane"] = {
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
+dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
 	if MouseData.hit == source then
 		MouseData.topScrollable = source
 	end
 	if eleData.configNextFrame then
 		configScrollPane(source)
 	end
+	if eleData.configRTNextFrame then
+		configScrollPaneRT(source)
+	end
+	local bgColor = eleData.bgColor
 	local scrollbar = eleData.scrollbars
 	local scbThick = eleData.scrollBarThick
 	local xthick = dgsElementData[scrollbar[1]].visible and scbThick or 0
@@ -478,7 +484,6 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		eleData.verticalMoveOffset = OffsetY
 		OffsetY = OffsetY-OffsetY%1
 	end
-	
 	------------------------------------
 	if eleData.functionRunBefore then
 		local fnc = eleData.functions
@@ -488,21 +493,10 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	end
 	------------------------------------
 	local newRndTgt = eleData.renderTarget_parent
+	local drawTarget
 	if newRndTgt then
-		dxSetRenderTarget(rndtgt)
-		local bgColor = eleData.bgColor
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-		if eleData.bgImage then
-			bgColor = bgColor or 0xFFFFFFFF
-			dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI,rndtgt)
-			bgColor = applyColorAlpha(bgColor,parentAlpha)
-		elseif eleData.bgColor then
-			bgColor = applyColorAlpha(bgColor,parentAlpha)
-			dxDrawRectangle(x,y,relSizX,relSizY,bgColor,isPostGUI)
-		end
-		dxSetBlendMode("add")
 		local filter = eleData.filter
-		local drawTarget = newRndTgt
+		drawTarget = newRndTgt
 		if filter then
 			if type(filter) == "table" and isElement(filter[1]) then
 				if eleData.sourceTexture ~= newRndTgt then
@@ -522,15 +516,35 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		else
 			eleData.sourceTexture = false
 		end
+	end
+	dxSetRenderTarget(newRndTgt,true)
+	local scrollPaneOffsetX, scrollPaneOffsetY = mathCeil(mathAbs(OffsetX)), mathCeil(mathAbs(OffsetY))
+	local children = eleData.children
+	for i=1, #children do
+		local child = children[i]
+		local childAbsPos = dgsElementData[child].absPos
+		local childAbsSize = dgsElementData[child].absSize
+		local childMinX, childMinY, childMaxX, childMaxY = childAbsPos[1], childAbsPos[2], childAbsPos[1] + childAbsSize[1], childAbsPos[2] + childAbsSize[2]
+		if (scrollPaneOffsetX + w > childMinX) and (scrollPaneOffsetX <= childMaxX) and (scrollPaneOffsetY + h > childMinY) and (scrollPaneOffsetY < childMaxY) then
+			renderGUI(child,mx,my,enabledInherited,enabledSelf,newRndTgt,0,0,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+		end
+	end
+	dxSetRenderTarget(rndtgt)
+	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+	if bgColor then
+		bgColor = bgColor or 0xFFFFFFFF
+		local color = applyColorAlpha(bgColor,parentAlpha)
+		dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,color,isPostGUI,rndtgt)
+		bgColor = applyColorAlpha(bgColor,parentAlpha)
+	end
+	dxSetBlendMode("add")
+	if drawTarget then
 		dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 	end
-	--Let old render target finish rendering first, to reduce the situation of blinking.
-	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-	if eleData.configRTNextFrame then
-		configScrollPaneRT(source)
-	end
-	local newRndTgt = eleData.renderTarget_parent
-	dxSetRenderTarget(newRndTgt,true)
-	rndtgt = newRndTgt
 	return rndtgt,false,mx,my,OffsetX,OffsetY
 end
+
+----------------------------------------------------------------
+-------------------------Children Renderer----------------------
+----------------------------------------------------------------
+dgsChildRenderer["dgs-dxscrollpane"] = false	--Disable children renderer
