@@ -629,7 +629,7 @@ function dgsFocus(dgsEle)
 	return true
 end
 
-function dgsBlur(dgsEle,noTriggerGUI)
+function dgsBlur(dgsEle)
 	if not dgsEle then dgsEle = MouseData.focused end
 	if not isElement(dgsEle) or dgsEle ~= MouseData.focused then return true end
 	local eleType = dgsElementType[dgsEle]
@@ -637,7 +637,7 @@ function dgsBlur(dgsEle,noTriggerGUI)
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser()
 	else
-		blurEditMemo()
+		blurEditMemo(dgsEle)
 	end
 	triggerEvent("onDgsBlur",dgsEle)
 	return true

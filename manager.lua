@@ -228,8 +228,8 @@ function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
 	return true
 end
 
-function blurEditMemo()
-	local dgsType = dgsGetType(MouseData.focused)
+function blurEditMemo(dgsEle)
+	local dgsType = dgsGetType(dgsEle or MouseData.focused)
 	if dgsType == "dgs-dxedit" then
 		guiBlur(GlobalEdit)
 		dgsElementData[GlobalEdit].linkedDxEdit = nil
