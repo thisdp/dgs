@@ -1076,7 +1076,7 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 				local blendMode
 				if isInRndTgt and dgsBasicType == "shader" then
 					blendMode = dxGetBlendMode()
-					dxSetBlendMode("blend")
+					dxSetBlendMode("add")
 				end
 				if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
 					if debugMode then
