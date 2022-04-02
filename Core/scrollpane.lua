@@ -560,7 +560,6 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,color,isPostGUI,rndtgt)
 		bgColor = applyColorAlpha(bgColor,parentAlpha)
 	end
-	dxSetBlendMode("add")
 	if drawTarget then
 		dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 	end

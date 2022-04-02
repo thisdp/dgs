@@ -1076,7 +1076,7 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 				local blendMode
 				if isInRndTgt and dgsBasicType == "shader" then
 					blendMode = dxGetBlendMode()
-					dxSetBlendMode("add")
+					dxSetBlendMode("modulate_add")
 				end
 				if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
 					if debugMode then
@@ -1111,7 +1111,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 			local blendMode
 			if isInRndTgt and dgsBasicType == "shader" then
 				blendMode = dxGetBlendMode()
-				dxSetBlendMode("blend")
+				dxSetBlendMode("modulate_add")
 			end
 			if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
 				if debugMode then
