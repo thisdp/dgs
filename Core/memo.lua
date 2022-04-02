@@ -1685,7 +1685,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 							textRenderBuffer[textRenderBuffer.count][3] = yPos
 							textRenderBuffer[textRenderBuffer.count][4] = -showPos
 							textRenderBuffer[textRenderBuffer.count][5] = fontHeight+yPos
-							textRenderBuffer[textRenderBuffer.count][6] = textColor
+							textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(textColor,parentAlpha)
 							textRenderBuffer[textRenderBuffer.count][7] = txtSizX
 							textRenderBuffer[textRenderBuffer.count][8] = txtSizY
 							textRenderBuffer[textRenderBuffer.count][9] = font
@@ -1722,8 +1722,10 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		if eleData.textRT then
-			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			dxSetBlendMode("add")
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,white,isPostGUI)
 		end
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
@@ -1804,7 +1806,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					textRenderBuffer[textRenderBuffer.count][3] = yPos
 					textRenderBuffer[textRenderBuffer.count][4] = -showPos
 					textRenderBuffer[textRenderBuffer.count][5] = fontHeight+yPos
-					textRenderBuffer[textRenderBuffer.count][6] = textColor
+					textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(textColor,parentAlpha)
 					textRenderBuffer[textRenderBuffer.count][7] = txtSizX
 					textRenderBuffer[textRenderBuffer.count][8] = txtSizY
 					textRenderBuffer[textRenderBuffer.count][9] = font
@@ -1833,8 +1835,10 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
 		if eleData.textRT then
-			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			dxSetBlendMode("add")
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,white,isPostGUI)
 		end
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then

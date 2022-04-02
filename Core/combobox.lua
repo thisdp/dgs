@@ -1021,7 +1021,6 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	textRenderBuffer.count = 0
 	if DataTab.bgRT then
 		dxSetRenderTarget(DataTab.bgRT,true)
-		dxSetBlendMode("modulate_add")
 		local align = DataTab.itemAlignment
 		local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
 		if MouseData.entered == source and mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
@@ -1099,14 +1098,14 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],tRB[10],tRB[11],tRB[12],tRB[13],false,tRB[14],subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 		end
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		dxSetRenderTarget(rndtgt)
-		dxSetBlendMode("blend")
 		if DataTab.bgRT then
 			__dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
-		dxSetBlendMode("add")
 		if DataTab.textRT then
-			__dxDrawImage(x,y,w,h,DataTab.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			dxSetBlendMode("add")
+			__dxDrawImage(x,y,w,h,DataTab.textRT,0,0,0,white,isPostGUI)
 		end
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	end

@@ -1264,7 +1264,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		textX_Right = textX_Right-textX_Right%1
 		if not placeHolderIgnoreRndTgt then
 			if isPlaceHolderShown then
-				local pColor = eleData.placeHolderColor
+				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
 				local pFont = eleData.placeHolderFont
 				local pColorCoded = eleData.placeHolderColorCoded
 				local pHolderTextSizeX,pHolderTextSizeY
@@ -1278,9 +1278,9 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		if eleData.autoCompleteShow then
-			dgsDrawText(eleData.autoCompleteShow.result or "",textX_Left,0,textX_Right-posFix,h-sidelength*2,eleData.autoCompleteTextColor or applyColorAlpha(textColor,0.7),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+			dgsDrawText(eleData.autoCompleteShow.result or "",textX_Left,0,textX_Right-posFix,h-sidelength*2,eleData.autoCompleteTextColor or applyColorAlpha(textColor,0.7*parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 		end
-		dgsDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength*2,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
+		dgsDrawText(text,textX_Left,0,textX_Right-posFix,h-sidelength*2,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	dxSetRenderTarget(rndtgt)
@@ -1311,7 +1311,9 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 	end
 	
-	__dxDrawImage(px,py,pw,ph,eleData.textRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+	dxSetBlendMode("add")
+	__dxDrawImage(px,py,pw,ph,eleData.textRT,0,0,0,white,isPostGUI)
+	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 
 	if MouseData.focused == source and MouseData.EditMemoCursor then
 		local CaretShow = true

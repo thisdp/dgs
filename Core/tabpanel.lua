@@ -588,7 +588,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][3] = 0
 						textRenderBuffer[textRenderBuffer.count][4] = width+tabX
 						textRenderBuffer[textRenderBuffer.count][5] = height
-						textRenderBuffer[textRenderBuffer.count][6] = type(tabTextColor) == "table" and tabTextColor[selState] or tabTextColor
+						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(type(tabTextColor) == "table" and tabTextColor[selState] or tabTextColor,parentAlpha)
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
 						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
@@ -632,8 +632,10 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			__dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
 		end
 		if eleData.textRT then
-			__dxDrawImage(x,y,w,height,eleData.textRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
+			dxSetBlendMode("add")
+			__dxDrawImage(x,y,w,height,eleData.textRT,0,0,0,white,isPostGUI)
 		end
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		local tabEleData = dgsElementData[ tabs[selected] ]
 		local colors = applyColorAlpha(tabEleData.bgColor,parentAlpha)
 		dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)

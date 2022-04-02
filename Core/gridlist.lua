@@ -2524,8 +2524,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 
 	local font = eleData.font or systemFont
 	local columnHeight = eleData.columnHeight
-	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-	dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	local columnData,rowData = eleData.columnData,eleData.rowData
 	local columnCount,rowCount = #columnData,#rowData
 	local columnTextColor = eleData.columnTextColor
@@ -2609,7 +2607,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnPos = renderBuffer.columnPos
 	local columnEndPos = renderBuffer.columnEndPos
 	local columnShadow = eleData.columnShadow
-	dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
 	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 	if not eleData.mode then
 		dxSetRenderTarget(eleData.columnTextRT,true)
@@ -2620,11 +2617,11 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local mouseSelectColumn = -1
 		local cPosStart,cPosEnd
 		if columnShadow then
-			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],columnShadow[3],columnShadow[4],columnShadow[5]
+			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4],columnShadow[5]
 		end
 		for id = 1,#columnData do
 			local data = columnData[id]
-			local _columnTextColor = data[5] or columnTextColor
+			local _columnTextColor = applyColorAlpha(data[5] or columnTextColor,parentAlpha)
 			local _columnTextColorCoded = data[6] or colorCoded
 			local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
 			local _columnFont = data[9] or eleData.columnFont or font
@@ -2656,9 +2653,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 			end
 		end
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-		
-		
 		local preSelectLastFrame = eleData.preSelectLastFrame
 		local preSelect = eleData.preSelect
 		if mouseInsideRow then
@@ -2691,8 +2685,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local textBufferCnt = 0
 		local elementBuffer = renderBuffer.elementBuffer
 		local textBuffer = renderBuffer.textBuffer
-		
-		dxSetBlendMode("modulate_add")
 		if eleData.rowRT then
 			dxSetRenderTarget(eleData.rowRT,true)
 			if cPosStart and cPosEnd then
@@ -2703,10 +2695,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading--_RowHeight
 					local rowpos_1 = rowpos-rowHeight--_RowHeight
 					local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1,sW,rowpos
-					--[[if eleData.PixelInt then
-						_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
-					end]]
-
 					for id = cPosStart,cPosEnd do
 						local currentRowData = lc_rowData[id]
 						local text = currentRowData[1]
@@ -2781,7 +2769,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							currentTextBuffer[3] = textYS-textYS%1			--startY
 							currentTextBuffer[4] = textXE-textXE%1			--endX
 							currentTextBuffer[5] = textYE-textYE%1			--endY
-							currentTextBuffer[6] = type(currentRowData[2]) == "table" and currentRowData[2][rowState] or currentRowData[2]
+							currentTextBuffer[6] = applyColorAlpha(type(currentRowData[2]) == "table" and currentRowData[2][rowState] or currentRowData[2],parentAlpha)
 							currentTextBuffer[7] = _txtScalex
 							currentTextBuffer[8] = _txtScaley
 							currentTextBuffer[9] = _txtFont
@@ -2791,13 +2779,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					end
 				end
 			end
-			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		end
 		if eleData.rowTextRT then
 			dxSetRenderTarget(eleData.rowTextRT,true)
 			dxSetBlendMode("modulate_add")
 			if rowShadow then
-				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],rowShadow[3],rowShadow[4],rowShadow[5]
+				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],applyColorAlpha(rowShadow[3],parentAlpha),rowShadow[4],rowShadow[5]
 			end
 			for a=1,textBufferCnt do
 				local line = textBuffer[a]
@@ -2807,7 +2794,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				dgsDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 			
-			dxSetBlendMode("blend")
 			if not eleData.childOutsideHit then
 				if MouseData.hit ~= source then
 					enabledInherited = false
@@ -2829,16 +2815,18 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		dxSetRenderTarget(rndtgt)
+		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
+		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
 		if eleData.rowRT then
 			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
+		dxSetBlendMode("add")
 		if eleData.rowTextRT then
-			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowTextRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowTextRT,0,0,0,white,isPostGUI)
 		end
 		if eleData.columnTextRT then
-			dxDrawImage(x,y,w-scbThickV,columnHeight,eleData.columnTextRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			dxDrawImage(x,y,w-scbThickV,columnHeight,eleData.columnTextRT,0,0,0,white,isPostGUI)
 		end
-
 	elseif columnCount >= 1 then --NO RT
 		local whichColumnToStart,whichColumnToEnd = -1,-1
 		local _rowMoveOffset = (1-eleData.FromTo[1])*rowHeightLeadingTemp--_RowHeight
@@ -2869,6 +2857,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		column_x = cx-cpos[whichColumnToStart]+columnOffset
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
+		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
 		local relativeBlack = applyColorAlpha(black,parentAlpha)
 		if columnShadow then
 			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4],columnShadow[5]

@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 local loadstring = loadstring
 addEventHandler("onClientResourceStart",resourceRoot,function()
 ------------Full demo
@@ -386,6 +387,7 @@ function createFullDemoOOP()
 			end
 		end
 	end)
+	--demoUI.window.alpha = 0.2
 end
 --createFullDemoOOP()
 
@@ -1226,5 +1228,6 @@ function ChartTest()
 	end
 	dgsChartDatasetSetData(chart,datasetID,setdata)
 end
+
 
 end)
