@@ -217,7 +217,6 @@ local ProgressBarStyle = {
 			bgProgress = 1-bgProgress
 			progress = 1-progress
 		end
-		print(bgProgress)
 		dxSetShaderValue(circleBG,"progress",bgProgress)
 		dxSetShaderValue(circleBG,"isClockwise",eleData.isClockwise)
 		dxSetShaderValue(circleBG,"indicatorColor",fromcolor(eleData.bgColor,true,true))
