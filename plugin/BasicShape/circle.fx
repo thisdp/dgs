@@ -1,4 +1,4 @@
-#define PI 3.1415926
+#define PI 3.1415926535897932384626433832795
 #define PI2 PI*2
 float4 color = float4(1,1,1,1);
 float borderSoft = 0.01;

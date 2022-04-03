@@ -217,6 +217,7 @@ local ProgressBarStyle = {
 			bgProgress = 1-bgProgress
 			progress = 1-progress
 		end
+		print(bgProgress)
 		dxSetShaderValue(circleBG,"progress",bgProgress)
 		dxSetShaderValue(circleBG,"isClockwise",eleData.isClockwise)
 		dxSetShaderValue(circleBG,"indicatorColor",fromcolor(eleData.bgColor,true,true))
@@ -389,7 +390,7 @@ end
 
 ----------------Shader
 ProgressBarShaders["ring-round"] = [[
-#define PI2 6.283185
+#define PI2 6.283185307179586476925286766559
 float borderSoft = 0.02;
 float radius = 0.2;
 float thickness = 0.02;
@@ -452,7 +453,7 @@ technique DrawCircle{
 ]]
 
 ProgressBarShaders["ring-plain"] = [[
-#define PI2 6.283185
+#define PI2 6.283185307179586476925286766559
 float4 indicatorColor = float4(1,1,1,1);
 float borderSoft = 0.02;
 float progress = PI2;
