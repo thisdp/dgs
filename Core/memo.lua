@@ -145,7 +145,9 @@ function dgsCreateMemo(...)
 	style = style.memo
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[memo] = {
-		renderBuffer = {},
+		renderBuffer = {
+			parentAlphaLast = false,
+		},
 		bgColor = bgColor or style.bgColor,
 		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		bgColorBlur = style.bgColorBlur,
@@ -1699,7 +1701,13 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 		end
-		if eleData.textRT and eleData.updateTextRTNextFrame then
+		
+		if renderBuffer.parentAlphaLast ~= parentAlpha then
+			renderBuffer.parentAlphaLast = parentAlpha
+			eleData.updateTextRTNextFrame = true
+		end
+		
+		if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 			eleData.updateTextRTNextFrame = false
 			dxSetRenderTarget(eleData.textRT,true)
 			dxSetBlendMode("modulate_add")
