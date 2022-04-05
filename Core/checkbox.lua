@@ -17,6 +17,7 @@ dgsRegisterProperties("dgs-dxcheckbox",{
 	text = 					{	PArg.Text	},
 	textColor = 			{	PArg.Color	},
 	textPadding = 			{	{ PArg.Number, PArg.Bool }	},
+	textOffset = 			{	PArg.Nil, { PArg.Number, PArg.Number, PArg.Bool }, {	{ PArg.Number, PArg.Number, PArg.Bool }, { PArg.Number, PArg.Number, PArg.Bool }, { PArg.Number, PArg.Number, PArg.Bool }	}	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
 	wordBreak = 			{	PArg.Bool	},
 })
@@ -133,6 +134,7 @@ function dgsCreateCheckBox(...)
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
 		textPadding = style.textPadding or {2,false},
+		textOffset = nil,
 		buttonSize = style.buttonSize,
 		font = style.font or systemFont,
 		shadow = nil,
@@ -278,6 +280,16 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	dgsDrawText(text,px,y,px+w-1,y+h-1,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	local textOffset = eleData.textOffset
+	local offsetX,offsetY = 0,0
+	if textOffset then
+		local item = textOffset[colorimgid]
+		if type(item) == "table" then
+			offsetX,offsetY = item[3] and item[1]*w or item[1],item[3] and item[2]*h or item[2]
+		else
+			offsetX,offsetY = textOffset[3] and textOffset[1]*w or textOffset[1],textOffset[3] and textOffset[2]*h or textOffset[2]
+		end
+	end
+	dgsDrawText(text,px+offsetX,y+offsetY,px+w+offsetX,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	return rndtgt,false,mx,my,0,0
 end
