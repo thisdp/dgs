@@ -2153,6 +2153,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			if multiClick[button][state][1] == 2 then
 				triggerEvent("onDgsMouseDoubleClick",dgsEle,button,state,mouseX,mouseY)
 			end
+			if not isElement(dgsEle) then return end
 			triggerEvent("onDgsMouseMultiClick",dgsEle,button,state,mouseX,mouseY,multiClick[button][state][1])
 			multiClick[button][state][3] = setTimer(function(button,state)
 				multiClick[button][state] = {0,false,false}
