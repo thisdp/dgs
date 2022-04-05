@@ -189,6 +189,7 @@ function dgsCreateEdit(...)
 		
 		renderBuffer = {
 			placeHolderState = false,
+			parentAlphaLast = false,
 		},
 	}
 	dgsSetParent(edit,parent,true,true)
@@ -1175,6 +1176,8 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
+	local renderBuffer = eleData.renderBuffer
+
 	local bgImage = eleData.isFocused and eleData.bgImage or (eleData.bgImageBlur or eleData.bgImage)
 	local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
 	bgColor = applyColorAlpha(bgColor,parentAlpha)
@@ -1251,11 +1254,17 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,textColor,lineWidth)
 		end
 	end
+	
 	local isPlaceHolderShown = text == "" and placeHolder ~= "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) 
-	if eleData.placeHolderState ~= isPlaceHolderShown then
-		eleData.placeHolderState = isPlaceHolderShown
+	if renderBuffer.placeHolderState ~= isPlaceHolderShown then
+		renderBuffer.placeHolderState = isPlaceHolderShown
 		eleData.updateTextRTNextFrame = true
 	end
+	if renderBuffer.parentAlphaLast ~= parentAlpha then
+		renderBuffer.parentAlphaLast = parentAlpha
+		eleData.updateTextRTNextFrame = true
+	end
+	
 	if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 		eleData.updateTextRTNextFrame = false
 		dxSetBlendMode("modulate_add")
