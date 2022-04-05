@@ -1546,6 +1546,7 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
+	local renderBuffer = eleData.renderBuffer
 	if MouseData.hit == source and MouseData.focused == source then
 		MouseData.topScrollable = source
 	end
