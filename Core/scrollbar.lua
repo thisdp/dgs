@@ -417,7 +417,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	colorImageIndex[5] = 1
 
 	local slotRange
-	local scrollArrow =  eleData.scrollArrow
+	local scrollArrow = eleData.scrollArrow
 	local cursorWidth,troughWidth,arrowWidth = eleData.cursorWidth,eleData.troughWidth,eleData.arrowWidth
 	local imgRot = eleData.imageRotation
 	local troughPadding,cursorPadding,arrowPadding
