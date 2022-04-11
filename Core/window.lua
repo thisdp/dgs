@@ -16,6 +16,7 @@ dgsRegisterProperties("dgs-dxwindow",{
 	sizable = 				{	PArg.Bool	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Bool+PArg.Nil }, PArg.Nil	},
 	text = 					{	PArg.Text	},
+	textOffset =			{	{ PArg.Number, PArg.Number, PArg.Bool+PArg.Nil }, PArg.Nil },
 	textColor = 			{	PArg.Color	},
 	textSize = 				{	{ PArg.Number,PArg.Number }	},
 	titleColor = 			{	PArg.Color	},
@@ -90,6 +91,7 @@ function dgsCreateWindow(...)
 		image = image or dgsCreateTextureFromStyle(using,res,style.image),
 		color = tonumber(color) or style.color,
 		textSize = style.textSize,
+		textOffset = nil,	--nil if don't set
 		titleHeight = tonumber(titleHeight) or style.titleHeight,
 		borderSize = tonumber(borderSize) or style.borderSize,
 		ignoreTitle = false,
@@ -320,23 +322,19 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local font = eleData.font or systemFont
 	local textColor = applyColorAlpha(eleData.textColor,parentAlpha)
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
+	local textOffset = eleData.textOffset
+	if textOffset then
+		x = x+(textOffset[3] and textOffset[1]*w or textOffset[1])
+		y = y+(textOffset[3] and textOffset[2]*h or textOffset[2])
+	end
 	local clip,wordBreak,colorCoded = eleData.clip,eleData.wordBreak,eleData.colorCoded
 	local text = eleData.text
 	local shadow = eleData.shadow
+	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 	if shadow then
-		local shadowoffx,shadowoffy,shadowc,shadowIsOutline = shadow[1],shadow[2],shadow[3],shadow[4]
-		local textX,textY = x,y
-		if shadowoffx and shadowoffy and shadowc then
-			local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
-			local shadowc = applyColorAlpha(shadowc,parentAlpha)
-			dgsDrawText(shadowText,textX+shadowoffx,textY+shadowoffy,textX+w+shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-			if shadowIsOutline then
-				dgsDrawText(shadowText,textX-shadowoffx,textY+shadowoffy,textX+w-shadowoffx,textY+titsize+shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-				dgsDrawText(shadowText,textX-shadowoffx,textY-shadowoffy,textX+w-shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-				dgsDrawText(shadowText,textX+shadowoffx,textY-shadowoffy,textX+w+shadowoffx,textY+titsize-shadowoffy,shadowc,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI)
-			end
-		end
+		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
+		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	dgsDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,eleData.colorCoded)
+	dgsDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	return rndtgt,false,mx,my,0,0
 end
