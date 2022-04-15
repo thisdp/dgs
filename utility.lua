@@ -1140,26 +1140,27 @@ function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,ali
 		end
 	end
 	if shadowOffsetX then
+		local shadowText = text
 		if colorCoded then
-			text = text:gsub("#%x%x%x%x%x%x","") or text
+			shadowText = shadowText:gsub("#%x%x%x%x%x%x","") or shadowText
 		end
 		shadowFont = shadowFont or font or "default"
 		if not shadowIsOutline or shadowIsOutline == 0 then
-			dgsDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		elseif shadowIsOutline == true or shadowIsOutline == 1 then
-			dgsDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		elseif shadowIsOutline == 2 then
-			dgsDrawText(text,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX,topY+shadowOffsetY,rightX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX-shadowOffsetX,topY,rightX-shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX,topY-shadowOffsetY,rightX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
-			dgsDrawText(text,leftX+shadowOffsetX,topY,rightX+shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX+shadowOffsetX,topY+shadowOffsetY,rightX+shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX-shadowOffsetX,topY+shadowOffsetY,rightX-shadowOffsetX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX-shadowOffsetX,topY-shadowOffsetY,rightX-shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX+shadowOffsetX,topY-shadowOffsetY,rightX+shadowOffsetX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX,topY+shadowOffsetY,rightX,bottomY+shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX-shadowOffsetX,topY,rightX-shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX,topY-shadowOffsetY,rightX,bottomY-shadowOffsetY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
+			dgsDrawText(shadowText,leftX+shadowOffsetX,topY,rightX+shadowOffsetX,bottomY,shadowColor,scaleX or 1,scaleY or 1,shadowFont,alignX or "left",alignY or "top",clip,wordBreak,postGUI,false,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing)
 		end
 	end
 	if not dxDrawText(text,leftX,topY,rightX,bottomY,color,scaleX or 1,scaleY or 1,font or "default",alignX or "left",alignY or "top",clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing) then
@@ -1228,9 +1229,25 @@ function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,
 		if not _n then break end
 	end
 	return textTable
+end]]
+--[[
+local richTextMeta = {
+	insert = function(text,isColorCoded,textSizeX,textSizeY,font)
+		while text do
+			
+		end
+	end,
+}
+function dgsCreateRichText(defaultTextSizeX,defaultTextSizeY,defaultFont,defaultColor)
+	return {
+		textSizeX = defaultTextSizeX or 1,
+		textSizeY = defaultTextSizeY or 1,
+		font = defaultFont or "default",
+		color = defaultColor or white,
+	}
 end
 
-function dgsDrawText(buffer,x,y)
+function dgsDrawRichText(buffer,x,y)
 	for line=1,#buffer do
 		local l = buffer[line]
 		for index=1,#l do
@@ -1239,7 +1256,11 @@ function dgsDrawText(buffer,x,y)
 			dxDrawText(text,x+offx,y+offy,_,_,color)
 		end
 	end	
-end]]
+end
+local rt = dgsCreateTextBuffer("123#FF0000123")
+addEventHandler("onClientRender",root,function()
+	dgsDrawRichText(rt,10,10)
+end)]]
 --------------------------------Other Utility
 function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)
