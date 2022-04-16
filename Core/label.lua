@@ -39,6 +39,7 @@ local tonumber = tonumber
 local type = type
 
 function dgsCreateLabel(...)
+	local sRes = sourceResource or resource
 	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,shadowOffsetX,shadowOffsetY,shadowColor,hAlign,vAlign
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
