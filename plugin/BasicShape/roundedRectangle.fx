@@ -1,7 +1,9 @@
+#define PI 3.1415926535897932384626433832795
 texture sourceTexture;
 float4 color = float4(1,1,1,1);
 bool textureLoad = false;
-bool textureRotated = false;
+float textureRot = 0;
+float2 textureRotCenter = float2(0.5,0.5);
 float4 isRelative = 1;
 float4 radius = 0.2;
 float borderSoft = 0.01;
@@ -15,7 +17,12 @@ SamplerState tSampler{
 };
 
 float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
-	float4 result = textureLoad?tex2D(tSampler,textureRotated?tex.yx:tex)*color:color;
+	float thetaCos = cos(-textureRot/180.0*PI);
+	float thetaSin = sin(-textureRot/180.0*PI);
+	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
+	float2 rotedTex = mul(tex-textureRotCenter,rot)+textureRotCenter;
+	float4 result = colorOverwritten?color:_color;
+	if(textureLoad) result *= tex2D(tSampler,rotedTex);
 	float alp = 1;
 	float2 tex_bk = tex;
 	float2 dx = ddx(tex);
@@ -66,9 +73,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	}else if (fixedPos.x >= 0 && -fixedPos.y <= corner[1].y && fixedPos.y <= corner[2].y && (nRadius[1] || nRadius[2])){
 		alp = (-fixedPos.x+center.x)/aA;
 	}
-	alp = clamp(alp,0,1);
-	result.rgb = colorOverwritten?result.rgb:_color.rgb;
-	result.a *= _color.a*alp;
+	result.a *= clamp(alp,0,1);
 	return result;
 }
 

@@ -24,7 +24,8 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	float thetaSin = sin(-textureRot/180.0*PI);
 	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
 	float2 rotedTex = mul(tex-textureRotCenter,rot)+textureRotCenter;
-	float4 result = textureLoad?tex2D(tSampler,rotedTex)*color:color;
+	float4 result = colorOverwritten?color:_color;
+	if(textureLoad) result *= tex2D(tSampler,rotedTex);
 	float2 dxy = float2(length(ddx(tex)),length(ddy(tex)));
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float xDistance = tex.x-0.5,yDistance = 0.5-tex.y;
@@ -61,14 +62,8 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
 		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
 		float _b = dot(StartN,P)/(length(StartN)*len0P);
-		bool hit1 = (a >= 0 && dis1 < nBorderSoft && _a<=0);
-		bool hit2 = (b >= 0 && dis2 < nBorderSoft && _b>=0);
-		if(hit1&&hit2)
-			alpha += max(clamp((dis1)/nBorderSoft,0,1),clamp((dis2)/nBorderSoft,0,1));
-		else if(hit1)
-			alpha += clamp((dis1)/nBorderSoft,0,1);
-		else if(hit2)
-			alpha += clamp((dis2)/nBorderSoft,0,1);
+		if(a >= 0 && dis1 < nBorderSoft && _a<=0) alpha = max(alpha,clamp(dis1/nBorderSoft,0,1));
+		if(b >= 0 && dis2 < nBorderSoft && _b>=0) alpha = max(alpha,clamp(dis2/nBorderSoft,0,1));
 	}else{
 		float2 P1 = P+N;
 		float len0P = length(P1);
@@ -86,19 +81,11 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
 		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
 		float _b = dot(StartN,P)/(length(StartN)*len0P);
-		bool hit1 = (a >= 0 && dis1 < nBorderSoft && _a>=0);
-		bool hit2 = (b >= 0 && dis2 < nBorderSoft && _b<=0);
-		if(hit1&&hit2){
-			alpha += max(clamp((dis1)/nBorderSoft,0,1),clamp((dis2)/nBorderSoft,0,1));
-		}else if(hit1)
-			alpha += clamp((dis1)/nBorderSoft,0,1);
-		else if(hit2)
-			alpha += clamp((dis2)/nBorderSoft,0,1);
+		if(a >= 0 && dis1 < nBorderSoft && _a>=0) alpha = max(alpha,clamp(dis1/nBorderSoft,0,1));
+		if(b >= 0 && dis2 < nBorderSoft && _b<=0) alpha = max(alpha,clamp(dis2/nBorderSoft,0,1));
 	}
-	alpha *= clamp((1-distance(tex,0.5)-oRadius+nBorderSoft)/nBorderSoft,0,1);
-	alpha *= clamp((distance(tex,0.5)-insideRadius+nBorderSoft)/nBorderSoft,0,1);
-	result.a *= clamp(alpha,0,1)*_color.a;
-	result.rgb = colorOverwritten?result.rgb:_color.rgb;
+	alpha *= clamp((1-distance(tex,0.5)-oRadius+nBorderSoft)/nBorderSoft,0,1)*clamp((distance(tex,0.5)-insideRadius+nBorderSoft)/nBorderSoft,0,1);
+	result.a *= alpha;
 	return result;
 }
 
