@@ -503,14 +503,8 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
 		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
 		float _b = dot(StartN,P)/(length(StartN)*len0P);
-		bool hit1 = (a >= 0 && dis1 < nBS && _a<=0);
-		bool hit2 = (b >= 0 && dis2 < nBS && _b>=0);
-		if(hit1&&hit2)
-			alpha += max(clamp(dis1/nBS,0,1),clamp(dis2/nBS,0,1));
-		else if(hit1)
-			alpha += clamp(dis1/nBS,0,1);
-		else if(hit2)
-			alpha += clamp(dis2/nBS,0,1);
+		if(a >= 0 && dis1 < nBS && _a<=0) alpha = max(alpha,clamp(dis1/nBS,0,1));
+		if(b >= 0 && dis2 < nBS && _b>=0) alpha = max(alpha,clamp(dis2/nBS,0,1));
 	}else{
 		float2 P1 = P+N;
 		float len0P = length(P1);
@@ -528,14 +522,8 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
 		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
 		float _b = dot(StartN,P)/(length(StartN)*len0P);
-		bool hit1 = (a >= 0 && dis1 < nBS && _a>=0);
-		bool hit2 = (b >= 0 && dis2 < nBS && _b<=0);
-		if(hit1&&hit2){
-			alpha += max(clamp(dis1/nBS,0,1),clamp(dis2/nBS,0,1));
-		}else if(hit1)
-			alpha += clamp(dis1/nBS,0,1);
-		else if(hit2)
-			alpha += clamp(dis2/nBS,0,1);
+		if(a >= 0 && dis1 < nBS && _a>=0) alpha = max(alpha,clamp(dis1/nBS,0,1));
+		if(b >= 0 && dis2 < nBS && _b<=0) alpha = max(alpha,clamp(dis2/nBS,0,1));
 	}
 	alpha *= clamp((1-distance(tex,0.5)-oRadius)/nBS,0,1);
 	alpha *= clamp((distance(tex,0.5)-radius+thickness)/nBS,0,1);
