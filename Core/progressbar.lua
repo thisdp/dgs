@@ -198,7 +198,7 @@ local ProgressBarStyle = {
 		if bgStartPoint == bgEndPoint then
 			dxSetShaderValue(circleBG,"indicatorColor",0,0,0,0)
 		else
-			dxSetShaderValue(circleBG,"indicatorColor",fromcolor(eleData.bgColor,true,true))
+			dxSetShaderValue(circleBG,"indicatorColor",fromcolor(bgColor,true,true))
 		end
 		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
 		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
@@ -219,7 +219,7 @@ local ProgressBarStyle = {
 		end
 		dxSetShaderValue(circleBG,"progress",bgProgress)
 		dxSetShaderValue(circleBG,"isClockwise",eleData.isClockwise)
-		dxSetShaderValue(circleBG,"indicatorColor",fromcolor(eleData.bgColor,true,true))
+		dxSetShaderValue(circleBG,"indicatorColor",fromcolor(bgColor,true,true))
 		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
 		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
 		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
