@@ -3016,7 +3016,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			end
 		end
 		if rowShadow then
-			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],rowShadow[3],rowShadow[4],rowShadow[5]
+			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],applyColorAlpha(rowShadow[3],parentAlpha),rowShadow[4],rowShadow[5]
 		end
 		for i=1,#textBuffer do
 			local line = textBuffer[i]
