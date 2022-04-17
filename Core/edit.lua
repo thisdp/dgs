@@ -1331,7 +1331,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 		if CaretShow then
 			local caretStyle = eleData.caretStyle
-			local selStartX = selectX+x+paddingX
+			local selStartX = selectX+x+paddingX-1
 			selStartX = selStartX-selStartX%1
 			if caretStyle == 0 then
 				if selStartX+1 >= x+paddingX and selStartX <= x+w-paddingX then
