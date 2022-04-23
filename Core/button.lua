@@ -101,9 +101,9 @@ function dgsCreateButton(...)
 		colorCoded = nil,
 		font = style.font or systemFont,
 		iconColor = 0xFFFFFFFF,
-		iconDirection = "left",
+		iconAlignment = {"left","center"},
 		iconImage = nil,
-		iconOffset = {0,0,"text"},-- Can be false/true/"text"
+		iconOffset = {0,0,false},-- Can be false/true
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
 		--iconShadow = {},
 		imageTransformTime = 0, --ms
@@ -203,7 +203,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	end
 	local text = eleData.text
-	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
+	local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
@@ -211,6 +211,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	style = style.loaded[style.using]
 	local systemFont = style.systemFontElement
 	
+	local wordBreak = eleData.wordBreak
 	local font = eleData.font or systemFont
 	local colorCoded = eleData.colorCoded
 	local textOffset = eleData.textOffset
@@ -222,8 +223,8 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		local iconColor = eleData.iconColor
 		local iconShadow = eleData.iconShadow
 		local iconSize = eleData.iconSize
-		local fontHeight = dxGetFontHeight(txtSizY,font)
-		local fontWidth = dxGetTextWidth(text,txtSizX,font,colorCoded)
+		local fontWidth = dxGetTextSize(text,w,textSizeX,textSizeY,font,wordBreak,colorCoded)
+		local fontHeight = dxGetFontHeight(txtSizeY,font)
 		local iconHeight,iconWidth = iconSize[2],iconSize[1]
 		if iconSize[3] == "text" then
 			iconWidth,iconHeight = fontHeight*iconSize[1],fontHeight*iconSize[2]
@@ -232,58 +233,63 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		local posX,posY = txtoffsetsX,txtoffsetsY
 		local iconOffset = eleData.iconOffset
+		local iconAlignment = eleData.iconAlignment
+		if iconAlignment[1] == "left" then
+			if alignment[1] == "left" then
+				posX = posX-iconWidth
+			elseif alignment[1] == "right" then
+				posX = posX+w-fontWidth-iconWidth
+			else
+				posX = posX+w/2-fontWidth/2-iconWidth
+			end
+		elseif iconAlignment[1] == "right" then
+			if alignment[1] == "left" then
+				posX = posX+fontWidth
+			elseif alignment[1] == "right" then
+				posX = posX+w
+			else
+				posX = posX+w/2+fontWidth/2
+			end
+		elseif iconAlignment[1] == "center" then
+			if alignment[1] == "left" then
+				posX = posX+fontWidth/2-iconWidth/2
+			elseif alignment[1] == "right" then
+				posX = posX+w-fontWidth/2-iconWidth/2
+			else
+				posX = posX+w/2-iconWidth/2
+			end
+		end
+		if iconAlignment[2] == "top" then
+			if alignment[2] == "top" then
+				posY = posY-iconHeight
+			elseif alignment[2] == "bottom" then
+				posY = posY+h-fontHeight-iconHeight
+			else
+				posY = posY+h/2-fontHeight/2-iconHeight
+			end
+		elseif iconAlignment[2] == "bottom" then
+			if alignment[2] == "top" then
+				posY = posY+fontHeight
+			elseif alignment[2] == "bottom" then
+				posY = posY+h
+			else
+				posY = posY+h/2+fontHeight/2
+			end
+		elseif iconAlignment[2] == "center" then
+			if alignment[2] == "top" then
+				posY = posY+fontHeight/2-iconHeight/2
+			elseif alignment[2] == "bottom" then
+				posY = posY+h-fontHeight/2-iconHeight/2
+			else
+				posY = posY+h/2-iconHeight/2
+			end
+		end
 		if type(iconOffset) == "table" then
-			if eleData.iconDirection == "left" then
-				if alignment[1] == "left" then
-					posX = posX-iconWidth
-				elseif alignment[1] == "right" then
-					posX = posX+w-fontWidth-iconWidth
-				else
-					posX = posX+w/2-fontWidth/2-iconWidth
-				end
-			elseif eleData.iconDirection == "right" then
-				if alignment[1] == "left" then
-					posX = posX+fontWidth
-				elseif alignment[1] == "right" then
-					posX = posX+w
-				else
-					posX = posX+w/2+fontWidth/2
-				end
-			end
-			if alignment[2] == "top" then
-				posY = posY
-			elseif alignment[2] == "bottom" then
-				posY = posY+h-fontHeight
-			else
-				posY = posY+(h-iconHeight)/2
-			end
-			posX = posX+iconOffset[1]
-			posY = posY+iconOffset[2]
+			posX = posX+(iconOffset[3] and w*iconOffset[1] or iconOffset[1])
+			posY = posY+(iconOffset[3] and h*iconOffset[2] or iconOffset[2])
 		else
-			if eleData.iconDirection == "left" then
-				if alignment[1] == "left" then
-					posX = posX-iconWidth-iconOffset
-				elseif alignment[1] == "right" then
-					posX = posX+w-fontWidth-iconWidth-iconOffset
-				else
-					posX = posX+w/2-fontWidth/2-iconWidth-iconOffset
-				end
-			elseif eleData.iconDirection == "right" then
-				if alignment[1] == "left" then
-					posX = posX+fontWidth+iconOffset
-				elseif alignment[1] == "right" then
-					posX = posX+w+iconOffset
-				else
-					posX = posX+w/2+fontWidth/2+iconOffset
-				end
-			end
-			if alignment[2] == "top" then
-				posY = posY-iconOffset
-			elseif alignment[2] == "bottom" then
-				posY = posY+h-fontHeight+iconOffset
-			else
-				posY = posY+(h-iconHeight)/2+iconOffset
-			end
+			posX = posX+iconOffset
+			posY = posY+iconOffset
 		end
 		posX,posY = posX+x,posY+y
 		iconImage = type(iconImage) ~= "table" and iconImage or iconImage[buttonState]
@@ -307,7 +313,6 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 
 	if #text ~= 0 then
 		local clip = eleData.clip
-		local wordBreak = eleData.wordBreak
 		if buttonState == 3 then
 			txtoffsetsX,txtoffsetsY = txtoffsetsX+eleData.clickOffset[1],txtoffsetsY+eleData.clickOffset[2]
 		end
@@ -320,7 +325,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 		
 		local textColor = type(eleData.textColor) ~= "table" and eleData.textColor or (eleData.textColor[buttonState] or eleData.textColor[1])
-		dgsDrawText(text,textX,textY,textX+w,textY+h,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+		dgsDrawText(text,textX,textY,textX+w,textY+h,applyColorAlpha(textColor,parentAlpha),textSizeX,textSizeY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	end
 
 	return rndtgt,false,mx,my,0,0
