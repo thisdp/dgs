@@ -232,10 +232,12 @@ function blurEditMemo(dgsEle)
 	local dgsType = dgsGetType(dgsEle or MouseData.focused)
 	if dgsType == "dgs-dxedit" then
 		guiBlur(GlobalEdit)
+		if not dgsElementData[GlobalEdit] then dgsElementData[GlobalEdit] = {} end
 		dgsElementData[GlobalEdit].linkedDxEdit = nil
 	elseif dgsType == "dgs-dxmemo" then
 		guiBlur(GlobalMemo)
-		dgsElementData[GlobalEdit].linkedDxMemo = nil
+		if not dgsElementData[GlobalMemo] then dgsElementData[GlobalMemo] = {} end
+		dgsElementData[GlobalMemo].linkedDxMemo = nil
 	end
 end
 
