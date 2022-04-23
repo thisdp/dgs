@@ -1709,7 +1709,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		dxSetRenderTarget(rndtgt)
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
@@ -1817,7 +1817,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		dxSetRenderTarget(rndtgt)
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)

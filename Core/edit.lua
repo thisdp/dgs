@@ -1246,6 +1246,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if selx ~= 0 then
 			dxDrawRectangle(selectX,selStartY,selectW,selEndY,selectColor)
 		end
+		dxSetBlendMode("modulate_add")
 		if eleData.underline then
 			local textBottomeight = dxGetFontHeight(txtSizY,font)
 			local lineOffset = eleData.underlineOffset+h*0.5+textBottomeight*0.5
@@ -1254,7 +1255,6 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,applyColorAlpha(textColor,parentAlpha),lineWidth)
 		end
 		eleData.updateRTNextFrame = false
-		dxSetBlendMode("modulate_add")
 		textLeft = textLeft-textLeft%1
 		textRight = textRight-textRight%1
 		if not placeHolderIgnoreRndTgt then
@@ -1277,7 +1277,6 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 		dgsDrawText(text,textLeft,textTop,textRight-posFix,textBottom,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 	end
-	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	dxSetRenderTarget(rndtgt)
 	local px,py,pw,ph = x+paddingX,y+paddingY,w-paddingX*2,textBottom
 	local finalcolor
@@ -1295,6 +1294,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		finalcolor = bgColor
 	end
 	dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
+	dxSetBlendMode(rndtgt and "modulate_add" or "add")
 	__dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,white,isPostGUI)
 	if placeHolderIgnoreRndTgt then
 		if isPlaceHolderShown then

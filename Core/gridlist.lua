@@ -2708,7 +2708,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						elseif backgroundWidth+_x >= w or columnCount == id then
 							backgroundWidth = w-_x
 						end
-						local itemUsingBGColor,itemUsingBGImage = itemBGColor[rowState] or color[rowState],itemBGImage[rowState] or image[rowState]
+						
+						local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
 						dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
 						elementBuffer[i][id] = elementBuffer[i][id] or {}
 						local currentElementBuffer = elementBuffer[i][id]
@@ -2784,8 +2785,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetRenderTarget(rndtgt)
 		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
+		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		if eleData.rowRT then
-			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowRT,0,0,0,white,isPostGUI)
 		end
 		if eleData.columnRT then
 			dxDrawImage(x,y,w-scbThickV,columnHeight,eleData.columnRT,0,0,0,white,isPostGUI)

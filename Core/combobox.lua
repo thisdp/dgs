@@ -1079,7 +1079,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			tRB = textRenderBuffer[i]
 			dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],tRB[10],tRB[11],tRB[12],tRB[13],false,tRB[14],subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 		end
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		dxSetRenderTarget(rndtgt)
 		if DataTab.bgRT then
 			__dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,white,isPostGUI)

@@ -11,7 +11,7 @@ dgsRegisterProperties("dgs-dxbutton",{
 	font = 					{	PArg.Font+PArg.String	},
 	iconColor = 			{	PArg.Color, { PArg.Color, PArg.Color, PArg.Color }	},
 	iconImage = 			{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	iconOffset = 			{	{ PArg.Number, PArg.Number }	},
+	iconOffset = 			{	{ PArg.Number, PArg.Number, PArg.String+PArg.Bool }	},
 	iconSize = 				{	{ PArg.Number, PArg.Number, PArg.String+PArg.Bool }	},
 	image = 				{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
@@ -103,7 +103,7 @@ function dgsCreateButton(...)
 		iconColor = 0xFFFFFFFF,
 		iconDirection = "left",
 		iconImage = nil,
-		iconOffset = {0,0},
+		iconOffset = {0,0,"text"},-- Can be false/true/"text"
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
 		--iconShadow = {},
 		imageTransformTime = 0, --ms
