@@ -11,7 +11,7 @@ dgsRegisterProperties("dgs-dxbutton",{
 	font = 					{	PArg.Font+PArg.String	},
 	iconColor = 			{	PArg.Color, { PArg.Color, PArg.Color, PArg.Color }	},
 	iconImage = 			{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
-	iconOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool+Parg.Nil }	},
+	iconOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool+PArg.Nil }	},
 	iconAlignment = 		{	{ PArg.String+PArg.Nil, PArg.String+PArg.Nil }	},
 	iconSize = 				{	{ PArg.Number, PArg.Number, PArg.String+PArg.Bool }	},
 	image = 				{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
