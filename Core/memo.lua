@@ -193,7 +193,7 @@ function dgsCreateMemo(...)
 		multiClickCounter = {false,false,0},
 		colorCoded = true,
 		textRenderBuffer = {},
-		updateTextRTNextFrame = false,
+		updateRTNextFrame = false,
 	}
 	dgsSetParent(memo,parent,true,true)
 	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
@@ -219,13 +219,6 @@ function dgsCreateMemo(...)
 		outputDebugString(err,2)
 	end
 	dgsElementData[memo].bgRT = bgRT
-	local textRT,err = dxCreateRenderTarget(sizex,sizey,true,memo)
-	if textRT ~= false then
-		dgsAttachToAutoDestroy(textRT,memo,-2)
-	else
-		outputDebugString(err,2)
-	end
-	dgsElementData[memo].textRT = textRT
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
@@ -931,7 +924,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 				dgsMemoSetCaretPosition(memo,index+offset-1,line)
 			end
 		end
-		eleData.updateTextRTNextFrame = true
+		eleData.updateRTNextFrame = true
 		triggerEvent("onDgsTextChange",memo)
 	end
 end
@@ -1057,7 +1050,7 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 			eleData.showLine = 1-canHold+#textTable
 		end
 	end
-	eleData.updateTextRTNextFrame = true
+	eleData.updateRTNextFrame = true
 	triggerEvent("onDgsTextChange",memo)
 end
 
@@ -1071,7 +1064,7 @@ function dgsMemoClearText(memo)
 	dgsSetData(memo,"selectFrom",{0,1})
 	dgsSetData(memo,"rightLength",{0,1})
 	configMemo(memo)
-	eleData.updateTextRTNextFrame = true
+	eleData.updateRTNextFrame = true
 	triggerEvent("onDgsTextChange",memo)
 	return true
 end
@@ -1269,7 +1262,6 @@ function configMemo(memo)
 	local sizex,sizey = size[1]-padding[1]*2,size[2]-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
 	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	if isElement(eleData.textRT) then destroyElement(eleData.textRT) end
 	local bgRT,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
 	if bgRT ~= false then
 		dgsAttachToAutoDestroy(bgRT,memo,-1)
@@ -1277,15 +1269,8 @@ function configMemo(memo)
 		outputDebugString(err,2)
 	end
 	dgsSetData(memo,"bgRT",bgRT)
-	local textRT,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
-	if textRT ~= false then
-		dgsAttachToAutoDestroy(textRT,memo,-2)
-	else
-		outputDebugString(err,2)
-	end
-	dgsSetData(memo,"textRT",textRT)
 	dgsSetData(memo,"configNextFrame",false)
-	dgsElementData[memo].updateTextRTNextFrame = true
+	dgsElementData[memo].updateRTNextFrame = true
 end
 
 function checkMemoScrollBar(source,new,old)
@@ -1333,7 +1318,7 @@ function checkMemoScrollBar(source,new,old)
 		local temp = new*canHold
 		dgsSetData(memo,"showPos",temp)
 	end
-	eleData.updateTextRTNextFrame = true
+	eleData.updateRTNextFrame = true
 end
 
 function syncScrollBars(memo,which)
@@ -1514,10 +1499,10 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 	end,
 	textSize = function(dgsEle,key,value,oldValue)
 		dgsMemoRebuildTextTable(dgsEle)
-		dgsElementData[dgsEle].updateTextRTNextFrame = true
+		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
 	textColor = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateTextRTNextFrame = true
+		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
 	font = function(dgsEle,key,value,oldValue)
 		--Multilingual
@@ -1530,16 +1515,22 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 		dgsElementData[dgsEle].font = value
 		
 		dgsMemoRebuildTextTable(dgsEle)
-		dgsElementData[dgsEle].updateTextRTNextFrame = true
+		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
 	wordWrap = function(dgsEle,key,value,oldValue)
 		if value then
 			dgsMemoRebuildWordWrapMapTable(dgsEle)
 		end
-		dgsElementData[dgsEle].updateTextRTNextFrame = true
+		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
 	showPos = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateTextRTNextFrame = true
+		dgsElementData[dgsEle].updateRTNextFrame = true
+	end,
+	selectFrom = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].updateRTNextFrame = true
+	end,
+	caretPos = function(dgsEle,key,value,oldValue)
+		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
 }
 ----------------------------------------------------------------
@@ -1564,8 +1555,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local text = eleData.text
 	local caretPos = eleData.caretPos
 	local selectFro = eleData.selectFrom
-	local selectColor = MouseData.focused == source and eleData.selectColor or eleData.selectColorBlur
-	
+	local selectColor = applyColorAlpha(MouseData.focused == source and eleData.selectColor or eleData.selectColorBlur,parentAlpha)
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
@@ -1598,12 +1588,12 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local textRenderBuffer = eleData.textRenderBuffer
 	textRenderBuffer.count = 0
 	dxDrawImage(x,y,w,h,eleData.bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
+	local textColor = eleData.textColor
 	if eleData.wordWrap then
 		if eleData.rebuildMapTableNextFrame then
 			dgsMemoRebuildWordWrapMapTable(source)
 		end
 		local allLines = #eleData.wordWrapMapText
-		local textColor = eleData.textColor
 		local wordWrapShowLine = eleData.wordWrapShowLine
 		local caretHeight = eleData.caretHeight-1
 		local canHoldLines = mathFloor((h-4)/fontHeight)
@@ -1612,9 +1602,12 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		local caretRltHeight = fontHeight*caretHeight
 		local caretDrawPos
 		local selPosStart,selPosEnd,selStart,selEnd
-		if eleData.bgRT then
+		if renderBuffer.parentAlphaLast ~= parentAlpha then
+			renderBuffer.parentAlphaLast = parentAlpha
+			eleData.updateRTNextFrame = true
+		end
+		if eleData.bgRT and (eleData.updateRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 			dxSetRenderTarget(eleData.bgRT,true)
-			dxSetBlendMode("modulate_add")
 			if allLines > 0 then
 				if selectFro[2] > caretPos[2] then
 					selStart,selEnd = caretPos[2],selectFro[2]
@@ -1701,16 +1694,8 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					if lineCnt > canHoldLines then break end
 				end
 			end
-		end
-		
-		if renderBuffer.parentAlphaLast ~= parentAlpha then
-			renderBuffer.parentAlphaLast = parentAlpha
-			eleData.updateTextRTNextFrame = true
-		end
-		
-		if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
-			eleData.updateTextRTNextFrame = false
-			dxSetRenderTarget(eleData.textRT,true)
+			
+			eleData.updateRTNextFrame = false
 			dxSetBlendMode("modulate_add")
 			local tRB
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
@@ -1728,13 +1713,8 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
-			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
-		if eleData.textRT then
-			dxSetBlendMode("add")
-			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,white,isPostGUI)
-		end
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
@@ -1759,16 +1739,18 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 	else
 		local allLine = #text
-		local textColor = eleData.textColor
 		local showLine = eleData.showLine
 		local caretHeight = eleData.caretHeight-1
 		local canHoldLines = mathFloor((h-4)/fontHeight)
 		canHoldLines = canHoldLines > allLine and allLine or canHoldLines
 		local selPosStart,selPosEnd,selStart,selEnd
 		local showPos = eleData.showPos
-		if eleData.bgRT then
+		if renderBuffer.parentAlphaLast ~= parentAlpha then
+			renderBuffer.parentAlphaLast = parentAlpha
+			eleData.updateRTNextFrame = true
+		end
+		if eleData.bgRT and (eleData.updateRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
 			dxSetRenderTarget(eleData.bgRT,true)
-			dxSetBlendMode("blend")
 			if allLine > 0 then
 				local toShowLine = showLine+canHoldLines
 				toShowLine = toShowLine > allLine and allLine or toShowLine
@@ -1821,10 +1803,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					textRenderBuffer[textRenderBuffer.count][9] = font
 				end
 			end
-		end
-		if eleData.textRT and (eleData.updateTextRTNextFrame or dgsRenderInfo.RTRestoreNeed) then
-			eleData.updateTextRTNextFrame = false
-			dxSetRenderTarget(eleData.textRT,true)
+			eleData.updateRTNextFrame = false
 			dxSetBlendMode("modulate_add")
 			local tRB
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
@@ -1841,13 +1820,8 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
-			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
-		if eleData.textRT then
-			dxSetBlendMode("add")
-			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.textRT,0,0,0,white,isPostGUI)
-		end
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then

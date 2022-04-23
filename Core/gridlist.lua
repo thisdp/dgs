@@ -217,17 +217,11 @@ function dgsCreateGridList(...)
 	calculateGuiPositionSize(gridlist,x,y,relative,w,h,relative,true)
 	local aSize = dgsElementData[gridlist].absSize
 	local abx,aby = aSize[1],aSize[2]
-	local columnRT,rowRT,columnTextRT,rowTextRT
+	local columnRT,rowRT
 	if abx*columnHeight ~= 0 then
 		columnRT,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist,sRes)
 		if columnRT then
 			dgsAttachToAutoDestroy(columnRT,gridlist,-1)
-		else
-			outputDebugString(err,2)
-		end
-		columnTextRT,err = dxCreateRenderTarget(abx,columnHeight,true,gridlist,sRes)
-		if columnTextRT then
-			dgsAttachToAutoDestroy(columnTextRT,gridlist,-2)
 		else
 			outputDebugString(err,2)
 		end
@@ -239,17 +233,9 @@ function dgsCreateGridList(...)
 		else
 			outputDebugString(err,2)
 		end
-		rowTextRT,err = dxCreateRenderTarget(abx,aby-columnHeight-scbThick,true,gridlist,sRes)
-		if rowTextRT then
-			dgsAttachToAutoDestroy(rowTextRT,gridlist,-4)
-		else
-			outputDebugString(err,2)
-		end
 	end
 	dgsSetData(gridlist,"columnRT",columnRT)
-	dgsSetData(gridlist,"columnTextRT",columnTextRT)
 	dgsSetData(gridlist,"rowRT",rowRT)
-	dgsSetData(gridlist,"rowTextRT",rowTextRT)
 	local scrollbar1 = dgsCreateScrollBar(abx-scbThick,0,scbThick,aby-scbThick,false,false,gridlist)
 	dgsSetData(scrollbar1,"attachedToParent",gridlist)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-scbThick,abx-scbThick,scbThick,true,false,gridlist)
@@ -2421,21 +2407,13 @@ function configGridList(gridlist)
 
 	local res = eleData.resource
 	if isElement(eleData.columnRT) then destroyElement(eleData.columnRT) end
-	if isElement(eleData.columnTextRT) then destroyElement(eleData.columnTextRT) end
 	if isElement(eleData.rowRT) then destroyElement(eleData.rowRT) end
-	if isElement(eleData.rowTextRT) then destroyElement(eleData.rowTextRT) end
 	if not eleData.mode then
-		local columnRT,rowRT,columnTextRT,rowTextRT
+		local columnRT,rowRT
 		if relSizX*columnHeight ~= 0 then
 			columnRT,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
 			if columnRT ~= false then
 				dgsAttachToAutoDestroy(columnRT,gridlist,-1)
-			else
-				outputDebugString(err,2)
-			end
-			columnTextRT,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
-			if columnTextRT ~= false then
-				dgsAttachToAutoDestroy(columnTextRT,gridlist,-2)
 			else
 				outputDebugString(err,2)
 			end
@@ -2447,17 +2425,9 @@ function configGridList(gridlist)
 			else
 				outputDebugString(err,2)
 			end
-			rowTextRT,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
-			if rowTextRT ~= false then
-				dgsAttachToAutoDestroy(rowTextRT,gridlist,-4)
-			else
-				outputDebugString(err,2)
-			end
 		end
 		dgsSetData(gridlist,"columnRT",columnRT)
-		dgsSetData(gridlist,"columnTextRT",columnTextRT)
 		dgsSetData(gridlist,"rowRT",rowRT)
-		dgsSetData(gridlist,"rowTextRT",rowTextRT)
 	end
 	dgsGridListUpdateRowMoveOffset(gridlist)
 	eleData.configNextFrame = false
@@ -2609,7 +2579,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnShadow = eleData.columnShadow
 	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 	if not eleData.mode then
-		dxSetRenderTarget(eleData.columnTextRT,true)
+		dxSetRenderTarget(eleData.columnRT,true)
 		dxSetBlendMode("modulate_add")
 		local multiplier = eleData.columnRelative and (w-scbThickV) or 1
 		local tempColumnOffset = columnMoveOffset+columnOffset
@@ -2631,7 +2601,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			if _tempStartx <= w and _tempEndx >= 0 then
 				columnPos[id],columnEndPos[id] = tempCpos,_tempEndx
 				cPosStart,cPosEnd = cPosStart or id,id
-				if eleData.columnTextRT then
+				if eleData.columnRT then
 					local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
 					local textPosL = _tempStartx+columnTextPosOffset[1]
 					local textPosT = columnTextPosOffset[2]
@@ -2779,9 +2749,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					end
 				end
 			end
-		end
-		if eleData.rowTextRT then
-			dxSetRenderTarget(eleData.rowTextRT,true)
 			dxSetBlendMode("modulate_add")
 			if rowShadow then
 				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],applyColorAlpha(rowShadow[3],parentAlpha),rowShadow[4],rowShadow[5]
@@ -2806,7 +2773,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						if item and item[1] then
 							local offx,offy = item[2],item[3]
 							for a=1,#item[1] do
-								renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowTextRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible)
+								renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible)
 							end
 						end
 					end
@@ -2820,12 +2787,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		if eleData.rowRT then
 			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowRT,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
 		end
-		dxSetBlendMode("add")
-		if eleData.rowTextRT then
-			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowTextRT,0,0,0,white,isPostGUI)
-		end
-		if eleData.columnTextRT then
-			dxDrawImage(x,y,w-scbThickV,columnHeight,eleData.columnTextRT,0,0,0,white,isPostGUI)
+		if eleData.columnRT then
+			dxDrawImage(x,y,w-scbThickV,columnHeight,eleData.columnRT,0,0,0,white,isPostGUI)
 		end
 	elseif columnCount >= 1 then --NO RT
 		local whichColumnToStart,whichColumnToEnd = -1,-1
@@ -2859,7 +2822,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
-		local relativeBlack = applyColorAlpha(black,parentAlpha)
 		if columnShadow then
 			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4],columnShadow[5]
 		end

@@ -131,14 +131,7 @@ function dgsCreateTabPanel(...)
 	else
 		outputDebugString(err,2)
 	end
-	local textRT,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
-	if textRT ~= false then
-		dgsAttachToAutoDestroy(textRT,tabpanel,-2)
-	else
-		outputDebugString(err,2)
-	end
 	dgsElementData[tabpanel].bgRT = bgRT
-	dgsElementData[tabpanel].textRT = textRT
 	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
 	triggerEvent("onDgsCreate",tabpanel,sRes)
 	return tabpanel
@@ -331,7 +324,6 @@ function configTabPanel(source)
 	local sx,sy = eleData.absSize[1],eleData.absSize[2]
 	local tabHeight = eleData.tabHeight
 	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	if isElement(eleData.textRT) then destroyElement(eleData.textRT) end
 	local bgRT,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
 	if bgRT ~= false then
 		dgsAttachToAutoDestroy(bgRT,source,-1)
@@ -339,13 +331,6 @@ function configTabPanel(source)
 		outputDebugString(err,2)
 	end
 	dgsSetData(source,"bgRT",bgRT)
-	local textRT,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
-	if textRT ~= false then
-		dgsAttachToAutoDestroy(textRT,source,-2)
-	else
-		outputDebugString(err,2)
-	end
-	dgsSetData(source,"textRT",textRT)
 	eleData.configNextFrame = false
 end
 
@@ -480,7 +465,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local tabAlignment = eleData.tabAlignment
 	if selected == -1 then
 		local color = applyColorAlpha(eleData.bgColor,parentAlpha)
-		dxDrawImage(x,y+height,w,h-height,eleData.bgImage,0,0,0,color,isPostGUI)
+		dxDrawImage(x,y+height,w,h-height,applyColorAlpha(eleData.bgImage,parentAlpha),0,0,0,color,isPostGUI)
 	else
 		local tabOffset = eleData.tabOffset[2] and eleData.tabOffset[1]*w or eleData.tabOffset[1]
 		local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
@@ -498,7 +483,6 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local textRenderBuffer = eleData.textRenderBuffer
 		textRenderBuffer.count = 0
 		if eleData.bgRT then
-			dxSetBlendMode("blend")
 			dxSetRenderTarget(eleData.bgRT,true)
 			for d=1,#tabs do
 				local t = tabs[d]
@@ -528,7 +512,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								local average = (r+g+b)/3*eleData.disabledColorPercent
 								finalcolor = tocolor(average,average,average,a*parentAlpha)
 							else
-								finalcolor = tabColor[selState]
+								finalcolor = applyColorAlpha(tabColor[selState],parentAlpha)
 							end
 						else
 							finalcolor = applyColorAlpha(tabColor[selState],parentAlpha)
@@ -602,11 +586,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					tabX = tabX+width+gap
 				end
 			end
-		end
-		
-		if eleData.textRT then
 			dxSetBlendMode("modulate_add")
-			dxSetRenderTarget(eleData.textRT,true)
 			local shadow = eleData.shadow
 			if shadow then
 				local shadowOffsetX,shadowOffsetY,shadowColor = shadow[1],shadow[2],shadow[3]
@@ -629,13 +609,8 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if eleData.bgRT then
-			__dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,applyColorAlpha(white,parentAlpha),isPostGUI)
+			__dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
-		if eleData.textRT then
-			dxSetBlendMode("add")
-			__dxDrawImage(x,y,w,height,eleData.textRT,0,0,0,white,isPostGUI)
-		end
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		local tabEleData = dgsElementData[ tabs[selected] ]
 		local colors = applyColorAlpha(tabEleData.bgColor,parentAlpha)
 		dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
