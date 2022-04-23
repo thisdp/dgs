@@ -12,6 +12,7 @@ dgsRegisterProperties("dgs-dxbutton",{
 	iconColor = 			{	PArg.Color, { PArg.Color, PArg.Color, PArg.Color }	},
 	iconImage = 			{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	iconOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool+PArg.Nil }	},
+	iconRelative = 			{	PArg.Bool	},
 	iconAlignment = 		{	{ PArg.String+PArg.Nil, PArg.String+PArg.Nil }	},
 	iconSize = 				{	{ PArg.Number, PArg.Number, PArg.String+PArg.Bool }	},
 	image = 				{	PArg.Nil+PArg.Material, { PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
@@ -104,6 +105,7 @@ function dgsCreateButton(...)
 		iconColor = 0xFFFFFFFF,
 		iconAlignment = {"left","center"},
 		iconImage = nil,
+		iconRelative = true,	--true for text, false for button
 		iconOffset = {0,0,false},-- Can be false/true
 		iconSize = {1,1,"text"}; -- Can be false/true/"text"
 		--iconShadow = {},
@@ -232,56 +234,70 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		elseif iconSize[3] == true then
 			iconWidth,iconHeight = w*iconSize[1],h*iconSize[2]
 		end
-		local posX,posY = txtoffsetsX,txtoffsetsY
+		local posX,posY = 0,0
 		local iconOffset = eleData.iconOffset
 		local iconAlignment = eleData.iconAlignment
-		if iconAlignment[1] == "left" then
-			if alignment[1] == "left" then
-				posX = posX-iconWidth
-			elseif alignment[1] == "right" then
-				posX = posX+w-fontWidth-iconWidth
-			else
-				posX = posX+w/2-fontWidth/2-iconWidth
+		if eleData.iconRelative then
+			posX,posY = txtoffsetsX,txtoffsetsY
+			if iconAlignment[1] == "left" then
+				if alignment[1] == "left" then
+					posX = posX-iconWidth
+				elseif alignment[1] == "right" then
+					posX = posX+w-fontWidth-iconWidth
+				else
+					posX = posX+w/2-fontWidth/2-iconWidth
+				end
+			elseif iconAlignment[1] == "right" then
+				if alignment[1] == "left" then
+					posX = posX+fontWidth
+				elseif alignment[1] == "right" then
+					posX = posX+w
+				else
+					posX = posX+w/2+fontWidth/2
+				end
+			elseif iconAlignment[1] == "center" then
+				if alignment[1] == "left" then
+					posX = posX+fontWidth/2-iconWidth/2
+				elseif alignment[1] == "right" then
+					posX = posX+w-fontWidth/2-iconWidth/2
+				else
+					posX = posX+w/2-iconWidth/2
+				end
 			end
-		elseif iconAlignment[1] == "right" then
-			if alignment[1] == "left" then
-				posX = posX+fontWidth
-			elseif alignment[1] == "right" then
-				posX = posX+w
-			else
-				posX = posX+w/2+fontWidth/2
+			if iconAlignment[2] == "top" then
+				if alignment[2] == "top" then
+					posY = posY-iconHeight
+				elseif alignment[2] == "bottom" then
+					posY = posY+h-fontHeight-iconHeight
+				else
+					posY = posY+h/2-fontHeight/2-iconHeight
+				end
+			elseif iconAlignment[2] == "bottom" then
+				if alignment[2] == "top" then
+					posY = posY+fontHeight
+				elseif alignment[2] == "bottom" then
+					posY = posY+h
+				else
+					posY = posY+h/2+fontHeight/2
+				end
+			elseif iconAlignment[2] == "center" then
+				if alignment[2] == "top" then
+					posY = posY+fontHeight/2-iconHeight/2
+				elseif alignment[2] == "bottom" then
+					posY = posY+h-fontHeight/2-iconHeight/2
+				else
+					posY = posY+h/2-iconHeight/2
+				end
 			end
-		elseif iconAlignment[1] == "center" then
-			if alignment[1] == "left" then
-				posX = posX+fontWidth/2-iconWidth/2
-			elseif alignment[1] == "right" then
-				posX = posX+w-fontWidth/2-iconWidth/2
-			else
+		else
+			if iconAlignment[1] == "right" then
+				posX = posX+w-iconWidth
+			elseif iconAlignment[1] == "center" then
 				posX = posX+w/2-iconWidth/2
 			end
-		end
-		if iconAlignment[2] == "top" then
-			if alignment[2] == "top" then
-				posY = posY-iconHeight
-			elseif alignment[2] == "bottom" then
-				posY = posY+h-fontHeight-iconHeight
-			else
-				posY = posY+h/2-fontHeight/2-iconHeight
-			end
-		elseif iconAlignment[2] == "bottom" then
-			if alignment[2] == "top" then
-				posY = posY+fontHeight
-			elseif alignment[2] == "bottom" then
-				posY = posY+h
-			else
-				posY = posY+h/2+fontHeight/2
-			end
-		elseif iconAlignment[2] == "center" then
-			if alignment[2] == "top" then
-				posY = posY+fontHeight/2-iconHeight/2
-			elseif alignment[2] == "bottom" then
-				posY = posY+h-fontHeight/2-iconHeight/2
-			else
+			if iconAlignment[2] == "bottom" then
+				posY = posY+h-iconHeight
+			elseif iconAlignment[2] == "center" then
 				posY = posY+h/2-iconHeight/2
 			end
 		end
