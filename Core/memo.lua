@@ -1574,26 +1574,11 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local scbThick = eleData.scrollBarThick
 	local scrollbars = eleData.scrollbars
 	local selectVisible = eleData.selectVisible
-	local finalcolor
-	if not enabledInherited and not enabledSelf then
-		if type(eleData.disabledColor) == "number" then
-			finalcolor = eleData.disabledColor
-		elseif eleData.disabledColor == true then
-			local r,g,b,a = fromcolor(bgColor,true)
-			local average = (r+g+b)/3*eleData.disabledColorPercent
-			finalcolor = tocolor(average,average,average,a)
-		else
-			finalcolor = bgColor
-		end
-	else
-		finalcolor = bgColor
-	end
 	local padding = eleData.padding
 	local sidelength,sideheight = padding[1]-padding[1]%1,padding[2]-padding[2]%1
 	local px,py,pw,ph = x+sidelength,y+sideheight,w-sidelength*2,h-sideheight*2
 	local textRenderBuffer = eleData.textRenderBuffer
 	textRenderBuffer.count = 0
-	dxDrawImage(x,y,w,h,eleData.bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	local textColor = eleData.textColor
 	if eleData.wordWrap then
 		if eleData.rebuildMapTableNextFrame then
@@ -1715,6 +1700,18 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		dxSetRenderTarget(rndtgt)
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		local finalcolor = bgColor
+		if not enabledInherited and not enabledSelf then
+			if type(eleData.disabledColor) == "number" then
+				finalcolor = eleData.disabledColor
+			elseif eleData.disabledColor == true then
+				local r,g,b,a = fromcolor(bgColor,true)
+				local average = (r+g+b)/3*eleData.disabledColorPercent
+				finalcolor = tocolor(average,average,average,a)
+			end
+		end
+		dxDrawImage(x,y,w,h,eleData.bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
@@ -1823,6 +1820,20 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		dxSetRenderTarget(rndtgt)
+		
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		local finalcolor = bgColor
+		if not enabledInherited and not enabledSelf then
+			if type(eleData.disabledColor) == "number" then
+				finalcolor = eleData.disabledColor
+			elseif eleData.disabledColor == true then
+				local r,g,b,a = fromcolor(bgColor,true)
+				local average = (r+g+b)/3*eleData.disabledColorPercent
+				finalcolor = tocolor(average,average,average,a)
+			end
+		end
+		dxDrawImage(x,y,w,h,eleData.bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
+		
 		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then

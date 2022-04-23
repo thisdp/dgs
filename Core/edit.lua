@@ -1284,6 +1284,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		dgsDrawText(text,textLeft,textTop,textRight-posFix,textBottom,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],false,false,false,false)
 	end
 	dxSetRenderTarget(rndtgt)
+	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	local px,py,pw,ph = x+paddingX,y+paddingY,w-paddingX*2,textBottom
 	local finalcolor
 	if not enabledInherited and not enabledSelf then
