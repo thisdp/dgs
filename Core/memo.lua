@@ -833,12 +833,15 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 	local textTable = eleData.text or {}
 	local maxLength = eleData.maxLength
 	if not noclear then
-		eleData.text = {{[-1]=0,[0]="",[1]={}}}
+		eleData.text = {{[-1]=0,[0]=""}}
 		textTable = eleData.text
 		dgsSetData(memo,"caretPos",{0,1})
+		dgsSetData(memo,"wordWrapMapText",{})
+		dgsSetData(memo,"wordWrapShowLine",{1,1,1})
 		dgsSetData(memo,"selectFrom",{0,1})
 		dgsSetData(memo,"rightLength",{0,1})
 		configMemo(memo)
+		eleData.updateRTNextFrame = true
 	end
 	
 	local res = eleData.resource or "global"
