@@ -836,11 +836,15 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 		eleData.text = {{[-1]=0,[0]=""}}
 		textTable = eleData.text
 		dgsSetData(memo,"caretPos",{0,1})
-		dgsSetData(memo,"wordWrapMapText",{})
-		dgsSetData(memo,"wordWrapShowLine",{1,1,1})
 		dgsSetData(memo,"selectFrom",{0,1})
 		dgsSetData(memo,"rightLength",{0,1})
+		if eleData.wordWrap then
+			dgsSetData(memo,"wordWrapMapText",{})
+			dgsSetData(memo,"wordWrapShowLine",{1,1,1})
+			dgsMemoRebuildWordWrapMapTable(memo)
+		end
 		configMemo(memo)
+		
 		eleData.updateRTNextFrame = true
 	end
 	
@@ -1063,10 +1067,13 @@ function dgsMemoClearText(memo)
 	local eleData = dgsElementData[memo]
 	eleData.text = {{[-1]=0,[0]=""}}
 	dgsSetData(memo,"caretPos",{0,1})
-	dgsSetData(memo,"wordWrapMapText",{})
-	dgsSetData(memo,"wordWrapShowLine",{1,1,1})
 	dgsSetData(memo,"selectFrom",{0,1})
 	dgsSetData(memo,"rightLength",{0,1})
+	if eleData.wordWrap then
+		dgsSetData(memo,"wordWrapMapText",{})
+		dgsSetData(memo,"wordWrapShowLine",{1,1,1})
+		dgsMemoRebuildWordWrapMapTable(memo)
+	end
 	configMemo(memo)
 	eleData.updateRTNextFrame = true
 	triggerEvent("onDgsTextChange",memo)
@@ -1594,7 +1601,6 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		canHoldLines = canHoldLines > allLines and allLines or canHoldLines
 		local showPos = eleData.showPos
 		local caretRltHeight = fontHeight*caretHeight
-		local caretDrawPos
 		local selPosStart,selPosEnd,selStart,selEnd
 		if renderBuffer.parentAlphaLast ~= parentAlpha then
 			renderBuffer.parentAlphaLast = parentAlpha
@@ -1665,7 +1671,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 							if caretPos[2] == a then
 								if caretPos[1] >= weakLinePos and caretPos[1] <= weakLinePos+weakLineLen then
 									local indexInWeakLine = caretPos[1]-weakLinePos
-									caretDrawPos = {px-showPos-2,py+yPos,utf8Sub(renderingText,1,indexInWeakLine),utf8Sub(renderingText,indexInWeakLine+1,indexInWeakLine+1)}
+									renderBuffer.caretDrawPos = {px-showPos-2,py+yPos,utf8Sub(renderingText,1,indexInWeakLine),utf8Sub(renderingText,indexInWeakLine+1,indexInWeakLine+1)}
 								end
 							end
 							textRenderBuffer.count = textRenderBuffer.count+1
@@ -1721,11 +1727,13 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.bgRT then
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
 				CaretShow = eleData.readOnlyCaretShow
 			end
+			local caretDrawPos = renderBuffer.caretDrawPos
 			if CaretShow and caretDrawPos then
 				local caretStyle = eleData.caretStyle
 				local caretRenderX = caretDrawPos[1]+dxGetTextWidth(caretDrawPos[3],txtSizX,font)+1
