@@ -223,12 +223,12 @@ function configScrollPane(scrollpane)
 	end
 	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
 	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
-	if scbStateH and scbStateH ~= oriScbStateH then
+	--[[if scbStateH and scbStateH ~= oriScbStateH then
 		dgsSetData(scrollbar[2],"scrollPosition",0)
 	end
 	if scbStateV and scbStateV ~= oriScbStateV then
 		dgsSetData(scrollbar[1],"scrollPosition",0)
-	end
+	end]]
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	dgsElementData[scrollbar[1]].ignoreParentTitle = eleData.ignoreParentTitle
