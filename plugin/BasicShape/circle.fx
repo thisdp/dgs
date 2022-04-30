@@ -91,6 +91,9 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 
 technique circleTechnique{
 	pass p0{
+		SeparateAlphaBlendEnable = true;
+		SrcBlendAlpha = One;
+		DestBlendAlpha = InvSrcAlpha;
 		PixelShader = compile ps_2_a circleShader();
 	}
 }
