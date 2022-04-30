@@ -561,7 +561,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		bgColor = applyColorAlpha(bgColor,parentAlpha)
 	end
 	if drawTarget then
-		dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,tocolor(255,255,255,255),isPostGUI)
+		dxSetBlendMode(rndtgt and "modulate_add" or "add")
+		dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,white,isPostGUI)
 	end
 	return rndtgt,false,mx,my,OffsetX,OffsetY
 end
