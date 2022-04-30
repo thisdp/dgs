@@ -1073,11 +1073,11 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 				dgsDrawType = "image"
 				dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 			else
-				--[[local blendMode
+				local blendMode
 				if isInRndTgt and dgsBasicType == "shader" then
 					blendMode = dxGetBlendMode()
 					dxSetBlendMode("blend")
-				end]]
+				end
 				if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
 					if debugMode then
 						local debugTrace = dgsElementData[self].debugTrace
@@ -1090,7 +1090,7 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 						end
 					end
 				end
-				--if blendMode then dxSetBlendMode(blendMode) end
+				if blendMode then dxSetBlendMode(blendMode) end
 			end
 		end
 	else
@@ -1108,11 +1108,11 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
 			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 		else
-			--[[local blendMode
+			local blendMode
 			if isInRndTgt and dgsBasicType == "shader" then
 				blendMode = dxGetBlendMode()
-				dxSetBlendMode("modulate_add")
-			end]]
+				dxSetBlendMode("blend")
+			end
 			if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
 				if debugMode then
 					local debugTrace = dgsElementData[self].debugTrace
@@ -1125,7 +1125,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 					end
 				end
 			end
-			--if blendMode then dxSetBlendMode(blendMode) end
+			if blendMode then dxSetBlendMode(blendMode) end
 		end
 	end
 	return true
