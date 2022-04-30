@@ -1073,11 +1073,11 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 				dgsDrawType = "image"
 				dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 			else
-				local blendMode
+				--[[local blendMode
 				if isInRndTgt and dgsBasicType == "shader" then
 					blendMode = dxGetBlendMode()
-					dxSetBlendMode("modulate_add")
-				end
+					dxSetBlendMode("blend")
+				end]]
 				if not __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
 					if debugMode then
 						local debugTrace = dgsElementData[self].debugTrace
@@ -1090,7 +1090,7 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 						end
 					end
 				end
-				if blendMode then dxSetBlendMode(blendMode) end
+				--if blendMode then dxSetBlendMode(blendMode) end
 			end
 		end
 	else
@@ -1108,11 +1108,11 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
 			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 		else
-			local blendMode
+			--[[local blendMode
 			if isInRndTgt and dgsBasicType == "shader" then
 				blendMode = dxGetBlendMode()
 				dxSetBlendMode("modulate_add")
-			end
+			end]]
 			if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
 				if debugMode then
 					local debugTrace = dgsElementData[self].debugTrace
@@ -1125,7 +1125,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 					end
 				end
 			end
-			if blendMode then dxSetBlendMode(blendMode) end
+			--if blendMode then dxSetBlendMode(blendMode) end
 		end
 	end
 	return true
@@ -1362,7 +1362,7 @@ function dgsGetTotalVideoMemoryForMTA()
 	return dxStatus.VideoMemoryFreeForMTA+dxStatus.VideoMemoryUsedByFonts+dxStatus.VideoMemoryUsedByTextures+dxStatus.VideoMemoryUsedByRenderTargets
 end
 
-function dgsAssignRT(index)
+function dgsAssignRTQueued(index)
 	local element,w,h,size,priority = rtAssignQueue[index][1]
 	local RTState = dgsElementData[element].RTState or {state=0,RT=nil,priority=priority}
 	local vmRemain = dxGetStatus().VideoMemoryFreeForMTA
@@ -1371,17 +1371,28 @@ function dgsAssignRT(index)
 			local rt = dxCreateRenderTarget(w,h,true)
 			table.remove(rtAssignQueue,index)
 			if not rt then
-				outputDebugString("[DGS]Failed to create render target (Expected:"..size.."MB/"..vmRemain.."MB)")
+				outputDebugString("[DGS]Failed to create render target for "..dgsGetType(element).." (Expected:"..size.."MB/"..vmRemain.."MB)")
 				RTState.state = 0
 				return false
 			end
 			RTState.state = 2
 			RTState.RT = rt
-			rtUsing[element] = {element,rt,w,h}
-			return true
+			--AssignFor, Render Target, width, height, last used tick
+			rtUsing[element] = {element,rt,w,h,0}
+			return rtUsing[element]
 		end
 	end
-	return false
+end
+
+function dgsAssignRT(element,w,h)
+	local rt = dxCreateRenderTarget(w,h,true)
+	if not rt then
+		outputDebugString("[DGS]Failed to create render target for "..dgsGetType(element).." (Expected:"..size.."MB/"..vmRemain.."MB)")
+		return false
+	end
+	--AssignFor, Render Target, width, height, last used tick
+	rtUsing[element] = {element,rt,w,h,0}
+	return rtUsing[element]
 end
 
 function dgsRemoveRT(element)
@@ -1400,8 +1411,8 @@ end
 function dgsGetRTAssignState(element)
 	local RTState = dgsElementData[element].RTState or {state=0,RT=nil}
 	return RTState.state
-end]]
-
+end
+]]
 --------------------------------DEBUG
 local resourceDebugRegistered = {}
 local debugContextQueue = {}
