@@ -391,18 +391,23 @@ function dgsRegisterPluginType(typeName)
 	dgsPluginType[typeName] = typeName
 end
 
-function dgsGetType(dgsEle)
-	if isElement(dgsEle) then return tostring(dgsElementType[dgsEle] or getElementType(dgsEle)) end
-	local theType = type(dgsEle)
-	if theType == "userdata" then
-		local userdataType = getUserdataType(dgsEle)
-		if MTAUserDataType[userdataType] then
-			return userdataType
-		else
-			return "destroyed element"
+function dgsGetType(dgsEle,dgsTypeOnly)
+	if dgsTypeOnly then
+		if isElement(dgsEle) then return dgsElementType[dgsEle],dgsType[dgsElementType[dgsEle] or ""] end
+	else
+		if isElement(dgsEle) then return tostring(dgsElementType[dgsEle] or getElementType(dgsEle)) end
+		local theType = type(dgsEle)
+		if theType == "userdata" then
+			local userdataType = getUserdataType(dgsEle)
+			if MTAUserDataType[userdataType] then
+				return userdataType
+			else
+				return "destroyed element"
+			end
 		end
+		return theType
 	end
-	return theType
+	return false
 end
 
 function dgsIsType(dgsEle,isType)

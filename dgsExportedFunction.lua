@@ -84,7 +84,7 @@ function dgsImportFunction(name,nameAs)
 								functionCallLogger.file=data.source
 								functionCallLogger.fncName=fncName
 								local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
-								if isCreateFunction and isElement(retValue[1]) then
+								if isCreateFunction and isElement(retValue[1]) and dgsGetType(retValue[1],true) then
 									call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",functionCallLogger)
 								end
 								return unpack(retValue)
