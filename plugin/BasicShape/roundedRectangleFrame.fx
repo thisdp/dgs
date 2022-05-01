@@ -6,7 +6,7 @@ float4 isRelative = 1;
 float4 radius = 0.2;
 float borderSoft = 0.01;
 bool colorOverwritten = true;
-float2 borderThickness = float2(0.2,0.2);
+float borderThickness = 0.2;
 float radiusMultipler = 0.95;
 
 SamplerState tSampler{
@@ -88,7 +88,11 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.x,isRelative.y==1?radius.y/2:radius.y*dd.x,isRelative.z==1?radius.z/2:radius.z*dd.x,isRelative.w==1?radius.w/2:radius.w*dd.x);
 	}
 	fixedPos = (tex_bk-center*(newborderThickness+1));
-	float4 nRadiusHalf = nRadius*radiusMultipler;
+	float4 nRadiusHalf = nRadius;
+	nRadiusHalf.x -= newborderThickness.x/2;
+	nRadiusHalf.y -= newborderThickness.y/2;
+	nRadiusHalf.z -= newborderThickness.x/2;
+	nRadiusHalf.w -= newborderThickness.y/2;
 	corner[0] = center-nRadiusHalf.x;
 	corner[1] = center-nRadiusHalf.y;
 	corner[2] = center-nRadiusHalf.z;
@@ -131,6 +135,10 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 
 technique rndRectTech{
 	pass P0{
+		//Solve Render Issues
+		SeparateAlphaBlendEnable = true;
+		SrcBlendAlpha = One;
+		DestBlendAlpha = InvSrcAlpha;
 		PixelShader = compile ps_2_a rndRect();
 	}
 }
