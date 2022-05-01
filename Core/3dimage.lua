@@ -25,10 +25,6 @@ dgsRegisterProperties("dgs-dx3dimage",{
 	UVPos = 				{	{ PArg.Number, PArg.Number }	},
 	UVSize = 				{	{ PArg.Number, PArg.Number }	},
 })
---[[
-dgsRegisterCreationArgList("dgs-dx3dimage",{
-
-})]]
 
 --Dx Functions
 local dxDrawLine = dxDrawLine
@@ -207,15 +203,7 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-local g_canBeBlocked = {
-	checkBuildings = true,
-	checkVehicles = true,
-	checkPeds = true,
-	checkObjects = true,
-	checkDummies = true,
-	seeThroughStuff = false,
-	ignoreSomeObjectsForCamera = false,
-}
+
 dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local attachTable = eleData.attachTo
 	local posTable = eleData.position

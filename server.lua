@@ -50,7 +50,6 @@ loadConfig()
 addEvent("DGSI_RequestQRCode",true)
 addEvent("DGSI_RequestIP",true)
 addEvent("DGSI_RequestRemoteImage",true)
-addEvent("DGSI_RequestAboutData",true)
 addEventHandler("DGSI_RequestQRCode",resourceRoot,function(str,w,h,id)
 	fetchRemote("https://api.qrserver.com/v1/create-qr-code/?size="..w.."x"..h.."&data="..str,{},function(data,info,player,id)
 		triggerClientEvent(player,"DGSI_ReceiveQRCode",resourceRoot,data,info.success,id)
@@ -70,13 +69,6 @@ addEventHandler("DGSI_RequestIP",resourceRoot,getMyIP)
 
 setElementData(root,"DGS-ResName",getResourceName(getThisResource()))
 
------------About DGS
-addEventHandler("DGSI_RequestAboutData",resourceRoot,function()
-	if not checkServerVersion(player) then return end
-    fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/README.md",{},function(data,info,player)
-		triggerClientEvent(player,"DGSI_SendAboutData",resourceRoot,data)
-	end,{client})
-end)
 
 function hashFile(fName)
 	local f = fileOpen(fName)

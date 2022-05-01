@@ -96,7 +96,6 @@
 	<file src="plugin/mask/mask-BackGroundFilter.fx" type="client" />
 	<file src="plugin/mask/mask-ColorInverter.fx" type="client" />
 
-	<script src="dxCmdEvent.lua" type="client" />
 	<script src="update.lua" type="server" />
 	<script src="G2DManager_s.lua" type="server" />
 	<script src="test.lua" type="client" />

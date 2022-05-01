@@ -3,7 +3,10 @@ function dgsLogLuaMemory()
 	collectgarbage()
 	local columns,rows = getPerformanceStats("Lua memory","",getResourceName(getThisResource()))
 	local debugInfo = debug.getinfo(2)
-	dgsStartUpMemoryMonitor[#dgsStartUpMemoryMonitor+1] = {debugInfo.short_src,rows[1][3]}
+	local src = debugInfo.short_src:gsub("%\\","/")
+	local res = src:find("/")
+	src = src:sub(res)
+	dgsStartUpMemoryMonitor[#dgsStartUpMemoryMonitor+1] = {src,rows[1][3]}
 	debugInfo = nil
 	columns = nil
 	rows = nil
@@ -12,11 +15,15 @@ end
 --[[
 setTimer(function()
 	dgsLogLuaMemory()
+	local last = 0
 	for i=1,#dgsStartUpMemoryMonitor do
-		iprint(dgsStartUpMemoryMonitor[i])
+		local current = tonumber(dgsStartUpMemoryMonitor[i][2]:sub(1,-4))
+		print("+"..(current-last).." KB",dgsStartUpMemoryMonitor[i][2],dgsStartUpMemoryMonitor[i][1])
+		last = current
 	end
-end,1000,1)]]
-
+	print("Logged "..#dgsStartUpMemoryMonitor.." Times")
+end,1000,1)
+]]
 dgsLogLuaMemory()
 --------------------------------Events
 events = {
@@ -84,7 +91,6 @@ events = {
 	-------internal events
 	"DGSI_Paste",
 	"DGSI_ReceiveIP",
-	"DGSI_SendAboutData",
 	"DGSI_ReceiveQRCode",
 	"DGSI_ReceiveRemoteImage",
 	"DGSI_onDebug",
@@ -179,6 +185,17 @@ cursorTypesBuiltIn = {
 	move = true,
 	pointer = true,
 }
+-------Can Be Blocked Default Value
+g_canBeBlocked = {
+	checkBuildings = true,
+	checkVehicles = true,
+	checkPeds = true,
+	checkObjects = true,
+	checkDummies = true,
+	seeThroughStuff = false,
+	ignoreSomeObjectsForCamera = false,
+}
+
 -------DGS Built-in Texture
 DGSBuiltInTex = {
 	transParent_1x1 = dxCreateTexture(1,1,"dxt5"),

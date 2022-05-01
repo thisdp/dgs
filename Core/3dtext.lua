@@ -141,15 +141,7 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-local g_canBeBlocked = {
-	checkBuildings = true,
-	checkVehicles = true,
-	checkPeds = true,
-	checkObjects = true,
-	checkDummies = true,
-	seeThroughStuff = false,
-	ignoreSomeObjectsForCamera = false,
-}
+
 dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local attachTable = eleData.attachTo
 	local posTable = eleData.position
