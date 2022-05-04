@@ -1880,8 +1880,10 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				if MouseData.clickr == dgsEle then
 					triggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 				end
-			else
-				triggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+			elseif button == "middle" then
+				if MouseData.clickm == dgsEle then
+					triggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+				end
 			end
 		else
 			triggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
