@@ -524,9 +524,6 @@
 	tab = {
 	---Color
 		textColor = tocolor(255,255,255,255),		--Use Tab Panel's
-		bgColor = false,			--Background color of tab panel when selected(This will overwrite the background color of tab panel when selected). nil/false for using tab panel's bgColor
-	---Image
-		bgImage = {},
 	---Values
 		font = false,	--Using tab panel's font
 		textSize = {1,1},

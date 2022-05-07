@@ -208,8 +208,8 @@ function dgsCreateTab(...)
 		width = wid,
 		textColor = tonumber(textColor) or style.textColor or pTextColor,
 		textSize = {textSizeX,textSizeY},
-		bgColor = tonumber(bgColor) or style.bgColor or eleData.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage) or eleData.bgImage,
+		bgColor = tonumber(bgColor),
+		bgImage = bgImage
 		tabImage = {nImage,hImage,cImage},
 		tabColor = {nColor,hColor,cColor},
 		iconColor = 0xFFFFFFFF,
@@ -624,8 +624,8 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			__dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
 		local tabEleData = dgsElementData[ tabs[selected] ]
-		local colors = applyColorAlpha(tabEleData.bgColor,parentAlpha)
-		dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
+		local colors = applyColorAlpha(tabEleData.bgColor or eleData.bgColor,parentAlpha)
+		dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage or eleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
 		local children = tabEleData.children
 		for i=1,#children do
 			renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
