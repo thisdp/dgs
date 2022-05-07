@@ -146,7 +146,7 @@ function dgsSetPosition(dgsEle,x,y,relative,...)
 	if (y and type(y) ~= "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
 	local pos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
 	local x,y = x or pos[1],y or pos[2]
-	local pivot = dgsElementData[dgsEle].pivotPos
+	local pivot = dgsElementData[dgsEle].posPivot
 	if select("#",...) == 2 or pivot then
 		local pivotX,pivotY
 		if select("#",...) == 2 then
@@ -199,7 +199,7 @@ function dgsSetSize(dgsEle,w,h,relative,...)
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
 	local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 	local w,h = w or size[1], h or size[2]
-	local pivot = dgsElementData[dgsEle].pivotSize
+	local pivot = dgsElementData[dgsEle].sizePivot
 	if select("#",...) == 2 or pivot then
 		local pivotX,pivotY
 		if select("#",...) == 2 then
