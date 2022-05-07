@@ -140,17 +140,26 @@ function dgsGetPosition(dgsEle,relative,includeParent,rndSuspend,includeSide)
 	end
 end
 
-function dgsSetPosition(dgsEle,x,y,relative,isCenterPosition)
+function dgsSetPosition(dgsEle,x,y,relative,...)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPosition",1,"dgs-dxelement")) end
 	if (x and type(x) ~= "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"nil/number")) end
 	if (y and type(y) ~= "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
 	local pos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
 	local x,y = x or pos[1],y or pos[2]
-	if isCenterPosition then
-		local size = dgsElementData[dgsEle][relative and "rltSize" or "absSize"]
-		calculateGuiPositionSize(dgsEle,x-size[1]/2,y-size[2]/2,relative)
+	if select("#",...) == 2 then
+		local pivotX,pivotY = ...
+		if (type(pivotX) ~= "number") then error(dgsGenAsrt(pivotX,"dgsSetPosition",5,"number")) end
+		if (type(pivotY) ~= "number") then error(dgsGenAsrt(pivotY,"dgsSetPosition",6,"number")) end
+		local size = dgsElementData[dgsEle].absSize
+		calculateGuiPositionSize(dgsEle,x-size[1]*pivotX,y-size[2]*pivotX,relative)
 	else
-		calculateGuiPositionSize(dgsEle,x,y,relative)
+		local isCenterPosition = ...
+		if isCenterPosition then
+			local size = dgsElementData[dgsEle][relative and "rltSize" or "absSize"]
+			calculateGuiPositionSize(dgsEle,x-size[1]/2,y-size[2]/2,relative)
+		else
+			calculateGuiPositionSize(dgsEle,x,y,relative)
+		end
 	end
 	return true
 end
@@ -177,13 +186,25 @@ function dgsGetSize(dgsEle,relative)
 	return size[1],size[2]
 end
 
-function dgsSetSize(dgsEle,w,h,relative)
+function dgsSetSize(dgsEle,w,h,relative,...)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSize",1,"dgs-dxelement")) end
 	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
 	local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 	local w,h = w or size[1], h or size[2]
-	calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
+	if select("#",...) == 2 then
+		local pivotX,pivotY = ...
+		if (type(pivotX) ~= "number") then error(dgsGenAsrt(pivotX,"dgsSetSize",5,"number")) end
+		if (type(pivotY) ~= "number") then error(dgsGenAsrt(pivotY,"dgsSetSize",6,"number")) end
+		local oldSize = posRelative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
+		calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
+		local posRelative = dgsElementData[dgsEle].relative[2]
+		local oldPos = posRelative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
+		local newSize = posRelative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
+		calculateGuiPositionSize(dgsEle,oldPos[1]-(newSize[1]-oldSize[1])*pivotX,oldPos[2]-(newSize[2]-oldSize[2])*pivotX,posRelative)
+	else
+		calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
+	end
 	return true
 end
 
