@@ -344,7 +344,7 @@ function dgsSizeTo(...)
 	return dgsAnimTo(dgsEle,relative and "rltSize" or "absSize",{w,h},easing,duration,delay,reversedProgress,true)
 end
 
-function dgsStopSizing()
+function dgsStopSizing(dgsEle)
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsStopSizing",1,"dgs-dxelement/table")) end
 	if type(dgsEle) == "table" then
 		for i=1,#dgsEle do dgsStopMoving(dgsEle[i]) end
