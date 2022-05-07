@@ -102,6 +102,12 @@ function dgsCreateTabPanel(...)
 	
 	style = style.tabpanel
 	local tabHeight = tabHeight or style.tabHeight
+	local nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
+	local hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2]))
+	local cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3]))
+	local nColor = nColor or (style.tabColor and style.tabColor[1])
+	local hColor = hColor or (style.tabColor and style.tabColor[2])
+	local cColor = cColor or (style.tabColor and style.tabColor[3])
 	dgsElementData[tabpanel] = {
 		tabHeight = {tabHeight,false},
 		tabMaxWidth = {10000,false},
@@ -122,6 +128,8 @@ function dgsCreateTabPanel(...)
 		tabAlignment = "left",
 		tabOffset = {0,false},
 		textRenderBuffer = {},
+		tabImage = {nImage,hImage,cImage},
+		tabColor = {nColor,hColor,cColor},
 	}
 	dgsSetParent(tabpanel,parent,true,true)
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
@@ -187,12 +195,12 @@ function dgsCreateTab(...)
 	local tabGapSize = eleData.tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
-	local nImage = nImage or dgsCreateTextureFromStyle(using,res,style.tabImage[1])
-	local hImage = hImage or dgsCreateTextureFromStyle(using,res,style.tabImage[2])
-	local cImage = cImage or dgsCreateTextureFromStyle(using,res,style.tabImage[3])
-	local nColor = nColor or style.tabColor[1]
-	local hColor = hColor or style.tabColor[2]
-	local cColor = cColor or style.tabColor[3]
+	local nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
+	local hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2]))
+	local cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3]))
+	local nColor = nColor or (style.tabColor and style.tabColor[1])
+	local hColor = hColor or (style.tabColor and style.tabColor[2])
+	local cColor = cColor or (style.tabColor and style.tabColor[3])
 	dgsElementData[tab] = {
 		parent = tabpanel,
 		id = id,
@@ -463,6 +471,10 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local shadow = eleData.shadow
 	local wordBreak = eleData.wordBreak
 	local tabAlignment = eleData.tabAlignment
+	local tabImageP = eleData.tabImage
+	local tabColorP = eleData.tabColor
+	local tabImagePIsTable = type(tabImageP) == "table"
+	local tabColorPIsTable = type(tabColorP) == "table"
 	if selected == -1 then
 		local color = applyColorAlpha(eleData.bgColor,parentAlpha)
 		dxDrawImage(x,y+height,w,h-height,applyColorAlpha(eleData.bgImage,parentAlpha),0,0,0,color,isPostGUI)
@@ -494,8 +506,6 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					if tshadow == nil then tshadow = shadow end
 					local width = tabData.width+tabPadding*2
 					if tabX+width >= 0 and tabX <= w then
-						local tabImage = tabData.tabImage
-						local tabColor = tabData.tabColor
 						local tabTextColor = tabData.textColor
 						local selState = 1
 						if selected == d then
@@ -503,6 +513,8 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						elseif eleData.preSelect == d then
 							selState = 2
 						end
+						local tabImage = type(tabData.tabImage) ~= "table" and tabData.tabImage or (tabData.tabImage[selState] or (not tabImagePIsTable and tabImageP or tabImageP[selState]))
+						local tabColor = type(tabData.tabColor) ~= "table" and tabData.tabColor or (tabData.tabColor[selState] or (not tabColorPIsTable and tabColorP or tabColorP[selState]))
 						local finalcolor
 						if not enabledSelf then
 							if type(eleData.disabledColor) == "number" then
@@ -512,12 +524,12 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								local average = (r+g+b)/3*eleData.disabledColorPercent
 								finalcolor = tocolor(average,average,average,a*parentAlpha)
 							else
-								finalcolor = applyColorAlpha(tabColor[selState],parentAlpha)
+								finalcolor = applyColorAlpha(tabColor,parentAlpha)
 							end
 						else
-							finalcolor = applyColorAlpha(tabColor[selState],parentAlpha)
+							finalcolor = applyColorAlpha(tabColor,parentAlpha)
 						end
-						dxDrawImage(tabX,0,width,height,tabImage[selState],0,0,0,finalcolor,false,rendt)
+						dxDrawImage(tabX,0,width,height,tabImage,0,0,0,finalcolor,false,rndtgt)
 						local textSizeX,textSizeY = tabData.textSize[1],tabData.textSize[2]
 						--[[local iconImage = eleData.iconImage
 						if iconImage then

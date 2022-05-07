@@ -500,8 +500,18 @@
 			tocolor(255,255,255,255),	--Hovered
 			tocolor(255,255,255,255),	--Selected
 		},
+		tabColor = {						--Color of tab, if tab doesn't have this property, use this one
+			tocolor(50,50,50,180),	--Normal
+			tocolor(80,80,80,190),	--Hovered
+			tocolor(54,57,64,255),	--Selected
+		},
 	---Image
 		bgImage = {},
+		tabImage = {						--Image of tab, if tab doesn't have this property, use this one
+			{},
+			{},
+			{},
+		},
 	---Values
 		font = false,	--Using systemFont ( and usage is the same as system font )
 		tabPadding = {4,false},
@@ -515,18 +525,8 @@
 	---Color
 		textColor = tocolor(255,255,255,255),		--Use Tab Panel's
 		bgColor = false,			--Background color of tab panel when selected(This will overwrite the background color of tab panel when selected). nil/false for using tab panel's bgColor
-		tabColor = {	--Background color of tab
-			tocolor(50,50,50,180),	--Normal
-			tocolor(80,80,80,190),	--Hovered
-			tocolor(54,57,64,255),	--Selected
-		},
 	---Image
 		bgImage = {},
-		tabImage = {
-			{},
-			{},
-			{},
-		},
 	---Values
 		font = false,	--Using tab panel's font
 		textSize = {1,1},
