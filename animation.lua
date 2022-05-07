@@ -122,7 +122,6 @@ function dgsStopAniming(...)
 			local anim = animQueue[index]
 			if anim[1] == dgsEle then --Confirm
 				for i=1,#property do
-					print(anim[2],property[i])
 					if anim[2] == property[i] then
 						table.remove(animQueue,index)	--Remove
 						triggerEvent("onDgsStopAniming",dgsEle,anim[-2],property[i],anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
