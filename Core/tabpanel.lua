@@ -209,7 +209,7 @@ function dgsCreateTab(...)
 		textColor = tonumber(textColor) or style.textColor or pTextColor,
 		textSize = {textSizeX,textSizeY},
 		bgColor = tonumber(bgColor),
-		bgImage = bgImage
+		bgImage = bgImage,
 		tabImage = {nImage,hImage,cImage},
 		tabColor = {nColor,hColor,cColor},
 		iconColor = 0xFFFFFFFF,
