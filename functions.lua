@@ -211,9 +211,9 @@ function dgsSetSize(dgsEle,w,h,relative,...)
 		if (type(pivotY) ~= "number") then error(dgsGenAsrt(pivotY,"dgsSetSize",6,"number")) end
 		local oldSize = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 		calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
-		local oldPos = dgsEle and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
-		local newSize = dgsEle and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
-		calculateGuiPositionSize(dgsEle,oldPos[1]-(newSize[1]-oldSize[1])*pivotX,oldPos[2]-(newSize[2]-oldSize[2])*pivotX,relative)
+		local oldPos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
+		local newSize = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
+		calculateGuiPositionSize(dgsEle,oldPos[1]-(newSize[1]-oldSize[1])*pivotX,oldPos[2]-(newSize[2]-oldSize[2])*pivotY,relative)
 	else
 		calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
 	end
