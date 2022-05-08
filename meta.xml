@@ -59,7 +59,7 @@
 	<file src="plugin/ColorPicker/RGBComponent.fx" type="client" />
 	<file src="plugin/ColorPicker/ALPComponent.fx" type="client" />
 
-	<script src="plugin/Effect3D.lua" type="client" />
+	<script src="plugin/effect3D.lua" type="client" />
 
 	<file src="plugin/BasicShape/roundedRectangle.fx" />
 	<file src="plugin/BasicShape/roundedRectangleFrame.fx" />
@@ -79,7 +79,7 @@
 
 	<script src="plugin/nineSlice.lua" type="client" />
 
-	<script src="plugin/BlurBox.lua" type="client" />
+	<script src="plugin/blurBox.lua" type="client" />
 	
 	<script src="plugin/screenSource.lua" type="client" />
 	
