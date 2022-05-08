@@ -30,19 +30,21 @@ local function tableCount(tabl)
 	return cnt
 end
 G2D = {}
+G2D.type = "convertor"
 G2D.backup = true
 G2D.select = {}
 
 G2DHelp = {
 	--Options,Extra,Argument,Comment
-	{"-add","Resource Name","Retain selections and select other resources (-m :Pattern Match)"},
-	{"-c","	","Clear selections"},
-	{"-h","	","G2D Help"},
-	{"-rm","Resource Name","Remove specific selected resources from list  (-m :Pattern Match)"},
-	{"-l","	","List all selected resources"},
-	{"-e","	","Start to convert"},
-	{"-q","	","Stop converting process"},
-	{"-crawl","autocomplete type","Crawl and Generate DGS autocomplete"},
+	{"add","Resource Name","Retain selections and select other resources (match :Pattern Match)"},
+	{"clear","	","Clear selections"},
+	{"help","	","G2D Help"},
+	{"type","G2D Type","Change the type of G2D command, can be 'convertor' or 'hooker'. 'convertor' by default"},
+	{"remove","Resource Name","Remove specific selected resources from list  (match :Pattern Match)"},
+	{"list","	","List all selected resources"},
+	{"start","	","Start to convert"},
+	{"stop","	","Stop converting process"},
+	{"crawl","autocomplete type","Crawl and Generate DGS autocomplete"},
 }
 
 addCommandHandler("g2d",function(player,command,...)
@@ -52,11 +54,11 @@ addCommandHandler("g2d",function(player,command,...)
 		local accn = getAccountName(account)
 		if accn == "Console" then
 			local args = {...}
-			if args[1] == "-rm" or args[1] == "-remove" then
+			if args[1] == "remove" then
 				if args[2] and args[2] ~= "" then
-					if args[3] == "-m" or args[3] == "-match" then
+					if args[3] == "match" then
 						for k,v in pairs(G2D.select) do
-							if string.match(k:lower(),args[2]:lower()) then
+							if k:lower():find(args[2]:lower()) then
 								G2D.select[k] = nil
 							end
 						end
@@ -67,16 +69,16 @@ addCommandHandler("g2d",function(player,command,...)
 							end
 						end
 					end
-					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, use -l")
+					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, command: g2d list")
 				else
-					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, use -l")
+					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, command: g2d list")
 				end
-			elseif args[1] == "-a" or args[1] == "-add" then
+			elseif args[1] == "add" then
 				if args[2] and args[2] ~= "" then
-					if args[3] == "-m" or args[3] == "-match" then
+					if args[3] == "match" then
 						for k,v in ipairs(getResources()) do
 							local resN = getResourceName(v)
-							if string.match(resN:lower(),args[2]:lower()) then
+							if resN:lower():find(args[2]:lower()) then
 								G2D.select[resN] = v
 							end
 						end
@@ -88,47 +90,34 @@ addCommandHandler("g2d",function(player,command,...)
 							end
 						end
 					end
-					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, use -l")
+					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, command: g2d list")
 				else
-					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, use -l")
+					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, command: g2d list")
 				end
-			elseif args[1] == "-l" or args[1] == "-list" then
+			elseif args[1] == "list" then
 				outputDebugString("[DGS-G2D] There are "..tableCount(G2D.select).." resources selected:")
 				for k,v in pairs(G2D.select) do
 					outputDebugString(k)
 				end
-			elseif args[1] == "-c" or args[1] == "-clear" then
+			elseif args[1] == "clear" then
 				G2D.select = {}
 				outputDebugString("[DGS-G2D] Selections cleared!")
-			elseif args[1] == "-e" or args[1] == "-exe" then
+			elseif args[1] == "start" then
 				if not G2D.Process then
-					print("[DGS-G2D]Scanning files...")
-					local process = {}
-					for resN,res in pairs(G2D.select) do
-						local xml = xmlLoadFile(":"..resN.."/meta.xml")
-						for k,v in pairs(xmlNodeGetChildren(xml)) do
-							if xmlNodeGetName(v) == "script" and xmlNodeGetAttribute(v,"type") == "client" then
-								local path = xmlNodeGetAttribute(v,"src")
-								table.insert(process,":"..resN.."/"..path)
-							end
-						end
-					end
-					print("[DGS-G2D]"..#process.." files to be converted")
 					G2D.Process = true
 					G2D.Running = {}
-					G2D.Files = process
 					G2DStart()
 				else
 					print("[DGS-G2D]G2D is running!")
 				end
-			elseif args[1] == "-q" then
+			elseif args[1] == "stop" then
 				if G2D.Process then
 					print("[DGS-G2D]G2D process terminated!")
 					G2D.Process = false
 				else
 					print("[DGS-G2D]G2D is not running!")
 				end
-			elseif args[1] == "-crawl" then
+			elseif args[1] == "crawl" then
 				if not checkServerVersion() then return end
 				if args[2] and args[2] ~= "" then
 					if args[2] == "npp" or args[2] == "n++" then
@@ -142,6 +131,24 @@ addCommandHandler("g2d",function(player,command,...)
 					end
 				else
 					print("[DGS]Please select target type: g2d -g <npp/vsc/sublime>")
+				end
+			elseif args[1] == "type" then
+				if args[2] then
+					if not G2D.Process then
+						if args[2] == "convertor" then
+							G2D.type = "convertor"
+							print("[DGS-G2D]Current G2D type has been changed to "..G2D.type)
+						elseif args[2] == "hooker" then
+							G2D.type = "hooker"
+							print("[DGS-G2D]Current G2D type has been changed to "..G2D.type)
+						else
+							print("[DGS-G2D]Bad G2D type, expected convertor/hooker got "..args[2])
+						end
+					else
+						print("[DGS-G2D]G2D type can not be changed while G2D process is running")
+					end
+				else
+					print("[DGS-G2D]Current G2D type is "..G2D.type)
 				end
 			else
 				outputDebugString("[DGS-G2D]Command help")
@@ -434,32 +441,130 @@ G2DRunningData = {
 }
 
 function G2DStart()
-	local k,filename = next(G2D.Files,(G2D.Running or {})[2])
-	if not filename then
-		G2D.Process = false
-		return print("[G2D]Process Done")
+	if G2D.type == "convertor" then
+		print("[DGS-G2D]Scanning files...")
+		local process = {}
+		for resN,res in pairs(G2D.select) do
+			local xml = xmlLoadFile(":"..resN.."/meta.xml")
+			for k,v in pairs(xmlNodeGetChildren(xml)) do
+				if xmlNodeGetName(v) == "script" and xmlNodeGetAttribute(v,"type") == "client" then
+					local path = xmlNodeGetAttribute(v,"src")
+					table.insert(process,":"..resN.."/"..path)
+				end
+			end
+		end
+		print("[DGS-G2D]"..#process.." files to be converted")
+		G2D.Files = process
+		G2D.Running = coroutine.create(function()
+			G2D.StartTick = getTickCount()
+			for i=1,#G2D.Files do
+				processFileConvertor(G2D.File[i])
+			end
+			print("[DGS-G2D]Process Done")
+			G2D.Process = false
+		end)
+	elseif G2D.type == "hooker" then
+		print("[DGS-G2D]Scanning resources...")
+		G2D.Running = coroutine.create(function()
+			G2D.StartTick = getTickCount()
+			for resN,res in pairs(G2D.select) do
+				local resPath = ":"..resN.."/"
+				local xml = xmlLoadFile(resPath.."meta.xml")
+				for index,node in ipairs(xmlNodeGetChildren(xml)) do
+					if xmlNodeGetName(node) == "script" and xmlNodeGetAttribute(node,"type") == "client" then
+						local path = resPath..xmlNodeGetAttribute(node,"src")
+						local file = fileOpen(path)
+						local str = fileRead(file,fileGetSize(file))
+						local backupStr = str
+						if str:find("guiCreate") then	--has gui create function and is the 1st script in client
+							print("[DGS-G2D]Processing "..path)
+							local findA,findB = string.find(str,"loadstring%s*%(.*dgsG2DLoadHooker%s*%(%s*%)%s*%)")
+							if not findA then	--if not, add
+								fileSetPos(file,0)
+								fileWrite(file,"loadstring(exports."..getResourceName(getThisResource())..":dgsG2DLoadHooker())()\n\n"..str)
+							else	--if exists, update (maybe solve dgs resource name problems)
+								local oldStrLen = #str
+								str = string.sub(str,1,findA-1).."loadstring(exports."..getResourceName(getThisResource())..":dgsG2DLoadHooker())"..string.sub(str,findB+1)
+								local diff = oldStrLen-#str
+								fileSetPos(file,0)
+								fileWrite(file,str)
+								if diff > 0 then
+									fileWrite(file,string.rep(" ",diff))
+								end
+							end
+							local backup = fileCreate("G2DHookerBackUp/"..path:sub(2))
+							fileWrite(backup,backupStr)
+							fileClose(backup)
+							break
+						end
+						fileClose(file)
+						processExpired()
+					end
+				end
+			end
+			print("[DGS-G2D]Process Done")
+			G2D.Process = false
+		end)
 	end
-	local cor = coroutine.create(processFile)
-	G2D.Running = {cor,k}
-	G2D.StartTick = getTickCount()
-	local result,errmess = coroutine.resume(cor,filename)
+	local result,errmess = coroutine.resume(G2D.Running)
 	if not result then
 		print(errmess)
 	end
 end
 
-function processExpired(isEnd)
-	if not isEnd then
-		setTimer(function()
-			G2D.StartTick = getTickCount()
-			coroutine.resume(G2D.Running[1])
-		end,50,1)
-	else
-		G2DStart()
-	end
+function processExpired()
+	setTimer(function()
+		G2D.StartTick = getTickCount()
+		coroutine.resume(G2D.Running)
+	end,50,1)
 end
 
-function processFile(filename)
+function processFileConvertor(filename)
+	print("[G2D]Start to process file '"..filename.."'")
+	local file = fileOpen(filename)
+	local str = fileRead(file,fileGetSize(file))
+	local utf8BOM = false
+	local txtByte = {str:byte(1,3)}
+	if txtByte[1] == 0xEF and txtByte[2] == 0xBB and txtByte[3] == 0xBF then
+		str = str:sub(4)
+		utf8BOM = true
+	end
+	fileClose(file)
+	local ls = createLuaLexer("5.1",function(line,index,err)
+		assert("Failed to analyse lua script "..line..":"..index..":"..err)
+	end)
+	ls:init(str)
+	ls:start()
+	local az = AnalyzerState(ls.result)
+	local convTabCnt = #convertFunctionTable
+	print("[G2D]Replacing Functions")
+	for i=1,convTabCnt do
+		az:set(convertFunctionTable[i])
+		az:executeProcess()
+		if getTickCount()-G2D.StartTick >= 100 then
+			showProgress((i-1)/convTabCnt*100)
+			processExpired()
+			coroutine.yield()
+		end
+	end
+	local convTabCnt = #convertEventTable
+	print("[G2D]Replacing Events")
+	for i=1,convTabCnt do
+		az:set(convertEventTable[i],true)
+		az:executeProcess()
+		if getTickCount()-G2D.StartTick >= 100 then
+			showProgress((i-1)/convTabCnt*100)
+			processExpired()
+			coroutine.yield()
+		end
+	end
+	showProgress(100)
+	az:generateFile(filename,utf8BOM)
+	return true
+end
+
+
+function processFileHooker(filename)
 	print("[G2D]Start to process file '"..filename.."'")
 	local file = fileOpen(filename)
 	local str = fileRead(file,fileGetSize(file))
@@ -502,6 +607,7 @@ function processFile(filename)
 	az:generateFile(filename,utf8BOM)
 	return processExpired(true)
 end
+
 
 
 -------------------------------------

@@ -69,7 +69,6 @@ addEventHandler("DGSI_RequestIP",resourceRoot,getMyIP)
 
 setElementData(root,"DGS-ResName",getResourceName(getThisResource()))
 
-
 function hashFile(fName)
 	local f = fileOpen(fName)
 	local fSize = fileGetSize(f)
