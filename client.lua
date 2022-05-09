@@ -1418,7 +1418,7 @@ function dgsCheckHit(hits,cursorShowing)
 	MouseData.lastPos[2] = my
 	if not isElement(MouseData.clickl) then
 		local _cursorType = "arrow"
-		if MouseData.entered then
+		if MouseData.entered and dgsElementData[MouseData.entered] then
 			local eleData = dgsElementData[MouseData.entered]
 			local sizeData = eleData.sizeHandlerData
 			if sizeData or enteredElementType == "dgs-dxwindow" then
