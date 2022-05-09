@@ -213,6 +213,7 @@
 	<export function="dgsGetInputMode" type="client" />
 	<export function="dgsGetRootElement" type="client" />
 	<export function="dgsSetInputEnabled" type="client" />
+	<export function="dgsGetInputEnabled" type="client" />
 	<export function="dgsAddMoveHandler" type="client" />
 	<export function="dgsRemoveMoveHandler" type="client" />
 	<export function="dgsIsMoveHandled" type="client" />
