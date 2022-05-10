@@ -1418,7 +1418,7 @@ function dgsCheckHit(hits,cursorShowing)
 	MouseData.lastPos[2] = my
 	if not isElement(MouseData.clickl) then
 		local _cursorType = "arrow"
-		if MouseData.entered and dgsElementData[MouseData.entered] then
+		if MouseData.entered then
 			local eleData = dgsElementData[MouseData.entered]
 			local sizeData = eleData.sizeHandlerData
 			if sizeData or enteredElementType == "dgs-dxwindow" then
@@ -1708,6 +1708,10 @@ function dgsCleanElement(source)
 	if tresource and boundResource[tresource] then
 		boundResource[tresource][source] = nil
 	end
+	if MouseData.entered == source then MouseData.entered = nil end
+	if MouseData.clickl == source then MouseData.clickl = nil end
+	if MouseData.clickm == source then MouseData.clickm = nil end
+	if MouseData.clickr == source then MouseData.clickr = nil end
 	dgsElementData[source] = nil
 	dgsElementType[source] = nil
 end
