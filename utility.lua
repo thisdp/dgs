@@ -1084,6 +1084,8 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 		local dgsBasicType = dgsGetType(image)
 		if dgsBasicType == "table" then
 			__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
+		elseif dgsBasicType == "dgs-dxcustomrenderer" then
+			return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 		else
 			local pluginType = dgsGetPluginType(image)
 			if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[image].disableCustomTexture then
