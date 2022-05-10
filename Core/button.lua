@@ -133,6 +133,35 @@ function dgsCreateButton(...)
 	return button
 end
 
+function dgsButtonGetTextExtent(button)
+	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonGetTextExtent",1,"dgs-dxbutton")) end
+	local eleData = dgsElementData[button]
+	local font = eleData.font or systemFont
+	local textSizeX = eleData.textSize[1]
+	local text = eleData.text
+	local colorCoded = eleData.colorCoded
+	return dxGetTextWidth(text,textSizeX,font,colorCoded)
+end
+
+function dgsButtonGetFontHeight(button)
+	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonGetFontHeight",1,"dgs-dxbutton")) end
+	local font = dgsElementData[button].font or systemFont
+	local textSizeY = dgsElementData[button].textSize[2]
+	return dxGetFontHeight(textSizeY,font)
+end
+
+function dgsButtonGetTextSize(button)
+	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonGetTextSize",1,"dgs-dxbutton")) end
+	local eleData = dgsElementData[button]
+	local font = eleData.font or systemFont
+	local textSizeX = eleData.textSize[1]
+	local textSizeY = eleData.textSize[2]
+	local absSize = eleData.absSize
+	local text = eleData.text
+	local colorCoded = eleData.colorCoded
+	local wordBreak = eleData.wordBreak
+    return dxGetTextSize(text,absSize[1],textSizeX,textSizeY,font,wordBreak,colorCoded)
+end
 --function dgsButtonSetIconImage()
 --function dgsButtonSetIconColor()
 ----------------------------------------------------------------

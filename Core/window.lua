@@ -295,6 +295,36 @@ function dgsWindowGetVerticalAlign(window)
 	return alignment[2]
 end
 
+function dgsWindowGetTextExtent(window)
+	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetTextExtent",1,"dgs-dxwindow")) end
+	local eleData = dgsElementData[window]
+	local font = eleData.font or systemFont
+	local textSizeX = eleData.textSize[1]
+	local text = eleData.text
+	local colorCoded = eleData.colorCoded
+	return dxGetTextWidth(text,textSizeX,font,colorCoded)
+end
+
+function dgsWindowGetFontHeight(window)
+	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetFontHeight",1,"dgs-dxwindow")) end
+	local font = dgsElementData[window].font or systemFont
+	local textSizeY = dgsElementData[window].textSize[2]
+	return dxGetFontHeight(textSizeY,font)
+end
+
+function dgsWindowGetTextSize(window)
+	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetTextSize",1,"dgs-dxwindow")) end
+	local eleData = dgsElementData[window]
+	local font = eleData.font or systemFont
+	local textSizeX = eleData.textSize[1]
+	local textSizeY = eleData.textSize[2]
+	local absSize = eleData.absSize
+	local text = eleData.text
+	local colorCoded = eleData.colorCoded
+	local wordBreak = eleData.wordBreak
+    return dxGetTextSize(text,absSize[1],textSizeX,textSizeY,font,wordBreak,colorCoded)
+end
+
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------

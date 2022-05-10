@@ -299,6 +299,9 @@
 	<export function="dgsWindowSetVerticalAlign" type="client" />
 	<export function="dgsWindowGetHorizontalAlign" type="client" />
 	<export function="dgsWindowGetVerticalAlign" type="client" />
+	<export function="dgsWindowGetTextExtent" type="client" />
+	<export function="dgsWindowGetFontHeight" type="client" />
+	<export function="dgsWindowGetTextSize" type="client" />
 
 	<export function="dgsCreateCustomRenderer" type="client" />
 	<export function="dgsCustomRendererSetFunction" type="client" />
@@ -468,6 +471,9 @@
 	<export function="dgsComboBoxSort" type="client" />
 
 	<export function="dgsCreateButton" type="client" />
+	<export function="dgsButtonGetTextExtent" type="client" />
+	<export function="dgsButtonGetFontHeight" type="client" />
+	<export function="dgsButtonGetTextSize" type="client" />
 
 	<export function="dgsCreateEdit" type="client" />
 	<export function="dgsEditMoveCaret" type="client" />
