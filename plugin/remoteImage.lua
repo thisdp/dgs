@@ -24,7 +24,7 @@ function dgsCreateRemoteImage(website)
 	end,false)
 	dgsSetData(remoteImage,"defaultImages",table.shallowCopy(remoteImageDefaultImages))
 	dgsSetData(remoteImage,"loadState",0)	--unloaded
-	dgsSetData(remoteImage,"textureRef",false)
+	dgsSetData(remoteImage,"textureRef",dgsElementData[remoteImage].defaultImages.unloadedTex)
 	dxSetShaderValue(remoteImage,"textureRef",dgsElementData[remoteImage].defaultImages.unloadedTex) --Change image when state changes
 	if website then
 		dgsRemoteImageRequest(remoteImage,website)
