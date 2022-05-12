@@ -18,12 +18,16 @@ function dgsCreateRemoteImage(website)
 	local remoteImage = dxCreateShader(remoteImagePlaceHolder)
 	dgsSetData(remoteImage,"asPlugin","dgs-dxremoteimage")
 	addEventHandler("onClientElementDestroy",remoteImage,function()
-		if isElement(dgsElementData[source].textureRef) then
-			destroyElement(dgsElementData[source].textureRef)
+		local textureRef = dgsElementData[source].textureRef
+		if isElement(textureRef) then
+			if textureRef ~= remoteImageDefaultImages.unloadedTex and textureRef ~= remoteImageDefaultImages.loadingTex and textureRef ~= remoteImageDefaultImages.failedTex then
+				destroyElement(textureRef)
+			end
 		end
 	end,false)
 	dgsSetData(remoteImage,"defaultImages",table.shallowCopy(remoteImageDefaultImages))
 	dgsSetData(remoteImage,"loadState",0)	--unloaded
+	--dgsSetData(remoteImage,"keepTexture",false)
 	dgsSetData(remoteImage,"textureRef",dgsElementData[remoteImage].defaultImages.unloadedTex)
 	dxSetShaderValue(remoteImage,"textureRef",dgsElementData[remoteImage].defaultImages.unloadedTex) --Change image when state changes
 	if website then
@@ -70,6 +74,12 @@ addEventHandler("DGSI_ReceiveRemoteImage",resourceRoot,function(data,response,in
 	local remoteImage = remoteImageQueue[index]
 	remoteImageQueue[index] = nil
 	if isElement(remoteImage) then
+		local textureRef = dgsElementData[remoteImage].textureRef
+		if isElement(textureRef) and not dgsElementData[remoteImage].keepTexture then
+			if textureRef ~= remoteImageDefaultImages.unloadedTex and textureRef ~= remoteImageDefaultImages.loadingTex and textureRef ~= remoteImageDefaultImages.failedTex then
+				destroyElement(textureRef)
+			end
+		end
 		if response.success then
 			local texture = dxCreateTexture(data)
 			dgsSetData(texture,"DGSContainer",remoteImage)
