@@ -14,7 +14,7 @@ local tableRemove = table.remove
 
 function dgsCreateLine(...)
 	local sRes = sourceResource or resource
-	local x,y,z,color,width
+	local x,y,w,h,relative,parent,lineWidth,color
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]

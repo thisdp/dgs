@@ -8,7 +8,7 @@ float rotation = 0;
 float4 colorFrom = float4(1,1,1,1);
 float4 colorTo = float4(1,1,1,1);
 bool colorOverwritten = true;
-#define PI 3.1415926535898
+#define PI 3.1415926535897932384626433832795
 
 SamplerState tSampler{
 	Texture = sourceTexture;
@@ -32,6 +32,9 @@ float4 gradientShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 
 technique Gradient{
 	pass P0{
+		SeparateAlphaBlendEnable = true;
+		SrcBlendAlpha = One;
+		DestBlendAlpha = InvSrcAlpha;
 		PixelShader = compile ps_2_0 gradientShader();
 	}
 }
