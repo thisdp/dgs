@@ -1,36 +1,43 @@
 dgsLogLuaMemory()
 dgsRegisterType("dgs-dxmemo","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxmemo",{
-	allowCopy = 		{	PArg.Bool	},
-	bgColor =  			{	PArg.Color	},
-	bgColorBlur = 		{	PArg.Color	},
-	bgImage =  			{	PArg.Material+PArg.Nil	},
-	bgImageBlur =  		{	PArg.Material+PArg.Nil	},
-	caretColor = 		{	PArg.Color	},
-	caretHeight = 		{	PArg.Number	},
-	caretOffset = 		{	PArg.Number	},
-	caretPos	= 		{	{ PArg.Number, PArg.Number }	},
-	caretStyle  = 		{	PArg.Number	},
-	caretThick  = 		{	PArg.Number	},
-	font  = 			{	PArg.Font+PArg.String	},
-	maxLength  = 		{	PArg.Number	},
-	padding = 			{	{ PArg.Number, PArg.Number }	},
-	readOnly = 			{	PArg.Bool	},
-	readOnlyCaretShow = {	PArg.Bool	},
-	scrollBarState = 	{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
-	scrollBarThick = 	{	PArg.Number	},
-	scrollBarLength = 	{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
-	scrollSize = 		{	PArg.Number	},
-	selectColor = 		{	PArg.Color	},
-	selectColorBlur = 	{	PArg.Color	},
-	selectVisible = 	{	PArg.Bool	},
-	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
-	--text = 				{	PArg.String	},
-	textColor = 		{	PArg.Color	},
-	textSize = 			{	{ PArg.Number, PArg.Number }	},
-	typingSound = 		{	PArg.String	},
-	typingSoundVolume = {	PArg.Number	},
-	wordWrap = 			{	PArg.Bool+PArg.Number	},
+	allowCopy = 					{	PArg.Bool	},
+	bgColor =  						{	PArg.Color	},
+	bgColorBlur = 					{	PArg.Color	},
+	bgImage =  						{	PArg.Material+PArg.Nil	},
+	bgImageBlur =  					{	PArg.Material+PArg.Nil	},
+	caretColor = 					{	PArg.Color	},
+	caretHeight = 					{	PArg.Number	},
+	caretOffset = 					{	PArg.Number	},
+	caretPos = 						{	{ PArg.Number, PArg.Number }	},
+	caretStyle = 					{	PArg.Number	},
+	caretThick = 					{	PArg.Number	},
+	font =	 						{	PArg.Font+PArg.String	},
+	maxLength = 					{	PArg.Number	},
+	padding = 						{	{ PArg.Number, PArg.Number }	},
+	placeHolder = 					{	PArg.String	},
+	placeHolderColor = 				{	PArg.Color	},
+	placeHolderColorCoded = 		{	PArg.Bool	},
+	placeHolderFont = 				{	PArg.Font	},
+	placeHolderIgnoreRenderTarget = {	PArg.Bool	},
+	placeHolderOffset = 			{	{ PArg.Number, PArg.Number }	},
+	placeHolderVisibleWhenFocus = 	{	PArg.Bool	},
+	readOnly = 						{	PArg.Bool	},
+	readOnlyCaretShow =				{	PArg.Bool	},
+	scrollBarState = 				{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
+	scrollBarThick = 				{	PArg.Number	},
+	scrollBarLength = 				{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
+	scrollSize = 					{	PArg.Number	},
+	selectColor = 					{	PArg.Color	},
+	selectColorBlur = 				{	PArg.Color	},
+	selectVisible = 				{	PArg.Bool	},
+	shadow = 						{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	--text = 							{	PArg.String	},
+	textColor = 					{	PArg.Color	},
+	textSize = 						{	{ PArg.Number, PArg.Number }	},
+	typingSound = 					{	PArg.String	},
+	typingSoundVolume = 			{	PArg.Number	},
+	wordWrap = 						{	PArg.Bool+PArg.Number	},
 })
 --Dx Functions
 local dxDrawLine = dxDrawLine
@@ -146,6 +153,7 @@ function dgsCreateMemo(...)
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[memo] = {
 		renderBuffer = {
+			placeHolderState = false,
 			parentAlphaLast = false,
 			isFocused = false,
 		},
@@ -182,6 +190,14 @@ function dgsCreateMemo(...)
 		undoHistory = {},
 		redoHistory = {},
 		padding = style.padding,
+		placeHolder = style.placeHolder,
+		placeHolderFont = systemFont,
+		placeHolderVisibleWhenFocus = false,
+		placeHolderColor = style.placeHolderColor,
+		placeHolderColorCoded = style.placeHolderColorCoded,
+		placeHolderOffset = style.placeHolderOffset,
+		placeHolderTextSize = style.placeHolderTextSize,
+		placeHolderIgnoreRenderTarget = style.placeHolderIgnoreRenderTarget,
 		typingSound = style.typingSound,
 		typingSoundVolume = style.typingSoundVolume,
 		selectColor = style.selectColor,
@@ -1567,6 +1583,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		renderBuffer.isFocused = isFocused
 		eleData.updateRTNextFrame = true
 	end
+	
 	local shadow = eleData.shadow
 	local text = eleData.text
 	local caretPos = eleData.caretPos
@@ -1590,6 +1607,21 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local textRenderBuffer = eleData.textRenderBuffer
 	textRenderBuffer.count = 0
 	local textColor = eleData.textColor
+	
+	local isPlaceHolderShown = (#text == 1 and text[1][0] == "") and placeHolder ~= "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) 
+	iprint(text, isPlaceHolderShown)
+	if renderBuffer.placeHolderState ~= isPlaceHolderShown then
+		renderBuffer.placeHolderState = isPlaceHolderShown
+		eleData.updateRTNextFrame = true
+	end
+	if renderBuffer.parentAlphaLast ~= parentAlpha then
+		renderBuffer.parentAlphaLast = parentAlpha
+		eleData.updateRTNextFrame = true
+	end
+	local placeHolder = eleData.placeHolder
+	local placeHolderIgnoreRndTgt = eleData.placeHolderIgnoreRenderTarget
+	local placeHolderOffset = eleData.placeHolderOffset
+
 	if eleData.wordWrap then
 		if eleData.rebuildMapTableNextFrame then
 			dgsMemoRebuildWordWrapMapTable(source)
@@ -1695,6 +1727,22 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			
+			if not placeHolderIgnoreRndTgt then
+				if isPlaceHolderShown then
+					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
+					local pFont = eleData.placeHolderFont
+					local pColorCoded = eleData.placeHolderColorCoded
+					local pHolderTextSizeX,pHolderTextSizeY
+					local placeHolderTextSize = eleData.placeHolderTextSize
+					if placeHolderTextSize then
+						pHolderTextSizeX,pHolderTextSizeY = placeHolderTextSize[1],placeHolderTextSize[2]
+					else
+						pHolderTextSizeX,pHolderTextSizeY = txtSizX,txtSizY
+					end
+					dgsDrawText(placeHolder,0+placeHolderOffset[1],0+placeHolderOffset[2],pw+placeHolderOffset[1],fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
+				end
+			end
+			
 			eleData.updateRTNextFrame = false
 			dxSetBlendMode("modulate_add")
 			local tRB
@@ -1726,6 +1774,21 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)
+		end
+		if not placeHolderIgnoreRndTgt then
+			if isPlaceHolderShown then
+				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
+				local pFont = eleData.placeHolderFont
+				local pColorCoded = eleData.placeHolderColorCoded
+				local pHolderTextSizeX,pHolderTextSizeY
+				local placeHolderTextSize = eleData.placeHolderTextSize
+				if placeHolderTextSize then
+					pHolderTextSizeX,pHolderTextSizeY = placeHolderTextSize[1],placeHolderTextSize[2]
+				else
+					pHolderTextSizeX,pHolderTextSizeY = txtSizX,txtSizY
+				end
+				dgsDrawText(placeHolder,px+placeHolderOffset[1],py+placeHolderOffset[2],px+pw+placeHolderOffset[1],py+fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
+			end
 		end
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
@@ -1817,6 +1880,23 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					textRenderBuffer[textRenderBuffer.count][9] = font
 				end
 			end
+			
+			if not placeHolderIgnoreRndTgt then
+				if isPlaceHolderShown then
+					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
+					local pFont = eleData.placeHolderFont
+					local pColorCoded = eleData.placeHolderColorCoded
+					local pHolderTextSizeX,pHolderTextSizeY
+					local placeHolderTextSize = eleData.placeHolderTextSize
+					if placeHolderTextSize then
+						pHolderTextSizeX,pHolderTextSizeY = placeHolderTextSize[1],placeHolderTextSize[2]
+					else
+						pHolderTextSizeX,pHolderTextSizeY = txtSizX,txtSizY
+					end
+					dgsDrawText(placeHolder,0+placeHolderOffset[1],0+placeHolderOffset[2],pw+placeHolderOffset[1],fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
+				end
+			end
+			
 			eleData.updateRTNextFrame = false
 			dxSetBlendMode("modulate_add")
 			local tRB
@@ -1850,6 +1930,24 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.bgRT then
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
+		
+		if not placeHolderIgnoreRndTgt then
+			if isPlaceHolderShown then
+				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
+				local pFont = eleData.placeHolderFont
+				local pColorCoded = eleData.placeHolderColorCoded
+				local pHolderTextSizeX,pHolderTextSizeY
+				local placeHolderTextSize = eleData.placeHolderTextSize
+				if placeHolderTextSize then
+					pHolderTextSizeX,pHolderTextSizeY = placeHolderTextSize[1],placeHolderTextSize[2]
+				else
+					pHolderTextSizeX,pHolderTextSizeY = txtSizX,txtSizY
+				end
+				dgsDrawText(placeHolder,px+placeHolderOffset[1],py+placeHolderOffset[2],px+pw+placeHolderOffset[1],py+fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
+			end
+		end
+		
+		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
