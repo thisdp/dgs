@@ -1609,7 +1609,6 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local textColor = eleData.textColor
 	
 	local isPlaceHolderShown = (#text == 1 and text[1][0] == "") and placeHolder ~= "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) 
-	iprint(text, isPlaceHolderShown)
 	if renderBuffer.placeHolderState ~= isPlaceHolderShown then
 		renderBuffer.placeHolderState = isPlaceHolderShown
 		eleData.updateRTNextFrame = true
