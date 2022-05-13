@@ -322,6 +322,7 @@
 		caretColor = tocolor(255,255,255,255),	--Caret color
 		selectColor = tocolor(50,150,255,200),	--Select background color
 		selectColorBlur = tocolor(140,140,140,200),	--Selected background color when blurred
+		placeHolderColor = tocolor(200,200,200,255),		--Place holder text color
 	---Image
 		bgImage = {},	--Background image of memo
 		bgImageBlur = {},	--Background image of memo when blur, set to empty or nil/false to use bgImage
@@ -338,6 +339,11 @@
 		typingSound = false,
 		typingSoundVolume = 1,
 		padding = {2,2},
+		placeHolder = "",
+		placeHolderColorCoded = false,
+		placeHolderOffset = {0,0},
+		placeHolderTextSize = false,	---Use textSize if set to false/nil
+		placeHolderIgnoreRenderTarget = false,
 	},
 
 -----------------------------------------------------------------------------------DGS Progress Bar
