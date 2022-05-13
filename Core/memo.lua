@@ -1726,6 +1726,9 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			
+			eleData.updateRTNextFrame = false
+			dxSetBlendMode("modulate_add")
+			
 			if not placeHolderIgnoreRndTgt then
 				if isPlaceHolderShown then
 					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
@@ -1742,8 +1745,6 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			
-			eleData.updateRTNextFrame = false
-			dxSetBlendMode("modulate_add")
 			local tRB
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 			if shadow then
@@ -1774,7 +1775,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.bgRT then
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
-		if not placeHolderIgnoreRndTgt then
+		if placeHolderIgnoreRndTgt then
 			if isPlaceHolderShown then
 				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
 				local pFont = eleData.placeHolderFont
@@ -1789,7 +1790,9 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				dgsDrawText(placeHolder,px+placeHolderOffset[1],py+placeHolderOffset[2],px+pw+placeHolderOffset[1],py+fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
 			end
 		end
+
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+		
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
@@ -1880,6 +1883,9 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			
+			eleData.updateRTNextFrame = false
+			dxSetBlendMode("modulate_add")
+			
 			if not placeHolderIgnoreRndTgt then
 				if isPlaceHolderShown then
 					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
@@ -1896,8 +1902,6 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			
-			eleData.updateRTNextFrame = false
-			dxSetBlendMode("modulate_add")
 			local tRB
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 			if shadow then
@@ -1929,8 +1933,8 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if eleData.bgRT then
 			__dxDrawImageSection(px,py,pw-scbTakes1,ph-scbTakes2,0,0,pw-scbTakes1,ph-scbTakes2,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
-		
-		if not placeHolderIgnoreRndTgt then
+
+		if placeHolderIgnoreRndTgt then
 			if isPlaceHolderShown then
 				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
 				local pFont = eleData.placeHolderFont
