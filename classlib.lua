@@ -739,6 +739,9 @@ class {
 		return dgsCreateButton(x,y,w,h,text,rlt,parent.dgsElement,...)
 	end;
 	public = {
+		getTextExtent = gObjFnc("dgsButtonGetTextExtent"),
+		getFontHeight = gObjFnc("dgsButtonGetFontHeight"),
+		getTextSize = gObjFnc("dgsButtonGetTextSize"),
 	};
 }
 
@@ -950,6 +953,7 @@ class {
 		setItemBackGroundImage = gObjFnc("dgsGridListSetItemBackGroundImage",true),
 		getItemBackGroundColor = gObjFnc("dgsGridListGetItemBackGroundColor"),
 		setItemBackGroundColor = gObjFnc("dgsGridListSetItemBackGroundColor",true),
+		setItemBackGroundColorTemplate = gObjFnc("dgsGridListSetItemBackGroundColorTemplate",true),
 		removeItemImage = gObjFnc("dgsGridListRemoveItemImage",true),
 		getRowBackGroundImage = gObjFnc("dgsGridListGetRowBackGroundImage"),
 		setRowBackGroundImage = gObjFnc("dgsGridListSetRowBackGroundImage",true),
@@ -1308,6 +1312,9 @@ class {
 		setHorizontalAlign = gObjFnc("dgsWindowSetHorizontalAlign",true),
 		getVerticalAlign = gObjFnc("dgsWindowGetVerticalAlign"),
 		setVerticalAlign = gObjFnc("dgsWindowSetVerticalAlign",true),
+		getTextExtent = gObjFnc("dgsWindowGetTextExtent"),
+		getFontHeight = gObjFnc("dgsWindowGetFontHeight"),
+		getTextSize = gObjFnc("dgsWindowGetTextSize"),
 	};
 }
 
