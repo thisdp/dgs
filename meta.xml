@@ -730,6 +730,7 @@
 	<export function="dgsGridListSetItemHoverable" type="client" />
 	<export function="dgsGridListGetItemSelectable" type="client" />
 	<export function="dgsGridListSetItemSelectable" type="client" />
+	<export function="dgsGridListSetItemBackGroundColorTemplate" type="client" />
 	<export function="dgsGridListSetItemBackGroundColor" type="client" />
 	<export function="dgsGridListGetItemBackGroundColor" type="client" />
 	<export function="dgsGridListSetItemBackGroundImage" type="client" />

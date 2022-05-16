@@ -27,6 +27,7 @@ dgsRegisterProperties('dgs-dxgridlist',{
 	mode = 					{	PArg.Bool	},
 	mouseSelectButton = 	{	{ PArg.Bool, PArg.Bool, PArg.Bool }	},
 	moveHardness = 			{	{ PArg.Number, PArg.Number }	},
+	rowColorTemplate =		{	PArg.Table },
 	rowColor = 				{	{ PArg.Color, PArg.Color,PArg.Color }	},
 	rowHeight = 			{	PArg.Number	},
 	rowImage = 				{	PArg.Material	},
@@ -2178,6 +2179,27 @@ function dgsGridListGetItemColor(gridlist,r,c,notSplitColor)
 	end
 end
 
+function dgsGridListSetItemBackGroundColorTemplate(gridlist,template,applyToAll)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetItemBackGroundColorTemplate",1,"dgs-dxgridlist")) end
+	if template and type(template) ~= "table" then error(dgsGenAsrt(template,"dgsGridListSetItemBackGroundColorTemplate",2,"table/nil")) end
+	if template then
+		if #template == 0 then error(dgsGenAsrt(template,"dgsGridListSetItemBackGroundColorTemplate",2,"table","{{colors,...},...}","Bad Format")) end
+		if applyToAll then
+			local eleData = dgsElementData[gridlist]
+			local cData,rData = eleData.columnData,eleData.rowData
+			local cLen,rLen = #cData,#rData
+			for i=1,rLen do
+				for j=1,cLen do
+					rData[i][j][13] = nil
+				end
+			end
+		end
+		dgsSetData(gridlist,"itemColorTemplate",template)
+	else
+		dgsSetData(gridlist,"itemColorTemplate",nil)
+	end
+end
+
 function dgsGridListSetItemBackGroundColor(gridlist,r,c,...)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetItemBackGroundColor",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
@@ -2501,6 +2523,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local rowHeight = eleData.rowHeight--_RowHeight
 	local rowTextPosOffset = eleData.rowTextPosOffset
 	local rowWordBreak = eleData.rowWordBreak
+	local rowColor = eleData.rowColor
+	local itemColorTemplate = eleData.itemColorTemplate
+	local rowImage = eleData.rowImage
 	local columnTextPosOffset = eleData.columnTextPosOffset
 	local leading = eleData.leading
 	local scbThick = eleData.scrollBarThick
@@ -2661,7 +2686,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				for i=eleData.FromTo[1],eleData.FromTo[2] do
 					if not elementBuffer[i] then elementBuffer[i] = {} end
 					local lc_rowData = rowData[i]
-					local image,columnOffset,isSection,color = lc_rowData[-3] or eleData.rowImage,lc_rowData[-4] or eleData.columnOffset,lc_rowData[-5],lc_rowData[0] or eleData.rowColor
+					local image,columnOffset,isSection = lc_rowData[-3] or rowImage,lc_rowData[-4] or columnOffset,lc_rowData[-5]
+					local color = lc_rowData[0] or rowColor
 					local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading--_RowHeight
 					local rowpos_1 = rowpos-rowHeight--_RowHeight
 					local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1,sW,rowpos
@@ -2672,7 +2698,19 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						local _txtScalex = currentRowData[4] or rowTextSx
 						local _txtScaley = currentRowData[5] or rowTextSy
 						local alignment = currentRowData[11] or columnData[id][4]
-						local itemBGColor,itemBGImage = currentRowData[13] or color,currentRowData[14] or image
+						
+						local itemBGColor,itemBGImage = currentRowData[13],currentRowData[14] or image
+						if not itemBGColor then
+							if itemColorTemplate then
+								local iCTRows = #itemColorTemplate or 0
+								local iCTRow = ((i-1)%iCTRows)+1
+								local iCTColumns = #itemColorTemplate[iCTRow] or 0
+								local iCTColumn = ((id-1)%iCTColumns)+1
+								itemBGColor = itemColorTemplate[iCTRow][iCTColumn]
+							else
+								itemBGColor = color
+							end
+						end
 						local rowState = 1
 						if selectionMode == 1 then
 							if i == preSelect[1] then
@@ -2911,7 +2949,18 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local _txtScalex = currentRowData[4] or rowTextSx
 				local _txtScaley = currentRowData[5] or rowTextSy
 				local alignment = currentRowData[11] or columnData[id][4]
-				local itemBGColor,itemBGImage = currentRowData[13] or color,currentRowData[14] or image
+				local itemBGColor,itemBGImage = currentRowData[13],currentRowData[14] or image
+				if not itemBGColor then
+					if itemColorTemplate then
+						local iCTRows = #itemColorTemplate or 0
+						local iCTRow = ((i-1)%iCTRows)+1
+						local iCTColumns = #itemColorTemplate[iCTRow] or 0
+						local iCTColumn = ((id-1)%iCTColumns)+1
+						itemBGColor = itemColorTemplate[iCTRow][iCTColumn]
+					else
+						itemBGColor = color
+					end
+				end
 				local rowState = 1
 				if selectionMode == 1 then
 					if i == preSelect[1] then
