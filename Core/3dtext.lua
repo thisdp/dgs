@@ -149,127 +149,121 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local isRender = true
 	if attachTable then
 		if isElement(attachTable[1]) then
-			if isElementStreamedIn(attachTable[1]) then
-				wx,wy,wz = getPositionFromElementOffset(attachTable[1],attachTable[2],attachTable[3],attachTable[4])
-				posTable[1],posTable[2],posTable[3] = wx,wy,wz
-			else
-				isRender = false
-			end
+			wx,wy,wz = getPositionFromElementOffset(attachTable[1],attachTable[2],attachTable[3],attachTable[4])
+			posTable[1],posTable[2],posTable[3] = wx,wy,wz
 		else
 			eleData.attachTo = false
 		end
 	end
-	if isRender then
-		local camX,camY,camZ = getCameraMatrix()
-		local maxDistance = eleData.maxDistance
-		local distance = ((wx-camX)^2+(wy-camY)^2+(wz-camZ)^2)^0.5
-		if distance <= maxDistance and distance > 0 then
-			local canBeBlocked = eleData.canBeBlocked
-			if canBeBlocked then
-				if canBeBlocked == true then
-					canBeBlocked = g_canBeBlocked
-				end
-				if canBeBlocked.checkBuildings == nil then canBeBlocked.checkBuildings = g_canBeBlocked.checkBuildings end
-				if canBeBlocked.checkVehicles == nil then canBeBlocked.checkVehicles = g_canBeBlocked.checkVehicles end
-				if canBeBlocked.checkPeds == nil then canBeBlocked.checkPeds = g_canBeBlocked.checkPeds end
-				if canBeBlocked.checkObjects == nil then canBeBlocked.checkObjects = g_canBeBlocked.checkObjects end
-				if canBeBlocked.checkDummies == nil then canBeBlocked.checkDummies = g_canBeBlocked.checkDummies end
-				if canBeBlocked.seeThroughStuff == nil then canBeBlocked.seeThroughStuff = g_canBeBlocked.seeThroughStuff end
-				if canBeBlocked.ignoreSomeObjectsForCamera == nil then canBeBlocked.ignoreSomeObjectsForCamera = g_canBeBlocked.ignoreSomeObjectsForCamera end
+	local camX,camY,camZ = getCameraMatrix()
+	local maxDistance = eleData.maxDistance
+	local distance = ((wx-camX)^2+(wy-camY)^2+(wz-camZ)^2)^0.5
+	if distance <= maxDistance and distance > 0 then
+		local canBeBlocked = eleData.canBeBlocked
+		if canBeBlocked then
+			if canBeBlocked == true then
+				canBeBlocked = g_canBeBlocked
 			end
-			local fadeDistance = eleData.fadeDistance
-			local res = eleData.resource or "global"
-			local style = styleManager.styles[res]
-			local using = style.using
-			style = style.loaded[style.using]
-			local systemFont = style.systemFontElement
-			eleData.isBlocked = (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera)))
-			if eleData.isBlocked then
-				local fadeMulti = 1
-				if maxDistance > fadeDistance and distance >= fadeDistance then
-					fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
+			if canBeBlocked.checkBuildings == nil then canBeBlocked.checkBuildings = g_canBeBlocked.checkBuildings end
+			if canBeBlocked.checkVehicles == nil then canBeBlocked.checkVehicles = g_canBeBlocked.checkVehicles end
+			if canBeBlocked.checkPeds == nil then canBeBlocked.checkPeds = g_canBeBlocked.checkPeds end
+			if canBeBlocked.checkObjects == nil then canBeBlocked.checkObjects = g_canBeBlocked.checkObjects end
+			if canBeBlocked.checkDummies == nil then canBeBlocked.checkDummies = g_canBeBlocked.checkDummies end
+			if canBeBlocked.seeThroughStuff == nil then canBeBlocked.seeThroughStuff = g_canBeBlocked.seeThroughStuff end
+			if canBeBlocked.ignoreSomeObjectsForCamera == nil then canBeBlocked.ignoreSomeObjectsForCamera = g_canBeBlocked.ignoreSomeObjectsForCamera end
+		end
+		local fadeDistance = eleData.fadeDistance
+		local res = eleData.resource or "global"
+		local style = styleManager.styles[res]
+		local using = style.using
+		style = style.loaded[style.using]
+		local systemFont = style.systemFontElement
+		eleData.isBlocked = (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera)))
+		if eleData.isBlocked then
+			local fadeMulti = 1
+			if maxDistance > fadeDistance and distance >= fadeDistance then
+				fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
+			end
+			local x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
+			eleData.isOnScreen = x and y
+			if eleData.isOnScreen then
+				local offsetX,offsetY = eleData.textOffset[1],eleData.textOffset[2]
+				local subPixelPositioning = eleData.subPixelPositioning
+				local colorCoded = eleData.colorCoded
+				local text = eleData.text
+				local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
+				local font = eleData.font or systemFont
+				local alignment = eleData.alignment
+				local x,y = x+offsetX-x%1,y+offsetY-y%1
+				if eleData.fixTextSize then
+					distance = 50
 				end
-				local x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
-				eleData.isOnScreen = x and y
-				if eleData.isOnScreen then
-					local offsetX,offsetY = eleData.textOffset[1],eleData.textOffset[2]
-					local subPixelPositioning = eleData.subPixelPositioning
-					local colorCoded = eleData.colorCoded
-					local text = eleData.text
-					local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
-					local font = eleData.font or systemFont
-					local alignment = eleData.alignment
-					local x,y = x+offsetX-x%1,y+offsetY-y%1
-					if eleData.fixTextSize then
-						distance = 50
-					end
-					local antiDistance = 1/distance
-					local sizeX = textSizeX*textSizeX/distance*50
-					local sizeY = textSizeY*textSizeY/distance*50
-					local color = applyColorAlpha(eleData.color,parentAlpha*fadeMulti)
-					local shadow = eleData.shadow
-					local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
-					if shadow then
-						shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1]*antiDistance*50,shadow[2]*antiDistance*50,shadow[3],shadow[4],shadow[5]
-						shadowColor = applyColorAlpha(shadowColor or white,parentAlpha*fadeMulti)
-					end
-					dgsDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-					------------------------------------OutLine
-					local outlineData = eleData.outline
-					if outlineData then
-						local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
-						local w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
-						local x,y=x-w*0.5,y-h*0.5
-						local sideColor = outlineData[3]
-						local sideSize = outlineData[2]*antiDistance*25
-						local hSideSize = sideSize*0.5
-						sideColor = applyColorAlpha(sideColor,parentAlpha*fadeMulti)
-						local side = outlineData[1]
-						if side == "in" then
-							if outlineData[6] ~= false then
-								dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize)
-							end
-							if outlineData[4] ~= false then
-								dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize)
-							end
-							if outlineData[5] ~= false then 
-								dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize)
-							end
-							if outlineData[7] ~= false then
-								dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
-							end
-						elseif side == "center" then
-							if outlineData[6] ~= false then
-								dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize)
-							end
-							if outlineData[4] ~= false then
-								dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize)
-							end
-							if outlineData[5] ~= false then 
-								dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
-							end
-							if outlineData[7] ~= false then
-								dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize)
-							end
-						elseif side == "out" then
-							if outlineData[6] ~= false then
-								dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize)
-							end
-							if outlineData[4] ~= false then
-								dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize)
-							end
-							if outlineData[5] ~= false then 
-								dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize)
-							end
-							if outlineData[7] ~= false then
-								dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize)
-							end
+				local antiDistance = 1/distance
+				local sizeX = textSizeX*textSizeX/distance*50
+				local sizeY = textSizeY*textSizeY/distance*50
+				local color = applyColorAlpha(eleData.color,parentAlpha*fadeMulti)
+				local shadow = eleData.shadow
+				local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
+				if shadow then
+					shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1]*antiDistance*50,shadow[2]*antiDistance*50,shadow[3],shadow[4],shadow[5]
+					shadowColor = applyColorAlpha(shadowColor or white,parentAlpha*fadeMulti)
+				end
+				dgsDrawText(text,x,y,x,y,color,sizeX,sizeY,font,alignment[1],alignment[2],false,false,false,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				------------------------------------OutLine
+				local outlineData = eleData.outline
+				if outlineData then
+					local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
+					local w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
+					local x,y=x-w*0.5,y-h*0.5
+					local sideColor = outlineData[3]
+					local sideSize = outlineData[2]*antiDistance*25
+					local hSideSize = sideSize*0.5
+					sideColor = applyColorAlpha(sideColor,parentAlpha*fadeMulti)
+					local side = outlineData[1]
+					if side == "in" then
+						if outlineData[6] ~= false then
+							dxDrawLine(x,y+hSideSize,x+w,y+hSideSize,sideColor,sideSize)
+						end
+						if outlineData[4] ~= false then
+							dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize)
+						end
+						if outlineData[5] ~= false then 
+							dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize)
+						end
+						if outlineData[7] ~= false then
+							dxDrawLine(x,y+h-hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
+						end
+					elseif side == "center" then
+						if outlineData[6] ~= false then
+							dxDrawLine(x-hSideSize,y,x+w+hSideSize,y,sideColor,sideSize)
+						end
+						if outlineData[4] ~= false then
+							dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize)
+						end
+						if outlineData[5] ~= false then 
+							dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
+						end
+						if outlineData[7] ~= false then
+							dxDrawLine(x-hSideSize,y+h,x+w+hSideSize,y+h,sideColor,sideSize)
+						end
+					elseif side == "out" then
+						if outlineData[6] ~= false then
+							dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize)
+						end
+						if outlineData[4] ~= false then
+							dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize)
+						end
+						if outlineData[5] ~= false then 
+							dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize)
+						end
+						if outlineData[7] ~= false then
+							dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize)
 						end
 					end
 				end
-			else
-				eleData.isOnScreen = false
 			end
+		else
+			eleData.isOnScreen = false
 		end
 	end
 	return rndtgt,true,mx,my
