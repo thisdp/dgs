@@ -446,6 +446,10 @@ float4 myShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 
 technique DrawCircle{
 	pass P0	{
+		//Solve Render Issues
+		SeparateAlphaBlendEnable = true;
+		SrcBlendAlpha = One;
+		DestBlendAlpha = InvSrcAlpha;
 		PixelShader = compile ps_2_a myShader();
 	}
 }
@@ -534,6 +538,10 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 
 technique circleTechnique{
 	pass p0{
+		//Solve Render Issues
+		SeparateAlphaBlendEnable = true;
+		SrcBlendAlpha = One;
+		DestBlendAlpha = InvSrcAlpha;
 		PixelShader = compile ps_2_a circleShader();
 	}
 }
