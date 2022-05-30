@@ -12,7 +12,7 @@ function dgsLogLuaMemory()
 	rows = nil
 	collectgarbage()
 end
---[[
+
 setTimer(function()
 	dgsLogLuaMemory()
 	local last = 0
@@ -23,86 +23,86 @@ setTimer(function()
 	end
 	print("Logged "..#dgsStartUpMemoryMonitor.." Times")
 end,1000,1)
-]]
+
 dgsLogLuaMemory()
 --------------------------------Events
 events = {
-	"onDgsCursorTypeChange",
-	"onDgsMouseLeave",
-	"onDgsMouseEnter",
-	"onDgsMousePreClick",
-	"onDgsMouseWheel",
-	"onDgsMouseClick",
-	"onDgsMouseClickUp",
-	"onDgsMouseClickDown",
-	"onDgsMouseDoubleClick",
-	"onDgsMouseDoubleClickUp",
-	"onDgsMouseDoubleClickDown",
-	"onDgsMouseMultiClick",
-	"onDgsMouseDown",
-	"onDgsMouseUp",
-	"onDgsMouseDrag",
-	"onDgsMouseMove",
-	"onDgsWindowClose",
-	"onDgsPositionChange",
-	"onDgsSizeChange",
-	"onDgsTextChange",
-	"onDgsElementScroll",
-	"onDgsDestroy",
-	"onDgsSwitchButtonStateChange",
-	"onDgsSelectorSelect",
-	"onDgsGridListSelect",
-	"onDgsGridListHover",
-	"onDgsMouseHover",
-	"onDgsGridListItemDoubleClick",
-	"onDgsProgressBarChange",
-	"onDgsCreate",
-	"onDgsPluginCreate",
-	"onDgsPreRender",
-	"onDgsRender",
-	"onDgsElementRender",
-	"onDgsElementLeave",
-	"onDgsElementEnter",
-	"onDgsElementMove",
-	"onDgsElementSize",
-	"onDgsFocus",
-	"onDgsBlur",
-	"onDgsTabSelect",
-	"onDgsTabPanelTabSelect",
-	"onDgsRadioButtonChange",
-	"onDgsCheckBoxChange",
-	"onDgsComboBoxSelect",
-	"onDgsComboBoxStateChange",
-	"onDgsEditPreSwitch",
-	"onDgsEditSwitched",
-	"onDgsEditAccepted",
-	"onDgsStopMoving",
-	"onDgsStopSizing",
-	"onDgsStopAlphaing",
-	"onDgsStopAniming",
-	"onDgsDrop",
-	"onDgsDrag",
-	"onDgsStart",
-	"onDgsPaste", --DGS Paste Handler
-	"onDgsPropertyChange",
-	-------Plugin events
-	"onDgsRemoteImageLoad",
-	"onDgsQRCodeLoad",
-	-------internal events
-	"DGSI_Paste",
-	"DGSI_ReceiveIP",
-	"DGSI_ReceiveQRCode",
-	"DGSI_ReceiveRemoteImage",
-	"DGSI_onDebug",
-	"DGSI_onDebugRequestContext",
-	"DGSI_onDebugSendContext",
-	"DGSI_onImport",
-	-------G2D Hooker events
-    "onDgsEditAccepted-C",
-    "onDgsTextChange-C",
-    "onDgsComboBoxSelect-C",
-    "onDgsTabSelect-C",
-	-------
+"onDgsCursorTypeChange",
+"onDgsMouseLeave",
+"onDgsMouseEnter",
+"onDgsMousePreClick",
+"onDgsMouseWheel",
+"onDgsMouseClick",
+"onDgsMouseClickUp",
+"onDgsMouseClickDown",
+"onDgsMouseDoubleClick",
+"onDgsMouseDoubleClickUp",
+"onDgsMouseDoubleClickDown",
+"onDgsMouseMultiClick",
+"onDgsMouseDown",
+"onDgsMouseUp",
+"onDgsMouseDrag",
+"onDgsMouseMove",
+"onDgsWindowClose",
+"onDgsPositionChange",
+"onDgsSizeChange",
+"onDgsTextChange",
+"onDgsElementScroll",
+"onDgsDestroy",
+"onDgsSwitchButtonStateChange",
+"onDgsSelectorSelect",
+"onDgsGridListSelect",
+"onDgsGridListHover",
+"onDgsMouseHover",
+"onDgsGridListItemDoubleClick",
+"onDgsProgressBarChange",
+"onDgsCreate",
+"onDgsPluginCreate",
+"onDgsPreRender",
+"onDgsRender",
+"onDgsElementRender",
+"onDgsElementLeave",
+"onDgsElementEnter",
+"onDgsElementMove",
+"onDgsElementSize",
+"onDgsFocus",
+"onDgsBlur",
+"onDgsTabSelect",
+"onDgsTabPanelTabSelect",
+"onDgsRadioButtonChange",
+"onDgsCheckBoxChange",
+"onDgsComboBoxSelect",
+"onDgsComboBoxStateChange",
+"onDgsEditPreSwitch",
+"onDgsEditSwitched",
+"onDgsEditAccepted",
+"onDgsStopMoving",
+"onDgsStopSizing",
+"onDgsStopAlphaing",
+"onDgsStopAniming",
+"onDgsDrop",
+"onDgsDrag",
+"onDgsStart",
+"onDgsPaste", --DGS Paste Handler
+"onDgsPropertyChange",
+-------Plugin events
+"onDgsRemoteImageLoad",
+"onDgsQRCodeLoad",
+-------internal events
+"DGSI_Paste",
+"DGSI_ReceiveIP",
+"DGSI_ReceiveQRCode",
+"DGSI_ReceiveRemoteImage",
+"DGSI_onDebug",
+"DGSI_onDebugRequestContext",
+"DGSI_onDebugSendContext",
+"DGSI_onImport",
+-------G2D Hooker events
+"onDgsEditAccepted-C",
+"onDgsTextChange-C",
+"onDgsComboBoxSelect-C",
+"onDgsTabSelect-C",
+-------
 }
 local addEvent = addEvent
 for i=1,#events do
@@ -697,22 +697,22 @@ function findRotation(x1,y1,x2,y2,offsetFix)
 	return t<0 and t+360 or t
 end
 
-function math.restrict(value,n_min,n_max)
-	if type(value) ~= "number" then
+function math.clamp(value,n_min,n_max)
+	--[[if type(value) ~= "number" then
 		local dbInfo = debug.getinfo(2)
-		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.restrict at argument 1, expect a number, got "..type(value),4,255,128,0)
+		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.clamp at argument 1, expect a number, got "..type(value),4,255,128,0)
 		return false
 	end
 	if type(n_min) ~= "number" then
 		local dbInfo = debug.getinfo(2)
-		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.restrict at argument 2, expect a number, got "..type(n_min),4,255,128,0)
+		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.clamp at argument 2, expect a number, got "..type(n_min),4,255,128,0)
 		return false
 	end
 	if type(n_max) ~= "number" then
 		local dbInfo = debug.getinfo(2)
-		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.restrict at argument 3, expect a number, got "..type(n_max),4,255,128,0)
+		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.clamp at argument 3, expect a number, got "..type(n_max),4,255,128,0)
 		return false
-	end
+	end]]
 	if value <= n_min then
 		return n_min
 	elseif value >= n_max then
@@ -738,12 +738,6 @@ function math.seekEmpty(list)
 	return cnt
 end
 
-function math.factorial(x)
-	local a = 1
-	for i=2,x do a = a*i end
-	return a
-end
-
 function math.c(n,r)
 	local up,down = 1,1
 	for i=n-r+1,n do up = up*i end
@@ -761,31 +755,6 @@ function math.getBezierPoint(pos,t)
 		retY = retY+factor*pos[i][2]
 	end
 	return retX,retY
-end
-
-function random(n, m)
-    math.randomseed(os.clock()*math.random(1000000,90000000)+math.random(1000000,90000000))
-    return math.random(n, m)
-end
-
-function randomNumber(len)
-    local rt = ""
-    for i=1,len,1 do
-        if i == 1 then
-            rt = rt..random(1,9)
-        else
-            rt = rt..random(0,9)
-        end
-    end
-    return rt
-end
-
-function randomLetter(len)
-    local rt = ""
-    for i = 1, len, 1 do
-        rt = rt..string.char(random(97,122))
-    end
-    return rt
 end
 
 function getPositionFromElementOffset(element,offX,offY,offZ)
@@ -812,40 +781,6 @@ function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
 	return rot,(x-posX)/absSize[1],(y-posY)/absSize[2]
 end
 
-------------Round Up Functions
-defaultRoundUpPoints = 3
-function dgsRoundUp(num,points)
-	if points then
-		assert(type(points) == "number","Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..dgsGetType(points))
-		assert(points%1 == 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got float")
-		assert(points > 0,"Bad Argument @dgsRoundUp at argument 2, expect a positive integer got "..points)
-	end
-	local points = points or defaultRoundUpPoints
-	local s_num = tostring(num)
-	local from,to = utf8.find(s_num,"%.")
-	if from then
-		local single = s_num:sub(from+points,from+points)
-		local single = tonumber(single) or 0
-		local a = s_num:sub(0,from+points-1)
-		if single >= 5 then
-			a = a+10^(-points+1)
-		end
-		return tonumber(a)
-	end
-	return num
-end
-
-function dgsGetRoundUpPoints()
-	return defaultRoundUpPoints
-end
-
-function dgsSetRoundUpPoints(points)
-	assert(type(points) == "number","Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got "..dgsGetType(points))
-	assert(points%1 == 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got float")
-	assert(points > 0,"Bad Argument @dgsSetRoundUpPoints at argument 1, expect a positive integer got 0")
-	defaultRoundUpPoints = points
-	return true
-end
 --------------------------------Built-in Utility
 HorizontalAlign = {
 	left = "left",
@@ -866,45 +801,35 @@ red = 0xFFFF0000
 blue = 0xFF0000FF
 yellow = 0xFFFFFF00
 
-function fromcolor(int,useMath,relative)
+function fromcolor(int,relative)
 	local a,r,g,b
-	if useMath then
-		b = int%256
-		local int = (int-b)/256
-		g = int%256
-		local int = (int-g)/256
-		r = int%256
-		local int = (int-r)/256
-		a = int%256
-	else
-		a,r,g,b = getColorFromString(format("#%.8x",int))
-	end
+	b = int%256
+	local int = (int-b)/256
+	g = int%256
+	local int = (int-g)/256
+	r = int%256
+	local int = (int-r)/256
+	a = int%256
 	if relative then
-		a,r,g,b = a/255,r/255,g/255,b/255
+		return r/255,g/255,b/255,a/255
 	end
 	return r,g,b,a
 end
 
 function getColorAlpha(color)
-	if color < 0 then
-		color = 0x100000000+color
-	end
+	color = color%0x100000000
 	local a = (color-color%0x1000000)/0x1000000
 	return a-a%1
 end
 
 function setColorAlpha(color,alpha)
-	if color < 0 then
-		color = 0x100000000+color
-	end
+	color = color%0x100000000
 	alpha = alpha-alpha%1
 	return color%0x1000000+alpha*0x1000000
 end
 
 function applyColorAlpha(color,alpha)
-	if color < 0 then
-		color = 0x100000000+color
-	end
+	color = color%0x100000000
 	local rgb = color%0x1000000
 	local a = (color-rgb)/0x1000000*alpha
 	a = a-a%1
@@ -947,16 +872,11 @@ function HSL2RGB(H,S,L)
 	if S == 0 then
 		R,G,B = L,L,L
 	else
-		local var_1,var_2
-		if L < 0.5 then
-			var_2 = L*(1+S)
-		else
-			var_2 = L+S-S*L
-		end
-		var_1 = 2*L-var_2
-		R = HUE2RGB(var_1,var_2,H+(1/3))
-		G = HUE2RGB(var_1,var_2,H)
-		B = HUE2RGB(var_1,var_2,H-(1/3))
+		local var2 = (L < 0.5) and L*(1+S) or L+S-S*L
+		local var1 = 2*L-var2
+		R = HUE2RGB(var1,var2,H+(1/3))
+		G = HUE2RGB(var1,var2,H)
+		B = HUE2RGB(var1,var2,H-(1/3))
 	end
 	return R*255,G*255,B*255
 end

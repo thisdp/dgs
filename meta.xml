@@ -75,7 +75,8 @@
 
 	<script src="plugin/canvas.lua" type="client" />
 	
-	<script src="plugin/gradient.lua" type="client" />
+	<script src="plugin/gradient/gradient.lua" type="client" />
+	<file src="plugin/gradient/gradient.fx" type="client" />
 
 	<script src="plugin/nineSlice.lua" type="client" />
 

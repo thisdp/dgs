@@ -108,7 +108,7 @@ function dgsLabelSetColor(label,r,g,b,a)
 	if tonumber(r) and g == true then
 		return dgsSetData(label,"textColor",r)
 	else
-		local _r,_g,_b,_a = fromcolor(dgsElementData[label].textColor,true)
+		local _r,_g,_b,_a = fromcolor(dgsElementData[label].textColor)
 		return dgsSetData(label,"textColor",tocolor(r or _r,g or _g,b or _b,a or _a))
 	end
 end

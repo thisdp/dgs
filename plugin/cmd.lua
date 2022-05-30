@@ -196,7 +196,6 @@ function executeCmdCommand(cmd,str,...)
 	end
 end
 --------------DGS CMD
-dgsLogLuaMemory()
 dgs_MyIP = "Unknown"
 triggerServerEvent("DGSI_RequestIP",resourceRoot)
 addEventHandler("DGSI_ReceiveIP",resourceRoot,function(ip)
@@ -518,9 +517,7 @@ function dgsCreateAnimationWindow(...)
 	setTimer(function(window)
 		dgsMoveTo(window,x,y,false,"InQuad",200)
 		dgsSizeTo(window,sx,sy,false,"InQuad",200)
-		setTimer(function(window)
-			triggerEvent("onAnimationWindowCreate",window)
-		end,202,1,window)
+		setTimer(onAnimationWindowCreate,202,1,window)
 	end,210,1,window)
 	return window
 end
@@ -539,9 +536,9 @@ function dxStatusUpdate()
 	end
 	dgsSetProperty(dxStatus["dxList"],"rowData",rowData)
 end
-addEvent("onAnimationWindowCreate",true)
-addEventHandler("onAnimationWindowCreate",resourceRoot,function()
-	if source == netSystem["window"] then
+
+function onAnimationWindowCreate(window)
+	if window == netSystem["window"] then
 		netSystem["Sent"] = dgsCreateLabel(10,10,100,30,"Send",false,netSystem["window"],_,1.6,1.6)
 		netSystem["ByteSent"] = dgsCreateLabel(10,50,200,20,"Bytes:",false,netSystem["window"],_,1.2,1.2)
 		netSystem["PacketsSent"] = dgsCreateLabel(10,80,200,20,"Packages:",false,netSystem["window"],_,1.2,1.2)
@@ -553,34 +550,31 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		netSystem["PacketLossTotal"] = dgsCreateLabel(10,300,200,20,"Average Loss:",false,netSystem["window"],_,1.2,1.2)
 		netSystem["IP"] = dgsCreateLabel(10,340,200,20,"My IP:"..dgs_MyIP,false,netSystem["window"],_,1.2,1.2)
 
-		netSystem["picture_sen"] = dgsCreateImage(290,10,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
-		dgsSetProperty(netSystem.picture_sen,"functionRunBefore",false)
-		netSystem["picture_sen_max"] = dgsCreateLabel(240,15,40,0,"N/A",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
-		netSystem["picture_sen_min"] = dgsCreateLabel(240,95,40,0,"0Byte/s",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
-		dgsSetProperty(netSystem["picture_sen"],"sideSize",1)
-		dgsSetProperty(netSystem["picture_sen"],"sideState","out")
-		dgsSetProperty(netSystem["picture_sen"],"sideColor",tocolor(100,150,240,255))
+		netSystem["chartSent"] = dgsCreateImage(290,10,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
+		dgsSetProperty(netSystem.chartSent,"functionRunBefore",false)
+		netSystem["chartSentMAX"] = dgsCreateLabel(240,15,40,0,"N/A",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
+		netSystem["chartSentMin"] = dgsCreateLabel(240,95,40,0,"0Byte/s",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
 
-		netSystem["picture_rec"] = dgsCreateImage(290,120,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
-		dgsSetProperty(netSystem.picture_rec,"functionRunBefore",false)
-		netSystem["picture_rec_max"] = dgsCreateLabel(240,125,40,0,"N/A",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
-		netSystem["picture_rec_min"] = dgsCreateLabel(240,205,40,0,"0Byte/s",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
-		dgsSetProperty(netSystem["picture_rec"],"sideSize",1)
-		dgsSetProperty(netSystem["picture_rec"],"sideState","out")
-		dgsSetProperty(netSystem["picture_rec"],"sideColor",tocolor(100,150,240,255))
+		netSystem["chartRcv"] = dgsCreateImage(290,120,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
+		dgsSetProperty(netSystem.chartRcv,"functionRunBefore",false)
+		netSystem["chartRcvMax"] = dgsCreateLabel(240,125,40,0,"N/A",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
+		netSystem["chartRcvMin"] = dgsCreateLabel(240,205,40,0,"0Byte/s",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
 
-		netSystem["picture_pkl"] = dgsCreateImage(290,230,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
-		dgsSetProperty(netSystem.picture_pkl,"functionRunBefore",false)
-		netSystem["picture_pkl_max"] = dgsCreateLabel(240,235,40,0,"100%",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
-		netSystem["picture_pkl_min"] = dgsCreateLabel(240,315,40,0,"0%",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
-		dgsSetProperty(netSystem["picture_pkl"],"sideSize",1)
-		dgsSetProperty(netSystem["picture_pkl"],"sideState","out")
-		dgsSetProperty(netSystem["picture_pkl"],"sideColor",tocolor(100,150,240,255))
+		netSystem["chartPkl"] = dgsCreateImage(290,230,300,90,_,false,netSystem["window"],tocolor(255,255,255,50))
+		dgsSetProperty(netSystem.chartPkl,"functionRunBefore",false)
+		netSystem["chartPklMax"] = dgsCreateLabel(240,235,40,0,"100%",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
+		netSystem["chartPklMin"] = dgsCreateLabel(240,315,40,0,"0%",false,netSystem["window"],_,1.2,1.2,_,_,_,"right","center")
+
+		dgsSetProperties({netSystem.chartSent,netSystem.chartRcv,netSystem.chartPkl},{
+			sideSize=1,
+			sideState="out",
+			sideColor=tocolor(100,150,240,255),
+		})
 		
 		dgsSetProperty(netSystem["Sent"],"renderEventCall",true)
 		addEventHandler("onDgsElementRender",netSystem["Sent"],netUpdate,false)
-		dgsSetProperty(netSystem["picture_sen"],"renderEventCall",true)
-		addEventHandler("onDgsElementRender",netSystem["picture_sen"],function()
+		dgsSetProperty(netSystem["chartSent"],"renderEventCall",true)
+		addEventHandler("onDgsElementRender",netSystem["chartSent"],function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
 			local maxPos = math.floor((speedSend[0] or 0)*1.2)
@@ -590,11 +584,11 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 				local nextone = speedSend[i+1] or 0
 				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedSend[i]/maxPos)-1,LineBlue,1,isPostGUI)
 			end
-			dgsSetText(netSystem["picture_sen_max"],maxPos.."Byte/s")
+			dgsSetText(netSystem["chartSentMAX"],maxPos.."Byte/s")
 		end)
 
-		dgsSetProperty(netSystem["picture_rec"],"renderEventCall",true)
-		addEventHandler("onDgsElementRender",netSystem["picture_rec"],function()
+		dgsSetProperty(netSystem["chartRcv"],"renderEventCall",true)
+		addEventHandler("onDgsElementRender",netSystem["chartRcv"],function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
 			local maxPos = math.floor((speedRecv[0] or 0)*1.2)
@@ -604,11 +598,11 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 				local nextone = speedRecv[i+1] or 0
 				dxDrawLine(x+sx-sx*i/MaxStatisticTimes-1,y+sy-sy*(nextone/maxPos)-1,x+sx-sx*(i-1)/MaxStatisticTimes-1,y+sy-sy*(speedRecv[i]/maxPos)-1,LineBlue,1,isPostGUI)
 			end
-			dgsSetText(netSystem["picture_rec_max"],maxPos.."Byte/s")
+			dgsSetText(netSystem["chartRcvMax"],maxPos.."Byte/s")
 		end)
 
-		dgsSetProperty(netSystem["picture_pkl"],"renderEventCall",true)
-		addEventHandler("onDgsElementRender",netSystem["picture_pkl"],function()
+		dgsSetProperty(netSystem["chartPkl"],"renderEventCall",true)
+		addEventHandler("onDgsElementRender",netSystem["chartPkl"],function()
 			local x,y = dgsGetPosition(source,false,true)
 			local sx,sy = dgsGetSize(source,false)
 			local LineBlue = tocolor(80,180,255,255)
@@ -619,7 +613,7 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 			end
 		end)
 
-	elseif source == dxStatus["window"] then
+	elseif window == dxStatus["window"] then
 		dxStatus["dxList"] = dgsCreateGridList(10,10,680,460,false,dxStatus["window"],_,tocolor(0,0,0,100),white,tocolor(0,0,0,100),tocolor(0,0,0,0),tocolor(100,100,100,100),tocolor(200,200,200,150))
 		dgsGridListSetSortEnabled(dxStatus["dxList"],false)
 		dgsSetProperty(dxStatus["dxList"],"rowHeight",25)
@@ -633,7 +627,7 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		dgsSetProperty(scrollBars[2],"scrollArrow",false)
 		dgsSetProperty(dxStatus["dxList"],"mode",true)
 		addEventHandler("onClientRender",root,dxStatusUpdate)
-	elseif source == performanceBrowser["window"] then
+	elseif window == performanceBrowser["window"] then
 		performanceBrowser["dxList"] = dgsCreateGridList(10,10,130,460,false,performanceBrowser["window"])
 		dgsSetProperty(performanceBrowser["dxList"],"columnHeight",0)
 		dgsSetProperty(performanceBrowser["dxList"],"rowHeight",40)
@@ -666,11 +660,11 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 						dgsGridListAddRow(source)
 					end
 				end
-				for row,value in ipairs(rows) do
-					for k,v in pairs(value) do
-						rowData[row][k] = rowData[row][k] or {}
-						rowData[row][k][1] = v
-						rowData[row][k][2] = white
+				for i=1,#rows do
+					for k,v in pairs(rows[i]) do
+						rowData[i][k] = rowData[i][k] or {}
+						rowData[i][k][1] = v
+						rowData[i][k][2] = white
 					end
 				end
 				dgsSetProperty(source,"rowData",rowData)
@@ -693,7 +687,7 @@ addEventHandler("onAnimationWindowCreate",resourceRoot,function()
 		end,false)
 		dgsGridListSetSelectedItem(performanceBrowser["dxList"],1)
 	end
-end)
+end
 
 ---------About DGS (Contributed by Ahmed Ly)
 AboutDGS = {}

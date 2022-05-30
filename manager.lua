@@ -12,7 +12,7 @@ local tonumber = tonumber
 local type = type
 local mathMin = math.min
 local mathMax = math.max
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 local getElementType = getElementType
 -------------------------------------------------------Table Defines
 --Animations

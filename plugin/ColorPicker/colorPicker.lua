@@ -192,7 +192,7 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	local offset =  dgsElementData[cs].offset
 	local voh = dgsElementData[cs].voh
 	local oldV = dgsElementData[cs].value
-	local value = math.restrict(value,0,100)
+	local value = math.clamp(value,0,100)
 	dgsSetData(cs,"value",value)
 	local absSize = dgsElementData[cs].absSize
 	local images = dgsElementData[cs].cp_images
@@ -597,27 +597,27 @@ function dgsColorPickerSetColor(cp,...)
 	if args[5] == "HSL" then
 		local color = dgsElementData[cp].HSL
 		local h,s,l = args[1] or color[1] or 360,args[2] or color[2] or 100,args[3] or color[3] or 100
-		h = math.restrict(h,0,360)
-		s = math.restrict(s,0,100)
-		l = math.restrict(l,0,100)
+		h = math.clamp(h,0,360)
+		s = math.clamp(s,0,100)
+		l = math.clamp(l,0,100)
 		newColorRGB = {HSL2RGB(h,s,l)}
 		newColorHSL = {h,s,l}
 		newColorHSV = {HSL2HSV(h,s,l)}
 	elseif args[5] == "HSV" then
 		local color = dgsElementData[cp].HSV
 		local h,s,v = args[1] or color[1] or 360,args[2] or color[2] or 100,args[3] or color[3] or 100
-		h = math.restrict(h,0,360)
-		s = math.restrict(s,0,100)
-		v = math.restrict(v,0,100)
+		h = math.clamp(h,0,360)
+		s = math.clamp(s,0,100)
+		v = math.clamp(v,0,100)
 		newColorRGB = {HSV2RGB(h,s,v)}
 		newColorHSV = {h,s,v}
 		newColorHSL = {HSV2HSL(h,s,v)}
 	elseif args[5] == "RGB" then
 		local color = dgsElementData[cp].RGB
 		local r,g,b = args[1] or color[1] or 255,args[2] or color[2] or 255,args[3] or color[3] or 255
-		r = math.restrict(r,0,255)
-		g = math.restrict(g,0,255)
-		b = math.restrict(b,0,255)
+		r = math.clamp(r,0,255)
+		g = math.clamp(g,0,255)
+		b = math.clamp(b,0,255)
 		newColorRGB = {r,g,b}
 		newColorHSL = {RGB2HSL(r,g,b)}
 		newColorHSV = {HSL2HSV(newColorHSL[1],newColorHSL[2],newColorHSL[3])}

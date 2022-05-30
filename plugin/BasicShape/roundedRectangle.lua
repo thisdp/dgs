@@ -1,3 +1,4 @@
+dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxroundrectangle")
 
 function requestRoundRectangleShader(withoutFilled)
@@ -111,7 +112,7 @@ end
 function dgsRoundRectSetColor(rectShader,color)
 	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetColor",1,"plugin dgs-dxroundrectangle")) end
 	if not(dgsGetType(color) == "number") then error(dgsGenAsrt(color,"dgsRoundRectSetColor",2,"number")) end
-	dxSetShaderValue(rectShader,"color",{fromcolor(color,true,true)})
+	dxSetShaderValue(rectShader,"color",fromcolor(color,true))
 	dgsSetData(rectShader,"color",color)
 	return true
 end
@@ -157,4 +158,3 @@ function dgsRoundRectGetBorderOnly(rectShader)
 	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectGetBorderOnly",1,"plugin dgs-dxroundrectangle")) end
 	return dgsElementData[rectShader].borderOnly
 end
-dgsLogLuaMemory()

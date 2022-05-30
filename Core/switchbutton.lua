@@ -232,7 +232,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		if type(eleData.disabledColor) == "number" then
 			color = applyColorAlpha(eleData.disabledColor,parentAlpha)
 		elseif eleData.disabledColor == true then
-			local r,g,b,a = fromcolor(cursorColor,true)
+			local r,g,b,a = fromcolor(cursorColor)
 			local average = (r+g+b)/3*eleData.disabledColorPercent
 			cursorColor = tocolor(average,average,average,a*parentAlpha)
 		end
@@ -245,10 +245,10 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
 				colorOn = applyColorAlpha(eleData.disabledColor,parentAlpha)
 			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(colorOff,true)
+				local r,g,b,a = fromcolor(colorOff)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOff = tocolor(average,average,average,a*parentAlpha)
-				local r,g,b,a = fromcolor(colorOn,true)
+				local r,g,b,a = fromcolor(colorOn)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOn = tocolor(average,average,average,a*parentAlpha)
 			end
@@ -276,10 +276,10 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
 				colorOn = applyColorAlpha(eleData.disabledColor,parentAlpha)
 			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(colorOff,true)
+				local r,g,b,a = fromcolor(colorOff)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOff = tocolor(average,average,average,a*parentAlpha)
-				local r,g,b,a = fromcolor(colorOn,true)
+				local r,g,b,a = fromcolor(colorOn)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOn = tocolor(average,average,average,a*parentAlpha)
 			end
@@ -318,7 +318,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			if type(eleData.disabledColor) == "number" then
 				color = applyColorAlpha(eleData.disabledColor,parentAlpha)
 			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(color,true)
+				local r,g,b,a = fromcolor(color)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				color = tocolor(average,average,average,a*parentAlpha)
 			end

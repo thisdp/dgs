@@ -8,7 +8,7 @@ local mathFloor = math.floor
 local mathCeil = math.ceil
 local mathMin = math.min
 local mathMax = math.max
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 local mathLerp = math.lerp
 local tocolor = tocolor
 --Dx Functions

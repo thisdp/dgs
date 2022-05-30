@@ -30,7 +30,7 @@ local tostring = tostring
 local tocolor = tocolor
 local type = type
 local mathLerp = math.lerp
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 
 function dgsCreateScalePane(...)
 	local sRes = sourceResource or resource

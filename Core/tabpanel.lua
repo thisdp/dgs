@@ -59,7 +59,7 @@ local createElement = createElement
 local assert = assert
 local tonumber = tonumber
 local type = type
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 local mathMin = math.min
 local mathMax = math.max
 local mathFloor = math.floor
@@ -520,7 +520,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if type(eleData.disabledColor) == "number" then
 								finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 							elseif eleData.disabledColor == true then
-								local r,g,b,a = fromcolor(tabColor[1],true)
+								local r,g,b,a = fromcolor(tabColor[1])
 								local average = (r+g+b)/3*eleData.disabledColorPercent
 								finalcolor = tocolor(average,average,average,a*parentAlpha)
 							else

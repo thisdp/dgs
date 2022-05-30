@@ -84,7 +84,7 @@ end
 function dgsCircleSetColor(circle,color)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetColor",1,"plugin dgs-dxcircle")) end
 	if not(type(color) == "number") then error(dgsGenAsrt(color,"dgsCircleSetColor",2,"number")) end
-	dxSetShaderValue(circle,"color",{fromcolor(color,true,true)})
+	dxSetShaderValue(circle,"color",fromcolor(color,true))
 	return dgsSetData(circle,"color",color)
 end
 

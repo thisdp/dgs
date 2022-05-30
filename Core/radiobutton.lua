@@ -231,7 +231,7 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		if type(eleData.disabledColor) == "number" then
 			finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 		elseif eleData.disabledColor == true then
-			local r,g,b,a = fromcolor(color[1],true)
+			local r,g,b,a = fromcolor(color[1])
 			local average = (r+g+b)/3*eleData.disabledColorPercent
 			finalcolor = tocolor(average,average,average,a*parentAlpha)
 		else

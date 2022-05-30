@@ -46,7 +46,7 @@ local tostring = tostring
 local type = type
 local mathFloor = math.floor
 local mathAbs = math.abs
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 
 function dgsCreateScrollBar(...)
 	local sRes = sourceResource or resource

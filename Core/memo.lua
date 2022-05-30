@@ -78,7 +78,7 @@ local tableSort = table.sort
 local tableInsert = table.insert
 local tableRemove = table.remove
 local mathFloor = math.floor
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 local utf8Sub = utf8.sub
 local utf8Gsub = utf8.gsub
 local utf8Len = utf8.len
@@ -1763,7 +1763,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			if type(eleData.disabledColor) == "number" then
 				finalcolor = eleData.disabledColor
 			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(bgColor,true)
+				local r,g,b,a = fromcolor(bgColor)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				finalcolor = tocolor(average,average,average,a)
 			end
@@ -1921,7 +1921,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			if type(eleData.disabledColor) == "number" then
 				finalcolor = eleData.disabledColor
 			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(bgColor,true)
+				local r,g,b,a = fromcolor(bgColor)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				finalcolor = tocolor(average,average,average,a)
 			end

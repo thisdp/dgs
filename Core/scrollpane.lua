@@ -37,7 +37,7 @@ local tostring = tostring
 local tocolor = tocolor
 local type = type
 local mathLerp = math.lerp
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 local mathAbs = math.abs
 local mathCeil = math.ceil
 

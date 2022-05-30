@@ -888,7 +888,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		if type(eleData.disabledColor) == "number" then
 			finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 		elseif eleData.disabledColor == true then
-			local r,g,b,a = fromcolor(colors[1],true)
+			local r,g,b,a = fromcolor(colors[1])
 			local average = (r+g+b)/3*eleData.disabledColorPercent
 			finalcolor = tocolor(average,average,average,a*parentAlpha)
 		else
@@ -917,9 +917,9 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxSetShaderValue(arrow,"linewidth",eleData.arrowSettings[3])
 		end
 		local r,g,b,a = fromcolor(arrowColor,true)
-		dxSetShaderValue(arrow,"_color",r/255,g/255,b/255,a/255*parentAlpha)
+		dxSetShaderValue(arrow,"_color",r,g,b,a*parentAlpha)
 		local r,g,b,a = fromcolor(arrowOutSideColor,true)
-		dxSetShaderValue(arrow,"ocolor",r/255,g/255,b/255,a/255*parentAlpha)
+		dxSetShaderValue(arrow,"ocolor",r,g,b,a*parentAlpha)
 		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
 	else 
 		local rotation = (90 * (eleData.listStateAnim)) - 90

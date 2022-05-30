@@ -202,7 +202,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		if type(eleData.disabledColor) == "number" then
 			finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 		elseif eleData.disabledColor == true then
-			local r,g,b,a = fromcolor(bgColor,true)
+			local r,g,b,a = fromcolor(bgColor)
 			local average = (r+g+b)/3*eleData.disabledColorPercent
 			finalcolor = tocolor(average,average,average,a*parentAlpha)
 		else

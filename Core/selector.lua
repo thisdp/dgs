@@ -45,7 +45,7 @@ local tonumber = tonumber
 local type = type
 local tableInsert = table.insert
 local tableRemove = table.remove
-local mathClamp = math.restrict
+local mathClamp = math.clamp
 --[[
 Selector Data Structure:
 {
