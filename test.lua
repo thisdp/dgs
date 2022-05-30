@@ -1,6 +1,33 @@
 dgsLogLuaMemory()
 local loadstring = loadstring
-addEventHandler("onClientResourceStart",resourceRoot,function()
+
+
+function executeTest()
+
+function random(n, m)
+    math.randomseed(os.clock()*math.random(1000000,90000000)+math.random(1000000,90000000))
+    return math.random(n, m)
+end
+
+function randomNumber(len)
+    local rt = ""
+    for i=1,len,1 do
+        if i == 1 then
+            rt = rt..random(1,9)
+        else
+            rt = rt..random(0,9)
+        end
+    end
+    return rt
+end
+
+function randomLetter(len)
+    local rt = ""
+    for i = 1, len, 1 do
+        rt = rt..string.char(random(97,122))
+    end
+    return rt
+end
 ------------Full demo
 function createFullDemoOOP()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
@@ -20,6 +47,12 @@ function createFullDemoOOP()
 				local rndtBtn = parent:dgsButton(400,10,120,60,"Button\nRounded\nTransition",false)
 					:setProperty("image",rndRect)
 					:setProperty("colorTransitionPeriod",100)
+					
+			local iBtn = parent:dgsButton(10,80,120,60,"Button\nText\nColor",false)
+				:setProperty("iconImage",rndRect)
+				:setProperty("iconOffset",{0,0,true})
+				:setProperty("iconRelative",false)
+				:setProperty("iconAlignment",{"right","center"})
 			end
 			if dgsCreateCircle then
 				local circle = dgsCreateCircle(0.49,0)
@@ -27,14 +60,15 @@ function createFullDemoOOP()
 				local cirBtn = parent:dgsButton(530,10,60,60,"Button\nCircle",false)
 					:setProperty("image",circle)
 			end
-			local sBtn0 = parent:dgsButton(10,80,120,60,"Button\nShadow",false)
+			local sBtn0 = parent:dgsButton(10,150,120,60,"Button\nShadow",false)
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
-			local sBtn1 = parent:dgsButton(140,80,120,60,"Button\nShadow1",false)
+			local sBtn1 = parent:dgsButton(140,150,120,60,"Button\nShadow1",false)
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255),1})
-			local sBtn2 = parent:dgsButton(270,80,120,60,"Button\nShadow2",false)
+			local sBtn2 = parent:dgsButton(270,150,120,60,"Button\nShadow2",false)
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255),2})
-			local sBtn2 = parent:dgsButton(400,80,120,60,"Button\nText\nColor",false)
+			local sBtn2 = parent:dgsButton(400,150,120,60,"Button\nText\nColor",false)
 				:setProperty("textColor",{tocolor(255,255,255,255),tocolor(255,0,0,255),tocolor(0,255,255,255)})
+				
 		end,
 		["ColorPicker"] = dgsCreateColorPicker and function(parent)
 			--Color Picker HSVRing
@@ -150,29 +184,37 @@ function createFullDemoOOP()
 		["Edit"] = function(parent)
 			--Normal
 			local edit = parent:dgsEdit(50,40,400,40,"DGS Edit Box",false)
-				:setProperty("textSize",{1.3,1.3})
+				:setProperty("textSize",{2,2})
 			--Caret
 			local edit2 = parent:dgsEdit(50,120,400,40,"DGS Edit Box",false)
-				:setProperty("textSize",{1.3,1.3})
+				:setProperty("textSize",{2,2})
 				:setProperty("caretStyle",1)
 			--PlaceHolder With AutoComplete
 			local edit3 = parent:dgsEdit(50,200,400,40,"",false)
-				:setProperty("textSize",{1.3,1.3})
+				:setProperty("textSize",{2,2})
 				:setProperty("placeHolder","Type 'Hello'")
 				:addAutoComplete("HelloWorld",true)
 			--Alignment
 			local edit4 = parent:dgsEdit(50,280,400,40,"DGS Edit Box",false)
-				:setProperty("textSize",{1.3,1.3})
+				:setProperty("textSize",{2,2})
 				:setProperty("alignment",{"center", "center"})
 			--dgsEditSetMasked (edit4, true)
 		end,
 		["GridList"] = function(parent)
+			--[[local colorA = {tocolor(255,0,0,255),tocolor(255,0,0,255),tocolor(255,0,0,255)}
+			local colorB = {tocolor(0,255,0,255),tocolor(0,255,0,255),tocolor(0,255,0,255)}
+			local colorC = {tocolor(0,0,255,255),tocolor(0,0,255,255),tocolor(0,0,255,255)}]]
 			local gridlist = parent
 				:dgsGridList(10,10,630,250,false)
 				:setMultiSelectionEnabled(true)
 				:setProperty("columnShadow",{1,1,tocolor(0,0,0,255),2})
 				:setProperty("rowTextSize",{1.2,1.2})
 				:setProperty("rowHeight",20)
+				--[[:setProperty("itemColorTemplate",{
+					{colorA,colorB,colorC},
+					{colorB,colorC,colorA},
+					{colorC,colorA,colorB},
+				})]]
 				:setProperty("clip",true)
 				:setProperty("rowWordBreak",true)
 				:setProperty("rowShadow",{1,1,tocolor(0,0,0,255),2})
@@ -180,7 +222,7 @@ function createFullDemoOOP()
 				:setProperty("rowTextColor",{tocolor(255,255,255,255),tocolor(0,255,255,255),tocolor(255,0,255,255)})
 				:setProperty("defaultSortFunctions",{"longerUpper","longerLower"})
 			for i=1,10 do
-				gridlist:addColumn("Column "..i,0.5)
+				gridlist:addColumn("Column "..i,0.2)
 			end
 			for i=1,100 do
 				gridlist:addRow(i,i,string.rep("x",math.random(1,40)))
@@ -364,8 +406,8 @@ function createFullDemoOOP()
 	demoUI.demoList = demoUI.window:dgsGridList(0,0,150,600-25,false)
 		:setProperties({
 			columnHeight = 0,
-			rowHeight = 25,
-			rowTextSize = {1.5,1.5},
+			rowHeight = 40,
+			rowTextSize = {2,2},
 			sortEnabled = false,
 		})
 	demoUI.demoList:addColumn("",1)
@@ -387,15 +429,16 @@ function createFullDemoOOP()
 			end
 		end
 	end)
-	--demoUI.window.alpha = 0.2
+	demoUI.window.alpha = 1
 end
---createFullDemoOOP()
+
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
 	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
 	dgsProgressBarSetStyle(pb,"ring-plain")
 	dgsSetProperty(pb,"isReverse",true)
+	dgsSetAlpha(pb,0.5)
 	local start = 0
 	addEventHandler("onClientRender",root,function()
 		dgsProgressBarSetProgress(pb,start)
@@ -907,6 +950,10 @@ function ScrollPane3DEffectTest()
 	dgsEffect3DApplyToScrollPane(effect3d,sp)
 	edit1 = dgsCreateEdit(0,0,200,100,"DGS 3D Effect Edit 1",false,img)
 	edit2 = dgsCreateEdit(0,400,200,50,"DGS 3D Effect Edit 2",false,img)
+	
+	local pb = dgsCreateProgressBar(100,100,400,400,false)
+	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
+	dgsProgressBarSetStyle(pb,"ring-plain")
 end
 
 ---------------QRCode
@@ -955,10 +1002,10 @@ end
 
 ---------------DGS Object Preview Support Test
 function testObjectPreview()
-	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Scroll Pane (exclude this window)",false)
+	wind = dgsCreateWindow(0.2*sW,0,0.4*sW,0.4*sH,"Example Object Preview",false)
 	local objPrevName = "object_preview"
 	dgsLocateObjectPreviewResource(objPrevName)
-	local veh = createVehicle(411,0,0,3)
+	local veh = createPed(0,0,0,3)
 	local objPrev = dgsCreateObjectPreviewHandle(veh,0,0,0)
 	local image = dgsCreateImage(20,20,300,300,_,false,wind)
 	dgsAttachObjectPreviewToImage(objPrev,image)
@@ -1081,8 +1128,12 @@ end
 
 function gridlistStress()
 	local tick = getTickCount()
-	for i=1,500 do
+	for i=1,200 do
 		local win = dgsCreateGridList(0, 0, 800, 600)
+		dgsGridListAddColumn(win,"test",0.8)
+		for k=1,50 do
+			dgsGridListAddRow(win,_,k)
+		end
 		--destroyElement(win)
 	end
 	print(getTickCount()-tick)
@@ -1103,7 +1154,7 @@ function dgsScrollPaneTest()
 	local tex = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
 	local y = 0
 	
-	for i = 1, 5000 do
+	for i = 1, 500 do
 		y = ((i - 1) * 45)
 		local button = dgsCreateButton(0, y, 380, 40, "", false, ele)
 	end
@@ -1112,10 +1163,10 @@ function dgsScrollPaneTest()
 		y = ((i - 1) * 45)
 		dgsCreateButton(405, y, 380, 40, "", false, ele)
 	end]]
+	dgsScrollPaneSetScrollPosition(ele,50,0)
 end
 
 function SVGTest()
-	
 	local svg = dgsCreateSVG(500,500)
 	local svgDoc = dgsSVGGetDocument(svg)
 	local rect = dgsSVGCreateNode(svgDoc,"rect",50,50,50,50)
@@ -1229,5 +1280,19 @@ function ChartTest()
 	dgsChartDatasetSetData(chart,datasetID,setdata)
 end
 
+--[[
+Dict = {
+	TestText={
+		"health == 'Superman'",				"You are a superman",
+		"find({0}, health)",				"Your health is 0",
+		"health <= 20",						"Your health is low",
+		"health <= 40",						"Your health is medium",
+		"health > 40",						"Your health is high",
+		"Your health is %health",
+	},
+	Smile=":)",
+}]]
+end
 
-end)
+--addEventHandler("onClientResourceStart",resourceRoot,executeTest)
+executeTest = nil
