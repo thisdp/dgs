@@ -1,29 +1,33 @@
-dgsStartUpMemoryMonitor = {}
-function dgsLogLuaMemory()
-	collectgarbage()
-	local columns,rows = getPerformanceStats("Lua memory","",getResourceName(getThisResource()))
-	local debugInfo = debug.getinfo(2)
-	local src = debugInfo.short_src:gsub("%\\","/")
-	local res = src:find("/")
-	src = src:sub(res)
-	dgsStartUpMemoryMonitor[#dgsStartUpMemoryMonitor+1] = {src,rows[1][3]}
-	debugInfo = nil
-	columns = nil
-	rows = nil
-	collectgarbage()
-end
-
-setTimer(function()
-	dgsLogLuaMemory()
-	local last = 0
-	for i=1,#dgsStartUpMemoryMonitor do
-		local current = tonumber(dgsStartUpMemoryMonitor[i][2]:sub(1,-4))
-		print("+"..(current-last).." KB",dgsStartUpMemoryMonitor[i][2],dgsStartUpMemoryMonitor[i][1])
-		last = current
+EnableDGSMemoryLog = false
+if EnableDGSMemoryLog then
+	dgsStartUpMemoryMonitor = {}
+	function dgsLogLuaMemory()
+		collectgarbage()
+		local columns,rows = getPerformanceStats("Lua memory","",getResourceName(getThisResource()))
+		local debugInfo = debug.getinfo(2)
+		local src = debugInfo.short_src:gsub("%\\","/")
+		local res = src:find("/")
+		src = src:sub(res)
+		dgsStartUpMemoryMonitor[#dgsStartUpMemoryMonitor+1] = {src,rows[1][3]}
+		debugInfo = nil
+		columns = nil
+		rows = nil
+		collectgarbage()
 	end
-	print("Logged "..#dgsStartUpMemoryMonitor.." Times")
-end,1000,1)
 
+	setTimer(function()
+		dgsLogLuaMemory()
+		local last = 0
+		for i=1,#dgsStartUpMemoryMonitor do
+			local current = tonumber(dgsStartUpMemoryMonitor[i][2]:sub(1,-4))
+			print("+"..(current-last).." KB",dgsStartUpMemoryMonitor[i][2],dgsStartUpMemoryMonitor[i][1])
+			last = current
+		end
+		print("Logged "..#dgsStartUpMemoryMonitor.." Times")
+	end,1000,1)
+else
+	function dgsLogLuaMemory() return end
+end
 dgsLogLuaMemory()
 --------------------------------Events
 events = {
