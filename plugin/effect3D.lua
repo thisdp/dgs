@@ -44,7 +44,7 @@ end
 
 function dgsEffect3DSetRotationFactor(effect3d,rotFactor)
 	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(rectShader,"dgsEffect3DSetRotationFactor",1,"plugin dgs-dxeffect3d")) end
-	assert(dgsGetType(rotFactor) == "number","Bad argument @dgsEffect3DSetRotationFactor at argument 2, expect number got "..dgsGetType(rotFactor))
+	assert(type(rotFactor) == "number","Bad argument @dgsEffect3DSetRotationFactor at argument 2, expect number got "..type(rotFactor))
 	return dgsSetData(effect3d,"rotFactor",rotFactor)
 end
 
@@ -55,7 +55,7 @@ end
 
 function dgsEffect3DSetAlwaysEnabled(effect3d,state)
 	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(rectShader,"dgsEffect3DSetAlwaysEnabled",1,"plugin dgs-dxeffect3d")) end
-	assert(dgsGetType(state) == "bool","Bad argument @dgsEffect3DSetAlwaysEnabled at argument 2, expect bool got "..dgsGetType(state))
+	assert(type(state) == "boolean","Bad argument @dgsEffect3DSetAlwaysEnabled at argument 2, expect boolean got "..type(state))
 	return dgsSetData(effect3d,"alwaysEnable",state)
 end
 
