@@ -94,16 +94,16 @@ float2 tR = float2(32,32);	//Texture Resolution
 float2 rR = float2(32,32);	//Render Image Resolution
 
 sampler2D Sampler = sampler_state{
-    Texture		= sourceTexture;
-    MinFilter	= None;
-    MagFilter	= None;
-    MipFilter	= None;
-    AddressU	= Wrap;
-    AddressV	= Wrap;
+	Texture		= sourceTexture;
+	MinFilter	= None;
+	MagFilter	= None;
+	MipFilter	= None;
+	AddressU	= Wrap;
+	AddressV	= Wrap;
 };
 
 float map(float v,float a,float b,float c,float d) {
-    return (v-a)/(b-a)*(d-c)+c;
+	return (v-a)/(b-a)*(d-c)+c;
 }
 
 float4 nineSlice(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{

@@ -3,8 +3,7 @@ local loadstring = loadstring
 ---------------Speed Up
 local tableInsert,tableRemove,tableFind = table.insert,table.remove,table.find
 local triggerEvent = triggerEvent
-local type = type
-local assert = assert
+local type,assert = type,assert
 local isElement = isElement
 local destroyElement = destroyElement
 local guiBlur = guiBlur or function()
@@ -22,17 +21,11 @@ function insertResource(res,dgsEle)
 end
 
 function dgsGetGuiLocationOnScreen(dgsEle,rlt,rndsup)
-	if isElement(dgsEle) then
-		local pos = dgsElementData[dgsEle].absPos
-		local x,y = getParentLocation(dgsEle,rndsup,pos[1],pos[2])
-		return rlt and x/sW or x,rlt and y/sH or y
-	end
-	return false
+	if not isElement(dgsEle) then return false end
+	local pos = dgsElementData[dgsEle].absPos
+	local x,y = getParentLocation(dgsEle,rndsup,pos[1],pos[2])
+	return rlt and x/sW or x,rlt and y/sH or y
 end
---[[
-function dgsGetPositionInElement(dgsEle,x,y,rndSuspend,includeSide)
-	local 
-end]]
 -- todo
 function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
 	local eleData
@@ -133,10 +126,8 @@ function dgsGetPosition(dgsEle,relative,includeParent,rndSuspend,includeSide)
 		end
 	else
 		local pos = dgsElementData[dgsEle][relative and "rltPos" or "absPos"]
-		if pos then
-			return pos[1],pos[2]
-		end
-		return false
+		if not pos then return false end
+		return pos[1],pos[2]
 	end
 end
 
@@ -412,14 +403,15 @@ function calculateGuiPositionSize(dgsEle,x,y,relativep,sx,sy,relatives,notrigger
 end
 
 function dgsSetAlpha(dgsEle,alpha,absolute)
+	if not(type(alpha) == "number") then error(dgsGenAsrt(alpha,"dgsSetAlpha",2,"number")) end
 	if type(dgsEle) == "table" then
 		for i=1,#dgsEle do
+			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetAlpha",1,"dgs-dxelement",_,_,"at table index "..i)) end
 			dgsSetAlpha(dgsEle[i],alpha,absolute)
 		end
 		return true
 	end
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetAlpha",1,"dgs-dxelement")) end
-	if not(type(alpha) == "number") then error(dgsGenAsrt(alpha,"dgsSetAlpha",2,"number")) end
 	alpha = absolute and alpha/255 or alpha
 	return dgsSetData(dgsEle,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 end
@@ -441,8 +433,15 @@ function dgsGetAlpha(dgsEle,absolute,includeParent)
 end
 
 function dgsSetEnabled(dgsEle,enabled)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetEnabled",1,"dgs-dxelement")) end
 	if not(type(enabled) == "boolean") then error(dgsGenAsrt(enabled,"dgsSetEnabled",2,"boolean")) end
+	if type(dgsEle) == "table" then
+		for i=1,#dgsEle do
+			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetEnabled",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetEnabled(dgsEle[i],enabled)
+		end
+		return true
+	end
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetEnabled",1,"dgs-dxelement")) end
 	return dgsSetData(dgsEle,"enabled",enabled)
 end
 
@@ -625,7 +624,7 @@ function dgsGetMouseClickGUI(button)
 	end
 end
 
-function dgsIsMouseWithinGUI(ele) return MouseData.WithinElements[ele] and true or false end
+function dgsIsMouseWithinGUI(ele) return (isCursorShowing() and MouseData.WithinElements[ele]) and true or false end
 function dgsGetMouseEnterGUI() return MouseData.entered end
 function dgsGetMouseLeaveGUI() return MouseData.left end
 function dgsGetFocusedGUI() return MouseData.focused end
@@ -1134,6 +1133,7 @@ addEvent("onDgsCursorMove",true)
 addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)
 
 ---------------DGS XML Loader
+--[[
 function dgsCreateFromXML(xmlFile)
 	if getUserdataType(xmlFile) == "xml-node" then
 		local createdTable = {}
@@ -1168,7 +1168,7 @@ function dgsCreateFromXML(xmlFile)
 		xmlUnloadFile(xml)
 		return createdTable
 	end
-end
+end]]
 ---------------DGS 3D Common Functions
 function dgs3DSetPosition(ele3D,x,y,z)
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetPosition",1,"dgs-dx3delement")) end
