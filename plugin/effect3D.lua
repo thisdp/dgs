@@ -30,6 +30,7 @@ function dgsEffect3DMouseMoveCheck()
 		dgsEffect3DRemoveFromScrollPane(source)
 	end
 	local alwaysEnable = dgsElementData[ filter[1] ].alwaysEnable
+	if not isCursorShowing() then return false end
 	if dgsIsMouseWithinGUI(source) or alwaysEnable then
 		local x,y = dgsGetCursorPosition()
 		local spx,spy = dgsGetPosition(source,false,true)
