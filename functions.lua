@@ -998,12 +998,7 @@ function dgsTranslate(dgsEle,textTable,sourceResource)
 				setmetatable(textTable,cTranslationEnvMeta)
 				setfenv(condition,textTable)
 				local status,result = pcall(condition)
-				if not status then
-					outputDebugString("Bad argument @dgsTranslate, failed to execute conditional ("..result..") at dictionary:"..translation.."[\""..textTable[1].."\"]["..math.floor(i/2).."]",2)
-					break
-				else
-					if result then result = value[i+1] break end
-				end
+				if status and result then result = value[i+1] break end
 			end
 			local count = 2
 			while true do
