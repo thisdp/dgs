@@ -1045,7 +1045,6 @@ function dgsTranslate(dgsEle,textTable,sourceResource)
 	return false
 end
 
-function dgsTranslationListenProperty
 
 function dgsGetTranslationFont(dgsEle,fontTable,sourceResource)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
