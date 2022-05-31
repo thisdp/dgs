@@ -128,7 +128,6 @@ __dxCreateTexture = dxCreateTexture
 __dxCreateRenderTarget = dxCreateRenderTarget
 __dxDrawImageSection = dxDrawImageSection
 __dxDrawImage = dxDrawImage
-dgs = exports[getResourceName(getThisResource())]
 
 -------Built-in DX Fonts
 fontBuiltIn = {
@@ -259,12 +258,9 @@ function dgsPopElement(eleType,sRes)
 	externalElementPool[sourceRes][eleType] = externalElementPool[sourceRes][eleType] or {}
 	local elePool = externalElementPool[sourceRes][eleType]
 	local ele = elePool[#elePool]
-	if ele then
-		elePool[#elePool] = nil
-		return ele
-	else
-		return false
-	end
+	if not ele then return false end
+	elePool[#elePool] = nil
+	return ele
 end
 
 --Built in
