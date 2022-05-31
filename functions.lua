@@ -986,20 +986,24 @@ function dgsTranslate(dgsEle,textTable,sourceResource)
 				"Your health is $health",
 			},
 			]]
-			if #value%2 == 0 then error(dgsGenAsrt(dgsEle,"dgsTranslate",_,_,_"Bad conditional translation item count (should be odd, got even), maybe missing default translation")) end
+			if #value%2 == 0 then error(dgsGenAsrt(dgsEle,"dgsTranslate",_,_,_,"Bad conditional translation item count (should be odd, got even), maybe missing default translation")) end
 			local result = value[#value]
 			for i=1,#value-1,2 do --Odd item is conditional, Even item is translation, and skip default translation
 				if not cTranslationBuffer[value[i]] then
 					local fnc,err = loadstring("return "..value[i])
-					if not fnc then error("Bad argument @dgsTranslate, failed to load conditional function ("..err..") at dictionary "..translation.."[\""..textTable[1].."\"]["..i.."]") end
+					if not fnc then error("Bad argument @dgsTranslate, failed to load conditional ("..err..") at dictionary:"..translation.."[\""..textTable[1].."\"]["..math.floor(i/2).."]") end
 					cTranslationBuffer[value[i]] = fnc	--buffer
 				end
 				local condition = cTranslationBuffer[value[i]]
 				setmetatable(textTable,cTranslationEnvMeta)
 				setfenv(condition,textTable)
 				local status,result = pcall(condition)
-				if not status then error("Bad argument @dgsTranslate, failed to execute conditional function ("..result..") at dictionary "..translation.."[\""..textTable[1].."\"]["..i.."]") end
-				if result then result = value[i+1] break end
+				if not status then
+					outputDebugString("Bad argument @dgsTranslate, failed to execute conditional ("..result..") at dictionary:"..translation.."[\""..textTable[1].."\"]["..math.floor(i/2).."]",2)
+					break
+				else
+					if result then result = value[i+1] break end
+				end
 			end
 			local count = 2
 			while true do
