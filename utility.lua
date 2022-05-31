@@ -801,15 +801,14 @@ red = 0xFFFF0000
 blue = 0xFF0000FF
 yellow = 0xFFFFFF00
 
-function fromcolor(int,relative)
-	local a,r,g,b
-	b = int%256
-	local int = (int-b)/256
-	g = int%256
-	local int = (int-g)/256
-	r = int%256
-	local int = (int-r)/256
-	a = int%256
+function fromcolor(color,relative)
+	local b = color%256
+	color = (color-b)/256
+	local g = color%256
+	color = (color-g)/256
+	local r = color%256
+	color = (color-r)/256
+	local a = color%256
 	if relative then
 		return r/255,g/255,b/255,a/255
 	end
