@@ -957,28 +957,95 @@ function dgsGetTranslationValue(name,key)
 	return false
 end
 --------------Translation Internal
+local cTranslationEnvMeta = {
+	__index = {
+		table = table,
+		string = string,
+		find = function(tableToFind,value)
+			for i=1,#tableToFind do
+				if tableToFind[i] == value then return i end
+			end
+			return false
+		end,
+	}
+}
+local cTranslationBuffer = {}
 function dgsTranslate(dgsEle,textTable,sourceResource)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
 	if type(textTable) == "table" then
 		local translation = dgsElementData[dgsEle]._translang or resourceTranslation[sourceResource or getThisResource()]
 		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
-		local count = 2
-		while true do
-			local textArg = textTable[count]
-			if not textArg then break end
-			if type(textArg) == "table" then
-				textArg = dgsTranslate(dgsEle,textArg,sourceResource)
+		if type(value) == "table" then	--Conditional Translation
+			--[[ --Conditional Translation
+			TestText={
+				"health == 'Superman'",				"You are a superman",
+				"find({0}, health)",				"Your health is 0",
+				"health <= 40",						"Your health is low",
+				"health <= 60",						"Your health is medium",
+				"health <= 80",						"Your health is high",
+				"Your health is $health",
+			},
+			]]
+			if #value%2 == 0 then error(dgsGenAsrt(dgsEle,"dgsTranslate",_,_,_"Bad conditional translation item count (should be odd, got even), maybe missing default translation")) end
+			local result = value[#value]
+			for i=1,#value-1,2 do --Odd item is conditional, Even item is translation, and skip default translation
+				if not cTranslationBuffer[value[i]] then
+					local fnc,err = loadstring("return "..value[i])
+					if not fnc then error("Bad argument @dgsTranslate, failed to load conditional function ("..err..") at dictionary "..translation.."[\""..textTable[1].."\"]["..i.."]") end
+					cTranslationBuffer[value[i]] = fnc	--buffer
+				end
+				local condition = cTranslationBuffer[value[i]]
+				setmetatable(textTable,cTranslationEnvMeta)
+				setfenv(condition,textTable)
+				local status,result = pcall(condition)
+				if not status then error("Bad argument @dgsTranslate, failed to execute conditional function ("..result..") at dictionary "..translation.."[\""..textTable[1].."\"]["..i.."]") end
+				if result then result = value[i+1] break end
 			end
-			local _value = value:gsub("%%rep%%",textArg,1)
-			if _value == value then break end
-			count = count+1
-			value = _value
+			local count = 2
+			while true do
+				local textArg = textTable[count]
+				if not textArg then break end
+				if type(textArg) == "table" then
+					textArg = dgsTranslate(dgsEle,textArg,sourceResource)
+				end
+				local _value = result:gsub("%%rep%%",textArg,1)
+				if _value == result then break end
+				count = count+1
+				result = _value
+			end
+			for k,v in pairs(textTable) do
+				if type(k) == "string" then
+					result = result:gsub("$"..k,v)
+				end
+			end
+			result = result:gsub("%%rep%%","")
+			return result
+		else	--Replacing Translation
+			local count = 2
+			while true do
+				local textArg = textTable[count]
+				if not textArg then break end
+				if type(textArg) == "table" then
+					textArg = dgsTranslate(dgsEle,textArg,sourceResource)
+				end
+				local _value = value:gsub("%%rep%%",textArg,1)
+				if _value == value then break end
+				count = count+1
+				value = _value
+			end
+			for k,v in pairs(textTable) do
+				if type(k) == "string" then
+					value = value:gsub("$"..k,v)
+				end
+			end
+			value = value:gsub("%%rep%%","")
+			return value
 		end
-		value = value:gsub("%%rep%%","")
-		return value
 	end
 	return false
 end
+
+function dgsTranslationListenProperty
 
 function dgsGetTranslationFont(dgsEle,fontTable,sourceResource)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
