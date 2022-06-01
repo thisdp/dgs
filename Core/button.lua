@@ -123,7 +123,7 @@ function dgsCreateButton(...)
 	dgsSetParent(button,parent,true,true)
 	dgsAttachToTranslation(button,resourceTranslation[sRes])
 	if type(text) == "table" then
-		dgsElementData[button]._translationText = text
+		dgsElementData[button]._translation_text = text
 		dgsSetData(button,"text",text)
 	else
 		dgsSetData(button,"text",tostring(text or ""))

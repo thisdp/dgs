@@ -66,6 +66,20 @@ dgsElementPropertyList = {}					----The Registered exported property list
 --Element Type
 dgsElementType = {}
 --
+--TranslationUpdater
+dgsOnTranslationUpdate = {
+	default = function(dgsEle)
+		local text = dgsElementData[dgsEle]._translation_text
+		if text then
+			dgsSetData(dgsEle,"text",text)
+		end
+		local font = dgsElementData[dgsEle]._translation_font
+		if font then
+			dgsSetData(dgsEle,"font",font)
+		end
+	end,
+}
+--
 --Plugin Creation Manager
 addEventHandler("onDgsPluginCreate",resourceRoot,function(theResource)
 	insertResource(theResource,source)
@@ -466,10 +480,10 @@ dgsOnPropertyChange = {
 	["default"] = {
 		text = function(dgsEle,key,value,oldValue)
 			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationText = value
+				dgsElementData[dgsEle]._translation_text = value
 				value = dgsTranslate(dgsEle,value,sourceResource)
 			else
-				dgsElementData[dgsEle]._translationText = nil
+				dgsElementData[dgsEle]._translation_text = nil
 			end
 			dgsElementData[dgsEle].text = tostring(value)
 			triggerEvent("onDgsTextChange",dgsEle)
@@ -477,19 +491,19 @@ dgsOnPropertyChange = {
 		font = function(dgsEle,key,value,oldValue)
 			--Multilingual
 			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationFont = value
+				dgsElementData[dgsEle]._translation_font = value
 				value = dgsGetTranslationFont(dgsEle,value,sourceResource)
 			else
-				dgsElementData[dgsEle]._translationFont = nil
+				dgsElementData[dgsEle]._translation_font = nil
 			end
 			dgsElementData[dgsEle].font = value
 		end,
 		caption = function(dgsEle,key,value,oldValue)
 			if type(value) == "table" then
-				dgsElementData[dgsEle]._translationText = value
+				dgsElementData[dgsEle]._translation_text = value
 				value = dgsTranslate(dgsEle,value,sourceResource)
 			else
-				dgsElementData[dgsEle]._translationText = nil
+				dgsElementData[dgsEle]._translation_text = nil
 			end
 			dgsElementData[dgsEle].caption = tostring(value)
 		end,
@@ -650,6 +664,10 @@ function dgsSetData(dgsEle,key,value,nocheck)
 	if nocheck then return true end
 	local dataHandlerList = dgsOnPropertyChange[dgsType] or dgsOnPropertyChange.default
 	local dataHandler = dataHandlerList[key] or dgsOnPropertyChange.default[key]
+	local translationListener = eleData.translationListener
+	if translationListener and translationListener[key] then
+		if dgsOnTranslationUpdate[dgsEle] then dgsOnTranslationUpdate[dgsType]() else dgsOnTranslationUpdate.default(dgsEle,key,value,translationListener[key]) end
+	end
 	if dataHandler then dataHandler(dgsEle,key,value,oldValue) end
 	if eleData.propertyListener and eleData.propertyListener[key] then triggerEvent("onDgsPropertyChange",dgsEle,key,value,oldValue) end
 	return true

@@ -431,7 +431,7 @@ function createFullDemoOOP()
 	end)
 	demoUI.window.alpha = 1
 end
-
+--createFullDemoOOP()
 
 function ProgressBarTest()
 	local pb= dgsCreateProgressBar(500,200,600,600,false)
@@ -1280,19 +1280,25 @@ function ChartTest()
 	dgsChartDatasetSetData(chart,datasetID,setdata)
 end
 
---[[
-Dict = {
-	TestText={
-		"health == 'Superman'",				"You are a superman",
-		"find({0}, health)",				"Your health is 0",
-		"health <= 20",						"Your health is low",
-		"health <= 40",						"Your health is medium",
-		"health > 40",						"Your health is high",
-		"Your health is %health",
-	},
-	Smile=":)",
-}]]
+function multilingualTest()
+	local Dict = {
+		TestText={
+			"health == 'Superman'",				"You are a superman",
+			"find({0}, health)",				"Your health is 0",
+			"health <= 20",						"Your health is low",
+			"health <= 40",						"Your health is medium",
+			"health > 40",						"Your health is high",
+			"Your health is $health",
+		},
+		wtf = "Superman",
+	}
+	dgsSetTranslationTable("Main",Dict)
+	dgsSetAttachTranslation("Main")
+	label = dgsCreateLabel (0.51, 0.54, 0.16, 0.14, {"TestText"}, true )
+	dgsTranslationAddPropertyListener(label,"health")
+	dgsSetProperty(label,"health",{"wtf"})
 end
 
---addEventHandler("onClientResourceStart",resourceRoot,executeTest)
+end
+addEventHandler("onClientResourceStart",resourceRoot,executeTest)
 executeTest = nil

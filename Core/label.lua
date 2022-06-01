@@ -93,7 +93,7 @@ function dgsCreateLabel(...)
 	dgsSetParent(label,parent,true,true)
 	dgsAttachToTranslation(label,resourceTranslation[sRes])
 	if type(text) == "table" then
-		dgsElementData[label]._translationText = text
+		dgsElementData[label]._translation_text = text
 		dgsSetData(label,"text",text)
 	else
 		dgsSetData(label,"text",tostring(text or ""))

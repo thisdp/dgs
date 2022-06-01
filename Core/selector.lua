@@ -146,7 +146,7 @@ function dgsSelectorAddItem(selector,text,pos)
 		itemTextSize[1],
 		itemTextSize[2],
 		font,
-		_translationText=_text,
+		_translation_text=_text,
 		{}, --item data
 		nil, -- item image
 	})

@@ -125,11 +125,11 @@ function dgsCreateSwitchButton(...)
 	dgsSetParent(switchbutton,parent,true,true)
 	dgsAttachToTranslation(switchbutton,resourceTranslation[sRes])
 	if type(textOn) == "table" then
-		dgsElementData[switchbutton]._translationtextOn = textOn
+		dgsElementData[switchbutton]._translation_textOn = textOn
 		textOn = dgsTranslate(switchbutton,textOn,sRes)
 	end
 	if type(textOff) == "table" then
-		dgsElementData[switchbutton]._translationtextOff = textOff
+		dgsElementData[switchbutton]._translation_textOff = textOff
 		textOff = dgsTranslate(switchbutton,textOff,sRes)
 	end
 	dgsElementData[switchbutton].textOn = tostring(textOn or "")
@@ -152,16 +152,16 @@ end
 function dgsSwitchButtonSetText(switchbutton,textOn,textOff)
 	if not(dgsGetType(switchbutton) == "dgs-dxswitchbutton") then error(dgsGenAsrt(switchbutton,"dgsSwitchButtonSetText",1,"dgs-dxswitchbutton")) end
 	if type(textOn) == "table" then
-		dgsElementData[switchbutton]._translationtextOn = textOn
+		dgsElementData[switchbutton]._translation_textOn = textOn
 		textOn = dgsTranslate(switchbutton,textOn,sourceResource)
 	else
-		dgsElementData[switchbutton]._translationtextOn = nil
+		dgsElementData[switchbutton]._translation_textOn = nil
 	end
 	if type(textOff) == "table" then
-		dgsElementData[switchbutton]._translationtextOff = textOff
+		dgsElementData[switchbutton]._translation_textOff = textOff
 		textOff = dgsTranslate(switchbutton,textOff,sourceResource)
 	else
-		dgsElementData[switchbutton]._translationtextOff = nil
+		dgsElementData[switchbutton]._translation_textOff = nil
 	end
 	textOn = textOn or dgsElementData[switchbutton].textOn
 	textOff = textOff or dgsElementData[switchbutton].textOff
@@ -183,6 +183,19 @@ dgsOnPropertyChange["dgs-dxswitchbutton"] = {
 		triggerEvent("onDgsSwitchButtonStateChange",dgsEle,value,oldValue)
 	end,
 }
+
+----------------------------------------------------------------
+---------------------Translation Updater------------------------
+----------------------------------------------------------------
+dgsOnTranslationUpdate["dgs-dxswitchbutton"] = function(dgsEle)
+	local textOn = dgsElementData[dgsEle]._translation_textOn
+	local textOff = dgsElementData[dgsEle]._translation_textOff
+	dgsSwitchButtonSetText(dgsEle,textOn,textOff)
+	local font = dgsElementData[dgsEle]._translation_font
+	if font then
+		dgsSetData(dgsEle,"font",font)
+	end
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

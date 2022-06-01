@@ -224,7 +224,7 @@ function dgsCreateTab(...)
 	if eleData.selected == -1 then eleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sRes])
 	if type(text) == "table" then
-		dgsElementData[tab]._translationText = text
+		dgsElementData[tab]._translation_text = text
 		local wid = mathClamp(dxGetTextWidth(dgsTranslate(tab,text,sRes),scaleX or 1,font),minwidth,maxwidth)
 		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
 		dgsElementData[tab].width = wid
@@ -403,10 +403,10 @@ dgsOnPropertyChange["dgs-dxtabpanel"] = {
 dgsOnPropertyChange["dgs-dxtab"] = {
 	text = function(dgsEle,key,value,oldValue)
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationText = value
+			dgsElementData[dgsEle]._translation_text = value
 			value = dgsTranslate(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translationText = nil
+			dgsElementData[dgsEle]._translation_text = nil
 		end
 		local tabpanel = dgsElementData[dgsEle].parent
 		local w = dgsElementData[tabpanel].absSize[1]
@@ -430,10 +430,10 @@ dgsOnPropertyChange["dgs-dxtab"] = {
 	font = function(dgsEle,key,value,oldValue)
 		--Multilingual
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationFont = value
+			dgsElementData[dgsEle]._translation_font = value
 			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translationFont = nil
+			dgsElementData[dgsEle]._translation_font = nil
 		end
 		dgsElementData[dgsEle].font = value
 		

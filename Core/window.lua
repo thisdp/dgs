@@ -108,7 +108,7 @@ function dgsCreateWindow(...)
 	dgsSetParent(window,nil,true,true)
 	dgsAttachToTranslation(window,resourceTranslation[sRes])
 	if type(text) == "table" then
-		dgsElementData[window]._translationText = text
+		dgsElementData[window]._translation_text = text
 		dgsSetData(window,"text",text)
 	else
 		dgsSetData(window,"text",tostring(text or ""))

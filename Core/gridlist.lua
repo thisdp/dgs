@@ -698,7 +698,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 		len,
 		oldLen,
 		HorizontalAlign[alignment] or "left",
-		_translationText = _name,
+		_translation_text = _name,
 	})
 	local cTextSize = eleData.columnTextSize
 	local cTextColor = eleData.columnTextColor
@@ -747,10 +747,10 @@ function dgsGridListSetColumnFont(gridlist,c,font,affectRow)
 	if not (fontBuiltIn[font] or dgsGetType(font) == "dx-font") then error(dgsGenAsrt(font,"dgsGridListSetColumnFont",3,"dx-font/string",_,"invalid font")) end
 	--Multilingual
 	if type(font) == "table" then
-		cData[c]._translationFont = font
+		cData[c]._translation_font = font
 		font = dgsGetTranslationFont(gridlist,font,sourceResource)
 	else
-		cData[c]._translationFont = nil
+		cData[c]._translation_font = nil
 	end
 	cData[c][9] = font
 	if affectRow then
@@ -758,10 +758,10 @@ function dgsGridListSetColumnFont(gridlist,c,font,affectRow)
 		for r=1,#rData do
 			--Multilingual
 			if type(font) == "table" then
-				rData[r][c]._translationFont = font
+				rData[r][c]._translation_font = font
 				font = dgsGetTranslationFont(gridlist,font,sourceResource)
 			else
-				rData[r][c]._translationFont = nil
+				rData[r][c]._translation_font = nil
 			end
 
 			rData[r][c][6] = font
@@ -882,10 +882,10 @@ function dgsGridListSetColumnTitle(gridlist,c,name)
 	local c = c-c%1
 	if cData[c] then
 		if type(name) == "table" then
-			cData[c]._translationText = name
+			cData[c]._translation_text = name
 			name = dgsTranslate(gridlist,name,sourceResource)
 		else
-			cData[c]._translationText = nil
+			cData[c]._translation_text = nil
 		end
 		cData[c][1] = name
 		dgsSetData(gridlist,"columnData",cData)
@@ -1152,7 +1152,7 @@ function dgsGridListAddRow(gridlist,r,...)
 			text = dgsTranslate(gridlist,text,sourceResource)
 		end
 		rowTable[i] = {
-			_translationText=_text,
+			_translation_text=_text,
 			tostring(text or ""),
 			rTextColor,
 			colorCoded,
@@ -1206,7 +1206,7 @@ function dgsGridListAddRows(gridlist,r,t,isRawData)
 					text = dgsTranslate(gridlist,text,sourceResource)
 				end
 				rowTable[col] = {
-					_translationText=_text,
+					_translation_text=_text,
 					tostring(text or ""),
 					rTextColor,
 					colorCoded,
@@ -1525,10 +1525,10 @@ function dgsGridListSetItemFont(gridlist,r,c,font)
 	if not rData[r][c] then return false end
 	--Multilingual
 	if type(font) == "table" then
-		rData[r][c]._translationFont = font
+		rData[r][c]._translation_font = font
 		font = dgsGetTranslationFont(gridlist,font,sourceResource)
 	else
-		rData[r][c]._translationFont = nil
+		rData[r][c]._translation_font = nil
 	end
 	
 	rData[r][c][6] = font
@@ -1756,10 +1756,10 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	if type(text) == "table" then
-		rData[r][c]._translationText = text
+		rData[r][c]._translation_text = text
 		text = dgsTranslate(gridlist,text,sourceResource)
 	else
-		rData[r][c]._translationText = nil
+		rData[r][c]._translation_text = nil
 	end
 	rData[r][c][1] = tostring(text or "")
 	if isSection then
@@ -2462,6 +2462,38 @@ dgsOnPropertyChange["dgs-dxgridlist"] = {
 		local oldSort = sortFunction == oldLowerSortFnc and lowerSortFnc or upperSortFnc
 	end,
 }
+
+----------------------------------------------------------------
+---------------------Translation Updater------------------------
+----------------------------------------------------------------
+dgsOnTranslationUpdate["dgs-dxgridlist"] = function(dgsEle)
+	local columnData = dgsElementData[dgsEle].columnData
+	for cIndex=1,#columnData do
+		local text = columnData[cIndex]._translation_text
+		if text then
+			columnData[cIndex][1] = dgsTranslate(dgsEle,text,sourceResource)
+		end
+		local font = columnData[cIndex]._translation_font
+		if font then
+			columnData[cIndex][9] = dgsGetTranslationFont(dgsEle,font,sourceResource)
+		end
+	end
+	dgsSetData(dgsEle,"columnData",columnData)
+	local rowData = dgsElementData[dgsEle].rowData
+	for rID=1,#rowData do
+		for cID=1,#rowData[rID] do
+			local text = rowData[rID][cID]._translation_text
+			if text then
+				rowData[rID][cID][1] = dgsTranslate(dgsEle,text,sourceResource)
+			end
+			local font = rowData[rID][cID]._translation_font
+			if font then
+				rowData[rID][cID][6] = dgsGetTranslationFont(dgsEle,font,sourceResource)
+			end
+		end
+	end
+	dgsSetData(dgsEle,"rowData",rowData)
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

@@ -180,7 +180,7 @@ function dgsCreateComboBox(...)
 	dgsSetParent(combobox,parent,true,true)
 	dgsAttachToTranslation(combobox,resourceTranslation[sRes])
 	if type(caption) == "table" then
-		dgsElementData[combobox]._translationText = caption
+		dgsElementData[combobox]._translation_text = caption
 		dgsSetData(combobox,"caption",caption)
 	else
 		dgsSetData(combobox,"caption",tostring(caption or ""))
@@ -377,8 +377,8 @@ function dgsComboBoxAddItem(combobox,text)
 		[-1] = dgsElementData[combobox].itemImage,		--background image of item
 		[0] = dgsElementData[combobox].itemColor,		--background color of item
 		tostring(text or ""),
-		_translationText = _text,
-		_translationFont = dgsElementData[combobox]._translationFont,
+		_translation_text = _text,
+		_translation_font = dgsElementData[combobox]._translation_font,
 	}
 	tableInsert(iData,id,tab)
 	dgsSetData(combobox,"configNextFrame",true)
@@ -394,10 +394,10 @@ function dgsComboBoxSetItemText(combobox,i,text)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	local i = i-i%1
 	if type(text) == "table" then
-		iData[i]._translationText = text
+		iData[i]._translation_text = text
 		text = dgsTranslate(combobox,text,sourceResource)
 	else
-		iData[i]._translationText = nil
+		iData[i]._translation_text = nil
 	end
 	iData[i][1] = tostring(text or "")
 	if dgsElementData[combobox].autoSort then
@@ -491,10 +491,10 @@ function dgsComboBoxSetItemFont(combobox,i,font)
 
 	--Multilingual
 	if type(font) == "table" then
-		iData[i]._translationFont = font
+		iData[i]._translation_font = font
 		font = dgsGetTranslationFont(combobox,font,sourceResource)
 	else
-		iData[i]._translationFont = nil
+		iData[i]._translation_font = nil
 	end
 	iData[i][-4] = font
 	return true
@@ -855,6 +855,28 @@ dgsOnPropertyChange["dgs-dxcombobox"] = {
 		end
 	end,
 }
+
+----------------------------------------------------------------
+---------------------Translation Updater------------------------
+----------------------------------------------------------------
+dgsOnTranslationUpdate["dgs-dxcombobox"] = function(dgsEle)
+	local text = dgsElementData[dgsEle]._translation_text
+	if text then
+		dgsComboBoxSetCaptionText(dgsEle,text)
+	end
+	local itemData = dgsElementData[dgsEle].itemData
+	for itemID=1,#itemData do
+		local text = itemData[itemID]._translation_text
+		if text then
+			itemData[itemID][1] = dgsTranslate(dgsEle,text,sourceResource)
+		end
+		local font = itemData[itemID]._translation_font
+		if font then
+			itemData[itemID][-4] = dgsGetTranslationFont(dgsEle,font,sourceResource)
+		end
+	end
+	dgsSetData(dgsEle,"itemData",itemData)
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

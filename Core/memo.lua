@@ -1534,10 +1534,10 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 	font = function(dgsEle,key,value,oldValue)
 		--Multilingual
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationFont = value
+			dgsElementData[dgsEle]._translation_font = value
 			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translationFont = nil
+			dgsElementData[dgsEle]._translation_font = nil
 		end
 		dgsElementData[dgsEle].font = value
 		

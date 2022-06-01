@@ -126,7 +126,7 @@ function dgsCreateRadioButton(...)
 	dgsSetParent(rb,parent,true,true)
 	dgsAttachToTranslation(rb,resourceTranslation[sRes])
 	if type(text) == "table" then
-		dgsElementData[rb]._translationText = text
+		dgsElementData[rb]._translation_text = text
 		dgsElementData[rb].text = dgsTranslate(rb,text,sRes)
 	end
 	calculateGuiPositionSize(rb,x,y,relative or false,w,h,relative or false,true)

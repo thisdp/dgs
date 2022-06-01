@@ -1700,7 +1700,7 @@ function dgsCleanElement(source)
 		if dgsBackEndRenderer[eleData.asPlugin] or dgsBackEndRenderer[dgsType] then
 			tableRemoveItemFromArray(BackEndTable,source)
 		end
-		if eleData._translationText then
+		if eleData._translation_text then
 			tableRemoveItemFromArray(LanguageTranslationAttach,source)
 		end
 	end

@@ -1119,10 +1119,10 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 	font = function(dgsEle,key,value,oldValue)
 		--Multilingual
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationFont = value
+			dgsElementData[dgsEle]._translation_font = value
 			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translationFont = nil
+			dgsElementData[dgsEle]._translation_font = nil
 		end
 		dgsElementData[dgsEle].font = value
 		
@@ -1139,10 +1139,10 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 		dgsElementData[dgsEle].updateRTNextFrame = true
 		--Multilingual
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationPlaceHolderText = value
+			dgsElementData[dgsEle]._translation_placeHolderText = value
 			value = dgsTranslate(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translationPlaceHolderText = nil
+			dgsElementData[dgsEle]._translation_placeHolderText = nil
 		end
 		dgsElementData[dgsEle].placeHolder = tostring(value)
 	end,
@@ -1150,10 +1150,10 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 		dgsElementData[dgsEle].updateRTNextFrame = true
 		--Multilingual
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translationPlaceHolderFont = value
+			dgsElementData[dgsEle]._translation_placeHolderFont = value
 			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translationPlaceHolderFont = nil
+			dgsElementData[dgsEle]._translation_placeHolderFont = nil
 		end
 		dgsElementData[dgsEle].placeHolderFont = value
 	end,
@@ -1164,6 +1164,22 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 	placeHolderTextSize = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
 	placeHolderIgnoreRenderTarget = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
 }
+
+
+----------------------------------------------------------------
+---------------------Translation Updater------------------------
+----------------------------------------------------------------
+dgsOnTranslationUpdate["dgs-dxedit"] = function(dgsEle)
+	local text = dgsElementData[dgsEle]._translation_placeHolderText
+	if text then
+		dgsSetData(dgsEle,"placeHolder",text)
+	end
+	local font = dgsElementData[dgsEle]._translation_placeHolderFont
+	if font then
+		dgsSetData(dgsEle,"placeHolderFont",font)
+	end
+	dgsElementData[dgsEle].updateTextRTNextFrame = true
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

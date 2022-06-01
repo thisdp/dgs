@@ -284,6 +284,8 @@
 	<export function="dgsGetTranslationName" type="client" />
 	<export function="dgsGetTranslationValue" type="client" />
 	<export function="dgsTranslateText" type="client" />
+	<export function="dgsTranslationAddPropertyListener" type="client" />
+	<export function="dgsTranslationRemovePropertyListener" type="client" />
 
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
