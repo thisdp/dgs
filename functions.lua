@@ -976,7 +976,7 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 	if type(textTable) == "table" then
 		local translation = eleData._translang or resourceTranslation[sourceResource or getThisResource()]
 		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
-		local result = value
+		local result,status = value
 		if type(value) == "table" then	--Conditional Translation
 			--[[ --Conditional Translation
 			TestText={
@@ -999,8 +999,12 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 				local condition = cTranslationBuffer[value[i]]
 				setmetatable(textTable,cTranslationEnvMeta)
 				setfenv(condition,textTable)
-				local status,result = pcall(condition)
-				if status and result then result = value[i+1] break end
+				status,result = pcall(condition)
+				if status and result then
+					result = value[i+1]
+					iprint(condition,value[i],value[i+1],"break")
+					break
+				end
 			end
 			local count = 2
 			while true do
@@ -1081,7 +1085,7 @@ function dgsApplyLanguageChange(name,translation,attach)
 		local dgsEle = attach[i]
 		if isElement(dgsEle) then
 			local dgsType = dgsGetType(dgsEle)
-			if dgsOnTranslationUpdate[dgsType] then dgsOnTranslationUpdate[dgsType]() else dgsOnTranslationUpdate.default() end
+			if dgsOnTranslationUpdate[dgsType] then dgsOnTranslationUpdate[dgsType](dgsEle) else dgsOnTranslationUpdate.default(dgsEle) end
 		end
 	end
 end
