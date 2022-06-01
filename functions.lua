@@ -1002,7 +1002,6 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 				status,result = pcall(condition)
 				if status and result then
 					result = value[i+1]
-					iprint(condition,value[i],value[i+1],"break")
 					break
 				end
 			end
