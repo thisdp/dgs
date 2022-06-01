@@ -187,9 +187,11 @@ dgsOnPropertyChange["dgs-dxswitchbutton"] = {
 ----------------------------------------------------------------
 ---------------------Translation Updater------------------------
 ----------------------------------------------------------------
-dgsOnTranslationUpdate["dgs-dxswitchbutton"] = function(dgsEle)
+dgsOnTranslationUpdate["dgs-dxswitchbutton"] = function(dgsEle,key,value)
 	local textOn = dgsElementData[dgsEle]._translation_textOn
 	local textOff = dgsElementData[dgsEle]._translation_textOff
+	if key then textOn[key] = value end
+	if key then textOff[key] = value end
 	dgsSwitchButtonSetText(dgsEle,textOn,textOff)
 	local font = dgsElementData[dgsEle]._translation_font
 	if font then

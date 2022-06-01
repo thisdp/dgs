@@ -1169,9 +1169,10 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 ----------------------------------------------------------------
 ---------------------Translation Updater------------------------
 ----------------------------------------------------------------
-dgsOnTranslationUpdate["dgs-dxedit"] = function(dgsEle)
+dgsOnTranslationUpdate["dgs-dxedit"] = function(dgsEle,key,value)
 	local text = dgsElementData[dgsEle]._translation_placeHolderText
 	if text then
+		if key then text[key] = value end
 		dgsSetData(dgsEle,"placeHolder",text)
 	end
 	local font = dgsElementData[dgsEle]._translation_placeHolderFont

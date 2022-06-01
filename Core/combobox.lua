@@ -859,15 +859,17 @@ dgsOnPropertyChange["dgs-dxcombobox"] = {
 ----------------------------------------------------------------
 ---------------------Translation Updater------------------------
 ----------------------------------------------------------------
-dgsOnTranslationUpdate["dgs-dxcombobox"] = function(dgsEle)
+dgsOnTranslationUpdate["dgs-dxcombobox"] = function(dgsEle,key,value)
 	local text = dgsElementData[dgsEle]._translation_text
 	if text then
+		if key then text[key] = value end
 		dgsComboBoxSetCaptionText(dgsEle,text)
 	end
 	local itemData = dgsElementData[dgsEle].itemData
 	for itemID=1,#itemData do
 		local text = itemData[itemID]._translation_text
 		if text then
+			if key then text[key] = value end
 			itemData[itemID][1] = dgsTranslate(dgsEle,text,sourceResource)
 		end
 		local font = itemData[itemID]._translation_font

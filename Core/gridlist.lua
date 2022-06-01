@@ -2466,11 +2466,12 @@ dgsOnPropertyChange["dgs-dxgridlist"] = {
 ----------------------------------------------------------------
 ---------------------Translation Updater------------------------
 ----------------------------------------------------------------
-dgsOnTranslationUpdate["dgs-dxgridlist"] = function(dgsEle)
+dgsOnTranslationUpdate["dgs-dxgridlist"] = function(dgsEle,key,value)
 	local columnData = dgsElementData[dgsEle].columnData
 	for cIndex=1,#columnData do
 		local text = columnData[cIndex]._translation_text
 		if text then
+			if key then text[key] = value end
 			columnData[cIndex][1] = dgsTranslate(dgsEle,text,sourceResource)
 		end
 		local font = columnData[cIndex]._translation_font
@@ -2484,6 +2485,7 @@ dgsOnTranslationUpdate["dgs-dxgridlist"] = function(dgsEle)
 		for cID=1,#rowData[rID] do
 			local text = rowData[rID][cID]._translation_text
 			if text then
+				if key then text[key] = value end
 				rowData[rID][cID][1] = dgsTranslate(dgsEle,text,sourceResource)
 			end
 			local font = rowData[rID][cID]._translation_font

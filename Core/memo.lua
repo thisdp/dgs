@@ -1560,6 +1560,22 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
 }
+
+----------------------------------------------------------------
+---------------------Translation Updater------------------------
+----------------------------------------------------------------
+dgsOnTranslationUpdate["dgs-dxmemo"] = function(dgsEle,key,value)
+	local text = dgsElementData[dgsEle]._translation_placeHolderText
+	if text then
+		if key then text[key] = value end
+		dgsSetData(dgsEle,"placeHolder",text)
+	end
+	local font = dgsElementData[dgsEle]._translation_placeHolderFont
+	if font then
+		dgsSetData(dgsEle,"placeHolderFont",font)
+	end
+	dgsElementData[dgsEle].updateRTNextFrame = true
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
