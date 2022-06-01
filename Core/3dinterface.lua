@@ -18,6 +18,7 @@ local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.ac
 local assert = assert
 local type = type
 local tableInsert = table.insert
+local dxDrawMaterialPrimitive3D = dxDrawMaterialPrimitive3D
 
 function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,roll,w,h,tex,r,g,b,a)
 	dxSetShaderValue(shader, "sourceTexture", tex )
@@ -88,20 +89,33 @@ function dgsCreate3DInterface(...)
 	return interface
 end
 
+local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0,0},{0,0,0,0,1,1},{0,0,0,0,1,0}
 function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,roll)
-	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
+	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
 	local offFaceZ = atan2(vx,vy)
 	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(roll)+sin(roll)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(roll)-sin(roll)*sin(offFaceZ),-cos(offFaceX)*cos(roll)
 	w,h = w/2,h/2
 	local topX,topY,topZ = _x*h,_y*h,_z*h
 	local leftX,leftY,leftZ = topY*vz-vy*topZ,topZ*vx-vz*topX,topX*vy-vx*topY --Left Point
-	local leftModel = (leftX^2+leftY^2+leftZ^2)^0.5
+	local leftModel = (leftX*leftX+leftY*leftY+leftZ*leftZ)^0.5
 	local leftX,leftY,leftZ = leftX/leftModel*w,leftY/leftModel*w,leftZ/leftModel*w
-	local rightBottom = {leftX+topX+x,leftY+topY+y,leftZ+topZ+z,color,0,1}
-	local rightTop = {leftX-topX+x,leftY-topY+y,leftZ-topZ+z,color,0,0}
-	local leftBottom = {-leftX+topX+x,-leftY+topY+y,-leftZ+topZ+z,color,1,1}
-	local leftTop= {-leftX-topX+x,-leftY-topY+y,-leftZ-topZ+z,color,1,0}
-	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop,leftBottom,rightTop,rightBottom)
+	rightBottom3D[1]  = leftX+topX+x
+	rightBottom3D[2]  = leftY+topY+y
+	rightBottom3D[3]  = leftZ+topZ+z
+	rightBottom3D[4]  = color
+	rightTop3D[1]  = leftX-topX+x
+	rightTop3D[2]  = leftY-topY+y
+	rightTop3D[3]  = leftZ-topZ+z
+	rightTop3D[4]  = color
+	leftBottom3D[1]  = -leftX+topX+x
+	leftBottom3D[2]  = -leftY+topY+y
+	leftBottom3D[3]  = -leftZ+topZ+z
+	leftBottom3D[4]  = color
+	leftTop3D[1]  = -leftX-topX+x
+	leftTop3D[2]  = -leftY-topY+y
+	leftTop3D[3]  = -leftZ-topZ+z
+	leftTop3D[4]  = color
+	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop3D,leftBottom3D,rightTop3D,rightBottom3D)
 end
 
 --lnVP = lnVector(xyz)+lnPoint(xyz)
