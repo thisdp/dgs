@@ -130,11 +130,13 @@ addEventHandler("onClientRestore",root,function()
 	dgsRenderInfo.RTRestoreNeed = true	--RT is not working when minimized, force to restore the draw result is needed.
 end)
 
+cameraPos = {}
 function dgsCoreRender()
 	dgsRenderInfo.frames = dgsRenderInfo.frames+1
 	dgsRenderInfo.frameStartScreen = getTickCount()
 	dgsRenderInfo.rendering = 0
 	triggerEvent("onDgsPreRender",resourceRoot)
+	local frameStart3DOnScreen,frameEnd3DOnScreen = 0,0
 	local backendTableSize = #BackEndTable
 	local bottomTableSize = #BottomFatherTable
 	local centerTableSize = #CenterFatherTable
@@ -190,11 +192,15 @@ function dgsCoreRender()
 			end
 		end
 		--
+		frameStart3DOnScreen = getTickCount()
 		MouseData.hitData3D[0] = false
 		MouseData.topScrollable = false
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
 		MouseData.WithinElements = {}
+		if dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
+			cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
+		end
 		for i=1,dgsWorld3DTableSize do
 			local v = dgsWorld3DTable[i]
 			local eleData = dgsElementData[v]
@@ -215,6 +221,7 @@ function dgsCoreRender()
 
 		local hit3D = MouseData.hit
 		MouseData.hit = false
+		frameEnd3DOnScreen = getTickCount()
 
 		MouseData.hitData2D[0] = false
 		for i=1,bottomTableSize do
@@ -314,8 +321,8 @@ function dgsCoreRender()
 	----Debug stuff
 	dgsRenderInfo.frameEndScreen = getTickCount()
 	if debugMode then
-		dgsRenderInfo.frameRenderTimeScreen = dgsRenderInfo.frameEndScreen-dgsRenderInfo.frameStartScreen
-		dgsRenderInfo.frameRenderTime3D = (dgsRenderInfo.frameEnd3D or getTickCount())-(dgsRenderInfo.frameStart3D or getTickCount())
+		dgsRenderInfo.frameRenderTimeScreen = dgsRenderInfo.frameEndScreen-dgsRenderInfo.frameStartScreen-(frameEnd3DOnScreen-frameStart3DOnScreen)
+		dgsRenderInfo.frameRenderTime3D = (dgsRenderInfo.frameEnd3D or getTickCount())-(dgsRenderInfo.frameStart3D or getTickCount())+(frameEnd3DOnScreen-frameStart3DOnScreen)
 		dgsRenderInfo.frameRenderTimeTotal = dgsRenderInfo.frameRenderTimeScreen+dgsRenderInfo.frameRenderTime3D
 		local debugHitElement = checkDisabledElement and MouseData.hitDebug or MouseData.hit
 		if isElement(debugHitElement) and debugMode >= 2 then
@@ -387,7 +394,7 @@ function dgsCoreRender()
 		dgsDrawText("DGS "..version..freeMemory,5+1,sH*0.4-129,sW,sH,black)
 		dgsDrawText("DGS "..version..freeMemory,5,sH*0.4-130)
 		local renderTimeStr = dgsRenderInfo.frameRenderTimeTotal.."ms-"..dgsRenderInfo.frameRenderTimeScreen.."ms-"..dgsRenderInfo.frameRenderTime3D.."ms"
-		dgsDrawText("Render Time(All-2D-3D): "..renderTimeStr,5+1,sH*0.4-115+1,sW,sH,black)
+		dgsDrawText("CPU Time(All-2D-3D): "..renderTimeStr,5+1,sH*0.4-115+1,sW,sH,black)
 		local tickColor
 		if dgsRenderInfo.frameRenderTimeTotal <= 8 then
 			tickColor = green
@@ -396,7 +403,7 @@ function dgsCoreRender()
 		else
 			tickColor = red
 		end
-		dgsDrawText("Render Time(All-2D-3D): "..renderTimeStr,5,sH*0.4-115,_,_,tickColor)
+		dgsDrawText("CPU Time(All-2D-3D): "..renderTimeStr,5,sH*0.4-115,_,_,tickColor)
 		local Focused = MouseData.focused and dgsGetPluginType(MouseData.focused).."("..getElementID(MouseData.focused)..")" or "None"
 		local enterStr = MouseData.hit and dgsGetPluginType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
 		local leftStr = MouseData.clickl and dgsGetPluginType(MouseData.clickl).." ("..getElementID(MouseData.clickl)..")" or "None"
@@ -732,8 +739,11 @@ addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.rende
 function dgsCore3DRender()
 	dgsRenderInfo.frameStart3D = getTickCount()
 	local rendering3D = 0
-	local created3D = #dgsWorld3DTable
-	for i=1,created3D do
+	local dgsWorld3DTableSize = #dgsWorld3DTable
+	if dgsWorld3DTableSize ~= 0 then
+		cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
+	end
+	for i=1,dgsWorld3DTableSize do
 		local ele = dgsWorld3DTable[i]
 		local dgsType = dgsElementType[ele]
 		if dgs3DRenderer[dgsType] then
@@ -743,7 +753,7 @@ function dgsCore3DRender()
 		end
 	end
 	dgsRenderInfo.rendering3D = rendering3D
-	dgsRenderInfo.created3D = created3D
+	dgsRenderInfo.dgsWorld3DTableSize = dgsWorld3DTableSize
 	dgsRenderInfo.frameEnd3D = getTickCount()
 end
 addEventHandler("onClientPreRender",root,dgsCore3DRender)

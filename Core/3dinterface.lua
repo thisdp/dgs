@@ -71,6 +71,7 @@ function dgsCreate3DInterface(...)
 		dimension = -1,
 		interior = -1,
 		roll = roll or 0,
+		hit = {},
 		--filterShader = dxCreateShader(defaultFilter)
 	}
 	local renderTarget,err = dxCreateRenderTarget(resX,resY,true,interface)
@@ -121,23 +122,28 @@ end
 --lnVP = lnVector(xyz)+lnPoint(xyz)
 --pnVP = pnVector(xyz)+pnPoint(xyz)
 function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
-	local offFaceX = atan2(vz,(vx^2+vy^2)^0.5)
+	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
 	local offFaceZ = atan2(vx,vy)
 	local _h=h
 	h=h*0.5
-	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(roll)+sin(roll)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(roll)-sin(roll)*sin(offFaceZ),-cos(offFaceX)*cos(roll)
+	local cRoll = cos(roll)
+	local sRoll = sin(roll)
+	local cZ = cos(offFaceZ)
+	local sZ = sin(offFaceZ)
+	local sX = sin(offFaceX)
+	local _x,_y,_z = sX*sZ*cRoll+sRoll*cZ,sX*cZ*cRoll-sRoll*sZ,-cos(offFaceX)*cRoll
 	local x1,y1,z1 = _x*h,_y*h,_z*h
 	if lnVP1 then
 		local px,py,pz = dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,vx,vy,vz,x,y,z) --Intersection Point
 		if not px then return end
-		local model = (vx^2+vy^2+vz^2)^0.5
+		local model = (vx*vx+vy*vy+vz*vz)^0.5
 		local vx,vy,vz = vx/model,vy/model,vz/model
 		local ltX,ltY,ltZ = y1*vz-vy*z1,z1*vx-vz*x1,x1*vy-vx*y1 --Left Point
-		local leftModel = (ltX^2+ltY^2+ltZ^2)^0.5*2
+		local leftModel = (ltX*ltX+ltY*ltY+ltZ*ltZ)^0.5*2
 		local ltX,ltY,ltZ = ltX/leftModel*w,ltY/leftModel*w,ltZ/leftModel*w
 		local vec1X,vec1Y,vec1Z = ltX+x-px,ltY+y-py,ltZ+z-pz
 		local vec2X,vec2Y,vec2Z = px-x+x1,py-y+y1,pz-z+z1
-		local _x,_y = (vec1X*ltX+vec1Y*ltY+vec1Z*ltZ)/(ltX^2+ltY^2+ltZ^2)^0.5/w,(vec2X*x1+vec2Y*y1+vec2Z*z1)/(x1^2+y1^2+z1^2)^0.5/_h
+		local _x,_y = (vec1X*ltX+vec1Y*ltY+vec1Z*ltZ)/(ltX*ltX+ltY*ltY+ltZ*ltZ)^0.5/w,(vec2X*x1+vec2Y*y1+vec2Z*z1)/(x1*x1+y1*y1+z1*z1)^0.5/_h
 		local angle = (x-lnVP4)*lnVP1+(y-lnVP5)*lnVP2+(z-lnVP6)*lnVP3
 		local inSide = _x>=0 and _x<=1 and _y>=0 and _y <=1
 		return (angle > 0) and inSide,_x,_y,px,py,pz
@@ -294,7 +300,7 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	rndtgt = eleData.renderTarget_parent
 	if x and y and z and w and h and enabledInherited and mx then
 		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123
-		local camX,camY,camZ = getCameraMatrix()
+		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
 		if not fx or not fy or not fz then
 			fx,fy,fz = camX-x,camY-y,camZ-z
 		end
@@ -305,14 +311,19 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 			lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ,camX,camY,camZ
 		end
 		if eleData.cameraDistance or 0 <= eleData.maxDistance then
-			eleData.hit = {dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)}
-		else
-			eleData.hit = {}
+			local isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
+			eleData.hit[1] = isHit
+			eleData.hit[2] = hitX
+			eleData.hit[3] = hitY
+			eleData.hit[4] = hx
+			eleData.hit[5] = hy
+			eleData.hit[6] = hz
 		end
-		local hitData = eleData.hit or {}
-		if #hitData > 0 then
+		local hitData = eleData.hit
+		if hitData[1] then
 			local hit,hitX,hitY,hx,hy,hz = hitData[1],hitData[2],hitData[3],hitData[4],hitData[5],hitData[6]
-			local distance = ((camX-hx)^2+(camY-hy)^2+(camZ-hz)^2)^0.5
+			local dx,dy,dz = camX-hx,camY-hy,camZ-hz
+			local distance = (dx*dx+dy*dy+dz*dz)^0.5
 			local oldPos = MouseData.hitData3D
 			if (isElement(MouseData.lock3DInterface) and MouseData.lock3DInterface == source) or ((not oldPos[0] or distance <= oldPos[4]) and hit) then
 				MouseData.hit = source
@@ -355,11 +366,12 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 		end
 		local size = eleData.size
 		local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
-		eleData.hit = false
+		eleData.hit[1] = false
 		if x and y and z and w and h then
 			self = source
-			local camX,camY,camZ = getCameraMatrix()
-			local cameraDistance = ((camX-x)^2+(camY-y)^2+(camZ-z)^2)^0.5
+			local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
+			local dx,dy,dz = camX-x,camY-y,camZ-z
+			local cameraDistance = (dx*dx+dy*dy+dz*dz)^0.5
 			eleData.cameraDistance = cameraDistance
 			if cameraDistance <= eleData.maxDistance then
 				local renderThing = eleData.renderTarget_parent
