@@ -223,8 +223,9 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 	end
 	if isRender then
 		local maxDistance = eleData.maxDistance
-		local camX,camY,camZ = getCameraMatrix()
-		local distance = ((wx-camX)^2+(wy-camY)^2+(wz-camZ)^2)^0.5
+		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
+		local dx,dy,dz = camX-wx,camY-wy,camZ-mz
+		local distance = (dx*dx+dy*dy+dz*dz)^0.5
 		if distance <= maxDistance and distance > 0 then
 			local canBeBlocked = eleData.canBeBlocked
 			if canBeBlocked then
