@@ -94,7 +94,12 @@ local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0
 function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,roll)
 	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
 	local offFaceZ = atan2(vx,vy)
-	local _x,_y,_z = sin(offFaceX)*sin(offFaceZ)*cos(roll)+sin(roll)*cos(offFaceZ),sin(offFaceX)*cos(offFaceZ)*cos(roll)-sin(roll)*sin(offFaceZ),-cos(offFaceX)*cos(roll)
+	local cRoll = cos(roll)
+	local sRoll = sin(roll)
+	local cZ = cos(offFaceZ)
+	local sZ = sin(offFaceZ)
+	local sX = sin(offFaceX)
+	local _x,_y,_z = sX*sZ*cRoll+sRoll*cZ,sX*cZ*cRoll-sRoll*sZ,-cos(offFaceX)*cRoll
 	w,h = w/2,h/2
 	local topX,topY,topZ = _x*h,_y*h,_z*h
 	local leftX,leftY,leftZ = topY*vz-vy*topZ,topZ*vx-vz*topX,topX*vy-vx*topY --Left Point
@@ -124,14 +129,14 @@ end
 function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
 	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
 	local offFaceZ = atan2(vx,vy)
-	local _h=h
-	h=h*0.5
 	local cRoll = cos(roll)
 	local sRoll = sin(roll)
 	local cZ = cos(offFaceZ)
 	local sZ = sin(offFaceZ)
 	local sX = sin(offFaceX)
 	local _x,_y,_z = sX*sZ*cRoll+sRoll*cZ,sX*cZ*cRoll-sRoll*sZ,-cos(offFaceX)*cRoll
+	local _h=h
+	h=h*0.5
 	local x1,y1,z1 = _x*h,_y*h,_z*h
 	if lnVP1 then
 		local px,py,pz = dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,vx,vy,vz,x,y,z) --Intersection Point
