@@ -1069,6 +1069,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 	return true
 end
 
+local textShadowMemory = setmetatable({},{__mode="k"})
 function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	if type(text) ~= "string" then
 		local pluginType = dgsGetPluginType(text)
@@ -1080,7 +1081,10 @@ function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,ali
 	if shadowOffsetX then
 		local shadowText = text
 		if colorCoded then
-			shadowText = shadowText:gsub("#%x%x%x%x%x%x","") or shadowText
+			if not textShadowMemory[text] then
+				textShadowMemory[text] = shadowText:gsub("#%x%x%x%x%x%x","") or shadowText
+			end
+			shadowText = textShadowMemory[text]
 		end
 		shadowFont = shadowFont or font or "default"
 		if not shadowIsOutline or shadowIsOutline == 0 then
