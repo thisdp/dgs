@@ -70,8 +70,15 @@ dgsElementType = {}
 dgsOnTranslationUpdate = {
 	default = function(dgsEle,key,value)
 		local text = dgsElementData[dgsEle]._translation_text
+		local translationListener = dgsElementData[dgsEle].translationListener
 		if text then
-			text[key] = value
+			if key then
+				text[key] = value
+			elseif translationListener then
+				for key,value in pairs(translationListener) do
+					text[key] = value
+				end
+			end
 			dgsSetData(dgsEle,"text",text)
 		end
 		local font = dgsElementData[dgsEle]._translation_font
