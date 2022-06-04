@@ -667,7 +667,7 @@ function dgsSetData(dgsEle,key,value,nocheck)
 	local dataHandler = dataHandlerList[key] or dgsOnPropertyChange.default[key]
 	local translationListener = eleData.translationListener
 	if translationListener and translationListener[key] then
-		if dgsOnTranslationUpdate[dgsEle] then dgsOnTranslationUpdate[dgsType]() else dgsOnTranslationUpdate.default(dgsEle,key,value,translationListener[key]) end
+		if dgsOnTranslationUpdate[dgsEle] then dgsOnTranslationUpdate[dgsType](dgsEle,key,value,translationListener[key]) else dgsOnTranslationUpdate.default(dgsEle,key,value,translationListener[key]) end
 	end
 	if dataHandler then dataHandler(dgsEle,key,value,oldValue) end
 	if eleData.propertyListener and eleData.propertyListener[key] then triggerEvent("onDgsPropertyChange",dgsEle,key,value,oldValue) end
