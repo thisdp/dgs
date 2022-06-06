@@ -121,6 +121,7 @@ function dgsCreateRadioButton(...)
 		clip = nil,
 		wordBreak = nil,
 		colorCoded = nil,
+		buttonPosition = "left",
 		alignment = {"left","center"},
 	}
 	dgsSetParent(rb,parent,true,true)
@@ -240,12 +241,9 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	else
 		finalcolor = applyColorAlpha(color[colorimgid],parentAlpha)
 	end
-	dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
-
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
+	style = style.loaded[style.using]
 	local systemFont = style.systemFontElement
 
 	local font = eleData.font or systemFont
@@ -257,15 +255,6 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local textPadding = _textPadding[2] and _textPadding[1]*w or _textPadding[1]
 	local colorCoded = eleData.colorCoded
 	local alignment = eleData.alignment
-	local px = x+buttonSizeX+textPadding
-	if eleData.PixelInt then px = px-px%1 end
-	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
-	local shadow = eleData.shadow
-	if shadow then
-		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
-		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
-	end
-	
 	local textOffset = eleData.textOffset
 	local offsetX,offsetY = 0,0
 	if textOffset then
@@ -276,6 +265,20 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 			offsetX,offsetY = textOffset[3] and textOffset[1]*w or textOffset[1],textOffset[3] and textOffset[2]*h or textOffset[2]
 		end
 	end
-	dgsDrawText(eleData.text,px+offsetX,y+offsetY,px+w+offsetX,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
+	local shadow = eleData.shadow
+	if shadow then
+		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
+		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
+	end
+	if eleData.buttonPosition == "right" then	--right
+		dxDrawImage(x+w-buttonSizeX,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
+		dgsDrawText(text,x+offsetX,y+offsetY,x+w+offsetX-buttonSizeX-textPadding,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	else	--left by default
+		local px = x+buttonSizeX+textPadding
+		if eleData.PixelInt then px = px-px%1 end
+		dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
+		dgsDrawText(text,px+offsetX,y+offsetY,px+w+offsetX,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	end
 	return rndtgt,false,mx,my,0,0
 end
