@@ -688,7 +688,7 @@ function dgsGetCursorVisible()
 	return (isCursorShowing() or isChatBoxInputActive() or isConsoleActive()) and not isMainMenuActive() --Is visible in game
 end
 
-function dgsGetCursorPosition(rltEle,rlt,forceOnScreen,onSurface)
+function dgsGetCursorPosition(rltEle,rlt,forceOnScreen)
 	if dgsGetCursorVisible() then
 		if MouseData.lock3DInterface and not forceOnScreen then
 			local absX,absY = dgsElementData[MouseData.lock3DInterface].cursorPosition[1],dgsElementData[MouseData.lock3DInterface].cursorPosition[2]
