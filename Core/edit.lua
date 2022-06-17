@@ -730,7 +730,7 @@ end
 addEventHandler("onClientGUIAccepted",GlobalEdit,function()
 	local dgsEdit = dgsElementData[source].linkedDxEdit
 	if dgsGetType(dgsEdit) == "dgs-dxedit" then
-		triggerEvent("onDgsEditAccepted",dgsEdit)
+		triggerEvent("onDgsEditAccepted",dgsEdit,dgsEdit)
 	end
 end,true)
 
