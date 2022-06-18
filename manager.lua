@@ -173,7 +173,16 @@ end
 
 function dgsGetElementsFromResource(res)
 	local res = res or sourceResource
-	if res then
+	if res == "all" then
+		local serialized,cnt = {},0
+		for r,storeTable in pairs(boundResource) do
+			for k,v in pairs(boundResource[r] or {}) do
+				cnt = cnt+1
+				serialized[cnt] = k
+			end
+		end
+		return serialized
+	else
 		local serialized,cnt = {},0
 		for k,v in pairs(boundResource[res] or {}) do
 			cnt = cnt+1
