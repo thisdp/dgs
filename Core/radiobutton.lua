@@ -131,7 +131,7 @@ function dgsCreateRadioButton(...)
 		dgsElementData[rb].text = dgsTranslate(rb,text,sRes)
 	end
 	calculateGuiPositionSize(rb,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",rb,sRes)
+	onDGSElementCreate(rb,sRes)
 	return rb
 end
 

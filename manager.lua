@@ -1028,11 +1028,9 @@ function DGSI_ReadData()
 				end
 				if data.eventHandlers then
 					local eventHandlers = data.eventHandlers
-					for eventName,fncs in pairs(eventHandlers) do
-						for fncName,datas in pairs(fncs) do
-							if not addEventHandler(eventName,dgsElement,_G[fncName],datas[2],datas[3]) then
-								fncs[fncName] = nil
-							end
+					if eventHandlers then 
+						for i=1,#eventHandlers do
+							addEventHandler(eventHandlers[i][1],dgsElement,_G[ eventHandlers[i][2] ],eventHandlers[i][3],eventHandlers[i][4])
 						end
 					end
 				end

@@ -119,7 +119,7 @@ function dgsCreateSelector(...)
 	}
 	dgsSetParent(selector,parent,true,true)
 	calculateGuiPositionSize(selector,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",selector,sRes)
+	onDGSElementCreate(selector,sRes)
 	return selector
 end
 

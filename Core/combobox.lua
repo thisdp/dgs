@@ -211,7 +211,7 @@ function dgsCreateComboBox(...)
 	dgsAddEventHandler("onDgsSizeChange",combobox,"updateBoxSizeWhenComboBoxResize",false)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
-	triggerEvent("onDgsCreate",combobox,sRes)
+	onDGSElementCreate(combobox,sRes)
 	dgsSetData(combobox,"childOutsideHit",true)
 	return combobox
 end
@@ -585,6 +585,7 @@ function dgsComboBoxClear(combobox)
 end
 
 function dgsComboBoxCreateBox(x,y,w,h,relative,parent)
+	local sRes = sourceResource or resource
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsComboBoxCreateBox",1,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsComboBoxCreateBox",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsComboBoxCreateBox",3,"number")) end
@@ -593,9 +594,8 @@ function dgsComboBoxCreateBox(x,y,w,h,relative,parent)
 	local box = createElement("dgs-dxcombobox-Box")
 	dgsSetType(box,"dgs-dxcombobox-Box")
 	dgsSetParent(box,parent,true,true)
-	insertResource(sourceResource,box)
 	calculateGuiPositionSize(box,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",box)
+	onDGSElementCreate(box,sRes)
 	return box
 end
 

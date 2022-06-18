@@ -34,6 +34,6 @@ function dgsCreateMenuList(x,y,sx,sy,data,relative,parent)
 	dgsSetType(menulist,"dgs-dxmenulist")
 	dgsSetParent(menulist,parent,true,true)
 	calculateGuiPositionSize(menulist,x,y,relative,sx,sy,relative,true)
-	triggerEvent("onDgsCreate",menulist,sRes)
+	onDGSElementCreate(menulist,sRes)
 	return menulist
 end

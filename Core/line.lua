@@ -41,7 +41,7 @@ function dgsCreateLine(...)
 	}
 	dgsSetParent(line,parent,true,true)
 	calculateGuiPositionSize(line,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",line,sRes)
+	onDGSElementCreate(line,sRes)
 	return line
 end
 

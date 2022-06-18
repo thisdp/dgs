@@ -141,7 +141,7 @@ function dgsCreateTabPanel(...)
 	end
 	dgsElementData[tabpanel].bgRT = bgRT
 	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
-	triggerEvent("onDgsCreate",tabpanel,sRes)
+	onDGSElementCreate(tabpanel,sRes)
 	return tabpanel
 end
 
@@ -235,7 +235,7 @@ function dgsCreateTab(...)
 		dgsElementData[tab].width = wid
 	end
 	dgsSetData(tab,"text",text)
-	triggerEvent("onDgsCreate",tab)
+	onDGSElementCreate(tab,sRes)
 	return tab
 end
 

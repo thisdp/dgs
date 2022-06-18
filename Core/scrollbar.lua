@@ -50,6 +50,7 @@ local mathClamp = math.clamp
 
 function dgsCreateScrollBar(...)
 	local sRes = sourceResource or resource
+	
 	local x,y,w,h,isHorizontal,relative,parent,arrowImage,troughImage,cursorImage,nColorA,hColorA,cColorA,troughColor,nColorC,hColorC,cColorC
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
 		local argTable = ...
@@ -136,7 +137,7 @@ function dgsCreateScrollBar(...)
 	}
 	dgsSetParent(scrollbar,parent,true,true)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",scrollbar,sRes)
+	onDGSElementCreate(scrollbar,sRes)
 	return scrollbar
 end
 

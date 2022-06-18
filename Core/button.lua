@@ -129,7 +129,7 @@ function dgsCreateButton(...)
 		dgsSetData(button,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(button,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",button,sRes)
+	onDGSElementCreate(button,sRes)
 	return button
 end
 

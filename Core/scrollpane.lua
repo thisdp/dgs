@@ -124,7 +124,7 @@ function dgsCreateScrollPane(...)
 	dgsSetData(scrollbar2,"minLength",10)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkScrollPaneScrollBar",false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScrollPaneScrollBar",false)
-	triggerEvent("onDgsCreate",scrollpane,sRes)
+	onDGSElementCreate(scrollpane,sRes)
 	return scrollpane
 end
 

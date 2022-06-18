@@ -124,7 +124,7 @@ function dgsCreateScalePane(...)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkScalePaneScrollBar",false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScalePaneScrollBar",false)
 	configScalePane(scalepane)
-	triggerEvent("onDgsCreate",scalepane,sRes)
+	onDGSElementCreate(scalepane,sRes)
 	return scalepane
 end
 

@@ -239,7 +239,7 @@ function dgsCreateMemo(...)
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
-	triggerEvent("onDgsCreate",memo,sRes)
+	onDGSElementCreate(memo,sRes)
 	return memo
 end
 

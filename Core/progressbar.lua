@@ -292,7 +292,7 @@ function dgsCreateProgressBar(...)
 		mx,my = dxGetMaterialSize(indicatorImage)
 	end
 	dgsElementData[progressbar].indicatorUVSize = {mx,my}
-	triggerEvent("onDgsCreate",progressbar,sRes)
+	onDGSElementCreate(progressbar,sRes)
 	return progressbar
 end
 

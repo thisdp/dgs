@@ -67,7 +67,7 @@ function dgsCreateBrowser(...)
 	local size = dgsElementData[browser].absSize
 	resizeBrowser(browser,resX or size[1],resY or size[2])
 	dgsElementData[browser].browserSize = {resX or size[1],resY or size[2]}
-	triggerEvent("onDgsCreate",browser,sRes)
+	onDGSElementCreate(browser,sRes)
 	addEventHandler("onDgsMouseMove",browser,function(x,y)
 		local size = dgsElementData[source].absSize
 		local brosize = dgsElementData[source].browserSize

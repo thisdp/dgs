@@ -424,13 +424,13 @@ function removeElementData(element,key)
 	setElementData(element,key,nil)
 end
 
+local addEventHandler = addEventHandler
 function dgsAddEventHandler(eventName,element,fncName,...)
 	if addEventHandler(eventName,element,_G[fncName],...) then
-		dgsElementData[element] = dgsElementData[element] or {}
-		dgsElementData[element].eventHandlers = dgsElementData[element].eventHandlers or {}
-		local eventHandlers = dgsElementData[element].eventHandlers
-		eventHandlers[eventName] = eventHandlers[eventName] or {}
-		eventHandlers[eventName][fncName] = {fncName,...}	--Log event handler
+		local eleData = dgsElementData[element]
+		if not eleData.eventHandlers then eleData.eventHandlers = {} end
+		local eventHandlers = eleData.eventHandlers
+		eventHandlers[#eventHandlers+1] = {eventName,fncName,...}	--Log event handler
 		return true
 	end
 	return false
@@ -439,9 +439,24 @@ end
 function dgsRemoveEventHandler(eventName,element,fncName)
 	local eventHandlers = dgsElementData[element].eventHandlers
 	if not eventHandlers then return true end
-	if not eventHandlers[eventName] then return true end
-	eventHandlers[eventName][fncName] = nil	--Remove event handler
-	return removeEventHandler(eventName,element,_G[fncName])
+	for i=1,#eventHandlers do
+		if eventHandlers[i][1] == eventName and eventHandlers[i][2] == fncName then
+			table.remove(i)
+			removeEventHandler(eventName,element,_G[fncName])
+			return 
+		end
+	end
+	return false
+end
+
+local _triggerEvent = triggerEvent
+function triggerEvent(...)	--Trigger event sometimes changes "sourceResource"
+	local sRes = sourceResource	--Log
+	local sResRoot = sourceResourceRoot	--Log
+	_triggerEvent(...)
+	sourceResource = sRes
+	sourceResourceRoot = sResRoot
+	return true
 end
 --------------------------------Table Utility
 function table.find(tab,ke,num)

@@ -45,7 +45,7 @@ function dgsCreateDetectArea(...)
 	if not x then
 		local detectarea = createElement("dgs-dxdetectarea")
 		dgsSetType(detectarea,"dgs-dxdetectarea")
-		triggerEvent("onDgsCreate",detectarea,sRes)
+		onDGSElementCreate(detectarea,sRes)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 		dgsSetData(detectarea,"debugTextureSize",{sW/2,sH/2})
 		dgsSetData(detectarea,"debugModeAlpha",128)

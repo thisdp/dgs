@@ -214,7 +214,7 @@ function dgsCreateEdit(...)
 	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)
 	dgsAddEventHandler("onDgsMouseMultiClick",edit,"dgsEditCheckMultiClick",false)
 	dgsAddEventHandler("onDgsEditPreSwitch",edit,"dgsEditCheckPreSwitch",false)
-	triggerEvent("onDgsCreate",edit,sRes)
+	onDGSElementCreate(edit,sRes)
 	return edit
 end
 

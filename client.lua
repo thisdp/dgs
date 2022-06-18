@@ -2310,7 +2310,19 @@ dgsRegisterProperties("dgsType2D",{
 	rltSize = 				{	{ PArg.Number, PArg.Number }	},
 	relative = 				{	{ PArg.Bool, PArg.Bool }	},
 })
-addEventHandler("onDgsCreate",root,function(theResource)
+
+function DGSI_onDGSWindowFocus()
+	dgsElementData[this].isFocused = true
+end
+
+function DGSI_onDGSWindowBlur()
+	dgsElementData[this].isFocused = false
+end
+
+local insertResource = insertResource
+local dgsAddEventHandler = dgsAddEventHandler
+local triggerEvent = triggerEvent
+function onDGSElementCreate(source,theResource)
 	local style
 	local res = theResource or "global"
 	if styleManager.styles[res] and styleManager.styles[res].using then
@@ -2353,14 +2365,10 @@ addEventHandler("onDgsCreate",root,function(theResource)
 	if not eleData.children then eleData.children = {} end
 	insertResource(theResource,source)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
-	addEventHandler("onDgsBlur",source,function()
-		dgsElementData[this].isFocused = false
-	end,getPropagated)
-
-	addEventHandler("onDgsFocus",source,function()
-		dgsElementData[this].isFocused = true
-	end,getPropagated)
-end,true)
+	dgsAddEventHandler("onDgsBlur",source,"DGSI_onDGSWindowBlur",getPropagated)
+	dgsAddEventHandler("onDgsFocus",source,"DGSI_onDGSWindowFocus",getPropagated)
+	triggerEvent("onDgsCreate",source,theResource)
+end
 
 function dgsClear(theType,res)
 	if res == true then

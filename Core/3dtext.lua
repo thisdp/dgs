@@ -97,7 +97,7 @@ function dgsCreate3DText(...)
 	else
 		dgsSetData(text3d,"text",tostring(text or ""))
 	end
-	triggerEvent("onDgsCreate",text3d,sRes)
+	onDGSElementCreate(text3d,sRes)
 	return text3d
 end
 

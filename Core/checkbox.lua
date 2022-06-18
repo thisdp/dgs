@@ -155,7 +155,7 @@ function dgsCreateCheckBox(...)
 	end
 	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
 	dgsAddEventHandler("onDgsCheckBoxChange",cb,"dgsCheckBoxCheckState",false)
-	triggerEvent("onDgsCreate",cb,sRes)
+	onDGSElementCreate(cb,sRes)
 	return cb
 end
 

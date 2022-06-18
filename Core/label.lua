@@ -99,7 +99,7 @@ function dgsCreateLabel(...)
 		dgsSetData(label,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(label,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",label,sRes)
+	onDGSElementCreate(label,sRes)
 	return label
 end
 

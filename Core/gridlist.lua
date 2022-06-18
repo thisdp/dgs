@@ -254,7 +254,7 @@ function dgsCreateGridList(...)
 	dgsSetData(gridlist,"scrollbars",{scrollbar1,scrollbar2})
 	dgsSetData(gridlist,"FromTo",{1,0})
 	dgsAddEventHandler("onDgsGridListSelect",gridlist,"dgsGridListCheckSelect",false)
-	triggerEvent("onDgsCreate",gridlist,sRes)
+	onDGSElementCreate(gridlist,sRes)
 	return gridlist
 end
 

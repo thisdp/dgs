@@ -67,7 +67,7 @@ function dgsCreateImage(...)
 	dgsSetParent(image,parent,true,true)
 	dgsElementData[image].image = type(img) == "string" and dgsImageCreateTextureExternal(image,res,img) or img
 	calculateGuiPositionSize(image,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",image,sRes)
+	onDGSElementCreate(image,sRes)
 	return image
 end
 

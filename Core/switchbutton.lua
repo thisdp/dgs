@@ -135,7 +135,7 @@ function dgsCreateSwitchButton(...)
 	dgsElementData[switchbutton].textOn = tostring(textOn or "")
 	dgsElementData[switchbutton].textOff = tostring(textOff or "")
 	calculateGuiPositionSize(switchbutton,x,y,relative or false,w,h,relative or false,true)
-	triggerEvent("onDgsCreate",switchbutton,sRes)
+	onDGSElementCreate(switchbutton,sRes)
 	return switchbutton
 end
 

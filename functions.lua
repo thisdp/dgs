@@ -5,7 +5,9 @@ local tableInsert,tableRemove,tableFind = table.insert,table.remove,table.find
 local triggerEvent = triggerEvent
 local type,assert = type,assert
 local isElement = isElement
+local setElementData = setElementData
 local destroyElement = destroyElement
+local dgsSetProperty = dgsSetProperty
 local guiBlur = guiBlur or function()
 	destroyElement(guiCreateLabel(0,0,0,0,"",false))
 end

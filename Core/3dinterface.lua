@@ -82,7 +82,7 @@ function dgsCreate3DInterface(...)
 		outputDebugString(err,2)
 	end
 	dgsElementData[interface].renderTarget_parent = renderTarget
-	triggerEvent("onDgsCreate",interface,sRes)
+	onDGSElementCreate(interface,sRes)
 	if not isElement(renderTarget) then
 		destroyElement(interface)
 		return false

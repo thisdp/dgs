@@ -151,7 +151,7 @@ function dgsCreateWindow(...)
 		dgsElementData[closeBtn].ignoreParentTitle = true
 	end
 	dgsElementData[window].closeButtonEnabled = createCloseButton
-	triggerEvent("onDgsCreate",window,sRes)
+	onDGSElementCreate(window,sRes)
 	return window
 end
 

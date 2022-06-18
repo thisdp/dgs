@@ -54,7 +54,7 @@ function dgsCreate3DLine(...)
 		lineWidth = lineWidth or 1,
 		lineData = {},
 	}
-	triggerEvent("onDgsCreate",line3d,sRes)
+	onDGSElementCreate(line3d,sRes)
 	return line3d
 end
 
