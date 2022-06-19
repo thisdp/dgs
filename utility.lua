@@ -427,6 +427,7 @@ end
 local addEventHandler = addEventHandler
 function dgsAddEventHandler(eventName,element,fncName,...)
 	if addEventHandler(eventName,element,_G[fncName],...) then
+		if not dgsElementData[element] then dgsElementData[element] = {} end
 		local eleData = dgsElementData[element]
 		if not eleData.eventHandlers then eleData.eventHandlers = {} end
 		local eventHandlers = eleData.eventHandlers
