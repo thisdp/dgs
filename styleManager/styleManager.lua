@@ -166,7 +166,7 @@ function dgsCreateFontFromStyle(styleName,res,theTable)
 		res = res or sourceResource or "global"
 		local filePath,size,isBold,quality = theTable[1],theTable[2] or 9,theTable[3] or false,theTable[4] or "proof"
 		if filePath then
-			local thePath = filePath
+			local thePath = "styleManager/"..styleName.."/"..filePath
 			local isFontSharing = styleManager.styles[res].loaded[styleName].sharedFont
 			if isFontSharing then
 				styleManager.styles[res].loaded[styleName].shared.font = styleManager.styles[res].loaded[styleName].shared.font or {}
@@ -191,7 +191,7 @@ function dgsCreateTextureFromStyle(styleName,res,theTable)
 		local filePath,textureType,shaderSettings = theTable[1],theTable[2],theTable[3]
 		if filePath then
 			textureType = textureType or "image"
-			local thePath = filePath
+			local thePath = "styleManager/"..styleName.."/"..filePath
 			if textureType == "image" then
 				local isTextureSharing = styleManager.styles[res].loaded[styleName].sharedTexture
 				if isTextureSharing then
