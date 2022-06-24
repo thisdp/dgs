@@ -166,7 +166,7 @@ function dgsCreateFontFromStyle(styleName,res,theTable)
 		res = res or sourceResource or "global"
 		local filePath,size,isBold,quality = theTable[1],theTable[2] or 9,theTable[3] or false,theTable[4] or "proof"
 		if filePath then
-			local thePath = "styleManager/"..styleName.."/"..filePath
+			local thePath = filePath
 			local isFontSharing = styleManager.styles[res].loaded[styleName].sharedFont
 			if isFontSharing then
 				styleManager.styles[res].loaded[styleName].shared.font = styleManager.styles[res].loaded[styleName].shared.font or {}
@@ -191,7 +191,7 @@ function dgsCreateTextureFromStyle(styleName,res,theTable)
 		local filePath,textureType,shaderSettings = theTable[1],theTable[2],theTable[3]
 		if filePath then
 			textureType = textureType or "image"
-			local thePath = "styleManager/"..styleName.."/"..filePath
+			local thePath = filePath
 			if textureType == "image" then
 				local isTextureSharing = styleManager.styles[res].loaded[styleName].sharedTexture
 				if isTextureSharing then
@@ -281,10 +281,11 @@ function dgsLoadStyle(styleName,res)
 						if newStyle[dgsType][dgsProperty] ~= nil then
 							gStyle[dgsType] = gStyle[dgsType] or {}
 							if type(newStyle[dgsType][dgsProperty]) == "table" then
-								for i=1,#newStyle[dgsType][dgsProperty] do
-									if type(newStyle[dgsType][dgsProperty][i]) == "table" then
-										if type(newStyle[dgsType][dgsProperty][i][1]) == "string" then
-											newStyle[dgsType][dgsProperty][i][1] = getStyleFilePath(styleName,res,newStyle[dgsType][dgsProperty][i][1])
+								if dgsType =="cursor" then iprint(newStyle[dgsType][dgsProperty],#newStyle[dgsType][dgsProperty]) end
+								for key,value in pairs(newStyle[dgsType][dgsProperty]) do
+									if type(newStyle[dgsType][dgsProperty][key]) == "table" then
+										if type(newStyle[dgsType][dgsProperty][key][1]) == "string" then
+											newStyle[dgsType][dgsProperty][key][1] = getStyleFilePath(styleName,res,newStyle[dgsType][dgsProperty][key][1])
 										end
 									else
 										if type(newStyle[dgsType][dgsProperty][1]) == "string" then
