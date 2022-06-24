@@ -280,8 +280,7 @@ function dgsLoadStyle(styleName,res)
 					for dgsProperty,value in pairs(settings) do
 						if newStyle[dgsType][dgsProperty] ~= nil then
 							gStyle[dgsType] = gStyle[dgsType] or {}
-							if type(newStyle[dgsType][dgsProperty]) == "table" then
-								if dgsType =="cursor" then iprint(newStyle[dgsType][dgsProperty],#newStyle[dgsType][dgsProperty]) end
+							if type(newStyle[dgsType][dgsProperty]) == "table" thens
 								for key,value in pairs(newStyle[dgsType][dgsProperty]) do
 									if type(newStyle[dgsType][dgsProperty][key]) == "table" then
 										if type(newStyle[dgsType][dgsProperty][key][1]) == "string" then
