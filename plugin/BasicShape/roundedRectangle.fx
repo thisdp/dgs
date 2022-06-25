@@ -15,7 +15,7 @@ SamplerState tSampler{
 };
 
 float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
-	float4 result = textureLoad?tex2D(tSampler,textureRotated?tex.yx:tex)*borderColor:borderColor;
+	float4 result = borderColor;
 	float alp = 1;
 	float2 tex_bk = tex;
 	float2 dx = ddx(tex);
@@ -83,15 +83,15 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 			if (!rightTopSideY && (nRadius[1] || nRadius[2]))
 				alp *= saturate((-fixedPos.x+center.x)/aA);
 		}else{
-			if (!leftBottomSideX && (nRadius[2] || nRadius[3]))
+			if (!rightBottomSideX && (nRadius[2] || nRadius[3]))
 				alp *= saturate((-fixedPos.y+center.y)/aA);
-			if (!leftBottomSideY && (nRadius[1] || nRadius[2]))
+			if (!rightBottomSideY && (nRadius[1] || nRadius[2]))
 				alp *= saturate((-fixedPos.x+center.x)/aA);
 		}
 	}
 	alp = saturate(alp);
 	float nAlp = 1;
-	float4 filledColor = color;
+	float4 filledColor = (textureLoad?tex2D(tSampler,textureRotated?tex_bk.yx:tex_bk):1)*color;
 	if(borderThickness[0] > 0 && borderThickness[1] > 0){
 		float2 newborderThickness = borderThickness*dd*100;
 		tex_bk = tex_bk+tex_bk*newborderThickness;
@@ -168,16 +168,16 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 				if (!rightTopSideY)
 					nAlp *= saturate((-fixedPos.x+center.x)/aA);
 			}else{
-				if (!leftBottomSideX)
+				if (!rightBottomSideX)
 					nAlp *= saturate((-fixedPos.y+center.y)/aA);
-				if (!leftBottomSideY)
+				if (!rightBottomSideY)
 					nAlp *= saturate((-fixedPos.x+center.x)/aA);
 			}
 		}
 	}
 	nAlp = 1-saturate(nAlp);
 	result = result+(filledColor-result)*(1-clamp(nAlp,0,1));
-	result.rgb = colorOverwritten?result.rgb:_color.rgb;
+	result.rgb *= colorOverwritten?1:_color.rgb;
 	result.a *= _color.a*alp;
 	return result;
 }
