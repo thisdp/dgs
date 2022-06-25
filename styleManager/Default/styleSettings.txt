@@ -72,8 +72,8 @@
 			image = {"Images/cursor/CursorPointer.png"},--Image
 			rotation = 0,								--Rotation
 			rotationCenter = {0,0},						--Rotation Center (Relative)
-			offset = {0,0},								--Offset (Relative)
-			scale = 1,									--Scale
+			offset = {-0.25,0},								--Offset (Relative)
+			scale = 1.2,									--Scale
 		},
 	},
 ---------------------------------------------------------------------------------------------------Unique

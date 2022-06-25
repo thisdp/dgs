@@ -1472,8 +1472,19 @@ function dgsCheckHit(hits,cursorShowing)
 				end
 			elseif enteredElementType == "dgs-dxmemo" or enteredElementType == "dgs-dxedit" then
 				_cursorType = "text"
+			elseif enteredElementType == "dgs-dxbutton" or enteredElementType == "dgs-dxtab" or enteredElementType == "dgs-dxswitchbutton" or enteredElementType == "dgs-dxcheckbox" or enteredElementType == "dgs-dxcombobox" or enteredElementType == "dgs-dxradiobutton" then
+				_cursorType = "pointer"
+			elseif enteredElementType == "dgs-dxscrollbar" then
+				if MouseData.scbEnterData and MouseData.scbEnterData == 1 or MouseData.scbEnterData == 3 or MouseData.scbEnterData == 5 then
+					_cursorType = "pointer"
+				end
+			elseif enteredElementType == "dgs-dxselector" then
+				if MouseData.selectorEnterData and MouseData.selectorEnterData == 1 or MouseData.selectorEnterData == 3 then
+					_cursorType = "pointer"
+				end
 			end
 		end
+		
 		if _cursorType == "arrow" then
 			_cursorType = guiGetCursorType()
 		end
