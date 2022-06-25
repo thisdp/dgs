@@ -62,7 +62,6 @@
 	<script src="plugin/effect3D.lua" type="client" />
 
 	<file src="plugin/BasicShape/roundedRectangle.fx" />
-	<file src="plugin/BasicShape/roundedRectangleFrame.fx" />
 	<script src="plugin/BasicShape/roundedRectangle.lua" type="client" />
 	<file src="plugin/BasicShape/circle.fx" />
 	<script src="plugin/BasicShape/circle.lua" type="client" />
