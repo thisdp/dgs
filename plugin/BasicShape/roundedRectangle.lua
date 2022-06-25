@@ -22,7 +22,10 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 	end
 	if not shader then return false end
 	color = color or tocolor(255,255,255,255)
-	if type(borderOnlyOrColor) == "boolean" then
+	if type(borderOnlyOrColor) == "number" then
+		dgsRoundRectSetBorderThickness(shader,borderThicknessHorizontal or 0.2,borderThicknessVertical or borderThicknessHorizontal or 0.2)
+		dgsRoundRectSetColor(shader,color,borderOnlyOrColor)
+	else
 		if borderOnlyOrColor then
 			dgsRoundRectSetBorderThickness(shader,borderThicknessHorizontal or 0.2,borderThicknessVertical or borderThicknessHorizontal or 0.2)
 			dgsRoundRectSetColor(shader,color,color)
@@ -31,9 +34,6 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 			dgsRoundRectSetColor(shader,color,color)
 		end
 		dgsSetData(shader,"borderOnly",borderOnlyOrColor)
-	elseif type(borderOnlyOrColor) == "number" then
-		dgsRoundRectSetBorderThickness(shader,borderThicknessHorizontal or 0.2,borderThicknessVertical or borderThicknessHorizontal or 0.2)
-		dgsRoundRectSetColor(shader,color,borderOnlyOrColor)
 	end
 	dgsRoundRectSetColorOverwritten(shader,colorOverwritten ~= false)
 	dgsRoundRectSetTexture(shader,texture)
