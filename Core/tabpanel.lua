@@ -103,8 +103,8 @@ function dgsCreateTabPanel(...)
 	style = style.tabpanel
 	local tabHeight = tabHeight or style.tabHeight
 	local nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
-	local hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2]))
-	local cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3]))
+	local hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2])) or nImage
+	local cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3])) or nImage
 	local nColor = nColor or (style.tabColor and style.tabColor[1])
 	local hColor = hColor or (style.tabColor and style.tabColor[2])
 	local cColor = cColor or (style.tabColor and style.tabColor[3])

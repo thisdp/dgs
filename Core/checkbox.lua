@@ -98,8 +98,8 @@ function dgsCreateCheckBox(...)
 	style = style.checkbox
 	local imageUnchecked = style.imageUnchecked
 	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
-	hImageF = hImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[2])
-	cImageF = cImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[3])
+	hImageF = hImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[2]) or nImageF
+	cImageF = cImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[3]) or nImageF
 	local colorUnchecked = style.colorUnchecked
 	nColorF = nColorF or colorUnchecked[1]
 	hColorF = hColorF or colorUnchecked[2]
@@ -107,8 +107,8 @@ function dgsCreateCheckBox(...)
 
 	local imageChecked = style.imageChecked
 	nImageT = nImageT or dgsCreateTextureFromStyle(using,res,imageChecked[1])
-	hImageT = hImageT or dgsCreateTextureFromStyle(using,res,imageChecked[2])
-	cImageT = cImageT or dgsCreateTextureFromStyle(using,res,imageChecked[3])
+	hImageT = hImageT or dgsCreateTextureFromStyle(using,res,imageChecked[2]) or nImageT
+	cImageT = cImageT or dgsCreateTextureFromStyle(using,res,imageChecked[3]) or nImageT
 	local colorChecked = style.colorChecked
 	nColorT = nColorT or colorChecked[1]
 	hColorT = hColorT or colorChecked[2]
@@ -116,8 +116,8 @@ function dgsCreateCheckBox(...)
 
 	local imageIndeterminate = style.imageIndeterminate
 	nImageN = nImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[1])
-	hImageN = hImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[2])
-	cImageN = cImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[3])
+	hImageN = hImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[2]) or nImageN
+	cImageN = cImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[3]) or nImageN
 	local colorIndeterminate = style.colorIndeterminate
 	nColorN = nColorN or colorIndeterminate[1]
 	hColorN = hColorN or colorIndeterminate[2]

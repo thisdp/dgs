@@ -140,8 +140,8 @@ function dgsCreateGridList(...)
 	local hColorR = hColorR or style.rowColor[2]
 	local sColorR = sColorR or style.rowColor[3]
 	local nImageR = nImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[1])
-	local hImageR = hImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[2])
-	local sImageR = sImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[3])
+	local hImageR = hImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[2]) or nImageR
+	local sImageR = sImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[3]) or nImageR
 	local gridlist = createElement("dgs-dxgridlist")
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsElementData[gridlist] = {

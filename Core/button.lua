@@ -90,8 +90,8 @@ function dgsCreateButton(...)
 	local hoveringColor = hoveringColor or style.color[2]
 	local clickedColor = clickedColor or style.color[3]
 	local normalImage = normalImage or dgsCreateTextureFromStyle(using,res,style.image[1])
-	local hoveringImage = hoveringImage or dgsCreateTextureFromStyle(using,res,style.image[2])
-	local clickedImage = clickedImage or dgsCreateTextureFromStyle(using,res,style.image[3])
+	local hoveringImage = hoveringImage or dgsCreateTextureFromStyle(using,res,style.image[2]) or normalImage
+	local clickedImage = clickedImage or dgsCreateTextureFromStyle(using,res,style.image[3]) or normalImage
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[button] = {
 		alignment = {"center","center"},
