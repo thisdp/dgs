@@ -88,11 +88,17 @@ function dgsCreateSwitchButton(...)
 	
 	style = style.switchbutton
 	local imageOff = style.imageOff
-	local norimg_o,hovimg_o,cliimg_o = dgsCreateTextureFromStyle(using,res,imageOff[1]),dgsCreateTextureFromStyle(using,res,imageOff[2]),dgsCreateTextureFromStyle(using,res,imageOff[3])
+	local norimg_o = dgsCreateTextureFromStyle(using,res,imageOff[1])
+	local hovimg_o = dgsCreateTextureFromStyle(using,res,imageOff[2]) or norimg_o
+	local cliimg_o = dgsCreateTextureFromStyle(using,res,imageOff[3]) or norimg_o
 	local imageOn = style.imageOn
-	local norimg_f,hovimg_f,cliimg_f = dgsCreateTextureFromStyle(using,res,imageOn[1]),dgsCreateTextureFromStyle(using,res,imageOn[2]),dgsCreateTextureFromStyle(using,res,imageOn[3])
+	local norimg_f = dgsCreateTextureFromStyle(using,res,imageOn[1])
+	local hovimg_f = dgsCreateTextureFromStyle(using,res,imageOn[2]) or norimg_f
+	local cliimg_f = dgsCreateTextureFromStyle(using,res,imageOn[3]) or norimg_f
 	local cursorImage = style.cursorImage
-	local norimg_c,hovimg_c,cliimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[1]),dgsCreateTextureFromStyle(using,res,cursorImage[2]),dgsCreateTextureFromStyle(using,res,cursorImage[3])
+	local norimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[1])
+	local hovimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[2]) or norimg_c
+	local cliimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[3]) or norimg_c
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[switchbutton] = {
 		renderBuffer = {};
