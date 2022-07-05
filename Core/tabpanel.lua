@@ -477,7 +477,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local tabColorPIsTable = type(tabColorP) == "table"
 	if selected == -1 then
 		local color = applyColorAlpha(eleData.bgColor,parentAlpha)
-		dxDrawImage(x,y+height,w,h-height,applyColorAlpha(eleData.bgImage,parentAlpha),0,0,0,color,isPostGUI)
+		dxDrawImage(x,y+height,w,h-height,eleData.bgImage,0,0,0,color,isPostGUI)
 	else
 		local tabOffset = eleData.tabOffset[2] and eleData.tabOffset[1]*w or eleData.tabOffset[1]
 		local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
