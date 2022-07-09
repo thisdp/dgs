@@ -263,7 +263,8 @@ end
 local dgsClosingElement = nil
 function dgsCloseWindow(window)
 	if not(dgsGetType(window) == "dgs-dxwindow") then error(dgsGenAsrt(window,"dgsCloseWindow",1,"dgs-dxwindow")) end
-	if dgsClosingElement == window then error(dgsGenAsrt(window,"dgsCloseWindow",1,_,_,_,"couldn't close this dgs-dxwindow in onDgsWindowClose event, since it is being closed.")) end
+	if dgsElementData[window]._DGSI_BeingClosed then return false end
+	dgsSetData(window,"_DGSI_BeingClosed",true)
 	dgsClosingElement = window
 	triggerEvent("onDgsWindowClose",window)
 	dgsClosingElement = nil
