@@ -122,7 +122,7 @@ end
 function dgsLabelSetHorizontalAlign(label,align,wordbreak)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetColor",1,"dgs-dxlabel")) end
 	if not HorizontalAlign[align] then error(dgsGenAsrt(align,"dgsLabelSetHorizontalAlign",2,"string","left/center/right")) end
-	dgsSetProperty(label,"wordBreak",wordbreak)
+	dgsSetData(label,"wordBreak",wordbreak)
 	local alignment = dgsElementData[label].alignment
 	return dgsSetData(label,"alignment",{align,alignment[2]})
 end
@@ -130,7 +130,7 @@ end
 function dgsLabelSetVerticalAlign(label,align,wordbreak)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelSetVerticalAlign",1,"dgs-dxlabel")) end
 	if not VerticalAlign[align] then error(dgsGenAsrt(align,"dgsLabelSetVerticalAlign",2,"string","top/center/bottom")) end
-	dgsSetProperty(label,"wordBreak",wordbreak)
+	dgsSetData(label,"wordBreak",wordbreak)
 	local alignment = dgsElementData[label].alignment
 	return dgsSetData(label,"alignment",{alignment[1],align})
 end
