@@ -444,12 +444,12 @@ function dgsEditGetReadOnly(edit)
 	return dgsElementData[edit].readOnly
 end
 
-function dgsEditSetWhiteList(edit,str)
-	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditSetWhiteList",1,"dgs-dxedit")) end
+function dgsEditSetTextFilter(edit,str)
+	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditSetTextFilter",1,"dgs-dxedit")) end
 	if type(str) == "string" then
-		dgsSetData(edit,"whiteList",str)
+		dgsSetData(edit,"textFilter",str)
 	else
-		dgsSetData(edit,"whiteList",nil)
+		dgsSetData(edit,"textFilter",nil)
 	end
 	local eleData = dgsElementData[edit]
 	
@@ -462,9 +462,9 @@ function dgsEditSetWhiteList(edit,str)
 	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local index = dgsEditGetCaretPosition(edit,true)
-	local whiteList = str or ""
+	local textFilter = str or ""
 	local oldText = eleData.text
-	local text = utf8Gsub(eleData.text,whiteList,"")
+	local text = utf8Gsub(eleData.text,textFilter,"")
 	local textLen = utf8Len(text)
 	eleData.text = text
 	if eleData.masked then
@@ -479,6 +479,7 @@ function dgsEditSetWhiteList(edit,str)
 	eleData.updateRTNextFrame = true
 	triggerEvent("onDgsTextChange",edit,oldText)
 end
+dgsRegisterDeprecatedFunction("dgsEditSetWhiteList","dgsEditSetTextFilter")
 
 function dgsEditInsertText(edit,index,text)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditInsertText",1,"dgs-dxedit")) end
@@ -794,12 +795,12 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 	local textSize = eleData.textSize
 	local _index = dgsEditGetCaretPosition(edit,true)
 	local index = index or _index
-	local whiteList = eleData.whiteList or ""
+	local textFilter = eleData.textFilter or ""
 	local textDataLen = utf8Len(textData)
 	local text = utf8Sub(text,1,maxLength-textDataLen)
 	local _textLen = utf8Len(text)
 	local textData_add = utf8Sub(textData,1,index)..text..utf8Sub(textData,index+1)
-	local newTextData = utf8Gsub(textData_add,whiteList,"")
+	local newTextData = utf8Gsub(textData_add,textFilter,"")
 	local textLen = utf8Len(newTextData)-textDataLen
 	eleData.text = newTextData
 	newTextData = eleData.masked and strRep(eleData.maskText,utf8Len(newTextData)) or newTextData

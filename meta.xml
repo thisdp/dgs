@@ -485,7 +485,7 @@
 	<export function="dgsEditSetCaretPosition" type="client" />
 	<export function="dgsEditGetCaretStyle" type="client" />
 	<export function="dgsEditSetCaretStyle" type="client" />
-	<export function="dgsEditSetWhiteList" type="client" />
+	<export function="dgsEditSetTextFilter" type="client" />
 	<export function="dgsEditGetMaxLength" type="client" />
 	<export function="dgsEditSetMaxLength" type="client" />
 	<export function="dgsEditSetReadOnly" type="client" />
@@ -515,6 +515,8 @@
 	<export function="dgsEditRemoveAutoComplete" type="client" />
 	<export function="dgsEditSetAutoComplete" type="client" />
 	<export function="dgsEditGetAutoComplete" type="client" />
+	
+	<export function="dgsEditSetWhiteList" type="client" />
 
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />
