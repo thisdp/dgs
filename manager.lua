@@ -732,8 +732,8 @@ function dgsRemovePropertyListener(dgsEle,propertyNames)
 	end
 end
 
-function dgsGetListeningProperties(dgsEle)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetListeningProperties",1,"dgs-dxelement")) end
+function dgsGetListenedProperties(dgsEle)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetListenedProperties",1,"dgs-dxelement")) end
 	local eleData = dgsElementData[dgsEle]
 	eleData.propertyListener = eleData.propertyListener or {}
 	local listening = {}
