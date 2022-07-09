@@ -162,6 +162,35 @@ function dgsButtonGetTextSize(button)
 	local wordBreak = eleData.wordBreak
     return dxGetTextSize(text,absSize[1],textSizeX,textSizeY,font,wordBreak,colorCoded)
 end
+
+function dgsButtonSubmitForm()
+	local formAssembly = dgsElementData[source].formAssembly
+	local texts = {}
+	for key,ele in pairs(formAssembly) do
+		if isElement(ele) then
+			texts[key] = dgsGetText(ele)
+		else
+			texts[key] = false
+		end
+	end
+	triggerEvent("onDgsFormSubmit",source,texts)
+end
+
+function dgsButtonMakeForm(button,forms)
+	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonMakeForm",1,"dgs-dxbutton")) end
+	for key,ele in pairs(forms) do
+		local dgsType = dgsGetType(ele)
+		if not (dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo") then error(dgsGenAsrt(ele,"dgsButtonMakeForm",2,"dgs-dxedit/dgs-dxmemo","at")) end
+	end
+	dgsSetData(button,"formAssembly",forms)
+	dgsAddEventHandler("onDgsMouseClickUp",button,"dgsButtonSubmitForm",false)
+end
+
+function dgsButtonRemoveForm(button)
+	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonRemoveForm",1,"dgs-dxbutton")) end
+	dgsSetData(button,"formAssembly",nil)
+	dgsRemoveEventHandler("onDgsMouseClickUp",button,"dgsButtonSubmitForm",false)
+end
 --function dgsButtonSetIconImage()
 --function dgsButtonSetIconColor()
 ----------------------------------------------------------------

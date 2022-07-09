@@ -476,6 +476,8 @@
 	<export function="dgsButtonGetTextExtent" type="client" />
 	<export function="dgsButtonGetFontHeight" type="client" />
 	<export function="dgsButtonGetTextSize" type="client" />
+	<export function="dgsButtonMakeForm" type="client" />
+	<export function="dgsButtonRemoveForm" type="client" />
 
 	<export function="dgsCreateEdit" type="client" />
 	<export function="dgsEditMoveCaret" type="client" />
