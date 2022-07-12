@@ -791,10 +791,10 @@ function getPositionFromOffsetByRotMat(offx,offy,offz,x,y,z,m11,m12,m13,m21,m22,
 end
 
 function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
-	--local posX,posY = dgsGetGuiLocationOnScreen(dgsEle,false)
-	local absPos = dgsElementData[dgsEle].absPos
+	local posX,posY = dgsGetGuiLocationOnScreen(dgsEle,false)
+	--local absPos = dgsElementData[dgsEle].absPos
 	local absSize = dgsElementData[dgsEle].absSize
-	local posX,posY = absPos[1]+absSize[1]/2,absPos[2]+absSize[2]/2
+	local posX,posY = posX+absSize[1]/2,posY+absSize[2]/2
 	local rot = findRotation(posX,posY,x,y,offsetFix)
 	return rot,(x-posX)/absSize[1],(y-posY)/absSize[2]
 end
