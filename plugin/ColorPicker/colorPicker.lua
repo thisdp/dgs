@@ -660,7 +660,7 @@ end
 
 ---------------------HSLSquare Color Picker
 function HSLSquareChange()
-	local cx,cy = dgsGetCursorPosition(source)
+	local cx,cy = dgsGetCursorPosition()
 	local absSize = dgsElementData[source].absSize
 	local H,S = XYToHSL(cx/absSize[1],cy/absSize[2])
 	dgsColorPickerSetColor(source,H,S,_,_,"HSL")
@@ -676,7 +676,7 @@ function XYToHSL(X,Y)
 end
 ---------------------HSVRing Color Picker
 function HSVRingChange()
-	local cx,cy = dgsGetCursorPosition(source)
+	local cx,cy = dgsGetCursorPosition()
 	if eventName == "onDgsMouseClickDown" then
 		local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
 		local clickRadius = (CenDisX^2+CenDisY^2)^0.5
