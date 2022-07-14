@@ -792,7 +792,6 @@ end
 
 function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
 	local posX,posY = dgsGetGuiLocationOnScreen(dgsEle,false)
-	--local absPos = dgsElementData[dgsEle].absPos
 	local absSize = dgsElementData[dgsEle].absSize
 	local posX,posY = posX+absSize[1]/2,posY+absSize[2]/2
 	local rot = findRotation(posX,posY,x,y,offsetFix)
