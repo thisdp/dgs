@@ -1028,7 +1028,7 @@ function onClientKeyTriggered(button)
 				end
 			end
 		elseif button == "c" or button == "x" and ctrl then
-			if eleData.allowCopy then
+			if eleData.allowCopy and not eleData.masked then
 				local cpos,spos = eleData.caretPos,eleData.selectFrom
 				if cpos ~= spos then
 					local deleteText = button == "x" and not eleData.readOnly
