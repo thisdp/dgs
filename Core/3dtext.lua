@@ -156,7 +156,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 	end
 	local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
-	local dx,dy,dz = camX-wx,camY-wy,camZ-mz
+	local dx,dy,dz = camX-wx,camY-wy,camZ-wz
 	local distance = (dx*dx+dy*dy+dz*dz)^0.5
 	local maxDistance = eleData.maxDistance
 	if distance <= maxDistance and distance > 0 then
