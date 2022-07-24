@@ -72,12 +72,21 @@ function dgsImportFunction(name,nameAs)
 						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
 						if isTraceDebug then
 							local data
-							local index = 5
+							local index = 1
+							local isLocated = false
 							repeat
-								data = data or debug.getinfo(index)
-								index = index-1
-								if index == 0 then break end
-							until data and data.source:sub(1,1) == "@"
+								local d = debug.getinfo(index)
+								if not d then break end
+								data = d
+								index = index+1
+								if data.func == self[fncName] then
+									if isLocated == true then
+										break
+									else
+										isLocated = true	--Need to get the next index
+									end
+								end
+							until data and data.source:sub(1,1) == "@" 
 							if data then
 								functionCallLogger = fncCallLoggerSelf
 								functionCallLogger.line=data.currentline
