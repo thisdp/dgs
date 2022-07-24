@@ -37,6 +37,7 @@ function dgsAnimTo(...)
 	else
 		animationID = animationID+1
 		local animTable = {
+			[-3]=nil,
 			[-2]=animationID,
 			[-1]=sourceResourceRoot,
 			[0]=nil, --Result
@@ -54,7 +55,7 @@ function dgsAnimTo(...)
 		local isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") or (getElementData(localPlayer,"DGS-DEBUG") == 3)
 		if isTraceDebug then
 			dgsDebugGetContext(sourceResourceRoot,function(context)
-				animTable[-2] = context
+				animTable[-3] = context
 			end)
 		end
 		--
@@ -229,8 +230,8 @@ function onAnimQueueProcess()
 				dbgResult,dbgErr = pcall(dgsSetProperty,dgsEle,property,animItem[0])
 				if not dbgResult then
 					outputDebugString("DGS runtime error: Animation",4,255,180,100)
-					if animItem[-1] and animItem[-2] then
-						local debugContext = animItem[-2] 
+					if animItem[-1] and animItem[-3] then
+						local debugContext = animItem[-3] 
 						if type(debugContext) == "table" then
 							triggerEvent("DGSI_onDebug",animItem[-1],"AnimationError",property,debugContext.file,debugContext.line,debugContext.fncName)
 						end
