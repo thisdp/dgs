@@ -15,6 +15,9 @@ float4 circle(float2 tex:TEXCOORD0,float4 __color:COLOR0):COLOR0{
 
 technique RepTexture{
 	pass P0{
+		SeparateAlphaBlendEnable = true;
+		SrcBlendAlpha = One;
+		DestBlendAlpha = InvSrcAlpha;
 		PixelShader = compile ps_2_a circle();
 	}
 }

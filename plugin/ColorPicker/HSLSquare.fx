@@ -27,6 +27,9 @@ float4 myShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 
 technique RepTexture{
 	pass P0	{
+		SeparateAlphaBlendEnable = true;
+		SrcBlendAlpha = One;
+		DestBlendAlpha = InvSrcAlpha;
 		PixelShader = compile ps_2_0 myShader();
 	}
 }
