@@ -285,7 +285,7 @@ function dgsMoveTo(...)
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsMoveTo",2,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsMoveTo",3,"number")) end
 	local easing = easing or "Linear"
-	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsMoveTo",5,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
+	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsMoveTo",5,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsMoveTo",6,"number")) end
 	return dgsAnimTo(dgsEle,relative and "rltPos" or "absPos",{x,y},easing,duration,delay,reversedProgress,true)
 end
