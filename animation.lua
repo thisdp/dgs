@@ -26,7 +26,7 @@ function dgsAnimTo(...)
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAnimTo",1,"dgs-dxelement/table")) end
 	if not(type(property) == "string") then error(dgsGenAsrt(property,"dgsAnimTo",2,"string")) end
 	local easing = easing or "Linear"
-	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAnimTo",4,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
+	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAnimTo",4,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAnimTo",5,"number")) end
 	if type(dgsEle) == "table" then
 		local animIDs = {}
@@ -339,7 +339,7 @@ function dgsSizeTo(...)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsSizeTo",2,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsSizeTo",3,"number")) end
 	local easing = easing or "Linear"
-	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsSizeTo",5,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
+	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsSizeTo",5,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsSizeTo",6,"number")) end
 	return dgsAnimTo(dgsEle,relative and "rltSize" or "absSize",{w,h},easing,duration,delay,reversedProgress,true)
 end
@@ -390,7 +390,7 @@ function dgsAlphaTo(...)
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAlphaTo",1,"dgs-dxelement/table")) end
 	if not(type(alpha) == "number") then error(dgsGenAsrt(alpha,"dgsAlphaTo",2,"number")) end
 	local easing = easing or "Linear"
-	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAlphaTo",3,_,_"easing function doesn't exist ("..tostring(easing)..")")) end
+	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAlphaTo",3,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAlphaTo",4,"number")) end
 	return dgsAnimTo(dgsEle,"alpha",alpha,easing,duration,delay,reversedProgress,true)
 end
