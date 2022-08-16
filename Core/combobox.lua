@@ -823,7 +823,7 @@ end
 function dgsComboBoxSort(combobox)
 	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxSort",1,"dgs-dxcombobox")) end
 	local itemData = dgsElementData[combobox].itemData
-	local sortFunction = dgsElementData[combobox].sortFunction
+	local sortFunction = dgsElementData[combobox].sortFunction or comboSortFunctions.greaterLower
 	tableSort(itemData,sortFunction)
 	dgsElementData[combobox].itemData = itemData
 	return true
