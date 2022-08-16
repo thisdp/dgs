@@ -175,7 +175,7 @@ function dgsCreateComboBox(...)
 		captionEdit = false,
 		configNextFrame = false,
 		textRenderBuffer = {},
-		autoSort = true,
+		autoSort = false,
 	}
 	dgsSetParent(combobox,parent,true,true)
 	dgsAttachToTranslation(combobox,resourceTranslation[sRes])
@@ -821,7 +821,7 @@ function dgsComboBoxSortGetAutoSortEnabled(combobox)
 end
 
 function dgsComboBoxSort(combobox)
-	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxSortSort",1,"dgs-dxcombobox")) end
+	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxSort",1,"dgs-dxcombobox")) end
 	local itemData = dgsElementData[combobox].itemData
 	local sortFunction = dgsElementData[combobox].sortFunction
 	tableSort(itemData,sortFunction)
