@@ -326,7 +326,6 @@ function dgsComboBoxSetEditEnabled(combobox,enabled)
 	return true
 end
 
-
 function dgsComboBoxGetEditEnabled(combobox)
 	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetEditEnabled",1,"dgs-dxcombobox")) end
 	return isElement(dgsElementData[combobox].captionEdit) and true or false
@@ -671,6 +670,10 @@ function configComboBox(combobox,remainBox)
 	end
 end
 
+function dgsComboBoxGetScrollBar(combobox)
+	if dgsGetType(combobox) ~= "dgs-dxcombobox" then error(dgsGenAsrt(combobox,"dgsComboBoxGetScrollBar",1,"dgs-dxcombobox")) end
+	return dgsElementData[combobox].scrollbar
+end
 
 function dgsComboBoxSetScrollPosition(combobox,vertical)
 	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetScrollPosition",1,"dgs-dxcombobox")) end
