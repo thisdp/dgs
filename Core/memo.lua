@@ -226,21 +226,30 @@ function dgsCreateMemo(...)
 	dgsSetData(scrollbar2,"minLength",10)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkMemoScrollBar",false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkMemoScrollBar",false)
-	local padding = dgsElementData[memo].padding
-	local sizex,sizey = abx-padding[1]*2,abx-padding[2]*2
+	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
+	handleDxMemoText(memo,text,false,true)
+	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
+	onDGSElementCreate(memo,sRes)
+	dgsMemoRecreateRenderTarget(memo)
+	return memo
+end
+
+function dgsMemoRecreateRenderTarget(memo)
+	local eleData = dgsElementData[memo]
+	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
+	local padding = eleData.padding
+	local sizex,sizey = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
 	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local bgRT,err = dxCreateRenderTarget(sizex,sizey,true,memo)
+	local scbThick = eleData.scrollBarThick
+	local scrollbar = eleData.scrollbars
+	local scbThickV,scbThickH = dgsElementData[scrollbar[2]].visible and scbThick or 0,dgsElementData[scrollbar[1]].visible and scbThick or 0
+	local bgRT,err = dxCreateRenderTarget(sizex-scbThickV,sizey-scbThickH,true,memo)
 	if bgRT ~= false then
 		dgsAttachToAutoDestroy(bgRT,memo,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsElementData[memo].bgRT = bgRT
-	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
-	handleDxMemoText(memo,text,false,true)
-	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
-	onDGSElementCreate(memo,sRes)
-	return memo
+	dgsSetData(memo,"bgRT",bgRT)
 end
 
 function dgsMemoMultiClickCheck(button,state,x,y,times)
@@ -1281,21 +1290,10 @@ function configMemo(memo)
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = eleData.scrollSize*5/(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
-	local scrollBarAfter = {dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible}
-	if scrollBarAfter[1] ~= scrollBarBefore[1] or scrollBarAfter[2] ~= scrollBarBefore[2] then
+	if dgsElementData[scrollbar[1]].visible ~= scrollBarBefore[1] or dgsElementData[scrollbar[2]].visible ~= scrollBarBefore[2] then
 		dgsSetData(memo,"rebuildMapTableNextFrame",true)
 	end
-	local padding = eleData.padding
-	local sizex,sizey = size[1]-padding[1]*2,size[2]-padding[2]*2
-	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	local bgRT,err = dxCreateRenderTarget(sizex-scbTakes1,sizey-scbTakes2,true,memo)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,memo,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsSetData(memo,"bgRT",bgRT)
+	dgsMemoRecreateRenderTarget(memo)
 	dgsSetData(memo,"configNextFrame",false)
 	dgsElementData[memo].updateRTNextFrame = true
 end

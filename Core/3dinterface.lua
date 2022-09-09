@@ -74,20 +74,22 @@ function dgsCreate3DInterface(...)
 		hit = {},
 		--filterShader = dxCreateShader(defaultFilter)
 	}
-	local renderTarget,err = dxCreateRenderTarget(resX,resY,true,interface)
-	if renderTarget ~= false then
-		dxSetTextureEdge(renderTarget,"mirror")
-		dgsAttachToAutoDestroy(renderTarget,interface,-1)
+	onDGSElementCreate(interface,sRes)
+	dgs3DInterfaceRecreateRenderTarget(interface)
+	return interface
+end
+
+function dgs3DInterfaceRecreateRenderTarget(interface)
+	if isElement(dgsElementData[interface].mainRT) then destroyElement(dgsElementData[interface].mainRT) end
+	local resolution = dgsElementData[interface].resolution
+	local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,interface)
+	if mainRT ~= false then
+		dxSetTextureEdge(mainRT,"mirror")
+		dgsAttachToAutoDestroy(mainRT,interface,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsElementData[interface].renderTarget_parent = renderTarget
-	onDGSElementCreate(interface,sRes)
-	if not isElement(renderTarget) then
-		destroyElement(interface)
-		return false
-	end
-	return interface
+	dgsSetData(interface,"mainRT",mainRT)
 end
 
 local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0,0},{0,0,0,0,1,1},{0,0,0,0,1,0}
@@ -224,17 +226,9 @@ function dgs3DInterfaceSetResolution(interface,resw,resh)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetResolution",1,"dgs-dx3dinterface")) end
 	if not(type(resw) == "number") then error(dgsGenAsrt(resw,"dgs3DInterfaceSetResolution",2,"number")) end
 	if not(type(resh) == "number") then error(dgsGenAsrt(resh,"dgs3DInterfaceSetResolution",3,"number")) end
-	local oldRT = dgsElementData[interface].renderTarget_parent
-	if isElement(oldRT) then destroyElement(oldRT) end
-	local renderTarget,err = dxCreateRenderTarget(resw,resh,true,interface)
-	if renderTarget ~= false then
-		dxSetTextureEdge(renderTarget,"mirror")
-		dgsAttachToAutoDestroy(renderTarget,interface,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsSetData(interface,"renderTarget_parent",renderTarget)
-	return dgsSetData(interface,"resolution",{resw,resh})
+	dgsSetData(interface,"resolution",{resw,resh})
+	dgs3DInterfaceRecreateRenderTarget(interface)
+	return true
 end
 
 function dgs3DInterfaceGetResolution(interface)
@@ -286,14 +280,7 @@ end
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
-dgsOnPropertyChange["dgs-dx3dinterface"] = {
-	size = function(dgsEle,key,value,oldValue)
-		local temprt = dgsElementData[dgsEle].renderTarget
-		if isElement(temprt) then destroyElement(temprt) end
-		local renderTarget = dxCreateRenderTarget(value[1],value[2],true)
-		dgsSetData(dgsEle,"renderTarget",renderTarget)
-	end
-}
+dgsOnPropertyChange["dgs-dx3dinterface"] = {}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -302,7 +289,7 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local size = eleData.size
 	local faceTo = eleData.faceTo
 	local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
-	rndtgt = eleData.renderTarget_parent
+	rndtgt = eleData.mainRT
 	if x and y and z and w and h and enabledInherited and mx then
 		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123
 		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
@@ -379,7 +366,7 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 			local cameraDistance = (dx*dx+dy*dy+dz*dz)^0.5
 			eleData.cameraDistance = cameraDistance
 			if cameraDistance <= eleData.maxDistance then
-				local renderThing = eleData.renderTarget_parent
+				local renderThing = eleData.mainRT
 				local addalp = 1
 				if cameraDistance >= eleData.fadeDistance then
 					addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)

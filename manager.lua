@@ -46,9 +46,10 @@ dgsCollider = {
 		end
 	end,
 }
+--Visibility
+dgsOnVisibilityChange = {}
 --Plugin System
 dgsPluginTable = {}
---
 --Parent System
 BackEndTable = {}			--Store Back-end Render Element (If it has back-end renderer)
 BottomFatherTable = {}		--Store Bottom Father Element
@@ -210,7 +211,6 @@ end
 function dgsGetParent(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetParent",1,"dgs-dxelement")) end
 	return dgsElementData[dgsEle] and dgsElementData[dgsEle].parent or false
-
 end
 
 function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)

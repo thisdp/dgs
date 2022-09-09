@@ -189,15 +189,9 @@ function dgsCreateComboBox(...)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
 	dgsElementData[combobox].myBox = box
 	dgsElementData[box].myCombo = combobox
-	local boxsiz = dgsElementData[box].absSize
-	local bgRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,sRes)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,combobox,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsElementData[combobox].bgRT = bgRT
-	local scrollbar = dgsCreateScrollBar(boxsiz[1]-scbThick,0,scbThick,boxsiz[2],false,false,box)
+	local boxSize = dgsElementData[box].absSize
+
+	local scrollbar = dgsCreateScrollBar(boxSize[1]-scbThick,0,scbThick,boxSize[2],false,false,box)
 	dgsSetData(scrollbar,"length",{0,true})
 	dgsSetData(scrollbar,"multiplier",{1,true})
 	dgsSetData(scrollbar,"myCombo",combobox)
@@ -212,8 +206,22 @@ function dgsCreateComboBox(...)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
 	onDGSElementCreate(combobox,sRes)
+	dgsComboBoxRecreateRenderTarget(combobox)
 	dgsSetData(combobox,"childOutsideHit",true)
 	return combobox
+end
+
+function dgsComboBoxRecreateRenderTarget(combobox)
+	if isElement(dgsElementData[combobox].bgRT) then destroyElement(dgsElementData[combobox].bgRT) end
+	local box = dgsElementData[combobox].myBox
+	local boxSize = dgsElementData[box].absSize
+	local bgRT,err = dxCreateRenderTarget(boxSize[1],boxSize[2],true,combobox)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,combobox,-1)
+	else
+		outputDebugString(err,2)
+	end
+	dgsSetData(combobox,"bgRT",bgRT)
 end
 
 function checkComboBoxScrollBar(scb,new,old)
@@ -633,24 +641,16 @@ function configComboBox(combobox,remainBox)
 	local itemHeight = eleData.itemHeight
 	local allHeight = iLen*itemHeight
 	dgsSetVisible(scrollbar,allHeight > size[2])
-	local res = eleData.resource
 	if not remainBox then
-		local boxsiz = dgsElementData[box].absSize
-		local sbt = eleData.scrollBarThick
-		if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-		local bgRT,err = dxCreateRenderTarget(boxsiz[1],boxsiz[2],true,combobox,res)
-		if bgRT ~= false then
-			dgsAttachToAutoDestroy(bgRT,combobox,-1)
-		else
-			outputDebugString(err,2)
-		end
-		dgsSetData(combobox,"bgRT",bgRT)
-		dgsSetPosition(scrollbar,boxsiz[1]-sbt,0,false)
-		dgsSetSize(scrollbar,sbt,boxsiz[2],false)
-		local higLen = 1-(allHeight-boxsiz[2])/allHeight
+		local boxSize = dgsElementData[box].absSize
+		local scbThick = eleData.scrollBarThick
+		dgsComboBoxRecreateRenderTarget(combobox)
+		dgsSetPosition(scrollbar,boxSize[1]-scbThick,0,false)
+		dgsSetSize(scrollbar,scbThick,boxSize[2],false)
+		local higLen = 1-(allHeight-boxSize[2])/allHeight
 		higLen = higLen >= 0.95 and 0.95 or higLen
 		dgsSetData(scrollbar,"length",{higLen,true})
-		local verticalScrollSize = eleData.scrollSize/(allHeight-boxsiz[2])
+		local verticalScrollSize = eleData.scrollSize/(allHeight-boxSize[2])
 		dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
 		dgsSetData(scrollbar,"moveType","sync")
 		dgsSetData(combobox,"configNextFrame",false)

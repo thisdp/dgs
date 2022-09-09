@@ -85,14 +85,6 @@ function dgsCreateScalePane(...)
 	calculateGuiPositionSize(scalepane,x,y,relative or false,w,h,relative or false,true)
 	local sx,sy = dgsElementData[scalepane].absSize[1],dgsElementData[scalepane].absSize[2]
 	local x,y = dgsElementData[scalepane].absPos[1],dgsElementData[scalepane].absPos[2]
-	local renderTarget,err = dxCreateRenderTarget(resolX or sx,resolY or sy,true,scalepane)
-	if renderTarget ~= false then
-		dxSetTextureEdge(renderTarget,"border",tocolor(0,0,0,0))
-		dgsAttachToAutoDestroy(renderTarget,scalepane,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsElementData[scalepane].renderTarget_parent = renderTarget
 	dgsElementData[scalepane].resolution = {resolX or sx,resolY or sy}
 	
 	local titleOffset = 0
@@ -126,6 +118,20 @@ function dgsCreateScalePane(...)
 	configScalePane(scalepane)
 	onDGSElementCreate(scalepane,sRes)
 	return scalepane
+end
+
+function dgsScalePaneRecreateRenderTarget(scalepane)
+	local eleData = dgsElementData[scalepane]
+	if isElement(eleData.mainRT) then destroyElement(eleData.mainRT) end
+	local resolution = dgsElementData[scalepane].resolution
+	local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,scalepane)
+	if mainRT ~= false then
+		dxSetTextureEdge(mainRT,"border",tocolor(0,0,0,0))
+		dgsAttachToAutoDestroy(mainRT,scalepane,-1)
+	else
+		outputDebugString(err,2)
+	end
+	dgsSetData(scalepane,"mainRT",mainRT)
 end
 
 function checkScalePaneScrollBar(scb,new,old)
@@ -331,6 +337,11 @@ dgsOnPropertyChange["dgs-dxscalepane"] = {
 		configScalePane(dgsEle)
 	end,
 }
+
+--------------------------VisibilityManage
+dgsOnVisibilityChange["dgs-dxtabpanel"] = function(dgsElement,selfVisibility,inheritVisibility)
+	
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -368,7 +379,7 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 		end
 	end
 	------------------------------------
-	local newRndTgt = eleData.renderTarget_parent
+	local newRndTgt = eleData.mainRT
 	if newRndTgt then
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode("add")

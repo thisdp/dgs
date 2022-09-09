@@ -198,24 +198,29 @@ function dgsCreateEdit(...)
 	dgsSetParent(edit,parent,true,true)
 	editsCount = editsCount+1
 	calculateGuiPositionSize(edit,x,y,relative or false,w,h,relative or false,true)
-	local sx,sy = dgsGetSize(edit,false)
-	local padding = dgsElementData[edit].padding
-	local sizex,sizey = sx-padding[1]*2,sy-padding[2]*2
-	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local bgRT,err = dxCreateRenderTarget(sizex,sizey,true,edit)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,edit,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsElementData[edit].bgRT = bgRT
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
 	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)
 	dgsAddEventHandler("onDgsMouseMultiClick",edit,"dgsEditCheckMultiClick",false)
 	dgsAddEventHandler("onDgsEditPreSwitch",edit,"dgsEditCheckPreSwitch",false)
 	onDGSElementCreate(edit,sRes)
+	dgsEditRecreateRenderTarget(edit)
 	return edit
+end
+
+function dgsEditRecreateRenderTarget(edit)
+	local eleData = dgsElementData[edit]
+	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
+	local padding = eleData.padding
+	local width,height = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
+	width,height = width-width%1,height-height%1
+	local bgRT,err = dxCreateRenderTarget(width,height,true,edit)
+	if bgRT ~= false then
+		dgsAttachToAutoDestroy(bgRT,edit,-1)
+	else
+		outputDebugString(err,2)
+	end
+	dgsSetData(edit,"bgRT",bgRT)
 end
 
 function dgsEditCheckMultiClick(button,state,x,y,times)
@@ -622,17 +627,7 @@ end
 -----------------Internal Functions
 function configEdit(edit)
 	local eleData = dgsElementData[edit]
-	local w,h = eleData.absSize[1],eleData.absSize[2]
-	local px,py = w-eleData.padding[1]*2,h-eleData.padding[2]*2
-	px,py = px-px%1,py-py%1
-	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	local bgRT,err = dxCreateRenderTarget(px,py,true,edit)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,edit,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsSetData(edit,"bgRT",bgRT)
+	dgsEditRecreateRenderTarget(edit)
 	local oldPos = dgsEditGetCaretPosition(edit)
 	dgsEditSetCaretPosition(edit,0)
 	dgsEditSetCaretPosition(edit,oldPos)

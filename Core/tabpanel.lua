@@ -123,8 +123,8 @@ function dgsCreateTabPanel(...)
 		scrollSpeed = style.scrollSpeed,
 		showPos = 0,
 		tabLengthAll = 0,
-		colorCoded = false,
-		wordBreak = false,
+		colorCoded = nil,
+		wordBreak = nil,
 		tabAlignment = "left",
 		tabOffset = {0,false},
 		textRenderBuffer = {},
@@ -133,16 +133,23 @@ function dgsCreateTabPanel(...)
 	}
 	dgsSetParent(tabpanel,parent,true,true)
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
-	local bgRT,err = dxCreateRenderTarget(dgsElementData[tabpanel].absSize[1],tabHeight,true,tabpanel)
+	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
+	onDGSElementCreate(tabpanel,sRes)
+	dgsTabPanelRecreateRenderTarget(tabpanel)
+	return tabpanel
+end
+
+function dgsTabPanelRecreateRenderTarget(tabpanel)
+	local eleData = dgsElementData[tabpanel]
+	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
+	local tabHeight = eleData.tabHeight[1]*(eleData.tabHeight[2] and eleData.absSize[2] or 1)
+	local bgRT,err = dxCreateRenderTarget(eleData.absSize[1],tabHeight,true,tabpanel)
 	if bgRT ~= false then
 		dgsAttachToAutoDestroy(bgRT,tabpanel,-1)
 	else
 		outputDebugString(err,2)
 	end
-	dgsElementData[tabpanel].bgRT = bgRT
-	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
-	onDGSElementCreate(tabpanel,sRes)
-	return tabpanel
+	dgsSetData(tabpanel,"bgRT",bgRT)
 end
 
 function configTabPanelWhenResize()
@@ -329,16 +336,7 @@ end
 
 function configTabPanel(source)
 	local eleData = dgsElementData[source]
-	local sx,sy = eleData.absSize[1],eleData.absSize[2]
-	local tabHeight = eleData.tabHeight
-	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	local bgRT,err = dxCreateRenderTarget(sx,tabHeight[2] and tabHeight[1]*sy or tabHeight[1],true,source)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,source,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsSetData(source,"bgRT",bgRT)
+	dgsTabPanelRecreateRenderTarget(source)
 	eleData.configNextFrame = false
 end
 
@@ -450,6 +448,11 @@ dgsOnPropertyChange["dgs-dxtab"] = {
 		dgsSetData(tabpanel,"tabLengthAll",dgsElementData[tabpanel].tabLengthAll+(value-oldValue))
 	end,
 }
+
+--------------------------VisibilityManage
+dgsOnVisibilityChange["dgs-dxtabpanel"] = function(dgsElement,selfVisibility,inheritVisibility)
+	
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

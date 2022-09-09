@@ -1288,6 +1288,40 @@ addEventHandler("onClientKey",root,function(but,state)
 end)
 
 --------------------------------Dx Utility
+function dgsIsPixelPNG(pixel)
+	local pngHeader = string.char(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)
+	local pngTail = string.char(0xAE, 0x42, 0x60, 0x82)
+	return #pixel >= 12 and pixel:sub(1,8) == pngHeader and pixel:sub(-4) == pngTail
+end
+
+function dgsIsPixelJPEG(pixel)
+	local JpegHeader = string.char(0xFF, 0xD8, 0xFF)
+	local JpegTail = string.char(0xFF, 0xD9)
+	if #pixel >= 5 and pixel:sub(1,3) == JpegHeader and pixel:sub(-2) == JpegTail then
+		local uiSeg1Size = pixel:sub(5,5):byte()*256+pixel:sub(6,6):byte()
+		return uiSeg1Size + 5 < #pixel and pixel:sub(5+uiSeg1Size,5+uiSeg1Size):byte() == 0xFF
+	end
+    return false
+end
+
+function dgsIsPixelDDS(pixel)
+	local ddsHeader = string.char(0x44, 0x44, 0x53, 0x20)
+	return #pixel >= 4 and pixel:sub(1,4) == ddsHeader
+end
+
+function dgsGetPixelsFormat(pixels)
+    if dgsIsPixelPNG(pixels) then return "png" end
+    if dgsIsPixelJPEG(pixels) then return "jpeg" end
+    if dgsIsPixelDDS(pixels) then return "dds" end
+    if (#pixels >= 8) then
+		local widA,widB = pixels:sub(-4,-3):byte(1,2)
+		local width = widA*256+widB
+		local heiA,heiB = pixels:sub(-2,-1):byte(1,2)
+		local height = heiA*256+heiB
+		if #pixels == width * height * 4 + 4 then return "plain" end
+    end
+	return false
+end
 --Render Target Assigner [Project AI]
 --[[
 RTState:

@@ -79,20 +79,13 @@ function dgsCreateScrollPane(...)
 		horizontalMoveOffset = 0,
 		verticalMoveOffset = 0,
 		moveHardness = {0.1,0.9},
-		childSizeRef = {{},{}}, --Horizontal,Vertical //to optimize
+		--childSizeRef = {{},{}}, --Horizontal,Vertical //to optimize
 		configNextFrame = false,
 		bgColor = false,
 		bgImage = false,
 		sourceTexture = false,
 	}
 	dgsSetParent(scrollpane,parent,true,true)
-	local renderTarget,err = dxCreateRenderTarget(w,h,true,scrollpane)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsElementData[scrollpane].renderTarget_parent = renderTarget
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,w,h,relative or false,true)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
@@ -125,7 +118,24 @@ function dgsCreateScrollPane(...)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkScrollPaneScrollBar",false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScrollPaneScrollBar",false)
 	onDGSElementCreate(scrollpane,sRes)
+	dgsScrollPaneRecreateRenderTarget(scrollpane)
 	return scrollpane
+end
+
+function dgsScrollPaneRecreateRenderTarget(scrollpane)
+	local eleData = dgsElementData[scrollpane]
+	if isElement(eleData.mainRT) then destroyElement(eleData.mainRT) end
+	local absSize = eleData.absSize
+	local scrollbar = eleData.scrollbars
+	local scbThick = eleData.scrollBarThick
+	local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
+	local mainRT,err = dxCreateRenderTarget(absSize[1]-scbThickV,absSize[2]-scbThickH,true,scrollpane)
+	if mainRT ~= false then
+		dgsAttachToAutoDestroy(mainRT,scrollpane,-1)
+	else
+		outputDebugString(err,2)
+	end
+	dgsSetData(scrollpane,"mainRT",mainRT)
 end
 
 function checkScrollPaneScrollBar(scb,new,old)
@@ -268,26 +278,7 @@ function configScrollPane(scrollpane)
 end
 
 function configScrollPaneRT(scrollpane)
-	local eleData = dgsElementData[scrollpane]
-	local scrollbar = eleData.scrollbars
-	local size = eleData.absSize
-	local sx,sy = size[1],size[2]
-	local scbThick = eleData.scrollBarThick
-	local childBounding = eleData.maxChildSize
-	local scbStateV,scbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
-	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
-	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
-	local renderTarget = eleData.renderTarget_parent
-	if isElement(renderTarget) then
-		destroyElement(renderTarget)
-	end
-	local renderTarget,err = dxCreateRenderTarget(relSizX,relSizY,true,scrollpane)
-	if renderTarget ~= false then
-		dgsAttachToAutoDestroy(renderTarget,scrollpane,-1)
-	else
-		outputDebugString(err,2)
-	end
-	dgsSetData(scrollpane,"renderTarget_parent",renderTarget)
+	dgsScrollPaneRecreateRenderTarget(scrollpane)
 	dgsSetData(scrollpane,"configRTNextFrame",false)
 end
 
@@ -510,7 +501,7 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		end
 	end
 	------------------------------------
-	local newRndTgt = eleData.renderTarget_parent
+	local newRndTgt = eleData.mainRT
 	local drawTarget
 	if newRndTgt then
 		local filter = eleData.filter

@@ -206,7 +206,7 @@ function dgsCoreRender()
 			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
-				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,eleData.renderTarget_parent,0,0,0,0,0,0,1,eleData.visible,MouseData.clickl)
+				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,eleData.mainRT,0,0,0,0,0,0,1,eleData.visible,MouseData.clickl)
 			end
 		end
 		dxSetBlendMode("blend")
@@ -533,7 +533,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		else
 			isPostGUI = isPostGUI and eleData.postGUI
 		end
-		if eleDataP and eleDataP.renderTarget_parent == rndtgt and rndtgt then xRT,yRT = x,y end
+		if eleDataP and eleDataP.mainRT == rndtgt and rndtgt then xRT,yRT = x,y end
 		self = source
 		renderArguments[1] = xRT
 		renderArguments[2] = yRT
