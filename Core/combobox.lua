@@ -224,6 +224,10 @@ function dgsComboBoxRecreateRenderTarget(combobox)
 	dgsSetData(combobox,"bgRT",bgRT)
 end
 
+function dgsComboBoxRemoveRenderTarget(combobox)
+	if isElement(dgsElementData[combobox].bgRT) then destroyElement(dgsElementData[combobox].bgRT) end
+end
+
 function checkComboBoxScrollBar(scb,new,old)
 	local parent = dgsGetParent(source)
 	if dgsGetType(parent) == "dgs-dxcombobox-Box" then
@@ -245,9 +249,11 @@ function dgsComboBoxCheckState(state)
 		local box = dgsElementData[source].myBox
 		if state then
 			dgsSetVisible(box,true)
+			dgsComboBoxRecreateRenderTarget(source)
 			dgsFocus(box)
 		else
 			dgsSetVisible(box,false)
+			dgsComboBoxRemoveRenderTarget(source)
 		end
 	end
 end
