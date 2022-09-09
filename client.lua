@@ -1982,7 +1982,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					end
 				elseif guitype == "dgs-dxcombobox" then
 					dgsSetData(dgsEle,"listState",eleData.listState == 1 and -1 or 1)
-				elseif guitype == "dgs-dxselector" then
+				--elseif guitype == "dgs-dxselector" then
 
 				end
 			elseif button == "middle" then
