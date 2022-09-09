@@ -206,7 +206,6 @@ function dgsCreateComboBox(...)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
 	onDGSElementCreate(combobox,sRes)
-	dgsComboBoxRecreateRenderTarget(combobox)
 	dgsSetData(combobox,"childOutsideHit",true)
 	return combobox
 end
@@ -226,6 +225,7 @@ end
 
 function dgsComboBoxRemoveRenderTarget(combobox)
 	if isElement(dgsElementData[combobox].bgRT) then destroyElement(dgsElementData[combobox].bgRT) end
+	dgsElementData[combobox].bgRT = nil
 end
 
 function checkComboBoxScrollBar(scb,new,old)
@@ -650,7 +650,6 @@ function configComboBox(combobox,remainBox)
 	if not remainBox then
 		local boxSize = dgsElementData[box].absSize
 		local scbThick = eleData.scrollBarThick
-		dgsComboBoxRecreateRenderTarget(combobox)
 		dgsSetPosition(scrollbar,boxSize[1]-scbThick,0,false)
 		dgsSetSize(scrollbar,scbThick,boxSize[2],false)
 		local higLen = 1-(allHeight-boxSize[2])/allHeight
