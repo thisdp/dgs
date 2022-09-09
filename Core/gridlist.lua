@@ -215,7 +215,6 @@ function dgsCreateGridList(...)
 	dgsSetParent(gridlist,parent,true,true)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sRes or resource])
 	dgsElementData[gridlist].configNextFrame = false
-	dgsElementData[gridlist].configRTNextFrame = true
 	calculateGuiPositionSize(gridlist,x,y,relative,w,h,relative,true)
 	local absSize = dgsElementData[gridlist].absSize
 	local scrollbar1 = dgsCreateScrollBar(absSize[1]-scbThick,0,scbThick,absSize[2]-scbThick,false,false,gridlist)
@@ -236,45 +235,49 @@ function dgsCreateGridList(...)
 	dgsSetData(gridlist,"FromTo",{1,0})
 	dgsAddEventHandler("onDgsGridListSelect",gridlist,"dgsGridListCheckSelect",false)
 	onDGSElementCreate(gridlist,sRes)
-	dgsGridListRecreateRenderTarget(gridlist)
+	dgsGridListRecreateRenderTarget(gridlist,true)
 	return gridlist
 end
 
-function dgsGridListRecreateRenderTarget(gridlist)
+function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 	local eleData = dgsElementData[gridlist]
 	if isElement(eleData.columnRT) then destroyElement(eleData.columnRT) end
 	if isElement(eleData.rowRT) then destroyElement(eleData.rowRT) end
+	dgsSetData(gridlist,"columnRT",nil)
+	dgsSetData(gridlist,"rowRT",nil)
 	if not eleData.mode then
-		local res = eleData.resource
-		local columnRT,rowRT
-		local w,h = eleData.absSize[1],eleData.absSize[2]
-		local columnHeight = eleData.columnHeight
-		local scbThick = eleData.scrollBarThick
-		local scrollbar = eleData.scrollbars
-		local scbThickV,scbThickH = dgsElementData[scrollbar[2]].visible and scbThick or 0,dgsElementData[scrollbar[1]].visible and scbThick or 0
-		local relSizX,relSizY = w-scbThickV,h-scbThickH
-		local rowShowRange = relSizY-columnHeight
-		if relSizX*columnHeight ~= 0 then
-			columnRT,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
-			if columnRT ~= false then
-				dgsAttachToAutoDestroy(columnRT,gridlist,-1)
-			else
-				outputDebugString(err,2)
+		if lateAlloc then
+			dgsSetData(gridlist,"retrieveRT",true)
+		else
+			local res = eleData.resource
+			local columnRT,rowRT
+			local w,h = eleData.absSize[1],eleData.absSize[2]
+			local columnHeight = eleData.columnHeight
+			local scbThick = eleData.scrollBarThick
+			local scrollbar = eleData.scrollbars
+			local scbThickV,scbThickH = dgsElementData[scrollbar[2]].visible and scbThick or 0,dgsElementData[scrollbar[1]].visible and scbThick or 0
+			local relSizX,relSizY = w-scbThickV,h-scbThickH
+			local rowShowRange = relSizY-columnHeight
+			if relSizX*columnHeight ~= 0 then
+				columnRT,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
+				if columnRT ~= false then
+					dgsAttachToAutoDestroy(columnRT,gridlist,-1)
+				else
+					outputDebugString(err,2)
+				end
 			end
-		end
-		if relSizX*rowShowRange ~= 0 then
-			rowRT,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
-			if rowRT ~= false then
-				dgsAttachToAutoDestroy(rowRT,gridlist,-3)
-			else
-				outputDebugString(err,2)
+			if relSizX*rowShowRange ~= 0 then
+				rowRT,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
+				if rowRT ~= false then
+					dgsAttachToAutoDestroy(rowRT,gridlist,-3)
+				else
+					outputDebugString(err,2)
+				end
 			end
+			dgsSetData(gridlist,"columnRT",columnRT)
+			dgsSetData(gridlist,"rowRT",rowRT)
+			dgsSetData(gridlist,"retrieveRT",nil)
 		end
-		dgsSetData(gridlist,"columnRT",columnRT)
-		dgsSetData(gridlist,"rowRT",rowRT)
-	else
-		dgsSetData(gridlist,"columnRT",nil)
-		dgsSetData(gridlist,"rowRT",nil)
 	end
 end
 
@@ -2322,7 +2325,7 @@ end
 
 function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local eleData = dgsElementData[gridlist]
-	local rowMoveOffset = rowMoveOffset or eleData.rowMoveOffsetTemp
+	local rowMoveOffset = tonumber(rowMoveOffset) or eleData.rowMoveOffsetTemp
 	local rowHeight = eleData.rowHeight--_RowHeight
 	local rowHeightLeadingTemp = rowHeight + eleData.leading--_RowHeight
 	local scrollbar = eleData.scrollbars[2]
@@ -2412,7 +2415,7 @@ function configGridList(gridlist)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	dgsSetData(scrollbar[2],"moveType","sync")
 
-	dgsGridListRecreateRenderTarget(gridlist)
+	dgsGridListRecreateRenderTarget(gridlist,true)
 	dgsGridListUpdateRowMoveOffset(gridlist)
 	eleData.configNextFrame = false
 end
@@ -2421,32 +2424,18 @@ end
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxgridlist"] = {
-	columnHeight = function(dgsEle,key,value,oldValue)
-		configGridList(dgsEle)
-	end,
-	mode = function(dgsEle,key,value,oldValue)
-		configGridList(dgsEle)
-	end,
-	scrollBarThick = function(dgsEle,key,value,oldValue)
-		configGridList(dgsEle)
-	end,
-	scrollBarState = function(dgsEle,key,value,oldValue)
-		configGridList(dgsEle)
-	end,
-	leading = function(dgsEle,key,value,oldValue)
-		configGridList(dgsEle)
-	end,
-	scrollBarCoverColumn = function(dgsEle,key,value,oldValue)
-		configGridList(dgsEle)
-	end,
+	columnHeight = configGridList,
+	mode = configGridList,
+	scrollBarThick = configGridList,
+	scrollBarState = configGridList,
+	leading = configGridList,
+	scrollBarCoverColumn = configGridList,
 	rowData = function(dgsEle,key,value,oldValue)
 		if dgsElementData[dgsEle].autoSort then
 			dgsElementData[dgsEle].nextRenderSort = true
 		end
 	end,
-	rowMoveOffset = function(dgsEle,key,value,oldValue)
-		dgsGridListUpdateRowMoveOffset(dgsEle)
-	end,
+	rowMoveOffset = dgsGridListUpdateRowMoveOffset,
 	defaultSortFunctions = function(dgsEle,key,value,oldValue)
 		local sortFunction = dgsElementData[dgsEle].sortFunction
 		local oldDefSortFnc = oldValue
@@ -2491,6 +2480,15 @@ dgsOnTranslationUpdate["dgs-dxgridlist"] = function(dgsEle,key,value)
 		end
 	end
 	dgsSetData(dgsEle,"rowData",rowData)
+end
+
+----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dxgridlist"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgsGridListRecreateRenderTarget(dgsElement,true)
+	end
 end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
@@ -2600,6 +2598,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnShadow = eleData.columnShadow
 	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 	if not eleData.mode then
+		if eleData.retrieveRT then
+			dgsGridListRecreateRenderTarget(source)
+		end
 		dxSetRenderTarget(eleData.columnRT,true)
 		dxSetBlendMode("modulate_add")
 		local multiplier = eleData.columnRelative and (w-scbThickV) or 1

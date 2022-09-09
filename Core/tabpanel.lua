@@ -135,21 +135,26 @@ function dgsCreateTabPanel(...)
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
 	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
 	onDGSElementCreate(tabpanel,sRes)
-	dgsTabPanelRecreateRenderTarget(tabpanel)
+	dgsTabPanelRecreateRenderTarget(tabpanel,true)
 	return tabpanel
 end
 
-function dgsTabPanelRecreateRenderTarget(tabpanel)
+function dgsTabPanelRecreateRenderTarget(tabpanel,lateAlloc)
 	local eleData = dgsElementData[tabpanel]
 	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	local tabHeight = eleData.tabHeight[1]*(eleData.tabHeight[2] and eleData.absSize[2] or 1)
-	local bgRT,err = dxCreateRenderTarget(eleData.absSize[1],tabHeight,true,tabpanel)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,tabpanel,-1)
+	if lateAlloc then
+		dgsSetData(tabpanel,"retrieveRT",true)
 	else
-		outputDebugString(err,2)
+		local tabHeight = eleData.tabHeight[1]*(eleData.tabHeight[2] and eleData.absSize[2] or 1)
+		local bgRT,err = dxCreateRenderTarget(eleData.absSize[1],tabHeight,true,tabpanel)
+		if bgRT ~= false then
+			dgsAttachToAutoDestroy(bgRT,tabpanel,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(tabpanel,"bgRT",bgRT)
+		dgsSetData(tabpanel,"retrieveRT",nil)
 	end
-	dgsSetData(tabpanel,"bgRT",bgRT)
 end
 
 function configTabPanelWhenResize()
@@ -336,7 +341,7 @@ end
 
 function configTabPanel(source)
 	local eleData = dgsElementData[source]
-	dgsTabPanelRecreateRenderTarget(source)
+	dgsTabPanelRecreateRenderTarget(source,true)
 	eleData.configNextFrame = false
 end
 
@@ -449,15 +454,22 @@ dgsOnPropertyChange["dgs-dxtab"] = {
 	end,
 }
 
---------------------------VisibilityManage
+----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
 dgsOnVisibilityChange["dgs-dxtabpanel"] = function(dgsElement,selfVisibility,inheritVisibility)
-	
+	if not selfVisibility or not inheritVisibility then
+		dgsTabPanelRecreateRenderTarget(dgsElement,true)
+	end
 end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
 	if eleData.configNextFrame then configTabPanel(source) end
+	if eleData.retrieveRT then
+		dgsTabPanelRecreateRenderTarget(source)
+	end
 	eleData.rndPreSelect = -1
 	local selected = eleData.selected
 	local tabs = eleData.tabs

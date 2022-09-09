@@ -118,24 +118,29 @@ function dgsCreateScrollPane(...)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar1,"checkScrollPaneScrollBar",false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScrollPaneScrollBar",false)
 	onDGSElementCreate(scrollpane,sRes)
-	dgsScrollPaneRecreateRenderTarget(scrollpane)
+	dgsScrollPaneRecreateRenderTarget(scrollpane,true)
 	return scrollpane
 end
 
-function dgsScrollPaneRecreateRenderTarget(scrollpane)
+function dgsScrollPaneRecreateRenderTarget(scrollpane,lateAlloc)
 	local eleData = dgsElementData[scrollpane]
 	if isElement(eleData.mainRT) then destroyElement(eleData.mainRT) end
-	local absSize = eleData.absSize
-	local scrollbar = eleData.scrollbars
-	local scbThick = eleData.scrollBarThick
-	local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
-	local mainRT,err = dxCreateRenderTarget(absSize[1]-scbThickV,absSize[2]-scbThickH,true,scrollpane)
-	if mainRT ~= false then
-		dgsAttachToAutoDestroy(mainRT,scrollpane,-1)
+	if lateAlloc then
+		dgsSetData(scrollpane,"retrieveRT",true)
 	else
-		outputDebugString(err,2)
+		local absSize = eleData.absSize
+		local scrollbar = eleData.scrollbars
+		local scbThick = eleData.scrollBarThick
+		local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
+		local mainRT,err = dxCreateRenderTarget(absSize[1]-scbThickV,absSize[2]-scbThickH,true,scrollpane)
+		if mainRT ~= false then
+			dgsAttachToAutoDestroy(mainRT,scrollpane,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(scrollpane,"mainRT",mainRT)
+		dgsSetData(scrollpane,"retrieveRT",nil)
 	end
-	dgsSetData(scrollpane,"mainRT",mainRT)
 end
 
 function checkScrollPaneScrollBar(scb,new,old)
@@ -274,12 +279,7 @@ function configScrollPane(scrollpane)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	dgsSetData(scrollbar[2],"moveType","sync")
 	dgsSetData(scrollpane,"configNextFrame",false)
-	dgsSetData(scrollpane,"configRTNextFrame",true)
-end
-
-function configScrollPaneRT(scrollpane)
-	dgsScrollPaneRecreateRenderTarget(scrollpane)
-	dgsSetData(scrollpane,"configRTNextFrame",false)
+	dgsScrollPaneRecreateRenderTarget(scrollpane,true)
 end
 
 function resizeScrollPane(scrollpane,source) --Need optimize
@@ -406,18 +406,10 @@ end
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxscrollpane"] = {
-	scrollBarThick = function(dgsEle,key,value,oldValue)
-		configScrollPane(dgsEle)
-	end,
-	scrollBarState = function(dgsEle,key,value,oldValue)
-		configScrollPane(dgsEle)
-	end,
-	scrollBarOffset = function(dgsEle,key,value,oldValue)
-		configScrollPane(dgsEle)
-	end,
-	scrollBarLength = function(dgsEle,key,value,oldValue)
-		configScrollPane(dgsEle)
-	end,
+	scrollBarThick = configScrollPane,
+	scrollBarState = configScrollPane,
+	scrollBarOffset = configScrollPane,
+	scrollBarLength = configScrollPane,
 	ignoreParentTitle = function(dgsEle,key,value,oldValue)
 		configPosSize(dgsEle,false,true)
 		configScrollPane(dgsEle)
@@ -432,6 +424,15 @@ dgsOnPropertyChange["dgs-dxscrollpane"] = {
 		end
 	end,
 }
+
+----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dxscrollpane"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgsScrollPaneRecreateRenderTarget(dgsElement,true)
+	end
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -442,8 +443,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	if eleData.configNextFrame then
 		configScrollPane(source)
 	end
-	if eleData.configRTNextFrame then
-		configScrollPaneRT(source)
+	if eleData.retrieveRT then
+		dgsScrollPaneRecreateRenderTarget(source)
 	end
 	local bgColor = eleData.bgColor
 	local scrollbar = eleData.scrollbars

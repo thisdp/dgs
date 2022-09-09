@@ -205,27 +205,28 @@ function dgsCreateComboBox(...)
 	dgsAddEventHandler("onDgsSizeChange",combobox,"updateBoxSizeWhenComboBoxResize",false)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
+	dgsElementData[combobox].retrieveRTNextFrame = true
 	onDGSElementCreate(combobox,sRes)
 	dgsSetData(combobox,"childOutsideHit",true)
 	return combobox
 end
 
-function dgsComboBoxRecreateRenderTarget(combobox)
+function dgsComboBoxRecreateRenderTarget(combobox,lateAlloc)
 	if isElement(dgsElementData[combobox].bgRT) then destroyElement(dgsElementData[combobox].bgRT) end
-	local box = dgsElementData[combobox].myBox
-	local boxSize = dgsElementData[box].absSize
-	local bgRT,err = dxCreateRenderTarget(boxSize[1],boxSize[2],true,combobox)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,combobox,-1)
+	if lateAlloc then
+		dgsSetData(combobox,"retrieveRT",true)
 	else
-		outputDebugString(err,2)
+		local box = dgsElementData[combobox].myBox
+		local boxSize = dgsElementData[box].absSize
+		local bgRT,err = dxCreateRenderTarget(boxSize[1],boxSize[2],true,combobox)
+		if bgRT ~= false then
+			dgsAttachToAutoDestroy(bgRT,combobox,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(combobox,"bgRT",bgRT)
+		dgsSetData(combobox,"retrieveRT",nil)
 	end
-	dgsSetData(combobox,"bgRT",bgRT)
-end
-
-function dgsComboBoxRemoveRenderTarget(combobox)
-	if isElement(dgsElementData[combobox].bgRT) then destroyElement(dgsElementData[combobox].bgRT) end
-	dgsElementData[combobox].bgRT = nil
 end
 
 function checkComboBoxScrollBar(scb,new,old)
@@ -249,11 +250,10 @@ function dgsComboBoxCheckState(state)
 		local box = dgsElementData[source].myBox
 		if state then
 			dgsSetVisible(box,true)
-			dgsComboBoxRecreateRenderTarget(source)
 			dgsFocus(box)
 		else
 			dgsSetVisible(box,false)
-			dgsComboBoxRemoveRenderTarget(source)
+			dgsComboBoxRecreateRenderTarget(source,true)
 		end
 	end
 end
@@ -660,6 +660,7 @@ function configComboBox(combobox,remainBox)
 		dgsSetData(scrollbar,"moveType","sync")
 		dgsSetData(combobox,"configNextFrame",false)
 	end
+	dgsComboBoxRecreateRenderTarget(combobox)
 	---------------Caption edit
 	local edit = eleData.captionEdit
 	if edit then
@@ -888,11 +889,22 @@ dgsOnTranslationUpdate["dgs-dxcombobox"] = function(dgsEle,key,value)
 	dgsSetData(dgsEle,"itemData",itemData)
 end
 ----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dxcombobox"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgsComboBoxRecreateRenderTarget(dgsElement,true)
+	end
+end
+----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	if eleData.configNextFrame then
 		configComboBox(source)
+	end
+	if eleData.retrieveRT then
+		dgsComboBoxRecreateRenderTarget(source)
 	end
 	local captionEdit = eleData.captionEdit
 	local colors,imgs = eleData.color,eleData.image

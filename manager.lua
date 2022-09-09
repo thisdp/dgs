@@ -875,11 +875,12 @@ end
 function dgsGetProperties(dgsEle,properties)
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsGetProperties",1,"dgs-dxelement/table")) end
 	if not(not properties or type(properties) == "table") then error(dgsGenAsrt(properties,"dgsGetProperties",2,"table/none")) end
-	if not dgsElementData[dgsEle] then return false end
-	if not properties then return dgsElementData[dgsEle] end
+	local eleData = dgsElementData[dgsEle]
+	if not eleData then return false end
+	if not properties then return eleData end
 	local data = {}
 	for k,key in ipairs(properties) do
-		data[key] = dgsElementData[dgsEle][key]
+		data[key] = eleData[key]
 	end
 	return data
 end

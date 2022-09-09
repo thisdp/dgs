@@ -204,23 +204,28 @@ function dgsCreateEdit(...)
 	dgsAddEventHandler("onDgsMouseMultiClick",edit,"dgsEditCheckMultiClick",false)
 	dgsAddEventHandler("onDgsEditPreSwitch",edit,"dgsEditCheckPreSwitch",false)
 	onDGSElementCreate(edit,sRes)
-	dgsEditRecreateRenderTarget(edit)
+	dgsEditRecreateRenderTarget(edit,true)
 	return edit
 end
 
-function dgsEditRecreateRenderTarget(edit)
+function dgsEditRecreateRenderTarget(edit,lateAlloc)
 	local eleData = dgsElementData[edit]
 	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	local padding = eleData.padding
-	local width,height = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
-	width,height = width-width%1,height-height%1
-	local bgRT,err = dxCreateRenderTarget(width,height,true,edit)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,edit,-1)
+	if lateAlloc then
+		dgsSetData(edit,"retrieveRT",true)
 	else
-		outputDebugString(err,2)
+		local padding = eleData.padding
+		local width,height = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
+		width,height = width-width%1,height-height%1
+		local bgRT,err = dxCreateRenderTarget(width,height,true,edit)
+		if bgRT ~= false then
+			dgsAttachToAutoDestroy(bgRT,edit,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(edit,"bgRT",bgRT)
+		dgsSetData(edit,"retrieveRT",nil)
 	end
-	dgsSetData(edit,"bgRT",bgRT)
 end
 
 function dgsEditCheckMultiClick(button,state,x,y,times)
@@ -627,7 +632,7 @@ end
 -----------------Internal Functions
 function configEdit(edit)
 	local eleData = dgsElementData[edit]
-	dgsEditRecreateRenderTarget(edit)
+	dgsEditRecreateRenderTarget(edit,true)
 	local oldPos = dgsEditGetCaretPosition(edit)
 	dgsEditSetCaretPosition(edit,0)
 	dgsEditSetCaretPosition(edit,oldPos)
@@ -1093,10 +1098,13 @@ addEventHandler("onClientGUIChanged",GlobalEdit,function()
 	end
 end,true)
 
-
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
+function dgsEditUpdateRTNextFrame(dgsEle)
+	dgsElementData[dgsEle].updateRTNextFrame = true
+end
+
 dgsOnPropertyChange["dgs-dxedit"] = {
 	text = function(dgsEle,key,value,oldValue)
 		handleDxEditText(dgsEle,value)
@@ -1105,15 +1113,9 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 		dgsElementData[dgsEle].textFontLen = dxGetTextWidth(dgsElementData[dgsEle].text,value[1],dgsElementData[dgsEle].font)
 		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
-	textColor = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateRTNextFrame = true
-	end,
-	caretPos = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateRTNextFrame = true
-	end,
-	selectFrom = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateRTNextFrame = true
-	end,
+	textColor = dgsEditUpdateRTNextFrame,
+	caretPos = dgsEditUpdateRTNextFrame,
+	selectFrom = dgsEditUpdateRTNextFrame,
 	font = function(dgsEle,key,value,oldValue)
 		--Multilingual
 		if type(value) == "table" then
@@ -1131,8 +1133,8 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 	padding = function(dgsEle,key,value,oldValue)
 		configEdit(dgsEle)
 	end,
-	showPos = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
-	masked = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
+	showPos = dgsEditUpdateRTNextFrame,
+	masked = dgsEditUpdateRTNextFrame,
 	placeHolder = function(dgsEle,key,value,oldValue)
 		dgsElementData[dgsEle].updateRTNextFrame = true
 		--Multilingual
@@ -1155,15 +1157,13 @@ dgsOnPropertyChange["dgs-dxedit"] = {
 		end
 		dgsElementData[dgsEle].placeHolderFont = value
 	end,
-	placeHolderVisibleWhenFocus = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
-	placeHolderColor = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
-	placeHolderColorcoded = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
-	placeHolderOffset = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
-	placeHolderTextSize = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
-	placeHolderIgnoreRenderTarget = function(dgsEle,key,value,oldValue) dgsElementData[dgsEle].updateRTNextFrame = true end,
+	placeHolderVisibleWhenFocus = dgsEditUpdateRTNextFrame,
+	placeHolderColor = dgsEditUpdateRTNextFrame,
+	placeHolderColorcoded = dgsEditUpdateRTNextFrame,
+	placeHolderOffset = dgsEditUpdateRTNextFrame,
+	placeHolderTextSize = dgsEditUpdateRTNextFrame,
+	placeHolderIgnoreRenderTarget = dgsEditUpdateRTNextFrame,
 }
-
-
 ----------------------------------------------------------------
 ---------------------Translation Updater------------------------
 ----------------------------------------------------------------
@@ -1179,12 +1179,24 @@ dgsOnTranslationUpdate["dgs-dxedit"] = function(dgsEle,key,value)
 	end
 	dgsElementData[dgsEle].updateTextRTNextFrame = true
 end
+
+----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dxedit"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgsEditRecreateRenderTarget(dgsElement,true)
+	end
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local renderBuffer = eleData.renderBuffer
-
+	if eleData.retrieveRT then
+		dgsEditRecreateRenderTarget(source)
+		eleData.updateRTNextFrame = true
+	end
 	local bgImage = eleData.isFocused and eleData.bgImage or (eleData.bgImageBlur or eleData.bgImage)
 	local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
 	bgColor = applyColorAlpha(bgColor,parentAlpha)
@@ -1283,7 +1295,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			local textFontLen = eleData.textFontLen
 			dxDrawLine(showPos,lineOffset,showPos+textFontLen,lineOffset,applyColorAlpha(textColor,parentAlpha),lineWidth)
 		end
-		eleData.updateRTNextFrame = false
+		eleData.updateRTNextFrame = nil
 		textLeft = textLeft-textLeft%1
 		textRight = textRight-textRight%1
 		if not placeHolderIgnoreRndTgt then

@@ -117,21 +117,27 @@ function dgsCreateScalePane(...)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar2,"checkScalePaneScrollBar",false)
 	configScalePane(scalepane)
 	onDGSElementCreate(scalepane,sRes)
+	dgsScalePaneRecreateRenderTarget(scalepane,true)
 	return scalepane
 end
 
-function dgsScalePaneRecreateRenderTarget(scalepane)
+function dgsScalePaneRecreateRenderTarget(scalepane,lateAlloc)
 	local eleData = dgsElementData[scalepane]
 	if isElement(eleData.mainRT) then destroyElement(eleData.mainRT) end
-	local resolution = dgsElementData[scalepane].resolution
-	local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,scalepane)
-	if mainRT ~= false then
-		dxSetTextureEdge(mainRT,"border",tocolor(0,0,0,0))
-		dgsAttachToAutoDestroy(mainRT,scalepane,-1)
+	if lateAlloc then
+		dgsSetData(scalepane,"retrieveRT",true)
 	else
-		outputDebugString(err,2)
+		local resolution = dgsElementData[scalepane].resolution
+		local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,scalepane)
+		if mainRT ~= false then
+			dxSetTextureEdge(mainRT,"border",tocolor(0,0,0,0))
+			dgsAttachToAutoDestroy(mainRT,scalepane,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(scalepane,"mainRT",mainRT)
+		dgsSetData(scalepane,"retrieveRT",nil)
 	end
-	dgsSetData(scalepane,"mainRT",mainRT)
 end
 
 function checkScalePaneScrollBar(scb,new,old)
@@ -321,26 +327,20 @@ end
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxscalepane"] = {
-	scrollBarThick = function(dgsEle,key,value,oldValue)
-		configScalePane(dgsEle)
-	end,
-	scrollBarState = function(dgsEle,key,value,oldValue)
-		configScalePane(dgsEle)
-	end,
-	scrollBarOffset = function(dgsEle,key,value,oldValue)
-		configScalePane(dgsEle)
-	end,
-	scrollBarLength = function(dgsEle,key,value,oldValue)
-		configScalePane(dgsEle)
-	end,
-	scale = function(dgsEle,key,value,oldValue)
-		configScalePane(dgsEle)
-	end,
+	scrollBarThick = configScalePane,
+	scrollBarState = configScalePane,
+	scrollBarOffset = configScalePane,
+	scrollBarLength = configScalePane,
+	scale = configScalePane,
 }
 
---------------------------VisibilityManage
-dgsOnVisibilityChange["dgs-dxtabpanel"] = function(dgsElement,selfVisibility,inheritVisibility)
-	
+----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dxscalepane"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgsScalePaneRecreateRenderTarget(dgsElement,true)
+	end
 end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
@@ -351,6 +351,9 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	end
 	if eleData.configNextFrame then
 		configScalePane(source)
+	end
+	if eleData.retrieveRT then
+		dgsScalePaneRecreateRenderTarget(source)
 	end
 	local scrollbar = eleData.scrollbars
 	local scbThick = eleData.scrollBarThick

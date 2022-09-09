@@ -75,21 +75,26 @@ function dgsCreate3DInterface(...)
 		--filterShader = dxCreateShader(defaultFilter)
 	}
 	onDGSElementCreate(interface,sRes)
-	dgs3DInterfaceRecreateRenderTarget(interface)
+	dgs3DInterfaceRecreateRenderTarget(interface,true)
 	return interface
 end
 
-function dgs3DInterfaceRecreateRenderTarget(interface)
+function dgs3DInterfaceRecreateRenderTarget(interface,lateAlloc)
 	if isElement(dgsElementData[interface].mainRT) then destroyElement(dgsElementData[interface].mainRT) end
-	local resolution = dgsElementData[interface].resolution
-	local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,interface)
-	if mainRT ~= false then
-		dxSetTextureEdge(mainRT,"mirror")
-		dgsAttachToAutoDestroy(mainRT,interface,-1)
+	if lateAlloc then
+		dgsSetData(interface,"retrieveRT",true)
 	else
-		outputDebugString(err,2)
+		local resolution = dgsElementData[interface].resolution
+		local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,interface)
+		if mainRT ~= false then
+			dxSetTextureEdge(mainRT,"mirror")
+			dgsAttachToAutoDestroy(mainRT,interface,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(interface,"mainRT",mainRT)
+		dgsSetData(interface,"retrieveRT",nil)
 	end
-	dgsSetData(interface,"mainRT",mainRT)
 end
 
 local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0,0},{0,0,0,0,1,1},{0,0,0,0,1,0}
@@ -282,9 +287,20 @@ end
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dx3dinterface"] = {}
 ----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dx3dinterface"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgs3DInterfaceRecreateRenderTarget(dgsElement,true)
+	end
+end
+----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
+	if eleData.retrieveRT then
+		dgs3DInterfaceRecreateRenderTarget(source)
+	end
 	local pos = eleData.position
 	local size = eleData.size
 	local faceTo = eleData.faceTo
@@ -342,6 +358,9 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 	local eleData = dgsElementData[source]
 	local dimension = eleData.dimension
 	if eleData.visible then
+		if eleData.retrieveRT then
+			dgs3DInterfaceRecreateRenderTarget(source)
+		end
 		local faceTo = eleData.faceTo
 		local pos = eleData.position
 		local attachTable = eleData.attachTo

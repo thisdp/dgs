@@ -2355,7 +2355,9 @@ function onDGSElementCreate(source,theResource)
 	eleData.positionAlignment = {nil,nil}
 	eleData.contentPositionAlignment = {nil,nil}
 	eleData.visible = true
+	eleData.visibleInherited = true
 	eleData.enabled = true
+	eleData.enabledInherited = true
 	--eleData.ignoreParentTitle = false
 	eleData.alpha = 1
 	--eleData.childOutsideHit = false

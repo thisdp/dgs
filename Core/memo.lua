@@ -203,14 +203,14 @@ function dgsCreateMemo(...)
 		selectColor = style.selectColor,
 		selectColorBlur = style.selectColorBlur,
 		selectVisible = style.selectVisible,
-		configNextFrame = false,
-		rebuildMapTableNextFrame = false,
+		configNextFrame = nil,
+		rebuildMapTableNextFrame = nil,
 		maxLength = 0x3FFFFFFF,
 		scrollBarLength = {},
 		multiClickCounter = {false,false,0},
 		colorCoded = true,
 		textRenderBuffer = {},
-		updateRTNextFrame = false,
+		updateRTNextFrame = nil,
 	}
 	dgsSetParent(memo,parent,true,true)
 	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
@@ -230,26 +230,31 @@ function dgsCreateMemo(...)
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
 	onDGSElementCreate(memo,sRes)
-	dgsMemoRecreateRenderTarget(memo)
+	dgsMemoRecreateRenderTarget(memo,true)
 	return memo
 end
 
-function dgsMemoRecreateRenderTarget(memo)
+function dgsMemoRecreateRenderTarget(memo,lateAlloc)
 	local eleData = dgsElementData[memo]
 	if isElement(eleData.bgRT) then destroyElement(eleData.bgRT) end
-	local padding = eleData.padding
-	local sizex,sizey = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
-	sizex,sizey = sizex-sizex%1,sizey-sizey%1
-	local scbThick = eleData.scrollBarThick
-	local scrollbar = eleData.scrollbars
-	local scbThickV,scbThickH = dgsElementData[scrollbar[2]].visible and scbThick or 0,dgsElementData[scrollbar[1]].visible and scbThick or 0
-	local bgRT,err = dxCreateRenderTarget(sizex-scbThickV,sizey-scbThickH,true,memo)
-	if bgRT ~= false then
-		dgsAttachToAutoDestroy(bgRT,memo,-1)
+	if lateAlloc then
+		dgsSetData(memo,"retrieveRT",true)
 	else
-		outputDebugString(err,2)
+		local padding = eleData.padding
+		local sizex,sizey = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
+		sizex,sizey = sizex-sizex%1,sizey-sizey%1
+		local scbThick = eleData.scrollBarThick
+		local scrollbar = eleData.scrollbars
+		local scbThickV,scbThickH = dgsElementData[scrollbar[2]].visible and scbThick or 0,dgsElementData[scrollbar[1]].visible and scbThick or 0
+		local bgRT,err = dxCreateRenderTarget(sizex-scbThickV,sizey-scbThickH,true,memo)
+		if bgRT ~= false then
+			dgsAttachToAutoDestroy(bgRT,memo,-1)
+		else
+			outputDebugString(err,2)
+		end
+		dgsSetData(memo,"bgRT",bgRT)
+		dgsSetData(memo,"retrieveRT",nil)
 	end
-	dgsSetData(memo,"bgRT",bgRT)
 end
 
 function dgsMemoMultiClickCheck(button,state,x,y,times)
@@ -1293,8 +1298,8 @@ function configMemo(memo)
 	if dgsElementData[scrollbar[1]].visible ~= scrollBarBefore[1] or dgsElementData[scrollbar[2]].visible ~= scrollBarBefore[2] then
 		dgsSetData(memo,"rebuildMapTableNextFrame",true)
 	end
-	dgsMemoRecreateRenderTarget(memo)
-	dgsSetData(memo,"configNextFrame",false)
+	dgsMemoRecreateRenderTarget(memo,true)
+	dgsSetData(memo,"configNextFrame",nil)
 	dgsElementData[memo].updateRTNextFrame = true
 end
 
@@ -1460,7 +1465,7 @@ addEventHandler("onClientGUIChanged",GlobalMemo,function()
 end,false)
 
 function dgsMemoRebuildWordWrapMapTable(memo)
-	dgsSetData(memo,"rebuildMapTableNextFrame",false)
+	dgsSetData(memo,"rebuildMapTableNextFrame",nil)
 	local eleData = dgsElementData[memo]
 	local isWordWrap = eleData.wordWrap
 	if isWordWrap then
@@ -1512,23 +1517,21 @@ end
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
+function dgsMemoUpdateRTNextFrame(dgsEle)
+	dgsElementData[dgsEle].updateRTNextFrame = true
+end
+
 dgsOnPropertyChange["dgs-dxmemo"] = {
 	text = function(dgsEle,key,value,oldValue)
 		return handleDxMemoText(dgsEle,value)
 	end,
-	scrollBarThick = function(dgsEle,key,value,oldValue)
-		configMemo(dgsEle)
-	end,
-	scrollBarState = function(dgsEle,key,value,oldValue)
-		configMemo(dgsEle)
-	end,
+	scrollBarThick = configMemo,
+	scrollBarState = configMemo,
 	textSize = function(dgsEle,key,value,oldValue)
 		dgsMemoRebuildTextTable(dgsEle)
 		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
-	textColor = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateRTNextFrame = true
-	end,
+	textColor = dgsMemoUpdateRTNextFrame,
 	font = function(dgsEle,key,value,oldValue)
 		--Multilingual
 		if type(value) == "table" then
@@ -1548,15 +1551,9 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 		end
 		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
-	showPos = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateRTNextFrame = true
-	end,
-	selectFrom = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateRTNextFrame = true
-	end,
-	caretPos = function(dgsEle,key,value,oldValue)
-		dgsElementData[dgsEle].updateRTNextFrame = true
-	end,
+	showPos = dgsMemoUpdateRTNextFrame,
+	selectFrom = dgsMemoUpdateRTNextFrame,
+	caretPos = dgsMemoUpdateRTNextFrame,
 }
 
 ----------------------------------------------------------------
@@ -1574,6 +1571,15 @@ dgsOnTranslationUpdate["dgs-dxmemo"] = function(dgsEle,key,value)
 	end
 	dgsElementData[dgsEle].updateRTNextFrame = true
 end
+
+----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dxmemo"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgsMemoRecreateRenderTarget(dgsElement,true)
+	end
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -1584,6 +1590,10 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	end
 	if eleData.configNextFrame then
 		configMemo(source)
+	end
+	if eleData.retrieveRT then
+		dgsMemoRecreateRenderTarget(source)
+		eleData.updateRTNextFrame = true
 	end
 	local bgColor = applyColorAlpha(eleData.bgColor,parentAlpha)
 	local caretColor = applyColorAlpha(eleData.caretColor,parentAlpha)
@@ -1740,7 +1750,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			
-			eleData.updateRTNextFrame = false
+			eleData.updateRTNextFrame = nil
 			dxSetBlendMode("modulate_add")
 			
 			if not placeHolderIgnoreRndTgt then
@@ -1897,7 +1907,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				end
 			end
 			
-			eleData.updateRTNextFrame = false
+			eleData.updateRTNextFrame = nil
 			dxSetBlendMode("modulate_add")
 			
 			if not placeHolderIgnoreRndTgt then

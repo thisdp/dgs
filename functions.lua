@@ -275,37 +275,72 @@ function dgsGetDetectArea(dgsEle)
 	return dgsElementData[dgsEle].dgsCollider or false
 end
 
+local function dgsApplyEnabledInherited(parent,enabled)
+	local children = dgsElementData[parent].children
+	for k,child in ipairs(children) do
+		dgsElementData[child].enabledInherited = dgsElementData[child].enabled and enabled
+		dgsApplyEnabledInherited(child,dgsElementData[child].enabledInherited)
+	end
+end
+
+function dgsSetEnabled(dgsEle,enabled)
+	local enabled = enabled and true or false
+	if type(dgsEle) == "table" then
+		for i=1,#dgsEle do
+			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetEnabled",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetEnabled(dgsEle[i],enabled)
+		end
+		return true
+	else
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetEnabled",1,"dgs-dxelement")) end
+		local originalEnabled = dgsElementData[dgsEle].enabled
+		if enabled == originalEnabled then return true end
+		dgsApplyEnabledInherited(dgsEle,enabled)
+		return dgsSetData(dgsEle,"enabled",enabled)
+	end
+end
+
+function dgsGetEnabled(dgsEle,selfOnly)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetEnabled",1,"dgs-dxelement")) end
+	if selfOnly then return dgsElementData[dgsEle].enabled end
+	return dgsElementData[dgsEle].enabledInherited and dgsElementData[dgsEle].enabled
+end
+
+local function dgsApplyVisibleInherited(parent,visible)
+	local children = dgsElementData[parent].children
+	for i=1,#children do
+		local child = children[i]
+		dgsElementData[child].visibleInherited = dgsElementData[child].visible and visible
+		local eleType = dgsElementType[child]
+		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](child) end
+		dgsApplyVisibleInherited(child,dgsElementData[child].visibleInherited)
+	end
+end
+
 function dgsSetVisible(dgsEle,visible)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetVisible",1,"dgs-dxelement")) end
+	local visible = visible and true or false
 	if type(dgsEle) == "table" then
 		local result = true
 		for i=1,#dgsEle do
-			local dEle = dgsEle[i]
-			local originalVisible = dgsElementData[dEle].visible
-			local visible = visible and true or false
-			if visible == originalVisible then
-				return true
-			end
-			result = result and dgsSetData(dEle,"visible",visible)
+			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetVisible",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetVisible(dgsEle[i],visible)
 		end
-		return result
+		return true
 	else
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetVisible",1,"dgs-dxelement")) end
 		local originalVisible = dgsElementData[dgsEle].visible
-		local visible = visible and true or false
-		if visible == originalVisible then
-			return true
-		end
+		if visible == originalVisible then return true end
+		local eleType = dgsElementType[dgsEle]
+		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](dgsEle) end
+		dgsApplyVisibleInherited(dgsEle,visible)
 		return dgsSetData(dgsEle,"visible",visible)
 	end
 end
 
-function dgsGetVisible(dgsEle)
+function dgsGetVisible(dgsEle,selfOnly)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetVisible",1,"dgs-dxelement")) end
-	for i=1,5000 do								--Limited to 5000 to make sure there won't be able to make an infinity loop
-		if not dgsElementData[dgsEle].visible then return false end	--check and return false if dgsEle is invisible
-		dgsEle = dgsElementData[dgsEle].parent			--if it is visible, check whether its parent hides it
-		if not dgsEle then return true end		--if it doesn't have parent, return true as visible
-	end
+	if selfOnly then return dgsElementData[dgsEle].visible end
+	return dgsElementData[dgsEle].visibleInherited and dgsElementData[dgsEle].visible
 end
 
 function dgsSetPositionAlignment(dgsEle,horizontal,vertical)
@@ -434,28 +469,6 @@ function dgsGetAlpha(dgsEle,absolute,includeParent)
 	end
 end
 
-function dgsSetEnabled(dgsEle,enabled)
-	if not(type(enabled) == "boolean") then error(dgsGenAsrt(enabled,"dgsSetEnabled",2,"boolean")) end
-	if type(dgsEle) == "table" then
-		for i=1,#dgsEle do
-			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetEnabled",1,"dgs-dxelement",_,_,"at table index "..i)) end
-			dgsSetEnabled(dgsEle[i],enabled)
-		end
-		return true
-	end
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetEnabled",1,"dgs-dxelement")) end
-	return dgsSetData(dgsEle,"enabled",enabled)
-end
-
-function dgsGetEnabled(dgsEle)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetEnabled",1,"dgs-dxelement")) end
-	for i=1,5000 do 							--Limited to 5000 to make sure there won't be able to make an infinity loop
-		if not dgsElementData[dgsEle].enabled then return false end	--check and return false if dgsEle is disabled
-		dgsEle = dgsElementData[dgsEle].parent			--if it is enabled, check whether its parent hides it
-		if not dgsEle then return true end		--if it doesn't have parent, return true as enabled
-	end
-end
-
 function dgsCreateFont(path,size,bold,quality)
 	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsCreateFont",1,"string")) end
 	if not path:find(":") then
@@ -542,12 +555,13 @@ function dgsSetClickingSound(dgsEle,soundPath,volume,button,state)
 	if not fileExists(soundPath) then error(dgsGenAsrt(soundPath,"dgsSetClickingSound",2,_,_,_,"Couldn't find such file '"..soundPath.."'")) end
 	button = button or "left"
 	state = state or "down"
-	if not dgsElementData[dgsEle].clickingSound then dgsElementData[dgsEle].clickingSound = {} end
-	if not dgsElementData[dgsEle].clickingSound[button] then dgsElementData[dgsEle].clickingSound[button] = {} end
-	dgsElementData[dgsEle].clickingSound[button][state] = soundPath
-	if not dgsElementData[dgsEle].clickingSoundVolume then dgsElementData[dgsEle].clickingSoundVolume = {} end
-	if not dgsElementData[dgsEle].clickingSoundVolume[button] then dgsElementData[dgsEle].clickingSoundVolume[button] = {} end
-	dgsElementData[dgsEle].clickingSoundVolume[button][state] = tonumber(volume)
+	local eleData = dgsElementData[dgsEle]
+	if not eleData.clickingSound then eleData.clickingSound = {} end
+	if not eleData.clickingSound[button] then eleData.clickingSound[button] = {} end
+	eleData.clickingSound[button][state] = soundPath
+	if not eleData.clickingSoundVolume then eleData.clickingSoundVolume = {} end
+	if not eleData.clickingSoundVolume[button] then eleData.clickingSoundVolume[button] = {} end
+	eleData.clickingSoundVolume[button][state] = tonumber(volume)
 	return true
 end
 
@@ -555,9 +569,10 @@ function dgsGetClickingSound(dgsEle,button,state)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetClickingSound",1,"dgs-dxelement")) end
 	button = button or "left"
 	state = state or "down"
-	if not dgsElementData[dgsEle].clickingSound then return false end
-	if not dgsElementData[dgsEle].clickingSound[button] then return false end
-	return dgsElementData[dgsEle].clickingSound[button][state] or false
+	local eleData = dgsElementData[dgsEle]
+	if not eleData.clickingSound then return false end
+	if not eleData.clickingSound[button] then return false end
+	return eleData.clickingSound[button][state] or false
 end
 
 function dgsSetClickingSoundVolume(dgsEle,volume,button,state)
@@ -565,9 +580,10 @@ function dgsSetClickingSoundVolume(dgsEle,volume,button,state)
 	if type(volume) ~= "number" then error(dgsGenAsrt(volume,"dgsSetClickingSoundVolume",2,"number")) end
 	button = button or "left"
 	state = state or "down"
-	if not dgsElementData[dgsEle].clickingSoundVolume then dgsElementData[dgsEle].clickingSoundVolume = {} end
-	if not dgsElementData[dgsEle].clickingSoundVolume[button] then dgsElementData[dgsEle].clickingSoundVolume[button] = {} end
-	dgsElementData[dgsEle].clickingSoundVolume[button][state] = volume
+	local eleData = dgsElementData[dgsEle]
+	if not eleData.clickingSoundVolume then eleData.clickingSoundVolume = {} end
+	if not eleData.clickingSoundVolume[button] then eleData.clickingSoundVolume[button] = {} end
+	eleData.clickingSoundVolume[button][state] = volume
 	return true
 end
 
@@ -575,9 +591,10 @@ function dgsGetClickingSoundVolume(dgsEle,button,state)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetClickingSound",1,"dgs-dxelement")) end
 	button = button or "left"
 	state = state or "down"
-	if not dgsElementData[dgsEle].clickingSoundVolume then return 1 end
-	if not dgsElementData[dgsEle].clickingSoundVolume[button] then return 1 end
-	return dgsElementData[dgsEle].clickingSoundVolume[button][state] or 1
+	local eleData = dgsElementData[dgsEle]
+	if not eleData.clickingSoundVolume then return 1 end
+	if not eleData.clickingSoundVolume[button] then return 1 end
+	return eleData.clickingSoundVolume[button][state] or 1
 end
 
 function dgsSetPostGUI(dgsEle,state)
