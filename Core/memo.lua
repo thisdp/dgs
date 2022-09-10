@@ -242,10 +242,11 @@ function dgsMemoRecreateRenderTarget(memo,lateAlloc)
 	else
 		local padding = eleData.padding
 		local sizex,sizey = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
+		print(sizex,sizey)
 		sizex,sizey = sizex-sizex%1,sizey-sizey%1
 		local scbThick = eleData.scrollBarThick
 		local scrollbar = eleData.scrollbars
-		local scbThickV,scbThickH = dgsElementData[scrollbar[2]].visible and scbThick or 0,dgsElementData[scrollbar[1]].visible and scbThick or 0
+		local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
 		local bgRT,err = dxCreateRenderTarget(sizex-scbThickV,sizey-scbThickH,true,memo)
 		if bgRT ~= false then
 			dgsAttachToAutoDestroy(bgRT,memo,-1)
@@ -1554,6 +1555,7 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 	showPos = dgsMemoUpdateRTNextFrame,
 	selectFrom = dgsMemoUpdateRTNextFrame,
 	caretPos = dgsMemoUpdateRTNextFrame,
+	padding = configMemo,
 }
 
 ----------------------------------------------------------------
