@@ -177,7 +177,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	}
 	nAlp = 1-saturate(nAlp);
 	result = result+(filledColor-result)*(1-clamp(nAlp,0,1));
-	result.rgb *= colorOverwritten?1:_color.rgb;
+	result.rgb = colorOverwritten?result.rgb:_color.rgb;
 	result.a *= _color.a*alp;
 	return result;
 }
