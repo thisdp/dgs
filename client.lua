@@ -137,12 +137,6 @@ function dgsCoreRender()
 	dgsRenderInfo.rendering = 0
 	triggerEvent("onDgsPreRender",resourceRoot)
 	local frameStart3DOnScreen,frameEnd3DOnScreen = 0,0
-	local backendTableSize = #BackEndTable
-	local bottomTableSize = #BottomFatherTable
-	local centerTableSize = #CenterFatherTable
-	local topTableSize = #TopFatherTable
-	local dgsWorld3DTableSize = #dgsWorld3DTable
-	local dgsScreen3DTableSize = #dgsScreen3DTable
 	MouseData.cursorPos3D[0] = false
 	local mx,my = -1000,-1000
 	local cursorShowing = dgsGetCursorVisible()
@@ -174,13 +168,13 @@ function dgsCoreRender()
 	MouseData.cursorPos[1],MouseData.cursorPos[2] = mx,my
 	MouseData.hit = false
 	MouseData.hitDebug = false
-	if bottomTableSize+centerTableSize+topTableSize+backendTableSize+dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
+	if #BottomFatherTable+#CenterFatherTable+#TopFatherTable+#BackEndTable+#dgsWorld3DTable+#dgsScreen3DTable ~= 0 then
 		--Animation Processing
 		onAnimQueueProcess()
 		----
 		dxSetRenderTarget()
 		--Back-End Renderer
-		for i=1,backendTableSize do
+		for i=1,#BackEndTable do
 			local v = BackEndTable[i]
 			local eleData = dgsElementData[v]
 			local asPlugin = eleData.asPlugin
@@ -198,10 +192,10 @@ function dgsCoreRender()
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
 		MouseData.WithinElements = {}
-		if dgsWorld3DTableSize+dgsScreen3DTableSize ~= 0 then
+		if #dgsWorld3DTable+#dgsScreen3DTable ~= 0 then
 			cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
 		end
-		for i=1,dgsWorld3DTableSize do
+		for i=1,#dgsWorld3DTable do
 			local v = dgsWorld3DTable[i]
 			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
@@ -211,7 +205,7 @@ function dgsCoreRender()
 		end
 		dxSetBlendMode("blend")
 		dxSetRenderTarget()
-		for i=1,dgsScreen3DTableSize do
+		for i=1,#dgsScreen3DTable do
 			local v = dgsScreen3DTable[i]
 			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
@@ -224,18 +218,18 @@ function dgsCoreRender()
 		frameEnd3DOnScreen = getTickCount()
 
 		MouseData.hitData2D[0] = false
-		for i=1,bottomTableSize do
+		for i=1,#BottomFatherTable do
 			local v = BottomFatherTable[i]
 			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
 		end
-		for i=1,centerTableSize do
+		for i=1,#CenterFatherTable do
 			local v = CenterFatherTable[i]
 			local eleData = dgsElementData[v]
 			local enabled = eleData.enabled
 			renderGUI(v,mx,my,enabled,enabled,nil,0,0,0,0,0,0,1,eleData.visible)
 		end
-		for i=1,topTableSize do
+		for i=1,#TopFatherTable do
 			local v = TopFatherTable[i]
 			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
@@ -739,11 +733,11 @@ addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.rende
 function dgsCore3DRender()
 	dgsRenderInfo.frameStart3D = getTickCount()
 	local rendering3D = 0
-	local dgsWorld3DTableSize = #dgsWorld3DTable
-	if dgsWorld3DTableSize ~= 0 then
+	local #dgsWorld3DTable = #dgsWorld3DTable
+	if #dgsWorld3DTable ~= 0 then
 		cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
 	end
-	for i=1,dgsWorld3DTableSize do
+	for i=1,#dgsWorld3DTable do
 		local ele = dgsWorld3DTable[i]
 		local dgsType = dgsElementType[ele]
 		if dgs3DRenderer[dgsType] then
@@ -753,7 +747,7 @@ function dgsCore3DRender()
 		end
 	end
 	dgsRenderInfo.rendering3D = rendering3D
-	dgsRenderInfo.dgsWorld3DTableSize = dgsWorld3DTableSize
+	dgsRenderInfo.dgsWorld3DTableSize = #dgsWorld3DTable
 	dgsRenderInfo.frameEnd3D = getTickCount()
 end
 addEventHandler("onClientPreRender",root,dgsCore3DRender)
