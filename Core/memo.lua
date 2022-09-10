@@ -242,7 +242,6 @@ function dgsMemoRecreateRenderTarget(memo,lateAlloc)
 	else
 		local padding = eleData.padding
 		local sizex,sizey = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
-		print(sizex,sizey)
 		sizex,sizey = sizex-sizex%1,sizey-sizey%1
 		local scbThick = eleData.scrollBarThick
 		local scrollbar = eleData.scrollbars
