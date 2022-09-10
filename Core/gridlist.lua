@@ -30,7 +30,7 @@ dgsRegisterProperties('dgs-dxgridlist',{
 	rowColorTemplate =		{	PArg.Table },
 	rowColor = 				{	{ PArg.Color, PArg.Color,PArg.Color }	},
 	rowHeight = 			{	PArg.Number	},
-	rowImage = 				{	PArg.Material	},
+	rowImage = 				{	{ PArg.Material, PArg.Material, PArg.Material }	},
 	rowMoveOffset= 			{	PArg.Number	},
 	rowShadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	rowTextColor = 			{	{ PArg.Color, PArg.Color,PArg.Color }, PArg.Color	},
@@ -2679,6 +2679,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local textBuffer = renderBuffer.textBuffer
 		if eleData.rowRT then
 			dxSetRenderTarget(eleData.rowRT,true)
+			dxSetBlendMode("blend")
 			if cPosStart and cPosEnd then
 				for i=eleData.FromTo[1],eleData.FromTo[2] do
 					if not elementBuffer[i] then elementBuffer[i] = {} end
