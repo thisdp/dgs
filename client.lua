@@ -733,7 +733,6 @@ addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.rende
 function dgsCore3DRender()
 	dgsRenderInfo.frameStart3D = getTickCount()
 	local rendering3D = 0
-	local #dgsWorld3DTable = #dgsWorld3DTable
 	if #dgsWorld3DTable ~= 0 then
 		cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
 	end
