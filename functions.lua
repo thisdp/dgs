@@ -275,7 +275,7 @@ function dgsGetDetectArea(dgsEle)
 	return dgsElementData[dgsEle].dgsCollider or false
 end
 
-local function dgsApplyEnabledInherited(parent,enabled)
+function dgsApplyEnabledInherited(parent,enabled)
 	local children = dgsElementData[parent].children
 	local parentInherit = dgsElementData[parent].enabledInherited
 	for k,child in ipairs(children) do
@@ -307,7 +307,7 @@ function dgsGetEnabled(dgsEle,selfOnly)
 	return dgsElementData[dgsEle].enabledInherited and dgsElementData[dgsEle].enabled
 end
 
-local function dgsApplyVisibleInherited(parent,visible)
+function dgsApplyVisibleInherited(parent,visible)
 	local children = dgsElementData[parent].children
 	local parentInherit = dgsElementData[parent].visibleInherited
 	for i=1,#children do
