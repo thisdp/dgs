@@ -200,7 +200,7 @@ function dgsCoreRender()
 			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
-				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,eleData.mainRT,0,0,0,0,0,0,1,eleData.visible,MouseData.clickl)
+				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,eleData.mainRT,0,0,0,0,0,0,1,MouseData.clickl)
 			end
 		end
 		dxSetBlendMode("blend")
@@ -209,7 +209,7 @@ function dgsCoreRender()
 			local v = dgsScreen3DTable[i]
 			local eleData = dgsElementData[v]
 			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
-				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
+				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1)
 			end
 		end
 
@@ -221,18 +221,18 @@ function dgsCoreRender()
 		for i=1,#BottomFatherTable do
 			local v = BottomFatherTable[i]
 			local eleData = dgsElementData[v]
-			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
+			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1)
 		end
 		for i=1,#CenterFatherTable do
 			local v = CenterFatherTable[i]
 			local eleData = dgsElementData[v]
 			local enabled = eleData.enabled
-			renderGUI(v,mx,my,enabled,enabled,nil,0,0,0,0,0,0,1,eleData.visible)
+			renderGUI(v,mx,my,enabled,enabled,nil,0,0,0,0,0,0,1)
 		end
 		for i=1,#TopFatherTable do
 			local v = TopFatherTable[i]
 			local eleData = dgsElementData[v]
-			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1,eleData.visible)
+			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1)
 		end
 		local hit2D = MouseData.hit
 		
@@ -426,10 +426,11 @@ function dgsCoreRender()
 	end
 end
 
-function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visibleInherited)
+function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha)
 	local eleData = dgsElementData[source]
-	local enabledInherited,enabledSelf = enabledInherited and eleData.enabled,eleData.enabled
+	local enabledInherited,enabledSelf = enabledInherited and eleData.enabledInherited and eleData.enabled,eleData.enabled
 	local visible = eleData.visible
+	local visibleInherited = eleData.visibleInherited
 	if visible and visibleInherited and isElement(source) then
 		local parentOffsetX,parentOffsetY
 		local eleType = dgsElementType[source]
@@ -693,10 +694,10 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 				end
 			end
 			if dgsChildRenderer[eleType] then
-				dgsChildRenderer[eleType](children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible,parentOffsetX,parentOffsetY)
+				dgsChildRenderer[eleType](children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,parentOffsetX,parentOffsetY)
 			elseif dgsChildRenderer[eleType] == nil then
 				for i=1,childrenCnt do
-					renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+					renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha)
 				end
 			end
 		end

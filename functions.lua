@@ -277,9 +277,8 @@ end
 
 function dgsApplyEnabledInherited(parent,enabled)
 	local children = dgsElementData[parent].children
-	local parentInherit = dgsElementData[parent].enabledInherited
 	for k,child in ipairs(children) do
-		dgsElementData[child].enabledInherited = dgsElementData[child].enabled and enabled and parentInherit
+		dgsElementData[child].enabledInherited = enabled
 		dgsApplyEnabledInherited(child,dgsElementData[child].enabledInherited)
 	end
 end
@@ -296,7 +295,11 @@ function dgsSetEnabled(dgsEle,enabled)
 		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetEnabled",1,"dgs-dxelement")) end
 		local originalEnabled = dgsElementData[dgsEle].enabled
 		if enabled == originalEnabled then return true end
-		dgsApplyEnabledInherited(dgsEle,enabled)
+		local parentInherited = true
+		local parent = dgsGetParent(dgsEle)
+		if parent then parentInherited = dgsElementData[parent].enabledInherited and dgsElementData[parent].enabled end
+		dgsElementData[dgsEle].enabledInherited = parentInherited
+		dgsApplyEnabledInherited(dgsEle,enabled and dgsElementData[dgsEle].enabledInherited)
 		return dgsSetData(dgsEle,"enabled",enabled)
 	end
 end
@@ -309,10 +312,9 @@ end
 
 function dgsApplyVisibleInherited(parent,visible)
 	local children = dgsElementData[parent].children
-	local parentInherit = dgsElementData[parent].visibleInherited
 	for i=1,#children do
 		local child = children[i]
-		dgsElementData[child].visibleInherited = dgsElementData[child].visible and visible and parentInherit
+		dgsElementData[child].visibleInherited = visible
 		local eleType = dgsElementType[child]
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](child) end
 		dgsApplyVisibleInherited(child,dgsElementData[child].visibleInherited)
@@ -332,9 +334,12 @@ function dgsSetVisible(dgsEle,visible)
 		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetVisible",1,"dgs-dxelement")) end
 		local originalVisible = dgsElementData[dgsEle].visible
 		if visible == originalVisible then return true end
-		local eleType = dgsElementType[dgsEle]
+		local parentInherited = true
+		local parent = dgsGetParent(dgsEle)
+		if parent then parentInherited = dgsElementData[parent].visibleInherited  and dgsElementData[parent].visible end
+		dgsElementData[dgsEle].visibleInherited = parentInherited
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](dgsEle) end
-		dgsApplyVisibleInherited(dgsEle,visible)
+		dgsApplyVisibleInherited(dgsEle,visible and dgsElementData[dgsEle].visibleInherited)
 		return dgsSetData(dgsEle,"visible",visible)
 	end
 end

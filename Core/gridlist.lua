@@ -3049,11 +3049,11 @@ end
 ----------------------------------------------------------------
 -------------------------Children Renderer----------------------
 ----------------------------------------------------------------
-dgsChildRenderer["dgs-dxgridlist"] = function(children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+dgsChildRenderer["dgs-dxgridlist"] = function(children,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha)
 	for i=1,#children do
 		local child = children[i]
 		if not dgsElementData[child].attachedToGridList then
-			renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+			renderGUI(child,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha)
 		end
 	end
 end
