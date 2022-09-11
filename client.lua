@@ -1197,6 +1197,7 @@ function onClientKeyTriggered(button)
 end
 
 function dgsCheckHit(hits,cursorShowing)
+	if not cursorShowing then return false end
 	local enteredElementType = dgsGetType(MouseData.entered)
 	local mx,my = MouseData.cursorPos[1],MouseData.cursorPos[2]
 	if not isElement(MouseData.clickl) or not (dgsGetType(MouseData.clickl) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
