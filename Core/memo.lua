@@ -521,7 +521,7 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 			dgsSetData(memo,"showPos",nowLen)
 			syncScrollBars(memo,2)
 		end
-		local targetLine = tline-showLine+1
+		local targetLine = line-showLine+1
 		if targetLine >= canHold then
 			dgsSetData(memo,"showLine",line-canHold+1)
 			syncScrollBars(memo,1)
