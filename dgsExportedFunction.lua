@@ -385,9 +385,9 @@ function dgsG2DLoadHooker(isLocal)
 		guiGridListSetSelectionMode = dgsGridListSetSelectionMode
 		guiGridListSetSortingEnabled = dgsGridListSetSortEnabled
 		guiCreateMemo = dgsCreateMemo
-		guiMemoGetCaretIndex = dgsMemoGetCaretIndex
+		guiMemoGetCaretIndex = dgsMemoGetCaretPosition
 		guiMemoIsReadOnly = dgsMemoIsReadOnly
-		guiMemoSetCaretIndex = dgsMemoSetCaretIndex
+		guiMemoSetCaretIndex = dgsMemoSetCaretPosition
 		guiMemoSetReadOnly = dgsMemoSetReadOnly
 		guiCreateProgressBar = dgsCreateProgressBar
 		guiProgressBarGetProgress = dgsProgressBarGetProgress
