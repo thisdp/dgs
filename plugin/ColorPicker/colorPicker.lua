@@ -660,7 +660,7 @@ end
 
 ---------------------HSLSquare Color Picker
 function HSLSquareChange()
-	local cx,cy = dgsGetCursorPosition()
+	local cx,cy = dgsGetCursorPosition(source)
 	local absSize = dgsElementData[source].absSize
 	local H,S = XYToHSL(cx/absSize[1],cy/absSize[2])
 	dgsColorPickerSetColor(source,H,S,_,_,"HSL")
