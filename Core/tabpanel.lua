@@ -377,8 +377,10 @@ dgsOnPropertyChange["dgs-dxtabpanel"] = {
 		local old,new = oldValue,value
 		local tabs = dgsElementData[dgsEle].tabs
 		triggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
+		dgsApplyVisibleInherited(tabs[old],false)
 		if isElement(tabs[new]) then
 			triggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
+			dgsApplyVisibleInherited(tabs[new],true)
 		end
 	end,
 	tabPadding = function(dgsEle,key,value,oldValue)

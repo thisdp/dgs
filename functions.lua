@@ -277,8 +277,9 @@ end
 
 local function dgsApplyEnabledInherited(parent,enabled)
 	local children = dgsElementData[parent].children
+	local parentInherit = dgsElementData[parent].enabledInherited
 	for k,child in ipairs(children) do
-		dgsElementData[child].enabledInherited = dgsElementData[child].enabled and enabled
+		dgsElementData[child].enabledInherited = dgsElementData[child].enabled and enabled and parentInherit
 		dgsApplyEnabledInherited(child,dgsElementData[child].enabledInherited)
 	end
 end
@@ -308,9 +309,10 @@ end
 
 local function dgsApplyVisibleInherited(parent,visible)
 	local children = dgsElementData[parent].children
+	local parentInherit = dgsElementData[parent].visibleInherited
 	for i=1,#children do
 		local child = children[i]
-		dgsElementData[child].visibleInherited = dgsElementData[child].visible and visible
+		dgsElementData[child].visibleInherited = dgsElementData[child].visible and visible and parentInherit
 		local eleType = dgsElementType[child]
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](child) end
 		dgsApplyVisibleInherited(child,dgsElementData[child].visibleInherited)
