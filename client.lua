@@ -86,6 +86,7 @@ MouseData = {
 	scbEnterRltPos = false,
 	topScrollable = false,
 	lastPos = {-1,-1},
+	visibleLastFrame = false,
 	hitData3D = {[0]=false},
 	hitData2D = {[0]=false},
 	lock3DInterface = false,
@@ -135,7 +136,7 @@ function dgsCoreRender()
 	dgsRenderInfo.frames = dgsRenderInfo.frames+1
 	dgsRenderInfo.frameStartScreen = getTickCount()
 	dgsRenderInfo.rendering = 0
-	triggerEvent("onDgsPreRender",resourceRoot)
+	--triggerEvent("onDgsPreRender",resourceRoot)
 	local frameStart3DOnScreen,frameEnd3DOnScreen = 0,0
 	MouseData.cursorPos3D[0] = false
 	local mx,my = -1000,-1000
@@ -145,19 +146,23 @@ function dgsCoreRender()
 		MouseData.cursorPosScr[0],MouseData.cursorPosScr[1],MouseData.cursorPosScr[2] = true,mx,my
 		MouseData.cursorPosWld[0],MouseData.cursorPosWld[1],MouseData.cursorPosWld[2] = true,mx,my
 		MouseData.cursorPos3D[0],MouseData.cursorPos3D[1],MouseData.cursorPos3D[2],MouseData.cursorPos3D[3] = true,getWorldFromScreenPosition(mx,my,1)
-	else
-		MouseData.MoveScroll[0] = false
-		MouseData.scbClickData = false
-		MouseData.selectorClickData = false
-		MouseData.lock3DInterface = false
-		MouseData.clickl = false
-		MouseData.clickr = false
-		MouseData.clickm = false
-		MouseData.Scale[0] = false
-		MouseData.Move[0] = false
-		MouseData.MoveScale[0] = false
-		MouseData.cursorPosWld[0] = false
-		MouseData.cursorPosScr[0] = false
+	end
+	if MouseData.visibleLastFrame ~= cursorShowing then
+		if not cursorShowing then
+			MouseData.MoveScroll[0] = false
+			MouseData.scbClickData = false
+			MouseData.selectorClickData = false
+			MouseData.lock3DInterface = false
+			MouseData.clickl = false
+			MouseData.clickr = false
+			MouseData.clickm = false
+			MouseData.Scale[0] = false
+			MouseData.Move[0] = false
+			MouseData.MoveScale[0] = false
+			MouseData.cursorPosWld[0] = false
+			MouseData.cursorPosScr[0] = false
+		end
+		MouseData.visibleLastFrame = cursorShowing
 	end
 	if isElement(BlurBoxGlobalScreenSource) then
 		dxUpdateScreenSource(BlurBoxGlobalScreenSource,true)
@@ -198,7 +203,8 @@ function dgsCoreRender()
 		for i=1,#dgsWorld3DTable do
 			local v = dgsWorld3DTable[i]
 			local eleData = dgsElementData[v]
-			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
+			local selfDimen = eleData.dimension
+			if (selfDimen == -1 or selfDimen == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				dxSetBlendMode(eleData.blendMode)
 				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,eleData.mainRT,0,0,0,0,0,0,1,MouseData.clickl)
 			end
@@ -208,7 +214,8 @@ function dgsCoreRender()
 		for i=1,#dgsScreen3DTable do
 			local v = dgsScreen3DTable[i]
 			local eleData = dgsElementData[v]
-			if (eleData.dimension == -1 or eleData.dimension == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
+			local selfDimen = eleData.dimension
+			if (selfDimen == -1 or selfDimen == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
 				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1)
 			end
 		end
@@ -247,7 +254,7 @@ function dgsCoreRender()
 		end
 		MouseData.hit = hit2D or hit3D 
 		dxSetRenderTarget()
-		if not cursorShowing then
+		--[[if not cursorShowing then
 			MouseData.hit = false
 			MouseData.Move[0] = false
 			MouseData.Scale[0] = false
@@ -261,7 +268,7 @@ function dgsCoreRender()
 			MouseData.clickm = false
 			MouseData.cursorPosWld[0] = false
 			MouseData.cursorPosScr[0] = false
-		end
+		end]]
 		triggerEvent("onDgsRender",resourceRoot)
 		if KeyHolder.repeatKey then
 			local tick = getTickCount()
@@ -584,7 +591,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
 									if type(checkPixel) == "function" then
 										local checkFnc = daEleData.checkFunction
-										if checkFnc((mx-xNRT)/w,(my-yNRT)/h,mx,my) then
+										if checkFnc(_mx,_my,mx,my) then
 											MouseData.hit = source
 											daDebugColor = 0xFF0000
 										end
@@ -706,26 +713,33 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 end
 addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
 
-function dgsCore3DRender()
+function dgsCore3DRender()	--This renderer will only be attached to onClientPreRender when there are 3d elements, because onClientPreRender is slow and only used to render 3d elements
 	dgsRenderInfo.frameStart3D = getTickCount()
 	local rendering3D = 0
 	if #dgsWorld3DTable ~= 0 then
 		cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
-	end
-	for i=1,#dgsWorld3DTable do
-		local ele = dgsWorld3DTable[i]
-		local dgsType = dgsElementType[ele]
-		if dgs3DRenderer[dgsType] then
-			if dgs3DRenderer[dgsType](ele) then
+		for i=1,#dgsWorld3DTable do
+			local ele = dgsWorld3DTable[i]
+			local dgsType = dgsElementType[ele]
+			if dgs3DRenderer[dgsType] and dgs3DRenderer[dgsType](ele) then
 				rendering3D = rendering3D+1
 			end
 		end
 	end
 	dgsRenderInfo.rendering3D = rendering3D
-	dgsRenderInfo.dgsWorld3DTableSize = #dgsWorld3DTable
 	dgsRenderInfo.frameEnd3D = getTickCount()
 end
-addEventHandler("onClientPreRender",root,dgsCore3DRender)
+
+function dgsCore3DStartRender()
+	addEventHandler("onClientPreRender",root,dgsCore3DRender,false)
+end
+
+function dgsCore3DStopRender()
+	removeEventHandler("onClientPreRender",root,dgsCore3DRender)
+	dgsRenderInfo.rendering3D = 0
+	dgsRenderInfo.frameStart3D = 0
+	dgsRenderInfo.frameEnd3D = 0
+end
 
 addEventHandler("onClientKey",root,function(button,state)
 	if button == "mouse_wheel_up" or button == "mouse_wheel_down" then
@@ -1668,8 +1682,14 @@ function dgsCleanElement(source)
 		if dgsIsAniming(source) then if isAlive then dgsStopAniming(source)  end end
 		if dgsTypeWorld3D[dgsType] then
 			tableRemoveItemFromArray(dgsWorld3DTable,source)
+			if #dgsWorld3DTable+#dgsScreen3DTable == 0 then
+				dgsCore3DStopRender()	--Remove renderer if no 3d elements
+			end
 		elseif dgsTypeScreen3D[dgsType] then
 			tableRemoveItemFromArray(dgsScreen3DTable,source)
+			if #dgsWorld3DTable+#dgsScreen3DTable == 0 then
+				dgsCore3DStopRender()	--Remove renderer if no 3d elements
+			end
 		else
 			local parent = dgsElementData[source].parent
 			if not parent or parent == root then
@@ -2351,6 +2371,13 @@ function onDGSElementCreate(source,theResource)
 	dgsAddEventHandler("onDgsBlur",source,"DGSI_onDGSWindowBlur",getPropagated)
 	dgsAddEventHandler("onDgsFocus",source,"DGSI_onDGSWindowFocus",getPropagated)
 	triggerEvent("onDgsCreate",source,theResource)
+	
+	local dgsType = dgsGetType(source)
+	if dgsTypeWorld3D[dgsType] or dgsTypeScreen3D[dgsType] then
+		if #dgsWorld3DTable+#dgsScreen3DTable == 1 then
+			dgsCore3DStartRender()	--Add renderer if there are 3d elements
+		end
+	end
 end
 
 function dgsClear(theType,res)
