@@ -11,6 +11,7 @@ dgsConfig.enableBuiltInCMD				= true			-- Enable DGS Built-in CMD /dgscmd
 dgsConfig.updateCommand					= "updatedgs"	-- Command of update dgs
 dgsConfig.enableTestFile				= true			-- Loads DGS Test File (If you want to save some bytes of memory, disable this by set to false)
 dgsConfig.disableCompatibilityCheck 	= false			-- Disable compatibility check warnings
+dgsConfig.enableDebug 					= true			-- Enable /debugdgs
 
 function loadConfig()
 	if fileExists("config.txt") then
@@ -29,7 +30,8 @@ function loadConfig()
 			outputDebugString("[DGS]Invaild Config File!",2)
 		end
 	end
-	setElementData(resourceRoot,"allowCMD",dgsConfig.enableBuiltInCMD)
+	setElementData(resourceRoot,"DGS-allowCMD",dgsConfig.enableBuiltInCMD)
+	setElementData(resourceRoot,"DGS-enableDebug",dgsConfig.enableDebug)
 	setElementData(resourceRoot,"DGS-disableCompatibilityCheck",dgsConfig.disableCompatibilityCheck)
 	if dgsConfig.g2d then
 		outputDebugString("[DGS]G2D is enabled!")
