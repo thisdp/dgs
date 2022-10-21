@@ -48,7 +48,7 @@ G2DHelp = {
 }
 
 addCommandHandler("g2d",function(player,command,...)
-	if not dgsConfig.g2d then return end
+	if not DGSConfig.enableG2DCMD then end
 	local account = getPlayerAccount(player)
 	if account then
 		local accn = getAccountName(account)

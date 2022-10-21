@@ -1,19 +1,21 @@
 ﻿-----------Config Loader
-dgsConfig = {}
-dgsConfig.updateCheck					= true			-- Enable:true;Disable:false
-dgsConfig.updateCheckInterval			= 120			-- Minutes
-dgsConfig.updateCheckNoticeInterval		= 120			-- Minutes
-dgsConfig.updateSystemDisabled			= false			-- Disable update system
-dgsConfig.backupMeta					= true			-- Backup meta.xml
-dgsConfig.backupStyleMeta				= true			-- Backup style files meta index from meta.xml
-dgsConfig.g2d							= true			-- GUI To DGS command line
-dgsConfig.enableBuiltInCMD				= true			-- Enable DGS Built-in CMD /dgscmd
-dgsConfig.updateCommand					= "updatedgs"	-- Command of update dgs
-dgsConfig.enableTestFile				= true			-- Loads DGS Test File (If you want to save some bytes of memory, disable this by set to false)
-dgsConfig.disableCompatibilityCheck 	= false			-- Disable compatibility check warnings
-dgsConfig.enableDebug 					= true			-- Enable /debugdgs
+DGSConfig = {
+	updateCheck						= true,			-- Enable:true;Disable:false
+	updateCheckInterval				= 120,			-- Minutes
+	updateCheckNoticeInterval		= 120,			-- Minutes
+	updateCommand					= "updatedgs",	-- Command of update dgs
+	enableUpdateSystem				= true	,		-- Enable update system
+	enableMetaBackup				= true,			-- Backup meta.xml
+	enableStyleMetaBackup			= true,			-- Backup style files meta index from meta.xml
+	enableG2DCMD					= true,			-- Enable GUI To DGS command line
+	enableBuiltInCMD				= true,			-- Enable DGS Built-in CMD /dgscmd
+	enableTestFile					= true,			-- Loads DGS Test File (If you want to save some bytes of memory, disable this by set to false)
+	enableCompatibilityCheck	 	= true,			-- Enable compatibility check warnings
+	enableDebug 					= true,			-- Enable /debugdgs
+}
 
 function loadConfig()
+	local dgsConfig = {}
 	if fileExists("config.txt") then
 		local file = fileOpen("config.txt")
 		if file then
@@ -21,6 +23,7 @@ function loadConfig()
 			fileClose(file)
 			local fnc = loadstring(str)
 			if fnc then
+				setfenv(fnc,{dgsConfig = dgsConfig})
 				fnc()
 				outputDebugString("[DGS]Config File Loaded!")
 			else
@@ -30,16 +33,19 @@ function loadConfig()
 			outputDebugString("[DGS]Invaild Config File!",2)
 		end
 	end
-	setElementData(resourceRoot,"DGS-allowCMD",dgsConfig.enableBuiltInCMD)
-	setElementData(resourceRoot,"DGS-enableDebug",dgsConfig.enableDebug)
-	setElementData(resourceRoot,"DGS-disableCompatibilityCheck",dgsConfig.disableCompatibilityCheck)
-	if dgsConfig.g2d then
-		outputDebugString("[DGS]G2D is enabled!")
+	for name,value in pairs(DGSConfig) do
+		DGSConfig[name] = dgsConfig[name]
+	end
+	setElementData(resourceRoot,"DGS-allowCMD",DGSConfig.enableBuiltInCMD)
+	setElementData(resourceRoot,"DGS-enableDebug",DGSConfig.enableDebug)
+	setElementData(resourceRoot,"DGS-enableCompatibilityCheck",DGSConfig.enableCompatibilityCheck)
+	if DGSConfig.enableG2DCMD then
+		outputDebugString("[DGS]G2D command line is enabled!")
 	end
 	--Regenerate config file
 	local file = fileCreate("config.txt")
 	local str = ""
-	for k,v in pairs(dgsConfig) do
+	for k,v in pairs(DGSConfig) do
 		local value = type(v) == "string" and '"'..v..'"' or tostring(v)
 		str = str.."\r\ndgsConfig."..k.." = "..value
 	end

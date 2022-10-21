@@ -6,7 +6,7 @@ local verRaw = fileRead(check,fileGetSize(check))
 fileClose(check)
 setElementData(resourceRoot,"Version",verRaw)
 local version = tonumber(verRaw) or 0
-if dgsConfig.updateSystemDisabled then return end
+if not DGSConfig.enableUpdateSystem then return end
 
 local _fetchRemote = fetchRemote
 function fetchRemote(...)
@@ -29,16 +29,16 @@ function checkUpdate()
 			if not ManualUpdate then
 				if RemoteVersion > version then
 					outputDebugString("[DGS]Remote Version Got [Remote:"..data.." Current:"..version.."].")
-					outputDebugString("[DGS]Update? Command: "..dgsConfig.updateCommand)
+					outputDebugString("[DGS]Update? Command: "..DGSConfig.updateCommand)
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
 						if RemoteVersion > version then
 							outputDebugString("[DGS]Remote Version Got [Remote:"..RemoteVersion.." Current:"..version.."].")
-							outputDebugString("[DGS]Update? Command: "..dgsConfig.updateCommand)
+							outputDebugString("[DGS]Update? Command: "..DGSConfig.updateCommand)
 						else
 							killTimer(updateTimer)
 						end
-					end,dgsConfig.updateCheckNoticeInterval*60000,0)
+					end,DGSConfig.updateCheckNoticeInterval*60000,0)
 				else
 					outputDebugString("[DGS]Current Version("..version..") is the latest!")
 				end
@@ -69,16 +69,16 @@ function checkServerVersion(player)
 	return true
 end
 
-if dgsConfig.updateCheckAuto then
+if DGSConfig.updateCheckAuto then
 	if not checkServerVersion() then return end
 	checkUpdate()
-	updatePeriodTimer = setTimer(checkUpdate,dgsConfig.updateCheckInterval*3600000,0)
+	updatePeriodTimer = setTimer(checkUpdate,DGSConfig.updateCheckInterval*3600000,0)
 end
 
-addCommandHandler(dgsConfig.updateCommand,function(player)
+addCommandHandler(DGSConfig.updateCommand,function(player)
 	if not checkServerVersion(player) then return end
 	local account = getPlayerAccount(player)
-	local isPermit = hasObjectPermissionTo(player,"command."..dgsConfig.updateCommand,false)
+	local isPermit = hasObjectPermissionTo(player,"command."..DGSConfig.updateCommand,false)
 	if not isPermit then
 		local accName = getAccountName(account)
 		local adminGroup = aclGetGroup("Admin")
@@ -162,7 +162,7 @@ function checkFiles()
 			local path = xmlNodeGetAttribute(v,"src")
 			if string.find(path,"styleMapper.lua") then break end
 			if path == "meta.xml" then break end
-			if string.find(path,"test.lua") and not dgsConfig.enableTestFile then break end
+			if string.find(path,"test.lua") and not DGSConfig.enableTestFile then break end
 			local sha = ""
 			if fileExists(path) then
 				local file = fileOpen(path)
@@ -227,7 +227,7 @@ function DownloadFinish()
 		fileDelete("meta.xml")
 	end
 	recoverStyleMapper()
-	if not dgsConfig.enableTestFile then	--Remove test.lua from meta.xml
+	if not DGSConfig.enableTestFile then	--Remove test.lua from meta.xml
 		local xml = xmlLoadFile("meta.xml")
 		for k,v in ipairs(xmlNodeGetChildren(xml)) do
 			if xmlNodeGetName(v) == "script" then
@@ -257,16 +257,16 @@ addCommandHandler("dgsver",function(pla,cmd)
 		if vsdd then
 			outputDebugString("[DGS]Version: "..vsdd,3)
 		else
-			outputDebugString("[DGS]Version State is damaged! Please use /"..dgsConfig.updateCommand.." to update",1)
+			outputDebugString("[DGS]Version State is damaged! Please use /"..DGSConfig.updateCommand.." to update",1)
 		end
 	else
-		outputDebugString("[DGS]Version State is damaged! Please use /"..dgsConfig.updateCommand.." to update",1)
+		outputDebugString("[DGS]Version State is damaged! Please use /"..DGSConfig.updateCommand.." to update",1)
 	end
 	if getPlayerName(pla) ~= "Console" then
 		if vsdd then
 			outputChatBox("[DGS]Version: "..vsdd,pla,0,255,0)
 		else
-			outputChatBox("[DGS]Version State is damaged! Please use /"..dgsConfig.updateCommand.." to update",pla,255,0,0)
+			outputChatBox("[DGS]Version State is damaged! Please use /"..DGSConfig.updateCommand.." to update",pla,255,0,0)
 		end
 	end
 end)
@@ -274,7 +274,7 @@ end)
 styleBackupStr = ""
 locator = [[	<export]]
 function backupStyleMapper()
-	if dgsConfig.backupMeta then
+	if DGSConfig.enableMetaBackup then
 		fileCopy("meta.xml","meta.xml.bak",true)
 	end
 	assert(fileExists("meta.xml"),"[DGS] Please rename the meta xml as meta.xml")
@@ -289,7 +289,7 @@ function backupStyleMapper()
 	if fileExists("styleMapperBackup.bak") then
 		fileDelete("styleMapperBackup.bak")
 	end
-	if dgsConfig.backupStyleMeta then
+	if DGSConfig.enableStyleMetaBackup then
 		local file = fileCreate("styleMapperBackup.bak")
 		fileWrite(file,styleBackupStr)
 		fileClose(file)

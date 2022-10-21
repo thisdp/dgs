@@ -475,7 +475,7 @@ end
 
 function dgsRegisterDeprecatedFunction(fncNameOld,fncNameNew)
 	_G[fncNameOld] = function(...)
-		if not getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then
+		if not getElementData(resourceRoot,"DGS-enableCompatibilityCheck") then
 			if not getElementData(localPlayer,"DGS-DEBUG-C") then
 				outputDebugString("Deprecated function @'"..fncNameOld.."', replace with '"..fncNameNew.."'. See information below, or run again with command /debugdgs c",2)
 				if getElementData(localPlayer,"DGS-DEBUG") == 3 then
@@ -777,7 +777,7 @@ local compatibility = {
 }
 function checkCompatibility(dgsEle,key,sResRoot)
 	local eleTyp = dgsGetType(dgsEle)
-	if getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then return (compatibility[eleTyp] and compatibility[eleTyp][key]) or compatibility[key] or key end
+	if getElementData(resourceRoot,"DGS-enableCompatibilityCheck") then return (compatibility[eleTyp] and compatibility[eleTyp][key]) or compatibility[key] or key end
 	if compatibility[eleTyp] and compatibility[eleTyp][key] then
 		if not getElementData(localPlayer,"DGS-DEBUG-C") then
 			outputDebugString("[DGS]Deprecated property '"..key.."' @dgsSetProperty with "..eleTyp..", replace with '"..compatibility[eleTyp][key].."'. See information below, or run again with command /debugdgs c",4,254,128,0)
