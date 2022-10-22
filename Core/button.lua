@@ -19,7 +19,7 @@ dgsRegisterProperties("dgs-dxbutton",{
 	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
 	subPixelPositioning = 	{	PArg.Bool	},
 	text = 					{	PArg.Text	},
-	textColor = 			{	PArg.Color	},
+	textColor = 			{	PArg.Color, { PArg.Color, PArg.Color, PArg.Color }	},
 	textOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
 	wordBreak = 			{	PArg.Bool	},
