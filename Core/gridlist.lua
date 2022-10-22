@@ -255,7 +255,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 			local columnHeight = eleData.columnHeight
 			local scbThick = eleData.scrollBarThick
 			local scrollbar = eleData.scrollbars
-			local scbThickV,scbThickH = dgsElementData[scrollbar[2]].visible and scbThick or 0,dgsElementData[scrollbar[1]].visible and scbThick or 0
+			local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
 			local relSizX,relSizY = w-scbThickV,h-scbThickH
 			local rowShowRange = relSizY-columnHeight
 			if relSizX*columnHeight ~= 0 then
@@ -2414,7 +2414,6 @@ function configGridList(gridlist)
 	local horizontalScrollSize = eleData.scrollSize*5/(columnWidth-columnShowRange)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	dgsSetData(scrollbar[2],"moveType","sync")
-
 	dgsGridListRecreateRenderTarget(gridlist,true)
 	dgsGridListUpdateRowMoveOffset(gridlist)
 	eleData.configNextFrame = false
