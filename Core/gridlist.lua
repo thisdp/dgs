@@ -24,7 +24,6 @@ dgsRegisterProperties('dgs-dxgridlist',{
 	font = 					{	PArg.Font+PArg.String	},
 	leading = 				{	PArg.Number	},
 	multiSelection = 		{	PArg.Bool	},
-	mode = 					{	PArg.Bool	},
 	mouseSelectButton = 	{	{ PArg.Bool, PArg.Bool, PArg.Bool }	},
 	moveHardness = 			{	{ PArg.Number, PArg.Number }	},
 	rowColorTemplate =		{	PArg.Table },
@@ -171,7 +170,6 @@ function dgsCreateGridList(...)
 		itemClick = {},
 		lastSelectedItem = {1,1},
 		leading = 0,
-		mode = false,
 		mouseSelectButton = {true,false,false},
 		moveHardness = {0.1,0.9},
 		moveType = 0,	--0 for wheel, 1 For scroll bar
@@ -191,6 +189,7 @@ function dgsCreateGridList(...)
 		rowSelect = {},
 		rowShadow = nil,
 		rowWordBreak = nil,
+		rowShowEntireOnly = false,
 		scrollBarThick = scbThick,
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
@@ -245,39 +244,37 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 	if isElement(eleData.rowRT) then destroyElement(eleData.rowRT) end
 	dgsSetData(gridlist,"columnRT",nil)
 	dgsSetData(gridlist,"rowRT",nil)
-	if not eleData.mode then
-		if lateAlloc then
-			dgsSetData(gridlist,"retrieveRT",true)
-		else
-			local res = eleData.resource
-			local columnRT,rowRT
-			local w,h = eleData.absSize[1],eleData.absSize[2]
-			local columnHeight = eleData.columnHeight
-			local scbThick = eleData.scrollBarThick
-			local scrollbar = eleData.scrollbars
-			local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
-			local relSizX,relSizY = w-scbThickV,h-scbThickH
-			local rowShowRange = relSizY-columnHeight
-			if relSizX*columnHeight ~= 0 then
-				columnRT,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
-				if columnRT ~= false then
-					dgsAttachToAutoDestroy(columnRT,gridlist,-1)
-				else
-					outputDebugString(err,2)
-				end
+	if lateAlloc then
+		dgsSetData(gridlist,"retrieveRT",true)
+	else
+		local res = eleData.resource
+		local columnRT,rowRT
+		local w,h = eleData.absSize[1],eleData.absSize[2]
+		local columnHeight = eleData.columnHeight
+		local scbThick = eleData.scrollBarThick
+		local scrollbar = eleData.scrollbars
+		local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
+		local relSizX,relSizY = w-scbThickV,h-scbThickH
+		local rowShowRange = relSizY-columnHeight
+		if relSizX*columnHeight ~= 0 then
+			columnRT,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
+			if columnRT ~= false then
+				dgsAttachToAutoDestroy(columnRT,gridlist,-1)
+			else
+				outputDebugString(err,2)
 			end
-			if relSizX*rowShowRange ~= 0 then
-				rowRT,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
-				if rowRT ~= false then
-					dgsAttachToAutoDestroy(rowRT,gridlist,-3)
-				else
-					outputDebugString(err,2)
-				end
-			end
-			dgsSetData(gridlist,"columnRT",columnRT)
-			dgsSetData(gridlist,"rowRT",rowRT)
-			dgsSetData(gridlist,"retrieveRT",nil)
 		end
+		if relSizX*rowShowRange ~= 0 then
+			rowRT,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
+			if rowRT ~= false then
+				dgsAttachToAutoDestroy(rowRT,gridlist,-3)
+			else
+				outputDebugString(err,2)
+			end
+		end
+		dgsSetData(gridlist,"columnRT",columnRT)
+		dgsSetData(gridlist,"rowRT",rowRT)
+		dgsSetData(gridlist,"retrieveRT",nil)
 	end
 end
 
@@ -2333,19 +2330,19 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local h = eleData.absSize[2]
 	local columnHeight = eleData.columnHeight
 	local rowCount = #eleData.rowData
-	if eleData.mode then
-		local temp1 = rowMoveOffset/rowHeightLeadingTemp
-		local whichRowToStart = -(temp1-temp1%1)+1
-		local temp2 = (h-columnHeight-scbThickH+rowHeight)/rowHeightLeadingTemp--_RowHeight
-		local whichRowToEnd = whichRowToStart+(temp2-temp2%1)-2
-		eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
+	local whichRowToStart,whichRowToEnd
+	if eleData.rowShowEntireOnly then
+		local temp1 = (rowMoveOffset)/rowHeightLeadingTemp
+		whichRowToStart = -(temp1-temp1%1)+1
+		local temp2 = (-rowMoveOffset+h-columnHeight-scbThickH)/rowHeightLeadingTemp--_RowHeight
+		whichRowToEnd = temp2-temp2%1
 	else
-		local temp1 = (rowMoveOffset+rowHeight)/rowHeightLeadingTemp
-		local whichRowToStart = -(temp1-temp1%1)+1
-		local temp2 = (h-columnHeight-scbThickH+rowHeight*2)/rowHeightLeadingTemp--_RowHeight
-		local whichRowToEnd = whichRowToStart+(temp2-temp2%1)-1
-		eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
+		local temp1 = (rowMoveOffset)/rowHeightLeadingTemp
+		whichRowToStart = -(temp1-temp1%1)
+		local temp2 = (-rowMoveOffset+h-columnHeight-scbThickH)/rowHeightLeadingTemp--_RowHeight
+		whichRowToEnd = temp2-temp2%1+1
 	end
+	eleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= rowCount and whichRowToEnd or rowCount}
 end
 
 function configGridList(gridlist)
@@ -2424,7 +2421,6 @@ end
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxgridlist"] = {
 	columnHeight = configGridList,
-	mode = configGridList,
 	scrollBarThick = configGridList,
 	scrollBarState = configGridList,
 	leading = configGridList,
@@ -2541,11 +2537,11 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		eleData.rowMoveOffsetTemp = mathLerp(mHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
 		local rMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
-		dgsGridListUpdateRowMoveOffset(source)
 		if _rowMoveOffset-eleData.rowMoveOffsetTemp <= 0.5 and _rowMoveOffset-eleData.rowMoveOffsetTemp >= -0.5 then
 			eleData.rowMoveOffsetTemp = _rowMoveOffset
 			dgsElementData[scb1].moveType = "sync"
 		end
+		dgsGridListUpdateRowMoveOffset(source)
 		rowMoveOffset = rMoveOffset
 	end
 	--Smooth Column
@@ -2596,450 +2592,234 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnEndPos = renderBuffer.columnEndPos
 	local columnShadow = eleData.columnShadow
 	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
-	if not eleData.mode then
-		if eleData.retrieveRT then
-			dgsGridListRecreateRenderTarget(source)
-		end
-		dxSetRenderTarget(eleData.columnRT,true)
-		dxSetBlendMode("modulate_add")
-		local multiplier = eleData.columnRelative and (w-scbThickV) or 1
-		local tempColumnOffset = columnMoveOffset+columnOffset
-		local mouseColumnPos = mx-cx
-		local mouseSelectColumn = -1
-		local cPosStart,cPosEnd
-		if columnShadow then
-			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4],columnShadow[5]
-		end
-		for id = 1,#columnData do
-			local data = columnData[id]
-			local _columnTextColor = applyColorAlpha(data[5] or columnTextColor,parentAlpha)
-			local _columnTextColorCoded = data[6] or colorCoded
-			local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
-			local _columnFont = data[9] or eleData.columnFont or font
-			local tempCpos = data[3]*multiplier
-			local _tempStartx = tempCpos+tempColumnOffset
-			local _tempEndx = _tempStartx+data[2]*multiplier
-			if _tempStartx <= w and _tempEndx >= 0 then
-				columnPos[id],columnEndPos[id] = tempCpos,_tempEndx
-				cPosStart,cPosEnd = cPosStart or id,id
-				if eleData.columnRT then
-					local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
-					local textPosL = _tempStartx+columnTextPosOffset[1]
-					local textPosT = columnTextPosOffset[2]
-					local textPosR = _tempEndx+columnTextPosOffset[1]
-					local textPosB = columnHeight+columnTextPosOffset[2]
-					
-					if sortColumn == id and sortIcon then
-						local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
-						local iconTextPosL = textPosL-iconWidth
-						local iconTextPosR = textPosR-iconWidth
-						dgsDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-					end
-					dgsDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextColorCoded,false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	if eleData.retrieveRT then
+		dgsGridListRecreateRenderTarget(source)
+	end
+	dxSetRenderTarget(eleData.columnRT,true)
+	dxSetBlendMode("modulate_add")
+	local multiplier = eleData.columnRelative and (w-scbThickV) or 1
+	local tempColumnOffset = columnMoveOffset+columnOffset
+	local mouseColumnPos = mx-cx
+	local mouseSelectColumn = -1
+	local cPosStart,cPosEnd
+	if columnShadow then
+		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4],columnShadow[5]
+	end
+	for id = 1,#columnData do
+		local data = columnData[id]
+		local _columnTextColor = applyColorAlpha(data[5] or columnTextColor,parentAlpha)
+		local _columnTextColorCoded = data[6] or colorCoded
+		local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
+		local _columnFont = data[9] or eleData.columnFont or font
+		local tempCpos = data[3]*multiplier
+		local _tempStartx = tempCpos+tempColumnOffset
+		local _tempEndx = _tempStartx+data[2]*multiplier
+		if _tempStartx <= w and _tempEndx >= 0 then
+			columnPos[id],columnEndPos[id] = tempCpos,_tempEndx
+			cPosStart,cPosEnd = cPosStart or id,id
+			if eleData.columnRT then
+				local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
+				local textPosL = _tempStartx+columnTextPosOffset[1]
+				local textPosT = columnTextPosOffset[2]
+				local textPosR = _tempEndx+columnTextPosOffset[1]
+				local textPosB = columnHeight+columnTextPosOffset[2]
+				if sortColumn == id and sortIcon then
+					local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
+					local iconTextPosL = textPosL-iconWidth
+					local iconTextPosR = textPosR-iconWidth
+					dgsDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,false,false,false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 				end
-				if mouseInsideGridList and mouseSelectColumn == -1 then
-					if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
-						mouseSelectColumn = id
-					end
-				end
+				dgsDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,false,_columnTextColorCoded,false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
-		end
-		local preSelectLastFrame = eleData.preSelectLastFrame
-		local preSelect = eleData.preSelect
-		if mouseInsideRow then
-			local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset--_RowHeight
-			local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp--_RowHeight
-			local sid = (tempID-tempID%1)+eleData.FromTo[1]+1
-			if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then--_RowHeight
-				eleData.oPreSelect = sid
-				if rowData[sid][-2] ~= false then
-					preSelect[1],preSelect[2] = sid,mouseSelectColumn
-				else
-					preSelect[1],preSelect[2] = -1,mouseSelectColumn
-				end
-			else
-				preSelect[1],preSelect[2] = -1,mouseSelectColumn
-			end
-		elseif mouseInsideColumn then
-			eleData.selectedColumn = mouseSelectColumn
-			preSelect[1],preSelect[2] = -1,mouseSelectColumn
-		else
-			preSelect[1],preSelect[2] = -1,-1
-		end
-		local preSelect = eleData.preSelect
-		if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
-			triggerEvent("onDgsGridListHover",source,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
-			preSelectLastFrame[1],preSelectLastFrame[2] = preSelect[1],preSelect[2]
-		end
-		local Select = eleData.rowSelect
-		local sectionFont = eleData.sectionFont or font
-		local textBufferCnt = 0
-		local elementBuffer = renderBuffer.elementBuffer
-		local textBuffer = renderBuffer.textBuffer
-		if eleData.rowRT then
-			dxSetRenderTarget(eleData.rowRT,true)
-			dxSetBlendMode("blend")
-			if cPosStart and cPosEnd then
-				for i=eleData.FromTo[1],eleData.FromTo[2] do
-					if not elementBuffer[i] then elementBuffer[i] = {} end
-					local lc_rowData = rowData[i]
-					local image,columnOffset,isSection = lc_rowData[-3] or rowImage,lc_rowData[-4] or columnOffset,lc_rowData[-5]
-					local color = lc_rowData[0] or rowColor
-					local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading--_RowHeight
-					local rowpos_1 = rowpos-rowHeight--_RowHeight
-					local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1,sW,rowpos
-					for id = cPosStart,cPosEnd do
-						local currentRowData = lc_rowData[id]
-						local text = currentRowData[1]
-						local _txtFont = isSection and (currentRowData[6] or sectionFont) or (currentRowData[6] or eleData.rowFont or eleData.columnFont or font)
-						local _txtScalex = currentRowData[4] or rowTextSx
-						local _txtScaley = currentRowData[5] or rowTextSy
-						local alignment = currentRowData[11] or columnData[id][4]
-						
-						local itemBGColor,itemBGImage = currentRowData[13],currentRowData[14] or image
-						if not itemBGColor then
-							if itemColorTemplate then
-								local iCTRows = #itemColorTemplate or 0
-								local iCTRow = ((i-1)%iCTRows)+1
-								local iCTColumns = #itemColorTemplate[iCTRow] or 0
-								local iCTColumn = ((id-1)%iCTColumns)+1
-								itemBGColor = itemColorTemplate[iCTRow][iCTColumn]
-							else
-								itemBGColor = color
-							end
-						end
-						local rowState = 1
-						if selectionMode == 1 then
-							if i == preSelect[1] then
-								rowState = 2
-							end
-							if Select[i] and Select[i][1] then
-								rowState = 3
-							end
-						elseif selectionMode == 2 then
-							if id == preSelect[2] then
-								rowState = 2
-							end
-							if Select[1] and Select[1][id] then
-								rowState = 3
-							end
-						elseif selectionMode == 3 then
-							if i == preSelect[1] and id == preSelect[2] then
-								rowState = 2
-							end
-							if Select[i] and Select[i][id] then
-								rowState = 3
-							end
-						end
-						local offset = columnPos[id]
-						local _x = _x+offset
-						local _sx = columnEndPos[id]
-						local columnWidth = columnData[id][2]*multiplier
-						local _bgX = _x
-						local backgroundWidth = columnWidth
-						if id == 1 then
-							_bgX = _x+backgroundOffset
-							backgroundWidth = columnWidth-backgroundOffset
-						elseif backgroundWidth+_x >= w or columnCount == id then
-							backgroundWidth = w-_x
-						end
-						
-						local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
-						dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
-						elementBuffer[i][id] = elementBuffer[i][id] or {}
-						local currentElementBuffer = elementBuffer[i][id]
-						currentElementBuffer[1] = currentRowData[10]
-						currentElementBuffer[2] = _x
-						currentElementBuffer[3] = _y
-						if text then
-							local colorCoded = currentRowData[3] == nil and colorCoded or currentRowData[3]
-							if currentRowData[7] then
-								local imageData = currentRowData[7]
-								local imagex = _x+(imageData[7] and imageData[3]*columnWidth or imageData[3])
-								local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
-								local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
-								local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
-								dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
-							end
-							local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
-							if currentRowData[12] then
-								local itemTextOffsetX = currentRowData[12][3] and columnWidth*currentRowData[12][1] or currentRowData[12][1]
-								local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]--_RowHeight
-								textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
-							end
-							textBufferCnt = textBufferCnt+1
-							if not textBuffer[textBufferCnt] then textBuffer[textBufferCnt] = {} end
-							local currentTextBuffer = textBuffer[textBufferCnt]
-							currentTextBuffer[1] = currentRowData[1]	--Text
-							currentTextBuffer[2] = textXS-textXS%1			--startX
-							currentTextBuffer[3] = textYS-textYS%1			--startY
-							currentTextBuffer[4] = textXE-textXE%1			--endX
-							currentTextBuffer[5] = textYE-textYE%1			--endY
-							currentTextBuffer[6] = applyColorAlpha(type(currentRowData[2]) == "table" and currentRowData[2][rowState] or currentRowData[2],parentAlpha)
-							currentTextBuffer[7] = _txtScalex
-							currentTextBuffer[8] = _txtScaley
-							currentTextBuffer[9] = _txtFont
-							currentTextBuffer[10] = colorCoded
-							currentTextBuffer[11] = alignment
-						end
-					end
-				end
-			end
-			dxSetBlendMode("modulate_add")
-			if rowShadow then
-				shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],applyColorAlpha(rowShadow[3],parentAlpha),rowShadow[4],rowShadow[5]
-			end
-			for a=1,textBufferCnt do
-				local line = textBuffer[a]
-				local text = line[1]
-				local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
-				local clr,tSclx,tScly,tFnt,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11]
-				dgsDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-			end
-			
-			if not eleData.childOutsideHit then
-				if MouseData.hit ~= source then
-					enabledInherited = false
-				end
-			end
-			if cPosStart and cPosEnd then
-				for i=eleData.FromTo[2],eleData.FromTo[1],-1 do
-					for id = cPosStart,cPosEnd do
-						local item = elementBuffer[i][id]
-						if item and item[1] then
-							local offx,offy = item[2],item[3]
-							for a=1,#item[1] do
-								renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible)
-							end
-						end
-					end
-				end
-			end
-		end
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-		dxSetRenderTarget(rndtgt)
-		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
-		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
-		dxSetBlendMode(rndtgt and "modulate_add" or "add")
-		if eleData.rowRT then
-			dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowRT,0,0,0,white,isPostGUI)
-		end
-		if eleData.columnRT then
-			dxDrawImage(x,y,w-scbThickV,columnHeight,eleData.columnRT,0,0,0,white,isPostGUI)
-		end
-	elseif columnCount >= 1 then --NO RT
-		local whichColumnToStart,whichColumnToEnd = -1,-1
-		local _rowMoveOffset = (1-eleData.FromTo[1])*rowHeightLeadingTemp--_RowHeight
-		local cpos = {}
-		local multiplier = eleData.columnRelative and (w-scbThickV) or 1
-		local ypcolumn = cy+columnHeight
-		local _y,_sx = ypcolumn+_rowMoveOffset,cx+w-scbThickV
-		local column_x = columnOffset
-		local allColumnWidth = columnData[columnCount][2]+columnData[columnCount][3]
-		local scrollbar = eleData.scrollbars[2]
-		local scrollPos = dgsElementData[scrollbar].scrollPosition*0.01
-		local mouseSelectColumn = -1
-		local does = false
-		for id = 1,#columnData do
-			local data = columnData[id]
-			cpos[id] = data[3]*multiplier
-			if (data[3]+data[2])*multiplier-columnOffset >= scrollPos*allColumnWidth*multiplier then
-				if (data[3]+data[2])*multiplier-scrollPos*allColumnWidth*multiplier <= w-scbThickV then
-					whichColumnToStart = whichColumnToStart ~= -1 and whichColumnToStart or id
-					whichColumnToEnd = whichColumnToEnd <= whichColumnToStart and whichColumnToStart or id
-					whichColumnToEnd = id
-					does = true
-				end
-			end
-		end
-		if not does then
-			whichColumnToStart,whichColumnToEnd = columnCount,columnCount
-		end
-		column_x = cx-cpos[whichColumnToStart]+columnOffset
-		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-		dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
-		dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
-		if columnShadow then
-			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = columnShadow[1],columnShadow[2],applyColorAlpha(columnShadow[3],parentAlpha),columnShadow[4],columnShadow[5]
-		end
-		for i=whichColumnToStart,whichColumnToEnd or columnCount do
-			local data = columnData[i]
-			local _columnTextColor = applyColorAlpha(data[5] or columnTextColor,parentAlpha)
-			local _columnTextColorCoded = data[6] or colorCoded
-			local _columnTextSx,_columnTextSy = data[7] or columnTextSx,data[8] or columnTextSy
-			local _columnFont = data[9] or eleData.columnFont or font
-			local column_sx = column_x+cpos[i]+data[2]*multiplier-scbThickV
-			local posx = column_x+cpos[i]
-			local tPosX = posx-posx%1
-			local textPosL = tPosX+columnTextPosOffset[1]
-			local textPosT = cy+columnTextPosOffset[2]
-			local textPosR = column_sx+columnTextPosOffset[1]
-			local textPosB = ypcolumn+columnTextPosOffset[2]
-			if sortColumn == i and sortIcon then
-				local iconWidth = dxGetTextWidth(sortIcon,_columnTextSx*0.8,_columnFont)
-				local iconTextPosL = textPosL-iconWidth
-				local iconTextPosR = textPosR-iconWidth
-				dgsDrawText(sortIcon,iconTextPosL-1,textPosT,iconTextPosR-1,textPosB,_columnTextColor,_columnTextSx*0.8,_columnTextSy*0.8,_columnFont,"left","center",clip,columnWordBreak,isPostGUI,false,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-			end
-			dgsDrawText(data[1],textPosL,textPosT,textPosR,textPosB,_columnTextColor,_columnTextSx,_columnTextSy,_columnFont,data[4],"center",clip,columnWordBreak,isPostGUI,_columnTextColorCoded,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			if mouseInsideGridList and mouseSelectColumn == -1 then
-				backgroundWidth = data[2]*multiplier
-				if backgroundWidth+posx-x >= w or whichColumnToEnd == i then
-					backgroundWidth = w-posx+x
-				end
-				local _tempStartx = posx
-				local _tempEndx = _tempStartx+backgroundWidth
-				if mx >= _tempStartx and mx <= _tempEndx then
-					mouseSelectColumn = i
+				if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
+					mouseSelectColumn = id
 				end
 			end
 		end
-		local preSelectLastFrame = eleData.preSelectLastFrame
-		local preSelect = eleData.preSelect
-		if MouseData.entered == source then		-------PreSelect
-			if mouseInsideRow then
-				local tempID = (my-cy-columnHeight)/rowHeightLeadingTemp-1--_RowHeight
-				sid = (tempID-tempID%1)+eleData.FromTo[1]+1
-				if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+_rowMoveOffset then--_RowHeight
-					eleData.oPreSelect = sid
-					if rowData[sid][-2] ~= false then
-						preSelect[1],preSelect[2] = sid,mouseSelectColumn
-					else
-						preSelect[1],preSelect[2] = -1,mouseSelectColumn
-					end
-				else
-					preSelect[1],preSelect[2] = -1,mouseSelectColumn
-				end
-			elseif mouseInsideColumn then
-				eleData.selectedColumn = mouseSelectColumn
-				preSelect[1],preSelect[2] = -1,mouseSelectColumn
+	end
+	local preSelectLastFrame = eleData.preSelectLastFrame
+	local preSelect = eleData.preSelect
+	if mouseInsideRow then
+		local toffset = (eleData.FromTo[1]*rowHeightLeadingTemp)+rowMoveOffset--_RowHeight
+		local tempID = (my-cy-columnHeight-toffset)/rowHeightLeadingTemp--_RowHeight
+		local sid = (tempID-tempID%1)+eleData.FromTo[1]+1
+		if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then--_RowHeight
+			eleData.oPreSelect = sid
+			if rowData[sid][-2] ~= false then
+				preSelect[1],preSelect[2] = sid,mouseSelectColumn
 			else
-				preSelect[1],preSelect[2] = -1,-1
+				preSelect[1],preSelect[2] = -1,mouseSelectColumn
 			end
 		else
-			preSelect[1],preSelect[2] = -1,-1
+			preSelect[1],preSelect[2] = -1,mouseSelectColumn
 		end
-		local preSelect = eleData.preSelect
-		if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
-			triggerEvent("onDgsGridListHover",source,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
-			preSelectLastFrame[1],preSelectLastFrame[2] = preSelect[1],preSelect[2]
-		end
-		local Select = eleData.rowSelect
-		local sectionFont = eleData.sectionFont or font
-		local textBuffer = {}
-		local textBufferCnt = 1
-		for i=eleData.FromTo[1],eleData.FromTo[2] do
-			local lc_rowData = rowData[i]
-			local image = lc_rowData[-3]
-			local color = lc_rowData[0]
-			local columnOffset = lc_rowData[-4]
-			local isSection = lc_rowData[-5]
-			local rowpos = i*rowHeight+(i-1)*leading--_RowHeight
-			local _x,_y,_sx,_sy = column_x+columnOffset,_y+rowpos-rowHeight,_sx,_y+rowpos--_RowHeight
-			if eleData.PixelInt then
-				_x,_y,_sx,_sy = _x-_x%1,_y-_y%1,_sx-_sx%1,_sy-_sy%1
+	elseif mouseInsideColumn then
+		eleData.selectedColumn = mouseSelectColumn
+		preSelect[1],preSelect[2] = -1,mouseSelectColumn
+	else
+		preSelect[1],preSelect[2] = -1,-1
+	end
+	local preSelect = eleData.preSelect
+	if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
+		triggerEvent("onDgsGridListHover",source,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
+		preSelectLastFrame[1],preSelectLastFrame[2] = preSelect[1],preSelect[2]
+	end
+	local Select = eleData.rowSelect
+	local sectionFont = eleData.sectionFont or font
+	local textBufferCnt = 0
+	local elementBuffer = renderBuffer.elementBuffer
+	local textBuffer = renderBuffer.textBuffer
+	if eleData.rowRT then
+		dxSetRenderTarget(eleData.rowRT,true)
+		dxSetBlendMode("blend")
+		if cPosStart and cPosEnd then
+			for i=eleData.FromTo[1],eleData.FromTo[2] do
+				if not elementBuffer[i] then elementBuffer[i] = {} end
+				local lc_rowData = rowData[i]
+				local image,columnOffset,isSection = lc_rowData[-3] or rowImage,lc_rowData[-4] or columnOffset,lc_rowData[-5]
+				local color = lc_rowData[0] or rowColor
+				local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading--_RowHeight
+				local rowpos_1 = rowpos-rowHeight--_RowHeight
+				local _x,_y,_sx,_sy = tempColumnOffset+columnOffset,rowpos_1,sW,rowpos
+				for id = cPosStart,cPosEnd do
+					local currentRowData = lc_rowData[id]
+					local text = currentRowData[1]
+					local _txtFont = isSection and (currentRowData[6] or sectionFont) or (currentRowData[6] or eleData.rowFont or eleData.columnFont or font)
+					local _txtScalex = currentRowData[4] or rowTextSx
+					local _txtScaley = currentRowData[5] or rowTextSy
+					local alignment = currentRowData[11] or columnData[id][4]
+					
+					local itemBGColor,itemBGImage = currentRowData[13],currentRowData[14] or image
+					if not itemBGColor then
+						if itemColorTemplate then
+							local iCTRows = #itemColorTemplate or 0
+							local iCTRow = ((i-1)%iCTRows)+1
+							local iCTColumns = #itemColorTemplate[iCTRow] or 0
+							local iCTColumn = ((id-1)%iCTColumns)+1
+							itemBGColor = itemColorTemplate[iCTRow][iCTColumn]
+						else
+							itemBGColor = color
+						end
+					end
+					local rowState = 1
+					if selectionMode == 1 then
+						if i == preSelect[1] then
+							rowState = 2
+						end
+						if Select[i] and Select[i][1] then
+							rowState = 3
+						end
+					elseif selectionMode == 2 then
+						if id == preSelect[2] then
+							rowState = 2
+						end
+						if Select[1] and Select[1][id] then
+							rowState = 3
+						end
+					elseif selectionMode == 3 then
+						if i == preSelect[1] and id == preSelect[2] then
+							rowState = 2
+						end
+						if Select[i] and Select[i][id] then
+							rowState = 3
+						end
+					end
+					local offset = columnPos[id]
+					local _x = _x+offset
+					local _sx = columnEndPos[id]
+					local columnWidth = columnData[id][2]*multiplier
+					local _bgX = _x
+					local backgroundWidth = columnWidth
+					if id == 1 then
+						_bgX = _x+backgroundOffset
+						backgroundWidth = columnWidth-backgroundOffset
+					elseif backgroundWidth+_x >= w or columnCount == id then
+						backgroundWidth = w-_x
+					end
+					
+					local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
+					dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+					elementBuffer[i][id] = elementBuffer[i][id] or {}
+					local currentElementBuffer = elementBuffer[i][id]
+					currentElementBuffer[1] = currentRowData[10]
+					currentElementBuffer[2] = _x
+					currentElementBuffer[3] = _y
+					if text then
+						local colorCoded = currentRowData[3] == nil and colorCoded or currentRowData[3]
+						if currentRowData[7] then
+							local imageData = currentRowData[7]
+							local imagex = _x+(imageData[7] and imageData[3]*columnWidth or imageData[3])
+							local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
+							local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
+							local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
+							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
+						end
+						local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
+						if currentRowData[12] then
+							local itemTextOffsetX = currentRowData[12][3] and columnWidth*currentRowData[12][1] or currentRowData[12][1]
+							local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]--_RowHeight
+							textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
+						end
+						textBufferCnt = textBufferCnt+1
+						if not textBuffer[textBufferCnt] then textBuffer[textBufferCnt] = {} end
+						local currentTextBuffer = textBuffer[textBufferCnt]
+						currentTextBuffer[1] = currentRowData[1]	--Text
+						currentTextBuffer[2] = textXS-textXS%1			--startX
+						currentTextBuffer[3] = textYS-textYS%1			--startY
+						currentTextBuffer[4] = textXE-textXE%1			--endX
+						currentTextBuffer[5] = textYE-textYE%1			--endY
+						currentTextBuffer[6] = applyColorAlpha(type(currentRowData[2]) == "table" and currentRowData[2][rowState] or currentRowData[2],parentAlpha)
+						currentTextBuffer[7] = _txtScalex
+						currentTextBuffer[8] = _txtScaley
+						currentTextBuffer[9] = _txtFont
+						currentTextBuffer[10] = colorCoded
+						currentTextBuffer[11] = alignment
+					end
+				end
 			end
-			for id=whichColumnToStart,whichColumnToEnd do
-				local currentRowData = lc_rowData[id]
-				local text = currentRowData[1]
-				local _txtFont = isSection and sectionFont or (currentRowData[6] or eleData.rowFont or eleData.columnFont or font)
-				local _txtScalex = currentRowData[4] or rowTextSx
-				local _txtScaley = currentRowData[5] or rowTextSy
-				local alignment = currentRowData[11] or columnData[id][4]
-				local itemBGColor,itemBGImage = currentRowData[13],currentRowData[14] or image
-				if not itemBGColor then
-					if itemColorTemplate then
-						local iCTRows = #itemColorTemplate or 0
-						local iCTRow = ((i-1)%iCTRows)+1
-						local iCTColumns = #itemColorTemplate[iCTRow] or 0
-						local iCTColumn = ((id-1)%iCTColumns)+1
-						itemBGColor = itemColorTemplate[iCTRow][iCTColumn]
-					else
-						itemBGColor = color
-					end
-				end
-				local rowState = 1
-				if selectionMode == 1 then
-					if i == preSelect[1] then
-						rowState = 2
-					end
-					if Select[i] and Select[i][1] then
-						rowState = 3
-					end
-				elseif selectionMode == 2 then
-					if id == preSelect[2] then
-						rowState = 2
-					end
-					if Select[1] and Select[1][id] then
-						rowState = 3
-					end
-				elseif selectionMode == 3 then
-					if i == preSelect[1] and id == preSelect[2] then
-						rowState = 2
-					end
-					if Select[i] and Select[i][id] then
-						rowState = 3
-					end
-				end
-				local offset = cpos[id]
-				local _x = _x+offset
-				local _sx = (cpos[id+1] or (columnData[id][2])*multiplier)+_x
-				local columnWidth = columnData[id][2]*multiplier
-				local _bgX = _x
-				if id == 1 then
-					_bgX = _x+backgroundOffset
-					columnWidth = columnWidth-backgroundOffset
-				elseif columnWidth+_x-x >= w or whichColumnToEnd == id then
-					columnWidth = w-_x+x-scbThickV
-				end
-				local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
-				dxDrawImage(_bgX,_y,columnWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,isPostGUI,rndtgt)--_RowHeight
-				if text ~= "" then
-					local colorCoded = currentRowData[3] == nil and colorCoded or currentRowData[3]
-					if currentRowData[7] then
-						local imageData = currentRowData[7]
-						local color = applyColorAlpha(imageData[2],parentAlpha)
-						dxDrawImage(_x+imageData[3],_y+imageData[4],imageData[5],imageData[6],imageData[1],0,0,0,color,rndtgt)
-					end
-					local textXS,textYS,textXE,textYE = _x,_y,_sx,_sy
-					if currentRowData[12] then
-						local itemTextOffsetX = currentRowData[12][3] and columnWidth*currentRowData[12][1] or currentRowData[12][1]
-						local itemTextOffsetY = currentRowData[12][3] and rowHeight*currentRowData[12][2] or currentRowData[12][2]--_RowHeight
-						textXS,textYS,textXE,textYE = textXS+itemTextOffsetX,textYS+itemTextOffsetY,textXE+itemTextOffsetX,textYE+itemTextOffsetY
-					end
-					local color = type(currentRowData[2]) == "table" and currentRowData[2] or {currentRowData[2],currentRowData[2],currentRowData[2]}
-					textBuffer[textBufferCnt] = {
-						currentRowData[1],	--Text
-						textXS-textXS%1,			--startX
-						textYS-textYS%1,			--startY
-						textXE-textXE%1,			--endX
-						textYE-textYE%1,			--endY
-						color[rowState],
-						_txtScalex,
-						_txtScaley,
-						_txtFont,
-						colorCoded,
-						alignment,
-					}
-					textBufferCnt = textBufferCnt+1
-				end
-			end
 		end
+		dxSetBlendMode("modulate_add")
 		if rowShadow then
 			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = rowShadow[1],rowShadow[2],applyColorAlpha(rowShadow[3],parentAlpha),rowShadow[4],rowShadow[5]
 		end
-		for i=1,#textBuffer do
-			local line = textBuffer[i]
+		for a=1,textBufferCnt do
+			local line = textBuffer[a]
 			local text = line[1]
 			local psx,psy,pex,pey = line[2]+rowTextPosOffset[1],line[3]+rowTextPosOffset[2],line[4]+rowTextPosOffset[1],line[5]+rowTextPosOffset[2]
 			local clr,tSclx,tScly,tFnt,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11]
-			local color = applyColorAlpha(clr,parentAlpha)
-			local psx = psx-psx%1			--startX
-			local psy = psy-psy%1			--startY
-			local pex = pex-pex%1			--endX
-			local pey = pey-pey%1			--endY
-			dgsDrawText(line[1],psx,psy,pex,pey,color,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,isPostGUI,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+			dgsDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 		end
+		
+		if not eleData.childOutsideHit then
+			if MouseData.hit ~= source then
+				enabledInherited = false
+			end
+		end
+		if cPosStart and cPosEnd then
+			for i=eleData.FromTo[2],eleData.FromTo[1],-1 do
+				for id = cPosStart,cPosEnd do
+					local item = elementBuffer[i][id]
+					if item and item[1] then
+						local offx,offy = item[2],item[3]
+						for a=1,#item[1] do
+							renderGUI(item[1][a],mx,my,enabledInherited,enabledSelf,eleData.rowRT,0,0,xNRT,yNRT+columnHeight,offx,offy,parentAlpha,visible)
+						end
+					end
+				end
+			end
+		end
+	end
+	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
+	dxSetRenderTarget(rndtgt)
+	dxDrawImage(x,y+columnHeight,w,h-columnHeight,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
+	dxDrawImage(x,y,w,columnHeight,columnImage,0,0,0,columnColor,isPostGUI,rndtgt)
+	dxSetBlendMode(rndtgt and "modulate_add" or "add")
+	if eleData.rowRT then
+		dxDrawImage(x,y+columnHeight,w-scbThickV,h-columnHeight-scbThickH,eleData.rowRT,0,0,0,white,isPostGUI)
+	end
+	if eleData.columnRT then
+		dxDrawImage(x,y,w-scbThickV,columnHeight,eleData.columnRT,0,0,0,white,isPostGUI)
 	end
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	return rndtgt,false,mx,my,0,0
