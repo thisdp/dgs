@@ -2332,12 +2332,12 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local rowCount = #eleData.rowData
 	local whichRowToStart,whichRowToEnd
 	if eleData.rowShowEntireOnly then
-		local temp1 = (rowMoveOffset)/rowHeightLeadingTemp
+		local temp1 = rowMoveOffset/rowHeightLeadingTemp
 		whichRowToStart = -(temp1-temp1%1)+1
-		local temp2 = (-rowMoveOffset+h-columnHeight-scbThickH)/rowHeightLeadingTemp--_RowHeight
-		whichRowToEnd = temp2-temp2%1
+		local temp2 = (h-columnHeight-scbThickH)/rowHeightLeadingTemp--_RowHeight
+		whichRowToEnd = whichRowToStart+temp2-temp2%1-1
 	else
-		local temp1 = (rowMoveOffset)/rowHeightLeadingTemp
+		local temp1 = rowMoveOffset/rowHeightLeadingTemp
 		whichRowToStart = -(temp1-temp1%1)
 		local temp2 = (-rowMoveOffset+h-columnHeight-scbThickH)/rowHeightLeadingTemp--_RowHeight
 		whichRowToEnd = temp2-temp2%1+1
