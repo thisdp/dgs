@@ -2544,6 +2544,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dgsGridListUpdateRowMoveOffset(source)
 		rowMoveOffset = rMoveOffset
 	end
+	if eleData.rowShowEntireOnly then
+		rowMoveOffset = (1-eleData.FromTo[1])*rowHeightLeadingTemp--_RowHeight
+	end
 	--Smooth Column
 	local _columnMoveOffset = eleData.columnMoveOffset
 	local columnMoveOffset = _columnMoveOffset
