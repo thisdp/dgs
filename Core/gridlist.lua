@@ -921,7 +921,7 @@ function dgsGridListGetColumnTitle(gridlist,c)
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnTitle",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
 	local c = c-c%1
-	return columnData[c][1]
+	return cData[c][1]
 end
 
 function dgsGridListGetColumnRelative(gridlist)
