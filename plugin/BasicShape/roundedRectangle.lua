@@ -26,6 +26,7 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 		dgsRoundRectSetBorderThickness(shader,borderThicknessHorizontal or 0.2,borderThicknessVertical or borderThicknessHorizontal or 0.2)
 		dgsRoundRectSetColor(shader,color,borderOnlyOrColor)
 	else
+		dgsSetData(shader,"borderOnly",borderOnlyOrColor)
 		if borderOnlyOrColor then
 			dgsRoundRectSetBorderThickness(shader,borderThicknessHorizontal or 0.2,borderThicknessVertical or borderThicknessHorizontal or 0.2)
 			dgsRoundRectSetColor(shader,color,color)
@@ -33,7 +34,6 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 			dgsRoundRectSetBorderThickness(shader,0,0)
 			dgsRoundRectSetColor(shader,color,color)
 		end
-		dgsSetData(shader,"borderOnly",borderOnlyOrColor)
 	end
 	dgsRoundRectSetColorOverwritten(shader,colorOverwritten ~= false)
 	dgsRoundRectSetTexture(shader,texture)
@@ -97,10 +97,11 @@ function dgsRoundRectSetColor(rectShader,color,secondColor)
 	if not(dgsGetType(secondColor) == "number" or not secondColor) then error(dgsGenAsrt(color,"dgsRoundRectSetColor",3,"number/nil")) end
 	local borderOnly = dgsElementData[rectShader].borderOnly
 	if borderOnly then
-		dxSetShaderValue(rectShader,"borderColor",fromcolor(color,true))
-		dgsSetData(rectShader,"color",color)
-		dxSetShaderValue(rectShader,"color",fromcolor(color,true))
+		local r,g,b,a = fromcolor(color,true)
+		dxSetShaderValue(rectShader,"borderColor",r,g,b,a)
 		dgsSetData(rectShader,"borderColor",color)
+		dxSetShaderValue(rectShader,"color",r,g,b,0)
+		dgsSetData(rectShader,"color",tocolor(r,g,b,0))
 	else
 		if secondColor then
 			dxSetShaderValue(rectShader,"borderColor",fromcolor(secondColor,true))
