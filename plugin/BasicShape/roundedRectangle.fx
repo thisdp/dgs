@@ -91,7 +91,6 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	}
 	alp = saturate(alp);
 	float nAlp = 1;
-	float4 filledColor = (textureLoad?tex2D(tSampler,textureRotated?tex_bk.yx:tex_bk):1)*color;
 	if(borderThickness[0] > 0 && borderThickness[1] > 0){
 		float2 newborderThickness = borderThickness*dd*100;
 		tex_bk = tex_bk+tex_bk*newborderThickness;
@@ -176,9 +175,10 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 		}
 	}
 	nAlp = 1-saturate(nAlp);
-	result = result+(filledColor-result)*(1-clamp(nAlp,0,1));
-	result.rgb = colorOverwritten?result.rgb:result.rgb*_color.rgb;
+	result += (color-result)*(1-clamp(nAlp,0,1));
+	result.rgb = colorOverwritten?result.rgb:_color.rgb;
 	result.a *= _color.a*alp;
+	result *= textureLoad?tex2D(tSampler,textureRotated?tex_bk.yx:tex_bk):1;
 	return result;
 }
 
