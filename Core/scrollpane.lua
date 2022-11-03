@@ -84,7 +84,7 @@ function dgsCreateScrollPane(...)
 		verticalMoveOffset = 0,
 		moveHardness = {0.1,0.9},
 		basePointOffset = {0,0,true},
-		minViewSize = {1,1,true},
+		minViewSize = {0,0,true},
 		--childSizeRef = {{},{}}, --Horizontal,Vertical //to optimize
 		configNextFrame = false,
 		bgColor = false,
