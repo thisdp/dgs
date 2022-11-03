@@ -189,7 +189,7 @@ function dgsCreateGridList(...)
 		rowSelect = {},
 		rowShadow = nil,
 		rowWordBreak = nil,
-		rowShowEntireOnly = false,
+		rowShowUnclippedOnly = false,
 		scrollBarThick = scbThick,
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
@@ -2331,7 +2331,7 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local columnHeight = eleData.columnHeight
 	local rowCount = #eleData.rowData
 	local whichRowToStart,whichRowToEnd
-	if eleData.rowShowEntireOnly then
+	if eleData.rowShowUnclippedOnly then
 		local temp1 = rowMoveOffset/rowHeightLeadingTemp
 		whichRowToStart = -(temp1-temp1%1)+1
 		local temp2 = (h-columnHeight-scbThickH)/rowHeightLeadingTemp--_RowHeight
@@ -2544,7 +2544,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dgsGridListUpdateRowMoveOffset(source)
 		rowMoveOffset = rMoveOffset
 	end
-	if eleData.rowShowEntireOnly then
+	if eleData.rowShowUnclippedOnly then
 		rowMoveOffset = (1-eleData.FromTo[1])*rowHeightLeadingTemp--_RowHeight
 	end
 	--Smooth Column
