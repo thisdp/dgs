@@ -1021,7 +1021,7 @@ function dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,c
 	if image then
 		local dgsBasicType = dgsGetType(image)
 		if dgsBasicType == "table" then
-			__dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
+			dxDrawImageSection(posX,posY,width,height,image[2],image[3],image[4],image[5],image[1],rotation,rotationX,rotationY,color,postGUI)
 		elseif dgsBasicType == "dgs-dxcustomrenderer" then
 			return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 		else
@@ -1066,19 +1066,36 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 			dgsCustomTexture[pluginType](posX,posY,width,height,nil,nil,nil,nil,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
 		else
 			local blendMode
-			if isInRndTgt and dgsBasicType == "shader" then
-				blendMode = dxGetBlendMode()
-				dxSetBlendMode("blend")
-			end
-			if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
-				if debugMode then
-					local debugTrace = dgsElementData[self].debugTrace
-					local thisTrace = debug.getinfo(2)
-					if debugTrace then
-						local line,file = debugTrace.line,debugTrace.file
-						outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed at the element ("..file..":"..line..")",4)
-					else
-						outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4)
+			if dgsBasicType == "shader" then
+				print(u/width,v/height,usize/width,vsize/height)
+				dxSetShaderValue(image,"UV",u/width,v/height,usize/width,vsize/height)
+				if isInRndTgt then
+					blendMode = dxGetBlendMode()
+					dxSetBlendMode("blend")
+				end
+				if not dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI) then
+					if debugMode then
+						local debugTrace = dgsElementData[self].debugTrace
+						local thisTrace = debug.getinfo(2)
+						if debugTrace then
+							local line,file = debugTrace.line,debugTrace.file
+							outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed at the element ("..file..":"..line..")",4)
+						else
+							outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4)
+						end
+					end
+				end
+			else
+				if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
+					if debugMode then
+						local debugTrace = dgsElementData[self].debugTrace
+						local thisTrace = debug.getinfo(2)
+						if debugTrace then
+							local line,file = debugTrace.line,debugTrace.file
+							outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed at the element ("..file..":"..line..")",4)
+						else
+							outputDebugString("↑Caused by dxDrawImageSection("..thisTrace.source..":"..thisTrace.currentline..") failed unable to trace",4)
+						end
 					end
 				end
 			end

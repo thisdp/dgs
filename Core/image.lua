@@ -193,7 +193,9 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 			local imageType = dgsGetType(image)
 			if imageType == "texture" or imageType == "svg" then
 				materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
-			else 
+			elseif imageType == "shader" then
+				materialInfo[1],materialInfo[2] = w,h
+			else
 				materialInfo[1],materialInfo[2] = 1,1
 			end
 		end
