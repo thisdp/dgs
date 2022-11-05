@@ -86,11 +86,11 @@ function dgs3DInterfaceRecreateRenderTarget(interface,lateAlloc)
 	else
 		local resolution = dgsElementData[interface].resolution
 		local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,interface)
-		if mainRT ~= false then
+		if mainRT == false and resolution[1]*resolution[2] ~= 0 then
+			outputDebugString(err,2)
+		else
 			dxSetTextureEdge(mainRT,"mirror")
 			dgsAttachToAutoDestroy(mainRT,interface,-1)
-		else
-			outputDebugString(err,2)
 		end
 		dgsSetData(interface,"mainRT",mainRT)
 		dgsSetData(interface,"retrieveRT",nil)
@@ -347,7 +347,9 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 				eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
 			end
 		end
-		dxSetRenderTarget(rndtgt,true)
+		if rndtgt then
+			dxSetRenderTarget(rndtgt,true)
+		end
 		dxSetRenderTarget()
 		return rndtgt,false,mx,my,0,0
 	end
@@ -402,7 +404,9 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 					dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,roll,w,h,renderThing,fromcolor(colors))
 					renderThing = filter
 				end
-				dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,roll)
+				if renderThing then
+					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,roll)
+				end
 				return true
 			end
 		end
