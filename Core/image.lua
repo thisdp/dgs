@@ -188,15 +188,17 @@ dgsRenderer["dgs-dximage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherite
 		end
 		local materialInfo = eleData.materialInfo
 		local uvPx,uvPy,uvSx,uvSy
-		if materialInfo[0] ~= image then	--is latest?
-			materialInfo[0] = image	--Update if not
-			local imageType = dgsGetType(image)
-			if imageType == "texture" or imageType == "svg" then
-				materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
-			elseif imageType == "shader" then
-				materialInfo[1],materialInfo[2] = w,h
-			else
-				materialInfo[1],materialInfo[2] = 1,1
+		local imageType = dgsGetType(image)
+		if imageType == "shader" then
+			materialInfo[1],materialInfo[2] = w,h
+		else
+			if materialInfo[0] ~= image then	--is latest?
+				materialInfo[0] = image	--Update if not
+				if imageType == "texture" or imageType == "svg" then
+					materialInfo[1],materialInfo[2] = dxGetMaterialSize(image)
+				else
+					materialInfo[1],materialInfo[2] = 1,1
+				end
 			end
 		end
 		local uvPos = eleData.UVPos
