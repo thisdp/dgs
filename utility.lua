@@ -1067,7 +1067,6 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 		else
 			local blendMode
 			if dgsBasicType == "shader" then
-				print(u/width,v/height,usize/width,vsize/height)
 				dxSetShaderValue(image,"UV",u/width,v/height,usize/width,vsize/height)
 				if isInRndTgt then
 					blendMode = dxGetBlendMode()
