@@ -428,8 +428,8 @@ function dgsAttachToGridList(element,gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsAttachToGridList",3,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsAttachToGridList",4,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsAttachToGridList",3,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsAttachToGridList",4,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if rData[r][c] then
 		dgsDetachElements(element)
@@ -637,7 +637,7 @@ function dgsGridListScrollTo(gridlist,r,c,smoothMove)
 		if rLen == 0 then return false end
 		local rIsNum = type(r) == "number"
 		local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-		if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListScrollTo",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
+		if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListScrollTo",2,"number","1~"..rLen,rNInRange and "row out of range")) end
 		local scb = eleData.scrollbars[2]
 		local rHeight = eleData.rowHeight--_RowHeight
 		local leading = eleData.leading
@@ -663,7 +663,7 @@ function dgsGridListScrollTo(gridlist,r,c,smoothMove)
 		if cLen == 0 then return false end
 		local cIsNum = type(c) == "number"
 		local cNInrange = cIsNum and not (c>=1 and c<=cLen)
-		if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListScrollTo",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+		if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListScrollTo",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 		local scb = eleData.scrollbars[1]
 		local sx = eleData.absSize[1]
 		local cOffset = eleData.columnOffset
@@ -762,7 +762,7 @@ function dgsGridListSetColumnFont(gridlist,c,font,affectRow)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnFont",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnFont",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	if not (fontBuiltIn[font] or dgsGetType(font) == "dx-font") then error(dgsGenAsrt(font,"dgsGridListSetColumnFont",3,"dx-font/string",_,"invalid font")) end
 	--Multilingual
@@ -798,7 +798,7 @@ function dgsGridListGetColumnFont(gridlist,c)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnFont",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnFont",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	return cData[c][9]	--Font
 end
@@ -812,7 +812,7 @@ function dgsGridListSetColumnAlignment(gridlist,c,align,affectRow)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnAlignment",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnAlignment",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	cData[c][4] = align
 	if affectRow then
@@ -832,7 +832,7 @@ function dgsGridListGetColumnAlignment(gridlist,c)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnAlignment",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnAlignment",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	return cData[c][4]	--Alignment
 end
@@ -845,7 +845,7 @@ function dgsGridListGetColumnTextSize(gridlist,c)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnTextSize",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnTextSize",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	return cData[c][7],cData[c][8]
 end
@@ -858,7 +858,7 @@ function dgsGridListSetColumnTextSize(gridlist,c,sizeX,sizeY)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnTextSize",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnTextSize",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	if not (type(sizeX) == "number") then error(dgsGenAsrt(sizeX,"dgsGridListSetColumnTextSize",3,"number")) end
 	cData[c][7] = sizeX
@@ -898,7 +898,7 @@ function dgsGridListSetColumnTitle(gridlist,c,name)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnTitle",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnTitle",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	if cData[c] then
 		if type(name) == "table" then
@@ -920,7 +920,7 @@ function dgsGridListGetColumnTitle(gridlist,c)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnTitle",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnTitle",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	return cData[c][1]
 end
@@ -943,7 +943,7 @@ function dgsGridListRemoveColumn(gridlist,c)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListRemoveColumn",2,"number","1~"..cLen, cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListRemoveColumn",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	local c = c-c%1
 	local oldLen = cData[c][3]
 	local lastColumnLen = 0
@@ -978,7 +978,7 @@ function dgsGridListSetColumnWidth(gridlist,c,width,relative)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnWidth",2,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnWidth",2,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c = c-c%1
 	if not (type(width) == "number") then error(dgsGenAsrt(c,"dgsGridListSetColumnWidth",3,"number")) end
 	local rlt = eleData.columnRelative
@@ -1015,7 +1015,7 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListAutoSizeColumn",2,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListAutoSizeColumn",2,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c = c-c%1
 	if not (additionalLength == nil or type(additionalLength) == "number") then error(dgsGenAsrt(c,"dgsGridListAutoSizeColumn",3,"number")) end
 	if not additionalLength then relative = false end
@@ -1055,7 +1055,7 @@ function dgsGridListGetColumnAllWidth(gridlist,c,relative,mode)
 	if cLen == 0 then return 0 end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnAllWidth",2,"number","0~"..cLen,cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnAllWidth",2,"number","0~"..cLen,cNInRange and "column out of range")) end
 	local c = c-c%1
 	local columnSize = eleData.absSize[1]-eleData.scrollBarThick
 	local rlt = eleData.columnRelative
@@ -1090,7 +1090,7 @@ function dgsGridListGetColumnWidth(gridlist,c,relative)
 	if cLen == 0 then return false end
 	local cIsNum = type(c) == "number"
 	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnWidth",2,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnWidth",2,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c = c-c%1
 	local columnSize = eleData.absSize[1]-eleData.scrollBarThick
 	local rlt = eleData.columnRelative
@@ -1250,7 +1250,7 @@ function dgsGridListSetRowID(gridlist,r,id)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowID",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowID",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if rData[r] then
 		rData[r][-5] = id
@@ -1267,7 +1267,7 @@ function dgsGridListGetRowID(gridlist,r)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowID",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowID",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if rData[r] then
 		return rData[r][-5]
@@ -1304,7 +1304,7 @@ function dgsGridListGetRowSelectable(gridlist,r)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowSelectable",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowSelectable",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	return rData[r] and rData[r][-1] or false
 end
@@ -1317,7 +1317,7 @@ function dgsGridListSetRowSelectable(gridlist,r,state)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowSelectable",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowSelectable",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if rData[r] then
 		rData[r][-1] = state and true or false
@@ -1334,7 +1334,7 @@ function dgsGridListGetRowHoverable(gridlist,r)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowHoverable",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowHoverable",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	return rData[r] and rData[r][-2] or false
 end
@@ -1347,7 +1347,7 @@ function dgsGridListSetRowHoverable(gridlist,r,state)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowHoverable",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowHoverable",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if rData[r] then
 		rData[r][-2] = state and true or false
@@ -1364,7 +1364,7 @@ function dgsGridListGetRowBackGroundColor(gridlist,r)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowBackGroundColor",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowBackGroundColor",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if rData[r][0] then
 		return rData[r][0][1],rData[r][0][2],rData[r][0][3]
@@ -1380,7 +1380,7 @@ function dgsGridListSetRowBackGroundColor(gridlist,r,nClr,sClr,cClr)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowBackGroundColor",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowBackGroundColor",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	rData[r][0] = {nClr or white,sClr or nClr,cClr or nClr}
 	return true
@@ -1394,7 +1394,7 @@ function dgsGridListGetRowBackGroundImage(gridlist,r)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowBackGroundImage",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetRowBackGroundImage",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if rData[r][-3] then
 		return rData[r][-3][1],rData[r][-3][2],rData[r][-3][3]
@@ -1410,7 +1410,7 @@ function dgsGridListSetRowBackGroundImage(gridlist,r,nImg,sImg,cImg)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowBackGroundImage",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowBackGroundImage",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if nImg ~= nil then
 		if not isMaterial(nImg) then error(dgsGenAsrt(nImg,"dgsGridListSetRowBackGroundImage",3,"material")) end
@@ -1433,7 +1433,7 @@ function dgsGridListSetRowAsSection(gridlist,r,enabled,enableMouseClickAndSelect
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowAsSection",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetRowAsSection",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	if enabled then
 		rData[r][-4] = eleData.sectionColumnOffset
@@ -1461,7 +1461,7 @@ function dgsGridListRemoveRow(gridlist,r)
 	if rLen == 0 then return false end
 	local rIsNum = type(r) == "number"
 	local rNInRange = rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListRemoveRow",2,"number","1~"..rLen, rNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListRemoveRow",2,"number","1~"..rLen, rNInRange and "row out of range")) end
 	local r = r-r%1
 	dgsGridListSelectItem(gridlist,r,1,false)	--unselect this row
 	tableRemove(rData,r)
@@ -1496,8 +1496,8 @@ function dgsGridListSetItemData(gridlist,r,c,data,...)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemData",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemData",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemData",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemData",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if select("#",...) == 0 then
 		rData[r][c][-1] = data
@@ -1518,8 +1518,8 @@ function dgsGridListGetItemData(gridlist,r,c,key)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemData",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemData",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemData",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemData",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not key then
 		return rData[r][c][-1]
@@ -1537,8 +1537,8 @@ function dgsGridListSetItemFont(gridlist,r,c,font)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemFont",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemFont",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemFont",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemFont",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local fontType = dgsGetType(font) 
 	if not (fontBuiltIn[font] or fontType == "dx-font" or fontType == "table") then error(dgsGenAsrt(font,"dgsGridListSetItemFont",4,"dx-font/string/table",_,"invalid font")) end
 	local c,r = c-c%1,r-r%1
@@ -1563,8 +1563,8 @@ function dgsGridListGetItemFont(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemFont",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemFont",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemFont",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemFont",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	return rData[r][c][6]
@@ -1578,8 +1578,8 @@ function dgsGridListSetItemTextSize(gridlist,r,c,sizeX,sizeY)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemTextSize",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemTextSize",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemTextSize",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemTextSize",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	if not (type(sizeX) == "number") then error(dgsGenAsrt(sizeX,"dgsGridListSetItemTextSize",4,"number")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
@@ -1596,8 +1596,8 @@ function dgsGridListGetItemTextSize(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemTextSize",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemTextSize",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemTextSize",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemTextSize",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	return rData[r][c][4],rData[r][c][5]
@@ -1612,8 +1612,8 @@ function dgsGridListSetItemAlignment(gridlist,r,c,align)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemAlignment",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemAlignment",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemAlignment",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemAlignment",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	rData[r][c][11] = align
 	return true
@@ -1627,8 +1627,8 @@ function dgsGridListGetItemAlignment(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemAlignment",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemAlignment",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemAlignment",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemAlignment",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	return rData[r][c][11] or cData[c][4]	--Alignment
 end
@@ -1641,8 +1641,8 @@ function dgsGridListSetItemSelectable(gridlist,r,c,state)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemSelectable",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemSelectable",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemSelectable",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemSelectable",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	rData[r][c][9] = not state or nil
@@ -1657,8 +1657,8 @@ function dgsGridListGetItemSelectable(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemSelectable",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemSelectable",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemSelectable",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemSelectable",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	return rData[r][c][9] == false
@@ -1672,8 +1672,8 @@ function dgsGridListSetItemHoverable(gridlist,r,c,state)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemHoverable",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemHoverable",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemHoverable",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemHoverable",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	rData[r][c][8] = not state
@@ -1688,8 +1688,8 @@ function dgsGridListGetItemHoverable(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemHoverable",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemHoverable",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemHoverable",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemHoverable",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	return rData[r][c][8] == false
@@ -1716,8 +1716,8 @@ function dgsGridListSetItemImage(gridlist,r,c,image,color,offx,offy,w,h,relative
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemImage",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemImage",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemImage",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemImage",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	local imageData = rData[r][c][7] or {}
@@ -1740,8 +1740,8 @@ function dgsGridListRemoveItemImage(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListRemoveItemImage",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListRemoveItemImage",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListRemoveItemImage",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListRemoveItemImage",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	rData[r][c][7] = nil
@@ -1756,8 +1756,8 @@ function dgsGridListGetItemImage(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemImage",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemImage",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemImage",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemImage",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	return unpack(rData[r][c][7] or {})
@@ -1771,8 +1771,8 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemText",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemText",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemText",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemText",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	if type(text) == "table" then
@@ -1799,8 +1799,8 @@ function dgsGridListGetItemText(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemText",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemText",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetItemText",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetItemText",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
 	return rData[r][c][1]
@@ -1894,8 +1894,8 @@ function dgsGridListGetSelectedCount(gridlist,r,c)
 	if cLen == 0 or rLen == 0 then return false end
 	local cIsNum,rIsNum = type(c) == "number",type(r) == "number"
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen or c == -1),rIsNum and not (r>=1 and r<=rLen or r == -1)
-	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetSelectedCount",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
-	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetSelectedCount",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
+	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListGetSelectedCount",2,"number","-1,1~"..rLen,rNInRange and "row out of range")) end
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetSelectedCount",3,"number","-1,1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	local selectedItems = dgsGridListGetSelectedItems(gridlist)
 	if r == -1 then
@@ -1938,8 +1938,8 @@ function dgsGridListSetSelectedItem(gridlist,r,c,scrollTo,isOrigin)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen or c == -1),not (r>=1 and r<=rLen or r == -1)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetSelectedItem",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetSelectedItem",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetSelectedItem",2,"number","-1,1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetSelectedItem",3,"number","-1,1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	local old1,old2
 	if eleData.multiSelection then
@@ -1990,8 +1990,8 @@ function dgsGridListSelectItem(gridlist,r,c,state)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen),not (r>=1 and r<=rLen)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSelectItem",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSelectItem",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSelectItem",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSelectItem",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	local selectedItem = eleData.rowSelect
 	if not rData[r][c] then return false end
@@ -2030,8 +2030,8 @@ function dgsGridListItemIsSelected(gridlist,r,c)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen),not (r>=1 and r<=rLen)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListItemIsSelected",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListItemIsSelected",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListItemIsSelected",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListItemIsSelected",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	local selectedItem = eleData.rowSelect
 	if rData[r][c] then
@@ -2057,8 +2057,8 @@ function dgsGridListSetItemTextOffset(gridlist,r,c,offsetX,offsetY,relative)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen or c == -1),not (r>=1 and r<=rLen or r == -1)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemTextOffset",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemTextOffset",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemTextOffset",2,"number","-1,1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemTextOffset",3,"number","-1,1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if r == -1 then
 		if c == -1 then
@@ -2091,8 +2091,8 @@ function dgsGridListGetItemTextOffset(gridlist,r,c)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen),not (r>=1 and r<=rLen)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemTextOffset",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemTextOffset",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemTextOffset",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemTextOffset",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	return rData[r][c][12][1],rData[r][c][12][2],rData[r][c][12][3]
 end
@@ -2104,8 +2104,8 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen or c == -1),not (r>=1 and r<=rLen or r == -1)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemColor",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemColor",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemColor",2,"number","-1,1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemColor",3,"number","-1,1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	--Deal with the color
 	local colors
@@ -2158,8 +2158,8 @@ function dgsGridListGetItemColor(gridlist,r,c,notSplitColor)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen),not (r>=1 and r<=rLen)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemColor",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemColor",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemColor",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemColor",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if notSplitColor then
 		return unpack(rData[r][c][2])
@@ -2193,8 +2193,8 @@ function dgsGridListSetItemBackGroundColor(gridlist,r,c,...)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen or c == -1),not (r>=1 and r<=rLen or r == -1)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemBackGroundColor",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemBackGroundColor",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemBackGroundColor",2,"number","-1,1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemBackGroundColor",3,"number","-1,1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	--Deal with the color
 	local colors
@@ -2243,8 +2243,8 @@ function dgsGridListGetItemBackGroundColor(gridlist,r,c,notSplitColor)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen),not (r>=1 and r<=rLen)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemBackGroundColor",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemBackGroundColor",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemBackGroundColor",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemBackGroundColor",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	local item = rData[r][c]
 	if item[13] then
@@ -2266,8 +2266,8 @@ function dgsGridListSetItemBackGroundImage(gridlist,r,c,nImg,sImg,cImg)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen or c == -1),not (r>=1 and r<=rLen or r == -1)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemBackGroundImage",2,"number","-1,1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemBackGroundImage",3,"number","-1,1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetItemBackGroundImage",2,"number","-1,1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetItemBackGroundImage",3,"number","-1,1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 
 	if nImg ~= nil then
@@ -2310,8 +2310,8 @@ function dgsGridListGetItemBackGroundImage(gridlist,r,c)
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
 	local cNInRange,rNInRange = not (c>=1 and c<=cLen),not (r>=1 and r<=rLen)
-	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemBackGroundImage",2,"number","1~"..rLen,rNInRange and "Out Of Range")) end
-	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemBackGroundImage",3,"number","1~"..cLen,cNInRange and "Out Of Range")) end
+	if rNInRange then error(dgsGenAsrt(r,"dgsGridListGetItemBackGroundImage",2,"number","1~"..rLen,rNInRange and "row out of range")) end
+	if cNInRange then error(dgsGenAsrt(c,"dgsGridListGetItemBackGroundImage",3,"number","1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
 	if rData[r][c][14] then
 		return rData[r][c][14][1],rData[r][c][14][2],rData[r][c][14][3]
