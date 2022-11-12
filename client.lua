@@ -718,11 +718,22 @@ function dgsCore3DRender()	--This renderer will only be attached to onClientPreR
 	local rendering3D = 0
 	if #dgsWorld3DTable ~= 0 then
 		cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
+		local dimension = getElementDimension(localPlayer)
+		local interior = getCameraInterior()
 		for i=1,#dgsWorld3DTable do
 			local ele = dgsWorld3DTable[i]
 			local dgsType = dgsElementType[ele]
-			if dgs3DRenderer[dgsType] and dgs3DRenderer[dgsType](ele) then
-				rendering3D = rendering3D+1
+			local eleData = dgsElementData[ele]
+			local selfDimen = eleData.dimension
+			if (selfDimen == -1 or selfDimen == dimension) and (eleData.interior == -1 or eleData.interior == interior) then
+				dxSetBlendMode(eleData.blendMode)
+				local visible = eleData.visible
+				local visibleInherited = eleData.visibleInherited
+				if visible and visibleInherited and isElement(ele) then
+					if dgs3DRenderer[dgsType] and dgs3DRenderer[dgsType](ele) then
+						rendering3D = rendering3D+1
+					end
+				end
 			end
 		end
 	end
