@@ -335,7 +335,7 @@ function dgsG2DLoadHooker(isLocal)
 			if isGUIGridList[gl] then
 				local selectedRow,selectedColumn = dgsGridListGetSelectedItem(gl)
 				selectedRow = selectedRow == -1 and -1 or selectedRow-1
-				selectedColumn = selectedColumn == -1 and 0 or selectedColumn
+				selectedColumn = selectedColumn == -1 and -1 or selectedColumn-1
 				return selectedRow,selectedColumn
 			else
 				return dgsGridListGetSelectedItem(gl)
