@@ -724,6 +724,7 @@
 	<export function="dgsGridListGetRowBackGroundColor" type="client" />
 	<export function="dgsGridListGetRowBackGroundImage" type="client" />
 	<export function="dgsGridListSetRowBackGroundImage" type="client" />
+	<export function="dgsGridListSetRowAsSection" type="client" />
 	<export function="dgsGridListSetItemText" type="client" />
 	<export function="dgsGridListGetItemText" type="client" />
 	<export function="dgsGridListSetItemTextOffset" type="client" />
@@ -741,13 +742,13 @@
 	<export function="dgsGridListGetItemBackGroundColor" type="client" />
 	<export function="dgsGridListSetItemBackGroundImage" type="client" />
 	<export function="dgsGridListGetItemBackGroundImage" type="client" />
+	<export function="dgsGridListSetItemAsSection" type="client" />
 	<export function="dgsGridListSetItemFont" type="client" />
 	<export function="dgsGridListGetItemFont" type="client" />
 	<export function="dgsGridListSetItemTextSize" type="client" />
 	<export function="dgsGridListGetItemTextSize" type="client" />
 	<export function="dgsGridListGetItemData" type="client" />
 	<export function="dgsGridListSetItemData" type="client" />
-	<export function="dgsGridListSetRowAsSection" type="client" />
 	<export function="dgsGridListGetItemImage" type="client" />
 	<export function="dgsGridListSetItemImage" type="client" />
 	<export function="dgsGridListRemoveItemImage" type="client" />
