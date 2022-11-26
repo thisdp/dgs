@@ -15,42 +15,44 @@ DGSConfig = {
 }
 
 function loadConfig()
-	local dgsConfig = {}
-	if fileExists("config.txt") then
-		local file = fileOpen("config.txt")
-		if file then
+	if fileExists("config.txt") then 
+		local file = fileOpen ("config.txt")
+		if file then 
 			local str = fileRead(file,fileGetSize(file))
 			fileClose(file)
 			local fnc = loadstring(str)
-			if fnc then
-				setfenv(fnc,{dgsConfig = dgsConfig})
+			if fnc then 
+				local dgsConfig = {}
+				setfenv(fnc,{dgsConfig=dgsConfig})
 				fnc()
-				outputDebugString("[DGS]Config File Loaded!")
+				for name,value in pairs(DGSConfig) do
+					DGSConfig[name] = dgsConfig[name]
+				end
+				outputDebugString("[DGS]Config file was loaded successfully")
 			else
-				outputDebugString("[DGS]Invaild Config File!",2)
+				outputDebugString("[DGS]Invalid config file",3)
 			end
 		else
-			outputDebugString("[DGS]Invaild Config File!",2)
+			outputDebugString("[DGS]DGS couldn't open the config file",3)
 		end
+	else
+		local file = fileCreate("config.txt")
+		local str = ""
+		for k,v in pairs(DGSConfig) do
+			local value = type(v) == "string" and '"'..v..'"' or tostring(v)
+			str = str.."\r\ndgsConfig."..k.." = "..value
+		end
+		fileWrite(file,str:sub(3))
+		fileClose(file)
+		outputDebugString("[DGS]Config file was created")
 	end
-	for name,value in pairs(DGSConfig) do
-		DGSConfig[name] = dgsConfig[name]
-	end
+
 	setElementData(resourceRoot,"DGS-allowCMD",DGSConfig.enableBuiltInCMD)
 	setElementData(resourceRoot,"DGS-enableDebug",DGSConfig.enableDebug)
 	setElementData(resourceRoot,"DGS-enableCompatibilityCheck",DGSConfig.enableCompatibilityCheck)
 	if DGSConfig.enableG2DCMD then
 		outputDebugString("[DGS]G2D command line is enabled!")
 	end
-	--Regenerate config file
-	local file = fileCreate("config.txt")
-	local str = ""
-	for k,v in pairs(DGSConfig) do
-		local value = type(v) == "string" and '"'..v..'"' or tostring(v)
-		str = str.."\r\ndgsConfig."..k.." = "..value
-	end
-	fileWrite(file,str:sub(3))
-	fileClose(file)
 end
 loadConfig()
 
