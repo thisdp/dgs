@@ -988,6 +988,50 @@ function dgsGridListGetColumnTitle(gridlist,c)
 	return cData[c][glCol_text]
 end
 
+function dgsGridListSetColumnTextColor(gridlist,c,...)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetColumnTextColor",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	local cData = eleData.columnData
+	local cLen = #cData
+	if cLen == 0 then return false end
+	local cIsNum = type(c) == "number"
+	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnTextColor",2,"number","1~"..cLen, cNInRange and "column out of range")) end
+	c = c-c%1
+	local color
+	local argLen = select("#",...)
+	local args = {...}
+	if not (type(argLen > 0 and args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetColumnTextColor",3,"number")) end
+	if argLen == 1 then 
+		color = args[1]
+	else
+		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetColumnTextColor",4,"number")) end
+		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetColumnTextColor",5,"number")) end
+		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetColumnTextColor",6,"nil/number")) end
+		color = tocolor(args[1],args[2],args[3],args[4])
+	end
+	cData[c][glCol_textColor] = color
+	return true
+end
+
+function dgsGridListGetColumnTextColor(gridlist,c,notSplitColor)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetColumnTextColor",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	local cData = eleData.columnData
+	local cLen = #cData
+	if cLen == 0 then return false end
+	local cIsNum = type(c) == "number"
+	local cNInRange = cIsNum and not (c>=1 and c<=cLen)
+	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListGetColumnTextColor",2,"number","1~"..cLen, cNInRange and "column out of range")) end
+	c = c-c%1
+	local color = cData[c][glCol_textColor]
+	if notSplitColor then
+		return color
+	else
+		return fromcolor(color)
+	end
+end
+
 function dgsGridListGetColumnRelative(gridlist)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetColumnRelative",1,"dgs-dxgridlist")) end
 	return dgsElementData[gridlist].columnRelative

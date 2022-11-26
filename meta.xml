@@ -699,6 +699,8 @@
 	<export function="dgsGridListGetColumnAlignment" type="client" />
 	<export function="dgsGridListGetColumnTextSize" type="client" />
 	<export function="dgsGridListSetColumnTextSize" type="client" />
+	<export function="dgsGridListSetColumnTextColor" type="client" />
+	<export function="dgsGridListGetColumnTextColor" type="client" />
 	<export function="dgsGridListInsertRowAfter" type="client" />
 	<export function="dgsGridListAddRow" type="client" />
 	<export function="dgsGridListAddRows" type="client" />
