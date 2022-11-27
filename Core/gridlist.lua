@@ -385,12 +385,12 @@ function dgsGridListGetMultiSelectionEnabled(gridlist)
 	return dgsElementData[gridlist].multiSelection
 end
 
-function dgsGridListGetNavigationEnabled(gridlist,state)
+function dgsGridListGetNavigationEnabled(gridlist)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetNavigationEnabled",1,"dgs-dxgridlist")) end
 	return dgsElementData[gridlist].enableNavigation
 end
 
-function dgsGridListSetNavigationEnabled(gridlist)
+function dgsGridListSetNavigationEnabled(gridlist,state)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetNavigationEnabled",1,"dgs-dxgridlist")) end
 	return dgsSetData(gridlist,"enableNavigation",state)
 end
