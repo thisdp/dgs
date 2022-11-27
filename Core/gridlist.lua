@@ -999,10 +999,9 @@ function dgsGridListSetColumnTextColor(gridlist,c,...)
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetColumnTextColor",2,"number","1~"..cLen, cNInRange and "column out of range")) end
 	c = c-c%1
 	local color
-	local argLen = select("#",...)
 	local args = {...}
-	if not (type(argLen > 0 and args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetColumnTextColor",3,"number")) end
-	if argLen == 1 then 
+	if not (type(#args > 0 and args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetColumnTextColor",3,"number")) end
+	if #args == 1 then 
 		color = args[1]
 	else
 		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetColumnTextColor",4,"number")) end
@@ -2328,17 +2327,16 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 	local c,r = c-c%1,r-r%1
 	--Deal with the color
 	local colors
-	local argLen = select("#",...)
 	local args = {...}
-	if argLen == 0 then
+	if #args == 0 then
 		error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"table/number"))
-	elseif argLen == 1 then
+	elseif #args == 1 then
 		if type(args[1]) == "table" then
 			colors = {args[1][1],args[1][2] or args[1][1],args[1][3] or args[1][1]}
 		else
 			colors = {args[1],args[1],args[1]}
 		end
-	elseif argLen >= 3 then
+	elseif #args >= 3 then
 		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"number")) end
 		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemColor",3,"number")) end
 		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemColor",4,"number")) end
@@ -2420,13 +2418,12 @@ function dgsGridListSetItemBackGroundColor(gridlist,r,c,...)
 	local c,r = c-c%1,r-r%1
 	--Deal with the color
 	local colors
-	local argLen = select("#",...)
 	local args = {...}
-	if argLen == 0 then
+	if #args == 0 then
 		error(dgsGenAsrt(args[1],"dgsGridListSetItemBackGroundColor",2,"table/number"))
-	elseif argLen == 1 and type(args[1]) == "table" then
+	elseif #args == 1 and type(args[1]) == "table" then
 		colors = args[1]
-	elseif argLen >= 3 then
+	elseif #args >= 3 then
 		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemBackGroundColor",2,"number")) end
 		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemBackGroundColor",3,"number")) end
 		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemBackGroundColor",4,"number")) end
