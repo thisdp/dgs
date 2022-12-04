@@ -427,7 +427,6 @@ function removeElementData(element,key)
 	setElementData(element,key,nil)
 end
 
-local addEventHandler = addEventHandler
 function dgsAddEventHandler(eventName,element,fncName,...)
 	if addEventHandler(eventName,element,_G[fncName],...) then
 		if not dgsElementData[element] then dgsElementData[element] = {} end
