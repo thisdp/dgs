@@ -198,6 +198,8 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local renderBuffer = eleData.renderBuffer
+	local color = eleData.color
+	local image = eleData.image
 	local buttonState = 1
 	if MouseData.entered == source then
 		buttonState = 2
@@ -222,10 +224,10 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	if eleData.currentState ~= buttonState then
 		eleData.currentState = buttonState
 		eleData.currentStateTick = getTickCount()
-		renderBuffer.startColor = renderBuffer.currentColor or (type(eleData.color) ~= "table" and eleData.color or eleData.color[eleData.lastState])
+		renderBuffer.startColor = renderBuffer.currentColor or (type(color) ~= "table" and color or color[eleData.lastState])
 	end
-	local bgColor = type(eleData.color) ~= "table" and eleData.color or eleData.color[buttonState] 
-	local bgImage = type(eleData.image) ~= "table" and eleData.image or eleData.image[buttonState]
+	local bgColor = type(color) ~= "table" and color or color[buttonState] 
+	local bgImage = type(image) ~= "table" and image or image[buttonState]
 	local finalcolor
 	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
