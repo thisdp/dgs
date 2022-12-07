@@ -174,6 +174,7 @@ function dgsCoreRender()
 	MouseData.hit = false
 	MouseData.hitDebug = false
 	if #BottomFatherTable+#CenterFatherTable+#TopFatherTable+#BackEndTable+#dgsWorld3DTable+#dgsScreen3DTable ~= 0 then
+		local preBlendMode = dxGetBlendMode()
 		--Animation Processing
 		onAnimQueueProcess()
 		----
@@ -190,6 +191,7 @@ function dgsCoreRender()
 				dgsRendererFunction(v)
 			end
 		end
+		dxSetBlendMode(preBlendMode)
 		--
 		frameStart3DOnScreen = getTickCount()
 		MouseData.hitData3D[0] = false
@@ -209,7 +211,7 @@ function dgsCoreRender()
 				renderGUI(v,mx,my,eleData.enabled,eleData.enabled,eleData.mainRT,0,0,0,0,0,0,1,MouseData.clickl)
 			end
 		end
-		dxSetBlendMode("blend")
+		dxSetBlendMode(preBlendMode)
 		dxSetRenderTarget()
 		for i=1,#dgsScreen3DTable do
 			local v = dgsScreen3DTable[i]
@@ -720,6 +722,7 @@ function dgsCore3DRender()	--This renderer will only be attached to onClientPreR
 		cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
+		local preBlendMode = dxGetBlendMode()
 		for i=1,#dgsWorld3DTable do
 			local ele = dgsWorld3DTable[i]
 			local dgsType = dgsElementType[ele]
@@ -736,6 +739,7 @@ function dgsCore3DRender()	--This renderer will only be attached to onClientPreR
 				end
 			end
 		end
+		dxSetBlendMode(preBlendMode)
 	end
 	dgsRenderInfo.rendering3D = rendering3D
 	dgsRenderInfo.frameEnd3D = getTickCount()
