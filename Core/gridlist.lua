@@ -2934,7 +2934,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local _txtFont = isSection and (cItem[glItem_textFont] or sectionFont) or (cItem[glItem_textFont] or eleData.rowFont or eleData.columnFont or font)
 					local _txtScalex = cItem[glItem_textScaleX] or rowTextSx
 					local _txtScaley = cItem[glItem_textScaleY] or rowTextSy
-					local alignment = cItem[glItem_textAlignment] or columnData[id][glCol_alignment]
+					local alignment = cItem[glItem_textAlignment] or columnData[id][glCol_textAlignment]
 					
 					local itemBGColor,itemBGImage = cItem[glItem_bgColor],cItem[glItem_bgImage] or image
 					if not itemBGColor then
