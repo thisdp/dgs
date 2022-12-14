@@ -44,6 +44,7 @@ end
 function dgsRoundRectSetTexture(rectShader,texture)
 	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetTexture",1,"plugin dgs-dxroundrectangle")) end
 	if isElement(texture) then
+		if not(isMaterial(texture) == "texture") then error(dgsGenAsrt(dgsCircleSetTexture,"dgsRoundRectSetTexture",1,"texture")) end
 		dxSetShaderValue(rectShader,"textureLoad",true)
 		dxSetShaderValue(rectShader,"sourceTexture",texture)
 		dgsSetData(rectShader,"sourceTexture",texture)

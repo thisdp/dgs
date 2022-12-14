@@ -38,14 +38,16 @@ function dgsCanvasRender(canvas)
 	local resolution = dgsElementData[canvas].resolution
 	local renderSource = dgsElementData[canvas].renderSource
 	local blendMode = dxGetBlendMode()
+	--dxSetBlendMode("overwrite")
 	dxSetRenderTarget(canvas,true)
 	dxDrawImage(0,0,resolution[1],resolution[2],renderSource)
 	dxSetRenderTarget()
-	dxSetBlendMode(blendMode)
+	--dxSetBlendMode(blendMode)
 end
 
 dgsCustomTexture["dgs-dxcanvas"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	return dgsCanvasRender(image)
+	--return __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 end
 
 dgsBackEndRenderer:register("dgs-dxcanvas",function(image)

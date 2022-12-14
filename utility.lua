@@ -271,6 +271,7 @@ dgsMaterialType = {
 	texture = "texture",
 	shader = "shader",
 	svg = "texture",
+	["dgs-dxcanvas"] = "texture",
 	["render-target-texture"] = "texture",
 }
 
