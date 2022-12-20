@@ -650,7 +650,19 @@ function dgsGetMouseClickGUI(button)
 	end
 end
 
-function dgsIsMouseWithinGUI(ele) return (isCursorShowing() and MouseData.WithinElements[ele]) and true or false end
+function dgsIsMouseWithinGUI(ele)
+	if type(ele) == "table" then
+		local result = {}
+		if isCursorShowing() then
+			for key,e in pairs(ele) do
+				result[e] = MouseData.WithinElements[e] and true or nil
+			end
+		end
+		return result
+	else
+		return (isCursorShowing() and MouseData.WithinElements[ele]) and true or false end
+	end
+end
 function dgsGetMouseEnterGUI() return MouseData.entered end
 function dgsGetMouseLeaveGUI() return MouseData.left end
 function dgsGetFocusedGUI() return MouseData.focused end
