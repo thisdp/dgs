@@ -660,7 +660,7 @@ function dgsIsMouseWithinGUI(ele)
 		end
 		return result
 	else
-		return (isCursorShowing() and MouseData.WithinElements[ele]) and true or false end
+		return (isCursorShowing() and MouseData.WithinElements[ele]) and true or false
 	end
 end
 function dgsGetMouseEnterGUI() return MouseData.entered end
