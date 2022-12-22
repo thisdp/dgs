@@ -18,6 +18,7 @@ function loadConfig()
 	if fileExists("config.txt") then 
 		local file = fileOpen ("config.txt")
 		if file then 
+			local configUpdateRequired = false
 			local str = fileRead(file,fileGetSize(file))
 			fileClose(file)
 			local fnc = loadstring(str)
@@ -26,14 +27,31 @@ function loadConfig()
 				setfenv(fnc,{dgsConfig=dgsConfig})
 				fnc()
 				for name,value in pairs(DGSConfig) do
-					DGSConfig[name] = dgsConfig[name]
+					if dgsConfig[name] == nil then
+						configUpdateRequired = true
+					else
+						DGSConfig[name] = dgsConfig[name]
+					end
 				end
-				outputDebugString("[DGS]Config file was loaded successfully")
+				outputDebugString("[DGS]Config Loaded!")
 			else
-				outputDebugString("[DGS]Invalid config file",3)
+				configUpdateRequired = true
+				outputDebugString("[DGS]Invalid config file!",3)
+			end
+			if configUpdateRequired then
+				fileDelete("config.txt")
+				local file = fileCreate("config.txt")
+				local str = ""
+				for k,v in pairs(DGSConfig) do
+					local value = type(v) == "string" and '"'..v..'"' or tostring(v)
+					str = str.."\r\ndgsConfig."..k.." = "..value
+				end
+				fileWrite(file,str:sub(3))
+				fileClose(file)
+				outputDebugString("[DGS]Config Updated!")
 			end
 		else
-			outputDebugString("[DGS]DGS couldn't open the config file",3)
+			outputDebugString("[DGS]Failed to open config file!",3)
 		end
 	else
 		local file = fileCreate("config.txt")
@@ -44,7 +62,7 @@ function loadConfig()
 		end
 		fileWrite(file,str:sub(3))
 		fileClose(file)
-		outputDebugString("[DGS]Config file was created")
+		outputDebugString("[DGS]Config Created!")
 	end
 
 	setElementData(resourceRoot,"DGS-allowCMD",DGSConfig.enableBuiltInCMD)
