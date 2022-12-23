@@ -471,7 +471,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				selectorTextColors[preEnterData] = 2
 			end
 		else
-			if MouseData.clickl == source then
+			if MouseData.click.left == source then
 				selectorTextColors[MouseData.selectorClickData] = 3
 			else
 				selectorTextColors[MouseData.selectorClickData] = 2

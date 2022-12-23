@@ -214,15 +214,15 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	if MouseData.entered == source then
 		colorimgid = 2
 		if eleData.clickType == 1 then
-			if MouseData.clickl == source then
+			if MouseData.click.left == source then
 				colorimgid = 3
 			end
 		elseif eleData.clickType == 2 then
-			if MouseData.clickr == source then
+			if MouseData.click.right == source then
 				colorimgid = 3
 			end
 		else
-			if MouseData.clickl == source or MouseData.clickr == source then
+			if MouseData.click.left == source or MouseData.click.right == source then
 				colorimgid = 3
 			end
 		end

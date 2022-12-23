@@ -642,11 +642,11 @@ end)
 
 function dgsGetMouseClickGUI(button)
 	if button == "left" then
-		return MouseData.clickl
+		return MouseData.click.left
 	elseif button == "middle" then
-		return MouseData.clickm
+		return MouseData.click.middle
 	else
-		return MouseData.clickr
+		return MouseData.click.right
 	end
 end
 

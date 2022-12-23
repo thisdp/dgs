@@ -494,7 +494,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 				colorImageIndex[MouseData.scbEnterData] = 2
 			end
 		else
-			if MouseData.clickl == source then
+			if MouseData.click.left == source then
 				colorImageIndex[MouseData.scbClickData] = 3
 				if MouseData.scbClickData == 3 then
 					local scrollPosition = 0

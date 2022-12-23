@@ -584,7 +584,7 @@ end
 
 function resetMemo(x,y)
 	if dgsGetType(MouseData.focused) == "dgs-dxmemo" then
-		if MouseData.focused == MouseData.clickl then
+		if MouseData.focused == MouseData.click.left then
 			local pos,line = searchMemoMousePosition(MouseData.focused,MouseData.cursorPos[1] or x*sW, MouseData.cursorPos[2] or y*sH)
 			dgsMemoSetCaretPosition(MouseData.focused,pos,line,true)
 		end

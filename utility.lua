@@ -968,21 +968,21 @@ function HSV2RGB(H,S,V)
 	local chroma = S*V;
 	local interm = chroma*(1-math.abs(H%2-1));
 	local shift = V - chroma;
-	local RGB
+	local r,g,b
 	if H < 1 then
-		RGB = {shift+chroma,shift+interm,shift}
+		r,g,b = shift+chroma,shift+interm,shift
 	elseif H < 2 then
-		RGB = {shift+interm,shift+chroma,shift}
+		r,g,b = shift+interm,shift+chroma,shift
 	elseif H < 3 then
-		RGB = {shift,shift+chroma,shift+interm}
+		r,g,b = shift,shift+chroma,shift+interm
 	elseif H < 4 then
-		RGB = {shift,shift+interm,shift+chroma}
+		r,g,b = shift,shift+interm,shift+chroma
 	elseif H < 5 then
-		RGB = {shift+interm,shift,shift+chroma}
+		r,g,b = shift+interm,shift,shift+chroma
 	else
-		RGB = {shift+chroma,shift,shift+interm}
+		r,g,b = shift+chroma,shift,shift+interm
 	end
-	return RGB[1]*255,RGB[2]*255,RGB[3]*255
+	return r*255,g*255,b*255
 end
 
 function HSV2HSL(H,S,V)
@@ -1104,7 +1104,6 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 	return true
 end
 
-local textShadowMemory = setmetatable({},{__mode="k"})
 function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	if type(text) ~= "string" then
 		local pluginType = dgsGetPluginType(text)
@@ -1116,10 +1115,7 @@ function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,ali
 	if shadowOffsetX then
 		local shadowText = text
 		if colorCoded then
-			if not textShadowMemory[text] then
-				textShadowMemory[text] = shadowText:gsub("#%x%x%x%x%x%x","") or shadowText
-			end
-			shadowText = textShadowMemory[text]
+			shadowText = shadowText:gsub("#%x%x%x%x%x%x","") or shadowText
 		end
 		shadowFont = shadowFont or font or "default"
 		if not shadowIsOutline or shadowIsOutline == 0 then
