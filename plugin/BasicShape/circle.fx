@@ -45,7 +45,6 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	float2 StartN = float2(-Start.y,Start.x);
 	float alpha = !direction;
 	if(angle_p<ang) alpha = direction;
-	[branch]
 	if(direction){
 		float2 P1 = P-N;
 		float len0P = length(P1);
