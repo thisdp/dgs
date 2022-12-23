@@ -14,6 +14,14 @@ DGSConfig = {
 	enableDebug 					= true,			-- Enable /debugdgs
 }
 
+addCommandHandler("debugdgs", function(playerSource, command, arg)
+	if ( hasObjectPermissionTo ( playerSource, "function.kickPlayer", true ) ) then
+		triggerClientEvent(playerSource, "enable-dgs", playerSource, arg)
+	else
+		outputChatBox("No permission", playerSource)
+	end
+end)
+
 function loadConfig()
 	if fileExists("config.txt") then 
 		local file = fileOpen ("config.txt")

@@ -206,32 +206,33 @@ DGSBuiltInTex = {
 }
 
 -------DEBUG
-addCommandHandler("debugdgs",function(command,arg)
+addEvent("enable-dgs", true)
+addEventHandler("enable-dgs", getRootElement(), function (arg)
 	local enableDebug = getElementData(resourceRoot,"DGS-enableDebug")
 	if not enableDebug then return outputChatBox("[DGS]Debug Mode is #FF0000not enabled #FFFFFFon this server",255,255,255,true) end
 	if not arg or arg == "1" then
-		debugMode = (not getElementData(localPlayer,"DGS-DEBUG") or arg == "1") and 1 or false
-		setElementData(localPlayer,"DGS-DEBUG",debugMode,false)
+		debugMode = (not getElementData(source,"DGS-DEBUG") or arg == "1") and 1 or false
+		setElementData(source,"DGS-DEBUG",debugMode,false)
 		checkDisabledElement = false
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
 		if not debugMode then
-			setElementData(localPlayer,"DGS-DEBUG-C",comp,false)
+			setElementData(source,"DGS-DEBUG-C",comp,false)
 		end
 	elseif arg == "2" then
 		debugMode = 2
-		setElementData(localPlayer,"DGS-DEBUG",2,false)
+		setElementData(source,"DGS-DEBUG",2,false)
 		checkDisabledElement = false
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 2 )"),255,255,255,true)
 	elseif arg == "3" then
 		debugMode = 3
-		setElementData(localPlayer,"DGS-DEBUG",3,false)
-		setElementData(localPlayer,"DGS-DebugTracer",true,false)
+		setElementData(source,"DGS-DEBUG",3,false)
+		setElementData(source,"DGS-DebugTracer",true,false)
 		checkDisabledElement = true
 		outputChatBox("[DGS]Debug Mode "..(debugMode and "#00FF00Enabled ( Mode 3 )"),255,255,255,true)
 	elseif arg == "c" then
-		local comp = not getElementData(localPlayer,"DGS-DEBUG-C")
+		local comp = not getElementData(source,"DGS-DEBUG-C")
 		outputChatBox("[DGS]Debug Mode For Compatibility Check "..(comp and "#00FF00Enabled" or "#FF0000Disabled"),255,255,255,true)
-		setElementData(localPlayer,"DGS-DEBUG-C",comp,false)
+		setElementData(source,"DGS-DEBUG-C",comp,false)
 	end
 end)
 
