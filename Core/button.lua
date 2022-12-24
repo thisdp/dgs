@@ -42,7 +42,7 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local assert = assert
 local tonumber = tonumber
@@ -173,7 +173,7 @@ function dgsButtonSubmitForm()
 			texts[key] = false
 		end
 	end
-	triggerEvent("onDgsFormSubmit",source,texts)
+	dgsTriggerEvent("onDgsFormSubmit",source,texts)
 end
 
 function dgsButtonMakeForm(button,forms)

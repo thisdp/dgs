@@ -79,7 +79,7 @@ function dgsCreateColorPicker(style,...)
 		dgsSetData(mainElement,"componentSelectors",{})
 		dgsSetData(mainElement,"style",style)
 		dgsColorPickerSetColor(mainElement,0,0,255,255)
-		triggerEvent("onDgsPluginCreate",mainElement,sourceResource)
+		dgsTriggerEvent("onDgsPluginCreate",mainElement,sourceResource)
 		return mainElement
 	end
 	return false
@@ -199,7 +199,7 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	else
 		dgsSetPosition(images[2],-offset,value*absSize[2]/100-thickness/2,false)
 	end
-	triggerEvent("onDgsColorPickerComponentSelectorChange",cs,value,oldV)
+	dgsTriggerEvent("onDgsColorPickerComponentSelectorChange",cs,value,oldV)
 end
 
 AvailableColorType = {
@@ -628,7 +628,7 @@ function dgsColorPickerSetColor(cp,...)
 	dgsSetData(cp,"HSV",newColorHSV)
 	dgsSetData(cp,"RGB",newColorRGB)
 	dgsSetData(cp,"A",newA)
-	triggerEvent("onDgsColorPickerChange",cp,oldRGB,oldHSL,oldHSV,oldAlp)
+	dgsTriggerEvent("onDgsColorPickerChange",cp,oldRGB,oldHSL,oldHSV,oldAlp)
 	for cs,_ in pairs(componentSelectors) do
 		if not isElement(cs) then componentSelectors[cs] = nil end
 		local csType = dgsGetPluginType(cs)

@@ -18,7 +18,7 @@ local dxSetBlendMode = dxSetBlendMode
 local dgsSetType = dgsSetType
 local dgsSetData = dgsSetData
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 --
 --This is a special dgs element that won't be rendered itself.
@@ -34,7 +34,7 @@ function dgsCreateCustomRenderer(customFnc,width,height)
 		dgsSetData(cr,"customRenderer",function() return false end)
 	end
 	if width and width > 0 and height and height > 0 then
-		local crRenderTarget,err = dxCreateRenderTarget(width,height,true,cr,sRes)
+		local crRenderTarget,err = dgsCreateRenderTarget(width,height,true,cr,sRes)
 		if crRenderTarget then
 			dgsAttachToAutoDestroy(crRenderTarget,cr,-1)
 		else
@@ -45,7 +45,7 @@ function dgsCreateCustomRenderer(customFnc,width,height)
 	else
 		dgsSetData(cr,"renderTargetResolution",{0,0})
 	end
-	triggerEvent("onDgsCreate",cr,sRes)
+	dgsTriggerEvent("onDgsCreate",cr,sRes)
 	return cr
 end
 
@@ -57,7 +57,7 @@ function dgsCustomRendererSetrenderTargetResolution(cr,width,height)
 	if eleData.renderTargetResolution[1] ~= width or eleData.renderTargetResolution[2] ~= height then
 		if isElement(eleData.renderTarget) then destroyElement(eleData.renderTarget) end
 		if not width or width == 0 or not height or height == 0 then
-			local crRenderTarget,err = dxCreateRenderTarget(width,height,true,cr,sourceResource)
+			local crRenderTarget,err = dgsCreateRenderTarget(width,height,true,cr,sourceResource)
 			if crRenderTarget then
 				dgsAttachToAutoDestroy(crRenderTarget,cr,-1)
 			else

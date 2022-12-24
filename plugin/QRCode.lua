@@ -11,7 +11,7 @@ function dgsRequestQRCode(str,w,h)
 	local index = math.seekEmpty(QRCodeQueue)
 	QRCodeQueue[index] = QRCode
 	triggerServerEvent("DGSI_RequestQRCode",resourceRoot,encodedStr,w,h,index)
-	triggerEvent("onDgsPluginCreate",QRCode,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",QRCode,sourceResource)
 	return QRCode
 end
 
@@ -30,5 +30,5 @@ addEventHandler("DGSI_ReceiveQRCode",resourceRoot,function(data,isSuccess,index)
 		dxSetTexturePixels(QRCode,pixels)
 		dgsSetData(QRCode,"loaded",true)
 	end
-	triggerEvent("onDgsQRCodeLoad",QRCode,isSuccess)
+	dgsTriggerEvent("onDgsQRCodeLoad",QRCode,isSuccess)
 end)

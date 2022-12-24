@@ -34,7 +34,7 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local assert = assert
 local type = type
@@ -152,14 +152,14 @@ function dgsRadioButtonSetSelected(rb,state)
 		if rb ~= _rb then
 			dgsSetData(parent,"RadioButton",rb)
 			if dgsIsType(_rb) then
-				triggerEvent("onDgsRadioButtonChange",_rb,false)
+				dgsTriggerEvent("onDgsRadioButtonChange",_rb,false)
 			end
-			triggerEvent("onDgsRadioButtonChange",rb,true)
+			dgsTriggerEvent("onDgsRadioButtonChange",rb,true)
 		end
 		return true
 	else
 		dgsSetData(parent,"RadioButton",false)
-		triggerEvent("onDgsRadioButtonChange",rb,false)
+		dgsTriggerEvent("onDgsRadioButtonChange",rb,false)
 		return true
 	end
 end

@@ -7,7 +7,7 @@ styleSecEnv = {
 	dxCreateTexture = function(path) return dxCreateTexture(path,false) end,
 	dxCreateScreenSource = dxCreateScreenSource,
 	dxCreateShader = function(path) return dxCreateShader(path,false) end,
-	dxCreateRenderTarget = dxCreateRenderTarget,
+	dgsCreateRenderTarget = dgsCreateRenderTarget,
 }
 
 styleManager = {

@@ -37,7 +37,7 @@ local applyColorAlpha = applyColorAlpha
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local isElement = isElement
 local assert = assert
@@ -345,7 +345,7 @@ dgsOnPropertyChange["dgs-dxscrollbar"] = {
 				else
 					dgsElementData[dgsEle][key] = nValue
 				end
-				triggerEvent("onDgsElementScroll",dgsEle,dgsEle,dgsElementData[dgsEle][key],oldValue,nValue,oValue)
+				dgsTriggerEvent("onDgsElementScroll",dgsEle,dgsEle,dgsElementData[dgsEle][key],oldValue,nValue,oValue)
 			else
 				dgsElementData[dgsEle][key] = oldValue
 			end

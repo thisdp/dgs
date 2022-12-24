@@ -49,7 +49,7 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 local __dxDrawImage = __dxDrawImage
-local dxCreateRenderTarget = dxCreateRenderTarget
+local dgsCreateRenderTarget = dgsCreateRenderTarget
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsSetParent = dgsSetParent
@@ -63,7 +63,7 @@ local isConsoleActive = isConsoleActive
 local isMainMenuActive = isMainMenuActive
 local isChatBoxInputActive = isChatBoxInputActive
 local getKeyState = getKeyState
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local addEventHandler = addEventHandler
 local createElement = createElement
 local assert = assert
@@ -217,7 +217,7 @@ function dgsEditRecreateRenderTarget(edit,lateAlloc)
 		local padding = eleData.padding
 		local width,height = eleData.absSize[1]-padding[1]*2,eleData.absSize[2]-padding[2]*2
 		width,height = width-width%1,height-height%1
-		local bgRT,err = dxCreateRenderTarget(width,height,true,edit)
+		local bgRT,err = dgsCreateRenderTarget(width,height,true,edit)
 		if bgRT ~= false then
 			dgsAttachToAutoDestroy(bgRT,edit,-1)
 		else
@@ -344,7 +344,7 @@ function dgsEditCheckPreSwitch()
 					dgsEditSetCaretPosition(theResult,utf8Len(dgsElementData[theResult].text or ""))
 				end
 				dgsBringToFront(theResult)
-				triggerEvent("onDgsEditSwitched",theResult,source)
+				dgsTriggerEvent("onDgsEditSwitched",theResult,source)
 			end
 		end
 	end
@@ -487,7 +487,7 @@ function dgsEditSetTextFilter(edit,str)
 	dgsSetData(edit,"undoHistory",{})
 	dgsSetData(edit,"redoHistory",{})
 	eleData.updateRTNextFrame = true
-	triggerEvent("onDgsTextChange",edit,oldText)
+	dgsTriggerEvent("onDgsTextChange",edit,oldText)
 end
 dgsRegisterDeprecatedFunction("dgsEditSetWhiteList","dgsEditSetTextFilter")
 
@@ -559,7 +559,7 @@ function dgsEditDeleteText(edit,fromIndex,toIndex,noAffectCaret,historyRecState)
 	end
 	eleData.textFontLen = dxGetTextWidth(text,eleData.textSize[1],eleData.font)
 	eleData.updateRTNextFrame = true
-	triggerEvent("onDgsTextChange",edit,oldText)
+	dgsTriggerEvent("onDgsTextChange",edit,oldText)
 	return deletedText
 end
 
@@ -571,7 +571,7 @@ function dgsEditClearText(edit)
 	dgsSetData(edit,"selectFrom",0)
 	dgsElementData[edit].textFontLen = 0
 	dgsElementData[edit].updateRTNextFrame = true
-	triggerEvent("onDgsTextChange",edit,oldText)
+	dgsTriggerEvent("onDgsTextChange",edit,oldText)
 	return true
 end
 
@@ -731,7 +731,7 @@ end
 addEventHandler("onClientGUIAccepted",GlobalEdit,function()
 	local dgsEdit = dgsElementData[source].linkedDxEdit
 	if dgsGetType(dgsEdit) == "dgs-dxedit" then
-		triggerEvent("onDgsEditAccepted",dgsEdit,dgsEdit)
+		dgsTriggerEvent("onDgsEditAccepted",dgsEdit,dgsEdit)
 	end
 end,true)
 
@@ -811,7 +811,7 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 		end
 	end
 	eleData.updateRTNextFrame = true
-	triggerEvent("onDgsTextChange",edit,oldText)
+	dgsTriggerEvent("onDgsTextChange",edit,oldText)
 	if eleData.enableRedoUndoRecord then
 		historyRecState = historyRecState or 1
 		if historyRecState ~= 0 and textLen ~= 0 then

@@ -33,7 +33,7 @@ function dgsCreateRemoteImage(website)
 	if website then
 		dgsRemoteImageRequest(remoteImage,website)
 	end
-	triggerEvent("onDgsPluginCreate",remoteImage,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",remoteImage,sourceResource)
 	return remoteImage
 end
 
@@ -102,7 +102,7 @@ addEventHandler("DGSI_ReceiveRemoteImage",resourceRoot,function(data,response,in
 				dxSetShaderValue(remoteImage,"textureRef",dgsElementData[remoteImage].defaultImages.unloadedTex)  --Change image when state changes
 			end
 		end
-		triggerEvent("onDgsRemoteImageLoad",remoteImage,response)
+		dgsTriggerEvent("onDgsRemoteImageLoad",remoteImage,response)
 	end
 end)
 

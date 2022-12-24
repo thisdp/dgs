@@ -50,7 +50,7 @@ function dgsCreateObjectPreviewHandle(objEle,rX,rY,rZ)
 	objPrevHandles[getElementID(objPrevEle)] = objPrevEle
 	dgsAddEventHandler("onClientElementDestroy",objEle,"destroyObjectPreviewWhenTargetElementDestroy",false)
 	dgsAddEventHandler("onClientElementDestroy",objPrevEle,"destroyObjectPreviewWhenOPElementDestroy",false)
-	triggerEvent("onDgsPluginCreate",objPrevEle,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",objPrevEle,sourceResource)
 	return objPrevEle
 end
 

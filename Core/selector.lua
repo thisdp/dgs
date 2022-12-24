@@ -38,7 +38,7 @@ local applyColorAlpha = applyColorAlpha
 local dgsTranslate = dgsTranslate
 local calculateGuiPositionSize = calculateGuiPositionSize
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local assert = assert
 local tonumber = tonumber
@@ -181,7 +181,7 @@ function dgsSelectorSetSelectedItem(selector,i)
 	if not(type(i) == "number") then error(dgsGenAsrt(i,"dgsSelectorSetSelectedItem",2,"number")) end
 	local prev = dgsElementData[selector].select
 	dgsSetData(selector,"select",i)
-	triggerEvent("onDgsSelectorSelect",selector,i,prev)
+	dgsTriggerEvent("onDgsSelectorSelect",selector,i,prev)
 	return true
 end
 

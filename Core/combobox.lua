@@ -51,7 +51,7 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local addEventHandler = addEventHandler
 local createElement = createElement
 local mathLerp = math.lerp
@@ -218,7 +218,7 @@ function dgsComboBoxRecreateRenderTarget(combobox,lateAlloc)
 	else
 		local box = dgsElementData[combobox].myBox
 		local boxSize = dgsElementData[box].absSize
-		local bgRT,err = dxCreateRenderTarget(boxSize[1],boxSize[2],true,combobox)
+		local bgRT,err = dgsCreateRenderTarget(boxSize[1],boxSize[2],true,combobox)
 		if bgRT ~= false then
 			dgsAttachToAutoDestroy(bgRT,combobox,-1)
 		else
@@ -240,7 +240,7 @@ function checkComboBoxScrollBar(scb,new,old)
 			local temp = -new*(itemLength-sy)/100
 			local temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp
 			dgsSetData(combobox,"itemMoveOffset",temp)
-			triggerEvent("onDgsElementScroll",combobox,source,new,old)
+			dgsTriggerEvent("onDgsElementScroll",combobox,source,new,old)
 		end
 	end
 end
@@ -622,7 +622,7 @@ function dgsComboBoxSetSelectedItem(combobox,i)
 	local i = i-i%1
 	local old = dgsElementData[combobox].select
 	dgsSetData(combobox,"select",i)
-	triggerEvent("onDgsComboBoxSelect",combobox,i,old)
+	dgsTriggerEvent("onDgsComboBoxSelect",combobox,i,old)
 	return true
 end
 
@@ -848,7 +848,7 @@ dgsOnPropertyChange["dgs-dxcombobox"] = {
 		configComboBox(dgsEle)
 	end,
 	listState = function(dgsEle,key,value,oldValue)
-		triggerEvent("onDgsComboBoxStateChange",dgsEle,value == 1 and true or false)
+		dgsTriggerEvent("onDgsComboBoxStateChange",dgsEle,value == 1 and true or false)
 	end,
 	viewCount = function(dgsEle,key,value,oldValue)
 		dgsComboBoxSetViewCount(dgsEle,value)

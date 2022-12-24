@@ -12,7 +12,7 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 --
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local dgsSetType = dgsSetType
 local dgsSetParent = dgsSetParent
@@ -61,7 +61,7 @@ function dgsCreateDetectArea(...)
 		dgsSetData(detectarea,"debugMode",false)
 		dgsSetData(detectarea,"debugModeAlpha",128)
 		calculateGuiPositionSize(detectarea,x,y,relative or false,w,h,relative or false,true)
-		triggerEvent("onDgsCreate",detectarea,sRes)
+		dgsTriggerEvent("onDgsCreate",detectarea,sRes)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 		return detectarea
 	end

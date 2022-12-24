@@ -22,7 +22,7 @@ function dgsCreateMask(texture1,texture2,settings)
 			dgsSetData(maskResult,k,v)
 		end
 		dgsSetData(maskResult,"asPlugin","dgs-dxmask")
-		triggerEvent("onDgsPluginCreate",maskResult,sourceResource)
+		dgsTriggerEvent("onDgsPluginCreate",maskResult,sourceResource)
 	elseif tex2Type == "texture" or tex2Type == "svg" then
 		maskResult = dxCreateShader("plugin/mask/maskTexture.fx")
 		dgsSetData(maskResult,"sourceTexture",texture1)
@@ -30,7 +30,7 @@ function dgsCreateMask(texture1,texture2,settings)
 		dgsSetData(maskResult,"maskTexture",texture2)
 		dxSetShaderValue(maskResult,"maskTexture",texture2)
 		dgsSetData(maskResult,"asPlugin","dgs-dxmask")
-		triggerEvent("onDgsPluginCreate",maskResult,sourceResource)
+		dgsTriggerEvent("onDgsPluginCreate",maskResult,sourceResource)
 	elseif tex2Type == "shader" then
 		maskResult = texture2
 		for k,v in pairs(settings) do
@@ -38,7 +38,7 @@ function dgsCreateMask(texture1,texture2,settings)
 			dgsSetData(maskResult,k,v)
 		end
 		dgsSetData(maskResult,"asPlugin","dgs-dxmask")
-		triggerEvent("onDgsPluginCreate",maskResult)
+		dgsTriggerEvent("onDgsPluginCreate",maskResult)
 	end
 	return maskResult
 end

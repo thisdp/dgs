@@ -207,7 +207,7 @@ function dgsCreateChart(x,y,w,h,chartType,relative,parent)
 	if chartProcessFunction[chartType] then
 		local chart = chartProcessFunction[chartType].create(x,y,w,h,chartType,relative,parent)
 		dgsSetData(chart,"updateNextFrame",true)
-		triggerEvent("onDgsPluginCreate",chart,sourceResource)
+		dgsTriggerEvent("onDgsPluginCreate",chart,sourceResource)
 		return chart
 	end
 	return false

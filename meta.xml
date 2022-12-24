@@ -86,6 +86,8 @@
 	<script src="plugin/svg.lua" type="client" />
 	
 	<script src="plugin/chart.lua" type="client" />
+	
+	<script src="plugin/tooltip.lua" type="client" />
 
 	<script src="plugin/pasteHandler/pasteHandler.lua" type="client"/>
 	<file src="plugin/pasteHandler/pasteHandler.html" />
@@ -197,6 +199,7 @@
 	<export function="dgsIsMouseWithinGUI" type="client" />
 	<export function="dgsGetMouseEnterGUI" type="client" />
 	<export function="dgsGetMouseLeaveGUI" type="client" />
+	<export function="dgsCenterElement" type="client" />
 	
 	<export function="dgsGetDxGUIFromResource" type="client" />
 	<export function="dgsGetDxGUINoParent" type="client" />
@@ -227,8 +230,10 @@
 	<export function="dgsDetachElements" type="client" />
 	<export function="dgsElementIsAttached" type="client" />
 	<export function="dgsGetCursorPosition" type="client" />
+	<export function="dgsGetMultiClickInterval" type="client" />
 	<export function="dgsSetMultiClickInterval" type="client" />
-	<export function="dgsSetMultiClickInterval" type="client" />
+	<export function="dgsGetMouseStayDelay" type="client" />
+	<export function="dgsSetMouseStayDelay" type="client" />
 	<export function="dgsGetBrowser" type="client" />
 	<export function="dgsAttachToAutoDestroy" type="client" />
 	<export function="dgsDetachFromAutoDestroy" type="client" />
@@ -937,7 +942,9 @@
 	<export function="dgsCreateCanvas" type="client" />
 	<export function="dgsCanvasSetBackEndFunction" type="client" />
 
-	<export function="dgsCenterElement" type="client" />
+	<export function="dgsCreateToolTip" type="client" />
+	<export function="dgsTooltipApplyTo" type="client" />
+	<export function="dgsTooltipRemoveFrom" type="client" />
 
 	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />

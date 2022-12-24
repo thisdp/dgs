@@ -49,7 +49,7 @@ local dxSetShaderValue = dxSetShaderValue
 local dxGetPixelsSize = dxGetPixelsSize
 local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
-local dxCreateRenderTarget = dxCreateRenderTarget
+local dgsCreateRenderTarget = dgsCreateRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 local __dxDrawImageSection = __dxDrawImageSection
@@ -65,7 +65,7 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local addEventHandler = addEventHandler
 local createElement = createElement
 local isElement = isElement
@@ -246,7 +246,7 @@ function dgsMemoRecreateRenderTarget(memo,lateAlloc)
 		local scbThick = eleData.scrollBarThick
 		local scrollbar = eleData.scrollbars
 		local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
-		local bgRT,err = dxCreateRenderTarget(sizex-scbThickV,sizey-scbThickH,true,memo)
+		local bgRT,err = dgsCreateRenderTarget(sizex-scbThickV,sizey-scbThickH,true,memo)
 		if bgRT ~= false then
 			dgsAttachToAutoDestroy(bgRT,memo,-1)
 		else
@@ -963,7 +963,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 			end
 		end
 		eleData.updateRTNextFrame = true
-		triggerEvent("onDgsTextChange",memo)
+		dgsTriggerEvent("onDgsTextChange",memo)
 	end
 end
 
@@ -1089,7 +1089,7 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 		end
 	end
 	eleData.updateRTNextFrame = true
-	triggerEvent("onDgsTextChange",memo)
+	dgsTriggerEvent("onDgsTextChange",memo)
 end
 
 function dgsMemoClearText(memo)
@@ -1106,7 +1106,7 @@ function dgsMemoClearText(memo)
 	end
 	configMemo(memo)
 	eleData.updateRTNextFrame = true
-	triggerEvent("onDgsTextChange",memo)
+	dgsTriggerEvent("onDgsTextChange",memo)
 	return true
 end
 

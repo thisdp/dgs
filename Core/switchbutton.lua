@@ -42,7 +42,7 @@ local dgsAttachToTranslation = dgsAttachToTranslation
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local assert = assert
 local tonumber = tonumber
@@ -186,7 +186,7 @@ end
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxswitchbutton"] = {
 	state = function(dgsEle,key,value,oldValue)
-		triggerEvent("onDgsSwitchButtonStateChange",dgsEle,value,oldValue)
+		dgsTriggerEvent("onDgsSwitchButtonStateChange",dgsEle,value,oldValue)
 	end,
 }
 

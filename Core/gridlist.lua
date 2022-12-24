@@ -99,7 +99,7 @@ local dgsDrawText = dgsDrawText
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local dxCreateRenderTarget = dxCreateRenderTarget
+local dgsCreateRenderTarget = dgsCreateRenderTarget
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsGetType = dgsGetType
@@ -112,7 +112,7 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local tonumber = tonumber
 local loadstring = loadstring
@@ -299,7 +299,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 		local relSizX,relSizY = w-scbThickV,h-scbThickH
 		local rowShowRange = relSizY-columnHeight
 		if relSizX*columnHeight ~= 0 then
-			columnRT,err = dxCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
+			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
 			if columnRT ~= false then
 				dgsAttachToAutoDestroy(columnRT,gridlist,-1)
 			else
@@ -307,7 +307,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 			end
 		end
 		if relSizX*rowShowRange ~= 0 then
-			rowRT,err = dxCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
+			rowRT,err = dgsCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
 			if rowRT ~= false then
 				dgsAttachToAutoDestroy(rowRT,gridlist,-3)
 			else
@@ -334,7 +334,7 @@ function checkGridListScrollBar(scb,new,old)
 				local temp = eleData.scrollFloor[1] and temp-temp%1 or temp
 				dgsSetData(gridlist,"rowMoveOffset",temp)
 			end
-			triggerEvent("onDgsElementScroll",gridlist,source,new,old)
+			dgsTriggerEvent("onDgsElementScroll",gridlist,source,new,old)
 		elseif source == scrollbars[2] then
 			local scbThickV = dgsElementData[scrollbars[1]].visible and scbThick or 0
 			local columnWidth = dgsGridListGetColumnAllWidth(gridlist,#eleData.columnData)
@@ -344,7 +344,7 @@ function checkGridListScrollBar(scb,new,old)
 				local temp = eleData.scrollFloor[2] and temp-temp%1 or temp
 				dgsSetData(gridlist,"columnMoveOffset",temp)
 			end
-			triggerEvent("onDgsElementScroll",gridlist,source,new,old)
+			dgsTriggerEvent("onDgsElementScroll",gridlist,source,new,old)
 		end
 	end
 end
@@ -2099,7 +2099,7 @@ function dgsGridListSetSelectedItems(gridlist,tab,isOrigin)
 		end
 	end
 	dgsSetData(gridlist,"rowSelect",originSel or tab)
-	triggerEvent("onDgsGridListSelect",gridlist,tab,_)
+	dgsTriggerEvent("onDgsGridListSelect",gridlist,tab,_)
 	return true
 end
 
@@ -2191,9 +2191,9 @@ function dgsGridListSetSelectedItem(gridlist,r,c,scrollTo,isOrigin)
 	end
 	eleData.itemClick = {r,c}
 	if eleData.multiSelection then
-		triggerEvent("onDgsGridListSelect",gridlist,r,c,old1)
+		dgsTriggerEvent("onDgsGridListSelect",gridlist,r,c,old1)
 	else
-		triggerEvent("onDgsGridListSelect",gridlist,r,c,old1 or -1,old2 or -1)
+		dgsTriggerEvent("onDgsGridListSelect",gridlist,r,c,old1 or -1,old2 or -1)
 	end
 	if scrollTo then
 		dgsGridListScrollTo(gridlist,r,c)
@@ -2236,7 +2236,7 @@ function dgsGridListSelectItem(gridlist,r,c,state)
 			selectedItem[r] = nil
 		end
 	end
-	triggerEvent("onDgsGridListSelect",gridlist,r,c)
+	dgsTriggerEvent("onDgsGridListSelect",gridlist,r,c)
 	eleData.rowSelect = selectedItem
 	return true
 end
@@ -2903,7 +2903,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	local preSelect = eleData.preSelect
 	if preSelectLastFrame[1] ~= preSelect[1] or preSelectLastFrame[2] ~= preSelect[2] then
-		triggerEvent("onDgsGridListHover",source,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
+		dgsTriggerEvent("onDgsGridListHover",source,preSelect[1],preSelect[2],preSelectLastFrame[1],preSelectLastFrame[2])
 		preSelectLastFrame[1],preSelectLastFrame[2] = preSelect[1],preSelect[2]
 	end
 	local Select = eleData.rowSelect

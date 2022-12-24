@@ -37,7 +37,7 @@ function dgsCreateMediaBrowser(w,h,transparent)
 	dgsSetData(media,"functionBuffer",{})
 	dgsElementData[media].duration = false
 	dgsElementData[media].current = false
-	triggerEvent("onDgsPluginCreate",media,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",media,sourceResource)
 	addEventHandler("onClientBrowserCreated",media,function()
 		loadBrowserURL(source,"http://mta/"..getResourceName(getThisResource()).."/html/media.html")
 	end,false)

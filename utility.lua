@@ -43,6 +43,7 @@ events = {
 "onDgsMouseDoubleClickUp",
 "onDgsMouseDoubleClickDown",
 "onDgsMouseMultiClick",
+"onDgsMouseStay",
 "onDgsMouseDown",
 "onDgsMouseUp",
 "onDgsMouseDrag",
@@ -126,7 +127,6 @@ __createElement = createElement
 __dxCreateShader = dxCreateShader
 __dxCreateFont = dxCreateFont
 __dxCreateTexture = dxCreateTexture
-__dxCreateRenderTarget = dxCreateRenderTarget
 __dxDrawImageSection = dxDrawImageSection
 __dxDrawImage = dxDrawImage
 
@@ -292,7 +292,7 @@ function dxCreateEmptyTexture(width,height,sRes)
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
 			local sResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",width,height)
+			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",width,height)
 			texture = dgsPopElement("texture",sRes)
 		end
 	end
@@ -315,7 +315,7 @@ function dxCreateTexture(pathOrData,sRes)
 		if dgsElementKeeper[sRes] then
 			local textureData = fileGetContent(pathOrData) or pathOrData
 			local sResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",textureData)
+			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",textureData)
 			texture = dgsPopElement("texture",sRes)
 		end
 	end
@@ -339,7 +339,7 @@ function dxCreateShader(pathOrData,sRes)
 		if dgsElementKeeper[sRes] then
 			local shaderData = fileGetContent(pathOrData) or pathOrData
 			local sResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"shader",shaderData)
+			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"shader",shaderData)
 			shader = dgsPopElement("shader",sRes)
 		end
 	end
@@ -371,7 +371,7 @@ function dxCreateFont(creationInfo,sRes)
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
 			local sResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"font",pathOrData,size,isbold,quality)
+			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"font",pathOrData,size,isbold,quality)
 			font = dgsPopElement("font",sRes)
 		end
 	end
@@ -388,17 +388,17 @@ function dxCreateFont(creationInfo,sRes)
 	end
 end
 
-function dxCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
+function dgsCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
 	local rt
 	if sRes ~= false then	--Create remotely
 		sRes = sRes or sourceResource
 		if dgsElementKeeper[sRes] then
 			local sResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"rendertarget",w,h,isTransparent)
+			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"rendertarget",w,h,isTransparent)
 			rt = dgsPopElement("rendertarget",sRes)
 		end
 	end
-	local rendertarget = rt or __dxCreateRenderTarget(w,h,isTransparent)
+	local rendertarget = rt or dxCreateRenderTarget(w,h,isTransparent)
 	if not isElement(rendertarget) then
 		if w < 1 or h < 1 then return nil end	--Pass
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
@@ -416,7 +416,7 @@ function createElement(eleType,sRes)
 	if sRes then	--Create remotely
 		if dgsElementKeeper[sRes] then
 			local sResRoot = getResourceRootElement(sRes)
-			triggerEvent("onDgsRequestCreateRemoteElement",sResRoot,eleType)
+			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,eleType)
 			ele = dgsPopElement(eleType,sRes)
 		end
 	end
@@ -426,6 +426,27 @@ end
 
 function removeElementData(element,key)
 	setElementData(element,key,nil)
+end
+
+DGSFastEvent = {}
+function dgsRegisterFastEvent(eventName,fncName)
+	if not DGSFastEvent[eventName] then DGSFastEvent[eventName] = {} end
+	DGSFastEvent[eventName][#DGSFastEvent[eventName]+1] = fncName
+	return true
+end
+
+function dgsRemoveFastEvent(eventName,fncName)
+	if not DGSFastEvent[eventName] then return false end
+	return table.removeItemFromArray(DGSFastEvent[eventName],fncName)
+end
+
+function dgsTriggerFastEvent(eventName,...)
+	local eventFunctions = DGSFastEvent[eventName]
+	if eventFunctions then
+		for i=1,#eventFunctions do
+			_G[ eventFunctions[i] ](...)
+		end
+	end
 end
 
 function dgsAddEventHandler(eventName,element,fncName,...)
@@ -453,14 +474,18 @@ function dgsRemoveEventHandler(eventName,element,fncName)
 	return false
 end
 
-local _triggerEvent = triggerEvent
-function triggerEvent(...)	--Trigger event sometimes changes "sourceResource"
+function dgsTriggerEvent(eventName,element,...)
+	--Trigger event sometimes changes "sourceResource"
 	local sRes = sourceResource	--Log
 	local sResRoot = sourceResourceRoot	--Log
-	_triggerEvent(...)
+	dgsTriggerFastEvent(eventName,element,...)
+	local result = true
+	if isElement(element) then
+		result = triggerEvent(eventName,element,...)
+	end
 	sourceResource = sRes
 	sourceResourceRoot = sResRoot
-	return true
+	return result
 end
 --------------------------------Table Utility
 function table.find(tab,ke,num)

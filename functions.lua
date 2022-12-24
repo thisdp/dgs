@@ -2,7 +2,7 @@ dgsLogLuaMemory()
 local loadstring = loadstring
 ---------------Speed Up
 local tableInsert,tableRemove,tableFind = table.insert,table.remove,table.find
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local type,assert = type,assert
 local isElement = isElement
 local setElementData = setElementData
@@ -422,7 +422,7 @@ function calculateGuiPositionSize(dgsEle,x,y,relativep,sx,sy,relatives,notrigger
 		dgsSetData(dgsEle,"rltPos",{relatx,relaty})
 		dgsSetData(dgsEle,"relative",{relativep,oldRelativeSize})
 		if not notrigger then
-			triggerEvent("onDgsPositionChange",dgsEle,oldPosAbsx,oldPosAbsy,oldPosRltx,oldPosRlty)
+			dgsTriggerEvent("onDgsPositionChange",dgsEle,oldPosAbsx,oldPosAbsy,oldPosRltx,oldPosRlty)
 		end
 	end
 	if sx and sy then
@@ -440,7 +440,7 @@ function calculateGuiPositionSize(dgsEle,x,y,relativep,sx,sy,relatives,notrigger
 		dgsSetData(dgsEle,"rltSize",{relatsx,relatsy})
 		dgsSetData(dgsEle,"relative",{oldRelativePos,relatives})
 		if not notrigger then
-			triggerEvent("onDgsSizeChange",dgsEle,oldSizeAbsx,oldSizeAbsy,oldSizeRltx,oldSizeRlty)
+			dgsTriggerEvent("onDgsSizeChange",dgsEle,oldSizeAbsx,oldSizeAbsy,oldSizeRltx,oldSizeRlty)
 		end
 	end
 	return true
@@ -618,27 +618,29 @@ function dgsSimulateClick(dgsGUI,button)
 	local x,y = dgsGetPosition(dgsGUI,false)
 	local sx,sy = dgsGetSize(dgsGUI,false)
 	local x,y = x+sx*0.5,y+sy*0.5
-	triggerEvent("onDgsMouseClick",dgsGUI,button,"down",x,y)
-	triggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
+	dgsTriggerEvent("onDgsMouseClick",dgsGUI,button,"down",x,y)
+	dgsTriggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
-addEventHandler("onDgsMouseClick",root,function(button,state,x,y,isCoolingDown)
+function DGSMouseClickConvert(source,button,state,x,y,isCoolingDown)
 	if not isElement(source) then return end
 	if state == "down" then
-		triggerEvent("onDgsMouseClickDown",source,button,state,x,y,isCoolingDown)
+		dgsTriggerEvent("onDgsMouseClickDown",source,button,state,x,y,isCoolingDown)
 	elseif state == "up" then
-		triggerEvent("onDgsMouseClickUp",source,button,state,x,y,isCoolingDown)
+		dgsTriggerEvent("onDgsMouseClickUp",source,button,state,x,y,isCoolingDown)
 	end
-end)
+end
+dgsRegisterFastEvent("onDgsMouseClick","DGSMouseClickConvert")
 
-addEventHandler("onDgsMouseDoubleClick",root,function(button,state,x,y)
+function DGSMouseDoubleClickConvert(source,button,state,x,y)
 	if not isElement(source) then return end
 	if state == "down" then
-		triggerEvent("onDgsMouseDoubleClickDown",source,button,state,x,y)
+		dgsTriggerEvent("onDgsMouseDoubleClickDown",source,button,state,x,y)
 	elseif state == "up" then
-		triggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y)
+		dgsTriggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y)
 	end
-end)
+end
+dgsRegisterFastEvent("onDgsMouseDoubleClick","DGSMouseDoubleClickConvert")
 
 function dgsGetMouseClickGUI(button)
 	if button == "left" then
@@ -692,10 +694,10 @@ function dgsFocus(dgsEle)
 		dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 	end
 	if isElement(lastFront) and dgsEle ~= lastFront then
-		triggerEvent("onDgsBlur",lastFront,dgsEle)
+		dgsTriggerEvent("onDgsBlur",lastFront,dgsEle)
 	end
 	MouseData.focused = dgsEle
-	triggerEvent("onDgsFocus",dgsEle,isElement(lastFront) and lastFront or nil)
+	dgsTriggerEvent("onDgsFocus",dgsEle,isElement(lastFront) and lastFront or nil)
 	return true
 end
 
@@ -709,7 +711,7 @@ function dgsBlur(dgsEle)
 	else
 		blurEditMemo(dgsEle)
 	end
-	triggerEvent("onDgsBlur",dgsEle)
+	dgsTriggerEvent("onDgsBlur",dgsEle)
 	return true
 end
 
@@ -786,11 +788,18 @@ addEventHandler("onClientCursorMove",root,function(_,_,x,y)
 	end
 end)
 
+--Multi Click Interval
 function dgsGetMultiClickInterval() return multiClick.Interval end
-
 function dgsSetMultiClickInterval(interval)
 	if not(type(interval) == "number") then error(dgsGenAsrt(interval,"dgsSetClickInterval",1,"number")) end
 	multiClick.Interval = interval
+	return true
+end
+--Mouse Stay Delay
+function dgsGetMouseStayDelay() return mouseStay.delay end
+function dgsSetMouseStayDelay(delay)
+	if not(type(delay) == "number") then error(dgsGenAsrt(delay,"dgsSetMouseStayDelay",1,"number")) end
+	mouseStay.delay = delay
 	return true
 end
 
@@ -951,17 +960,19 @@ function dgsAttachToTranslation(dgsEle,name)
 		end
 	end
 	dgsSetData(dgsEle,"_translang",name)
-	if LanguageTranslation[name] then
-		LanguageTranslationAttach[name] = LanguageTranslationAttach[name] or {}
-		tableInsert(LanguageTranslationAttach[name],dgsEle)
-	end
-	local text = dgsElementData[dgsEle]._translation_text
-	if text then
-		dgsSetData(dgsEle,"text",text)
-	end
-	local font = dgsElementData[dgsEle]._translation_font
-	if font then
-		dgsSetData(dgsEle,"font",font)
+	if name then
+		if LanguageTranslation[name] then
+			LanguageTranslationAttach[name] = LanguageTranslationAttach[name] or {}
+			tableInsert(LanguageTranslationAttach[name],dgsEle)
+		end
+		local text = dgsElementData[dgsEle]._translation_text
+		if text then
+			dgsSetData(dgsEle,"text",text)
+		end
+		local font = dgsElementData[dgsEle]._translation_font
+		if font then
+			dgsSetData(dgsEle,"font",font)
+		end
 	end
 	return true
 end
@@ -1175,12 +1186,12 @@ end
 addEvent("onDgsScrollBarScrollPositionChange",true)
 addEventHandler("onDgsElementScroll",root,function(scb,new,old)
 	if dgsGetType(source) == "scrollbar" then
-		triggerEvent("onDgsScrollBarScrollPositionChange",source,new,old)
+		dgsTriggerEvent("onDgsScrollBarScrollPositionChange",source,new,old)
 	end
 end)
 
 addEvent("onDgsCursorMove",true)
-addEventHandler("onDgsMouseMove",root,function(...) triggerEvent("onDgsCursorMove",source,...) end)
+addEventHandler("onDgsMouseMove",root,function(...) dgsTriggerEvent("onDgsCursorMove",source,...) end)
 
 ---------------DGS XML Loader
 --[[

@@ -13,7 +13,7 @@ function dgsCreateGradient(colorFrom,colorTo,rotation)
 	dxSetShaderValue(shader,"colorFrom",fromcolor(colorFrom,true))
 	dxSetShaderValue(shader,"colorTo",fromcolor(colorTo,true))
 	dxSetShaderValue(shader,"rotation",rotation)
-	triggerEvent("onDgsPluginCreate",shader,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",shader,sourceResource)
 	return shader 
 end
 

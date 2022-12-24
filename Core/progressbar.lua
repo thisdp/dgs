@@ -56,7 +56,7 @@ local applyColorAlpha = applyColorAlpha
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local isElement = isElement
 local assert = assert
@@ -552,7 +552,7 @@ technique circleTechnique{
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxprogressbar"] = {
 	progress = function(dgsEle,key,value,oldValue)
-		triggerEvent("onDgsProgressBarChange",dgsEle,value,oldValue)
+		dgsTriggerEvent("onDgsProgressBarChange",dgsEle,value,oldValue)
 	end
 }
 ----------------------------------------------------------------

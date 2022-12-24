@@ -15,7 +15,7 @@ function dgsCreateDynamicShader()
 	})
 	dgsSetData(dynamicShader,"regenerateNeeded",true)
 	dgsSetData(dynamicShader,"shader",false)
-	triggerEvent("onDgsPluginCreate",dynamicShader,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",dynamicShader,sourceResource)
 	return dynamicShader
 end
 

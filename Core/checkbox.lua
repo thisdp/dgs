@@ -36,7 +36,7 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local assert = assert
 local type = type
@@ -175,7 +175,7 @@ function dgsCheckBoxSetSelected(cb,state)
 	if not (type(state) == "boolean") then error(dgsGenAsrt(cb,"dgsCheckBoxSetSelected",2,"boolean")) end
 	local oldState = dgsElementData[cb].state
 	if state ~= oldState then
-		triggerEvent("onDgsCheckBoxChange",cb,state,oldState)
+		dgsTriggerEvent("onDgsCheckBoxChange",cb,state,oldState)
 	end
 	return true
 end

@@ -37,7 +37,7 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 	end
 	dgsRoundRectSetColorOverwritten(shader,colorOverwritten ~= false)
 	dgsRoundRectSetTexture(shader,texture)
-	triggerEvent("onDgsPluginCreate",shader,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",shader,sourceResource)
 	return shader
 end
 

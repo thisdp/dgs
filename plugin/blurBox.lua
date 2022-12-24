@@ -68,8 +68,8 @@ function dgsCreateBlurBox(w,h,sourceTexture)
 	dgsAttachToAutoDestroy(shaderV,bb,-2)
 	dgsSetData(bb,"asPlugin","dgs-dxblurbox")
 	dgsSetData(bb,"shaders",{shaderH,shaderV})
-	local bufferRTH = dxCreateRenderTarget(w,h,true,bb)
-	local bufferRTV = dxCreateRenderTarget(w,h,true,bb)
+	local bufferRTH = dgsCreateRenderTarget(w,h,true,bb)
+	local bufferRTV = dgsCreateRenderTarget(w,h,true,bb)
 	if bufferRTH then
 		dxSetTextureEdge(bufferRTH,"mirror")
 		dgsAttachToAutoDestroy(bufferRTH,bb,-3)
@@ -85,7 +85,7 @@ function dgsCreateBlurBox(w,h,sourceTexture)
 	dgsSetData(bb,"level",5)
 	dgsSetData(bb,"blendMode","blend")
 	blurboxShaders = blurboxShaders+1
-	triggerEvent("onDgsPluginCreate",bb,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",bb,sourceResource)
 	return bb
 end
 
@@ -104,8 +104,8 @@ function dgsBlurBoxSetResolution(bb,w,h)
 	local bufferRTV = dgsElementData[bb].bufferRTV
 	if isElement(bufferRTH) then destroyElement(bufferRTH) end
 	if isElement(bufferRTV) then destroyElement(bufferRTV) end
-	local bufferRTH = dxCreateRenderTarget(w,h,true,bb)
-	local bufferRTV = dxCreateRenderTarget(w,h,true,bb)
+	local bufferRTH = dgsCreateRenderTarget(w,h,true,bb)
+	local bufferRTV = dgsCreateRenderTarget(w,h,true,bb)
 	if bufferRTH then
 		dxSetTextureEdge(bufferRTH,"mirror")
 		dgsAttachToAutoDestroy(bufferRTH,bb,-3)

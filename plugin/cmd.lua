@@ -58,7 +58,7 @@ function dgsCreateCmd(x,y,w,h,relative,parent)
 			end
 		end
 	end,false)
-	triggerEvent("onDgsPluginCreate",cmdMemo,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",cmdMemo,sourceResource)
 	return cmdMemo
 end
 

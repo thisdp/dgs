@@ -26,7 +26,7 @@ function dgsCreateSVG(...)
 	}
 	dgsSVGXMLRef[dgsElementData[svg].svgDocument] = svg
 	dgsSetData(svg,"asPlugin","dgs-dxsvg")
-	triggerEvent("onDgsPluginCreate",svg,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",svg,sourceResource)
 	return svg
 end
 

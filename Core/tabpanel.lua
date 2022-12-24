@@ -39,7 +39,7 @@ local dgsDrawText = dgsDrawText
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local dxCreateRenderTarget = dxCreateRenderTarget
+local dgsCreateRenderTarget = dgsCreateRenderTarget
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsGetType = dgsGetType
@@ -54,7 +54,7 @@ local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
 local isElement = isElement
 local destroyElement = destroyElement
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local assert = assert
 local tonumber = tonumber
@@ -146,7 +146,7 @@ function dgsTabPanelRecreateRenderTarget(tabpanel,lateAlloc)
 		dgsSetData(tabpanel,"retrieveRT",true)
 	else
 		local tabHeight = eleData.tabHeight[1]*(eleData.tabHeight[2] and eleData.absSize[2] or 1)
-		local bgRT,err = dxCreateRenderTarget(eleData.absSize[1],tabHeight,true,tabpanel)
+		local bgRT,err = dgsCreateRenderTarget(eleData.absSize[1],tabHeight,true,tabpanel)
 		if bgRT ~= false then
 			dgsAttachToAutoDestroy(bgRT,tabpanel,-1)
 		else
@@ -376,10 +376,10 @@ dgsOnPropertyChange["dgs-dxtabpanel"] = {
 	selected = function(dgsEle,key,value,oldValue)
 		local old,new = oldValue,value
 		local tabs = dgsElementData[dgsEle].tabs
-		triggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
+		dgsTriggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
 		dgsApplyVisibleInherited(tabs[old],false)
 		if isElement(tabs[new]) then
-			triggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
+			dgsTriggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
 			dgsApplyVisibleInherited(tabs[new],true)
 		end
 	end,
@@ -421,7 +421,7 @@ dgsOnPropertyChange["dgs-dxtab"] = {
 		local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 		dgsElementData[dgsEle].text = tostring(value)
 		dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
-		return triggerEvent("onDgsTextChange",dgsEle)
+		return dgsTriggerEvent("onDgsTextChange",dgsEle)
 	end,
 	textSize = function(dgsEle,key,value,oldValue)
 		local tabpanel = dgsElementData[dgsEle].parent

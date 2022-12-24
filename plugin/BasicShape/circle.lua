@@ -17,7 +17,7 @@ function dgsCreateCircle(outsideRadius,insideRadius,angle,color,texture)
 	dgsCircleSetTexture(circle,texture)
 	dgsCircleSetColor(circle,color or tocolor(255,255,255,255))
 	dgsCircleSetAngle(circle,angle or 360)
-	triggerEvent("onDgsPluginCreate",circle,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",circle,sourceResource)
 	return circle
 end
 

@@ -30,7 +30,7 @@ local dxDrawImage = dxDrawImage
 local dgsDrawText = dgsDrawText
 local dxDrawRectangle = dxDrawRectangle
 --
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local isElement = isElement
 local createElement = createElement
 local addEventHandler = addEventHandler
@@ -266,7 +266,7 @@ function dgsCloseWindow(window)
 	if dgsElementData[window]._DGSI_BeingClosed then return false end
 	dgsSetData(window,"_DGSI_BeingClosed",true)
 	dgsClosingElement = window
-	triggerEvent("onDgsWindowClose",window)
+	dgsTriggerEvent("onDgsWindowClose",window)
 	dgsClosingElement = nil
 	if not wasEventCancelled() then
 		return destroyElement(window)

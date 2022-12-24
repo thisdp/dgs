@@ -8,7 +8,7 @@ function dgsCreateEffect3D(rotFactor)
 	dgsSetData(effect3d,"rotFactor",rotFactor or 2)
 	dgsSetData(effect3d,"alwaysEnable",false)
 	dgsSetData(effect3d,"applyToScrollPane",nil)
-	triggerEvent("onDgsPluginCreate",effect3d,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",effect3d,sourceResource)
 	return effect3d
 end
 

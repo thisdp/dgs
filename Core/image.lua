@@ -25,8 +25,6 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 --Utilities
 local isElement = isElement
-local getElementType = getElementType
-local triggerEvent = triggerEvent
 local createElement = createElement
 local assert = assert
 local tonumber = tonumber

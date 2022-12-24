@@ -22,7 +22,6 @@ local createBrowser = createBrowser
 local focusBrowser = focusBrowser
 --Utilities
 local isElement = isElement
-local triggerEvent = triggerEvent
 local addEventHandler = addEventHandler
 local assert = assert
 local type = type

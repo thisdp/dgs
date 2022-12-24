@@ -85,7 +85,7 @@ function dgs3DInterfaceRecreateRenderTarget(interface,lateAlloc)
 		dgsSetData(interface,"retrieveRT",true)
 	else
 		local resolution = dgsElementData[interface].resolution
-		local mainRT,err = dxCreateRenderTarget(resolution[1],resolution[2],true,interface)
+		local mainRT,err = dgsCreateRenderTarget(resolution[1],resolution[2],true,interface)
 		if mainRT == false and resolution[1]*resolution[2] ~= 0 then
 			outputDebugString(err,2)
 		else

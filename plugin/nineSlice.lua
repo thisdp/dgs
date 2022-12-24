@@ -38,7 +38,7 @@ function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,re
 			destroyElement(dgsElementData[nineSlice].renderShader)
 		end
 	end,false)
-	triggerEvent("onDgsPluginCreate",nineSlice,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",nineSlice,sourceResource)
 	return nineSlice
 end
 

@@ -15,7 +15,7 @@ function dgsCreateScreenSource(uPos,vPos,uSize,vSize,relative)
 		dgsSetData(ss,"uvPos",{uPos,vPos,relative or false})
 		dgsSetData(ss,"uvSize",{uSize,vSize,relative or false})
 	end
-	triggerEvent("onDgsPluginCreate",ss,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",ss,sourceResource)
 	if not isElement(GlobalScreenSource) then
 		GlobalScreenSource = dxCreateScreenSource(sW*GlobalScreenSourceWidthFactor,sH*GlobalScreenSourceHeightFactor)
 	end

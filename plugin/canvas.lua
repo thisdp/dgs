@@ -7,7 +7,7 @@ function dgsCreateCanvas(renderSource,w,h,color)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCanvas",2,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCanvas",3,"number")) end
 	color = color or 0xFFFFFFFF
-	local canvas = dxCreateRenderTarget(w,h,true) -- Main Render Target
+	local canvas = dgsCreateRenderTarget(w,h,true) -- Main Render Target
 	dgsElementData[canvas] = {
 		blendMode="blend",
 		renderSource=renderSource,
@@ -16,7 +16,7 @@ function dgsCreateCanvas(renderSource,w,h,color)
 	dgsSetType(canvas,"dgs-dxcanvas")
 	dgsSetData(canvas,"asPlugin","dgs-dxcanvas")
 	dgsSetData(canvas,"disableCustomTexture",false)
-	triggerEvent("onDgsPluginCreate",canvas,sourceResource)
+	dgsTriggerEvent("onDgsPluginCreate",canvas,sourceResource)
 	return canvas
 end
 

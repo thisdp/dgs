@@ -16,7 +16,7 @@ local dxDrawRectangle = dxDrawRectangle
 local dxSetShaderValue = dxSetShaderValue
 local dxSetRenderTarget = dxSetRenderTarget
 local dxSetBlendMode = dxSetBlendMode
-local dxCreateRenderTarget = dxCreateRenderTarget
+local dgsCreateRenderTarget = dgsCreateRenderTarget
 --DGS Functions
 local dgsSetType = dgsSetType
 local dgsGetType = dgsGetType
@@ -29,7 +29,7 @@ local dgsAttachToAutoDestroy = dgsAttachToAutoDestroy
 local calculateGuiPositionSize = calculateGuiPositionSize
 local dgsCreateTextureFromStyle = dgsCreateTextureFromStyle
 --Utilities
-local triggerEvent = triggerEvent
+local dgsTriggerEvent = dgsTriggerEvent
 local addEventHandler = addEventHandler
 local createElement = createElement
 local isElement = isElement
@@ -138,7 +138,7 @@ function dgsScrollPaneRecreateRenderTarget(scrollpane,lateAlloc)
 		local scrollbar = eleData.scrollbars
 		local scbThick = eleData.scrollBarThick
 		local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
-		local mainRT,err = dxCreateRenderTarget(absSize[1]-scbThickV,absSize[2]-scbThickH,true,scrollpane)
+		local mainRT,err = dgsCreateRenderTarget(absSize[1]-scbThickV,absSize[2]-scbThickH,true,scrollpane)
 		if mainRT ~= false then
 			dgsAttachToAutoDestroy(mainRT,scrollpane,-1)
 		else
@@ -154,7 +154,7 @@ function checkScrollPaneScrollBar(scb,new,old)
 	if dgsGetType(parent) == "dgs-dxscrollpane" then
 		local scrollbars = dgsElementData[parent].scrollbars
 		if source == scrollbars[1] or source == scrollbars[2] then
-			triggerEvent("onDgsElementScroll",parent,source,new,old)
+			dgsTriggerEvent("onDgsElementScroll",parent,source,new,old)
 		end
 	end
 end

@@ -19,14 +19,14 @@ function dgsPasteHandlerSetEnabled(state)
 		--focusBrowser(GlobalPasteHandler)
 		end,false)
 
-		triggerEvent("onDgsPluginCreate",GlobalPasteHandler,sourceResource)
+		dgsTriggerEvent("onDgsPluginCreate",GlobalPasteHandler,sourceResource)
 
 		addEventHandler("DGSI_Paste",GlobalPasteHandler,function(data,theType)
 			if theType == "file" then
 				local result = base64Decode(split(data,",")[2])
-				return triggerEvent("onDgsPaste",resourceRoot,result,theType)
+				return dgsTriggerEvent("onDgsPaste",resourceRoot,result,theType)
 			elseif theType == "string" then
-				return triggerEvent("onDgsPaste",resourceRoot,data,theType)
+				return dgsTriggerEvent("onDgsPaste",resourceRoot,data,theType)
 			end
 		end)
 	end

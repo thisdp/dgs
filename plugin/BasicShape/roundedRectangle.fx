@@ -19,7 +19,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	float4 result = borderColor;
 	float alp = 1;
 	float2 tempTex = tex;
-	tempTex = frac(tempTex*UV.zw+UV.xy);
+	tempTex = (tempTex*UV.zw+UV.xy)%1;
 	float2 tex_bk = tempTex;
 	float2 dx = ddx(tempTex);
 	float2 dy = ddy(tempTex);
