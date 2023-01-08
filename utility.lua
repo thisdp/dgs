@@ -1455,6 +1455,7 @@ end
 
 function onDGSLogImports(resRoot)
 	resourceDebugRegistered[resRoot] = true
+	removeEventHandler("onClientResourceStop",resRoot,onDGSRemoveImports)
 	addEventHandler("onClientResourceStop",resRoot,onDGSRemoveImports,false)
 end
 addEventHandler("DGSI_onImport",root,onDGSLogImports)

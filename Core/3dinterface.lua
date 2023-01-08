@@ -170,6 +170,30 @@ function dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,pnVP1,pnVP2,pnVP
 	end
 end
 
+function dgs3DInterfaceCalculateMousePosition(interface)
+	local eleData = dgsElementData[interface]
+	local pos = eleData.position
+	local size = eleData.size
+	local faceTo = eleData.faceTo 
+	local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
+	if x and y and z and w and h then
+		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123
+		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
+		if not fx or not fy or not fz then
+			fx,fy,fz = camX-x,camY-y,camZ-z
+		end
+		if eleData.faceRelativeTo == "world" then
+			fx,fy,fz = fx-x,fy-y,fz-z
+		end
+		if MouseData.cursorPos3D[0] then	--Is cursor 3d position available
+			lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ,camX,camY,camZ
+			local isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
+			return hitX,hitY,hx,hy,hz,isHit
+		end
+	end
+	return false
+end
+
 dgsRegisterDeprecatedFunction("dgs3DInterfaceSetRotation","dgs3DInterfaceSetRoll")
 function dgs3DInterfaceSetRoll(interface,roll)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetRoll",1,"dgs-dx3dinterface")) end
