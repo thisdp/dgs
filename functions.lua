@@ -787,6 +787,7 @@ function dgsGetCursorPosition(rltEle,rlt,forceOnScreen)
 			end
 		end
 	end
+	return false
 end
 
 addEventHandler("onClientCursorMove",root,function(_,_,x,y)
