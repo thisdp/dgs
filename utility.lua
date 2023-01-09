@@ -741,6 +741,15 @@ function findRotation(x1,y1,x2,y2,offsetFix)
 	return t<0 and t+360 or t
 end
 
+function findRotation3D(x1,y1,z1,x2,y2,z2) 
+	local dx = x1-x2
+	local dy = y1-y2
+	local rotx = atan2(z2-z1,(dx*dx+dy*dy)^0.5)/pi180
+	local rotz = -atan2(x2-x1,y2-y1)/pi180
+	rotz = rotz < 0 and rotz + 360 or rotz
+	return rotx, 0,rotz
+end
+
 function math.clamp(value,n_min,n_max)
 	--[[if type(value) ~= "number" then
 		local dbInfo = debug.getinfo(2)

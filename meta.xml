@@ -345,6 +345,8 @@
 	<export function="dgsCreate3DLine" type="client" />
 	<export function="dgs3DLineAddItem" type="client" />
 	<export function="dgs3DLineRemoveItem" type="client" />
+	<export function="dgs3DLineSetLineType" type="client" />
+	<export function="dgs3DLineGetLineType" type="client" />
 	<export function="dgs3DLineSetItemPosition" type="client" />
 	<export function="dgs3DLineGetItemPosition" type="client" />
 	<export function="dgs3DLineSetItemWidth" type="client" />
