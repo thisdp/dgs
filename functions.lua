@@ -730,7 +730,15 @@ end
 
 function dgsGetCursorPosition(rltEle,rlt,forceOnScreen)
 	if dgsGetCursorVisible() then
-		if MouseData.lock3DInterface and not forceOnScreen then	--For 3d interface using calculated position
+		if dgsGetType(rltEle) == "dgs-dx3dinterface" then 	--For 3d interface, recalculate position and ignore "forceOnScreen"
+			local hitX,hitY,px,py,pz,isHit = dgs3DInterfaceCalculateMousePosition(rltEle)
+			if rlt then
+				return hitX,hitY,px,py,pz,isHit
+			else
+				local resolution = dgsElementData[rltEle].resolution
+				return hitX*resolution[1],hitY*resolution[2],px,py,pz,isHit
+			end
+		elseif MouseData.lock3DInterface and not forceOnScreen then	--For 3d interface using calculated position
 			local absX,absY = dgsElementData[MouseData.lock3DInterface].cursorPosition[1],dgsElementData[MouseData.lock3DInterface].cursorPosition[2]
 			local resolution = dgsElementData[MouseData.lock3DInterface].resolution
 			if not rltEle and not dgsIsType(rltEle) then
@@ -747,14 +755,6 @@ function dgsGetCursorPosition(rltEle,rlt,forceOnScreen)
 				else
 					return absX-xPos,absY-yPos
 				end
-			end
-		elseif dgsGetType(rltEle) == "dgs-dx3dinterface" then 	--For 3d interface, recalculate position and ignore "forceOnScreen"
-			local hitX,hitY,px,py,pz,isHit = dgs3DInterfaceCalculateMousePosition(rltEle)
-			if rlt then
-				return hitX,hitY,px,py,pz,isHit
-			else
-				local resolution = dgsElementData[rltEle].resolution
-				return hitX*resolution[1],hitY*resolution[2],px,py,pz,isHit
 			end
 		else
 			local absX,absY = CursorPosXVisible,CursorPosYVisible
