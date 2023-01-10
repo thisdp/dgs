@@ -260,17 +260,15 @@ function dgsWindowGetCloseButtonSize(window,relative)
 	return false
 end
 
-local dgsClosingElement = nil
 function dgsCloseWindow(window)
 	if not(dgsGetType(window) == "dgs-dxwindow") then error(dgsGenAsrt(window,"dgsCloseWindow",1,"dgs-dxwindow")) end
-	if dgsElementData[window]._DGSI_BeingClosed then return false end
-	dgsSetData(window,"_DGSI_BeingClosed",true)
-	dgsClosingElement = window
+	if dgsElementData[window]._DGSI_isClosing then return false end
+	dgsSetData(window,"_DGSI_isClosing",true)
 	dgsTriggerEvent("onDgsWindowClose",window)
-	dgsClosingElement = nil
 	if not wasEventCancelled() then
 		return destroyElement(window)
 	end
+	dgsSetData(window,"_DGSI_isClosing",nil)
 	return false
 end
 
