@@ -1169,39 +1169,6 @@ function dgsTranslateText(textTable)
 	return false
 end
 
-----Compatibility
-dgsRegisterDeprecatedFunction("dgsSetSide","dgsSetPositionAlignment")
-dgsRegisterDeprecatedFunction("dgsGetSide","dgsGetPositionAlignment")
-local _dgsSetSide = dgsSetSide
-local _dgsGetSide = dgsGetSide
-function dgsSetSide(dgsEle,which,where)
-	if which == "lor" then
-		_dgsSetSide(dgsEle,where)
-	elseif which == "tob" then
-		_dgsSetSide(dgsEle,_,where)
-	end
-	return true
-end
-
-function dgsGetSide(dgsEle,which)
-	local h,v = _dgsGetSide(dgsEle,_,where)
-	if which == "lor" then
-		return h
-	elseif which == "tob" then
-		return v
-	end
-end
-
-addEvent("onDgsScrollBarScrollPositionChange",true)
-addEventHandler("onDgsElementScroll",root,function(scb,new,old)
-	if dgsGetType(source) == "scrollbar" then
-		dgsTriggerEvent("onDgsScrollBarScrollPositionChange",source,new,old)
-	end
-end)
-
-addEvent("onDgsCursorMove",true)
-addEventHandler("onDgsMouseMove",root,function(...) dgsTriggerEvent("onDgsCursorMove",source,...) end)
-
 ---------------DGS XML Loader
 --[[
 function dgsCreateFromXML(xmlFile)
@@ -1247,20 +1214,12 @@ function dgs3DSetPosition(ele3D,x,y,z)
 	if not(type(z) == "number") then error(dgsGenAsrt(z,"dgs3DSetPosition",4,"number")) end
 	return dgsSetData(ele3D,"position",{x,y,z})
 end
-dgsRegisterDeprecatedFunction("dgs3DImageSetPosition","dgs3DSetPosition")
-dgsRegisterDeprecatedFunction("dgs3DInterfaceSetPosition","dgs3DSetPosition")
-dgsRegisterDeprecatedFunction("dgs3DLineSetPosition","dgs3DSetPosition")
-dgsRegisterDeprecatedFunction("dgs3DTextSetPosition","dgs3DSetPosition")
 
 function dgs3DGetPosition(ele3D)
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DGetPosition",1,"dgs-dx3delement")) end
 	local pos = dgsElementData[ele3D].position
 	return pos[1],pos[2],pos[3]
 end
-dgsRegisterDeprecatedFunction("dgs3DImageGetPosition","dgs3DGetPosition")
-dgsRegisterDeprecatedFunction("dgs3DInterfaceGetPosition","dgs3DGetPosition")
-dgsRegisterDeprecatedFunction("dgs3DLineGetPosition","dgs3DGetPosition")
-dgsRegisterDeprecatedFunction("dgs3DTextGetPosition","dgs3DGetPosition")
 
 function dgs3DSetInterior(ele3D,interior)
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetInterior",1,"dgs-dx3delement")) end
@@ -1268,19 +1227,11 @@ function dgs3DSetInterior(ele3D,interior)
 	if not(type(interior) == "number" and inRange) then error(dgsGenAsrt(interior,"dgs3DSetInterior",2,"number","-1~+∞",inRange and "Out Of Range")) end
 	return dgsSetData(ele3D,"interior",interior-interior%1)
 end
-dgsRegisterDeprecatedFunction("dgs3DImageSetInterior","dgs3DSetInterior")
-dgsRegisterDeprecatedFunction("dgs3DInterfaceSetInterior","dgs3DSetInterior")
-dgsRegisterDeprecatedFunction("dgs3DLineSetInterior","dgs3DSetInterior")
-dgsRegisterDeprecatedFunction("dgs3DTextSetInterior","dgs3DSetInterior")
 
 function dgs3DGetInterior(ele3D)
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DGetInterior",1,"dgs-dx3delement")) end
 	return dgsElementData[ele3D].interior or -1
 end
-dgsRegisterDeprecatedFunction("dgs3DImageGetInterior","dgs3DGetInterior")
-dgsRegisterDeprecatedFunction("dgs3DInterfaceGetInterior","dgs3DGetInterior")
-dgsRegisterDeprecatedFunction("dgs3DLineGetInterior","dgs3DGetInterior")
-dgsRegisterDeprecatedFunction("dgs3DTextGetInterior","dgs3DGetInterior")
 
 function dgs3DSetDimension(ele3D,dimension)
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DSetDimension",1,"dgs-dx3delement")) end
@@ -1288,16 +1239,8 @@ function dgs3DSetDimension(ele3D,dimension)
 	if not(type(dimension) == "number" and dimension) then error(dgsGenAsrt(dimension,"dgs3DSetDimension",2,"number","-1~+∞",inRange and "Out Of Range")) end
 	return dgsSetData(ele3D,"dimension",dimension-dimension%1)
 end
-dgsRegisterDeprecatedFunction("dgs3DImageSetDimension","dgs3DSetDimension")
-dgsRegisterDeprecatedFunction("dgs3DInterfaceSetDimension","dgs3DSetDimension")
-dgsRegisterDeprecatedFunction("dgs3DLineSetDimension","dgs3DSetDimension")
-dgsRegisterDeprecatedFunction("dgs3DTextSetDimension","dgs3DSetDimension")
 
 function dgs3DGetDimension()
 	if not(dgsIsType(ele3D,"dgsType3D")) then error(dgsGenAsrt(ele3D,"dgs3DGetDimension",1,"dgs-dx3delement")) end
 	return dgsElementData[ele3D].dimension or -1
 end
-dgsRegisterDeprecatedFunction("dgs3DImageGetDimension","dgs3DGetDimension")
-dgsRegisterDeprecatedFunction("dgs3DInterfaceGetDimension","dgs3DGetDimension")
-dgsRegisterDeprecatedFunction("dgs3DLineGetDimension","dgs3DGetDimension")
-dgsRegisterDeprecatedFunction("dgs3DTextGetDimension","dgs3DGetDimension")

@@ -12,6 +12,8 @@ dgsRegisterProperties("dgs-dx3dline",{
 })
 --Dx Functions
 local dxDrawLine3D = dxDrawLine3D
+local dxDrawImage = dxDrawImage
+local dxSetShaderValue = dxSetShaderValue
 --
 local getRotationMatrix = getRotationMatrix
 local getPositionFromOffsetByRotMat = getPositionFromOffsetByRotMat
@@ -227,9 +229,11 @@ end
 ----------------------Cylinder 3D Line--------------------------
 ----------------------------------------------------------------
 local cylinderLineShaderRaw = [[
-float3 startPos = float3(0, 0, 0);
-float3 endPos = float3(0, 0, 0);
-float radius = 1;
+float3x3 shapeConfig = {
+	float3(0, 0, 0),	//Start Pos
+	float3(0, 0, 0),	//End Pos
+	float3(0, 0, 0),	//Radius
+};
 float4x4 gProjectionMainScene : PROJECTION_MAIN_SCENE;
 float4x4 gViewMainScene : VIEW_MAIN_SCENE;
 #define PI 3.1415926535897932384626433832795
@@ -276,7 +280,10 @@ PSInput VertexShaderFunction(VSInput VS){
     PSInput PS = (PSInput)0;
     VS.Position.xyz = float3(-0.5+VS.TexCoord.xy, 0);
     float3 resultPos = getCylinderPosition(VS.Position.xyz);
-	resultPos.yz *= radius*0.00665;
+	float3 startPos = shapeConfig[0];
+	float3 endPos = shapeConfig[1];
+	float3 radius = shapeConfig[2];
+	resultPos.yz *= radius.x*0.00665;
 	resultPos.x *= length(endPos-startPos);
     VS.Position.xyz = resultPos.zyx;
 	float3 rot = findRotation3D(startPos,endPos);
@@ -313,7 +320,7 @@ technique dxDrawImage4D_cylinder_ap{
 }
 ]]
 cylinderShader3DLine = dxCreateShader(cylinderLineShaderRaw)
-dxSetShaderTessellation(cylinderShader3DLine,1,24)
+dxSetShaderTessellation(cylinderShader3DLine,1,16)
 cylinderLineShaderRaw = nil
 
 ----------------------------------------------------------------
@@ -322,9 +329,7 @@ cylinderLineShaderRaw = nil
 local dgs3DLineDraw = {
 	plane = dxDrawLine3D,
 	cylinder = function(startX,startY,startZ,endX,endY,endZ,color,width)
-		dxSetShaderValue(cylinderShader3DLine,"startPos",startX,startY,startZ)
-		dxSetShaderValue(cylinderShader3DLine,"endPos",endX,endY,endZ)
-		dxSetShaderValue(cylinderShader3DLine,"radius",width)
+		dxSetShaderValue(cylinderShader3DLine,"shapeConfig",startX,startY,startZ,endX,endY,endZ,width,0,0)
 		dxDrawImage(0,0,sW,sH,cylinderShader3DLine,0,0,0,color)	
 	end,
 }
@@ -373,6 +378,7 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 			local lData = eleData.lineData
 			local m11,m12,m13,m21,m22,m23,m31,m32,m33 = getRotationMatrix(wrx,wry,wrz)
 			local lastex,lastey,lastez,lastRlt
+			local drawFunction = dgs3DLineDraw[lineType]
 			for i=1,#lData do
 				local lineItem = lData[i]
 				local startX,startY,startZ,endX,endY,endZ = 0,0,0,lineItem[4],lineItem[5],lineItem[6]
@@ -392,7 +398,7 @@ dgs3DRenderer["dgs-dx3dline"] = function(source)
 				if isRelative then
 					endX,endY,endZ = endX*m11+endY*m21+endZ*m31+wx,endX*m12+endY*m22+endZ*m32+wy,endX*m13+endY*m23+endZ*m33+wz
 				end
-				dgs3DLineDraw[lineType](startX,startY,startZ,endX,endY,endZ,applyColorAlpha(lineItem[8] or color,fadeMulti),lineItem[7] or lineWidth)
+				drawFunction(startX,startY,startZ,endX,endY,endZ,applyColorAlpha(lineItem[8] or color,fadeMulti),lineItem[7] or lineWidth)
 			end
 			return true
 		end

@@ -489,7 +489,6 @@ function dgsEditSetTextFilter(edit,str)
 	eleData.updateRTNextFrame = true
 	dgsTriggerEvent("onDgsTextChange",edit,oldText)
 end
-dgsRegisterDeprecatedFunction("dgsEditSetWhiteList","dgsEditSetTextFilter")
 
 function dgsEditInsertText(edit,index,text)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditInsertText",1,"dgs-dxedit")) end

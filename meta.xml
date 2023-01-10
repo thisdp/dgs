@@ -247,13 +247,6 @@
 	<export function="dgsSetDebugTracerEnabled" type="client" />
 	<export function="dgsGetRegisteredProperties" type="client" />
 	<export function="dgsListPropertyTypes" type="client" />
-	
-	<export function="dgs3DSetPosition" type="client" />
-	<export function="dgs3DGetPosition" type="client" />
-	<export function="dgs3DSetInterior" type="client" />
-	<export function="dgs3DGetInterior" type="client" />
-	<export function="dgs3DSetDimension" type="client" />
-	<export function="dgs3DGetDimension" type="client" />
 
 	<export function="dgsAddStyle" type="client" />
 	<export function="dgsLoadStyle" type="client" />
@@ -291,6 +284,72 @@
 	<export function="dgsTranslationAddPropertyListener" type="client" />
 	<export function="dgsTranslationRemovePropertyListener" type="client" />
 
+	<export function="dgs3DSetPosition" type="client" />
+	<export function="dgs3DGetPosition" type="client" />
+	<export function="dgs3DSetInterior" type="client" />
+	<export function="dgs3DGetInterior" type="client" />
+	<export function="dgs3DSetDimension" type="client" />
+	<export function="dgs3DGetDimension" type="client" />
+	
+	<export function="dgsCreate3DInterface" type="client" />
+	<export function="dgs3DInterfaceGetBlendMode" type="client" />
+	<export function="dgs3DInterfaceSetBlendMode" type="client" />
+	<export function="dgs3DInterfaceGetSize" type="client" />
+	<export function="dgs3DInterfaceSetSize" type="client" />
+	<export function="dgs3DInterfaceGetResolution" type="client" />
+	<export function="dgs3DInterfaceSetResolution" type="client" />
+	<export function="dgs3DInterfaceGetFaceTo" type="client" />
+	<export function="dgs3DInterfaceSetFaceTo" type="client" />
+	<export function="dgs3DInterfaceAttachToElement" type="client" />
+	<export function="dgs3DInterfaceIsAttached" type="client" />
+	<export function="dgs3DInterfaceDetachFromElement" type="client" />
+	<export function="dgs3DInterfaceSetAttachedOffsets" type="client" />
+	<export function="dgs3DInterfaceGetAttachedOffsets" type="client" />
+	<export function="dgs3DInterfaceSetRoll" type="client" />
+	<export function="dgs3DInterfaceGetRoll" type="client" />
+
+	<export function="dgsCreate3DLine" type="client" />
+	<export function="dgs3DLineAddItem" type="client" />
+	<export function="dgs3DLineRemoveItem" type="client" />
+	<export function="dgs3DLineSetLineType" type="client" />
+	<export function="dgs3DLineGetLineType" type="client" />
+	<export function="dgs3DLineSetItemPosition" type="client" />
+	<export function="dgs3DLineGetItemPosition" type="client" />
+	<export function="dgs3DLineSetItemWidth" type="client" />
+	<export function="dgs3DLineGetItemWidth" type="client" />
+	<export function="dgs3DLineSetItemColor" type="client" />
+	<export function="dgs3DLineGetItemColor" type="client" />
+	<export function="dgs3DLineAttachToElement" type="client" />
+	<export function="dgs3DLineIsAttached" type="client" />
+	<export function="dgs3DLineDetachFromElement" type="client" />
+	<export function="dgs3DLineSetAttachedOffsets" type="client" />
+	<export function="dgs3DLineGetAttachedOffsets" type="client" />
+	<export function="dgs3DLineSetRotation" type="client" />
+	<export function="dgs3DLineGetRotation" type="client" />
+
+	<export function="dgsCreate3DText" type="client" />
+	<export function="dgs3DTextAttachToElement" type="client" />
+	<export function="dgs3DTextIsAttached" type="client" />
+	<export function="dgs3DTextDetachFromElement" type="client" />
+	<export function="dgs3DTextSetAttachedOffsets" type="client" />
+	<export function="dgs3DTextGetAttachedOffsets" type="client" />
+
+	<export function="dgsCreate3DImage" type="client" />
+	<export function="dgs3DImageSetImage" type="client" />
+	<export function="dgs3DImageGetImage" type="client" />
+	<export function="dgs3DImageSetSize" type="client" />
+	<export function="dgs3DImageGetSize" type="client" />
+	<export function="dgs3DImageAttachToElement" type="client" />
+	<export function="dgs3DImageIsAttached" type="client" />
+	<export function="dgs3DImageDetachFromElement" type="client" />
+	<export function="dgs3DImageSetAttachedOffsets" type="client" />
+	<export function="dgs3DImageGetAttachedOffsets" type="client" />
+	<export function="dgs3DImageGetNativeSize" type="client" />
+	<export function="dgs3DImageGetUVPosition" type="client" />
+	<export function="dgs3DImageSetUVPosition" type="client" />
+	<export function="dgs3DImageGetUVSize" type="client" />
+	<export function="dgs3DImageSetUVSize" type="client" />
+
 	<export function="dgsCreateWindow" type="client" />
 	<export function="dgsWindowSetSizable" type="client" />
 	<export function="dgsWindowSetMovable" type="client" />
@@ -316,91 +375,6 @@
 	<export function="dgsCustomRendererSetRenderTargetSize" type="client" />
 	<export function="dgsCustomRendererGetRenderTargetSize" type="client" />
 	<export function="dgsCustomRendererGetRenderTarget" type="client" />
-
-	<export function="dgsCreate3DInterface" type="client" />
-	<export function="dgs3DInterfaceGetBlendMode" type="client" />
-	<export function="dgs3DInterfaceSetBlendMode" type="client" />
-	<export function="dgs3DInterfaceGetPosition" type="client" />
-	<export function="dgs3DInterfaceSetPosition" type="client" />
-	<export function="dgs3DInterfaceGetSize" type="client" />
-	<export function="dgs3DInterfaceSetSize" type="client" />
-	<export function="dgs3DInterfaceGetResolution" type="client" />
-	<export function="dgs3DInterfaceSetResolution" type="client" />
-	<export function="dgs3DInterfaceGetFaceTo" type="client" />
-	<export function="dgs3DInterfaceSetFaceTo" type="client" />
-	<export function="dgs3DInterfaceAttachToElement" type="client" />
-	<export function="dgs3DInterfaceIsAttached" type="client" />
-	<export function="dgs3DInterfaceDetachFromElement" type="client" />
-	<export function="dgs3DInterfaceSetAttachedOffsets" type="client" />
-	<export function="dgs3DInterfaceGetAttachedOffsets" type="client" />
-	<export function="dgs3DInterfaceSetDimension" type="client" />
-	<export function="dgs3DInterfaceGetDimension" type="client" />
-	<export function="dgs3DInterfaceSetInterior" type="client" />
-	<export function="dgs3DInterfaceGetInterior" type="client" />
-	<export function="dgs3DInterfaceSetRoll" type="client" />
-	<export function="dgs3DInterfaceGetRoll" type="client" />
-	<export function="dgs3DInterfaceSetRotation" type="client" />
-	<export function="dgs3DInterfaceGetRotation" type="client" />
-
-	<export function="dgsCreate3DLine" type="client" />
-	<export function="dgs3DLineAddItem" type="client" />
-	<export function="dgs3DLineRemoveItem" type="client" />
-	<export function="dgs3DLineSetLineType" type="client" />
-	<export function="dgs3DLineGetLineType" type="client" />
-	<export function="dgs3DLineSetItemPosition" type="client" />
-	<export function="dgs3DLineGetItemPosition" type="client" />
-	<export function="dgs3DLineSetItemWidth" type="client" />
-	<export function="dgs3DLineGetItemWidth" type="client" />
-	<export function="dgs3DLineSetItemColor" type="client" />
-	<export function="dgs3DLineGetItemColor" type="client" />
-	<export function="dgs3DLineGetDimension" type="client" />
-	<export function="dgs3DLineSetDimension" type="client" />
-	<export function="dgs3DLineGetInterior" type="client" />
-	<export function="dgs3DLineSetInterior" type="client" />
-	<export function="dgs3DLineAttachToElement" type="client" />
-	<export function="dgs3DLineIsAttached" type="client" />
-	<export function="dgs3DLineDetachFromElement" type="client" />
-	<export function="dgs3DLineSetAttachedOffsets" type="client" />
-	<export function="dgs3DLineGetAttachedOffsets" type="client" />
-	<export function="dgs3DLineSetPosition" type="client" />
-	<export function="dgs3DLineGetPosition" type="client" />
-	<export function="dgs3DLineSetRotation" type="client" />
-	<export function="dgs3DLineGetRotation" type="client" />
-
-	<export function="dgsCreate3DText" type="client" />
-	<export function="dgs3DTextGetPosition" type="client" />
-	<export function="dgs3DTextSetPosition" type="client" />
-	<export function="dgs3DTextAttachToElement" type="client" />
-	<export function="dgs3DTextIsAttached" type="client" />
-	<export function="dgs3DTextDetachFromElement" type="client" />
-	<export function="dgs3DTextSetAttachedOffsets" type="client" />
-	<export function="dgs3DTextGetAttachedOffsets" type="client" />
-	<export function="dgs3DTextSetDimension" type="client" />
-	<export function="dgs3DTextGetDimension" type="client" />
-	<export function="dgs3DTextSetInterior" type="client" />
-	<export function="dgs3DTextGetInterior" type="client" />
-
-	<export function="dgsCreate3DImage" type="client" />
-	<export function="dgs3DImageSetImage" type="client" />
-	<export function="dgs3DImageGetImage" type="client" />
-	<export function="dgs3DImageSetSize" type="client" />
-	<export function="dgs3DImageGetSize" type="client" />
-	<export function="dgs3DImageGetDimension" type="client" />
-	<export function="dgs3DImageSetDimension" type="client" />
-	<export function="dgs3DImageGetInterior" type="client" />
-	<export function="dgs3DImageSetInterior" type="client" />
-	<export function="dgs3DImageAttachToElement" type="client" />
-	<export function="dgs3DImageIsAttached" type="client" />
-	<export function="dgs3DImageDetachFromElement" type="client" />
-	<export function="dgs3DImageSetAttachedOffsets" type="client" />
-	<export function="dgs3DImageGetAttachedOffsets" type="client" />
-	<export function="dgs3DImageSetPosition" type="client" />
-	<export function="dgs3DImageGetPosition" type="client" />
-	<export function="dgs3DImageGetNativeSize" type="client" />
-	<export function="dgs3DImageGetUVPosition" type="client" />
-	<export function="dgs3DImageSetUVPosition" type="client" />
-	<export function="dgs3DImageGetUVSize" type="client" />
-	<export function="dgs3DImageSetUVSize" type="client" />
 
 	<export function="dgsCreateScalePane" type="client" />
 	<export function="dgsScalePaneGetScrollBar" type="client" />
@@ -522,8 +496,6 @@
 	<export function="dgsEditRemoveAutoComplete" type="client" />
 	<export function="dgsEditSetAutoComplete" type="client" />
 	<export function="dgsEditGetAutoComplete" type="client" />
-	
-	<export function="dgsEditSetWhiteList" type="client" />
 
 	<export function="dgsCreateMemo" type="client" />
 	<export function="dgsMemoMoveCaret" type="client" />

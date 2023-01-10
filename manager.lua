@@ -743,38 +743,7 @@ function dgsGetListenedProperties(dgsEle)
 	return listening
 end
 
-local compatibility = {
-	1,
-	["dgs-dxprogressbar"] = {
-		isReverse = "isClockWise",
-	},
-	["dgs-scrollbar"] = {
-		position = "scrollPosition",
-	},
-	["dgs-dx3dinterface"] = {
-		rotation = "roll",
-	},
-	["dgs-dxedit"] = {
-		placeHolderColorcoded = "placeHolderColorCoded",
-	},
-	["dgs-dxcheckbox"] = {
-		image_f = "imageUnchecked",
-		image_t = "imageChecked",
-		image_i = "imageIndeterminate",
-		color_f = "colorUnchecked",
-		color_t = "colorChecked",
-		color_i = "colorIndeterminate",
-	},
-	["dgs-dxradiobutton"] = {
-		image_f = "imageUnchecked",
-		image_t = "imageChecked",
-		color_f = "colorUnchecked",
-		color_t = "colorChecked",
-	},
-	hitoutofparent = "childOutsideHit",
-	wordbreak = "wordBreak",
-	colorcoded = "colorCoded",
-}
+local compatibility = {}
 function checkCompatibility(dgsEle,key,sResRoot)
 	local eleTyp = dgsGetType(dgsEle)
 	if getElementData(resourceRoot,"DGS-enableCompatibilityCheck") then return (compatibility[eleTyp] and compatibility[eleTyp][key]) or compatibility[key] or key end
@@ -1170,6 +1139,3 @@ addEventHandler("onClientResourceStop",root,function(res)
 		end
 	end
 end)
----
-dgsRegisterDeprecatedFunction("dgsGetDxGUINoParent","dgsGetElementsInLayer")
-dgsRegisterDeprecatedFunction("dgsGetDxGUIFromResource","dgsGetElementsFromResource")
