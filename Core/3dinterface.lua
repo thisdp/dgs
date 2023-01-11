@@ -174,7 +174,7 @@ function dgs3DInterfaceCalculateMousePosition(interface)
 	local eleData = dgsElementData[interface]
 	local pos = eleData.position
 	local size = eleData.size
-	local faceTo = eleData.faceTo 
+	local faceTo = eleData.faceTo
 	local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
 	if x and y and z and w and h then
 		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123

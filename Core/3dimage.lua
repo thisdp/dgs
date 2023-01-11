@@ -327,7 +327,7 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 							if outlineData[4] ~= false then
 								dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize,isPostGUI)
 							end
-							if outlineData[5] ~= false then 
+							if outlineData[5] ~= false then
 								dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize,isPostGUI)
 							end
 							if outlineData[7] ~= false then
@@ -340,7 +340,7 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 							if outlineData[4] ~= false then
 								dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize,isPostGUI)
 							end
-							if outlineData[5] ~= false then 
+							if outlineData[5] ~= false then
 								dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize,isPostGUI)
 							end
 							if outlineData[7] ~= false then
@@ -353,10 +353,10 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 							if outlineData[4] ~= false then
 								dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,isPostGUI)
 							end
-							if outlineData[5] ~= false then 
+							if outlineData[5] ~= false then
 								dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,isPostGUI)
 							end
-							if outlineData[7] ~= false then 
+							if outlineData[7] ~= false then
 								dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,isPostGUI)
 							end
 						end

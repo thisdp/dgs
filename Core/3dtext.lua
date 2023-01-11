@@ -228,7 +228,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 						if outlineData[4] ~= false then
 							dxDrawLine(x+hSideSize,y,x+hSideSize,y+h,sideColor,sideSize)
 						end
-						if outlineData[5] ~= false then 
+						if outlineData[5] ~= false then
 							dxDrawLine(x+w-hSideSize,y,x+w-hSideSize,y+h,sideColor,sideSize)
 						end
 						if outlineData[7] ~= false then
