@@ -56,6 +56,7 @@ end
 
 function destroyObjectPreviewWhenTargetElementDestroy()
 	local OP = exports[objPrevResStatus.name]
+	print("wtf",source,dgsElementData[source])
 	local objPrevEle = dgsElementData[source].SOVelement
 	objPrevHandles[getElementID(objPrevEle)] = nil
 	OP:destroyObjectPreview(objPrevEle)
@@ -64,8 +65,14 @@ function destroyObjectPreviewWhenTargetElementDestroy()
 end
 
 function destroyObjectPreviewWhenOPElementDestroy()
-	local objEle = dgsElementData[source].renderElement
+	local objectPreview = getResourceFromName(objPrevResourceName)
+	if objectPreview and getResourceState(objectPreview) == "running" then
+		local OP = exports[objPrevResStatus.name]
+		OP:destroyObjectPreview(source)
+	end
 	objPrevHandles[getElementID(source)] = nil
+	local objEle = dgsElementData[source].renderElement
+	dgsRemoveEventHandler("onClientElementDestroy",objEle,"destroyObjectPreviewWhenTargetElementDestroy")
 	dgsElementData[objEle] = nil
 	dgsElementData[source] = nil
 end
