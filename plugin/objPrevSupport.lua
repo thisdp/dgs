@@ -56,7 +56,6 @@ end
 
 function destroyObjectPreviewWhenTargetElementDestroy()
 	local OP = exports[objPrevResStatus.name]
-	print("wtf",source,dgsElementData[source])
 	local objPrevEle = dgsElementData[source].SOVelement
 	objPrevHandles[getElementID(objPrevEle)] = nil
 	OP:destroyObjectPreview(objPrevEle)
