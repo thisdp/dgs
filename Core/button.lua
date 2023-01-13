@@ -107,7 +107,7 @@ function dgsCreateButton(...)
 		iconImage = nil,
 		iconRelative = true,	--true for text, false for button
 		iconOffset = {0,0,false},-- Can be false/true
-		iconSize = {1,1,"text"}; -- Can be false/true/"text"
+		iconSize = {1,1,"text"}, -- Can be false/true/"text"
 		--iconShadow = {},
 		imageTransformTime = 0, --ms
 		image = {normalImage, hoveringImage, clickedImage},

@@ -9,7 +9,6 @@ dgsRegisterProperties("dgs-dxwindow",{
 	font = 					{	PArg.Font+PArg.String	},
 	ignoreTitle = 			{	PArg.Bool	},
 	image = 				{	PArg.Material+PArg.Nil	},
-	maxSize = 				{	{ PArg.Number,PArg.Number }	},
 	minSize = 				{	{ PArg.Number,PArg.Number }	},
 	movable = 				{	PArg.Bool	},
 	closeButtonEnabled = 	{	PArg.Bool	},
@@ -25,6 +24,23 @@ dgsRegisterProperties("dgs-dxwindow",{
 	titleImage = 			{	PArg.Material+PArg.Nil	},
 	wordBreak = 			{	PArg.Bool	},
 })
+--[[
+dgsRegisterPropertyDefaultValue("dgs-dxwindow",{
+	alignment = 			{ "center", "center" },
+	clip = 					true,
+	colorCoded = 			false,
+	ignoreTitle = 			false,
+	minSize = 				{ 60, 60 },
+	movable = 				true,
+	sizable = 				true,
+	textOffset =			nil,
+	titleColor = 			{	PArg.Color	},
+	titleColorBlur = 		{	PArg.Color	},
+	titleHeight = 			{	PArg.Number	},
+	titleImage = 			{	PArg.Material+PArg.Nil	},
+	wordBreak = 			{	PArg.Bool	},
+})
+]]
 --Dx Functions
 local dxDrawImage = dxDrawImage
 local dgsDrawText = dgsDrawText
@@ -103,7 +119,6 @@ function dgsCreateWindow(...)
 		alignment = {"center","center"},
 		font = style.font or systemFont,
 		minSize = {60,60},
-		maxSize = {20000,20000},
 	}
 	dgsSetParent(window,nil,true,true)
 	dgsAttachToTranslation(window,resourceTranslation[sRes])
