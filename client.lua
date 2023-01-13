@@ -930,6 +930,9 @@ function onClientKeyCheck(button,state)
 			cancelEvent()
 		end
 	end
+	if isElement(MouseData.focused) then
+		triggerEvent("onDgsKey",MouseData.focused,button,state)
+	end
 end
 
 function onClientKeyTriggered(button)
@@ -1332,9 +1335,7 @@ function dgsCheckHit(hits,cursorShowing)
 			local endr = posX + sizeW
 			local endd = posY + sizeH
 			local minSize = dgsElementData[MouseData.click.left].minSize
-			local maxSize = dgsElementData[MouseData.click.left].maxSize
 			local minSizeX,minSizeY = minSize and minSize[1] or 10,minSize and minSize[2] or 10
-			local maxSizeX,maxSizeY = maxSize and maxSize[1] or 20000,maxSize and maxSize[2] or 20000
 			if MouseData.Scale[5] == 1 then
 				local old = posX
 				sizeW = sizeW-(mx-MouseData.Scale[1]-old)
@@ -1342,21 +1343,13 @@ function dgsCheckHit(hits,cursorShowing)
 					sizeW = minSizeX
 					posX = endr-sizeW
 				else
-					if sizeW > maxSizeX then
-						sizeW = maxSizeX
-						posX = endr-sizeW
-					else
-						posX = mx-MouseData.Scale[1]
-					end
+					posX = mx-MouseData.Scale[1]
 				end
 			end
 			if MouseData.Scale[5] == 3 then
 				sizeW = (mx-posX-MouseData.Scale[3])
 				if sizeW < minSizeX then
 					sizeW = minSizeX
-				end
-				if sizeW > maxSizeX then
-					sizeW = maxSizeX
 				end
 			end
 			if MouseData.Scale[6] == 2 then
@@ -1366,21 +1359,13 @@ function dgsCheckHit(hits,cursorShowing)
 					sizeH = minSizeY
 					posY = endd-sizeH
 				else
-					if sizeH > maxSizeY then
-						sizeH = maxSizeY
-						posY = endd-sizeH
-					else
-						posY = my-MouseData.Scale[2]
-					end
+					posY = my-MouseData.Scale[2]
 				end
 			end
 			if MouseData.Scale[6] == 4 then
 				sizeH = my-posY-MouseData.Scale[4]
 				if sizeH < minSizeY then
 					sizeH = minSizeY
-				end
-				if sizeH > maxSizeY then
-					sizeH = maxSizeY
 				end
 			end
 			local posX,posY = posX-addPosX,posY-addPosY

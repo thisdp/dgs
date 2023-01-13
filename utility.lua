@@ -72,6 +72,7 @@ events = {
 "onDgsElementSize",
 "onDgsFocus",
 "onDgsBlur",
+"onDgsKey",
 "onDgsTabSelect",
 "onDgsTabPanelTabSelect",
 "onDgsRadioButtonChange",
