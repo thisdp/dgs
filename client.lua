@@ -262,21 +262,6 @@ function dgsCoreRender()
 		end
 		MouseData.hit = hit2D or hit3D 
 		dxSetRenderTarget()
-		--[[if not cursorShowing then
-			MouseData.hit = false
-			MouseData.Move[0] = false
-			MouseData.Scale[0] = false
-			MouseData.MoveScale[0] = false
-			MouseData.MoveScroll[0] = false
-			MouseData.scbClickData = false
-			MouseData.selectorClickData = false
-			MouseData.lock3DInterface = false
-			MouseData.click.left = false
-			MouseData.click.right = false
-			MouseData.click.middle = false
-			MouseData.cursorPosWld[0] = false
-			MouseData.cursorPosScr[0] = false
-		end]]
 		dgsTriggerEvent("onDgsRender",resourceRoot)
 		if KeyHolder.repeatKey then
 			local tick = getTickCount()
