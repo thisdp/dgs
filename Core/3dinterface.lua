@@ -20,10 +20,6 @@ local type = type
 local tableInsert = table.insert
 local dxDrawMaterialPrimitive3D = dxDrawMaterialPrimitive3D
 
-function dgsSetFilterShaderData(shader,x,y,z,fx,fy,fz,roll,w,h,tex,r,g,b,a)
-	dxSetShaderValue(shader, "sourceTexture", tex )
-end
-
 function dgsCreate3DInterface(...)
 	local sRes = sourceResource or resource
 	local x,y,z,w,h,resX,resY,color,faceX,faceY,faceZ,distance,roll
@@ -65,14 +61,12 @@ function dgsCreate3DInterface(...)
 		resolution = {resX,resY},
 		maxDistance = distance or 200,
 		fadeDistance = distance or 180,
-		filterShader = false,
 		blendMode = "add",
 		attachTo = false,
 		dimension = -1,
 		interior = -1,
 		roll = roll or 0,
 		hit = {},
-		--filterShader = dxCreateShader(defaultFilter)
 	}
 	onDGSElementCreate(interface,sRes)
 	dgs3DInterfaceRecreateRenderTarget(interface,true)
@@ -328,7 +322,7 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local faceTo = eleData.faceTo
 	local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
 	rndtgt = eleData.mainRT
-	if x and y and z and w and h and enabledInherited and mx then
+	if x and y and z and w and h and enabledInherited then
 		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123
 		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
 		if not fx or not fy or not fz then
@@ -339,34 +333,33 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		end
 		if MouseData.cursorPos3D[0] then	--Is cursor 3d position available
 			lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ,camX,camY,camZ
-		end
-		if eleData.cameraDistance or 0 <= eleData.maxDistance then
-			local isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
-			eleData.hit[1] = isHit
-			eleData.hit[2] = hitX
-			eleData.hit[3] = hitY
-			eleData.hit[4] = hx
-			eleData.hit[5] = hy
-			eleData.hit[6] = hz
-		end
-		local hitData = eleData.hit
-		if hitData[1] then
-			local hit,hitX,hitY,hx,hy,hz = hitData[1],hitData[2],hitData[3],hitData[4],hitData[5],hitData[6]
-			local dx,dy,dz = camX-hx,camY-hy,camZ-hz
-			local distance = (dx*dx+dy*dy+dz*dz)^0.5
-			local oldPos = MouseData.hitData3D
-			if (isElement(MouseData.lock3DInterface) and MouseData.lock3DInterface == source) or ((not oldPos[0] or distance <= oldPos[4]) and hit) then
-				MouseData.hit = source
-				mx = hitX*eleData.resolution[1]
-				my = hitY*eleData.resolution[2]
-				MouseData.hitData3D[0] = true
-				MouseData.hitData3D[1] = hx
-				MouseData.hitData3D[2] = hy
-				MouseData.hitData3D[3] = hz
-				MouseData.hitData3D[4] = distance
-				MouseData.hitData3D[5] = source
-				eleData.cursorPosition[0] = dgsRenderInfo.frames+1
-				eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
+			local hitData = eleData.hit
+			if eleData.cameraDistance or 0 <= eleData.maxDistance then
+				local isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
+				hitData[1] = isHit
+				hitData[2] = hitX
+				hitData[3] = hitY
+				hitData[4] = hx
+				hitData[5] = hy
+				hitData[6] = hz
+				local dx,dy,dz = camX-hx,camY-hy,camZ-hz
+				local distance = (dx*dx+dy*dy+dz*dz)^0.5
+				local oldPos = MouseData.hitData3D
+				if (isElement(MouseData.lock3DInterface) and MouseData.lock3DInterface == source) or ((not oldPos[0] or distance <= oldPos[4]) and isHit) then
+					MouseData.hit = source
+					mx = hitX*eleData.resolution[1]
+					my = hitY*eleData.resolution[2]
+					MouseData.hitData3D[0] = true
+					MouseData.hitData3D[1] = hx
+					MouseData.hitData3D[2] = hy
+					MouseData.hitData3D[3] = hz
+					MouseData.hitData3D[4] = distance
+					MouseData.hitData3D[5] = source
+					eleData.cursorPosition[0] = dgsRenderInfo.frames+1
+					eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
+				end
+			else
+				hitData[1] = false
 			end
 		end
 		if rndtgt then
@@ -409,7 +402,6 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 			local cameraDistance = (dx*dx+dy*dy+dz*dz)^0.5
 			eleData.cameraDistance = cameraDistance
 			if cameraDistance <= eleData.maxDistance then
-				local renderThing = eleData.mainRT
 				local addalp = 1
 				if cameraDistance >= eleData.fadeDistance then
 					addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)
@@ -421,13 +413,8 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 				if eleData.faceRelativeTo == "world" then
 					fx,fy,fz = fx-x,fy-y,fz-z
 				end
-				local filter = eleData.filterShader
-				if isElement(filter) then
-					dgsSetFilterShaderData(filter,x,y,z,fx,fy,fz,roll,w,h,renderThing,fromcolor(colors))
-					renderThing = filter
-				end
-				if renderThing then
-					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,renderThing,w,h,colors,roll)
+				if eleData.mainRT then
+					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,colors,roll)
 				end
 				return true
 			end
