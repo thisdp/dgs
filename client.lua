@@ -167,6 +167,7 @@ function dgsCoreRender()
 			MouseData.MoveScale[0] = false
 			MouseData.cursorPosWld[0] = false
 			MouseData.cursorPosScr[0] = false
+			MouseData.cursorPos[0] = false
 		end
 		MouseData.visibleLastFrame = cursorShowing
 	end
