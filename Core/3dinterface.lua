@@ -95,40 +95,6 @@ function dgs3DInterfaceRecreateRenderTarget(interface,lateAlloc)
 	end
 end
 
-local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0,0},{0,0,0,0,1,1},{0,0,0,0,1,0}
-function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,roll)
-	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
-	local offFaceZ = atan2(vx,vy)
-	local cRoll = cos(roll)
-	local sRoll = sin(roll)
-	local cZ = cos(offFaceZ)
-	local sZ = sin(offFaceZ)
-	local sX = sin(offFaceX)
-	local _x,_y,_z = sX*sZ*cRoll+sRoll*cZ,sX*cZ*cRoll-sRoll*sZ,-cos(offFaceX)*cRoll
-	w,h = w/2,h/2
-	local topX,topY,topZ = _x*h,_y*h,_z*h
-	local leftX,leftY,leftZ = topY*vz-vy*topZ,topZ*vx-vz*topX,topX*vy-vx*topY --Left Point
-	local leftModel = (leftX*leftX+leftY*leftY+leftZ*leftZ)^0.5
-	local leftX,leftY,leftZ = leftX/leftModel*w,leftY/leftModel*w,leftZ/leftModel*w
-	rightBottom3D[1]  = leftX+topX+x
-	rightBottom3D[2]  = leftY+topY+y
-	rightBottom3D[3]  = leftZ+topZ+z
-	rightBottom3D[4]  = color
-	rightTop3D[1]  = leftX-topX+x
-	rightTop3D[2]  = leftY-topY+y
-	rightTop3D[3]  = leftZ-topZ+z
-	rightTop3D[4]  = color
-	leftBottom3D[1]  = -leftX+topX+x
-	leftBottom3D[2]  = -leftY+topY+y
-	leftBottom3D[3]  = -leftZ+topZ+z
-	leftBottom3D[4]  = color
-	leftTop3D[1]  = -leftX-topX+x
-	leftTop3D[2]  = -leftY-topY+y
-	leftTop3D[3]  = -leftZ-topZ+z
-	leftTop3D[4]  = color
-	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop3D,leftBottom3D,rightTop3D,rightBottom3D)
-end
-
 --lnVP = lnVector(xyz)+lnPoint(xyz)
 --pnVP = pnVector(xyz)+pnPoint(xyz)
 function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
@@ -437,8 +403,7 @@ float3x3 shapeConfig = {
 texture sourceTexture;
 float4x4 gProjectionMainScene : PROJECTION_MAIN_SCENE;
 float4x4 gViewMainScene : VIEW_MAIN_SCENE;
-#define PI 3.1415926535897932384626433832795
-#define PI2 6.283185307179586476925286766559
+#define HalfPI 1.5707963267948966192313216916398
 
 sampler2D SamplerColor = sampler_state{
     Texture = sourceTexture;
@@ -462,26 +427,25 @@ struct PSInput{
 };
 
 float4x4 createWorldMatrix(float3 pos, float3 rot){
+	float3 cosRot = cos(rot);
+	float3 sinRot = sin(rot);
     float4x4 eleMatrix = {
-        float4(cos(rot.z) * cos(rot.y) - sin(rot.z) * sin(rot.x) * sin(rot.y), cos(rot.y) * sin(rot.z) + cos(rot.z) * sin(rot.x) * sin(rot.y), -cos(rot.x) * sin(rot.y), 0),
-        float4(-cos(rot.x) * sin(rot.z), cos(rot.z) * cos(rot.x), sin(rot.x), 0),
-        float4(cos(rot.z) * sin(rot.y) + cos(rot.y) * sin(rot.z) * sin(rot.x), sin(rot.z) * sin(rot.y) - cos(rot.z) * cos(rot.y) * sin(rot.x), cos(rot.x) * cos(rot.y), 0),
+        float4(cosRot.z * cosRot.y - sinRot.z * sinRot.x * sinRot.y, cosRot.y * sinRot.z + cosRot.z * sinRot.x * sinRot.y, -cosRot.x * sinRot.y, 0),
+        float4(-cosRot.x * sinRot.z, cosRot.z * cosRot.x, sinRot.x, 0),
+        float4(cosRot.z * sinRot.y + cosRot.y * sinRot.z * sinRot.x, sinRot.z * sinRot.y - cosRot.z * cosRot.y * sinRot.x, cosRot.x * cosRot.y, 0),
         float4(pos.x,pos.y,pos.z, 1),
     };
     return eleMatrix;
 }
 
-float3 findRotation3D(float3 sPos, float3 ePos) {
-	float3 dPos = ePos-sPos;
-	float3 rot = float3(atan2(dPos.z,length(dPos.xy))+PI/2,0,-atan2(dPos.x,dPos.y));
-	return rot;
+float3 findRotation3D(float3 dPos) {
+	return float3(atan2(dPos.z,length(dPos.xy))+HalfPI,0,-atan2(dPos.x,dPos.y));
 }
 
 PSInput VertexShaderFunction(VSInput VS){
     PSInput PS = (PSInput)0;
-    VS.Position.xyz = float3(- 0.5 + VS.TexCoord.xy, 0);
-    VS.Position.xy *= shapeConfig[2].xy;
-    float4x4 sWorld = createWorldMatrix(shapeConfig[0], findRotation3D(0,shapeConfig[1]));
+    VS.Position.xyz = float3((VS.TexCoord.xy-0.5)*shapeConfig[2].xy, 0);
+    float4x4 sWorld = createWorldMatrix(shapeConfig[0], findRotation3D(shapeConfig[1]));
 	PS.Position = mul(mul(mul(float4(VS.Position,1),sWorld),gViewMainScene), gProjectionMainScene);
     PS.TexCoord = 1-VS.TexCoord;
     PS.Diffuse = VS.Diffuse;
