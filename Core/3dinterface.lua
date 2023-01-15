@@ -49,6 +49,7 @@ function dgsCreate3DInterface(...)
 	if not(type(resX) == "number") then error(dgsGenAsrt(resX,"dgsCreate3DInterface",6,"number")) end
 	if not(type(resY) == "number") then error(dgsGenAsrt(resY,"dgsCreate3DInterface",7,"number")) end
 	local interface = createElement("dgs-dx3dinterface")
+	local renderer = dxCreateShader(interface3DShader)
 	tableInsert(dgsWorld3DTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
 	dgsElementData[interface] = {
@@ -67,7 +68,9 @@ function dgsCreate3DInterface(...)
 		interior = -1,
 		roll = roll or 0,
 		hit = {},
+		renderer = renderer,
 	}
+	dgsAttachToAutoDestroy(renderer,interface,-2)
 	onDGSElementCreate(interface,sRes)
 	dgs3DInterfaceRecreateRenderTarget(interface,true)
 	return interface
@@ -85,6 +88,7 @@ function dgs3DInterfaceRecreateRenderTarget(interface,lateAlloc)
 		else
 			dxSetTextureEdge(mainRT,"mirror")
 			dgsAttachToAutoDestroy(mainRT,interface,-1)
+			dxSetShaderValue(dgsElementData[interface].renderer,"sourceTexture",mainRT)
 		end
 		dgsSetData(interface,"mainRT",mainRT)
 		dgsSetData(interface,"retrieveRT",nil)
@@ -414,10 +418,87 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 					fx,fy,fz = fx-x,fy-y,fz-z
 				end
 				if eleData.mainRT then
-					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,colors,roll)
+					--dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,colors,roll)
+					dxSetShaderValue(eleData.renderer,"shapeConfig",x,y,z,fx,fy,fz,w,h,0)
+					dxDrawImage(0,0,sW,sH,eleData.renderer)
 				end
 				return true
 			end
 		end
 	end
 end
+
+interface3DShader = [[
+float3x3 shapeConfig = {
+	float3(0, 0, 0),	//Position
+	float3(0, 1, 0),	//Face Position
+	float3(0, 0, 0),	//Width Height
+};
+texture sourceTexture;
+float4x4 gProjectionMainScene : PROJECTION_MAIN_SCENE;
+float4x4 gViewMainScene : VIEW_MAIN_SCENE;
+#define PI 3.1415926535897932384626433832795
+#define PI2 6.283185307179586476925286766559
+
+sampler2D SamplerColor = sampler_state{
+    Texture = sourceTexture;
+    MipFilter = Linear;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Mirror;
+    AddressV = Mirror;
+};
+
+struct VSInput{
+    float3 Position : POSITION0;
+    float2 TexCoord : TEXCOORD0;
+    float4 Diffuse : COLOR0;
+};
+
+struct PSInput{
+    float4 Position : POSITION0;
+    float2 TexCoord : TEXCOORD0;
+    float4 Diffuse : COLOR0;
+};
+
+float4x4 createWorldMatrix(float3 pos, float3 rot){
+    float4x4 eleMatrix = {
+        float4(cos(rot.z) * cos(rot.y) - sin(rot.z) * sin(rot.x) * sin(rot.y), cos(rot.y) * sin(rot.z) + cos(rot.z) * sin(rot.x) * sin(rot.y), -cos(rot.x) * sin(rot.y), 0),
+        float4(-cos(rot.x) * sin(rot.z), cos(rot.z) * cos(rot.x), sin(rot.x), 0),
+        float4(cos(rot.z) * sin(rot.y) + cos(rot.y) * sin(rot.z) * sin(rot.x), sin(rot.z) * sin(rot.y) - cos(rot.z) * cos(rot.y) * sin(rot.x), cos(rot.x) * cos(rot.y), 0),
+        float4(pos.x,pos.y,pos.z, 1),
+    };
+    return eleMatrix;
+}
+
+float3 findRotation3D(float3 sPos, float3 ePos) {
+	float3 dPos = ePos-sPos;
+	float3 rot = float3(atan2(dPos.z,length(dPos.xy))+PI/2,0,-atan2(dPos.x,dPos.y));
+	return rot;
+}
+
+PSInput VertexShaderFunction(VSInput VS){
+    PSInput PS = (PSInput)0;
+    VS.Position.xyz = float3(- 0.5 + VS.TexCoord.xy, 0);
+    VS.Position.xy *= shapeConfig[2].xy;
+    float4x4 sWorld = createWorldMatrix(shapeConfig[0], findRotation3D(0,shapeConfig[1]));
+	PS.Position = mul(mul(mul(float4(VS.Position,1),sWorld),gViewMainScene), gProjectionMainScene);
+    PS.TexCoord = 1-VS.TexCoord;
+    PS.Diffuse = VS.Diffuse;
+    return PS;
+}
+
+float4 PixelShaderFunction(PSInput PS) : COLOR0{
+    return tex2D(SamplerColor, PS.TexCoord.xy);
+}
+
+technique interface3D{
+  pass P0  {
+    ZEnable = true;
+    ZFunc = LessEqual;
+    ZWriteEnable = true;
+    VertexShader = compile vs_2_0 VertexShaderFunction();
+    PixelShader  = compile ps_2_0 PixelShaderFunction();
+  }
+}
+]]
