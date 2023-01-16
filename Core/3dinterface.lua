@@ -18,7 +18,8 @@ local cos,sin,rad,atan2,acos,deg = math.cos,math.sin,math.rad,math.atan2,math.ac
 local assert = assert
 local type = type
 local tableInsert = table.insert
-local dxDrawMaterialPrimitive3D = dxDrawMaterialPrimitive3D
+local dxSetShaderValue = dxSetShaderValue
+local dxDrawImage = dxDrawImage
 
 function dgsCreate3DInterface(...)
 	local sRes = sourceResource or resource
@@ -281,6 +282,104 @@ dgsOnVisibilityChange["dgs-dx3dinterface"] = function(dgsElement,selfVisibility,
 	end
 end
 ----------------------------------------------------------------
+----------------3D Interface Renderer Shader--------------------
+----------------------------------------------------------------
+
+interface3DShader = [[
+float3x3 shapeConfig = {
+	float3(0, 0, 0),	//Position
+	float3(0, 0, 0),	//Face To
+	float3(0, 0, 0),	//Width Height Roll
+};
+texture sourceTexture;
+float4x4 gProjectionMainScene : PROJECTION_MAIN_SCENE;
+float4x4 gViewMainScene : VIEW_MAIN_SCENE;
+#define HalfPI 1.5707963267948966192313216916398
+
+sampler2D SamplerColor = sampler_state{
+    Texture = sourceTexture;
+    MipFilter = Linear;
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Mirror;
+    AddressV = Mirror;
+};
+
+struct VSInput{
+    float3 Position : POSITION0;
+    float2 TexCoord : TEXCOORD0;
+    float4 Diffuse : COLOR0;
+};
+
+struct PSInput{
+    float4 Position : POSITION0;
+    float2 TexCoord : TEXCOORD0;
+    float4 Diffuse : COLOR0;
+};
+
+float3 findRotation3DByFaceRad(float3 faceTo) {
+	return float3(atan2(faceTo.z,length(faceTo.xy))+HalfPI,0,-atan2(faceTo.x,faceTo.y));	
+}
+
+float3x3 rodriguesFucksEuler(float3 rotVector, float angle){
+	rotVector = normalize(rotVector);
+    float c, s;
+    sincos(angle,s,c);
+    float t = 1-c;
+    float x = rotVector.x;
+    float y = rotVector.y;
+    float z = rotVector.z;
+    return float3x3(
+        t*x*x+c,   t*x*y-s*z, t*x*z+s*y,
+        t*x*y+s*z, t*y*y+c,   t*y*z-s*x,
+        t*x*z-s*y, t*y*z+s*x, t*z*z+c
+    );
+}
+
+float4x4 createWorldMatrix(float3 pos, float3 faceTo, float roll){
+	float3 faceToRot = findRotation3DByFaceRad(faceTo);
+    float3 cRot, sRot;
+    sincos(faceToRot, sRot, cRot);
+	float3x3 rotXZ = float3x3(
+        cRot.z * cRot.y - sRot.z * sRot.x * sRot.y, cRot.y * sRot.z + cRot.z * sRot.x * sRot.y, -cRot.x * sRot.y,
+        -cRot.x * sRot.z, cRot.z * cRot.x, sRot.x,
+        cRot.z * sRot.y + cRot.y * sRot.z * sRot.x, sRot.z * sRot.y - cRot.z * cRot.y * sRot.x, cRot.x * cRot.y
+	);
+	float3x3 rot = mul(rotXZ,rodriguesFucksEuler(faceTo,roll));
+    float4x4 eleMatrix = {
+        float4(rot[0], 0),
+        float4(rot[1], 0),
+        float4(rot[2], 0),
+        float4(pos, 1),
+    };
+    return eleMatrix;
+}
+
+PSInput VertexShaderFunction(VSInput VS){
+    PSInput PS = (PSInput)0;
+    VS.Position.xyz = float3((VS.TexCoord.xy-0.5)*shapeConfig[2].xy, 0);
+    float4x4 sWorld = createWorldMatrix(shapeConfig[0], shapeConfig[1], shapeConfig[2].z);
+	PS.Position = mul(mul(mul(float4(VS.Position,1),sWorld),gViewMainScene), gProjectionMainScene);
+    PS.TexCoord = 1-VS.TexCoord;
+    PS.Diffuse = VS.Diffuse;
+    return PS;
+}
+
+float4 PixelShaderFunction(PSInput PS) : COLOR0{
+    return tex2D(SamplerColor, PS.TexCoord.xy)*PS.Diffuse;
+}
+
+technique interface3D{
+  pass P0  {
+    ZEnable = true;
+    ZFunc = LessEqual;
+    ZWriteEnable = true;
+    VertexShader = compile vs_2_0 VertexShaderFunction();
+    PixelShader  = compile ps_2_0 PixelShaderFunction();
+  }
+}
+]]
+----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
@@ -384,85 +483,11 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 					fx,fy,fz = fx-x,fy-y,fz-z
 				end
 				if eleData.mainRT then
-					--dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,colors,roll)
-					dxSetShaderValue(eleData.renderer,"shapeConfig",x,y,z,fx,fy,fz,w,h,0)
-					dxDrawImage(0,0,sW,sH,eleData.renderer)
+					dxSetShaderValue(eleData.renderer,"shapeConfig",x,y,z,fx,fy,fz,w,h,roll/180*math.pi)
+					dxDrawImage(0,0,sW,sH,eleData.renderer,0,0,0,tocolor(255,0,0,255))
 				end
 				return true
 			end
 		end
 	end
 end
-
-interface3DShader = [[
-float3x3 shapeConfig = {
-	float3(0, 0, 0),	//Position
-	float3(0, 1, 0),	//Face Position
-	float3(0, 0, 0),	//Width Height
-};
-texture sourceTexture;
-float4x4 gProjectionMainScene : PROJECTION_MAIN_SCENE;
-float4x4 gViewMainScene : VIEW_MAIN_SCENE;
-#define HalfPI 1.5707963267948966192313216916398
-
-sampler2D SamplerColor = sampler_state{
-    Texture = sourceTexture;
-    MipFilter = Linear;
-    MinFilter = Linear;
-    MagFilter = Linear;
-    AddressU = Mirror;
-    AddressV = Mirror;
-};
-
-struct VSInput{
-    float3 Position : POSITION0;
-    float2 TexCoord : TEXCOORD0;
-    float4 Diffuse : COLOR0;
-};
-
-struct PSInput{
-    float4 Position : POSITION0;
-    float2 TexCoord : TEXCOORD0;
-    float4 Diffuse : COLOR0;
-};
-
-float4x4 createWorldMatrix(float3 pos, float3 rot){
-	float3 cosRot = cos(rot);
-	float3 sinRot = sin(rot);
-    float4x4 eleMatrix = {
-        float4(cosRot.z * cosRot.y - sinRot.z * sinRot.x * sinRot.y, cosRot.y * sinRot.z + cosRot.z * sinRot.x * sinRot.y, -cosRot.x * sinRot.y, 0),
-        float4(-cosRot.x * sinRot.z, cosRot.z * cosRot.x, sinRot.x, 0),
-        float4(cosRot.z * sinRot.y + cosRot.y * sinRot.z * sinRot.x, sinRot.z * sinRot.y - cosRot.z * cosRot.y * sinRot.x, cosRot.x * cosRot.y, 0),
-        float4(pos.x,pos.y,pos.z, 1),
-    };
-    return eleMatrix;
-}
-
-float3 findRotation3D(float3 dPos) {
-	return float3(atan2(dPos.z,length(dPos.xy))+HalfPI,0,-atan2(dPos.x,dPos.y));
-}
-
-PSInput VertexShaderFunction(VSInput VS){
-    PSInput PS = (PSInput)0;
-    VS.Position.xyz = float3((VS.TexCoord.xy-0.5)*shapeConfig[2].xy, 0);
-    float4x4 sWorld = createWorldMatrix(shapeConfig[0], findRotation3D(shapeConfig[1]));
-	PS.Position = mul(mul(mul(float4(VS.Position,1),sWorld),gViewMainScene), gProjectionMainScene);
-    PS.TexCoord = 1-VS.TexCoord;
-    PS.Diffuse = VS.Diffuse;
-    return PS;
-}
-
-float4 PixelShaderFunction(PSInput PS) : COLOR0{
-    return tex2D(SamplerColor, PS.TexCoord.xy);
-}
-
-technique interface3D{
-  pass P0  {
-    ZEnable = true;
-    ZFunc = LessEqual;
-    ZWriteEnable = true;
-    VertexShader = compile vs_2_0 VertexShaderFunction();
-    PixelShader  = compile ps_2_0 PixelShaderFunction();
-  }
-}
-]]

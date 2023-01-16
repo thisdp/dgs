@@ -258,14 +258,14 @@ float3 findRotation3D(float3 sPos, float3 ePos) {
 }
 
 float4x4 createWorldMatrix(float3 pos, float3 rot){
-    float4x4 eleMatrix = {
-        float4(cos(rot.z) * cos(rot.y) - sin(rot.z) * sin(rot.x) * sin(rot.y), 
-                cos(rot.y) * sin(rot.z) + cos(rot.z) * sin(rot.x) * sin(rot.y), -cos(rot.x) * sin(rot.y), 0),
-        float4(-cos(rot.x) * sin(rot.z), cos(rot.z) * cos(rot.x), sin(rot.x), 0),
-        float4(cos(rot.z) * sin(rot.y) + cos(rot.y) * sin(rot.z) * sin(rot.x), sin(rot.z) * sin(rot.y) - 
-                cos(rot.z) * cos(rot.y) * sin(rot.x), cos(rot.x) * cos(rot.y), 0),
-        float4(pos.x,pos.y,pos.z, 1),
-    };
+    float3 cRot, sRot;
+    sincos(rot, sRot, cRot);
+	float4x4 eleMatrix = float4x4(
+        cRot.z * cRot.y - sRot.z * sRot.x * sRot.y, cRot.y * sRot.z + cRot.z * sRot.x * sRot.y, -cRot.x * sRot.y, 0,
+        -cRot.x * sRot.z, cRot.z * cRot.x, sRot.x, 0,
+        cRot.z * sRot.y + cRot.y * sRot.z * sRot.x, sRot.z * sRot.y - cRot.z * cRot.y * sRot.x, cRot.x * cRot.y, 0,
+		pos.x, pos.y, pos.z, 1
+	);
     return eleMatrix;
 }
 
