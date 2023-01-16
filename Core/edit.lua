@@ -1337,7 +1337,9 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	end
 	dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	dxSetBlendMode(rndtgt and "modulate_add" or "add")
-	__dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,white,isPostGUI)
+	if eleData.bgRT then
+		__dxDrawImage(px,py,pw,ph,eleData.bgRT,0,0,0,white,isPostGUI)
+	end
 	if placeHolderIgnoreRndTgt then
 		if isPlaceHolderShown then
 			local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
