@@ -484,7 +484,7 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 				end
 				if eleData.mainRT then
 					dxSetShaderValue(eleData.renderer,"shapeConfig",x,y,z,fx,fy,fz,w,h,roll/180*math.pi)
-					dxDrawImage(0,0,sW,sH,eleData.renderer,0,0,0,tocolor(255,0,0,255))
+					dxDrawImage(0,0,sW,sH,eleData.renderer,0,0,0,color)
 				end
 				return true
 			end
