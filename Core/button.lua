@@ -200,6 +200,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local renderBuffer = eleData.renderBuffer
 	local color = eleData.color
 	local image = eleData.image
+	local textColor = eleData.textColor
 	local buttonState = 1
 	if MouseData.entered == source then
 		buttonState = 2
@@ -225,9 +226,11 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		eleData.currentState = buttonState
 		eleData.currentStateTick = getTickCount()
 		renderBuffer.startColor = renderBuffer.currentColor or (type(color) ~= "table" and color or color[eleData.lastState])
+		renderBuffer.startTextColor = renderBuffer.currentTextColor or (type(textColor) ~= "table" and textColor or textColor[eleData.lastState])
 	end
 	local bgColor = type(color) ~= "table" and color or color[buttonState] 
 	local bgImage = type(image) ~= "table" and image or image[buttonState]
+	local textColor = type(textColor) ~= "table" and textColor or (textColor[buttonState] or textColor[1])
 	local finalcolor
 	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
@@ -239,7 +242,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		else
 			local targetColor = bgColor
 			if eleData.colorTransitionPeriod > 0 then
-				renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod) -- todo
+				renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod)
 				finalcolor = applyColorAlpha(renderBuffer.currentColor,parentAlpha)
 			else
 				finalcolor = applyColorAlpha(targetColor,parentAlpha)
@@ -247,8 +250,12 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		end
 	else
 		local targetColor = bgColor
+		local targetTextColor = textColor
 		if eleData.colorTransitionPeriod > 0 and getTickCount()-eleData.currentStateTick <= eleData.colorTransitionPeriod then
-			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,(getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod) -- todo
+			local progress = (getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod
+			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,progress)
+			renderBuffer.currentTextColor = interpolateColor(renderBuffer.startTextColor or targetTextColor,targetTextColor,progress)
+			textColor = renderBuffer.currentTextColor
 			finalcolor = applyColorAlpha(renderBuffer.currentColor,parentAlpha)
 		else
 			finalcolor = applyColorAlpha(targetColor,parentAlpha)
@@ -401,7 +408,6 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 		end
 		
-		local textColor = type(eleData.textColor) ~= "table" and eleData.textColor or (eleData.textColor[buttonState] or eleData.textColor[1])
 		dgsDrawText(text,textX,textY,textX+w,textY+h,applyColorAlpha(textColor,parentAlpha),textSizeX,textSizeY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	end
 
