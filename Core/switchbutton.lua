@@ -373,10 +373,14 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		yOn = yOn+hOn/2-troughWidth/2
 		hOn = troughWidth
 		if animProgress == 0 then
+			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			dxDrawImage(xOn,yOn,wOn,hOn,imageOn,0,0,0,colorOn,isPostGUI,rndtgt)
 		elseif animProgress == 1 then
+			colorOff = applyColorAlpha(colorOff,parentAlpha)
 			dxDrawImage(xOn,yOn,wOn,hOn,imageOff,0,0,0,colorOff,isPostGUI,rndtgt)
 		else
+			colorOff = applyColorAlpha(colorOff,parentAlpha)
+			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			local offColor = applyColorAlpha(colorOff,animProgress)
 			local onColor = applyColorAlpha(colorOn,1-animProgress)
 			dxDrawImage(xOn,yOn,wOn,hOn,imageOn,0,0,0,onColor,isPostGUI,rndtgt)
@@ -402,10 +406,14 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		yOn = yOn+hOn/2-troughWidth/2
 		hOn = troughWidth
 		if animProgress == 0 then
+			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			dxDrawImage(xOn,yOn,wOn,hOn,imageOn,0,0,0,colorOn,isPostGUI,rndtgt)
 		elseif animProgress == 1 then
+			colorOff = applyColorAlpha(colorOff,parentAlpha)
 			dxDrawImage(xOn,yOn,wOn,hOn,imageOff,0,0,0,colorOff,isPostGUI,rndtgt)
 		else
+			colorOff = applyColorAlpha(colorOff,parentAlpha)
+			colorOn = applyColorAlpha(colorOn,parentAlpha)
 			local offColor = applyColorAlpha(colorOff,animProgress)
 			local onColor = applyColorAlpha(colorOn,1-animProgress)
 			dxDrawImage(xOn,yOn,wOn,hOn,imageOn,0,0,0,onColor,isPostGUI,rndtgt)
