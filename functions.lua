@@ -683,13 +683,13 @@ function dgsFocus(dgsEle)
 	if eleType == "dgs-dxbrowser" then
 		focusBrowser(dgsEle)
 	elseif eleType == "dgs-dxedit" then
-		MouseData.editCursor = true
 		resetTimer(MouseData.EditMemoTimer)
+		MouseData.EditMemoCursor = true
 		guiFocus(GlobalEdit)
 		dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
 	elseif eleType == "dgs-dxmemo" then
-		MouseData.editCursor = true
 		resetTimer(MouseData.EditMemoTimer)
+		MouseData.EditMemoCursor = true
 		guiFocus(GlobalMemo)
 		dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
 	end
