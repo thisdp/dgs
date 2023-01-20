@@ -2803,9 +2803,13 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnTextSx,columnTextSy = eleData.columnTextSize[1],eleData.columnTextSize[2] or eleData.columnTextSize[1]
 	local selectionMode = eleData.selectionMode
 	local clip = eleData.clip
-	local mouseInsideGridList = mx >= cx and mx <= cx+w and my >= cy and my <= cy+viewHeight
+	local mouseInsideGridList = false
+	if mx and my then
+		mouseInsideGridList = mx >= cx and mx <= cx+w and my >= cy and my <= cy+viewHeight
+	end
 	local mouseInsideColumn = mouseInsideGridList and my <= cy+columnHeight
 	local mouseInsideRow = mouseInsideGridList and my > cy+columnHeight
+	local mouseColumnPos = mouseInsideGridList and mx-cx
 	eleData.selectedColumn = -1
 	local defaultSortFunctions,sortIcon
 	local sortColumn = eleData.sortColumn
@@ -2833,7 +2837,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	dxSetBlendMode("modulate_add")
 	local multiplier = eleData.columnRelative and viewWidth or 1
 	local tempColumnOffset = columnMoveOffset+columnOffset
-	local mouseColumnPos = mx-cx
 	local mouseSelectColumn = -1
 	local cPosStart,cPosEnd
 	if columnShadow then
