@@ -254,13 +254,17 @@ function dgsCoreRender()
 		local hit2D = MouseData.hit
 		
 		if hit2D then
-			MouseData.cursorPos = dgsElementData[hit2D].cursorPosition
+			MouseData.cursorPos[0] = true
+			MouseData.cursorPos[1] = dgsElementData[hit2D].cursorPosition[1]
+			MouseData.cursorPos[2] = dgsElementData[hit2D].cursorPosition[2]
 			MouseData.hitData2D[0] = true
 			MouseData.hitData2D[1] = MouseData.cursorPos[1]
 			MouseData.hitData2D[2] = MouseData.cursorPos[2]
 			MouseData.hitData2D[3] = hit2D
 		elseif hit3D then
-			MouseData.cursorPos = dgsElementData[hit3D].cursorPosition
+			MouseData.cursorPos[0] = true
+			MouseData.cursorPos[1] = dgsElementData[hit3D].cursorPosition[1]
+			MouseData.cursorPos[2] = dgsElementData[hit3D].cursorPosition[2]
 		end
 		MouseData.hit = hit2D or hit3D 
 		dxSetRenderTarget()

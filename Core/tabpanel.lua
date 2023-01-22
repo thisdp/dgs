@@ -607,8 +607,10 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
 						textRenderBuffer[textRenderBuffer.count][10] = colorCoded	--Color Coded
 						textRenderBuffer[textRenderBuffer.count][11] = tshadow	--Shadow
-						if mx >= tabX+x and mx <= tabX+x+width and my > y and my < y+height and tabData.enabled and enabledSelf then
+						if mx and my and mx >= tabX+cx and mx <= tabX+cx+width and my > cy and my < cy+height and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
+							tabData.cursorPosition[0] = dgsRenderInfo.frames
+							tabData.cursorPosition[1],tabData.cursorPosition[2] = mx,my
 							MouseData.hit = t
 						end
 					end
@@ -616,13 +618,6 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 			end
 			dxSetBlendMode("modulate_add")
-			local shadow = eleData.shadow
-			if shadow then
-				local shadowOffsetX,shadowOffsetY,shadowColor = shadow[1],shadow[2],shadow[3]
-				for i=1,textRenderBuffer.count do
-					local tRB = textRenderBuffer[i]
-				end
-			end
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 			for i=1,textRenderBuffer.count do
 				local tRB = textRenderBuffer[i]

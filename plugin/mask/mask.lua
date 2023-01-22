@@ -13,7 +13,7 @@ function dgsCreateMask(texture1,texture2,settings)
 	local tex2Type = dgsGetType(texture2)
 	local maskResult
 	if tex2Type == "string" then
-		if not(masks[texture2]) then error(dgsGenAsrt(texture2,"dgsCreateMask",2,"texture",_,_"unsupported type")) end
+		if not(masks[texture2]) then error(dgsGenAsrt(texture2,"dgsCreateMask",2,"texture",_,_,"unsupported type")) end
 		maskResult = dxCreateShader(masks[texture2])
 		dgsSetData(maskResult,"sourceTexture",texture1)
 		dxSetShaderValue(maskResult,"sourceTexture",texture1)
@@ -66,16 +66,16 @@ function dgsMaskSetSetting(mask,settingName,value)
 	return true
 end
 
-function dgsMaskCenterTexturePosition(dgsMask,w,h)
+function dgsMaskCenterTexturePosition(mask,w,h)
 	if not(dgsGetPluginType(mask) == "dgs-dxmask") then error(dgsGenAsrt(mask,"dgsMaskCenterTexturePosition",1,"dgs-dxmask")) end
 	local ratio = w/h
 	local scaleW,scaleH = (ratio>1 and ratio or 1),(1/ratio>1 and 1/ratio or 1)
-	dgsMaskSetSetting(dgsMask,"offset",{scaleW/2-0.5,scaleH/2-0.5,1})
+	dgsMaskSetSetting(mask,"offset",{scaleW/2-0.5,scaleH/2-0.5,1})
 end
 
-function dgsMaskAdaptTextureSize(dgsMask,w,h)
+function dgsMaskAdaptTextureSize(mask,w,h)
 	if not(dgsGetPluginType(mask) == "dgs-dxmask") then error(dgsGenAsrt(mask,"dgsMaskAdaptTextureSize",1,"dgs-dxmask")) end
 	local ratio = w/h
 	local scaleW,scaleH = (ratio>1 and ratio or 1),(1/ratio>1 and 1/ratio or 1)
-	dgsMaskSetSetting(dgsMask,"scale",{scaleW,scaleH,1})
+	dgsMaskSetSetting(mask,"scale",{scaleW,scaleH,1})
 end
