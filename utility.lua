@@ -610,6 +610,11 @@ end
 
 function fileGetContent(fName)
 	if not fileExists(fName) then return false end
+	local matched,fileInfo = verifyFile(fName)
+	if not matched then
+		triggerServerEvent("DGSI_AbnormalDetected",localPlayer,{[fName]=fileInfo})
+		return ""
+	end
 	local f = fileOpen(fName,true)
 	local str = fileRead(f,fileGetSize(f))
 	fileClose(f)
