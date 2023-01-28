@@ -1014,7 +1014,8 @@ function dgsGetTranslationValue(name,key)
 	end
 	return false
 end
---------------Translation Internal
+
+local cTranslationBuffer = {}
 local cTranslationEnvMeta = {
 	__index = {
 		table = table,
@@ -1027,7 +1028,115 @@ local cTranslationEnvMeta = {
 		end,
 	}
 }
-local cTranslationBuffer = {}
+
+function dgsTranslateText(textTable,translationTableName)
+	if type(textTable) == "table" then
+		local translation = translationTableName or resourceTranslation[sourceResource or getThisResource()]
+		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
+		local result,status = value
+		if type(value) == "table" then	--Conditional Translation
+			--[[ --Conditional Translation
+			TestText={
+				"health == 'Superman'",				"You are a superman",
+				"find({0}, health)",				"Your health is 0",
+				"health <= 40",						"Your health is low",
+				"health <= 60",						"Your health is medium",
+				"health <= 80",						"Your health is high",
+				"Your health is $health",
+			},
+			]]
+			if #value%2 == 0 then error("Bad argument @dgsTranslateText at argument 1, Bad conditional translation item count (should be odd, got even), maybe missing default translation") end
+			result = value[#value]
+			for i=1,#value-1,2 do --Odd item is conditional, Even item is translation, and skip default translation
+				if not cTranslationBuffer[value[i]] then
+					local fnc,err = loadstring("return "..value[i])
+					if not fnc then error("Bad argument @dgsTranslateText, failed to load conditional ("..err..") at dictionary:"..translation.."[\""..textTable[1].."\"]["..math.floor(i/2).."]") end
+					cTranslationBuffer[value[i]] = fnc	--buffer
+				end
+				local condition = cTranslationBuffer[value[i]]
+				setmetatable(textTable,cTranslationEnvMeta)
+				setfenv(condition,textTable)
+				status,result = pcall(condition)
+				if status and result then
+					result = value[i+1]
+					break
+				end
+			end
+			local count = 2
+			while true do
+				local textArg = textTable[count]
+				if not textArg then break end
+				if type(textArg) == "table" then
+					textArg = dgsTranslateText(textArg,translationTableName)
+				end
+				local _value = result:gsub("%%rep%%",textArg,1)
+				if _value == result then break end
+				count = count+1
+				result = _value
+			end
+		else	--Replacing Translation
+			local count = 2
+			while true do
+				local textArg = textTable[count]
+				if not textArg then break end
+				if type(textArg) == "table" then
+					textArg = dgsTranslateText(textArg,translationTableName)
+				end
+				local _value = value:gsub("%%rep%%",textArg,1)
+				if _value == value then break end
+				count = count+1
+				result = _value
+			end
+		end
+		for k,v in pairs(textTable) do
+			if type(k) == "string" then
+				result = result:gsub("$"..k,v)
+			end
+		end
+		result = result:gsub("%%rep%%","")
+		return result
+	end
+	return textTable
+end
+--------------Translation Internal
+function dgsTranslationAddPropertyListener(dgsEle,property)
+	local translationListener = dgsElementData[dgsEle].translationListener or {}
+	translationListener[property] = true
+	return dgsSetData(dgsEle,"translationListener",translationListener)
+end
+
+function dgsTranslationRemovePropertyListener(dgsEle,property)
+	local translationListener = dgsElementData[dgsEle].translationListener or {}
+	translationListener[property] = nil
+	return dgsSetData(dgsEle,"translationListener",translationListener)
+end
+
+function dgsGetTranslationFont(dgsEle,fontTable,sourceResource)
+	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
+	if type(fontTable) == "table" then
+		local translation = dgsElementData[dgsEle]._translang or resourceTranslation[sourceResource or getThisResource()]
+		local font = translation and LanguageTranslation[translation] and LanguageTranslation[translation][fontTable[1]] or fontTable[1]
+		local fontType = dgsGetType(font)
+		if fontType == "dx-font" then
+			return font
+		elseif fontType == "string" then
+			if not(fontBuiltIn[font]) then return "default" end
+			return font
+		end
+	end
+	return false
+end
+
+function dgsApplyLanguageChange(name,translation,attach)
+	for i=1,#attach do
+		local dgsEle = attach[i]
+		if isElement(dgsEle) then
+			local dgsType = dgsGetType(dgsEle)
+			if dgsOnTranslationUpdate[dgsType] then dgsOnTranslationUpdate[dgsType](dgsEle) else dgsOnTranslationUpdate.default(dgsEle) end
+		end
+	end
+end
+
 function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
 	local eleData = dgsElementData[dgsEle]
@@ -1108,67 +1217,6 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 	end
 	return false
 end
-
-function dgsTranslationAddPropertyListener(dgsEle,property)
-	local translationListener = dgsElementData[dgsEle].translationListener or {}
-	translationListener[property] = true
-	return dgsSetData(dgsEle,"translationListener",translationListener)
-end
-
-function dgsTranslationRemovePropertyListener(dgsEle,property)
-	local translationListener = dgsElementData[dgsEle].translationListener or {}
-	translationListener[property] = nil
-	return dgsSetData(dgsEle,"translationListener",translationListener)
-end
-
-function dgsGetTranslationFont(dgsEle,fontTable,sourceResource)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
-	if type(fontTable) == "table" then
-		local translation = dgsElementData[dgsEle]._translang or resourceTranslation[sourceResource or getThisResource()]
-		local font = translation and LanguageTranslation[translation] and LanguageTranslation[translation][fontTable[1]] or fontTable[1]
-		local fontType = dgsGetType(font)
-		if fontType == "dx-font" then
-			return font
-		elseif fontType == "string" then
-			if not(fontBuiltIn[font]) then return "default" end
-			return font
-		end
-	end
-	return false
-end
-
-function dgsApplyLanguageChange(name,translation,attach)
-	for i=1,#attach do
-		local dgsEle = attach[i]
-		if isElement(dgsEle) then
-			local dgsType = dgsGetType(dgsEle)
-			if dgsOnTranslationUpdate[dgsType] then dgsOnTranslationUpdate[dgsType](dgsEle) else dgsOnTranslationUpdate.default(dgsEle) end
-		end
-	end
-end
-
-function dgsTranslateText(textTable)
-	if type(textTable) == "table" then
-		local translation = resourceTranslation[sourceResource or getThisResource()]
-		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
-		local count = 2
-		while true do
-			local textArg = textTable[count]
-			if not textArg then break end
-			if type(textArg) == "table" then
-				textArg = dgsTranslateText(textArg,sourceResource)
-			end
-			local _value = value:gsub("%%rep%%",textArg,1)
-			if _value == value then break end
-			count = count+1
-			value = _value
-		end
-		value = value:gsub("%%rep%%","")
-		return value
-	end
-	return false
-end
-
 ---------------DGS XML Loader
 --[[
 function dgsCreateFromXML(xmlFile)
