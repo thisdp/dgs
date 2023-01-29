@@ -194,6 +194,23 @@ end
 --function dgsButtonSetIconImage()
 --function dgsButtonSetIconColor()
 ----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxbutton"] = {
+	color = function(dgsEle,key,value,oldValue)
+		local eleData = dgsElementData[dgsEle]
+		local renderBuffer = eleData.renderBuffer
+		renderBuffer.startColor = nil
+		renderBuffer.currentColor = nil
+	end,
+	textColor = function(dgsEle,key,value,oldValue)
+		local eleData = dgsElementData[dgsEle]
+		local renderBuffer = eleData.renderBuffer
+		renderBuffer.startTextColor = nil
+		renderBuffer.currentTextColor = nil
+	end,
+}
+----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
