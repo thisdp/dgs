@@ -199,15 +199,24 @@ end
 dgsOnPropertyChange["dgs-dxbutton"] = {
 	color = function(dgsEle,key,value,oldValue)
 		local eleData = dgsElementData[dgsEle]
+		if eleData.colorTransitionPeriod <= 0 then return end
 		local renderBuffer = eleData.renderBuffer
-		renderBuffer.startColor = nil
-		renderBuffer.currentColor = nil
+		local context = renderBuffer.startContext
+		if context then
+			local colorFrom = type(value) ~= "table" and value or value[context[1] or eleData.currentState or 1]
+			local colorTo = type(value) ~= "table" and value or value[context[2] or eleData.currentState or 1]
+			renderBuffer.startColor = interpolateColor(colorFrom,colorTo,renderBuffer.currentProgress)
+		end
 	end,
 	textColor = function(dgsEle,key,value,oldValue)
-		local eleData = dgsElementData[dgsEle]
+		if eleData.colorTransitionPeriod <= 0 then return end
 		local renderBuffer = eleData.renderBuffer
-		renderBuffer.startTextColor = nil
-		renderBuffer.currentTextColor = nil
+		local context = renderBuffer.startContext
+		if context then
+			local colorFrom = type(value) ~= "table" and value or value[context[1] or eleData.currentState or 1]
+			local colorTo = type(value) ~= "table" and value or value[context[2] or eleData.currentState or 1]
+			renderBuffer.startTextColor = interpolateColor(colorFrom,colorTo,renderBuffer.currentProgress)
+		end
 	end,
 }
 ----------------------------------------------------------------
@@ -242,6 +251,9 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	if eleData.currentState ~= buttonState then
 		eleData.currentState = buttonState
 		eleData.currentStateTick = getTickCount()
+		if not renderBuffer.startContext then renderBuffer.startContext = {} end
+		renderBuffer.startContext[1] = eleData.lastState
+		renderBuffer.startContext[2] = eleData.currentState
 		renderBuffer.startColor = renderBuffer.currentColor or (type(color) ~= "table" and color or color[eleData.lastState])
 		renderBuffer.startTextColor = renderBuffer.currentTextColor or (type(textColor) ~= "table" and textColor or textColor[eleData.lastState])
 	end
@@ -272,9 +284,12 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			local progress = (getTickCount()-eleData.currentStateTick)/eleData.colorTransitionPeriod
 			renderBuffer.currentColor = interpolateColor(renderBuffer.startColor or targetColor,targetColor,progress)
 			renderBuffer.currentTextColor = interpolateColor(renderBuffer.startTextColor or targetTextColor,targetTextColor,progress)
+			renderBuffer.currentProgress = progress
 			textColor = renderBuffer.currentTextColor
 			finalcolor = applyColorAlpha(renderBuffer.currentColor,parentAlpha)
 		else
+			renderBuffer.currentProgress = 1
+			renderBuffer.currentColor = targetColor
 			finalcolor = applyColorAlpha(targetColor,parentAlpha)
 		end
 	end
