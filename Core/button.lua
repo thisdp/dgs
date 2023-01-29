@@ -209,6 +209,7 @@ dgsOnPropertyChange["dgs-dxbutton"] = {
 		end
 	end,
 	textColor = function(dgsEle,key,value,oldValue)
+		local eleData = dgsElementData[dgsEle]
 		if eleData.colorTransitionPeriod <= 0 then return end
 		local renderBuffer = eleData.renderBuffer
 		local context = renderBuffer.startContext
