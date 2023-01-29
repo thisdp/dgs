@@ -25,7 +25,7 @@ All function names refer simiularly to the original MTA:SA ones. This library us
 *(Sorry for the bad design of the default style though you are free to adjust everything with style system.)*
 
 For a full list of functions and event handlers, check the DGS wiki:
-* **English:** http://wiki.mtasa.com/wiki/Resource:Dgs
+* **English:** http://wiki.mtasa.com/wiki/Resource:DGS
 * **Arabic (العربية):** https://wiki.mtasa.com/wiki/AR/Resource:DGS
 * **Chinese Simplified (简体中文):** https://wiki.mtasa.com/wiki/ZH-CN/Resource:DGS
 * **Polish (Polski):** https://wiki.mtasa.com/wiki/PL/Resource:DGS
