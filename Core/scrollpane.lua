@@ -84,6 +84,7 @@ function dgsCreateScrollPane(...)
 		verticalMoveOffset = 0,
 		moveHardness = {0.1,0.9},
 		basePointOffset = {0,0,true},
+		padding = {0,0,true},
 		minViewSize = {0,0,true},
 		--childSizeRef = {{},{}}, --Horizontal,Vertical //to optimize
 		configNextFrame = false,
@@ -476,8 +477,10 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local mViewSizeH = mViewSize[3] and mViewSize[2]*h or mViewSize[2]
 	local childBoundingW = math.max(eleData.maxChildSize[1],mViewSizeW)
 	local childBoundingH = math.max(eleData.maxChildSize[2],mViewSizeH)
+	local paddingX = eleData.padding[3] and eleData.padding[1]*w or eleData.padding[1]
+	local paddingY = eleData.padding[3] and eleData.padding[2]*h or eleData.padding[2]
 	local relSizX,relSizY = w-xthick,h-ythick
-	local maxX,maxY = childBoundingW-relSizX,childBoundingH-relSizY
+	local maxX,maxY = childBoundingW-relSizX+paddingX*2,childBoundingH-relSizY+paddingY*2
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
 	
 	local _OffsetX = -maxX*dgsElementData[ scrollbar[2] ].scrollPosition*0.01
@@ -520,8 +523,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	end
 	
 	local basePointOffset = eleData.basePointOffset
-	OffsetX = OffsetX+(basePointOffset[3] and basePointOffset[1]*w or basePointOffset[1])
-	OffsetY = OffsetY+(basePointOffset[3] and basePointOffset[2]*h or basePointOffset[2])
+	OffsetX = OffsetX+(basePointOffset[3] and basePointOffset[1]*w or basePointOffset[1])+paddingX
+	OffsetY = OffsetY+(basePointOffset[3] and basePointOffset[2]*h or basePointOffset[2])+paddingY
 	------------------------------------
 	if eleData.functionRunBefore then
 		local fnc = eleData.functions
@@ -556,19 +559,22 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		end
 	end
 	dxSetRenderTarget(newRndTgt,true)
-	local scrollPaneOffsetX, scrollPaneOffsetY = mathCeil(mathAbs(OffsetX)), mathCeil(mathAbs(OffsetY))
 	local children = eleData.children
 	if not eleData.childOutsideHit then
 		if MouseData.hit ~= source then
 			enabledInherited = false
 		end
 	end
+	local scrollPaneStartX = -OffsetX
+	local scrollPaneStartY = -OffsetY
+	local scrollPaneEndX = scrollPaneStartX+w
+	local scrollPaneEndY = scrollPaneStartY+h
 	for i=1, #children do
 		local child = children[i]
 		local childAbsPos = dgsElementData[child].absPos
 		local childAbsSize = dgsElementData[child].absSize
-		local childMinX, childMinY, childMaxX, childMaxY = childAbsPos[1], childAbsPos[2], childAbsPos[1] + childAbsSize[1], childAbsPos[2] + childAbsSize[2]
-		if (scrollPaneOffsetX + w > childMinX) and (scrollPaneOffsetX <= childMaxX) and (scrollPaneOffsetY + h > childMinY) and (scrollPaneOffsetY < childMaxY) then
+		local childMinX, childMinY, childMaxX, childMaxY = childAbsPos[1],childAbsPos[2], childAbsPos[1] + childAbsSize[1], childAbsPos[2] + childAbsSize[2]
+		if (scrollPaneEndX > childMinX) and (scrollPaneStartX < childMaxX) and (scrollPaneEndY > childMinY) and (scrollPaneStartY < childMaxY) then
 			renderGUI(child,mx,my,enabledInherited,enabledSelf,newRndTgt,0,0,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
 		end
 	end
