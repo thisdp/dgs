@@ -70,6 +70,7 @@ function dgsCreate3DInterface(...)
 		roll = roll or 0,
 		hit = {},
 		renderer = renderer,
+		doublesided = true,
 	}
 	dgsAttachToAutoDestroy(renderer,interface,-2)
 	onDGSElementCreate(interface,sRes)
@@ -125,7 +126,7 @@ function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4
 		local inSide = _x>=0 and _x<=1 and _y>=0 and _y <=1
 		return (angle > 0) and inSide,_x,_y,px,py,pz
 	end
-end
+end	
 
 function dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,pnVP1,pnVP2,pnVP3,pnVP4,pnVP5,pnVP6)
 	local vpt = pnVP1*lnVP1+pnVP2*lnVP2+pnVP3*lnVP3
@@ -159,6 +160,27 @@ function dgs3DInterfaceCalculateMousePosition(interface)
 	return false
 end
 
+function dgs3DInterfaceProcessLine(interface,sx,sy,sz,ex,ey,ez)
+	local eleData = dgsElementData[interface]
+	local pos = eleData.position
+	local size = eleData.size
+	local faceTo = eleData.faceTo
+	local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
+	if x and y and z and w and h then
+		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = ex-sx,ey-sy,ez-sz,sx,sy,sz
+		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
+		if not fx or not fy or not fz then
+			fx,fy,fz = camX-x,camY-y,camZ-z
+		end
+		if eleData.faceRelativeTo == "world" then
+			fx,fy,fz = fx-x,fy-y,fz-z
+		end
+		local isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
+		return hitX,hitY,hx,hy,hz,isHit
+	end
+	return false
+end
+
 function dgs3DInterfaceSetRoll(interface,roll)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceSetRoll",1,"dgs-dx3dinterface")) end
 	if not (type(roll) == "number") then error(dgsGenAsrt(roll,"dgs3DInterfaceSetRoll",2,"number")) end
@@ -168,6 +190,17 @@ end
 function dgs3DInterfaceGetRoll(interface)
 	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetRoll",1,"dgs-dx3dinterface")) end
 	return dgsElementData[interface].roll
+end
+
+function dgs3DInterfaceSetDoublesided(interface,isDoublesided)
+	assert(dgsGetType(interface) == "dgs-dx3dinterface","Bad argument @dgs3DInterfaceSetDoublesided at argument 1, expect a dgs-dx3dinterface got "..dgsGetType(interface))
+	dgsSetData(interface,"doublesided",isDoublesided)
+	return dxSetShaderValue(dgsElementData[interface].renderer,"doublesided",isDoublesided == true)
+end
+
+function dgs3DInterfaceGetDoublesided(interface)
+	if not dgsIsType(interface,"dgs-dx3dinterface") then error(dgsGenAsrt(interface,"dgs3DInterfaceGetDoublesided",1,"dgs-dx3dinterface")) end
+	return dgsElementData[interface].doublesided
 end
 
 function dgs3DInterfaceSetFaceTo(interface,fx,fy,fz,relativeTo)
@@ -291,6 +324,7 @@ float3x3 shapeConfig = {
 	float3(0, 0, 0),	//Face To
 	float3(0, 0, 0),	//Width Height Roll
 };
+bool doublesided = true;
 texture sourceTexture;
 float4x4 gProjectionMainScene : PROJECTION_MAIN_SCENE;
 float4x4 gViewMainScene : VIEW_MAIN_SCENE;
@@ -374,6 +408,7 @@ technique interface3D{
     ZEnable = true;
     ZFunc = LessEqual;
     ZWriteEnable = true;
+	CullMode = doublesided?1:3;
     VertexShader = compile vs_2_0 VertexShaderFunction();
     PixelShader  = compile ps_2_0 PixelShaderFunction();
   }
