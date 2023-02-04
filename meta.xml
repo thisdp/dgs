@@ -292,7 +292,7 @@
 	<export function="dgs3DGetDimension" type="client" />
 	
 	<export function="dgsCreate3DInterface" type="client" />
-	<export function="dgs3DInterfaceProcessLine" type="client" />
+	<export function="dgs3DInterfaceProcessLineOfSight" type="client" />
 	<export function="dgs3DInterfaceSetDoublesided" type="client" />
 	<export function="dgs3DInterfaceGetDoublesided" type="client" />
 	<export function="dgs3DInterfaceGetBlendMode" type="client" />

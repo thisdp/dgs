@@ -160,7 +160,7 @@ function dgs3DInterfaceCalculateMousePosition(interface)
 	return false
 end
 
-function dgs3DInterfaceProcessLine(interface,sx,sy,sz,ex,ey,ez)
+function dgs3DInterfaceProcessLineOfSight(interface,sx,sy,sz,ex,ey,ez)
 	local eleData = dgsElementData[interface]
 	local pos = eleData.position
 	local size = eleData.size
