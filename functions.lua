@@ -948,6 +948,7 @@ function dgsSetTranslationTable(name,tab)
 		LanguageTranslation[name] = tab
 		if not LanguageTranslationAttach[name] then LanguageTranslationAttach[name] = {} end
 		dgsApplyLanguageChange(name,LanguageTranslation[name],LanguageTranslationAttach[name])
+		triggerEvent("onDgsTranslationTableChange",sourceResourceRoot or resourceRoot,name)
 	elseif dgsTranslationTableExists(name) then
 		LanguageTranslation[name] = false
 		for k,v in ipairs(LanguageTranslationAttach[name]) do

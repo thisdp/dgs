@@ -86,6 +86,7 @@ events = {
 "onDgsStopSizing",
 "onDgsStopAlphaing",
 "onDgsStopAniming",
+"onDgsTranslationTableChange",
 "onDgsDrop",
 "onDgsDrag",
 "onDgsStart",
