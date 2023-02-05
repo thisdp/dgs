@@ -3,6 +3,8 @@ dgsRegisterType("dgs-dxradiobutton","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxradiobutton",{
 	alignment = 		{	{ PArg.String, PArg.String }	},
 	buttonSize = 		{	{ PArg.Number, PArg.Number+PArg.Nil, PArg.Bool }	},
+	buttonSide = 			{	PArg.String	},
+	buttonAlignment = 		{	PArg.String	},
 	clip = 				{	PArg.Bool	},  
 	colorChecked = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	colorCoded = 		{	PArg.Bool	},
@@ -110,7 +112,6 @@ function dgsCreateRadioButton(...)
 		imageChecked = {nImageT,hImageT,cImageT},
 		colorChecked = {nColorT,hColorT,cColorT},
 		rbParent = dgsIsType(parent) and parent or resourceRoot,
-		text = tostring(text or ""),
 		textColor = textColor or style.textColor,
 		textSize = {textSizeX,textSizeY},
 		textPadding = style.textPadding,
@@ -121,16 +122,19 @@ function dgsCreateRadioButton(...)
 		clip = nil,
 		wordBreak = nil,
 		colorCoded = nil,
-		buttonPosition = "left",
+		buttonSide = "left",
+		buttonAlignment = "left",
 		alignment = {"left","center"},
 	}
 	dgsSetParent(rb,parent,true,true)
 	dgsAttachToTranslation(rb,resourceTranslation[sRes])
+	calculateGuiPositionSize(rb,x,y,relative or false,w,h,relative or false,true)
 	if type(text) == "table" then
 		dgsElementData[rb]._translation_text = text
-		dgsElementData[rb].text = dgsTranslate(rb,text,sRes)
+		dgsSetData(rb,"text",text)
+	else
+		dgsSetData(rb,"text",tostring(text or ""))
 	end
-	calculateGuiPositionSize(rb,x,y,relative or false,w,h,relative or false,true)
 	onDGSElementCreate(rb,sRes)
 	return rb
 end
@@ -188,6 +192,87 @@ function dgsRadioButtonGetVerticalAlign(rb)
 	return dgsElementData[rb].alignment[2]
 end
 
+function dgsRadioButtonSetButtonAlign(rb,alignment)
+	if not dgsIsType(rb,"dgs-dxradiobutton") then error(dgsGenAsrt(rb,"dgsRadioButtonSetButtonAlign",1,"dgs-dxradiobutton")) end
+	if alignment ~= "left"  and alignment ~= "right" then error(dgsGenAsrt(alignment,"dgsRadioButtonSetButtonAlign",2,"string (\"left\"/\"right\")")) end
+	dgsSetData(rb,"buttonAlignment",alignment)
+	return true
+end
+
+function dgsRadioButtonGetButtonAlign(rb,alignment)
+	if not dgsIsType(rb,"dgs-dxradiobutton") then error(dgsGenAsrt(rb,"dgsRadioButtonGetButtonAlign",1,"dgs-dxradiobutton")) end
+	return dgsElementData[rb].buttonAlignment
+end
+
+function dgsRadioButtonSetButtonSide(rb,side)
+	if not dgsIsType(rb,"dgs-dxradiobutton") then error(dgsGenAsrt(rb,"dgsRadioButtonSetButtonSide",1,"dgs-dxradiobutton")) end
+	if side ~= "left"  and side ~= "right" then error(dgsGenAsrt(side,"dgsRadioButtonSetButtonSide",2,"string (\"left\"/\"right\")")) end
+	dgsSetData(rb,"buttonSide",side)
+	return true
+end
+
+function dgsRadioButtonGetButtonSide(rb,side)
+	if not dgsIsType(rb,"dgs-dxradiobutton") then error(dgsGenAsrt(rb,"dgsRadioButtonGetButtonSide",1,"dgs-dxradiobutton")) end
+	return dgsElementData[rb].buttonSide
+end
+
+function dgsRadioButtonUpdateTextWidth(rb)
+	local eleData = dgsElementData[rb]
+	local wordBreak = eleData.wordBreak
+	local colorCoded = eleData.colorCoded
+	local textSize = eleData.textSize
+	local font = eleData.font
+	local text = eleData.text
+	local w = eleData.absSize[1]
+	local buttonSize = eleData.buttonSize
+	local buttonSizeX
+	if tonumber(buttonSize[2]) then
+		buttonSizeX = buttonSize[3] and buttonSize[1]*w or buttonSize[1]
+	else
+		buttonSizeX = buttonSize[2] and buttonSize[1]*h or buttonSize[1]
+	end
+	eleData.textWidth = dxGetTextSize(text,w-buttonSizeX,textSize[1],textSize[2],font,wordBreak,colorCoded)
+end
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxradiobutton"] = {
+	text = function(dgsEle,key,value,oldValue)
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translation_text = value
+			value = dgsTranslate(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translation_text = nil
+		end
+		dgsElementData[dgsEle].text = tostring(value)
+		dgsTriggerEvent("onDgsTextChange",dgsEle)
+		--
+		dgsRadioButtonUpdateTextWidth(dgsEle)
+		print(dgsEle)
+	end,
+	textSize = function(dgsEle,key,value,oldValue)
+		dgsRadioButtonUpdateTextWidth(dgsEle)
+	end,
+	font = function(dgsEle,key,value,oldValue)
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translation_font = value
+			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translation_font = nil
+		end
+		dgsElementData[dgsEle].font = value
+		--
+		dgsRadioButtonUpdateTextWidth(dgsEle)
+	end,
+	wordBreak = function(dgsEle,key,value,oldValue)
+		dgsRadioButtonUpdateTextWidth(dgsEle)
+	end,
+	colorCoded = function(dgsEle,key,value,oldValue)
+		dgsRadioButtonUpdateTextWidth(dgsEle)
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -271,14 +356,60 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	if eleData.buttonPosition == "right" then	--right
-		dxDrawImage(x+w-buttonSizeX,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
-		dgsDrawText(text,x+offsetX,y+offsetY,x+w+offsetX-buttonSizeX-textPadding,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-	else	--left by default
-		local px = x+buttonSizeX+textPadding
-		if eleData.PixelInt then px = px-px%1 end
-		dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
-		dgsDrawText(text,px+offsetX,y+offsetY,px+w+offsetX,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	local buttonX,textX,textEX
+	local textWidth = eleData.textWidth
+	if alignment[1] == "right" then
+		if eleData.buttonSide == "right" then
+			buttonX = x+w-buttonSizeX
+			textX = x
+			textEX = x+w-buttonSizeX
+		else
+			if eleData.buttonAlignment == "right" then
+				buttonX = x+w-textWidth-buttonSizeX
+			else
+				buttonX = x
+			end
+			textX = x+buttonSizeX
+			textEX = x+w
+		end
+	elseif alignment[1] == "center" then
+		if eleData.buttonSide == "right" then
+			if eleData.buttonAlignment == "right" then
+				buttonX = x+w-buttonSizeX
+				textX = x
+				textEX = x+w-buttonSizeX
+			else
+				buttonX = (x*2-buttonSizeX+w+textWidth)/2
+				textX = x
+				textEX = x+w-buttonSizeX
+			end
+		else
+			if eleData.buttonAlignment == "right" then
+				buttonX = (x*2-buttonSizeX+w-textWidth)/2
+				textX = x+buttonSizeX
+				textEX = x+w
+			else
+				buttonX = x
+				textX = x+buttonSizeX
+				textEX = x+w
+			end
+		end
+	elseif alignment[1] == "left" then
+		if eleData.buttonSide == "right" then
+			if eleData.buttonAlignment == "right" then
+				buttonX = x+w-buttonSizeX
+			else
+				buttonX = x+textWidth
+			end
+			textX = x
+			textEX = x+w-buttonSizeX
+		else
+			buttonX = x
+			textX = x+buttonSizeX
+			textEX = x+w
+		end
 	end
+	dxDrawImage(buttonX,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
+	dgsDrawText(text,textX+offsetX,y+offsetY,textEX+offsetX,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	return rndtgt,false,mx,my,0,0
 end

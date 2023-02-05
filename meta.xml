@@ -406,18 +406,26 @@
 	<export function="dgsCreateRadioButton" type="client" />
 	<export function="dgsRadioButtonGetSelected" type="client" />
 	<export function="dgsRadioButtonSetSelected" type="client" />
-	<export function="dgsRadioButtonSetHorizontalAlign" type="client" />
-	<export function="dgsRadioButtonSetVerticalAlign" type="client" />
 	<export function="dgsRadioButtonGetHorizontalAlign" type="client" />
+	<export function="dgsRadioButtonSetHorizontalAlign" type="client" />
 	<export function="dgsRadioButtonGetVerticalAlign" type="client" />
+	<export function="dgsRadioButtonSetVerticalAlign" type="client" />
+	<export function="dgsRadioButtonGetButtonSide" type="client" />
+	<export function="dgsRadioButtonSetButtonSide" type="client" />
+	<export function="dgsRadioButtonGetButtonAlign" type="client" />
+	<export function="dgsRadioButtonSetButtonAlign" type="client" />
 
 	<export function="dgsCreateCheckBox" type="client" />
 	<export function="dgsCheckBoxGetSelected" type="client" />
 	<export function="dgsCheckBoxSetSelected" type="client" />
-	<export function="dgsCheckBoxSetHorizontalAlign" type="client" />
-	<export function="dgsCheckBoxSetVerticalAlign" type="client" />
 	<export function="dgsCheckBoxGetHorizontalAlign" type="client" />
+	<export function="dgsCheckBoxSetHorizontalAlign" type="client" />
 	<export function="dgsCheckBoxGetVerticalAlign" type="client" />
+	<export function="dgsCheckBoxSetVerticalAlign" type="client" />
+	<export function="dgsCheckBoxGetButtonSide" type="client" />
+	<export function="dgsCheckBoxSetButtonSide" type="client" />
+	<export function="dgsCheckBoxGetButtonAlign" type="client" />
+	<export function="dgsCheckBoxSetButtonAlign" type="client" />
 
 	<export function="dgsCreateComboBox" type="client" />
 	<export function="dgsComboBoxAddItem" type="client" />

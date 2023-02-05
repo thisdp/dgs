@@ -3,6 +3,8 @@ dgsRegisterType("dgs-dxcheckbox","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxcheckbox",{
 	alignment = 			{	{ PArg.String, PArg.String }	},
 	buttonSize = 			{	{ PArg.Number, PArg.Number+PArg.Nil, PArg.Bool }	},
+	buttonSide = 			{	PArg.String	},
+	buttonAlignment = 		{	PArg.String	},
 	clip = 					{	PArg.Bool	},
 	colorChecked =			{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	colorCoded = 			{	PArg.Bool	},
@@ -142,18 +144,19 @@ function dgsCreateCheckBox(...)
 		wordBreak = nil,
 		colorCoded = nil,
 		state = state,
-		buttonPosition = "left",
+		buttonSide = "left",
+		buttonAlignment = "left",
 		alignment = {"left","center"},
 	}
 	dgsSetParent(cb,parent,true,true)
 	dgsAttachToTranslation(cb,resourceTranslation[sRes])
+	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
 	if type(text) == "table" then
 		dgsElementData[cb]._translation_text = text
 		dgsSetData(cb,"text",text)
 	else
 		dgsSetData(cb,"text",tostring(text or ""))
 	end
-	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
 	dgsAddEventHandler("onDgsCheckBoxChange",cb,"dgsCheckBoxCheckState",false)
 	onDGSElementCreate(cb,sRes)
 	return cb
@@ -202,6 +205,86 @@ function dgsCheckBoxGetVerticalAlign(cb)
 	return dgsElementData[cb].alignment[2]
 end
 
+function dgsCheckBoxSetButtonAlign(cb,alignment)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxSetButtonAlign",1,"dgs-dxcheckbox")) end
+	if alignment ~= "left"  and alignment ~= "right" then error(dgsGenAsrt(alignment,"dgsCheckBoxSetButtonAlign",2,"string (\"left\"/\"right\")")) end
+	dgsSetData(cb,"buttonAlignment",alignment)
+	return true
+end
+
+function dgsCheckBoxGetButtonAlign(cb,alignment)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxGetButtonAlign",1,"dgs-dxcheckbox")) end
+	return dgsElementData[cb].buttonAlignment
+end
+
+function dgsCheckBoxSetButtonSide(cb,side)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxSetButtonSide",1,"dgs-dxcheckbox")) end
+	if side ~= "left"  and side ~= "right" then error(dgsGenAsrt(side,"dgsCheckBoxSetButtonSide",2,"string (\"left\"/\"right\")")) end
+	dgsSetData(cb,"buttonSide",side)
+	return true
+end
+
+function dgsCheckBoxGetButtonSide(cb,side)
+	if not dgsIsType(cb,"dgs-dxcheckbox") then error(dgsGenAsrt(cb,"dgsCheckBoxGetButtonSide",1,"dgs-dxcheckbox")) end
+	return dgsElementData[cb].buttonSide
+end
+
+function dgsCheckBoxUpdateTextWidth(cb)
+	local eleData = dgsElementData[cb]
+	local wordBreak = eleData.wordBreak
+	local colorCoded = eleData.colorCoded
+	local textSize = eleData.textSize
+	local font = eleData.font
+	local text = eleData.text
+	local w = eleData.absSize[1]
+	local buttonSize = eleData.buttonSize
+	local buttonSizeX
+	if tonumber(buttonSize[2]) then
+		buttonSizeX = buttonSize[3] and buttonSize[1]*w or buttonSize[1]
+	else
+		buttonSizeX = buttonSize[2] and buttonSize[1]*h or buttonSize[1]
+	end
+	eleData.textWidth = dxGetTextSize(text,w-buttonSizeX,textSize[1],textSize[2],font,wordBreak,colorCoded)
+end
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dxcheckbox"] = {
+	text = function(dgsEle,key,value,oldValue)
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translation_text = value
+			value = dgsTranslate(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translation_text = nil
+		end
+		dgsElementData[dgsEle].text = tostring(value)
+		dgsTriggerEvent("onDgsTextChange",dgsEle)
+		--
+		dgsCheckBoxUpdateTextWidth(dgsEle)
+	end,
+	textSize = function(dgsEle,key,value,oldValue)
+		dgsCheckBoxUpdateTextWidth(dgsEle)
+	end,
+	font = function(dgsEle,key,value,oldValue)
+		--Multilingual
+		if type(value) == "table" then
+			dgsElementData[dgsEle]._translation_font = value
+			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
+		else
+			dgsElementData[dgsEle]._translation_font = nil
+		end
+		dgsElementData[dgsEle].font = value
+		--
+		dgsCheckBoxUpdateTextWidth(dgsEle)
+	end,
+	wordBreak = function(dgsEle,key,value,oldValue)
+		dgsCheckBoxUpdateTextWidth(dgsEle)
+	end,
+	colorCoded = function(dgsEle,key,value,oldValue)
+		dgsCheckBoxUpdateTextWidth(dgsEle)
+	end,
+}
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -287,14 +370,60 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	if eleData.buttonPosition == "right" then	--right
-		dxDrawImage(x+w-buttonSizeX,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
-		dgsDrawText(text,x+offsetX,y+offsetY,x+w+offsetX-buttonSizeX-textPadding,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-	else	--left by default
-		local px = x+buttonSizeX+textPadding
-		if eleData.PixelInt then px = px-px%1 end
-		dxDrawImage(x,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
-		dgsDrawText(text,px+offsetX,y+offsetY,px+w+offsetX,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	local buttonX,textX,textEX
+	local textWidth = eleData.textWidth
+	if alignment[1] == "right" then
+		if eleData.buttonSide == "right" then
+			buttonX = x+w-buttonSizeX
+			textX = x
+			textEX = x+w-buttonSizeX
+		else
+			if eleData.buttonAlignment == "right" then
+				buttonX = x+w-textWidth-buttonSizeX
+			else
+				buttonX = x
+			end
+			textX = x+buttonSizeX
+			textEX = x+w
+		end
+	elseif alignment[1] == "center" then
+		if eleData.buttonSide == "right" then
+			if eleData.buttonAlignment == "right" then
+				buttonX = x+w-buttonSizeX
+				textX = x
+				textEX = x+w-buttonSizeX
+			else
+				buttonX = (x*2-buttonSizeX+w+textWidth)/2
+				textX = x
+				textEX = x+w-buttonSizeX
+			end
+		else
+			if eleData.buttonAlignment == "right" then
+				buttonX = (x*2-buttonSizeX+w-textWidth)/2
+				textX = x+buttonSizeX
+				textEX = x+w
+			else
+				buttonX = x
+				textX = x+buttonSizeX
+				textEX = x+w
+			end
+		end
+	elseif alignment[1] == "left" then
+		if eleData.buttonSide == "right" then
+			if eleData.buttonAlignment == "right" then
+				buttonX = x+w-buttonSizeX
+			else
+				buttonX = x+textWidth
+			end
+			textX = x
+			textEX = x+w-buttonSizeX
+		else
+			buttonX = x
+			textX = x+buttonSizeX
+			textEX = x+w
+		end
 	end
+	dxDrawImage(buttonX,y+h*0.5-buttonSizeY*0.5,buttonSizeX,buttonSizeY,image[colorimgid],0,0,0,finalcolor,isPostGUI,rndtgt)
+	dgsDrawText(text,textX+offsetX,y+offsetY,textEX+offsetX,y+h+offsetY,applyColorAlpha(eleData.textColor,parentAlpha),txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	return rndtgt,false,mx,my,0,0
 end
