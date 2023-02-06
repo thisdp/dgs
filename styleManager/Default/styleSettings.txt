@@ -361,7 +361,7 @@
 -----------------------------------------------------------------------------------DGS Scroll Bar
 	scrollbar = {
 	---Color
-		cursorColor = {	--Cursor color
+		cursorColor = {	--Cursor image color
 			tocolor(79,83,91,255),		--Normal
 			tocolor(90,160,230,255),		--Hover
 			tocolor(60,110,180,255),		--Click
@@ -452,7 +452,7 @@
 		itemTextSize = {1,1},
 
 	},
------------------------------------------------------------------------------------DGS Switch Buttoon
+-----------------------------------------------------------------------------------DGS Switch Button
 	switchbutton = {
 	---Color
 		textColorOn = tocolor(250,250,250,255),	--Text Color
@@ -474,19 +474,19 @@
 		},
 	---Image
 		imageOn = {	--Default image when state is false ( unchecked )
-			{},		--Normal
-			{},		--Hover
-			{},		--Click
+			nil,		--Normal
+			nil,		--Hover
+			nil,		--Click
 		},
 		imageOff = {	--Default image when state is true ( checked )
-			{},		--Normal
-			{},	--Hover
-			{},		--Click
+			nil,		--Normal
+			nil,		--Hover
+			nil,		--Click
 		},
 		cursorImage = {
-			{},
-			{},
-			{},
+			nil,		--Normal
+			nil,		--Hover
+			nil,		--Click
 		},
 	---Values
 		font = false,	--Using systemFont ( and usage is the same as system font )
