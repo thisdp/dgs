@@ -1143,7 +1143,7 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 	local eleData = dgsElementData[dgsEle]
 	if type(textTable) == "table" then
 		local translation = eleData._translang or resourceTranslation[sourceResource or getThisResource()]
-		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
+		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1] or ""
 		local result,status = value
 		if type(value) == "table" then	--Conditional Translation
 			--[[ --Conditional Translation
