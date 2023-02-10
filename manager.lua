@@ -76,8 +76,8 @@ dgsOnTranslationUpdate = {
 			if key then
 				text[key] = value
 			elseif translationListener then
-				for key,value in pairs(translationListener) do
-					text[key] = value
+				for propertyName in pairs(translationListener) do
+					text[propertyName] = dgsElementData[dgsEle][propertyName] or ""
 				end
 			end
 			dgsSetData(dgsEle,"text",text)

@@ -1199,9 +1199,9 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 				result = _value
 			end
 		end
-		for k,v in pairs(textTable) do
-			if type(k) == "string" then
-				result = result:gsub("$"..k,v)
+		for name,value in pairs(textTable) do
+			if type(name) == "string" then
+				result = result:gsub("$"..name,value)
 			end
 		end
 		if not skipPropertyListener and eleData.translationListener then	--Dynamic Translation
