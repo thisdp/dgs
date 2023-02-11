@@ -689,11 +689,11 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		if eleData.enableFullEnterLeaveCheck then
 			if oldMouseIn ~= newMouseIn then
 				eleData.rndTmp_mouseIn = newMouseIn
-				dgsTriggerEvent("onDgsElement"..(newMouseIn and "Enter" or "Leave"),source)
+				dgsTriggerEvent("onDgsElement"..(newMouseIn and "Enter" or "Leave"),source,mx,my)
 			end
 		end
 		if eleData.renderEventCall then
-			dgsTriggerEvent("onDgsElementRender",source,xRT,yNRT,w,h)
+			dgsTriggerEvent("onDgsElementRender",source,xNRT,yNRT,w,h)
 		end
 		local childrenCnt = children and #children or 0
 		if childrenCnt ~= 0 then
