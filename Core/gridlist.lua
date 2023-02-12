@@ -192,6 +192,7 @@ function dgsCreateGridList(...)
 		bgColor = bgColor or style.bgColor,
 		colorCoded = false,
 		clip = true,
+		columnAlignment = {"left","center"},
 		columnWordBreak = nil,
 		columnColor = columnColor or style.columnColor,
 		columnData = {},
@@ -232,6 +233,7 @@ function dgsCreateGridList(...)
 		rowShadow = nil,
 		rowWordBreak = nil,
 		rowShowUnclippedOnly = false,
+		rowAlignment = {"left","center"},
 		scrollBarThick = scbThick,
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
@@ -1239,19 +1241,21 @@ function dgsGridListClearColumn(gridlist,notResetSelected,notResetScrollBar)
 end
 
 -----------------------------Row
+
 --[[
 rowData Struct:
 {
 	/*Row Settings*/
-	[-5] = identity,              --Identity
-	[-3] = {                      --Background Image
+	[glRow_isSection] = isSection,              --Is section
+	[glRow_identity] = identity,              --Identity
+	[glRow_bgImage] = {                      --Background Image
 			normalImage,
 			hoveringImage,
 			selectedImage,
 		},
-	[-2] = true/false,            --Hoverable
-	[-1] = true/false,            --Selectable
-	[0] = {                       --Background Color
+	[glRow_hoverable] = true/false,            --Hoverable
+	[glRow_selectable] = true/false,            --Selectable
+	[glRow_bgColor] = {                       --Background Color
 		normalColor,
 		hoveringColor,
 		selectedColor,
@@ -2155,7 +2159,7 @@ function dgsGridListSetSelectedItem(gridlist,r,c,scrollTo,isOrigin)
 	local cData,rData = eleData.columnData,eleData.rowData
 	local cLen,rLen = #cData,#rData
 	if cLen == 0 or rLen == 0 then return false end
-	local cNInRange,rNInRange = not (c>=1 and c<=cLen or c == -1),not (r>=1 and r<=rLen or r == -1)
+	local cNInRange,rNInRange = not (tonumber(c) and c>=1 and c<=cLen or c == -1),not (tonumber(r) and r>=1 and r<=rLen or r == -1)
 	if rNInRange then error(dgsGenAsrt(r,"dgsGridListSetSelectedItem",2,"number","-1,1~"..rLen,rNInRange and "row out of range")) end
 	if cNInRange then error(dgsGenAsrt(c,"dgsGridListSetSelectedItem",3,"number","-1,1~"..cLen,cNInRange and "column out of range")) end
 	local c,r = c-c%1,r-r%1
@@ -2849,16 +2853,16 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local cTextScaleX,cTextScaleY = cCol[glCol_textScaleX] or columnTextSx,cCol[glCol_textScaleY] or columnTextSy
 		local cTextFont = cCol[glCol_textFont] or eleData.columnFont or font
 		local tempCpos = cCol[glCol_widthSum]*multiplier
-		local _tempStartx = tempCpos+tempColumnOffset
-		local _tempEndx = _tempStartx+cCol[glCol_width]*multiplier
-		if _tempStartx <= w and _tempEndx >= 0 then
-			columnPos[id],columnEndPos[id] = tempCpos,_tempEndx
+		local columnStartX = tempCpos+tempColumnOffset
+		local columnEndX = columnStartX+cCol[glCol_width]*multiplier
+		if columnStartX <= w and columnEndX >= 0 then
+			columnPos[id],columnEndPos[id] = tempCpos,columnEndX
 			cPosStart,cPosEnd = cPosStart or id,id
 			if eleData.columnRT then
-				local _tempStartx = eleData.PixelInt and _tempStartx-_tempStartx%1 or _tempStartx
-				local textPosL = _tempStartx+columnTextPosOffset[1]
+				local columnStartX = eleData.PixelInt and columnStartX-columnStartX%1 or columnStartX
+				local textPosL = columnStartX+columnTextPosOffset[1]
 				local textPosT = columnTextPosOffset[2]
-				local textPosR = _tempEndx+columnTextPosOffset[1]
+				local textPosR = columnEndX+columnTextPosOffset[1]
 				local textPosB = columnHeight+columnTextPosOffset[2]
 				if sortColumn == id and sortIcon then
 					local iconWidth = dxGetTextWidth(sortIcon,cTextScaleX*0.8,cTextFont)
@@ -2869,7 +2873,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				dgsDrawText(cCol[glCol_text],textPosL,textPosT,textPosR,textPosB,cTextColor,cTextScaleX,cTextScaleY,cTextFont,cCol[glCol_textAlignment],"center",clip,columnWordBreak,false,cTextColorCoded,false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 			if mouseInsideGridList and mouseSelectColumn == -1 then
-				if mouseColumnPos >= _tempStartx and mouseColumnPos <= _tempEndx then
+				if mouseColumnPos <= (columnEndX <= viewWidth and columnEndX or viewWidth) then	--Actually, just need to compare cursor x with columnEndX
 					mouseSelectColumn = id
 				end
 			end
@@ -2884,14 +2888,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		if sid >= 1 and sid <= rowCount and my-cy-columnHeight < sid*rowHeight+(sid-1)*leading+rowMoveOffset then--_RowHeight
 			eleData.oPreSelect = sid
 			local rowAllowHover = rowData[sid][glRow_hoverable] ~= false
-			local itemAllowHover = true
+			local itemAllowHover = false
 			if mouseSelectColumn ~= -1 then
 				itemAllowHover = (rowData[sid][mouseSelectColumn][glItem_hoverable] == nil and rowAllowHover) or rowData[sid][mouseSelectColumn][glItem_hoverable]
 			end
-			if itemAllowHover then
+			if itemAllowHover and rowAllowHover then
 				preSelect[1],preSelect[2] = sid,mouseSelectColumn
-			elseif rowAllowHover then
-				preSelect[1],preSelect[2] = sid,-1
 			else
 				preSelect[1],preSelect[2] = -1,-1
 			end
