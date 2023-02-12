@@ -197,6 +197,7 @@ function dgsCreateEdit(...)
 	}
 	dgsSetParent(edit,parent,true,true)
 	editsCount = editsCount+1
+	dgsAttachToTranslation(edit,resourceTranslation[sRes])
 	calculateGuiPositionSize(edit,x,y,relative or false,w,h,relative or false,true)
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
