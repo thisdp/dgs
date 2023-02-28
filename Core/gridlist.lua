@@ -166,13 +166,13 @@ function dgsCreateGridList(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
-					
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.gridlist
 	local relative = relative or false
 	local scbThick = style.scrollBarThick
@@ -238,6 +238,7 @@ function dgsCreateGridList(...)
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
 		scrollFloor = {false,false},--move offset ->int or float
+		scrollBarAlignment = {"right","bottom"},
 		scrollSize = 60,			--60 pixels
 		scrollBarCoverColumn = true,
 		sectionColumnOffset = style.sectionColumnOffset,
@@ -298,7 +299,9 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 		local scbThick = eleData.scrollBarThick
 		local scrollbar = eleData.scrollbars
 		local scbThickV,scbThickH = dgsElementData[scrollbar[1]].visible and scbThick or 0,dgsElementData[scrollbar[2]].visible and scbThick or 0
-		local relSizX,relSizY = w-scbThickV,h-scbThickH
+		local scbAlignment = eleData.scrollBarAlignment
+		local scbAlignmentV,scbAlignmentH = scbAlignment[1],scbAlignment[2]
+		local relSizX,relSizY = w-(scbAlignmentV ~= "left" and scbThickV or 0),h-scbThickH
 		local rowShowRange = relSizY-columnHeight
 		if relSizX*columnHeight ~= 0 then
 			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
@@ -548,8 +551,8 @@ gridlistSortFunctions.numGreaterLowerNumFirst = function(...)
 	return a > b
 end
 
-gridlistSortFunctions.numGreaterUpper = gridlistSortFunctions.numGreaterUpperNumFirst 
-gridlistSortFunctions.numGreaterLower = gridlistSortFunctions.numGreaterLowerNumFirst 
+gridlistSortFunctions.numGreaterUpper = gridlistSortFunctions.numGreaterUpperNumFirst
+gridlistSortFunctions.numGreaterLower = gridlistSortFunctions.numGreaterLowerNumFirst
 
 gridlistSortFunctions.numGreaterUpperStrFirst = function(...)
 	local a,b = ...
@@ -801,7 +804,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 	local rData = eleData.rowData
 	local rTextColor = eleData.rTextColor
 	local scale = eleData.rowTextSize
-	
+
 	for i=1,#rData do
 		rData[i][c]= {
 			"",
@@ -1003,7 +1006,7 @@ function dgsGridListSetColumnTextColor(gridlist,c,...)
 	local color
 	local args = {...}
 	if not (type(#args > 0 and args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetColumnTextColor",3,"number")) end
-	if #args == 1 then 
+	if #args == 1 then
 		color = args[1]
 	else
 		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetColumnTextColor",4,"number")) end
@@ -1734,7 +1737,7 @@ function dgsGridListSetItemFont(gridlist,r,c,font)
 	local cNInRange,rNInRange = cIsNum and not (c>=1 and c<=cLen),rIsNum and not (r>=1 and r<=rLen)
 	if not (rIsNum and not rNInRange) then error(dgsGenAsrt(r,"dgsGridListSetItemFont",2,"number","1~"..rLen,rNInRange and "row out of range")) end
 	if not (cIsNum and not cNInRange) then error(dgsGenAsrt(c,"dgsGridListSetItemFont",3,"number","1~"..cLen,cNInRange and "column out of range")) end
-	local fontType = dgsGetType(font) 
+	local fontType = dgsGetType(font)
 	if not (fontBuiltIn[font] or fontType == "dx-font" or fontType == "table") then error(dgsGenAsrt(font,"dgsGridListSetItemFont",4,"dx-font/string/table",_,"invalid font")) end
 	local c,r = c-c%1,r-r%1
 	if not rData[r][c] then return false end
@@ -1745,7 +1748,7 @@ function dgsGridListSetItemFont(gridlist,r,c,font)
 	else
 		rData[r][c]._translation_font = nil
 	end
-	
+
 	rData[r][c][glItem_textFont] = font
 	return true
 end
@@ -2587,7 +2590,9 @@ function configGridList(gridlist)
 	local scbThick = eleData.scrollBarThick
 	local columnWidth = dgsGridListGetColumnAllWidth(gridlist,#eleData.columnData,false,true)
 	local rowLength = #eleData.rowData*(rowHeight+leading)--_RowHeight
-	local scbX,scbY = w-scbThick,h-scbThick
+	local scbAlignment = eleData.scrollBarAlignment
+	local scbAlignmentV,scbAlignmentH = scbAlignment[1],scbAlignment[2]
+	local scbX,scbY = scbAlignmentV ~= "left" and w-scbThick or 0, h-scbThick
 	local oriScbStateV,oriScbStateH = dgsElementData[scrollbar[1]].visible,dgsElementData[scrollbar[2]].visible
 	local scbStateV,scbStateH
 	if columnWidth > w then
@@ -2617,13 +2622,13 @@ function configGridList(gridlist)
 	--end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
-	
+
 	local scb1Y,scb1H = 0,relSizY
 	if not dgsElementData[gridlist].scrollBarCoverColumn then
 		scb1Y,scb1H = scb1Y+columnHeight,scb1H-columnHeight
 	end
 	dgsSetPosition(scrollbar[1],scbX,scb1Y,false)
-	dgsSetPosition(scrollbar[2],0,scbY,false)
+	dgsSetPosition(scrollbar[2],scbAlignmentV == "left" and scbThickV or 0,scbY,false)
 	dgsSetSize(scrollbar[1],scbThick,scb1H,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].scrollPosition
@@ -2657,6 +2662,7 @@ dgsOnPropertyChange["dgs-dxgridlist"] = {
 	columnHeight = configGridList,
 	scrollBarThick = configGridList,
 	scrollBarState = configGridList,
+	scrollBarAlignment = configGridList,
 	leading = configGridList,
 	scrollBarCoverColumn = configGridList,
 	rowData = function(dgsEle,key,value,oldValue)
@@ -2730,7 +2736,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	local bgColor,bgImage = applyColorAlpha(eleData.bgColor,parentAlpha),eleData.bgImage
 	local columnColor,columnImage = applyColorAlpha(eleData.columnColor,parentAlpha),eleData.columnImage
-	
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
@@ -2755,7 +2761,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local scrollbars = eleData.scrollbars
 	local scb1,scb2 = scrollbars[1],scrollbars[2]
 	local scbThickV,scbThickH = dgsElementData[scb1].visible and scbThick or 0,dgsElementData[scb2].visible and scbThick or 0
-	local viewWidth,viewHeight = w-scbThickV,h-scbThickH
+	local scbAlignment = eleData.scrollBarAlignment
+	local scbAlignmentV,scbAlignmentH = scbAlignment[1],scbAlignment[2]
+	local viewWidth,viewHeight = w-(scbAlignmentV ~= "left" and scbThickV or 0),h-scbThickH
 	local colorCoded = eleData.colorCoded
 	local rowShadow = eleData.rowShadow
 	local rowHeightLeadingTemp = rowHeight+leading--_RowHeight
@@ -2854,6 +2862,9 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local cTextFont = cCol[glCol_textFont] or eleData.columnFont or font
 		local tempCpos = cCol[glCol_widthSum]*multiplier
 		local columnStartX = tempCpos+tempColumnOffset
+		if scbAlignmentV == "left" then
+			columnStartX = columnStartX+scbThickV
+		end
 		local columnEndX = columnStartX+cCol[glCol_width]*multiplier
 		if columnStartX <= w and columnEndX >= 0 then
 			columnPos[id],columnEndPos[id] = tempCpos,columnEndX
@@ -2872,8 +2883,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				end
 				dgsDrawText(cCol[glCol_text],textPosL,textPosT,textPosR,textPosB,cTextColor,cTextScaleX,cTextScaleY,cTextFont,cCol[glCol_textAlignment],"center",clip,columnWordBreak,false,cTextColorCoded,false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
-			if mouseInsideGridList and mouseSelectColumn == -1 then
-				if mouseColumnPos <= (columnEndX <= viewWidth and columnEndX or viewWidth) then	--Actually, just need to compare cursor x with columnEndX
+			if mouseInsideGridList and mouseSelectColumn == -1 and (scbAlignmentV ~= "left" or (mouseColumnPos > scbThickV)) then
+				if mouseColumnPos <= (columnEndX <= viewWidth and columnEndX or viewWidth + (scbAlignmentV == "left" and scbThickV or 0)) then
 					mouseSelectColumn = id
 				end
 			end
@@ -2918,6 +2929,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local textBuffer = renderBuffer.textBuffer
 	local sectionColumnOffset = eleData.sectionColumnOffset
 	local defaultColumnOffset = eleData.defaultColumnOffset
+	local rowStartX = 0
+	if scbAlignmentV == "left" then
+		rowStartX = scbThickV
+	end
 	if eleData.rowRT then
 		dxSetRenderTarget(eleData.rowRT,true)
 		dxSetBlendMode("blend")
@@ -2930,7 +2945,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local color = cRow[glRow_bgColor] or rowColor
 				local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading--_RowHeight
 				local rowpos_1 = rowpos-rowHeight--_RowHeight
-				local _x,_y,_sx,_sy = tempColumnOffset,rowpos_1,sW,rowpos
+				local _x,_y,_sx,_sy = rowStartX+tempColumnOffset,rowpos_1,sW,rowpos
 				for id = cPosStart,cPosEnd do
 					local cItem = cRow[id]
 					local text = cItem[glItem_text]
@@ -2940,7 +2955,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local _txtScalex = cItem[glItem_textScaleX] or rowTextSx
 					local _txtScaley = cItem[glItem_textScaleY] or rowTextSy
 					local alignment = cItem[glItem_textAlignment] or columnData[id][glCol_textAlignment]
-					
+
 					local itemBGColor,itemBGImage = cItem[glItem_bgColor],cItem[glItem_bgImage] or image
 					if not itemBGColor then
 						if itemColorTemplate then
@@ -3069,7 +3084,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local clr,tSclx,tScly,tFnt,tClrCode,tHozAlign = line[6],line[7],line[8],line[9],line[10],line[11]
 			dgsDrawText(line[1],psx,psy,pex,pey,clr,tSclx,tScly,tFnt,tHozAlign,"center",clip,rowWordBreak,false,tClrCode,true,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 		end
-		
+
 		if not eleData.childOutsideHit then
 			if MouseData.hit ~= source then
 				enabledInherited = false
