@@ -677,8 +677,8 @@ end
 ---------------------HSVRing Color Picker
 function HSVRingChange()
 	local cx,cy = dgsGetCursorPosition()
+	local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
 	if eventName == "onDgsMouseClickDown" then
-		local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
 		local clickRadius = (CenDisX^2+CenDisY^2)^0.5
 		dgsSetData(source,"clickRadius",clickRadius)
 		if clickRadius >= 0.4 and clickRadius <= 0.5 then
@@ -691,10 +691,8 @@ function HSVRingChange()
 	else
 		local clickRadius = dgsElementData[source].clickRadius or 1
 		if clickRadius >= 0.4 and clickRadius <= 0.5 then
-			local rot = dgsFindRotationByCenter(source,cx,cy,90)
-			dgsColorPickerSetColor(source,rot,_,_,_,"HSL")
+			dgsColorPickerSetColor(source,rot,_,_,_,"HSV")
 		elseif clickRadius< 0.4 then
-			local rot,CenDisX,CenDisY = dgsFindRotationByCenter(source,cx,cy,90)
 			local HSV = dgsElementData[source].HSV
 			local S,V = dgsProjectHXYToSV(HSV[1],CenDisX,CenDisY)
 			dgsColorPickerSetColor(source,_,S,V,_,"HSV")
