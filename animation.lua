@@ -246,7 +246,7 @@ function onAnimQueueProcess()
 				animIndex = animIndex+1
 			end
 		else
-			table.remove(animItem,animIndex)
+			table.remove(animQueue,animIndex)
 		end
 	end
 end
