@@ -394,6 +394,7 @@ function dgsCoreRender()
 		local Focused = MouseData.focused and dgsGetPluginType(MouseData.focused).."("..getElementID(MouseData.focused)..")" or "None"
 		local enterStr = MouseData.hit and dgsGetPluginType(MouseData.hit).." ("..getElementID(MouseData.hit)..")" or "None"
 		local leftStr = MouseData.click.left and dgsGetPluginType(MouseData.click.left).." ("..getElementID(MouseData.click.left)..")" or "None"
+		local middleStr = MouseData.click.middle and dgsGetPluginType(MouseData.click.middle).." ("..getElementID(MouseData.click.middle)..")" or "None"
 		local rightStr = MouseData.click.right and dgsGetPluginType(MouseData.click.right).." ("..getElementID(MouseData.click.right)..")" or "None"
 		dgsDrawText("Cursor Pos On Screen: "..(mx or "Hidden")..","..(my or "Hidden"),10,sH*0.4-130,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		local cursorPosDGS = MouseData.cursorPos
@@ -402,17 +403,18 @@ function dgsCoreRender()
 		dgsDrawText("Enter: "..enterStr,10,sH*0.4-85,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		dgsDrawText("Click:",10,sH*0.4-70,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		dgsDrawText("L: "..leftStr,40,sH*0.4-70,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("R: "..rightStr,40,sH*0.4-55,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("M: "..middleStr,40,sH*0.4-55,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("R: "..rightStr,40,sH*0.4-40,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		dgsRenderInfo.created = 0
 		local index = 1
 		for value in pairs(dgsType) do
 			local elements = #getElementsByType(value)
 			dgsRenderInfo.created = dgsRenderInfo.created+elements
-			dgsDrawText(value.." : "..elements,15,sH*0.4-30+15*index+5,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+			dgsDrawText(value.." : "..elements,15,sH*0.4-15+15*index+5,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 			index = index+1
 		end
-		dgsDrawText("Rendering: "..dgsRenderInfo.rendering,10,sH*0.4-40,sW,sH,green,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("Created: "..dgsRenderInfo.rendering,10,sH*0.4-25,sW,sH,yellow,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Rendering: "..dgsRenderInfo.rendering,10,sH*0.4-25,sW,sH,green,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Created: "..dgsRenderInfo.rendering,10,sH*0.4-10,sW,sH,yellow,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		dgsRenderInfo.runningAnimation = #animQueue
 		dgsDrawText("Running Animations: "..dgsRenderInfo.runningAnimation,300,sH*0.4-115,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		ResCount = 0
