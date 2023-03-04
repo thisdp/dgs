@@ -1396,6 +1396,9 @@ function dgsCheckHit(hits,cursorShowing)
 		if not getKeyState("mouse2") then
 			MouseData.click.right = false
 		end
+		if not getKeyState("mouse3") then
+			MouseData.click.middle = false
+		end
 	else
 		MouseData.lastPos[1] = nil
 		MouseData.lastPos[2] = nil
@@ -2223,6 +2226,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			dgsDragDropBoard.lock = false
 		elseif button == "right" then
 			MouseData.click.right = false
+		else 
+			MouseData.click.middle = false
 		end
 		MouseData.Move[0] = false
 		MouseData.MoveScale[0] = false

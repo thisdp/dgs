@@ -363,6 +363,8 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 		MouseData.clickData = nil
 	elseif mouse == "right" then
 		MouseData.click.right = dgsEle
+	elseif mouse == "middle" then 
+		MouseData.click.middle = dgsEle
 	end
 	return true
 end
