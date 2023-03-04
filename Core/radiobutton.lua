@@ -362,14 +362,14 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 		if eleData.buttonSide == "right" then
 			buttonX = x+w-buttonSizeX
 			textX = x
-			textEX = x+w-buttonSizeX
+			textEX = x+w-buttonSizeX-textPadding
 		else
 			if eleData.buttonAlignment == "right" then
 				buttonX = x+w-textWidth-buttonSizeX
 			else
 				buttonX = x
 			end
-			textX = x+buttonSizeX
+			textX = x+buttonSizeX+textPadding
 			textEX = x+w
 		end
 	elseif alignment[1] == "center" then
@@ -377,20 +377,20 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 			if eleData.buttonAlignment == "right" then
 				buttonX = x+w-buttonSizeX
 				textX = x
-				textEX = x+w-buttonSizeX
+				textEX = x+w-buttonSizeX-textPadding
 			else
 				buttonX = (x*2-buttonSizeX+w+textWidth)/2
 				textX = x
-				textEX = x+w-buttonSizeX
+				textEX = x+w-buttonSizeX-textPadding
 			end
 		else
 			if eleData.buttonAlignment == "right" then
 				buttonX = (x*2-buttonSizeX+w-textWidth)/2
-				textX = x+buttonSizeX
+				textX = x+buttonSizeX+textPadding
 				textEX = x+w
 			else
 				buttonX = x
-				textX = x+buttonSizeX
+				textX = x+buttonSizeX+textPadding
 				textEX = x+w
 			end
 		end
@@ -402,10 +402,10 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 				buttonX = x+textWidth
 			end
 			textX = x
-			textEX = x+w-buttonSizeX
+			textEX = x+w-buttonSizeX-textPadding
 		else
 			buttonX = x
-			textX = x+buttonSizeX
+			textX = x+buttonSizeX+textPadding
 			textEX = x+w
 		end
 	end
