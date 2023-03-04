@@ -69,9 +69,9 @@ addCommandHandler("g2d",function(player,command,...)
 							end
 						end
 					end
-					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, command: g2d list")
+					outputDGSMessage("Selected "..tableCount(G2D.select).." resources, to see the selections, command: g2d list",nil,"G2D")
 				else
-					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, command: g2d list")
+					outputDGSMessage("Selected 0 resources, to see the selections, command: g2d list",nil,"G2D")
 				end
 			elseif args[1] == "add" then
 				if args[2] and args[2] ~= "" then
@@ -90,32 +90,32 @@ addCommandHandler("g2d",function(player,command,...)
 							end
 						end
 					end
-					outputDebugString("[DGS-G2D] Selected "..tableCount(G2D.select).." resources, to see the selections, command: g2d list")
+					outputDGSMessage("Selected "..tableCount(G2D.select).." resources, to see the selections, command: g2d list",nil,"G2D")
 				else
-					outputDebugString("[DGS-G2D] Selected 0 resources, to see the selections, command: g2d list")
+					outputDGSMessage("Selected 0 resources, to see the selections, command: g2d list")
 				end
 			elseif args[1] == "list" then
-				outputDebugString("[DGS-G2D] There are "..tableCount(G2D.select).." resources selected:")
+				outputDGSMessage("There are "..tableCount(G2D.select).." resources selected:",nil,"G2D")
 				for k,v in pairs(G2D.select) do
 					outputDebugString(k)
 				end
 			elseif args[1] == "clear" then
 				G2D.select = {}
-				outputDebugString("[DGS-G2D] Selections cleared!")
+				outputDGSMessage("Selections cleared!",nil,"G2D")
 			elseif args[1] == "start" then
 				if not G2D.Process then
 					G2D.Process = true
 					G2D.Running = {}
 					G2DStart()
 				else
-					print("[DGS-G2D]G2D is running!")
+					outputDGSMessage("G2D is running!",nil,"G2D")
 				end
 			elseif args[1] == "stop" then
 				if G2D.Process then
-					print("[DGS-G2D]G2D process terminated!")
+					outputDGSMessage("G2D process terminated!",nil,"G2D")
 					G2D.Process = false
 				else
-					print("[DGS-G2D]G2D is not running!")
+					outputDGSMessage("G2D is not running!",nil,"G2D")
 				end
 			elseif args[1] == "crawl" then
 				if not checkServerVersion() then return end
@@ -127,32 +127,32 @@ addCommandHandler("g2d",function(player,command,...)
 					elseif args[2] == "sublime" then
 						CrawlWikiFromMTA("sublime")
 					else
-						print("[DGS]Current type is not supported!")
+						outputDGSMessage("Current type is not supported!",nil,"Crawl")
 					end
 				else
-					print("[DGS]Please select target type: g2d -g <npp/vsc/sublime>")
+					outputDGSMessage("Please select target type: g2d -g <npp/vsc/sublime>",nil,"Crawl")
 				end
 			elseif args[1] == "type" then
 				if args[2] then
 					if not G2D.Process then
 						if args[2] == "convertor" then
 							G2D.type = "convertor"
-							print("[DGS-G2D]Current G2D type has been changed to "..G2D.type)
+							outputDGSMessage("Current G2D type has been changed to "..G2D.type,nil,"G2D")
 						elseif args[2] == "hooker" then
 							G2D.type = "hooker"
-							print("[DGS-G2D]Current G2D type has been changed to "..G2D.type)
+							outputDGSMessage("Current G2D type has been changed to "..G2D.type,nil,"G2D")
 						else
-							print("[DGS-G2D]Bad G2D type, expected convertor/hooker got "..args[2])
+							outputDGSMessage("Bad G2D type, expected convertor/hooker got "..args[2],nil,"G2D")
 						end
 					else
-						print("[DGS-G2D]G2D type can not be changed while G2D process is running")
+						outputDGSMessage("G2D type can not be changed while G2D process is running",nil,"G2D")
 					end
 				else
-					print("[DGS-G2D]Current G2D type is "..G2D.type)
+					outputDGSMessage("Current G2D type is "..G2D.type,nil,"G2D")
 				end
 			else
-				outputDebugString("[DGS-G2D]Command help")
-				outputDebugString("Option		Arguments		Comment")
+				outputDGSMessage("Command help",nil,"G2D")
+				outputDGSMessage("Option		Arguments		Comment")
 				for i=1,#G2DHelp do
 					local items = G2DHelp[i]
 					outputDebugString(items[1].."		"..items[2].."		"..items[3])
@@ -432,7 +432,7 @@ convertEventTable = {
 
 
 function showProgress(progress)
-	print("[G2D]Progress "..string.format("%.2f",progress).."%")
+	outputDGSMessage("Progress "..string.format("%.2f",progress).."%",nil,"G2D")
 end
 
 G2DRunningData = {
@@ -442,7 +442,7 @@ G2DRunningData = {
 
 function G2DStart()
 	if G2D.type == "convertor" then
-		print("[DGS-G2D]Scanning files...")
+		outputDGSMessage("Scanning files...",nil,"G2D")
 		local process = {}
 		for resN,res in pairs(G2D.select) do
 			local xml = xmlLoadFile(":"..resN.."/meta.xml")
@@ -453,18 +453,18 @@ function G2DStart()
 				end
 			end
 		end
-		print("[DGS-G2D]"..#process.." files to be converted")
+		outputDGSMessage(#process.." files to be converted",nil,"G2D")
 		G2D.Files = process
 		G2D.Running = coroutine.create(function()
 			G2D.StartTick = getTickCount()
 			for i=1,#G2D.Files do
 				processFileConvertor(G2D.File[i])
 			end
-			print("[DGS-G2D]Process Done")
+			outputDGSMessage("Process Done",nil,"G2D")
 			G2D.Process = false
 		end)
 	elseif G2D.type == "hooker" then
-		print("[DGS-G2D]Scanning resources...")
+		outputDGSMessage("Scanning resources...",nil,"G2D")
 		G2D.Running = coroutine.create(function()
 			G2D.StartTick = getTickCount()
 			for resN,res in pairs(G2D.select) do
@@ -477,7 +477,7 @@ function G2DStart()
 						local str = fileRead(file,fileGetSize(file))
 						local backupStr = str
 						if str:find("guiCreate") then	--has gui create function and is the 1st script in client
-							print("[DGS-G2D]Processing "..path)
+							outputDGSMessage("Processing "..path,nil,"G2D")
 							local findA,findB = string.find(str,"loadstring%s*%(.*dgsG2DLoadHooker%s*%(%s*%)%s*%)")
 							if not findA then	--if not, add
 								fileSetPos(file,0)
@@ -502,7 +502,7 @@ function G2DStart()
 					end
 				end
 			end
-			print("[DGS-G2D]Process Done")
+			outputDGSMessage("The process has finished successfully",nil,"G2D")
 			G2D.Process = false
 		end)
 	end
@@ -520,7 +520,7 @@ function processExpired()
 end
 
 function processFileConvertor(filename)
-	print("[G2D]Start to process file '"..filename.."'")
+	outputDGSMessage("Start to process file '"..filename.."'",nil,"G2D")
 	local file = fileOpen(filename)
 	local str = fileRead(file,fileGetSize(file))
 	local utf8BOM = false
@@ -537,7 +537,7 @@ function processFileConvertor(filename)
 	ls:start()
 	local az = AnalyzerState(ls.result)
 	local convTabCnt = #convertFunctionTable
-	print("[G2D]Replacing Functions")
+	outputDGSMessage("Replacing Functions",nil,"G2D")
 	for i=1,convTabCnt do
 		az:set(convertFunctionTable[i])
 		az:executeProcess()
@@ -548,7 +548,7 @@ function processFileConvertor(filename)
 		end
 	end
 	local convTabCnt = #convertEventTable
-	print("[G2D]Replacing Events")
+	outputDGSMessage("Replacing Events",nil,"G2D")
 	for i=1,convTabCnt do
 		az:set(convertEventTable[i],true)
 		az:executeProcess()
@@ -565,7 +565,7 @@ end
 
 
 function processFileHooker(filename)
-	print("[G2D]Start to process file '"..filename.."'")
+	outputDGSMessage("Start to process file '"..filename.."'",nil,"G2D")
 	local file = fileOpen(filename)
 	local str = fileRead(file,fileGetSize(file))
 	local utf8BOM = false
@@ -582,7 +582,7 @@ function processFileHooker(filename)
 	ls:start()
 	local az = AnalyzerState(ls.result)
 	local convTabCnt = #convertFunctionTable
-	print("[G2D]Replacing Functions")
+	outputDGSMessage("Replacing Functions",nil,"G2D")
 	for i=1,convTabCnt do
 		az:set(convertFunctionTable[i])
 		az:executeProcess()
@@ -593,7 +593,7 @@ function processFileHooker(filename)
 		end
 	end
 	local convTabCnt = #convertEventTable
-	print("[G2D]Replacing Events")
+	outputDGSMessage("Replacing Events",nil,"G2D")
 	for i=1,convTabCnt do
 		az:set(convertEventTable[i],true)
 		az:executeProcess()
@@ -616,11 +616,11 @@ local mainWikiURL = "https://wiki.multitheftauto.com"
 local threadPoolSize = 2
 function CrawlWikiFromMTA(t)
 	local targetURL = mainWikiURL.."/wiki/Template:DGSFUNCTIONS"
-	print("[DGS]Crawling wiki...")
+	outputDGSMessage("Crawling wiki..",nil,"DGS")
 	fetchRemote(targetURL,{},function(data,info,t)
 		if info.success then
 			local startPos = 0
-			print("[DGS]Wiki data is ready, Reading...")
+			outputDGSMessage("Wiki data has been retrieved. Reading now..",nil,"G2D")
 			local fncList = {type=t}
 			while(true) do
 				liStart_1,liStart_2 = string.find(data,"%<li%>",startPos)
@@ -639,8 +639,9 @@ function CrawlWikiFromMTA(t)
 				startPos = liEnd_2
 				xmlReleaseTempFiles(xmlNode)
 			end
-			print("[DGS]Function list("..#fncList..") is ready, Crawling...")
-			local fRProg = {thread=0,index=0,valid=0,progress=0,total=#fncList}
+			local fncListLen = #fncList
+			outputDGSMessage(fncList.." function"..fncListLen > 1 and "s" or "".." has been found. Crawling..",nil,"G2D")
+			local fRProg = {thread=0,index=0,valid=0,progress=0,total=fncListLen}
 			local fncData = {}
 			setTimer(function()
 				if fRProg.progress < fRProg.total then
@@ -663,7 +664,7 @@ function CrawlWikiFromMTA(t)
 										fRProg.thread = fRProg.thread-1
 										fRProg[poolID] = false
 										if info.success then
-											print("[DGS]Recorded ("..fRProg.progress.."/"..fRProg.total..")["..fncList[index].name.."]")
+											outputDGSMessage("Recorded ("..fRProg.progress.."/"..fRProg.total..")["..fncList[index].name.."]",nil,"Crawl")
 											local startPos = data:find("%<textarea")
 											local _,endPos = data:find("%<%/textarea>",startPos)
 											local line = data:sub(startPos,endPos)
@@ -677,7 +678,7 @@ function CrawlWikiFromMTA(t)
 											local targetSyntax = targetSyntax:gsub("\r",""):gsub("\n","")
 											fncList[index].syntax = targetSyntax
 										else
-											print("[DGS]Failed to get remote wiki data ("..info.statusCode ..")")
+											outputDGSMessage("Failed to get remote wiki data ("..info.statusCode ..")",nil,"Crawl")
 										end
 									end,{poolID,fRProg.index})
 									fRProg.valid = fRProg.valid+1
@@ -688,7 +689,7 @@ function CrawlWikiFromMTA(t)
 						end
 					end
 				else
-					print("[DGS]Crawling stage complete [Total:"..fRProg.total.."/Valid:"..fRProg.valid.."]")
+					outputDGSMessage("Crawling stage complete [Total:"..fRProg.total.."/Valid:"..fRProg.valid.."]",nil,"Crawl")
 					killTimer(sourceTimer)
 					fncList.valid = fRProg.valid
 					AnalyzeFunction(fncList)
@@ -699,14 +700,14 @@ function CrawlWikiFromMTA(t)
 end
 
 function AnalyzeFunction(tab)
-	print("[DGS]Start to analyze syntax")
+	outputDGSMessage("Start to analyze syntax",nil,"Crawl")
 	local nTable = {}
 	local validCount = 0
 	for i=1,#tab do
 		local item = tab[i]
 		if item.syntax then
 			validCount = validCount+1
-			print("[DGS]Analyzing syntax ("..validCount.."/"..tab.valid..")["..item.name.."]")
+			outputDGSMessage("Analyzing syntax ("..validCount.."/"..tab.valid..")["..item.name.."]",nil,"Crawl")
 			local startPos,endPos = string.find(item.syntax,item.name)
 			local rets = split(item.syntax:sub(1,startPos-1)," ")
 			local argStr = item.syntax:sub(endPos+1):gsub("%(",""):gsub("%)","")
@@ -743,7 +744,7 @@ function AnalyzeFunction(tab)
 			table.insert(nTable,resultTable)
 		end
 	end
-	print("[DGS]Syntax analyzing stage done")
+	outputDGSMessage("Syntax analyzing stage done",nil,"Crawl")
 	if tab.type == "npp" then
 		GenerateNPPAutoComplete(nTable)
 	elseif tab.type == "vsc" then
@@ -755,7 +756,7 @@ end
 
 function GenerateNPPAutoComplete(tab)
 	if fileExists("nppAC4DGS.xml") then fileDelete("nppAC4DGS.xml") end
-	print("[DGS]Generating NPP autocomplete file...")
+	outputDGSMessage("Generating NPP autocomplete file..",nil,"Crawl")
 	local xml = xmlCreateFile("nppAC4DGS.xml","NotepadPlus")
 	local envNode = xmlCreateChild(xml,"Environment")
 	local acNode = xmlCreateChild(xml,"AutoComplete")
@@ -789,12 +790,12 @@ function GenerateNPPAutoComplete(tab)
 	fileSetPos(f,0)
 	fileWrite(f,str)
 	fileClose(f)
-	print("[DGS]NPP autocomplete file is saved as 'nppAC4DGS.xml'")
+	outputDGSMessage("NPP autocomplete file has been saved as 'nppAC4DGS.xml'",nil,"Crawl")
 end
 
 function GenerateVSCodeAutoComplete(tab)
 	if fileExists("dgs.code-snippets") then fileDelete("dgs.code-snippets") end
-	print("[DGS]Generating VSCode autocomplete file...")
+	outputDGSMessage("Generating VSCode autocomplete file..",nil,"Crawl")
 	local t = {}
 	for i=1,#tab do
 		local item = tab[i]
@@ -806,12 +807,12 @@ function GenerateVSCodeAutoComplete(tab)
 	local json = toJSON(t,false,"spaces")
 	fileWrite(f,json:sub(3, json:len() - 1))
 	fileClose(f)
-	print("[DGS]VSCode autocomplete file is saved as 'dgs.code-snippets'")
+	outputDGSMessage("VSCode autocomplete file has been saved as 'dgs.code-snippets'",nil,"Crawl")
 end
 
 function GenerateSublimeAutoComplete(tab)
 	if fileExists("dgs.sublime-completions") then fileDelete("dgs.sublime-completions") end
-	print("[DGS]Generating Sublime autocomplete file...")
+	outputDGSMessage("Generating Sublime autocomplete file..",nil,"Crawl")
 	local t = {scope = "source.lua",completions = {}}
 	for i=1,#tab do
 		local item = tab[i]
@@ -823,5 +824,5 @@ function GenerateSublimeAutoComplete(tab)
 	local json = toJSON(t,false,"spaces")
 	fileWrite(f,json:sub(3, json:len() - 1))
 	fileClose(f)
-	print("[DGS]Sublime autocomplete file is saved as 'dgs.sublime-completions'")
+	outputDGSMessage("Sublime autocomplete file has been saved as 'dgs.sublime-completions'",nil,"Crawl")
 end

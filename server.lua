@@ -1,4 +1,25 @@
-﻿-----------Config Loader
+﻿function outputDGSMessage(message,visibleTo,title,level) -- level: 3 = info, 2 = warning, 1 = error, default is info
+	message = "[DGS"..(title and " "..title or "").."] "..message
+	if type(visibleTo) ~= "table" then
+		visibleTo = {visibleTo or "console"}
+	end
+	local r,g,b = 0,255,0 
+	if level == 2 then
+		r,g,b = 255, 147, 0
+	elseif level == 1 then
+		r,g,b = 255,0,0
+	end
+	for i=1,#visibleTo do
+		local to = visibleTo[i]
+		if to and (to ~= "console" and (not isElement(to) or getElementType(to) ~= "console")) then
+			outputChatBox(message,to,r,g,b)
+		else
+			outputDebugString(message,getVersion().sortable > "1.5.7-9.20477" and 4 or level,r,g,b)
+		end
+	end
+end
+
+-----------Config Loader
 DGSConfig = {
 	updateCheck						= true,			-- Enable:true;Disable:false
 	updateCheckInterval				= 120,			-- Minutes
@@ -13,6 +34,7 @@ DGSConfig = {
 	enableCompatibilityCheck	 	= true,			-- Enable compatibility check warnings
 	enableDebug 					= true,			-- Enable /debugdgs
 }
+
 
 function loadConfig()
 	if fileExists("config.txt") then 
@@ -33,10 +55,10 @@ function loadConfig()
 						DGSConfig[name] = dgsConfig[name]
 					end
 				end
-				outputDebugString("[DGS]Config Loaded!")
+				outputDGSMessage("The config file has been loaded.")
 			else
 				configUpdateRequired = true
-				outputDebugString("[DGS]Invalid config file!",3)
+				outputDGSMessage("Invalid config file.",3)
 			end
 			if configUpdateRequired then
 				fileDelete("config.txt")
@@ -48,10 +70,10 @@ function loadConfig()
 				end
 				fileWrite(file,str:sub(3))
 				fileClose(file)
-				outputDebugString("[DGS]Config Updated!")
+				outputDGSMessage("The config file has been updated.")
 			end
 		else
-			outputDebugString("[DGS]Failed to open config file!",3)
+			outputDGSMessage("Failed to open the config file.",3)
 		end
 	else
 		local file = fileCreate("config.txt")
@@ -62,14 +84,14 @@ function loadConfig()
 		end
 		fileWrite(file,str:sub(3))
 		fileClose(file)
-		outputDebugString("[DGS]Config Created!")
+		outputDGSMessage("Config file was created.")
 	end
 
 	setElementData(resourceRoot,"DGS-allowCMD",DGSConfig.enableBuiltInCMD)
 	setElementData(resourceRoot,"DGS-enableDebug",DGSConfig.enableDebug)
 	setElementData(resourceRoot,"DGS-enableCompatibilityCheck",DGSConfig.enableCompatibilityCheck)
 	if DGSConfig.enableG2DCMD then
-		outputDebugString("[DGS]G2D command line is enabled!")
+		outputDGSMessage("G2D command line is enabled.")
 	end
 end
 loadConfig()
@@ -124,6 +146,6 @@ addEvent("DGSI_AbnormalDetected",true)
 addEventHandler("DGSI_AbnormalDetected",root,function(fData)
 	local pName = getPlayerName(client)
 	for fName,fData in pairs(fData) do
-		outputDebugString("[DGS-Security]Abnormal Detected at '"..fName.."' of player '"..pName.."'")
+		outputDGSMessage("Abnormal Detected at '"..fName.."' of player '"..pName.."'",nil,"Security")
 	end
 end)
