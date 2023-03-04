@@ -1637,7 +1637,7 @@ dgsRegisterFastEvent("onDgsDestroy","DGSDestroy")
 
 function dgsCleanElement(source)
 	local isAlive = isElement(source)
-	local dgsType = dgsElementType[source]
+	local dgsType = dgsIsType(source)
 	if dgsType then
 		local eleData = dgsElementData[source] or {}
 		if isAlive then
