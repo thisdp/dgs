@@ -230,7 +230,7 @@ function dgsG2DLoadHooker(isLocal)
 			if item and item ~= -1 then
 				item = isGUIComboBox[combobox] and item+1 or item
 			end
-			if item and #dgsGetProperty(combobox,"itemData") < item then return false end
+			if item and dgsComboBoxGetItemCount(combobox) < item then return false end
 			return dgsComboBoxGetItemText(combobox,item,...)
 		end
 		guiComboBoxGetSelected = function(combobox,...)
@@ -247,14 +247,14 @@ function dgsG2DLoadHooker(isLocal)
 			if item and item ~= -1 then
 				item = isGUIComboBox[combobox] and item+1 or item
 			end
-			if item and #dgsGetProperty(combobox,"itemData") < item then return false end
+			if item and dgsComboBoxGetItemCount(combobox) < item then return false end
 			return dgsComboBoxRemoveItem(combobox,item,...)
 		end
 		guiComboBoxSetItemText = function(combobox,item,...)
 			if item and item ~= -1 then
 				item = isGUIComboBox[combobox] and item+1 or item
 			end
-			if item and #dgsGetProperty(combobox,"itemData") < item then return false end
+			if item and dgsComboBoxGetItemCount(combobox) < item then return false end
 			return dgsComboBoxSetItemText(combobox,item,...)
 		end
 		guiComboBoxSetOpen = dgsComboBoxSetState
@@ -262,7 +262,7 @@ function dgsG2DLoadHooker(isLocal)
 			if item and isGUIComboBox[combobox] and item ~= -1 then
 				item = item+1
 			end
-			if item and #dgsGetProperty(combobox,"itemData") < item then return false end
+			if item and dgsComboBoxGetItemCount(combobox) < item then return false end
 			return dgsComboBoxSetSelectedItem(combobox,item,...)
 		end
 		guiCreateEdit = dgsCreateEdit
