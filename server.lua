@@ -149,3 +149,11 @@ addEventHandler("DGSI_AbnormalDetected",root,function(fData)
 		outputDGSMessage("Abnormal Detected at '"..fName.."' of player '"..pName.."'","Security")
 	end
 end)
+
+addEventHandler("onElementDataChange",resourceRoot,
+function (key,old)
+	if client and (string.sub(key,0,4) ~= "DGSI" or key == "DGSI_FileInfo") then 
+		setElementData(source,key,old)
+		outputDGSMessage("Illegal attempt to modify element data ("..key..") by "..getPlayerName(client),"Security",1)
+	end
+end)	
