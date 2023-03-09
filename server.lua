@@ -1,4 +1,4 @@
-﻿function outputDGSMessage(message,visibleTo,title,level) -- level: 3 = info, 2 = warning, 1 = error, default is info
+﻿function outputDGSMessage(message,title,level,visibleTo) -- level: 3 = info, 2 = warning, 1 = error, default is info
 	message = "[DGS"..(title and " "..title or "").."] "..message
 	if type(visibleTo) ~= "table" then
 		visibleTo = {visibleTo or "console"}
@@ -58,7 +58,7 @@ function loadConfig()
 				outputDGSMessage("The config file has been loaded.")
 			else
 				configUpdateRequired = true
-				outputDGSMessage("Invalid config file.",3)
+				outputDGSMessage("Invalid config file.",nil,2)
 			end
 			if configUpdateRequired then
 				fileDelete("config.txt")
@@ -73,7 +73,7 @@ function loadConfig()
 				outputDGSMessage("The config file has been updated.")
 			end
 		else
-			outputDGSMessage("Failed to open the config file.",3)
+			outputDGSMessage("Failed to open the config file.",nil,2)
 		end
 	else
 		local file = fileCreate("config.txt")
@@ -146,6 +146,6 @@ addEvent("DGSI_AbnormalDetected",true)
 addEventHandler("DGSI_AbnormalDetected",root,function(fData)
 	local pName = getPlayerName(client)
 	for fName,fData in pairs(fData) do
-		outputDGSMessage("Abnormal Detected at '"..fName.."' of player '"..pName.."'",nil,"Security")
+		outputDGSMessage("Abnormal Detected at '"..fName.."' of player '"..pName.."'","Security")
 	end
 end)

@@ -28,32 +28,32 @@ function checkUpdate()
 			RemoteVersion = tonumber(data)
 			if not ManualUpdate then
 				if RemoteVersion > version then
-					outputDGSMessage("New update available: "..version.." > "..data..". Consider updating your DGS using /"..DGSConfig.updateCommand,nil,"Updater")
-					outputDGSMessage("Please check the changelogs at https://github.com/thisdp/dgs/releases to avoid breaking changes.",nil,"Updater")
+					outputDGSMessage("New update available: "..version.." > "..data..". Consider updating your DGS using /"..DGSConfig.updateCommand,"Updater")
+					outputDGSMessage("Please check the changelogs at https://github.com/thisdp/dgs/releases to avoid breaking changes.","Updater")
 					if isTimer(updateTimer) then killTimer(updateTimer) end
 					updateTimer = setTimer(function()
 						if RemoteVersion > version then
-							outputDGSMessage("New update available: "..version.." > "..data..". Consider updating your DGS using /"..DGSConfig.updateCommand,nil,"Updater")
-							outputDGSMessage("Please check the changelogs at https://github.com/thisdp/dgs/releases before to avoid breaking changes.",nil,"Updater")
+							outputDGSMessage("New update available: "..version.." > "..data..". Consider updating your DGS using /"..DGSConfig.updateCommand,"Updater")
+							outputDGSMessage("Please check the changelogs at https://github.com/thisdp/dgs/releases before to avoid breaking changes.","Updater")
 						else
 							killTimer(updateTimer)
 						end
 					end,DGSConfig.updateCheckNoticeInterval*60000,0)
 				else
-					outputDGSMessage("Current version ("..version..") is the latest!",nil,"Updater")
+					outputDGSMessage("Current version ("..version..") is the latest!","Updater")
 				end
 			else
 				startUpdate()
 			end
 		else
-			outputDGSMessage("The remote version could not be retrieved ("..err..")",nil,"Updater",2)
+			outputDGSMessage("The remote version could not be retrieved ("..err..")","Updater",2)
 		end
 	end)
 end
 
 function checkServerVersion(player)
 	if getVersion().sortable > "1.5.4-9.11342" then
-		outputDGSMessage("Your server version is too old to support dgs update system.",player,nil,2)
+		outputDGSMessage("Your server version is too old to support dgs update system.",nil,2,player)
 		return false
 	end
 	return true
@@ -77,7 +77,7 @@ addCommandHandler(DGSConfig.updateCommand,function(player)
 		isPermit = isPermit or (consoleGroup and isObjectInACLGroup("user."..accName,consoleGroup))
 	end
 	if isPermit then
-		outputDGSMessage(getPlayerName(player).." attempt to update dgs (Allowed)")
+		outputDGSMessage(getPlayerName(player).." attempt to update dgs (Allowed)","Updater")
 		outputDGSMessage("Preparing to update dgs",{player,"console"},"Updater")
 		if RemoteVersion > version then
 			startUpdate()
@@ -86,7 +86,7 @@ addCommandHandler(DGSConfig.updateCommand,function(player)
 			checkUpdate()
 		end
 	else
-		outputDGSMessage("Access Denied!",player,"Updater",1)
+		outputDGSMessage("Access Denied!","Updater",1,player)
 		outputDGSMessage(getPlayerName(player).." attempt to update dgs (Denied)",nil,"Updater",2)
 	end
 end)
@@ -94,20 +94,20 @@ end)
 function startUpdate()
 	ManualUpdate = false
 	setTimer(function()
-		outputDGSMessage("Requesting update data (From GitHub)...",nil,"Updater")
+		outputDGSMessage("Requesting update data (From GitHub)...","Updater")
 		fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/meta.xml",function(data,err)
 			if err == 0 then
-				outputDGSMessage("Update data retrieved successfully.",nil,"Updater")
+				outputDGSMessage("Update data retrieved successfully.","Updater")
 				if fileExists("updated/meta.xml") then
 					fileDelete("updated/meta.xml")
 				end
 				local meta = fileCreate("updated/meta.xml")
 				fileWrite(meta,data)
 				fileClose(meta)
-				outputDGSMessage("Requesting verification data...",nil,"Updater")
+				outputDGSMessage("Requesting verification data...","Updater")
 				getGitHubTree()
 			else
-				outputDGSMessage("Unable to retrieve remote update data ("..err..")",nil,"Updater",2)
+				outputDGSMessage("Unable to retrieve remote update data ("..err..")","Updater",2)
 			end
 		end)
 	end,50,1)
@@ -138,7 +138,7 @@ function getGitHubTree(path,nextPath)
 				checkFiles()
 			end
 		else
-			outputDGSMessage("Failed to get verification data, please try again later (API Cool Down 60 mins)",nil,"Updater",2)
+			outputDGSMessage("Failed to get verification data, please try again later (API Cool Down 60 mins)","Updater",2)
 		end
 	end)
 end
@@ -161,7 +161,7 @@ function checkFiles()
 				sha = hash("sha1","blob " .. size .. "\0" ..text)
 			end
 			if sha ~= fileHash[path] then
-				outputDGSMessage("Update required: ("..path..")",nil,"Updater")
+				outputDGSMessage("Update required: ("..path..")","Updater")
 				table.insert(preUpdate,path)
 			end
 		end
@@ -177,7 +177,7 @@ function DownloadFiles()
 		DownloadFinish()
 		return
 	end
-	outputDGSMessage("Requesting ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]),nil,"Updater")
+	outputDGSMessage("Requesting ("..UpdateCount.."/"..(#preUpdate or "Unknown").."): "..tostring(preUpdate[UpdateCount]),"Updater")
 	fetchRemote("https://raw.githubusercontent.com/thisdp/dgs/master/"..preUpdate[UpdateCount],function(data,err,path)
 		if err == 0 then
 			local size = 0
@@ -191,9 +191,9 @@ function DownloadFiles()
 			fileWrite(file,data)
 			local newsize = fileGetSize(file)
 			fileClose(file)
-			outputDGSMessage("Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]",nil,"Updater")
+			outputDGSMessage("Got ("..UpdateCount.."/"..#preUpdate.."): "..path.." [ "..size.."B -> "..newsize.."B ]","Updater")
 		else
-			outputDGSMessage("Download failed: "..path.." ("..err..")!",nil,"Updater",2)
+			outputDGSMessage("Download failed: "..path.." ("..err..")!","Updater",2)
 		end
 		if preUpdate[UpdateCount+1] then
 			DownloadFiles()
@@ -204,7 +204,7 @@ function DownloadFiles()
 end
 
 function DownloadFinish()
-	outputDGSMessage("Updating version file",nil,"Updater")
+	outputDGSMessage("Updating version file","Updater")
 	if fileExists("update.cfg") then
 		fileDelete("update.cfg")
 	end
@@ -229,8 +229,8 @@ function DownloadFinish()
 		xmlSaveFile(xml)
 		xmlUnloadFile(xml)
 	end
-	outputDGSMessage("Update successful: "..#preUpdate.." file"..(#preUpdate==1 and "" or "s").." have been updated.",{root,"console"},"Updater")
-	outputDGSMessage("Please restart DGS",nil,"Updater")
+	outputDGSMessage("Update successful: "..#preUpdate.." file"..(#preUpdate==1 and "" or "s").." have been updated.","Updater",{root,"console"})
+	outputDGSMessage("Please restart DGS","Updater")
 	preUpdate = {}
 	UpdateCount = 0
 end
@@ -243,12 +243,12 @@ addCommandHandler("dgsver",function(pla,cmd)
 		fileClose(file)
 		vsdd = tonumber(vscd)
 		if vsdd then
-			outputDGSMessage("Current version: "..vsdd,pla)
+			outputDGSMessage("Current version: "..vsdd,nil,3,pla)
 		else
-			outputDGSMessage("Version file is damaged! Please use /"..DGSConfig.updateCommand.." to update",pla,nil,2)
+			outputDGSMessage("Version file is damaged! Please use /"..DGSConfig.updateCommand.." to update",nil,2,pla)
 		end
 	else
-		outputDGSMessage("Version file is damaged! Please use /"..DGSConfig.updateCommand.." to update",pla,nil,2)
+		outputDGSMessage("Version file is damaged! Please use /"..DGSConfig.updateCommand.." to update",nil,2,pla)
 	end
 end)
 
@@ -278,7 +278,7 @@ function backupStyleMapper()
 end
 
 function recoverStyleMapper()
-	if styleBackupStr == "" then return outputDGSMessage("Failed to recover style mapper",nil,"Updater",2) end
+	if styleBackupStr == "" then return outputDGSMessage("Failed to recover style mapper","Updater",2) end
 	local meta = fileOpen("updated/meta.xml")
 	local str = fileRead(meta,fileGetSize(meta))
 	fileClose(meta)
