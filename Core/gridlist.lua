@@ -2935,7 +2935,6 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	if eleData.rowRT then
 		dxSetRenderTarget(eleData.rowRT,true)
-		dxSetBlendMode("blend")
 		if cPosStart and cPosEnd then
 			for i=eleData.FromTo[1],eleData.FromTo[2] do
 				if not elementBuffer[i] then elementBuffer[i] = {} end
@@ -3047,7 +3046,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
 							local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
 							local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
-							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,imageData[2])
+							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha))
 						end
 						local textXS,textYS,textXE,textYE = _x+columnOffset,_y,_sx,_sy
 						if cItem[glItem_textOffset] then
