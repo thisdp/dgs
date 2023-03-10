@@ -249,7 +249,6 @@ dgsOnPropertyChange["dgs-dxradiobutton"] = {
 		dgsTriggerEvent("onDgsTextChange",dgsEle)
 		--
 		dgsRadioButtonUpdateTextWidth(dgsEle)
-		print(dgsEle)
 	end,
 	textSize = function(dgsEle,key,value,oldValue)
 		dgsRadioButtonUpdateTextWidth(dgsEle)
