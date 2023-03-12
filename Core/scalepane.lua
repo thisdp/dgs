@@ -70,6 +70,8 @@ function dgsCreateScalePane(...)
 		scrollBarLength = {},
 		horizontalMoveOffsetTemp = 0,
 		verticalMoveOffsetTemp = 0,
+		horizontalMoveOffset = 0,
+		verticalMoveOffset = 0,
 		moveHardness = {0.1,0.9},
 		scale = {1,1},
 		scalable = true,
@@ -374,6 +376,8 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	eleData.verticalMoveOffsetTemp = yScroll
 	OffsetX = -(resolution[1]-relSizX/scale[1])*xScroll
 	OffsetY = -(resolution[2]-relSizY/scale[2])*yScroll
+	eleData.horizontalMoveOffset = OffsetX
+	eleData.verticalMoveOffset = OffsetY
 	------------------------------------
 	if eleData.functionRunBefore then
 		local fnc = eleData.functions
