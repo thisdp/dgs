@@ -931,7 +931,6 @@
 	<export function="dgsTooltipApplyTo" type="client" />
 	<export function="dgsTooltipRemoveFrom" type="client" />
 
-	<export function="dgsGetExportedFunctionName" type="client" />
 	<export function="dgsImportFunction" type="client" />
 	<export function="dgsImportOOPClass" type="client" />
 	<export function="dgsG2DLoadHooker" type="client" />
