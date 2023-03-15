@@ -24,7 +24,6 @@ dgsRegisterProperties('dgs-dxgridlist',{
 	font = 					{	PArg.Font+PArg.String	},
 	leading = 				{	PArg.Number	},
 	multiSelection = 		{	PArg.Bool	},
-	mouseSelectButton = 	{	{ PArg.Bool, PArg.Bool, PArg.Bool }	},
 	moveHardness = 			{	{ PArg.Number, PArg.Number }	},
 	rowColorTemplate =		{	PArg.Table },
 	rowColor = 				{	{ PArg.Color, PArg.Color,PArg.Color }	},
@@ -125,11 +124,6 @@ local tableRemoveItemFromArray = table.removeItemFromArray
 local utf8Len = utf8.len
 gridlistSortFunctions = {}
 self = false
-mouseButtonOrder = {
-	left=1,
-	middle=2,
-	right=3,
-}
 --[[
 Selection Mode
 1-> Row Selection
@@ -213,7 +207,6 @@ function dgsCreateGridList(...)
 		itemClick = {},
 		lastSelectedItem = {1,1},
 		leading = 0,
-		mouseSelectButton = {true,false,false},
 		moveHardness = {0.1,0.9},
 		moveType = 0,	--0 for wheel, 1 For scroll bar
 		multiSelection = false,
