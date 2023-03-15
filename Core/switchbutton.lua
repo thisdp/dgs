@@ -249,13 +249,12 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		if isHitCursor then
 			colorImgID = 2
 		end
-		if eleData.clickType == 1 and MouseData.click.left == source then
-			colorImgBgID = 3
-			colorImgID = isHitCursor and 3 or colorImgID
-		elseif eleData.clickType == 2 and MouseData.click.right == source then
-			colorImgBgID = 3
-			colorImgID = isHitCursor and 3 or colorImgID
-		elseif MouseData.click.left == source or MouseData.click.right == source then
+		local mouseButtons = eleData.mouseButtons
+		local canLeftClick,canRightClick,canMiddleClick = true
+		if mouseButtons then
+			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
+		end		
+		if (canLeftClick and MouseData.click.left == source) or (canRightClick and MouseData.click.right == source) or (canMiddleClick and MouseData.click.middle == source) then
 			colorImgBgID = 3
 			colorImgID = isHitCursor and 3 or colorImgID
 		end
