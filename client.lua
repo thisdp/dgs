@@ -1974,7 +1974,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				dgsBringToFront(scrollbar[1],_,_,true)
 				dgsBringToFront(scrollbar[2],_,_,true)
 			end
-			if button == "left" then 
+			if button == "left" then
 				if not checkScale(dgsEle) then
 					checkMove(dgsEle)
 				end
