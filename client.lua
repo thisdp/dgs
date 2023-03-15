@@ -1948,6 +1948,13 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		if not isElement(dgsEle) then return end
 		if wasEventCancelled() then return end
 
+		local mouseButtons = eleData.mouseButtons
+		local canLeftClick,canRightClick,canMiddleClick = true
+		if mouseButtons then
+			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
+		end		
+		local mouseClicked = (button == "left" and canLeftClick) or (button == "right" and canRightClick) or (button == "middle" and canMiddleClick)
+
 		local guitype = dgsGetType(dgsEle)
 		if guitype == "dgs-dxbrowser" then
 			focusBrowser(dgsEle)
@@ -1956,7 +1963,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		local parent = dgsGetParent(dgsEle)
 		if guitype == "dgs-dxswitchbutton" then
-			if eleData.clickState == state and eleData.clickButton == button then
+			if eleData.clickState == state and mouseClicked then
 				dgsSetData(dgsEle,"state", not eleData.state)
 			end
 		end
@@ -1967,12 +1974,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				dgsBringToFront(scrollbar[1],_,_,true)
 				dgsBringToFront(scrollbar[2],_,_,true)
 			end
-			local mouseButtons = eleData.mouseButtons
-			local canLeftClick,canRightClick,canMiddleClick = true
-			if mouseButtons then
-				canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
-			end		
-			if button == "left" then
+			if mouseClicked then
 				if not checkScale(dgsEle) then
 					checkMove(dgsEle)
 				end
@@ -2020,15 +2022,15 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				elseif guitype == "dgs-dxcombobox" then
 					dgsSetData(dgsEle,"listState",eleData.listState == 1 and -1 or 1)
 				--elseif guitype == "dgs-dxselector" then
-
 				end
-			elseif button == "middle" then
+			end
+			if button == "middle" then
 				if dgsGetType(MouseData.topScrollable) == "dgs-dxscalepane" then
 					dgsScalePaneCheckMove(MouseData.topScrollable)
 				end
 			end
 			if guitype == "dgs-dxgridlist" then
-				if (button == "left" and canLeftClick) or (button == "right" and canRightClick) or (button == "middle" and canRightClick)  then
+				if mouseClicked then
 					local oPreSelect = eleData.oPreSelect
 					local rowData = eleData.rowData
 					----Sort
