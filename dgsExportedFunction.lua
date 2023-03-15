@@ -382,12 +382,24 @@ function dgsG2DLoadHooker(isLocal)
 			return dgsGridListSetItemColor(gl,row,column,...)
 		end
 		guiGridListSetSelectedItem = function(gl,row,column,...)
-			if column and dgsGridListGetColumnCount(gl) < column then return false end
-			if row and row ~= -1 then
-				row = isGUIGridList[gl] and row+1 or row
-			end
-			if row and dgsGridListGetRowCount(gl) < row then return false end
-			return dgsGridListSetSelectedItem(gl,row,column,...)
+    		if column then 
+        		if column <= 0 then 
+            		column = -1
+        		elseif dgsGridListGetColumnCount(gl) < column then 
+            		return false 
+        		end
+    		end
+    		if row then 
+        		if row <= -1 then 
+            		row = -1
+        		elseif isGUIGridList[gl] then 
+            		row = row+1
+            		if dgsGridListGetRowCount(gl) < row then 
+                		return false 
+            		end
+       			 end
+    		end
+    		return dgsGridListSetSelectedItem(gl,row,column,...)
 		end
 		guiGridListAutoSizeColumn = function (gl,column)
 			if column and dgsGridListGetColumnCount(gl) < column then return false end
