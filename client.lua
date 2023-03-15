@@ -1967,6 +1967,11 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				dgsBringToFront(scrollbar[1],_,_,true)
 				dgsBringToFront(scrollbar[2],_,_,true)
 			end
+			local mouseButtons = eleData.mouseButtons
+			local canLeftClick,canRightClick,canMiddleClick = true
+			if mouseButtons then
+				canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
+			end		
 			if button == "left" then
 				if not checkScale(dgsEle) then
 					checkMove(dgsEle)
@@ -2023,9 +2028,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				end
 			end
 			if guitype == "dgs-dxgridlist" then
-				local clickButton = eleData.mouseSelectButton
-				local isSelectButtonEnabled = clickButton[mouseButtonOrder[button]]
-				if isSelectButtonEnabled then
+				if (button == "left" and canLeftClick) or (button == "right" and canRightClick) or (button == "middle" and canRightClick)  then
 					local oPreSelect = eleData.oPreSelect
 					local rowData = eleData.rowData
 					----Sort
