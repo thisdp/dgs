@@ -67,7 +67,7 @@ function dgsImportFunction(name,nameAs)
 			function DGSCallMT:__index(fncName)
 				if type(fncName) ~= 'string' then fncName = tostring(fncName) end
 				self[fncName] = function(...)
-					if not dgsImportHead then error("DGS import data is missing or DGS is not running, please reimport dgs functions("..getResourceName(getThisResource())..")") end
+					if not dgsImportHead then return outputDebugString("[DGS] "..getResourceName(getThisResource())..": DGS import data is missing or DGS is not running, please reimport dgs functions",4,255,0,0) end
 					if isElement(dgsRoot) then
 						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
 						if isTraceDebug then
