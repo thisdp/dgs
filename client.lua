@@ -1974,10 +1974,12 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				dgsBringToFront(scrollbar[1],_,_,true)
 				dgsBringToFront(scrollbar[2],_,_,true)
 			end
-			if mouseClicked then
+			if button == "left" then 
 				if not checkScale(dgsEle) then
 					checkMove(dgsEle)
 				end
+			end
+			if mouseClicked then
 				if guitype == "dgs-dxscrollbar" then
 					local scrollArrow = eleData.scrollArrow
 					local x,y = dgsGetPosition(dgsEle,false,true)
