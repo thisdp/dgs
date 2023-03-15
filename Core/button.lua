@@ -96,7 +96,6 @@ function dgsCreateButton(...)
 	dgsElementData[button] = {
 		alignment = {"center","center"},
 		clickOffset = {0,0},
-		clickType = 1;	--1:LMB;2:Wheel;3:RM,
 		clip = nil,
 		colorTransitionPeriod = 0, --ms
 		color = {normalColor, hoveringColor, clickedColor},
@@ -231,18 +230,13 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local buttonState = 1
 	if MouseData.entered == source then
 		buttonState = 2
-		if eleData.clickType == 1 then
-			if MouseData.click.left == source then
-				buttonState = 3
-			end
-		elseif eleData.clickType == 2 then
-			if MouseData.click.right == source then
-				buttonState = 3
-			end
-		else
-			if MouseData.click.left == source or MouseData.click.right == source then
-				buttonState = 3
-			end
+		local mouseButtons = eleData.mouseButtons
+		local canLeftClick,canRightClick,canMiddleClick = true
+		if mouseButtons then
+			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
+		end		
+		if (canLeftClick and MouseData.click.left == source) or (canRightClick and MouseData.click.right == source) or (canMiddleClick and MouseData.click.middle == source) then
+			buttonState = 3
 		end
 	end
 	if eleData.lastState ~= buttonState then
