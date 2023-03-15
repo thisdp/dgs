@@ -119,7 +119,6 @@ function dgsCreateSwitchButton(...)
 		cursorWidth = style.cursorWidth,
 		troughWidth = style.troughWidth,
 		stateAnim = state and 1 or -1,
-		clickButton = "left"; --"left":LMB;"middle":Wheel;"right":RM,
 		clickState = "up"; --"down":Down;"up":U,
 		cursorLength = style.cursorLength,
 		clip = false,
