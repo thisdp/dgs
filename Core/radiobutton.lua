@@ -297,18 +297,13 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local colorimgid = 1
 	if MouseData.entered == source then
 		colorimgid = 2
-		if eleData.clickType == 1 then
-			if MouseData.click.left == source then
-				colorimgid = 3
-			end
-		elseif eleData.clickType == 2 then
-			if MouseData.click.right == source then
-				colorimgid = 3
-			end
-		else
-			if MouseData.click.left == source or MouseData.click.right == source then
-				colorimgid = 3
-			end
+		local mouseButtons = eleData.mouseButtons 
+		local canLeftClick,canRightClick,canMiddleClick = true 
+		if mouseButtons then 
+			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
+		end
+		if (MouseData.click.left == source and canLeftClick) or (MouseData.click.right == source and canRightClick) or (MouseData.click.middle == source and canMiddleClick) then
+			colorimgid = 3
 		end
 	end
 	local finalcolor
