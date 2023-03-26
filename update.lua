@@ -52,7 +52,7 @@ function checkUpdate()
 end
 
 function checkServerVersion(player)
-	if getVersion().sortable > "1.5.4-9.11342" then
+	if getVersion().sortable < "1.5.4-9.11342" then
 		outputDGSMessage("Your server version is too old to support dgs update system.",nil,2,player)
 		return false
 	end
