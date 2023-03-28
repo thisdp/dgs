@@ -1509,23 +1509,24 @@ function dgsCheckHit(hits,cursorShowing)
 			if image and not isElement(image) then
 				CursorData[MouseData.cursorType] = nil
 				cData = nil
-			end
-			if cursorShowing then
-				local color = CursorData.color
-				local cursorSize = CursorData.size
-
-				local rotation = cData[2]
-				local rotCenter = cData[3]
-				local offset = cData[4]
-				local scale = cData[5]
-				local materialSize = cData[6]
-				local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
-				local cursorScrX,cursorScrY = dgsGetCursorPosition(_,false,true)
-				local cursorX,cursorY = cursorScrX+offset[1]*cursorW,cursorScrY+offset[2]*cursorH
-				setCursorAlpha(0)
-				__dxDrawImage(cursorX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
 			else
-				setCursorAlpha(255)
+				if cursorShowing then
+					local color = CursorData.color
+					local cursorSize = CursorData.size
+
+					local rotation = cData[2]
+					local rotCenter = cData[3]
+					local offset = cData[4]
+					local scale = cData[5]
+					local materialSize = cData[6]
+					local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
+					local cursorScrX,cursorScrY = dgsGetCursorPosition(_,false,true)
+					local cursorX,cursorY = cursorScrX+offset[1]*cursorW,cursorScrY+offset[2]*cursorH
+					setCursorAlpha(0)
+					__dxDrawImage(cursorX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
+				else
+					setCursorAlpha(255)
+				end
 			end
 		else
 			setCursorAlpha(255)
