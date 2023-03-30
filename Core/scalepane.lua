@@ -235,12 +235,10 @@ function dgsScalePaneCheckMove(scalepane)
 	local scale = eleData.scale
 	local resolution = eleData.resolution
 	local relSizX,relSizY = w-xthick,h-ythick
-	local mx,my = dgsGetCursorPosition()
-	local xScroll = eleData.horizontalMoveOffsetTemp
-	local yScroll = eleData.verticalMoveOffsetTemp
+	local xScroll = dgsElementData[scrollbar[2]].scrollPosition*0.01
+	local yScroll = dgsElementData[scrollbar[1]].scrollPosition*0.01
 	local renderOffsetX = -(resolution[1]-relSizX/scale[1])*xScroll
 	local renderOffsetY = -(resolution[2]-relSizY/scale[2])*yScroll
-	local moveData = eleData.moveOffsetData
 	MouseData.MoveScale[0] = true
 	MouseData.MoveScale[1] = MouseData.cursorPos[1]-x	--OffsetX
 	MouseData.MoveScale[2] = MouseData.cursorPos[2]-y	--OffsetY
@@ -412,20 +410,18 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 			eleData.sourceTexture = false
 		end
 		dxDrawImageSection(x,y,relSizX,relSizY,-OffsetX,-OffsetY,relSizX/scale[1],relSizY/scale[2],drawTarget,0,0,0,tocolor(255,255,255,255*parentAlpha),isPostGUI)
+
 		if MouseData.hit == source then
 			mx = (mx-xNRT)/scale[1]-OffsetX+xNRT
 			my = (my-yNRT)/scale[2]-OffsetY+yNRT
 		end
-	end
-	dxSetRenderTarget(newRndTgt,true)
-	
-	if newRndTgt then
+		dxSetRenderTarget(newRndTgt,true)
 		local bgColor = eleData.bgColor
 		if eleData.bgImage then
 			bgColor = bgColor or 0xFFFFFFFF
 			dxSetBlendMode("blend")
-			dxDrawImage(0,0,resolution[1],resolution[2],eleData.bgImage,0,0,0,tocolor(255,255,255,255*parentAlpha))
-			bgColor = applyColorAlpha(bgColor,parentAlpha)
+			bgColor = applyColorAlpha(bgColor or 0xFFFFFFFF,parentAlpha)
+			dxDrawImage(0,0,resolution[1],resolution[2],eleData.bgImage,0,0,0,bgColor)
 		elseif eleData.bgColor then
 			bgColor = applyColorAlpha(bgColor,parentAlpha)
 			dxSetBlendMode("modulate_add")

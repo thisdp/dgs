@@ -136,7 +136,34 @@ function dgsGetIntersection(lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,pnVP1,pnVP2,pnVP
 	end
 end
 
-function dgs3DInterfaceCalculateMousePosition(interface)
+--[[
+function dgsCalculate3DInterfaceMouse(x,y,z,vx,vy,vz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
+	local offFaceX,offFaceZ = atan2(vz,(vx*vx+vy*vy)^0.5),atan2(vx,vy)
+	roll = roll/180*math.pi
+	local cRoll,sRoll = cos(roll),sin(roll)
+	local cZ,sZ = cos(offFaceZ),sin(offFaceZ)
+	local cX,sX = cos(offFaceX),sin(offFaceX)
+	local _x,_y,_z = sX*sZ*cRoll+sRoll*cZ,sX*cZ*cRoll-sRoll*sZ,-cX*cRoll
+	local width,height = w/2,h/2
+	local x1,y1,z1 = _x*height,_y*height,_z*height
+	if not lnVP1 then return false end
+	local vpt = vx*lnVP1+vy*lnVP2+vz*lnVP3
+	if vpt == 0 then return false end
+	local t = (vx*(x-lnVP4)+vy*(y-lnVP5)+vz*(z-lnVP6))/vpt
+	local px,py,pz = lnVP4+lnVP1*t,lnVP5+lnVP2*t,lnVP6+lnVP3*t
+	local model = (vx*vx+vy*vy+vz*vz)^0.5
+	local vx,vy,vz = vx/model,vy/model,vz/model
+	local ltX,ltY,ltZ = (y1*vz-vy*z1)/2,(z1*vx-vz*x1)/2,(x1*vy-vx*y1)/2 --Left Point
+	local vec1X,vec1Y,vec1Z = ltX+x-px,ltY+y-py,ltZ+z-pz
+	local vec2X,vec2Y,vec2Z = px-x+x1,py-y+y1,pz-z+z1
+	local _x,_y = (vec1X*ltX+vec1Y*ltY+vec1Z*ltZ)/width/w,(vec2X*x1+vec2Y*y1+vec2Z*z1)/height/h
+	local angle = (x-lnVP4)*lnVP1+(y-lnVP5)*lnVP2+(z-lnVP6)*lnVP3
+	local inSide = _x>=0 and _x<=1 and _y>=0 and _y <=1
+	return (angle > 0) and inSide,_x,_y,px,py,pz
+end
+]]
+
+function dgs3DInterfaceCalculateMousePosition(interface)-- to delete
 	local eleData = dgsElementData[interface]
 	local pos = eleData.position
 	local size = eleData.size
@@ -301,23 +328,9 @@ function dgs3DInterfaceGetAttachedOffsets(interface)
 	end
 	return false
 end
-
-----------------------------------------------------------------
------------------------PropertyListener-------------------------
-----------------------------------------------------------------
-dgsOnPropertyChange["dgs-dx3dinterface"] = {}
-----------------------------------------------------------------
------------------------VisibilityManage-------------------------
-----------------------------------------------------------------
-dgsOnVisibilityChange["dgs-dx3dinterface"] = function(dgsElement,selfVisibility,inheritVisibility)
-	if not selfVisibility or not inheritVisibility then
-		dgs3DInterfaceRecreateRenderTarget(dgsElement,true)
-	end
-end
 ----------------------------------------------------------------
 ----------------3D Interface Renderer Shader--------------------
 ----------------------------------------------------------------
-
 interface3DShader = [[
 float3x3 shapeConfig = {
 	float3(0, 0, 0),	//Position
@@ -407,6 +420,9 @@ technique interface3D{
   pass P0  {
     ZEnable = true;
     ZFunc = LessEqual;
+	SeparateAlphaBlendEnable = true;
+	SrcBlendAlpha = One;
+	DestBlendAlpha = InvSrcAlpha;
     ZWriteEnable = true;
 	CullMode = doublesided?1:3;
     VertexShader = compile vs_2_0 VertexShaderFunction();
@@ -414,6 +430,19 @@ technique interface3D{
   }
 }
 ]]
+
+----------------------------------------------------------------
+-----------------------PropertyListener-------------------------
+----------------------------------------------------------------
+dgsOnPropertyChange["dgs-dx3dinterface"] = {}
+----------------------------------------------------------------
+-----------------------VisibilityManage-------------------------
+----------------------------------------------------------------
+dgsOnVisibilityChange["dgs-dx3dinterface"] = function(dgsElement,selfVisibility,inheritVisibility)
+	if not selfVisibility or not inheritVisibility then
+		dgs3DInterfaceRecreateRenderTarget(dgsElement,true)
+	end
+end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
@@ -421,58 +450,56 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	if eleData.retrieveRT then
 		dgs3DInterfaceRecreateRenderTarget(source)
 	end
-	local pos = eleData.position
-	local size = eleData.size
-	local faceTo = eleData.faceTo
-	local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
 	rndtgt = eleData.mainRT
-	if x and y and z and w and h and enabledInherited then
-		local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 --,lnVec123,lnPnt123
-		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
-		if not fx or not fy or not fz then
-			fx,fy,fz = camX-x,camY-y,camZ-z
-		end
-		if eleData.faceRelativeTo == "world" then
-			fx,fy,fz = fx-x,fy-y,fz-z
-		end
-		if MouseData.cursorPos3D[0] then	--Is cursor 3d position available
-			lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ,camX,camY,camZ
-			local hitData = eleData.hit
-			if eleData.cameraDistance or 0 <= eleData.maxDistance then
-				local isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
-				hitData[1] = isHit
-				hitData[2] = hitX
-				hitData[3] = hitY
-				hitData[4] = hx
-				hitData[5] = hy
-				hitData[6] = hz
-				local dx,dy,dz = camX-hx,camY-hy,camZ-hz
-				local distance = (dx*dx+dy*dy+dz*dz)^0.5
-				local oldPos = MouseData.hitData3D
-				if (isElement(MouseData.lock3DInterface) and MouseData.lock3DInterface == source) or ((not oldPos[0] or distance <= oldPos[4]) and isHit) then
-					MouseData.hit = source
-					mx = hitX*eleData.resolution[1]
-					my = hitY*eleData.resolution[2]
-					MouseData.hitData3D[0] = true
-					MouseData.hitData3D[1] = hx
-					MouseData.hitData3D[2] = hy
-					MouseData.hitData3D[3] = hz
-					MouseData.hitData3D[4] = distance
-					MouseData.hitData3D[5] = source
-					eleData.cursorPosition[0] = dgsRenderInfo.frames+1
-					eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
-				end
-			else
-				hitData[1] = false
+	local hitData = eleData.hit
+	hitData[1] = false
+	if eleData.cameraDistance and eleData.cameraDistance <= eleData.maxDistance and mx then
+		local eleData = dgsElementData[source]
+		local isHit = false
+		local pos = eleData.position
+		local size = eleData.size
+		local faceTo = eleData.faceTo
+		local resolution = eleData.resolution
+		local x,y,z,w,h,fx,fy,fz,roll = pos[1],pos[2],pos[3],size[1],size[2],faceTo[1],faceTo[2],faceTo[3],eleData.roll
+		local isHit,hitX,hitY,hx,hy,hz
+		if x and y and z and w and h then
+			local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
+			if not fx or not fy or not fz then fx,fy,fz = camX-x,camY-y,camZ-z end
+			if eleData.faceRelativeTo == "world" then fx,fy,fz = fx-x,fy-y,fz-z end
+			if MouseData.cursorPos3D[0] then	--Is cursor 3d position available
+				local lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6 = MouseData.cursorPos3D[1]-camX,MouseData.cursorPos3D[2]-camY,MouseData.cursorPos3D[3]-camZ,camX,camY,camZ
+				isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
+				hitX,hitY = hitX*resolution[1],hitY*resolution[2]
 			end
+		end
+		hitData[1] = isHit
+		hitData[2] = hitX
+		hitData[3] = hitY
+		hitData[4] = hx
+		hitData[5] = hy
+		hitData[6] = hz
+		local camX,camY,camZ = cameraPos[1],cameraPos[2],cameraPos[3]
+		local dx,dy,dz = camX-hx,camY-hy,camZ-hz
+		local distance = (dx*dx+dy*dy+dz*dz)^0.5
+		local oldPos = MouseData.hitData3D
+		if (isElement(MouseData.lock3DInterface) and MouseData.lock3DInterface == source) or ((not oldPos[0] or distance <= oldPos[4]) and isHit and not MouseData.click.left) then
+			MouseData.hit = source
+			MouseData.hitData3D[0] = true
+			MouseData.hitData3D[1] = hx
+			MouseData.hitData3D[2] = hy
+			MouseData.hitData3D[3] = hz
+			MouseData.hitData3D[4] = distance
+			MouseData.hitData3D[5] = source
+			eleData.cursorPosition[0] = dgsRenderInfo.frames+1
+			mx,my = hitX,hitY
+			eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
 		end
 		if rndtgt then
 			dxSetRenderTarget(rndtgt,true)
 		end
 		dxSetRenderTarget()
-		return rndtgt,false,mx,my,0,0
 	end
-	return rndtgt,true,mx,my,0,0
+	return rndtgt,false,mx,my,0,0
 end
 
 dgs3DRenderer["dgs-dx3dinterface"] = function(source)
@@ -510,7 +537,6 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 				if cameraDistance >= eleData.fadeDistance then
 					addalp = 1-(cameraDistance-eleData.fadeDistance)/(eleData.maxDistance-eleData.fadeDistance)
 				end
-				local colors = applyColorAlpha(eleData.color,eleData.alpha*addalp)
 				if not fx or not fy or not fz then
 					fx,fy,fz = camX-x,camY-y,camZ-z
 				end
@@ -519,7 +545,7 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 				end
 				if eleData.mainRT then
 					dxSetShaderValue(eleData.renderer,"shapeConfig",x,y,z,fx,fy,fz,w,h,roll/180*math.pi)
-					dxDrawImage(0,0,sW,sH,eleData.renderer,0,0,0,color)
+					dxDrawImage(0,0,sW,sH,eleData.renderer,0,0,0,applyColorAlpha(eleData.color,eleData.alpha*addalp))
 				end
 				return true
 			end

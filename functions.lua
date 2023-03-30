@@ -22,109 +22,107 @@ function insertResource(res,dgsEle)
 	end
 end
 
-function dgsGetGuiLocationOnScreen(dgsEle,rlt,rndsup)
-	if not isElement(dgsEle) then return false end
-	local pos = dgsElementData[dgsEle].absPos
-	local x,y = getParentLocation(dgsEle,rndsup,pos[1],pos[2])
-	return rlt and x/sW or x,rlt and y/sH or y
-end
--- todo
-function getParentLocation(dgsEle,rndSuspend,x,y,includeSide)
-	local eleData
-	local x,y = 0,0
-	local startEle = dgsEle
-	repeat
-		eleData = dgsElementData[dgsEle]
-		local absPos = eleData.absPos
-		local absPosX,absPosY = 0,0
-		if absPos then
-			absPosX,absPosY = absPos[1],absPos[2]
-		end
-		if includeSide then
-			local parent = dgsElementData[dgsEle].parent
-			local pEleData = dgsElementData[parent]
-			local eleConAlign = parent and pEleData.contentPositionAlignment
-			local eleAlign = eleData.positionAlignment
-			local eleAlignH,eleAlignV = eleAlign[1] or eleConAlign[1], eleAlign[2] or eleConAlign[2]
-			if eleAlignH == "right" then
-				local pWidth = parent and pEleData.absSize[1] or sW
-				absPosX = pWidth-absPosX
-			elseif eleAlignH == "center" then
-				local pWidth = parent and pEleData.absSize[1] or sW
-				absPosX = absPosX+pWidth/2-eleData.absSize[1]/2
-			end
-			if eleAlignV == "bottom" then
-				local pHeight = parent and pEleData.absSize[2] or sH
-				absPosY = pHeight-absPosY
-			elseif eleAlignV == "center" then
-				local pHeight = parent and pEleData.absSize[2] or sH
-				absPosY = absPosY+pHeight/2-eleData.absSize[2]/2
-			end
-		end
-		local _tmp = dgsEle
-		if dgsElementType[dgsEle] == "dgs-dxtab" then
-			dgsEle = eleData.parent
-			eleData = dgsElementData[dgsEle]
-			local h = eleData.absSize[2]
-			local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
-			x,y = x+eleData.absPos[1],y+eleData.absPos[2]+tabHeight
-		elseif eleData.attachedToGridList then
-			local data = eleData.attachedToGridList	--GridList,Row,Column
-			local gridList = data[1]	--Grid List
-			local gridListEleData = dgsElementData[gridList]
-			local scbThickV = dgsElementData[ gridListEleData.scrollbars[1] ].visible and gridListEleData.scrollBarThick or 0
-			local columnData = gridListEleData.columnData
-			local rowData = gridListEleData.rowData
-			local columnOffset = rowData[data[2]][-4] or gridListEleData.columnOffset
-			local columnMoveOffset = gridListEleData.columnMoveOffset
-			local rowHeight = gridListEleData.rowHeight
-			local leading = gridListEleData.leading
-			local w = gridListEleData.absSize[1]
-			x,y = x+columnMoveOffset+gridListEleData.columnOffset+columnOffset+columnData[data[3]][3]*(gridListEleData.columnRelative and (w-scbThickV) or 1), y+gridListEleData.rowMoveOffset+(data[2]-1)*(leading+rowHeight)+gridListEleData.columnHeight
-		end
-		dgsEle = dgsElementData[dgsEle].parent
-		eleData = dgsElementData[dgsEle]
-		if dgsElementType[dgsEle] == "dgs-dxwindow" then
-			local titleHeight = 0
-			if not eleData.ignoreParentTitle and not eleData.ignoreTitle then
-				titleHeight = eleData.titleHeight or 0
-			end
-			x,y = x+absPosX,y+absPosY+titleHeight
-		elseif dgsElementType[dgsEle] == "dgs-dxscrollpane" then
-			x,y = x+absPosX+eleData.horizontalMoveOffset,y+absPosY+eleData.verticalMoveOffset
-		elseif dgsElementType[dgsEle] == "dgs-dxscalepane" then
-			--[[local scrollbar = eleData.scrollbars
-			local scbThick = eleData.scrollBarThick
-			local size = eleData.absSize
-			local relSizX,relSizY = size[1]-(dgsElementData[ scrollbar[1] ].visible and scbThick or 0),size[2]-(dgsElementData[ scrollbar[2] ].visible and scbThick or 0)
-			local maxSize = eleData.maxChildSize
-			local maxX,maxY = (maxSize[1]-relSizX),(maxSize[2]-relSizY)
-			maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-			x,y = x+absPosX-maxX*dgsElementData[ scrollbar[2] ].scrollPosition*0.01,y+absPosY-maxY*dgsElementData[ scrollbar[1] ].scrollPosition*0.01]]
+function dgsGetElementPositionOnScreen(dgsEle,relativeTo)
+	if relativeTo == dgsEle then return 0,0 end
+	if relativeTo == true then relativeTo = "screen" end
+	local parentList = {count=0,[0]=dgsEle}
+	while(true) do
+		local currentElement = parentList[#parentList]
+		local parent = dgsElementData[currentElement].parent
+		if isElement(parent) and parent ~= relativeTo then
+			parentList.count = parentList.count+1
+			parentList[parentList.count] = parent
 		else
-			x,y = x+absPosX,y+absPosY
+			break
 		end
-		if startEle == dgsEle then
-			return _,_,startEle,_tmp
+	end
+	local x,y = 0,0
+	local OffsetX,OffsetY = 0,0
+	local ScaleX,ScaleY = 1,1
+	for i=#parentList,0,-1 do
+		dgsEle = parentList[i]
+		parent = parentList[i+1]
+		local eleData = dgsElementData[dgsEle]
+		local eleType = dgsElementType[dgsEle]
+		--Process Position Alignment 
+		local eleTypeP,eleDataP
+		local elePAlignH,elePAlignV
+		if parent then
+			eleTypeP,eleDataP = dgsElementType[parent],dgsElementData[parent]
+			elePAlignH,elePAlignV = dgsElementData[parent].contentPositionAlignment[1],dgsElementData[parent].contentPositionAlignment[2]
 		end
-	until(not isElement(dgsEle) or (rndSuspend and eleData.renderTarget_parent))
+
+		local absX,absY,absW,absH
+		local absPos,absSize = eleData.absPos,eleData.absSize
+		if not absPos then absX,absY = 0,0 else absX,absY = absPos[1],absPos[2] end
+		if not absSize then absW,absH = 0,0 else absW,absH = absSize[1],absSize[2] end
+		local PosX,PosY,w,h = absX,absY,absW,absH
+		local eleAlign = eleData.positionAlignment
+		local eleAlignH,eleAlignV = eleAlign[1] or elePAlignH, eleAlign[2] or elePAlignV
+		if eleAlignH == "right" then	--Horizontal
+			local pWidth = parent and eleDataP.absSize[1] or sW
+			PosX = pWidth-PosX-eleData.absSize[1]
+		elseif eleAlignH == "center" then
+			local pWidth = parent and eleDataP.absSize[1] or sW
+			PosX = PosX+pWidth/2-eleData.absSize[1]/2
+		end
+		if eleAlignV == "bottom" then --Vertical
+			local pHeight = parent and eleDataP.absSize[2] or sH
+			PosY = pHeight-PosY-eleData.absSize[2]
+		elseif eleAlignV == "center" then
+			local pHeight = parent and eleDataP.absSize[2] or sH
+			PosY = PosY+pHeight/2-eleData.absSize[2]/2
+		end
+		
+		if eleTypeP == "dgs-dxwindow" and eleData.ignoreParentTitle then OffsetY = 0 end
+		x,y = x+(OffsetX+PosX)*ScaleX,y+(OffsetY+PosY)*ScaleY
+		OffsetX,OffsetY = 0,0
+		if i == 0 then break end
+		if eleType == "dgs-dxwindow" then
+			if not eleData.ignoreTitle then
+				OffsetY = eleData.titleHeight
+			end
+		elseif eleType == "dgs-dxtab" then
+			local h = eleDataP.absSize[2]
+			OffsetY = eleDataP.tabHeight[2] and eleDataP.tabHeight[1]*h or eleDataP.tabHeight[1]
+		elseif eleType == "dgs-dxscrollpane" then
+			OffsetX,OffsetY = eleData.horizontalMoveOffset,eleData.verticalMoveOffset
+		elseif eleType == "dgs-dxscalepane" then
+			OffsetX,OffsetY = eleData.horizontalMoveOffset,eleData.verticalMoveOffset
+			local scale = eleData.scale
+			ScaleX,ScaleY = ScaleX*scale[1],ScaleY*scale[2]
+		elseif eleType == "dgs-dxgridlist" then
+			local child = parentList[i-1]
+			if child then
+				local eleDataC = dgsElementData[child]
+				if eleDataC.attachedToGridList then
+					local data = eleDataC.attachedToGridList	--GridList,Row,Column
+					local gridList = data[1]	--Grid List
+					local scbThickV = dgsElementData[eleData.scrollbars[1]].visible and eleData.scrollBarThick or 0
+					local columnData = eleData.columnData
+					local rowData = eleData.rowData
+					local columnOffset = rowData[data[2]][-4] or eleData.columnOffset
+					local columnMoveOffset = eleData.columnMoveOffsetTemp
+					local rowHeight = eleData.rowHeight
+					local leading = eleData.leading
+					local w = eleData.absSize[1]
+					OffsetX,OffsetY = columnMoveOffset+columnOffset+columnData[data[3]][3]*(eleData.columnRelative and (w-scbThickV) or 1),eleData.rowMoveOffsetTemp+(data[2]-1)*(leading+rowHeight)+eleData.columnHeight
+				end
+			end
+		end
+	end
 	return x,y
 end
 
-function dgsGetPosition(dgsEle,relative,includeParent,rndSuspend,includeSide)
+function dgsGetPosition(dgsEle,relative,relativeTo)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsGetPosition",1,"dgs-dxelement")) end
-	if includeParent then
-		local absPos = dgsElementData[dgsEle].absPos
-		local absPosX,absPosY = 0,0
-		if absPos then
-			absPosX,absPosY = absPos[1],absPos[2]
-		end
-		guielex,guieley,startElement,brokenElement = getParentLocation(dgsEle,rndSuspend,absPosX,absPosY,includeSide)
+	if relativeTo then
+		local posX,posY,startElement,brokenElement = dgsGetElementPositionOnScreen(dgsEle,relativeTo)
 		if brokenElement then error("Bad argument @'dgsGetPosition', Found an infinite loop under "..tostring(brokenElement).."("..dgsGetType(brokenElement).."), start from element "..tostring(startElement).."("..dgsGetType(startElement)..")") end
 		if relative then
-			return guielex/sW,guieley/sH
+			return posX/sW,posY/sH
 		else
-			return guielex,guieley
+			return posX,posY
 		end
 	else
 		local pos = dgsElementData[dgsEle][relative and "rltPos" or "absPos"]
@@ -728,62 +726,59 @@ function dgsGetCursorVisible()
 	return (isCursorShowing() or isChatBoxInputActive() or isConsoleActive()) and not isMainMenuActive() --Is visible in game
 end
 
+--to enhance cursor in scale pane
 function dgsGetCursorPosition(rltEle,rlt,forceOnScreen)
 	if dgsGetCursorVisible() then
-		if dgsGetType(rltEle) == "dgs-dx3dinterface" then 	--For 3d interface, recalculate position and ignore "forceOnScreen"
-			local hitX,hitY,px,py,pz,isHit = dgs3DInterfaceCalculateMousePosition(rltEle)
-			if rlt then
-				return hitX,hitY,px,py,pz,isHit
-			else
-				local resolution = dgsElementData[rltEle].resolution
-				return hitX*resolution[1],hitY*resolution[2],px,py,pz,isHit
+		if rltEle and dgsIsType(rltEle) then	--relative to element has higher priority
+			local cursorX,cursorY = CursorPosXVisible,CursorPosYVisible
+			local has3DInterface = false
+			local parent = rltEle
+			while(parent) do
+				if dgsGetType(parent) == "dgs-dx3dinterface" then has3DInterface = parent break end
+				parent = dgsGetParent(parent)
 			end
-		elseif MouseData.lock3DInterface and not forceOnScreen then	--For 3d interface using calculated position
+			if has3DInterface then	--For 3d interface, recalculate position and ignore "forceOnScreen"
+				local hitX,hitY,px,py,pz,isHit = dgs3DInterfaceCalculateMousePosition(has3DInterface)
+				local resolution = dgsElementData[has3DInterface].resolution
+				if rltEle == has3DInterface then
+					if rlt then return hitX, hitY end
+					return hitX*resolution[1], hitY*resolution[2]
+				end
+				cursorX,cursorY = hitX*resolution[1], hitY*resolution[2]
+			end
+			local posX,posY = dgsGetElementPositionOnScreen(rltEle)
+			if rlt then
+				local sizeX, sizeY = false,false
+				local parent = rltEle
+				while(parent) do
+					local size = dgsElementData[parent].absSize
+					if size then
+						sizeX, sizeY = size[1], size[2]
+						break
+					end
+					parent = dgsGetParent(parent)
+				end
+				if sizeX and sizeY then
+					return (cursorX-posX)/sizeX, (cursorY-posY)/sizeY
+				else
+					return (cursorX-posX)/scW, (cursorY-posY)/scH
+				end
+			else
+				return cursorX-posX, cursorY-posY
+			end
+		elseif MouseData.lock3DInterface and not forceOnScreen then	--If no rltEle and there is a 3d interface locked, for 3d interface using calculated position
 			local absX,absY = dgsElementData[MouseData.lock3DInterface].cursorPosition[1],dgsElementData[MouseData.lock3DInterface].cursorPosition[2]
 			local resolution = dgsElementData[MouseData.lock3DInterface].resolution
-			if not rltEle and not dgsIsType(rltEle) then
-				if rlt then
-					return absX/resolution[1],absY/resolution[2]
-				else
-					return absX,absY
-				end
+			if rlt then
+				return absX/resolution[1],absY/resolution[2]
 			else
-				local xPos,yPos = dgsGetGuiLocationOnScreen(rltEle,false)
-				local eleSize = dgsElementData[rltEle].absSize
-				if rlt then
-					return (absX-xPos)/eleSize[1],(absY-yPos)/eleSize[2]
-				else
-					return absX-xPos,absY-yPos
-				end
+				return absX,absY
 			end
 		else
-			local absX,absY = CursorPosXVisible,CursorPosYVisible
-			if dgsIsType(rltEle) then
-				local xPos,yPos = dgsGetGuiLocationOnScreen(rltEle,false)
-				local eleSize = dgsElementData[rltEle].absSize
-				
-				
-				-- todo
-				if dgsElementData[rltEle].scale then
-					x,y = (absX-xPos),(absY-yPos)
-				end
-				--[[
-				OffsetX = -(resolution[1]-relSizX/scale[1])*eleData.horizontalMoveOffsetTemp
-				OffsetY = -(resolution[2]-relSizY/scale[2])*eleData.verticalMoveOffsetTemp
-				mx = (mx-xNRT)/scale[1]-OffsetX+xNRT
-				my = (my-yNRT)/scale[2]-OffsetY+yNRT]]
-	
-				if rlt then
-					return (absX-xPos)/eleSize[1],(absY-yPos)/eleSize[2]
-				else
-					return absX-xPos,absY-yPos
-				end
+			if rlt then
+				return CursorPosXVisible/sW,CursorPosYVisible/sH
 			else
-				if rlt then
-					return absX/sW,absY/sH
-				else
-					return absX,absY
-				end
+				return CursorPosXVisible,CursorPosYVisible
 			end
 		end
 	end

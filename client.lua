@@ -439,56 +439,49 @@ end
 
 function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha)
 	local eleData = dgsElementData[source]
-	local enabledInherited,enabledSelf = enabledInherited and eleData.enabledInherited and eleData.enabled,eleData.enabled
 	local visible = eleData.visible
 	local visibleInherited = eleData.visibleInherited
 	if visible and visibleInherited and isElement(source) then
-		local parentOffsetX,parentOffsetY
-		local eleType = dgsElementType[source]
-		if eleType == "dgs-dxscrollbar" then
+		if debugMode then	--Debug Mode
+			dgsRenderInfo.rendering = dgsRenderInfo.rendering+1
+			if eleData.resource then
+				dgsRenderInfo.renderingResource[eleData.resource] = (dgsRenderInfo.renderingResource[eleData.resource] or 0)+1
+			end
+		end
+
+		local enabledSelf = eleData.enabled								--Seld enabled
+		local enabledInherited = enabledInherited and eleData.enabledInherited and enabledSelf	--Enabled inherited
+		local eleType = dgsElementType[source]							--Element type of current element
+		local parent = dgsElementData[source].parent					--Parent
+		local children = dgsElementData[source].children				--Children
+		local rndtgt = isElement(rndtgt) and rndtgt or false			--Parent render target
+		dxSetRenderTarget(rndtgt)										--Use parent render target
+		local globalBlendMode = rndtgt and "modulate_add" or "blend"	--Blend mode by default
+		dxSetBlendMode(globalBlendMode)									--Apply blend mode
+
+		--Apply parent alpha
+		if eleType == "dgs-dxscrollbar" then							--For scrollpane	(should be optimised soon)
 			local attachedToParent = eleData.attachedToParent
 			if isElement(attachedToParent) and dgsElementData[attachedToParent] then
 				if not dgsElementData[attachedToParent].visible then return end
 				parentAlpha = parentAlpha*dgsElementData[attachedToParent].alpha
 			end
 		end
-		local rndtgt = isElement(rndtgt) and rndtgt or false
-		local globalBlendMode = rndtgt and "modulate_add" or "blend"
-		dxSetBlendMode(globalBlendMode)
-		if debugMode then
-			dgsRenderInfo.rendering = dgsRenderInfo.rendering+1
-			if eleData.resource then
-				dgsRenderInfo.renderingResource[eleData.resource] = (dgsRenderInfo.renderingResource[eleData.resource] or 0)+1
-			end
-		end
-		local parent,children,parentAlpha = dgsElementData[source].parent,dgsElementData[source].children,(eleData.alpha or 1)*parentAlpha
+		parentAlpha = (eleData.alpha or 1)*parentAlpha					--Apply parent alpha with element alpha
+
+		--Process Position Alignment 
 		local eleTypeP,eleDataP
 		local elePAlignH,elePAlignV
 		if parent then
 			eleTypeP,eleDataP = dgsElementType[parent],dgsElementData[parent]
 			elePAlignH,elePAlignV = dgsElementData[parent].contentPositionAlignment[1],dgsElementData[parent].contentPositionAlignment[2]
 		end
-		dxSetRenderTarget(rndtgt)
-		--Side Processing
-		local PosX,PosY,w,h = 0,0,0,0
-		if eleTypeP == "dgs-dxwindow" then
-			PosY = (not eleDataP.ignoreTitle and not eleData.ignoreParentTitle) and PosY+(eleDataP.titleHeight or 0) or PosY
-		elseif eleTypeP == "dgs-dxtab" then
-			local gpEleData = dgsElementData[dgsElementData[parent].parent]
-			local gpSize = gpEleData.absSize
-			local tabHeight = gpEleData.tabHeight[2] and gpEleData.tabHeight[1]*gpSize[2] or gpEleData.tabHeight[1]
-			PosY = PosY+tabHeight
-			w,h = gpSize[1],gpSize[2]-tabHeight
-		end
-		if eleType ~= "dgs-dxtab" then
-			local absX,absY,absW,absH
-			local absPos = eleData.absPos
-			local absSize = eleData.absSize
-			if not absPos then absX,absY = 0,0 else absX,absY = absPos[1],absPos[2] end
-			if not absSize then absW,absH = 0,0 else absW,absH = absSize[1],absSize[2] end
-			PosX,PosY = PosX+absX,PosY+absY
-			w,h = absW,absH
-		end
+
+		local absX,absY,absW,absH
+		local absPos,absSize = eleData.absPos,eleData.absSize
+		if not absPos then absX,absY = 0,0 else absX,absY = absPos[1],absPos[2] end
+		if not absSize then absW,absH = 0,0 else absW,absH = absSize[1],absSize[2] end
+		local PosX,PosY,w,h = absX,absY,absW,absH
 		local eleAlign = eleData.positionAlignment
 		local eleAlignH,eleAlignV = eleAlign[1] or elePAlignH, eleAlign[2] or elePAlignV
 		if eleAlignH == "right" then	--Horizontal
@@ -505,6 +498,8 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			local pHeight = parent and eleDataP.absSize[2] or sH
 			PosY = PosY+pHeight/2-eleData.absSize[2]/2
 		end
+		
+		if eleTypeP == "dgs-dxwindow" and eleData.ignoreParentTitle then OffsetY = 0 end
 		local x,y = PosX+OffsetX,PosY+OffsetY
 		OffsetX,OffsetY = 0,0
 		xRT,yRT,xNRT,yNRT = xRT+x,yRT+y,xNRT+x,yNRT+y
@@ -522,6 +517,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		renderArguments[4] = h
 		renderArguments[5] = xNRT
 		renderArguments[6] = yNRT
+		local disableOutline
 		if xRT and yRT then
 			------------------------------------
 			if eleData.functionRunBefore then
@@ -533,92 +529,56 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 			------------------------------------
 			if eleData.PixelInt then xRT,yRT,w,h = xRT-xRT%1,yRT-yRT%1,w-w%1,h-h%1 end
 			------------------------------------Main Renderer
-			local _mx,_my,rt,disableOutline
 			local daDebugColor,daDebugTexture = 0xFFFFFF,nil
 			local dgsRendererFunction = dgsRenderer[eleType]
 			if dgsRendererFunction then
 				local _hitElement
-				if checkDisabledElement then
-					if mx and eleType ~= "dgs-dxdetectarea" then
-						local collider = eleData.dgsCollider
-						if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
-							local daEleData = dgsElementData[collider]
-							local checkPixel = daEleData.checkFunction
-							if checkPixel then
-								local _mx,_my = (mx-xNRT)/w,(my-yNRT)/h
-								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
-									if type(checkPixel) == "function" then
-										local checkFnc = daEleData.checkFunction
-										if checkFnc((mx-xNRT)/w,(my-yNRT)/h,mx,my) then
-											if enabledInherited then
-												MouseData.hit = source
-											end
+				if (enabledInherited or checkDisabledElement) and mx and eleType ~= "dgs-dxdetectarea" then
+					local collider = eleData.dgsCollider
+					if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
+						local daEleData = dgsElementData[collider]
+						local checkPixel = daEleData.checkFunction
+						if checkPixel then
+							local _mx,_my = (mx-xNRT)/w,(my-yNRT)/h
+							if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+								if type(checkPixel) == "function" then
+									local checkFnc = daEleData.checkFunction
+									if checkFnc(_mx,_my,mx,my) then
+										if enabledInherited then
+											MouseData.hit = source
+										elseif checkDisabledElement then
 											MouseData.hitDebug = source
-											daDebugColor = 0xFF0000
 										end
-									else
-										local px,py = dxGetPixelsSize(checkPixel)
-										local pixX,pixY = _mx*px,_my*py
-										local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
-										local gray = ((r or 0)+(g or 0)+(b or 0))/3
-										if gray >= 128 then
-											if enabledInherited then
-												MouseData.hit = source
-											end
+										daDebugColor = 0xFF0000
+									end
+								else
+									local px,py = dxGetPixelsSize(checkPixel)
+									local pixX,pixY = _mx*px,_my*py
+									local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
+									local gray = ((r or 0)+(g or 0)+(b or 0))/3
+									if gray >= 128 then
+										if enabledInherited then
+											MouseData.hit = source
+										elseif checkDisabledElement then
 											MouseData.hitDebug = source
-											daDebugColor = 0xFF0000
 										end
+										daDebugColor = 0xFF0000
 									end
 								end
-								daDebugTexture = daEleData.debugTexture
-								daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 							end
-						else
-							local hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) 
-							if enabledInherited then
-								MouseData.hit = hit or MouseData.hit
-							end
+							daDebugTexture = daEleData.debugTexture
+							daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
+						end
+					else
+						MouseData.hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
+						if enabledInherited then
+							MouseData.hit = hit or MouseData.hit
+						elseif checkDisabledElement then
 							MouseData.hitDebug = hit or MouseData.hitDebug
 						end
-						if eleType == "dgs-dxgridlist" and enabledInherited then
-							_hitElement = MouseData.hit
-						end
 					end
-				else
-					if enabledInherited and mx and eleType ~= "dgs-dxdetectarea" then
-						local collider = eleData.dgsCollider
-						if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
-							local daEleData = dgsElementData[collider]
-							local checkPixel = daEleData.checkFunction
-							if checkPixel then
-								local _mx,_my = (mx-xNRT)/w,(my-yNRT)/h
-								if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
-									if type(checkPixel) == "function" then
-										local checkFnc = daEleData.checkFunction
-										if checkFnc(_mx,_my,mx,my) then
-											MouseData.hit = source
-											daDebugColor = 0xFF0000
-										end
-									else
-										local px,py = dxGetPixelsSize(checkPixel)
-										local pixX,pixY = _mx*px,_my*py
-										local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
-										local gray = ((r or 0)+(g or 0)+(b or 0))/3
-										if gray >= 128 then
-											MouseData.hit = source
-											daDebugColor = 0xFF0000
-										end
-									end
-								end
-								daDebugTexture = daEleData.debugTexture
-								daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
-							end
-						else
-							MouseData.hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
-						end
-						if eleType == "dgs-dxgridlist" then
-							_hitElement = MouseData.hit
-						end
+					if eleType == "dgs-dxgridlist" then
+						_hitElement = MouseData.hit
 					end
 				end
 				if MouseData.hit then
@@ -630,18 +590,22 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 						end
 					end
 					MouseData.WithinElements[MouseData.hit] = true
-					if MouseData.hit == source then
-						eleData.cursorPosition[0] = dgsRenderInfo.frames
-						eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
-					end
 				end
-				rt,disableOutline,_mx,_my,parentOffsetX,parentOffsetY = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
-				mx,my = _mx or mx,_my or my
+				local parentOffsetX,parentOffsetY
+				rt,disableOutline,mx,my,parentOffsetX,parentOffsetY = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
+				if MouseData.hit == source then
+					eleData.cursorPosition[0] = dgsRenderInfo.frames
+					eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
+				end
 				if debugMode then
-					dgsElementData[source].debugData = {xNRT,yNRT,w,h,xNRT,yNRT}
-					if daDebugTexture then
-						__dxDrawImage(xRT,yRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI)
-					end
+					if not dgsElementData[source].debugData then dgsElementData[source].debugData = {} end
+					dgsElementData[source].debugData[1] = x
+					dgsElementData[source].debugData[2] = y
+					dgsElementData[source].debugData[3] = w
+					dgsElementData[source].debugData[4] = h
+					dgsElementData[source].debugData[5] = xNRT
+					dgsElementData[source].debugData[6] = yNRT
+					if daDebugTexture then __dxDrawImage(xRT,yRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI) end
 				end
 				rndtgt = rt or rndtgt
 				OffsetX,OffsetY = parentOffsetX or OffsetX,parentOffsetY or OffsetY
@@ -1177,7 +1141,7 @@ function onClientKeyTriggered(button)
 		elseif button == "a" and ctrl then
 			dgsMemoSetSelectedArea(memo,0,1,"all")
 		end
-	elseif dgsGetType(MouseData.focused) == "dgs-dxgridlist" then
+	elseif dgsGetType(MouseData.focused) == "dgs-dxgridlist" then--todo
 		local gridlist = MouseData.focused
 		if eleData.enableNavigation and eleData.visible and eleData.enabled then
 			if button == "arrow_u" then
@@ -1305,7 +1269,7 @@ function dgsCheckHit(hits,cursorShowing)
 			local posX,posY = 0,0
 			local parent = dgsElementData[MouseData.click.left].parent
 			if parent then
-				posX,posY = getParentLocation(parent)
+				posX,posY = dgsGetPosition(parent,false,"screen")
 				if dgsElementType[parent] == "dgs-dxwindow" then
 					if not dgsElementData[MouseData.click.left].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
 						posY = posY + (dgsElementData[parent].titleHeight or 0)
@@ -1328,7 +1292,7 @@ function dgsCheckHit(hits,cursorShowing)
 			local addPosX,addPosY = 0,0
 			local parent = dgsElementData[MouseData.click.left].parent
 			if parent then
-				addPosX,addPosY = getParentLocation(parent)
+				addPosX,addPosY = dgsGetPosition(parent,false,"screen")
 				if dgsElementType[parent] == "dgs-dxwindow" then
 					if not dgsElementData[MouseData.click.left].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
 						addPosY = addPosY + (dgsElementData[parent].titleHeight or 0)
@@ -1424,10 +1388,10 @@ function dgsCheckHit(hits,cursorShowing)
 				local yScroll = dgsElementData[scrollbar[1]].scrollPosition*0.01
 				local renderOffsetX = -(resolution[1]-relSizX)*xScroll
 				local renderOffsetY = -(resolution[2]-relSizY)*yScroll
-				
-				local posX,posY = mx+renderOffsetX-x-MouseData.MoveScale[1],my+renderOffsetY-y-MouseData.MoveScale[2]
-				local xScr = -posX/(resolution[1]-relSizX)
-				local yScr = -posY/(resolution[2]-relSizY)
+				local posX,posY = mx-x+renderOffsetX-MouseData.MoveScale[1],my-y+renderOffsetY-MouseData.MoveScale[2]
+				local xScr,yScr = 0,0
+				if resolution[1]-relSizX ~= 0 then xScr = -posX/(resolution[1]-relSizX) end
+				if resolution[2]-relSizY ~= 0 then yScr = -posY/(resolution[2]-relSizY) end
 				dgsScrollBarSetScrollPosition(scrollbar[2],mathClamp(xScr,0,1)*100)
 				dgsScrollBarSetScrollPosition(scrollbar[1],mathClamp(yScr,0,1)*100)
 			end
@@ -1502,7 +1466,7 @@ function dgsCheckHit(hits,cursorShowing)
 			MouseData.cursorType = _cursorType
 		end
 	end
-	if CursorData.enabled then
+	if CursorData.enabled and isMainMenuActive() then
 		local cData = CursorData[MouseData.cursorType]
 		if cData then
 			local image = cData[1]
@@ -1531,6 +1495,8 @@ function dgsCheckHit(hits,cursorShowing)
 		else
 			setCursorAlpha(255)
 		end
+	else	--Disable DGS Custom Cursor if not enabled or main menu is active
+		setCursorAlpha(255)
 	end
 end
 

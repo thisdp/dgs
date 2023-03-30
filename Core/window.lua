@@ -384,5 +384,10 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
 	dgsDrawText(text,x,y,x+w,y+titsize,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-	return rndtgt,false,mx,my,0,0
+	
+	local titleOffset = 0
+	if not eleData.ignoreTitle then
+		titleOffset = eleData.titleHeight
+	end
+	return rndtgt,false,mx,my,0,titleOffset
 end
