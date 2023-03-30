@@ -1196,7 +1196,10 @@ function onClientKeyTriggered(button)
 end
 
 function dgsCheckHit(hits,cursorShowing)
-	if not cursorShowing then return false end
+	if not cursorShowing then --or isMainMenuActive() 
+		setCursorAlpha(255)
+		return false
+	end
 	local enteredElementType = dgsGetType(MouseData.entered)
 	local mx,my = MouseData.cursorPos[1],MouseData.cursorPos[2]
 	if not isElement(MouseData.click.left) or not (dgsGetType(MouseData.click.left) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
@@ -1467,7 +1470,7 @@ function dgsCheckHit(hits,cursorShowing)
 		end
 	end
 
-	if CursorData.enabled and not isMainMenuActive() then
+	if CursorData.enabled then
 		local cData = CursorData[MouseData.cursorType]
 		if cData then
 			local image = cData[1]
@@ -1475,23 +1478,19 @@ function dgsCheckHit(hits,cursorShowing)
 				CursorData[MouseData.cursorType] = nil
 				cData = nil
 			else
-				if cursorShowing then
-					local color = CursorData.color
-					local cursorSize = CursorData.size
+				local color = CursorData.color
+				local cursorSize = CursorData.size
 
-					local rotation = cData[2]
-					local rotCenter = cData[3]
-					local offset = cData[4]
-					local scale = cData[5]
-					local materialSize = cData[6]
-					local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
-					local cursorScrX,cursorScrY = dgsGetCursorPosition(_,false,true)
-					local cursorX,cursorY = cursorScrX+offset[1]*cursorW,cursorScrY+offset[2]*cursorH
-					setCursorAlpha(0)
-					__dxDrawImage(cursorX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
-				else
-					setCursorAlpha(255)
-				end
+				local rotation = cData[2]
+				local rotCenter = cData[3]
+				local offset = cData[4]
+				local scale = cData[5]
+				local materialSize = cData[6]
+				local cursorW,cursorH = materialSize[1]/materialSize[2]*cursorSize*scale,cursorSize*scale
+				local cursorScrX,cursorScrY = dgsGetCursorPosition(_,false,true)
+				local cursorX,cursorY = cursorScrX+offset[1]*cursorW,cursorScrY+offset[2]*cursorH
+				setCursorAlpha(0)
+				__dxDrawImage(cursorX,cursorY,cursorW,cursorH,image,rotation,rotCenter[1],rotCenter[2],color,true)
 			end
 		else
 			setCursorAlpha(255)
