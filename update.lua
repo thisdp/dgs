@@ -78,7 +78,7 @@ addCommandHandler(DGSConfig.updateCommand,function(player)
 	end
 	if isPermit then
 		outputDGSMessage(getPlayerName(player).." attempt to update dgs (Allowed)","Updater")
-		outputDGSMessage("Preparing to update dgs",{player,"console"},"Updater")
+		outputDGSMessage("Preparing to update dgs","Updater")
 		if RemoteVersion > version then
 			startUpdate()
 		else
