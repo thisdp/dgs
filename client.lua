@@ -1466,7 +1466,8 @@ function dgsCheckHit(hits,cursorShowing)
 			MouseData.cursorType = _cursorType
 		end
 	end
-	if CursorData.enabled and isMainMenuActive() then
+
+	if CursorData.enabled and not isMainMenuActive() then
 		local cData = CursorData[MouseData.cursorType]
 		if cData then
 			local image = cData[1]
