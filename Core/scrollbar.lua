@@ -200,6 +200,7 @@ end
 
 function scrollScrollBar(scrollbar,button,speed)
 	local eleData = dgsElementData[scrollbar]
+	local grades = eleData.grades
 	local multiplier,rltPos = eleData.multiplier[1],eleData.multiplier[2]
 	local slotRange
 	local w,h = eleData.absSize[1],eleData.absSize[2]
@@ -211,9 +212,12 @@ function scrollScrollBar(scrollbar,button,speed)
 	else
 		slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1]) or 0)*2
 	end
-	local pos = dgsElementData[scrollbar].scrollPosition
-	local wheelReversed = dgsElementData[scrollbar].wheelReversed and -1 or 1
+	local pos = eleData.scrollPosition
+	local wheelReversed = eleData.wheelReversed and -1 or 1
 	local offsetPos = (rltPos and multiplier*slotRange or multiplier)/slotRange*100*(speed or 1)
+	if grades and grades > 0 then	--If using grades
+		offsetPos = math.max(100/grades,offsetPos)	--use larger unit, otherwise, maybe you can't scroll the scroll bar
+	end
 	local gpos = button and pos+offsetPos*wheelReversed or pos-offsetPos*wheelReversed
 	dgsSetData(scrollbar,"scrollPosition",mathClamp(gpos,0,100))
 end
