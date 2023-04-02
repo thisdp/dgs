@@ -331,6 +331,40 @@ end
 ----------------------------------------------------------------
 ----------------3D Interface Renderer Shader--------------------
 ----------------------------------------------------------------
+local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0,0},{0,0,0,0,1,1},{0,0,0,0,1,0}
+function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,roll)
+	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
+	local offFaceZ = atan2(vx,vy)
+	local cRoll = cos(roll)
+	local sRoll = sin(roll)
+	local cZ = cos(offFaceZ)
+	local sZ = sin(offFaceZ)
+	local sX = sin(offFaceX)
+	local _x,_y,_z = sX*sZ*cRoll+sRoll*cZ,sX*cZ*cRoll-sRoll*sZ,-cos(offFaceX)*cRoll
+	w,h = w/2,h/2
+	local topX,topY,topZ = _x*h,_y*h,_z*h
+	local leftX,leftY,leftZ = topY*vz-vy*topZ,topZ*vx-vz*topX,topX*vy-vx*topY --Left Point
+	local leftModel = (leftX*leftX+leftY*leftY+leftZ*leftZ)^0.5
+	local leftX,leftY,leftZ = leftX/leftModel*w,leftY/leftModel*w,leftZ/leftModel*w
+	rightBottom3D[1]  = leftX+topX+x
+	rightBottom3D[2]  = leftY+topY+y
+	rightBottom3D[3]  = leftZ+topZ+z
+	rightBottom3D[4]  = color
+	rightTop3D[1]  = leftX-topX+x
+	rightTop3D[2]  = leftY-topY+y
+	rightTop3D[3]  = leftZ-topZ+z
+	rightTop3D[4]  = color
+	leftBottom3D[1]  = -leftX+topX+x
+	leftBottom3D[2]  = -leftY+topY+y
+	leftBottom3D[3]  = -leftZ+topZ+z
+	leftBottom3D[4]  = color
+	leftTop3D[1]  = -leftX-topX+x
+	leftTop3D[2]  = -leftY-topY+y
+	leftTop3D[3]  = -leftZ-topZ+z
+	leftTop3D[4]  = color
+	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop3D,leftBottom3D,rightTop3D,rightBottom3D)
+end
+
 interface3DShader = [[
 float3x3 shapeConfig = {
 	float3(0, 0, 0),	//Position
@@ -544,9 +578,12 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 					fx,fy,fz = fx-x,fy-y,fz-z
 				end
 				if eleData.mainRT then
+					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,applyColorAlpha(eleData.color,eleData.alpha*addalp),roll)
+				end
+				--[[if eleData.mainRT then
 					dxSetShaderValue(eleData.renderer,"shapeConfig",x,y,z,fx,fy,fz,w,h,roll/180*math.pi)
 					dxDrawImage(0,0,sW,sH,eleData.renderer,0,0,0,applyColorAlpha(eleData.color,eleData.alpha*addalp))
-				end
+				end]]
 				return true
 			end
 		end
