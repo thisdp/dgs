@@ -575,6 +575,12 @@ PArg = {
 	"Color",
 	"Text",
 }
+dgsSkipProperties = {
+	['postGUI'] = true,
+	['resource'] = true,
+	['image'] = true,
+	['debugTrace'] = true
+}
 for i=1,#PArg do
 	PArg[ PArg[i] ] = 2^(i-1)
 end
@@ -627,7 +633,50 @@ end
 
 function dgsCheckPropertyByTemplate(propertyTemplate,propretyValue)
 	-- todo
+	
 end
+
+function dgsCheckPropertyValidation(element, key,value)
+	local isDgsElement = dgsIsType(element)
+	local registerdProperties = dgsGetProperties(element)
+	local eleType = isDgsElement and getElementType(element) or ''
+	if not(type(eleType) == "string" or isDgsElement) then error(dgsGenAsrt(element,"dgsCheckPropertyValidation",1,"dgsElement/string")) end
+
+	-- iprint(registerdProperties)
+
+
+	local skip = ( debugMode and not dgsSkipProperties[key])
+	if skip and type(registerdProperties[key]) == 'nil' then 
+		error('Bad Argument @dgsSetProperties/@dgsSetProperty at argument 2 , invaild Property for '..eleType
+		..",  ["..tostring(key)..' isn\'t a valid property for '..eleType..']'
+		)
+	else
+		if skip and type(registerdProperties[key]) ~= type(value)  then	
+			error('Bad Argument @dgsSetProperties/@dgsSetProperty at argument 2 , invaild Property value for '..eleType
+			..",  ["..tostring(key)..'= '.. tostring(value)..' isn\'t a valid property value for '..eleType..']'
+		)
+		else
+			if type(value) == 'table' then 
+				if  tostring(key):lower():find('offset') or tostring(key):lower():find('size') or tostring(key):lower():find('pos') then 
+					for i=1,#value do 
+						local iValue = value[i]
+						if debugMode and type(iValue) ~= 'number'  then 
+							error('Bad Argument @dgsSetProperties/@dgsSetProperty at argument 2 , invaild Property value for '..eleType
+							..",  [  "..tostring(key)..'[ '..i..']= '.. tostring(value[i])..' isn\'t a valid property value for '..eleType..' ]'
+							)
+						elseif not debugMode and type(iValue) ~= 'number'  then
+							value[i] = registerdProperties[key][i]
+							outputDebugString([[Warning : dgsSetProperty invaild property was set back to default
+							 type /debugdgs to activate error messages ]]
+							,1,255,0,0)
+						end 
+					end 
+				end  
+			end 
+			return true
+		end
+	end 
+end 
 
 function dgsCheckProperty(dgsElement,propertyName,propertyValue)
 	local eleType = dgsElementType[dgsElement]
@@ -785,10 +834,12 @@ end
 local _dgsSetData = dgsSetData
 function dgsSetProperty(dgsEle,key,value,...)
 	local isTable = type(dgsEle) == "table"
+	local args = {...}
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetProperty",1,"dgs-dxelement/table")) end
 	if isTable then
 		for i=1,#dgsEle do
-			dgsSetProperty(dgsEle[i],key,value,...)
+			local dgsElem = dgsEle[i]
+			dgsSetProperty(dgsElem,key,value)
 		end
 		return true
 	else
@@ -820,6 +871,8 @@ function dgsSetProperty(dgsEle,key,value,...)
 		elseif key == "rltSize" then
 			dgsSetSize(dgsEle,value[1],value[2],true)
 		end
+
+		dgsCheckPropertyValidation(dgsEle,key,value)
 		return _dgsSetData(dgsEle,key,value)
 	end
 end
@@ -836,7 +889,7 @@ function dgsSetProperties(dgsEle,theTable)
 	local dxElements = isTable and dgsEle or {dgsEle}
 	for i=1,#dxElements do
 		local dgsEle = dxElements[i]
-		for key,value in pairs(theTable) do
+		for key,value in pairs(theTable) do 
 			dgsSetProperty(dgsEle,key,value)
 		end
 	end
@@ -844,6 +897,7 @@ function dgsSetProperties(dgsEle,theTable)
 end
 
 function dgsGetProperties(dgsEle,properties)
+	local isTable = type(dgsEle) == 'table'
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsGetProperties",1,"dgs-dxelement/table")) end
 	if not(not properties or type(properties) == "table") then error(dgsGenAsrt(properties,"dgsGetProperties",2,"table/none")) end
 	local eleData = dgsElementData[dgsEle]
