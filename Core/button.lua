@@ -321,6 +321,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
 	local alignment = eleData.alignment
+	local subPixelPos = eleData.subPixelPositioning
 	local iconImage = eleData.iconImage
 	if iconImage then
 		local iconColor = eleData.iconColor
