@@ -1196,8 +1196,10 @@ function onClientKeyTriggered(button)
 end
 
 function dgsCheckHit(hits,cursorShowing)
-	if not cursorShowing then --or isMainMenuActive() 
-		setCursorAlpha(255)
+	if not cursorShowing then -- Also checks if main menu is visible https://github.com/multitheftauto/mtasa-blue/issues/2944
+		if CursorData.enabled and CursorData[MouseData.cursorType] then
+			setCursorAlpha(255)
+		end
 		return false
 	end
 	local enteredElementType = dgsGetType(MouseData.entered)
@@ -1495,8 +1497,6 @@ function dgsCheckHit(hits,cursorShowing)
 		else
 			setCursorAlpha(255)
 		end
-	else	--Disable DGS Custom Cursor if not enabled or main menu is active
-		setCursorAlpha(255)
 	end
 end
 
