@@ -1563,12 +1563,15 @@ function onClientMouseTriggered()
 end
 
 MouseHolder = {}
-MouseKeyConverter = {left="mouse1",right="mouse2",middle="mouse3"}
-MouseKeySupports = {["dgs-dxscrollbar"] = true,["dgs-dxselector"] = true}
 function onDGSMouseCheck(source,button,state)
-	local button = MouseKeyConverter[button]
+	local eleData = dgsElementData[source]
+	local mouseButtons = eleData.mouseButtons
+	local canLeftClick,canRightClick,canMiddleClick = true
+	if mouseButtons then
+		canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
+	end	
 	if state == "down" then
-		if MouseKeySupports[dgsGetType(source)] then
+		if (button == "left" and canLeftClick) or (button == "right" and canRightClick) or (button == "middle" and canMiddleClick) then
 			if not MouseHolder.lastKey then
 				if isTimer(MouseHolder.Timer) then killTimer(MouseHolder.Timer) end
 				MouseHolder = {
