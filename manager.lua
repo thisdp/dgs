@@ -1128,7 +1128,7 @@ addEventHandler("onClientResourceStop",root,function(res)
 	end
 	externalElementPool[res] = nil	--Clear external element pool
 	if dgsElementKeeper[res] then dgsElementKeeper[res] = nil end
-	if res == getThisResource() then	--Recover Cursor Alpha
+	if res == getThisResource() and CursorData.enabled then --Recover Cursor Alpha
 		setCursorAlpha(255)
 	end
 	if G2DHookerEvents[res] then -- G2D Hooker

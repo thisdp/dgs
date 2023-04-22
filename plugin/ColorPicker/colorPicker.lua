@@ -456,6 +456,7 @@ function dgsBindToColorPicker(cs,colorPicker,colorType,colorAttribute,staticMode
 			dgsImageSetImage(cs,ALPComponent)
 			dxSetShaderValue(ALPComponent,"vertical",dgsElementData[cs].voh)
 			dxSetShaderValue(ALPComponent,"isReversed",isReversed and true or false)
+			dgsAttachToAutoDestroy(ALPComponent,cs,-1)
 		elseif colorType == "RGB" then
 			local RGBComponent = dxCreateShader("plugin/ColorPicker/RGBComponent.fx")
 			dgsSetData(cs,"shader",RGBComponent)
@@ -471,6 +472,7 @@ function dgsBindToColorPicker(cs,colorPicker,colorType,colorAttribute,staticMode
 			else
 				dxSetShaderValue(RGBComponent,"StaticMode",{1,1,1})
 			end
+			dgsAttachToAutoDestroy(HSLComponent,cs,-1)
 		elseif colorType == "HSL" then
 			local HSLComponent = dxCreateShader("plugin/ColorPicker/HSLComponent.fx")
 			dgsSetData(cs,"shader",HSLComponent)
@@ -486,6 +488,7 @@ function dgsBindToColorPicker(cs,colorPicker,colorType,colorAttribute,staticMode
 			else
 				dxSetShaderValue(HSLComponent,"StaticMode",{1,1,1})
 			end
+			dgsAttachToAutoDestroy(HSLComponent,cs,-1)
 		elseif colorType == "HSV" then
 			local HSVComponent = dxCreateShader("plugin/ColorPicker/HSVComponent.fx")
 			dgsSetData(cs,"shader",HSVComponent)
@@ -501,6 +504,7 @@ function dgsBindToColorPicker(cs,colorPicker,colorType,colorAttribute,staticMode
 			else
 				dxSetShaderValue(HSVComponent,"StaticMode",{1,1,1})
 			end
+			dgsAttachToAutoDestroy(HSVComponent,cs,-1)
 		end
 		
 		if dgsElementData[cs].maskTexture then

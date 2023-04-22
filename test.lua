@@ -1,7 +1,6 @@
 dgsLogLuaMemory()
 local loadstring = loadstring
 
-
 function executeTest()
 
 function random(n, m)
@@ -72,7 +71,7 @@ function createFullDemoOOP()
 		end,
 		["ColorPicker"] = dgsCreateColorPicker and function(parent)
 			--Color Picker HSVRing
-			local cpRing = parent:dgsColorPicker("HSVRing",200,40,200,200)
+			local cpRing = parent:dgsColorPicker("HSLSquare",200,40,200,200)
 			local rSel = parent:dgsComponentSelector(40,260,150,10,true)
 				:bindToColorPicker(cpRing,"RGB","R",true)
 			local rSelEdit = parent:dgsEdit(200,255,40,20)
@@ -114,8 +113,15 @@ function createFullDemoOOP()
 				:setBoxHeight(200)
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
 				:setProperty("itemTextColor",{tocolor(255,255,255,255),tocolor(255,0,0,255),tocolor(0,255,255,255)})
-			for i=1,100 do
+			for i=1,3 do
 				nCombobox:addItem(i)
+			end
+			local ndCombobox = parent:dgsComboBox(10,80,150,30,"ComboBox1",false)
+				:setBoxHeight(200)
+				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
+				:setProperty("itemTextColor",{tocolor(255,255,255,255),tocolor(255,0,0,255),tocolor(0,255,255,255)})
+			for i=1,3 do
+				ndCombobox:addItem(i)
 			end
 			
 			local cCombobox = parent:dgsComboBox(180,10,150,30,"ComboBox2",false)
@@ -152,7 +158,7 @@ function createFullDemoOOP()
 					:setProperty("color",tocolor(86,98,246,255))
 			end
 			if dgsCreateCircle then
-				local circle = dgsCreateCircle(0.49,0)
+				local circle = dgsCreateCircle(0.5,0)
 				dgsCircleSetColorOverwritten(circle,false)
 				local cirImage = parent:dgsImage(120,120,100,100,circle,false)
 					:setProperty("color",tocolor(118,47,156,255))
@@ -185,6 +191,7 @@ function createFullDemoOOP()
 			--Normal
 			local edit = parent:dgsEdit(50,40,400,40,"DGS Edit Box",false)
 				:setProperty("textSize",{2,2})
+				:setProperty("shadow",{0,0,tocolor(0,0,0,255)})
 			--Caret
 			local edit2 = parent:dgsEdit(50,120,400,40,"DGS Edit Box",false)
 				:setProperty("textSize",{2,2})
@@ -300,10 +307,13 @@ function createFullDemoOOP()
 			local RadioButton1 = parent:dgsRadioButton(10,10,180,30,"This is a radio button for demo",false)
 			local RadioButton2 = parent:dgsRadioButton(10,50,180,30,"This is a #FF0000radio #00FF00button #FFFFFFfor #0000FFdemo",false)
 				:setProperty("colorCoded",true)
-			local RadioButton3 = parent:dgsRadioButton(10,90,180,30,"This is a is a bigger radio button",false)
+			local RadioButton3 = parent:dgsRadioButton(10,90,180,30,"This is a bigger radio button",false)
 				:setProperty("buttonSize",{1,true})
-			local RadioButton4 = parent:dgsRadioButton(10,130,180,30,"This is a is a farther radio button",false)
+			local RadioButton4 = parent:dgsRadioButton(10,130,180,30,"This is a farther radio button",false)
 				:setProperty("textPadding",{0.5,true})
+			local RadioButton5 = parent:dgsRadioButton(10,170,180,30,"This is a right radio button",false)
+				:setProperty("buttonPosition","right")
+				:setProperty("alignment",{"right","center"})
 		end,
 		["CheckBox"] = function(parent)
 			local CheckBox1 = parent:dgsCheckBox(10,10,180,30,"This is a check box for demo",false)
@@ -451,10 +461,11 @@ function MemoTest()
 	local memo = dgsCreateMemo(200,200,500,500,[[]],false)
 	--dgsSetFont(memo,"default-bold")
 	--dgsSetProperty(memo,"selectVisible",false)
-	--dgsSetProperty(memo,"padding",{20,10})
+	dgsSetProperty(memo,"padding",{20,10})
 	--dgsMemoSetWordWrapState(memo,true)
 	--local x,y = dgsMemoGetTextBoundingBox(memo)
 	--dgsSetSize(memo,x,y)
+
 	dgsSetText(memo,[[
 	This is a dgs-dxmemo
 
@@ -489,9 +500,6 @@ function MemoTest()
 	Test UTF8: 你好]])
 	dgsMemoSetCaretPosition(memo,10,20)
 	dgsSetProperty(memo,"shadow",{1,1,tocolor(0,0,0,255)})
-	setTimer(function()
-		guiMoveToBack(guiCreateLabel(0,0,100,100,"a",false))
-	end,5000,1)
 end
 
 --[[
@@ -576,6 +584,9 @@ function GridListSortingTest()
 		dgsSetProperty(gridlist,"columnShadow",{1,1,tocolor(255,0,0,255)})
 	end
 	dgsBringToFront(gridlist)
+	local scrollbars = dgsGridListGetScrollBar(gridlist)
+	dgsScrollBarSetGrades(scrollbars[1], 2) -- Scrolling doesnt work
+	--dgsScrollBarSetGrades(bars[1], 3) -- Scrolling works fine again
 end
 
 function ComboBoxSortingTest()
@@ -587,6 +598,7 @@ function ComboBoxSortingTest()
 		dgsComboBoxAddItem(combobox,tostring(i))
 	end
 	dgsComboBoxSetSortFunction(combobox,"greaterUpper")
+
 end
 
 function GridListTest()
@@ -595,15 +607,18 @@ function GridListTest()
 	dgsSetProperty(gridlist,"clip",false)
 	--dgsSetProperty(gridlist,"leading",10)
 	--dgsSetProperty(gridlist,"mode",true)
-	dgsGridListAddColumn(gridlist,"test1",0.6)
-	dgsGridListAddColumn(gridlist,"test2",0.4)
-	dgsGridListAddColumn(gridlist,"test3",0.6)
+	dgsGridListAddColumn(gridlist,"test1",0.2,nil,"center")
+	dgsGridListAddColumn(gridlist,"test2",0.3)
+	--dgsGridListAddColumn(gridlist,"test3",0.6)
+	dgsSetProperty(gridlist,"leading",-4)
 	local tick = getTickCount()
-	dgsSetProperty(gridlist,"rowHeight",200)
+	dgsSetProperty(gridlist,"scrollBarThick",50)
+	dgsSetProperty(gridlist,"rowHeight",30)
 	dgsSetProperty(gridlist,"rowTextSize",{1.3,1.3})
-	for i=1,10 do
+	for i=1,100 do
 		local row = dgsGridListAddRow(gridlist)
-		local window = dgsCreateGridList(0,1,400,198,false)
+		dgsGridListSetItemText(gridlist,row,1,i.."xx")
+		--[[local window = dgsCreateGridList(0,1,400,198,false)
 		dgsGridListAddColumn(window,"t1",0.2)
 		dgsGridListAddColumn(window,"t2",0.6)
 		for x=1,100 do
@@ -613,10 +628,16 @@ function GridListTest()
 		end
 		dgsAttachToGridList(window,gridlist,row,3)
 		dgsGridListSetItemText(gridlist,row,1,i.."xx")
-		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")
+		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")]]
+		dgsGridListSetItemHoverable(gridlist,row,1,false)
+		dgsGridListSetItemHoverable(gridlist,row,2,false)
 	end
 	--dgsGridListAutoSizeColumn(gridlist,1,0,false,true)
-	dgsGridListSetItemFont(gridlist,2,2,"default-bold")
+	dgsSetProperty(gridlist,"rowShowEntireOnly",true)
+	--[[dgsGridListSetItemAsSection(gridlist,1,1,true)
+	dgsGridListSetRowAsSection(gridlist,2,true)
+	dgsGridListSetItemAsSection(gridlist,2,1,false)]]
+	--dgsGridListSetSelectionMode(gridlist,3)
 end
 
 function MediaBrowserTest()
@@ -670,24 +691,29 @@ function PasteHandlerTest()
 end
 
 function _3DInterfaceAttachTest()
-	material = dgsCreate3DInterface(0,0,2,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
-	dgs3DInterfaceAttachToElement(material,localPlayer,0,0,1)
-	dgsSetProperty(material,"faceRelativeTo","world")
-	dgsSetProperty(material,"maxDistance",1000)
-	dgsSetProperty(material,"fadeDistance",1000)
-	local window = dgsCreateWindow(0,0,600,600,"test",false)
-	dgsSetParent(window,material)
+	material1 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
+	material2 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),1,1,0,_,0)
+	dgs3DInterfaceAttachToElement(material1,localPlayer,0,0,1)
+	dgs3DInterfaceSetRoll(material2,0)
+	dgsSetProperty(material1,"faceRelativeTo","world")
+	local window1 = dgsCreateWindow(0,0,600,600,"test",false)
+	local window2 = dgsCreateWindow(0,0,600,600,"test",false)
+	dgsCreateEdit(0,0,200,50,"test",false,window1)
+	dgsSetParent(window1,material1)
+	dgsSetParent(window2,material2)
 end
 
 function _3DLineTest()
-	line = dgsCreate3DLine(0,0,4,0,0,45,tocolor(255,255,255,255),1,100)
+	line = dgsCreate3DLine(0,0,4,0,0,45,1,tocolor(255,255,255,255),100)
 	local i = 1
-	dgs3DLineAddItem(line,4,0,0,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
-	for i=2,200 do
-		dgs3DLineAddItem(line,_,_,_,math.cos(i/200*math.pi*2)*4,math.sin(i/200*math.pi*2)*4,0,4,tocolor(i/200*255,255-i/200*255,0,255),true)
+	local items = 200
+	dgs3DLineAddItem(line,4,0,0,math.cos(i/items*math.pi*2)*4,math.sin(i/items*math.pi*2)*4,0,2,tocolor(i/items*255,255-i/items*255,0,255),true)
+	for i=2,items do
+		dgs3DLineAddItem(line,_,_,_,math.cos(i/items*math.pi*2)*4,math.sin(i/items*math.pi*2)*4,0,2,tocolor(i/items*255,255-i/items*255,0,255),true)
 	end
 	local veh = getPedOccupiedVehicle(localPlayer)
 	dgs3DLineAttachToElement(line,veh)
+	dgs3DLineSetLineType(line,"cylinder")
 end
 
 function DetectAreaApplyingTest()
@@ -970,7 +996,7 @@ function QRCodeTest()
 	local mask = dgsCreateMask(QRCode,"backgroundFilter")
 	local image2 = dgsCreateImage(400,200,128,128,mask,false)
 	local roundedRect = dgsCreateRoundRect(10, false, tocolor(255,255,255,255))
-	local rt = dxCreateRenderTarget(128,128,true)
+	local rt = dgsCreateRenderTarget(128,128,true)
 	dgsRoundRectSetTexture(roundedRect,rt)
 	local image3 = dgsCreateImage(600,200,128,128,roundedRect,false)
 	
@@ -990,7 +1016,7 @@ function BlurBoxTest()
 	local blurbox = dgsCreateBlurBox(sW/2,sH)
 	dgsSetProperty(blurbox,"updateScreenSource",true)
 	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
-	dgsBlurBoxSetIntensity(blurbox,1)
+	dgsBlurBoxSetIntensity(blurbox,20)
 	dgsBlurBoxSetLevel(blurbox,15)
 	--local text = dgsCreate3DImage(0,0,4,blurbox,tocolor(0,128,255,128),128,128)
 end
@@ -1090,18 +1116,20 @@ addEventHandler("onClientRender",root,function()
 end)]]
 ---------------------StressTest
 function animStress()
-	for i=1,1000 do
+	for i=1,50 do
 		local image = dgsCreateImage(200,i*1,30,1,_,false)
 		dgsSizeTo(image,300,1,false,"Linear",10000)
 	end
 end
 
 function labelStress()
-	for i=1,1000 do
-		local l = dgsCreateLabel(500,500,200,200,"test",false)
-		dgsSetProperty(l,"shadow",{1,1,tocolor(0,0,0,255)})
-		dgsSetProperty(l,"colorCoded",true)
+	local tick = getTickCount()
+	for i=1,4000 do
+		--local l = dgsCreateLabel(500,100+i*4,200,200,"Label #FF0000Stress #FFFFFFTest",false)
+		local l = dgsCreateLabel(500,100+i*4,200,200,"",false)
+		--dgsSetProperty(l,"colorCoded",true)
 	end
+	print(getTickCount()-tick)
 end
 
 function buttonStress()
@@ -1110,18 +1138,23 @@ function buttonStress()
 	end
 end
 
-
 function editStress()
 	for i=1,100 do
 		edit = dgsCreateEdit(0.3,0.3,0.2,0.05,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaas",true)
 	end
 end
 
+function interface3DStress()
+	local materials = {}
+	for i=1,250 do
+		materials[i] = dgsCreate3DInterface(0,0,4,4,2,500,500,tocolor(255,255,255,255),1,0,0,_,0)
+	end
+end
+
 function windowStress()
 	local tick = getTickCount()
-	for i=1,100 do
+	for i=1,1000 do
 		local win = dgsCreateWindow(0, 0, 800, 600, 'Dx Gui Demo')
-		--destroyElement(win)
 	end
 	print(getTickCount()-tick)
 end
@@ -1154,7 +1187,7 @@ function dgsScrollPaneTest()
 	local tex = dgsCreateRoundRect(10, false, tocolor(31, 31, 31, 255))
 	local y = 0
 	
-	for i = 1, 500 do
+	for i = 1, 100 do
 		y = ((i - 1) * 45)
 		local button = dgsCreateButton(0, y, 380, 40, "", false, ele)
 	end
@@ -1164,6 +1197,16 @@ function dgsScrollPaneTest()
 		dgsCreateButton(405, y, 380, 40, "", false, ele)
 	end]]
 	dgsScrollPaneSetScrollPosition(ele,50,0)
+	local image = dgsCreateImage(0,0,10,10,_,false)
+	dgsSetLayer(image,"top")
+	dgsSetEnabled(image,false)
+	setTimer(function()
+		iprint(dgsGetCursorPosition(ele))
+	end,500,0)
+	dgsSetProperty(ele,"minViewSize",{2,10,true})
+	dgsSetProperty(ele,"basePointOffset",{0.5,0.5,true})
+		--[[basePointOffset = {0,0,true},
+		minViewSize = {1,1,true},]]
 end
 
 function SVGTest()
@@ -1248,6 +1291,9 @@ end
 
 function ChartTest()
 	material = dgsCreate3DInterface(0,0,4,4,2,600,300,tocolor(255,255,255,255),1,0,0,_,0)
+	setTimer(function()
+		iprint(dgsGetCursorPosition(material))
+	end,1000,0)
 	local chart = dgsCreateChart(0,0,600,300,"line",false,material)
 	dgsChartSetLabels(chart,"Month",{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"})
 	dgsSetProperty(chart,"axisYScaler",{0,100})
@@ -1281,24 +1327,79 @@ function ChartTest()
 end
 
 function multilingualTest()
-	local Dict = {
-		TestText={
+	Dict = {
+		TestText = {
 			"health == 'Superman'",				"You are a superman",
 			"find({0}, health)",				"Your health is 0",
-			"health <= 20",						"Your health is low",
-			"health <= 40",						"Your health is medium",
-			"health > 40",						"Your health is high",
+			"health <= 40",						"Your health is low",
+			"health <= 60",						"Your health is medium",
+			"health <= 80",						"Your health is high",
 			"Your health is $health",
 		},
-		wtf = "Superman",
 	}
 	dgsSetTranslationTable("Main",Dict)
 	dgsSetAttachTranslation("Main")
-	label = dgsCreateLabel (0.51, 0.54, 0.16, 0.14, {"TestText"}, true )
+	label = dgsCreateEdit (0.51, 0.54, 0.16, 0.14, "123", true )
 	dgsTranslationAddPropertyListener(label,"health")
-	dgsSetProperty(label,"health",{"wtf"})
+	dgsSetProperty(label,"health",40)
+	print(dgsGetTranslationName(label))
 end
+--[[
+local edit = dgsCreateEdit(200,200,300,50,"",false)
+history = {}
+addEventHandler("onDgsEditAccepted",edit,function()
+	if not history[source] then history[source] = { current = 0 } end
+	history[source].current = 0
+	local text = dgsGetText(source)
+	table.insert(history[source],text)
+	dgsSetText(source,"")
+end,false)
+
+addEventHandler("onDgsKey",edit,function(button,state)
+	if state then
+		if not history[source] then return end
+		if button == "arrow_u" then
+			if history[source].current == 0 then
+				history[source].editing = dgsGetText(source)
+			end
+			history[source].current = history[source].current + 1
+			if history[source].current >= #history[source] then
+				history[source].current = #history[source]
+			end
+			dgsSetText(source,history[source][history[source].current])
+		elseif button == "arrow_d" then
+			if history[source].current ~= 0 then
+				history[source].current = history[source].current - 1
+				if history[source].current == 0 then
+					dgsSetText(source,history[source].editing or "")
+					history[source].editing = nil
+				else
+					dgsSetText(source,history[source][history[source].current])
+				end
+			end
+		end
+	end
+end,false)]]
+
+--[[
+local window = dgsCreateWindow(0,0, 512, 512, "test", false)
+local sp = dgsCreateScalePane(0,0,500,500,false,window,2000,1000)
+button = dgsCreateButton(100,100,100,100,"testt",false,sp)
+addEventHandler("onClientRender",root,function()
+	x,y = dgsGetPosition(button,false,"screen")
+	dxDrawText("test",x,y)
+end)]]
 
 end
 addEventHandler("onClientResourceStart",resourceRoot,executeTest)
 executeTest = nil
+
+--[[
+setTimer(function()
+	local columns, rows = getPerformanceStats("Lua memory","","dgs")
+	outputChatBox("----------------")
+	for i, row in ipairs(rows) do
+		outputChatBox(table.concat(row, "  "))
+	end
+		collectgarbage()
+end,1000,0)]]

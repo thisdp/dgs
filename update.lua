@@ -52,7 +52,7 @@ function checkUpdate()
 end
 
 function checkServerVersion(player)
-	if getVersion().sortable > "1.5.4-9.11342" then
+	if getVersion().sortable < "1.5.4-9.11342" then
 		outputDGSMessage("Your server version is too old to support dgs update system.",nil,2,player)
 		return false
 	end
@@ -78,7 +78,7 @@ addCommandHandler(DGSConfig.updateCommand,function(player)
 	end
 	if isPermit then
 		outputDGSMessage(getPlayerName(player).." attempt to update dgs (Allowed)","Updater")
-		outputDGSMessage("Preparing to update dgs",{player,"console"},"Updater")
+		outputDGSMessage("Preparing to update dgs","Updater",0,{player,"console"})
 		if RemoteVersion > version then
 			startUpdate()
 		else
@@ -87,7 +87,7 @@ addCommandHandler(DGSConfig.updateCommand,function(player)
 		end
 	else
 		outputDGSMessage("Access Denied!","Updater",1,player)
-		outputDGSMessage(getPlayerName(player).." attempt to update dgs (Denied)",nil,"Updater",2)
+		outputDGSMessage(getPlayerName(player).." attempt to update dgs (Denied)","Updater",2)
 	end
 end)
 

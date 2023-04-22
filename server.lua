@@ -55,10 +55,10 @@ function loadConfig()
 						DGSConfig[name] = dgsConfig[name]
 					end
 				end
-				outputDGSMessage("The config file has been loaded.")
+				outputDGSMessage("The config file has been loaded.","Config")
 			else
 				configUpdateRequired = true
-				outputDGSMessage("Invalid config file.",nil,2)
+				outputDGSMessage("Invalid config file.","Config",2)
 			end
 			if configUpdateRequired then
 				fileDelete("config.txt")
@@ -70,10 +70,10 @@ function loadConfig()
 				end
 				fileWrite(file,str:sub(3))
 				fileClose(file)
-				outputDGSMessage("The config file has been updated.")
+				outputDGSMessage("The config file has been updated.","Config")
 			end
 		else
-			outputDGSMessage("Failed to open the config file.",nil,2)
+			outputDGSMessage("Failed to open the config file.","Config",2)
 		end
 	else
 		local file = fileCreate("config.txt")
@@ -84,14 +84,14 @@ function loadConfig()
 		end
 		fileWrite(file,str:sub(3))
 		fileClose(file)
-		outputDGSMessage("Config file was created.")
+		outputDGSMessage("Config file was created.","Config")
 	end
 
 	setElementData(resourceRoot,"DGS-allowCMD",DGSConfig.enableBuiltInCMD)
 	setElementData(resourceRoot,"DGS-enableDebug",DGSConfig.enableDebug)
 	setElementData(resourceRoot,"DGS-enableCompatibilityCheck",DGSConfig.enableCompatibilityCheck)
 	if DGSConfig.enableG2DCMD then
-		outputDGSMessage("G2D command line is enabled.")
+		outputDGSMessage("G2D command line is enabled.","Config")
 	end
 end
 loadConfig()
@@ -152,8 +152,8 @@ end)
 
 addEventHandler("onElementDataChange",resourceRoot,
 function (key,old)
-	if client and (string.sub(key,0,4) ~= "DGSI" or key == "DGSI_FileInfo") then 
+	if client and (string.sub(key,0,4) == "DGS-" or key == "DGSI_FileInfo") then 
 		setElementData(source,key,old)
 		outputDGSMessage("Illegal attempt to modify element data ("..key..") by "..getPlayerName(client),"Security",1)
 	end
-end)	
+end,false)	

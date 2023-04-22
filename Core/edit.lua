@@ -1256,7 +1256,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	elseif alignment[1] == "center" then
 		local __width = eleData.textFontLen
 		width = dxGetTextWidth(utf8Sub(text,0,caretPos),txtSizX,font)
-		textLeft,textRight = showPos,w-paddingX
+		textLeft,textRight = showPos-paddingX,w-paddingX
 		selectX,selectW = width+showPos*0.5+w*0.5-__width*0.5-paddingX+1,selx
 		posFix = ((text:reverse():find("%S") or 1)-1)*dxGetTextWidth(" ",txtSizX,font)
 	elseif alignment[1] == "right" then

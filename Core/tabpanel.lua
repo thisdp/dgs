@@ -475,7 +475,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	eleData.rndPreSelect = -1
 	local selected = eleData.selected
 	local tabs = eleData.tabs
-	local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+	local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
 
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
@@ -494,7 +494,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local tabColorPIsTable = type(tabColorP) == "table"
 	if selected == -1 then
 		local color = applyColorAlpha(eleData.bgColor,parentAlpha)
-		dxDrawImage(x,y+height,w,h-height,eleData.bgImage,0,0,0,color,isPostGUI)
+		dxDrawImage(x,y+tabHeight,w,h-tabHeight,eleData.bgImage,0,0,0,color,isPostGUI)
 	else
 		local tabOffset = eleData.tabOffset[2] and eleData.tabOffset[1]*w or eleData.tabOffset[1]
 		local tabPadding = eleData.tabPadding[2] and eleData.tabPadding[1]*w or eleData.tabPadding[1]
@@ -508,7 +508,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			tabX = tabX-(1-eleData.showPos)*(tabAllWidth-w)
 		end
 		local gap = eleData.tabGapSize[2] and eleData.tabGapSize[1]*w or eleData.tabGapSize[1]
-		if eleData.PixelInt then height = height-height%1 end
+		if eleData.PixelInt then tabHeight = tabHeight-tabHeight%1 end
 		local textRenderBuffer = eleData.textRenderBuffer
 		textRenderBuffer.count = 0
 		if eleData.bgRT then
@@ -546,7 +546,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						else
 							finalcolor = applyColorAlpha(tabColor,parentAlpha)
 						end
-						dxDrawImage(tabX,0,width,height,tabImage,0,0,0,finalcolor,false,rndtgt)
+						dxDrawImage(tabX,0,width,tabHeight,tabImage,0,0,0,finalcolor,false,rndtgt)
 						local textSizeX,textSizeY = tabData.textSize[1],tabData.textSize[2]
 						--[[local iconImage = eleData.iconImage
 						if iconImage then
@@ -600,14 +600,14 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][2] = tabX
 						textRenderBuffer[textRenderBuffer.count][3] = 0
 						textRenderBuffer[textRenderBuffer.count][4] = width+tabX
-						textRenderBuffer[textRenderBuffer.count][5] = height
+						textRenderBuffer[textRenderBuffer.count][5] = tabHeight
 						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(type(tabTextColor) == "table" and tabTextColor[selState] or tabTextColor,parentAlpha)
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
 						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
 						textRenderBuffer[textRenderBuffer.count][10] = colorCoded	--Color Coded
 						textRenderBuffer[textRenderBuffer.count][11] = tshadow	--Shadow
-						if mx and my and mx >= tabX+cx and mx <= tabX+cx+width and my > cy and my < cy+height and tabData.enabled and enabledSelf then
+						if mx and my and mx >= tabX+cx and mx <= tabX+cx+width and my > cy and my < cy+tabHeight and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
 							tabData.cursorPosition[0] = dgsRenderInfo.frames
 							tabData.cursorPosition[1],tabData.cursorPosition[2] = mx,my
@@ -633,14 +633,15 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetRenderTarget(rndtgt)
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if eleData.bgRT then
-			__dxDrawImage(x,y,w,height,eleData.bgRT,0,0,0,white,isPostGUI)
+			__dxDrawImage(x,y,w,tabHeight,eleData.bgRT,0,0,0,white,isPostGUI)
 		end
 		local tabEleData = dgsElementData[ tabs[selected] ]
 		local colors = applyColorAlpha(tabEleData.bgColor or eleData.bgColor,parentAlpha)
-		dxDrawImage(x,y+height,w,h-height,tabEleData.bgImage or eleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
+		dxDrawImage(x,y+tabHeight,w,h-tabHeight,tabEleData.bgImage or eleData.bgImage,0,0,0,colors,isPostGUI,rndtgt)
 		local children = tabEleData.children
+
 		for i=1,#children do
-			renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+			renderGUI(children[i],mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY+tabHeight,parentAlpha,visible)
 		end
 	end
 	return rndtgt,false,mx,my,0,0
