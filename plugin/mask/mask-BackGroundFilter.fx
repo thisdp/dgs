@@ -23,7 +23,7 @@ SamplerState sourceSamplerPixelated{
 
 float4 maskBGFilter(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
 	float4 sampledTexture = isPixelated?tex2D(sourceSamplerPixelated,tex):tex2D(sourceSampler,tex);
-	float diffRGB = distance(sampledTexture.rgb,filterRGB);
+	float diffRGB = distance(sampledTexture.rgb,filterRGB/255.0);
 	sampledTexture.a *= (diffRGB-filterRange)/filterRange;
 	return sampledTexture*color;
 }
