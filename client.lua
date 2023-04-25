@@ -164,6 +164,7 @@ function dgsCoreRender()
 			MouseData.click.middle = false
 			MouseData.Scale[0] = false
 			MouseData.Move[0] = false
+			MouseData.Move[3] = nil
 			MouseData.MoveScale[0] = false
 			MouseData.cursorPosWld[0] = false
 			MouseData.cursorPosScr[0] = false
@@ -1203,6 +1204,27 @@ function dgsCheckHit(hits,cursorShowing)
 		return false
 	end
 	local enteredElementType = dgsGetType(MouseData.entered)
+	local clickedElement
+	local clickedButton
+	if isElement(MouseData.click.left) then
+		local mouseButtons = dgsElementData[MouseData.click.left].mouseButtons
+		if not mouseButtons or mouseButtons[1] then 
+			clickedElement = MouseData.click.left
+			clickedButton = "left"
+		end
+	elseif isElement(MouseData.click.right) then
+		local mouseButtons = dgsElementData[MouseData.click.right].mouseButtons
+		if mouseButtons and mouseButtons[2] then 
+			clickedElement = MouseData.click.right
+			clickedButton = "right"
+		end
+	elseif isElement(MouseData.click.middle) then
+		local mouseButtons = dgsElementData[MouseData.click.middle].mouseButtons
+		if mouseButtons and mouseButtons[3] then 
+			clickedElement = MouseData.click.middle
+			clickedButton = "middle"
+		end
+	end
 	local mx,my = MouseData.cursorPos[1],MouseData.cursorPos[2]
 	if not isElement(MouseData.click.left) or not (dgsGetType(MouseData.click.left) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
 		if MouseData.entered ~= hits then
@@ -1272,11 +1294,11 @@ function dgsCheckHit(hits,cursorShowing)
 		end
 		if MouseData.Move[0] then
 			local posX,posY = 0,0
-			local parent = dgsElementData[MouseData.click.left].parent
+			local parent = dgsElementData[clickedElement].parent
 			if parent then
 				posX,posY = dgsGetPosition(parent,false,"screen")
 				if dgsElementType[parent] == "dgs-dxwindow" then
-					if not dgsElementData[MouseData.click.left].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
+					if not dgsElementData[clickedElement].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
 						posY = posY + (dgsElementData[parent].titleHeight or 0)
 					end
 				elseif dgsElementType[parent] == "dgs-dxtab" then
@@ -1287,19 +1309,19 @@ function dgsCheckHit(hits,cursorShowing)
 				end
 			end
 			local posX,posY = mx-MouseData.Move[1]-posX,my-MouseData.Move[2]-posY
-			local absPos = dgsElementData[MouseData.click.left].absPos
+			local absPos = dgsElementData[clickedElement].absPos
 			if absPos[1] ~= posX or absPos[2] ~= posY then
-				calculateGuiPositionSize(MouseData.click.left,posX,posY,false)
+				calculateGuiPositionSize(clickedElement,posX,posY,false)
 			end
 		end
 		if MouseData.Scale[0] then
-			local posX,posY = dgsGetPosition(MouseData.click.left,false,true)
+			local posX,posY = dgsGetPosition(clickedElement,false,true)
 			local addPosX,addPosY = 0,0
-			local parent = dgsElementData[MouseData.click.left].parent
+			local parent = dgsElementData[clickedElement].parent
 			if parent then
 				addPosX,addPosY = dgsGetPosition(parent,false,"screen")
 				if dgsElementType[parent] == "dgs-dxwindow" then
-					if not dgsElementData[MouseData.click.left].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
+					if not dgsElementData[clickedElement].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
 						addPosY = addPosY + (dgsElementData[parent].titleHeight or 0)
 					end
 				elseif dgsElementType[parent] == "dgs-dxtab" then
@@ -1360,15 +1382,28 @@ function dgsCheckHit(hits,cursorShowing)
 			MouseData.click.left = false
 			MouseData.scbClickData = false
 			MouseData.selectorClickData = false
-			MouseData.Move[0] = false
+			if MouseData.Move[3] == "left" then
+				MouseData.Move[0] = false
+				MouseData.Move[3] = nil
+			end
 			MouseData.Scale[0] = false
 			MouseData.lock3DInterface = false
 		end
 		if not getKeyState("mouse2") then
 			MouseData.click.right = false
 		end
+			if MouseData.Move[3] == "right" then
+				MouseData.Move[0] = false
+				MouseData.Move[3] = nil
+			end
+		end
+		
 		if not getKeyState("mouse3") then
 			MouseData.click.middle = false
+			if MouseData.Move[3] == "middle" then
+				MouseData.Move[0] = false
+				MouseData.Move[3] = nil
+			end
 		end
 	else
 		MouseData.lastPos[1] = nil
@@ -1741,7 +1776,7 @@ addEventHandler("onClientElementDestroy",root,function()
 	end
 end,true,"low")
 
-function checkMove(source)
+function checkMove(source,button)
 	local eleData = dgsElementData[source]
 	local moveData = eleData.moveHandlerData
 	if moveData then
@@ -1759,6 +1794,7 @@ function checkMove(source)
 		MouseData.Move[0] = true
 		MouseData.Move[1] = offsetx
 		MouseData.Move[2] = offsety
+		MouseData.Move[3] = button
 		dgsTriggerEvent("onDgsElementMove",source,offsetx,offsety)
 	elseif dgsGetType(source) == "dgs-dxwindow" then
 		local x,y = dgsGetPosition(source,false,true)
@@ -1772,6 +1808,7 @@ function checkMove(source)
 		MouseData.Move[0] = true
 		MouseData.Move[1] = offsetx
 		MouseData.Move[2] = offsety
+		MouseData.Move[3] = button
 		dgsTriggerEvent("onDgsElementMove",source,offsetx,offsety)
 	end
 end
@@ -1944,9 +1981,9 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 				dgsBringToFront(scrollbar[1],_,_,true)
 				dgsBringToFront(scrollbar[2],_,_,true)
 			end
-			if button == "left" then
+			if mouseClicked then
 				if not checkScale(dgsEle) then
-					checkMove(dgsEle)
+					checkMove(dgsEle,button)
 				end
 			end
 			if mouseClicked then
