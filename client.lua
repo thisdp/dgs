@@ -1226,7 +1226,7 @@ function dgsCheckHit(hits,cursorShowing)
 		end
 	end
 	local mx,my = MouseData.cursorPos[1],MouseData.cursorPos[2]
-	if not isElement(MouseData.click.left) or not (dgsGetType(MouseData.click.left) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
+	if not clickedElement or not (dgsGetType(clickedElement) == "dgs-dxscrollbar" and MouseData.scbClickData == 3) then
 		if MouseData.entered ~= hits then
 			if isElement(MouseData.entered) then
 				if enteredElementType == "dgs-dxgridlist" then
@@ -1277,7 +1277,7 @@ function dgsCheckHit(hits,cursorShowing)
 			mouseStay.y = my
 		end
 	end
-	if isElement(MouseData.click.left) then
+	if clickedElement then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
 			dgsTriggerEvent("onDgsMouseDrag",MouseData.click.left,mx,my)
 			if not dgsDragDropBoard.lock and MouseData.clickPosition.left[0] then
@@ -1331,12 +1331,12 @@ function dgsCheckHit(hits,cursorShowing)
 					addPosY = addPosY + height
 				end
 			end
-			local absPos = dgsElementData[MouseData.click.left].absPos
-			local absSize = dgsElementData[MouseData.click.left].absSize
+			local absPos = dgsElementData[clickedElement].absPos
+			local absSize = dgsElementData[clickedElement].absSize
 			local sizeW,sizeH = absSize[1],absSize[2]
 			local endr = posX + sizeW
 			local endd = posY + sizeH
-			local minSize = dgsElementData[MouseData.click.left].minSize
+			local minSize = dgsElementData[clickedElement].minSize
 			local minSizeX,minSizeY = minSize and minSize[1] or 10,minSize and minSize[2] or 10
 			if MouseData.Scale[5] == 1 then
 				local old = posX
@@ -1372,7 +1372,7 @@ function dgsCheckHit(hits,cursorShowing)
 			end
 			local posX,posY = posX-addPosX,posY-addPosY
 			if posX+posY-absPos[1]-absPos[2] ~= 0 or sizeW+sizeH-absSize[1]-absSize[2] ~= 0 then
-				calculateGuiPositionSize(MouseData.click.left,posX,posY,false,sizeW,sizeH,false)
+				calculateGuiPositionSize(clickedElement,posX,posY,false,sizeW,sizeH,false)
 			end
 		else
 			MouseData.lastPos[1] = -1
@@ -1380,8 +1380,14 @@ function dgsCheckHit(hits,cursorShowing)
 		end
 		if not getKeyState("mouse1") then
 			MouseData.click.left = false
-			MouseData.scbClickData = false
-			MouseData.selectorClickData = false
+			if MouseData.scbClickButton == "left" then
+				MouseData.scbClickData = false
+				MouseData.scbClickButton = nil
+			end
+			if MouseData.selectorClickButton == "left" then
+				MouseData.selectorClickData = false
+				MouseData.selectorClickButton = nil
+			end
 			if MouseData.Move[3] == "left" then
 				MouseData.Move[0] = false
 				MouseData.Move[3] = nil
@@ -1391,7 +1397,14 @@ function dgsCheckHit(hits,cursorShowing)
 		end
 		if not getKeyState("mouse2") then
 			MouseData.click.right = false
-		end
+			if MouseData.scbClickButton == "right" then
+				MouseData.scbClickData = false
+				MouseData.scbClickButton = nil
+			end
+			if MouseData.selectorClickButton == "right" then
+				MouseData.selectorClickData = false
+				MouseData.selectorClickButton = nil
+			end
 			if MouseData.Move[3] == "right" then
 				MouseData.Move[0] = false
 				MouseData.Move[3] = nil
@@ -1400,6 +1413,14 @@ function dgsCheckHit(hits,cursorShowing)
 		
 		if not getKeyState("mouse3") then
 			MouseData.click.middle = false
+			if MouseData.scbClickButton == "middle" then
+				MouseData.scbClickData = false
+				MouseData.scbClickButton = nil
+			end
+			if MouseData.selectorClickButton == "middle" then
+				MouseData.selectorClickData = false
+				MouseData.selectorClickButton = nil
+			end
 			if MouseData.Move[3] == "middle" then
 				MouseData.Move[0] = false
 				MouseData.Move[3] = nil
@@ -1439,7 +1460,7 @@ function dgsCheckHit(hits,cursorShowing)
 	end
 	MouseData.lastPos[1] = mx
 	MouseData.lastPos[2] = my
-	if not isElement(MouseData.click.left) then
+	if not clickedElement then
 		local _cursorType = "arrow"
 		if MouseData.entered then
 			local eleData = dgsElementData[MouseData.entered]
@@ -1535,12 +1556,13 @@ function dgsCheckHit(hits,cursorShowing)
 	end
 end
 
-function onClientMouseTriggered()
+function onClientMouseTriggered(button)
 	if MouseHolder.element == MouseData.entered then
 		local dgsType = dgsGetType(MouseHolder.element)
 		if dgsType == "dgs-dxscrollbar" then
 			if MouseData.scbEnterData then
 				MouseData.scbClickData = MouseData.scbEnterData
+				MouseData.scbClickButton = button
 			end
 			local scrollbar = MouseHolder.element
 			if MouseData.scbEnterData == 1 or MouseData.scbEnterData == 5 then
@@ -1561,6 +1583,7 @@ function onClientMouseTriggered()
 			local selector = MouseHolder.element
 			if MouseData.selectorEnterData then
 				MouseData.selectorClickData = MouseData.selectorEnterData
+				MouseData.selectorClickButton = button
 			end
 			local scrollbar = MouseHolder.element
 			if MouseData.selectorEnterData == 1 then
@@ -2229,9 +2252,12 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 	end
 	if state == "up" then
+		MouseData.click[button] = false
 		if button == "left" then
 			MouseData.click.left = false
 			MouseData.lock3DInterface = false
+		end
+		if button == MouseData.scbClickButton then 
 			MouseData.MoveScroll[0] = false
 			if dgsDragDropBoard[0] then
 				local data = dgsRetrieveDragNDropData()
@@ -2239,6 +2265,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 					dgsTriggerEvent("onDgsDrop",dgsEle,data)
 				end
 			end
+		dgsDragDropBoard.button = nil
 			dgsDragDropBoard.lock = false
 		elseif button == "right" then
 			MouseData.click.right = false
@@ -2249,6 +2276,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		MouseData.MoveScale[0] = false
 		MouseData.Scale[0] = false
 		MouseData.scbClickData = nil
+		MouseData.scbClickButton = nil
 		MouseData.selectorClickData = nil
 	end
 	if state == "down" then
