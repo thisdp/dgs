@@ -2272,6 +2272,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 
 
 		MouseData.Move[0] = false
+		MouseData.Move[3] = nil
 		MouseData.MoveScale[0] = false
 		MouseData.Scale[0] = false
 		MouseData.scbClickData = nil
