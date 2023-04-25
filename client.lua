@@ -1279,14 +1279,15 @@ function dgsCheckHit(hits,cursorShowing)
 	end
 	if clickedElement then
 		if MouseData.lastPos[1] ~= mx or MouseData.lastPos[2] ~= my then
-			dgsTriggerEvent("onDgsMouseDrag",MouseData.click.left,mx,my)
-			if not dgsDragDropBoard.lock and MouseData.clickPosition.left[0] then
-				if ((MouseData.clickPosition.left[1]-mx)^2+(MouseData.clickPosition.left[2]-my)^2)^0.5 > 10 then
+			dgsTriggerEvent("onDgsMouseDrag",clickedElement,mx,my)
+			if not dgsDragDropBoard.lock and MouseData.clickPosition[clickedButton][0] then
+				if ((MouseData.clickPosition[clickedButton][1]-mx)^2+(MouseData.clickPosition[clickedButton][2]-my)^2)^0.5 > 10 then
 					dgsDragDropBoard.lock = true
-					dgsTriggerEvent("onDgsDrag",MouseData.click.left)
+					dgsDragDropBoard.button = clickedButton
+					dgsTriggerEvent("onDgsDrag",clickedElement)
 					if not wasEventCancelled() then
-						if dgsElementData[MouseData.click.left].dragHandler then
-							dgsSendDragNDropData(unpack(dgsElementData[MouseData.click.left].dragHandler))
+						if dgsElementData[clickedElement].dragHandler then
+							dgsSendDragNDropData(unpack(dgsElementData[clickedElement].dragHandler))
 						end
 					end
 				end
@@ -2259,19 +2260,17 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		if button == MouseData.scbClickButton then 
 			MouseData.MoveScroll[0] = false
-			if dgsDragDropBoard[0] then
-				local data = dgsRetrieveDragNDropData()
-				if isElement(dgsEle) then
-					dgsTriggerEvent("onDgsDrop",dgsEle,data)
-				end
-			end
-		dgsDragDropBoard.button = nil
-			dgsDragDropBoard.lock = false
-		elseif button == "right" then
-			MouseData.click.right = false
-		else 
-			MouseData.click.middle = false
 		end
+		if dgsDragDropBoard[0] and button == dgsDragDropBoard.button then 
+			local data = dgsRetrieveDragNDropData()
+			if isElement(dgsEle) then
+				dgsTriggerEvent("onDgsDrop",dgsEle,data)
+			end
+		end
+		dgsDragDropBoard.button = nil
+		dgsDragDropBoard.lock = false
+
+
 		MouseData.Move[0] = false
 		MouseData.MoveScale[0] = false
 		MouseData.Scale[0] = false
