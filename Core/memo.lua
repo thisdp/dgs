@@ -1598,7 +1598,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	end
 	local bgColor = applyColorAlpha(eleData.bgColor,parentAlpha)
 	local caretColor = applyColorAlpha(eleData.caretColor,parentAlpha)
-	local isFocused = MouseData.focused == source
+	local isFocused = MouseData.focused
 	if isFocused then
 		if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 			MouseData.focused = false
