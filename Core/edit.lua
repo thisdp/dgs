@@ -231,25 +231,34 @@ end
 
 function dgsEditCheckMultiClick(button,state,x,y,times)
 	if state == "down" then
+		local mouseButtons = dgsElementData[source].mouseButtons
+		local mouseClicked
+		if mouseButtons then
+			if button == "left" then
+				mouseClicked = mouseButtons[1]
+			elseif button == "middle" then
+				mouseClicked = mouseButtons[2]
+			elseif button == "right" then
+				mouseClicked = mouseButtons[3]
+			end
+		else
+			mouseClicked = button == "left"
+		end
+		if not mouseClicked then return end
+
 		if times== 1 then
-			if button ~= "middle" then
-				local shift = getKeyState("lshift") or getKeyState("rshift")
-				local pos,side = searchEditMousePosition(source,x)
-				dgsEditSetCaretPosition(source,pos,shift)
-			end
+			local shift = getKeyState("lshift") or getKeyState("rshift")
+			local pos,side = searchEditMousePosition(source,x)
+			dgsEditSetCaretPosition(source,pos,shift)
 		elseif times == 2 then
-			if button == "left" then
-				local pos,side = searchEditMousePosition(source,x)
-				local text = dgsElementData[source].text
-				local s,e = dgsSearchFullWordType(text,pos,side)
-				dgsEditSetCaretPosition(source,s)
-				dgsEditSetCaretPosition(source,e,true)
-			end
+			local pos,side = searchEditMousePosition(source,x)
+			local text = dgsElementData[source].text
+			local s,e = dgsSearchFullWordType(text,pos,side)
+			dgsEditSetCaretPosition(source,s)
+			dgsEditSetCaretPosition(source,e,true)
 		elseif times == 3 then
-			if button == "left" then
-				dgsEditSetCaretPosition(source,_)
-				dgsEditSetCaretPosition(source,0,true)
-			end
+			dgsEditSetCaretPosition(source,_)
+			dgsEditSetCaretPosition(source,0,true)
 		end
 	end
 end
@@ -640,10 +649,18 @@ function configEdit(edit)
 end
 
 function resetEdit(x,y)
-	if dgsGetType(MouseData.focused) == "dgs-dxedit" then
-		if MouseData.focused == MouseData.click.left then
-			local pos = searchEditMousePosition(MouseData.focused,MouseData.cursorPos[1] or x*sW)
-			dgsEditSetCaretPosition(MouseData.focused,pos,true)
+	local dgsEdit = MouseData.focused
+	if dgsGetType(dgsEdit) == "dgs-dxedit" then
+		local mouseButtons = dgsElementData[dgsEdit].mouseButtons
+		local clickedEle 
+		if mouseButtons and not mouseButtons[1] then 
+			clickedEle = (mouseButtons[2] and MouseData.click.right) or (mouseButtons[3] and MouseData.click.middle)
+		else 
+			clickedEle = MouseData.click.left
+		end
+		if dgsEdit == clickedEle then
+			local pos = searchEditMousePosition(dgsEdit,MouseData.cursorPos[1] or x*sW)
+			dgsEditSetCaretPosition(dgsEdit,pos,true)
 		end
 	end
 end
