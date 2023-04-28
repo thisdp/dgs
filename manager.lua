@@ -275,6 +275,16 @@ end
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 	local eleType = dgsIsType(dgsEle)
 	if not(eleType) then error(dgsGenAsrt(dgsEle,"dgsBringToFront",1,"dgs-dxelement")) end
+	if mouse then 
+		local mouseButtons = dgsElementData[dgsEle].mouseButtons
+		if mouseButtons then 
+			if (mouse == "left" and not mouseButtons[1]) 
+			or (mouse == "right" and not mouseButtons[2]) 
+			or (mouse == "middle" and not mouseButtons[3]) then
+				return 
+			end
+		end
+	end
 	local parent = dgsElementData[dgsEle].parent	--Get Parent
 	if not dontFocus then dgsFocus(dgsEle) end
 	if dgsElementData[dgsEle].changeOrder then
@@ -313,8 +323,13 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 						tableInsert(children,parents)
 						if dgsElementType[parents] == "dgs-dxscrollpane" then
 							local scrollbar = dgsElementData[parents].scrollbars
-							dgsBringToFront(scrollbar[1],"left",_,true,false)
-							dgsBringToFront(scrollbar[2],"left",_,true,false)
+							local clickedButton = "left"
+							local mouseButtons = dgsElementData[parents].mouseButtons
+							if mouseButtons and not mouseButtons[1] then 
+								clickedButton = (mouseButtons[2] and "right") or (mouseButtons[3] and "middle") or "left"
+							end
+							dgsBringToFront(scrollbar[1],clickedButton,_,true,false)
+							dgsBringToFront(scrollbar[2],clickedButton,_,true,false)
 						end
 					end
 					parents = uparents
@@ -342,8 +357,13 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 							tableInsert(layerTable,parents)
 							if dgsElementType[parents] == "dgs-dxscrollpane" then
 								local scrollbar = dgsElementData[parents].scrollbars
-								dgsBringToFront(scrollbar[1],"left",_,true,false)
-								dgsBringToFront(scrollbar[2],"left",_,true,false)
+								local clickedButton = "left"
+								local mouseButtons = dgsElementData[parents].mouseButtons
+								if mouseButtons and not mouseButtons[1] then 
+									clickedButton = (mouseButtons[2] and "right") or (mouseButtons[3] and "middle") or "left"
+								end
+								dgsBringToFront(scrollbar[1],clickedButton,_,true,false)
+								dgsBringToFront(scrollbar[2],clickedButton,_,true,false)
 							end
 						end
 						break
