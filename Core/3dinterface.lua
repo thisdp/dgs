@@ -528,11 +528,11 @@ dgsRenderer["dgs-dx3dinterface"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 			mx,my = hitX,hitY
 			eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
 		end
-		if rndtgt then
-			dxSetRenderTarget(rndtgt,true)
-		end
-		dxSetRenderTarget()
 	end
+	if rndtgt then
+		dxSetRenderTarget(rndtgt,true)
+	end
+	dxSetRenderTarget()
 	return rndtgt,false,mx,my,0,0
 end
 
