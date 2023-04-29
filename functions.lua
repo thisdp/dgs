@@ -336,6 +336,7 @@ function dgsSetVisible(dgsEle,visible)
 		local parent = dgsGetParent(dgsEle)
 		if parent then parentInherited = dgsElementData[parent].visibleInherited  and dgsElementData[parent].visible end
 		dgsElementData[dgsEle].visibleInherited = parentInherited
+		local eleType = dgsElementType[dgsEle]
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](dgsEle) end
 		dgsApplyVisibleInherited(dgsEle,visible and dgsElementData[dgsEle].visibleInherited)
 		return dgsSetData(dgsEle,"visible",visible)
