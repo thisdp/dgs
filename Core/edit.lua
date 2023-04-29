@@ -1218,7 +1218,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local bgColor = eleData.isFocused and eleData.bgColor or (eleData.bgColorBlur or eleData.bgColor)
 	bgColor = applyColorAlpha(bgColor,parentAlpha)
 	local caretColor = applyColorAlpha(eleData.caretColor,parentAlpha)
-	local isFocused = MouseData.focused == source
+	local isFocused = MouseData.focused
 	if isFocused == source then
 		if isConsoleActive() or isMainMenuActive() or isChatBoxInputActive() then
 			MouseData.focused = false
