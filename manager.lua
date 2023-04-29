@@ -856,10 +856,10 @@ function dgsGetProperties(dgsEle,properties)
 	return data
 end
 
-function dgsSetPropertyInherit(dxgui,key,value,...)
-	local isTable = type(dxgui) == "table"
+function dgsSetPropertyInherit(dgsEle,key,value,...)
+	local isTable = type(dgsEle) == "table"
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetPropertyInherit",1,"dgs-dxelement/table")) end
-	local dxElements = isTable and dxgui or {dxgui}
+	local dxElements = isTable and dgsEle or {dgsEle}
 	for i=1,#dxElements do
 		local dgsEle = dxElements[i]
 		dgsSetProperty(dgsEle,key,value)
