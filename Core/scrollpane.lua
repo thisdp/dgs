@@ -531,14 +531,6 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local basePointOffset = eleData.basePointOffset
 	OffsetX = OffsetX+(basePointOffset[3] and basePointOffset[1]*w or basePointOffset[1])+paddingX
 	OffsetY = OffsetY+(basePointOffset[3] and basePointOffset[2]*h or basePointOffset[2])+paddingY
-	------------------------------------
-	if eleData.functionRunBefore then
-		local fnc = eleData.functions
-		if type(fnc) == "table" then
-			fnc[1](unpack(fnc[2]))
-		end
-	end
-	------------------------------------
 	local newRndTgt = eleData.mainRT
 	local drawTarget
 	if newRndTgt then

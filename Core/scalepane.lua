@@ -376,14 +376,6 @@ dgsRenderer["dgs-dxscalepane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	OffsetY = -(resolution[2]-relSizY/scale[2])*yScroll
 	eleData.horizontalMoveOffset = OffsetX
 	eleData.verticalMoveOffset = OffsetY
-	------------------------------------
-	if eleData.functionRunBefore then
-		local fnc = eleData.functions
-		if type(fnc) == "table" then
-			fnc[1](unpack(fnc[2]))
-		end
-	end
-	------------------------------------
 	local newRndTgt = eleData.mainRT
 	if newRndTgt then
 		dxSetRenderTarget(rndtgt)

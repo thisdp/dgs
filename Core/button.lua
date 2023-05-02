@@ -294,14 +294,6 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			finalcolor = applyColorAlpha(targetColor,parentAlpha)
 		end
 	end
-	------------------------------------
-	if eleData.functionRunBefore then
-		local fnc = eleData.functions
-		if type(fnc) == "table" then
-			fnc[1](unpack(fnc[2]))
-		end
-	end
-	------------------------------------
 	if finalcolor/0x1000000%256 >= 1 then	--Optimise when alpha = 0
 		dxDrawImage(x,y,w,h,bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
 	end
