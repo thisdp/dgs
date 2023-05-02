@@ -570,7 +570,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 							daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 						end
 					else
-						MouseData.hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
+						hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
 						if enabledInherited then
 							MouseData.hit = hit or MouseData.hit
 						elseif checkDisabledElement then
