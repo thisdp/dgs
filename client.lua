@@ -1632,10 +1632,8 @@ function dgsCleanElement(source)
 					destroyElement(arrow)
 				end
 			end
-		elseif dgsType == "dgs-dxedit" then
-			blurEditMemo()
-		elseif dgsType == "dgs-dxmemo" then
-			blurEditMemo()
+		elseif dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
+			blurEditMemo()		
 		elseif dgsType == "dgs-dxtabpanel" then
 			local tabs = eleData.tabs
 			if tabs then
