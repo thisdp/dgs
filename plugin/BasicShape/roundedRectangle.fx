@@ -94,7 +94,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	}
 	alp = saturate(alp);
 	float nAlp = 1;
-	/*if(borderThickness[0] > 0 && borderThickness[1] > 0){
+	if(borderThickness[0] > 0 && borderThickness[1] > 0){
 		float2 newborderThickness = borderThickness*dd*100;
 		tex_bk = tex_bk+tex_bk*newborderThickness;
 		dx = ddx(tex_bk);
@@ -133,7 +133,6 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 		
 		leftBottomSideX = fixedPos.x <= -corner[3].x;
 		leftBottomSideY = fixedPos.y >= corner[3].y;
-		
 
 		if(leftTopSideX && leftTopSideY){					//LTCorner
 			float dis = distance(-fixedPos,corner[0]);
@@ -176,7 +175,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 					nAlp *= saturate((-fixedPos.x+center.x)/aA);
 			}
 		}
-	}*/
+	}
 	nAlp = 1-saturate(nAlp);
 	result += (color-result)*(1-clamp(nAlp,0,1));
 	result.rgb = colorOverwritten?result.rgb:_color.rgb;
