@@ -18,8 +18,7 @@ SamplerState tSampler{
 float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	float4 result = borderColor;
 	float alp = 1;
-	float2 tempTex = tex;
-	tempTex = (tempTex*UV.zw+UV.xy)%1;
+	float2 tempTex = (tex*UV.zw+UV.xy);
 	float2 tex_bk = tempTex;
 	float2 dx = ddx(tempTex);
 	float2 dy = ddy(tempTex);
@@ -38,6 +37,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 		nRadius = float4(isRelative.x==1?radius.x/2:radius.x*dd.x,isRelative.y==1?radius.y/2:radius.y*dd.x,isRelative.z==1?radius.z/2:radius.z*dd.x,isRelative.w==1?radius.w/2:radius.w*dd.x);
 	}
 	float2 fixedPos = tempTex-center;
+	tempTex %= 1;
 	float2 corner[] = {center-nRadius.x,center-nRadius.y,center-nRadius.z,center-nRadius.w};
 	bool leftTopSideX = fixedPos.x <= -corner[0].x;
 	bool leftTopSideY = fixedPos.y <= -corner[0].y;
@@ -94,7 +94,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	}
 	alp = saturate(alp);
 	float nAlp = 1;
-	if(borderThickness[0] > 0 && borderThickness[1] > 0){
+	/*if(borderThickness[0] > 0 && borderThickness[1] > 0){
 		float2 newborderThickness = borderThickness*dd*100;
 		tex_bk = tex_bk+tex_bk*newborderThickness;
 		dx = ddx(tex_bk);
@@ -176,7 +176,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 					nAlp *= saturate((-fixedPos.x+center.x)/aA);
 			}
 		}
-	}
+	}*/
 	nAlp = 1-saturate(nAlp);
 	result += (color-result)*(1-clamp(nAlp,0,1));
 	result.rgb = colorOverwritten?result.rgb:_color.rgb;
