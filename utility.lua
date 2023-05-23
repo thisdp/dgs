@@ -610,7 +610,7 @@ function hashFile(fName,exportContent)
 end
 
 function fileGetContent(fName)
-	if not fileExists(fName) then return false end
+	if not fileExists(fName) then outputDebugString("Bad argument @'fileGetContent' at argument 1, Couldn't find file \""..tostring(fName).."\"") return false end
 	local matched,fileInfo = verifyFile(fName)
 	if not matched then
 		triggerServerEvent("DGSI_AbnormalDetected",localPlayer,{[fName]=fileInfo})
