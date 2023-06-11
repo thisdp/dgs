@@ -1111,8 +1111,12 @@ end
 addEventHandler("onClientResourceStop",resourceRoot,function()
 	--Element Logger
 	setElementData(root,"DGSI_ElementLogger",dgsElementLogger,false)
-	destroyElement(GlobalEdit)
-	destroyElement(GlobalMemo)
+	if isElement(GlobalEdit) then
+		removeEventHandler("onClientElementDestroy",GlobalEdit,dgsGlobalEditDestroyDetector)	--shutdown global edit destroy detector 
+	end
+	if isElement(GlobalMemo) then
+		removeEventHandler("onClientElementDestroy",GlobalMemo,dgsGlobalMemoDestroyDetector)	--shutdown global memo destroy detector 
+	end
 	local terminator = createElement("dgs-dxterminator")
 	addEventHandler("onClientElementDestroy",terminator,function()
 		DGSI_SaveData()

@@ -84,10 +84,48 @@ local utf8Gsub = utf8.gsub
 local utf8Len = utf8.len
 local utf8Insert = utf8.insert
 local utf8Byte = utf8.byte
-GlobalMemoParent = guiCreateLabel(-1,0,0,0,"",true)
-GlobalMemo = guiCreateMemo(-1,0,0,0,"",true,GlobalMemoParent)
-addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
-dgsSetData(GlobalMemo,"linkedDxMemo",nil)
+
+----Initialize
+function dgsGlobalMemoDestroyDetector(oldGlobalEdit)
+	outputDebugString("DGS Global Memo has been destroyed by external resource, recreating",1)
+	local dgsMemo = dgsElementData[GlobalMemo].linkedDxMemo
+	dgsInitializeGlobalMemo()
+	dgsElementData[GlobalMemo].linkedDxMemo = dgsMemo
+end
+
+function dgsInitializeGlobalMemo()
+	if not isElement(GlobalMemoParent) then
+		GlobalMemoParent = guiCreateLabel(-1,0,0,0,"",true)
+	end
+	if not isElement(GlobalMemo) then
+		GlobalMemo = guiCreateMemo(-1,0,0,0,"",true,GlobalMemoParent)
+		dgsSetData(GlobalMemo,"linkedDxMemo",nil)
+		addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
+		addEventHandler("onClientGUIChanged",GlobalMemo,function()
+			if not dgsElementData[GlobalMemo] then return end
+			if getElementType(GlobalMemo) == "gui-memo" then
+				local dxMemo = dgsElementData[GlobalMemo].linkedDxMemo
+				if isElement(dxMemo) then
+					local text = guiGetText(GlobalMemo)
+					local cool = dgsElementData[dxMemo].CoolTime
+					if text ~= "\n" then
+						if not cool and not dgsElementData[dxMemo].readOnly then
+							local caretPos = dgsElementData[dxMemo].caretPos
+							local selectFrom = dgsElementData[dxMemo].selectFrom
+							dgsMemoDeleteText(dxMemo,caretPos[1],caretPos[2],selectFrom[1],selectFrom[2])
+							handleDxMemoText(dxMemo,utf8Sub(text,1,utf8Len(text)-1),true)
+						end
+						dgsElementData[dxMemo].CoolTime = true
+						guiSetText(GlobalMemo,"")
+						dgsElementData[dxMemo].CoolTime = false
+					end
+				end
+			end
+		end,false)
+		addEventHandler("onClientElementDestroy",GlobalMemo,dgsGlobalMemoDestroyDetector,false)
+	end
+end
+dgsInitializeGlobalMemo()
 --[[
 ---------------In Normal Mode------------------
 Text Table Structure:
@@ -1441,28 +1479,6 @@ function dgsMemoSetVerticalScrollPosition(memo,vertical)
 	local scb = dgsElementData[memo].scrollbars
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
 end
-
-addEventHandler("onClientGUIChanged",GlobalMemo,function()
-	if not dgsElementData[source] then return end
-	if getElementType(source) == "gui-memo" then
-		local dxMemo = dgsElementData[source].linkedDxMemo
-		if isElement(dxMemo) then
-			local text = guiGetText(source)
-			local cool = dgsElementData[dxMemo].CoolTime
-			if text ~= "\n" then
-				if not cool and not dgsElementData[dxMemo].readOnly then
-					local caretPos = dgsElementData[dxMemo].caretPos
-					local selectFrom = dgsElementData[dxMemo].selectFrom
-					dgsMemoDeleteText(dxMemo,caretPos[1],caretPos[2],selectFrom[1],selectFrom[2])
-					handleDxMemoText(dxMemo,utf8Sub(text,1,utf8Len(text)-1),true)
-				end
-				dgsElementData[dxMemo].CoolTime = true
-				guiSetText(source,"")
-				dgsElementData[dxMemo].CoolTime = false
-			end
-		end
-	end
-end,false)
 
 function dgsMemoRebuildWordWrapMapTable(memo)
 	dgsSetData(memo,"rebuildMapTableNextFrame",nil)

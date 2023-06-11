@@ -83,10 +83,57 @@ local strChar = string.char
 local mathMin = math.min
 local mathMax = math.max
 ----Initialize
-GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
-GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
-addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
-dgsSetData(GlobalEdit,"linkedDxEdit",nil)
+function dgsGlobalEditDestroyDetector(oldGlobalEdit)
+	outputDebugString("DGS Global Edit has been destroyed by external resource, recreating",1)
+	local dgsEdit = dgsElementData[oldGlobalEdit].linkedDxEdit
+	dgsInitializeGlobalEdit()
+	dgsElementData[GlobalEdit].linkedDxEdit = dgsEdit
+end
+
+function dgsInitializeGlobalEdit()
+	if not isElement(GlobalEditParent) then
+		GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
+	end
+	if not isElement(GlobalEdit) then
+		GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
+		dgsSetData(GlobalEdit,"linkedDxEdit",nil)
+		addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
+		addEventHandler("onClientGUIAccepted",GlobalEdit,function()
+			local dgsEdit = dgsElementData[source].linkedDxEdit
+			if dgsGetType(dgsEdit) == "dgs-dxedit" then
+				dgsTriggerEvent("onDgsEditAccepted",dgsEdit,dgsEdit)
+			end
+		end,true)
+		addEventHandler("onClientGUIChanged",GlobalEdit,function()
+			if getElementType(GlobalEdit) == "gui-edit" then
+				local dgsEdit = dgsElementData[GlobalEdit].linkedDxEdit
+				if isElement(dgsEdit) then
+					local text = guiGetText(GlobalEdit)
+					local eleData = dgsElementData[dgsEdit]
+					local cool = eleData.CoolTime
+					if #text ~= 0 then
+						if not cool then
+							if not eleData.readOnly then
+								local caretPos = eleData.caretPos
+								local selectFrom = eleData.selectFrom
+								if selectFrom-caretPos ~= 0 then
+									dgsEditReplaceText(dgsEdit,caretPos,selectFrom,text)
+								else
+									handleDxEditText(dgsEdit,text,true)
+								end
+							end
+							eleData.CoolTime = true
+							guiSetText(GlobalEdit,"")
+							eleData.CoolTime = false
+						end
+					end
+				end
+			end
+		end,true)
+		addEventHandler("onClientElementDestroy",GlobalEdit,dgsGlobalEditDestroyDetector,false)
+	end
+end
+dgsInitializeGlobalEdit()
 local splitChar = "\r\n"
 local splitChar2 = "\n"
 local editsCount = 1
@@ -728,13 +775,6 @@ function searchEditMousePosition(edit,posx)
 	return -1,0
 end
 
-addEventHandler("onClientGUIAccepted",GlobalEdit,function()
-	local dgsEdit = dgsElementData[source].linkedDxEdit
-	if dgsGetType(dgsEdit) == "dgs-dxedit" then
-		dgsTriggerEvent("onDgsEditAccepted",dgsEdit,dgsEdit)
-	end
-end,true)
-
 function dgsEditAlignmentShowPosition(edit,text)
 	local eleData = dgsElementData[edit]
 	local alignment = eleData.alignment
@@ -1070,33 +1110,6 @@ function dgsEditDoOpposite(edit,isUndo)
 	end
 	return false
 end
-
-addEventHandler("onClientGUIChanged",GlobalEdit,function()
-	if getElementType(source) == "gui-edit" then
-		local dgsEdit = dgsElementData[source].linkedDxEdit
-		if isElement(dgsEdit) then
-			local text = guiGetText(source)
-			local eleData = dgsElementData[dgsEdit]
-			local cool = eleData.CoolTime
-			if #text ~= 0 then
-				if not cool then
-					if not eleData.readOnly then
-						local caretPos = eleData.caretPos
-						local selectFrom = eleData.selectFrom
-						if selectFrom-caretPos ~= 0 then
-							dgsEditReplaceText(dgsEdit,caretPos,selectFrom,text)
-						else
-							handleDxEditText(dgsEdit,text,true)
-						end
-					end
-					eleData.CoolTime = true
-					guiSetText(source,"")
-					eleData.CoolTime = false
-				end
-			end
-		end
-	end
-end,true)
 
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
