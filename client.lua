@@ -448,7 +448,6 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 				dgsRenderInfo.renderingResource[eleData.resource] = (dgsRenderInfo.renderingResource[eleData.resource] or 0)+1
 			end
 		end
-
 		local enabledSelf = eleData.enabled								--Seld enabled
 		local enabledInherited = enabledInherited and eleData.enabledInherited and enabledSelf	--Enabled inherited
 		local eleType = dgsElementType[source]							--Element type of current element
@@ -458,6 +457,8 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		dxSetRenderTarget(rndtgt)										--Use parent render target
 		local globalBlendMode = rndtgt and "modulate_add" or "blend"	--Blend mode by default
 		dxSetBlendMode(globalBlendMode)									--Apply blend mode
+		local dgsPreRendererFunction = dgsPreRenderer[eleType]
+		if dgsPreRendererFunction then dgsPreRendererFunction(source) end	--Process something before render
 
 		--Apply parent alpha
 		if eleType == "dgs-dxscrollbar" then							--For scrollpane	(should be optimised soon)
@@ -511,145 +512,138 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 		end
 		if eleDataP and eleDataP.mainRT == rndtgt and rndtgt then xRT,yRT = x,y end
 		self = source
-		renderArguments[1] = xRT
-		renderArguments[2] = yRT
-		renderArguments[3] = w
-		renderArguments[4] = h
-		renderArguments[5] = xNRT
-		renderArguments[6] = yNRT
+		renderArguments[1],renderArguments[2] = xRT,yRT
+		renderArguments[3],renderArguments[4] = w,h
+		renderArguments[5],renderArguments[6] = xNRT,yNRT
 		local disableOutline
-		if xRT and yRT then
-			------------------------------------
-			if eleData.functionRunBefore then
-				local fnc = eleData.functions
-				if type(fnc) == "table" and fnc[1] then
-					fnc[1](unpack(fnc[2]))
-				end
+		------------------------------------
+		if eleData.functionRunBefore then
+			local fnc = eleData.functions
+			if type(fnc) == "table" and fnc[1] then
+				fnc[1](unpack(fnc[2]))
 			end
-			------------------------------------
-			if eleData.PixelInt then xRT,yRT,w,h = xRT-xRT%1,yRT-yRT%1,w-w%1,h-h%1 end
-			------------------------------------Main Renderer
-			local daDebugColor,daDebugTexture = 0xFFFFFF,nil
-			local dgsRendererFunction = dgsRenderer[eleType]
-			if dgsRendererFunction then
-				local _hitElement
-				if (enabledInherited or checkDisabledElement) and mx and eleType ~= "dgs-dxdetectarea" then
-					local collider = eleData.dgsCollider
-					if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
-						local daEleData = dgsElementData[collider]
-						local checkPixel = daEleData.checkFunction
-						if checkPixel then
-							local _mx,_my = (mx-xNRT)/w,(my-yNRT)/h
-							if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
-								if type(checkPixel) == "function" then
-									local checkFnc = daEleData.checkFunction
-									if checkFnc(_mx,_my,mx,my) then
-										if enabledInherited then
-											MouseData.hit = source
-										elseif checkDisabledElement then
-											MouseData.hitDebug = source
-										end
-										daDebugColor = 0xFF0000
+		end
+		------------------------------------
+		if eleData.PixelInt then xRT,yRT,w,h = xRT-xRT%1,yRT-yRT%1,w-w%1,h-h%1 end
+		------------------------------------Main Renderer
+		local daDebugColor,daDebugTexture = 0xFFFFFF,nil
+		local dgsRendererFunction = dgsRenderer[eleType]
+		if dgsRendererFunction then
+			local _hitElement
+			if (enabledInherited or checkDisabledElement) and mx and eleType ~= "dgs-dxdetectarea" then
+				local collider = eleData.dgsCollider
+				if collider and dgsElementType[collider] == "dgs-dxdetectarea" then
+					local daEleData = dgsElementData[collider]
+					local checkPixel = daEleData.checkFunction
+					if checkPixel then
+						local _mx,_my = (mx-xNRT)/w,(my-yNRT)/h
+						if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
+							if type(checkPixel) == "function" then
+								local checkFnc = daEleData.checkFunction
+								if checkFnc(_mx,_my,mx,my) then
+									if enabledInherited then
+										MouseData.hit = source
+									elseif checkDisabledElement then
+										MouseData.hitDebug = source
 									end
-								else
-									local px,py = dxGetPixelsSize(checkPixel)
-									local pixX,pixY = _mx*px,_my*py
-									local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
-									local gray = ((r or 0)+(g or 0)+(b or 0))/3
-									if gray >= 128 then
-										if enabledInherited then
-											MouseData.hit = source
-										elseif checkDisabledElement then
-											MouseData.hitDebug = source
-										end
-										daDebugColor = 0xFF0000
+									daDebugColor = 0xFF0000
+								end
+							else
+								local px,py = dxGetPixelsSize(checkPixel)
+								local pixX,pixY = _mx*px,_my*py
+								local r,g,b = dxGetPixelColor(checkPixel,pixX-1,pixY-1)
+								local gray = ((r or 0)+(g or 0)+(b or 0))/3
+								if gray >= 128 then
+									if enabledInherited then
+										MouseData.hit = source
+									elseif checkDisabledElement then
+										MouseData.hitDebug = source
 									end
+									daDebugColor = 0xFF0000
 								end
 							end
-							daDebugTexture = daEleData.debugTexture
-							daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 						end
-					else
-						hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
-						if enabledInherited then
-							MouseData.hit = hit or MouseData.hit
-						elseif checkDisabledElement then
-							MouseData.hitDebug = hit or MouseData.hitDebug
-						end
+						daDebugTexture = daEleData.debugTexture
+						daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 					end
-					if eleType == "dgs-dxgridlist" then
-						_hitElement = MouseData.hit
+				else
+					hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
+					if enabledInherited then
+						MouseData.hit = hit or MouseData.hit
+					elseif checkDisabledElement then
+						MouseData.hitDebug = hit or MouseData.hitDebug
 					end
 				end
-				if MouseData.hit then
-					if _hitElement and _hitElement ~= MouseData.hit then
-						local scbThickV = dgsElementData[ eleData.scrollbars[1] ].visible and eleData.scrollBarThick or 0
-						local scbThickH = dgsElementData[ eleData.scrollbars[2] ].visible and eleData.scrollBarThick or 0
-						if mx > xNRT+w-scbThickH or my > yNRT+h-scbThickV then
-							MouseData.hit = source
-						end
-					end
-					MouseData.WithinElements[MouseData.hit] = true
-				end
-				local parentOffsetX,parentOffsetY
-				rt,disableOutline,mx,my,parentOffsetX,parentOffsetY = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
-				if MouseData.hit == source then
-					eleData.cursorPosition[0] = dgsRenderInfo.frames
-					eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
-				end
-				if debugMode then
-					if not dgsElementData[source].debugData then dgsElementData[source].debugData = {} end
-					dgsElementData[source].debugData[1] = x
-					dgsElementData[source].debugData[2] = y
-					dgsElementData[source].debugData[3] = w
-					dgsElementData[source].debugData[4] = h
-					dgsElementData[source].debugData[5] = xNRT
-					dgsElementData[source].debugData[6] = yNRT
-					if daDebugTexture then __dxDrawImage(xRT,yRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI) end
-				end
-				rndtgt = rt or rndtgt
-				OffsetX,OffsetY = parentOffsetX or OffsetX,parentOffsetY or OffsetY
-			end
-			------------------------------------
-			if not eleData.functionRunBefore then
-				local fnc = eleData.functions
-				if type(fnc) == "table" then
-					fnc[1](unpack(fnc[2]))
+				if eleType == "dgs-dxgridlist" then
+					_hitElement = MouseData.hit
 				end
 			end
-			------------------------------------OutLine
-			if not disableOutline then
-				local outlineData = eleData.outline
-				if outlineData then
-					local sideColor = outlineData[3]
-					local sideSize = outlineData[2]
-					local hSideSize = sideSize*0.5
-					sideColor = applyColorAlpha(sideColor,parentAlpha)
-					local side = outlineData[1]
-					if side == "in" then
-						if outlineData[6] ~= false then dxDrawLine(xRT,yRT+hSideSize,xRT+w,yRT+hSideSize,sideColor,sideSize,isPostGUI) end
-						if outlineData[4] ~= false then dxDrawLine(xRT+hSideSize,yRT,xRT+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
-						if outlineData[5] ~= false then dxDrawLine(xRT+w-hSideSize,yRT,xRT+w-hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
-						if outlineData[7] ~= false then dxDrawLine(xRT,yRT+h-hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
-					elseif side == "center" then
-						if outlineData[6] ~= false then dxDrawLine(xRT-hSideSize,yRT,xRT+w+hSideSize,yRT,sideColor,sideSize,isPostGUI) end
-						if outlineData[4] ~= false then dxDrawLine(xRT,yRT+hSideSize,xRT,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
-						if outlineData[5] ~= false then dxDrawLine(xRT+w,yRT+hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
-						if outlineData[7] ~= false then dxDrawLine(xRT-hSideSize,yRT+h,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
-					elseif side == "out" then
-						if outlineData[6] ~= false then dxDrawLine(xRT-sideSize,yRT-hSideSize,xRT+w+sideSize,yRT-hSideSize,sideColor,sideSize,isPostGUI) end
-						if outlineData[4] ~= false then dxDrawLine(xRT-hSideSize,yRT,xRT-hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
-						if outlineData[5] ~= false then dxDrawLine(xRT+w+hSideSize,yRT,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
-						if outlineData[7] ~= false then dxDrawLine(xRT-sideSize,yRT+h+hSideSize,xRT+w+sideSize,yRT+h+hSideSize,sideColor,sideSize,isPostGUI) end
+			if MouseData.hit then
+				if _hitElement and _hitElement ~= MouseData.hit then
+					local scbThickV = dgsElementData[ eleData.scrollbars[1] ].visible and eleData.scrollBarThick or 0
+					local scbThickH = dgsElementData[ eleData.scrollbars[2] ].visible and eleData.scrollBarThick or 0
+					if mx > xNRT+w-scbThickH or my > yNRT+h-scbThickV then
+						MouseData.hit = source
 					end
 				end
-			else
-				visible = false
+				MouseData.WithinElements[MouseData.hit] = true
 			end
-			------------------------------------
+			local parentOffsetX,parentOffsetY
+			rt,disableOutline,mx,my,parentOffsetX,parentOffsetY = dgsRendererFunction(source,xRT,yRT,w,h,mx,my,xNRT,yNRT,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
+			if MouseData.hit == source then
+				eleData.cursorPosition[0] = dgsRenderInfo.frames
+				eleData.cursorPosition[1],eleData.cursorPosition[2] = mx,my
+			end
+			if debugMode then
+				if not dgsElementData[source].debugData then dgsElementData[source].debugData = {} end
+				dgsElementData[source].debugData[1] = x
+				dgsElementData[source].debugData[2] = y
+				dgsElementData[source].debugData[3] = w
+				dgsElementData[source].debugData[4] = h
+				dgsElementData[source].debugData[5] = xNRT
+				dgsElementData[source].debugData[6] = yNRT
+				if daDebugTexture then __dxDrawImage(xRT,yRT,w,h,daDebugTexture,0,0,0,daDebugColor,isPostGUI) end
+			end
+			rndtgt = rt or rndtgt
+			OffsetX,OffsetY = parentOffsetX or OffsetX,parentOffsetY or OffsetY
+		end
+		------------------------------------
+		if not eleData.functionRunBefore then
+			local fnc = eleData.functions
+			if type(fnc) == "table" then
+				fnc[1](unpack(fnc[2]))
+			end
+		end
+		------------------------------------OutLine
+		if not disableOutline then
+			local outlineData = eleData.outline
+			if outlineData then
+				local sideColor = outlineData[3]
+				local sideSize = outlineData[2]
+				local hSideSize = sideSize*0.5
+				sideColor = applyColorAlpha(sideColor,parentAlpha)
+				local side = outlineData[1]
+				if side == "in" then
+					if outlineData[6] ~= false then dxDrawLine(xRT,yRT+hSideSize,xRT+w,yRT+hSideSize,sideColor,sideSize,isPostGUI) end
+					if outlineData[4] ~= false then dxDrawLine(xRT+hSideSize,yRT,xRT+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+					if outlineData[5] ~= false then dxDrawLine(xRT+w-hSideSize,yRT,xRT+w-hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+					if outlineData[7] ~= false then dxDrawLine(xRT,yRT+h-hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
+				elseif side == "center" then
+					if outlineData[6] ~= false then dxDrawLine(xRT-hSideSize,yRT,xRT+w+hSideSize,yRT,sideColor,sideSize,isPostGUI) end
+					if outlineData[4] ~= false then dxDrawLine(xRT,yRT+hSideSize,xRT,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
+					if outlineData[5] ~= false then dxDrawLine(xRT+w,yRT+hSideSize,xRT+w,yRT+h-hSideSize,sideColor,sideSize,isPostGUI) end
+					if outlineData[7] ~= false then dxDrawLine(xRT-hSideSize,yRT+h,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+				elseif side == "out" then
+					if outlineData[6] ~= false then dxDrawLine(xRT-sideSize,yRT-hSideSize,xRT+w+sideSize,yRT-hSideSize,sideColor,sideSize,isPostGUI) end
+					if outlineData[4] ~= false then dxDrawLine(xRT-hSideSize,yRT,xRT-hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+					if outlineData[5] ~= false then dxDrawLine(xRT+w+hSideSize,yRT,xRT+w+hSideSize,yRT+h,sideColor,sideSize,isPostGUI) end
+					if outlineData[7] ~= false then dxDrawLine(xRT-sideSize,yRT+h+hSideSize,xRT+w+sideSize,yRT+h+hSideSize,sideColor,sideSize,isPostGUI) end
+				end
+			end
 		else
 			visible = false
 		end
+		------------------------------------
 		local oldMouseIn = eleData.rndTmp_mouseIn or false
 		local newMouseIn = MouseData.hit and true or false
 		if eleData.enableFullEnterLeaveCheck then

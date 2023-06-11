@@ -29,6 +29,7 @@ dgsRenderSetting = {
 	renderPriority = "normal",
 }
 --Render Functions
+dgsPreRenderer = {}
 dgsRenderer = {}
 dgsChildRenderer = {}
 dgs3DRenderer = {}

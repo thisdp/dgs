@@ -25,7 +25,7 @@
 	<script src="Core/layout.lua" type="client" />
 	<script src="Core/line.lua" type="client" />
 	<script src="Core/memo.lua" type="client" />
-	<script src="Core/menulist.lua" type="client" />
+	<script src="Core/menu.lua" type="client" />
 	<script src="Core/progressbar.lua" type="client" />
 	<script src="Core/radiobutton.lua" type="client" />
 	<script src="Core/tabpanel.lua" type="client" />

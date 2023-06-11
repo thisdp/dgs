@@ -198,7 +198,37 @@
 		scrollBarThick = 15,
 		autoHideAfterSelected=true,
 	},
-
+-----------------------------------------------------------------------------------DGS Menu
+	menu = {
+	---Color
+		bgColor = tocolor(43,43,43,255),
+		itemColor = {
+			tocolor(43,43,43,255),	--Normal
+			tocolor(65,65,65,255),	--Hover
+		},
+		itemTextColor = tocolor(255,255,255,255),
+	---Image
+		bgImage = nil,
+		itemImage = {
+			{},	--Normal
+			{},	--Hover
+		},
+	---Values
+		itemHeight = 20,
+		itemGap = 0,
+		itemTextOffset = {10,false},
+		itemTextSize = {1,1},
+		padding = {4,4},
+		separatorTextColor = tocolor(128,128,128,255),
+		separatorHeight = 1,
+		separatorGap = 8,
+		separatorLine = {
+			0.05,	--Start
+			0.95,	--End
+			true,	--Relative
+		},
+		font = false,	--Using systemFont ( and usage is the same as system font )
+	},
 -----------------------------------------------------------------------------------DGS Radio Button
 	radiobutton = {
 	---Color
