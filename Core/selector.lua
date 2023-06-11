@@ -471,7 +471,12 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				selectorTextColors[preEnterData] = 2
 			end
 		else
-			if MouseData.click.left == source then
+			local mouseButtons = eleData.mouseButtons
+			local canLeftClick,canRightClick,canMiddleClick = true
+			if mouseButtons then
+				canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
+			end		
+			if (canLeftClick and MouseData.click.left == source) or (canRightClick and MouseData.click.right == source) or (canMiddleClick and MouseData.click.middle == source) then
 				selectorTextColors[MouseData.selectorClickData] = 3
 			else
 				selectorTextColors[MouseData.selectorClickData] = 2

@@ -297,35 +297,43 @@ end
 
 function dgsMemoMultiClickCheck(button,state,x,y,times)
 	if state == "down" then
-		local pos,line,side = searchMemoMousePosition(source,x,y)
-		eleData = dgsElementData[source]
-		if button == "left" then
-			if not eleData.multiClickCounter[1] then
-				eleData.multiClickCounter = {pos,line,times-1}
-			elseif eleData.multiClickCounter[1] ~= pos or eleData.multiClickCounter[2] ~= line then
-				eleData.multiClickCounter = {pos,line,times-1}
+		local eleData = dgsElementData[source]
+		local mouseButtons = eleData.mouseButtons
+		local mouseClicked
+		if mouseButtons then
+			if button == "left" then
+				mouseClicked = mouseButtons[1]
+			elseif button == "middle" then
+				mouseClicked = mouseButtons[2]
+			elseif button == "right" then
+				mouseClicked = mouseButtons[3]
 			end
+		else
+			mouseClicked = button == "left"
 		end
+		if not mouseClicked then return end
+		
+		local pos,line,side = searchMemoMousePosition(source,x,y)
+		if not eleData.multiClickCounter[1] then
+			eleData.multiClickCounter = {pos,line,times-1}
+		elseif eleData.multiClickCounter[1] ~= pos or eleData.multiClickCounter[2] ~= line then
+			eleData.multiClickCounter = {pos,line,times-1}
+		end
+		
 		local t = times-eleData.multiClickCounter[3]
 		if t == 1 then
-			if button ~= "middle" then
-				local shift = getKeyState("lshift") or getKeyState("rshift")
-				dgsMemoSetCaretPosition(source,pos,line,shift)
-			end
+			local shift = getKeyState("lshift") or getKeyState("rshift")
+			dgsMemoSetCaretPosition(source,pos,line,shift)
 		elseif t == 2 then
-			if button == "left" then
-				local textTable = dgsElementData[source].text
-				local text = textTable[line][0]
-				local s,e = dgsSearchFullWordType(text,pos,side)
-				dgsMemoSetCaretPosition(source,s,line)
-				dgsMemoSetCaretPosition(source,e,line,true)
-			end
+			local textTable = dgsElementData[source].text
+			local text = textTable[line][0]
+			local s,e = dgsSearchFullWordType(text,pos,side)
+			dgsMemoSetCaretPosition(source,s,line)
+			dgsMemoSetCaretPosition(source,e,line,true)
 		elseif t == 3 then
-			if button == "left" then
-				dgsMemoSetCaretPosition(source,_,line)
-				dgsMemoMoveCaret(source,1,0)
-				dgsMemoSetCaretPosition(source,0,line,true)
-			end
+			dgsMemoSetCaretPosition(source,_,line)
+			dgsMemoMoveCaret(source,1,0)
+			dgsMemoSetCaretPosition(source,0,line,true)
 		end
 	end
 end
@@ -621,10 +629,18 @@ function dgsMemoGetReadOnly(memo)
 end
 
 function resetMemo(x,y)
-	if dgsGetType(MouseData.focused) == "dgs-dxmemo" then
-		if MouseData.focused == MouseData.click.left then
-			local pos,line = searchMemoMousePosition(MouseData.focused,MouseData.cursorPos[1] or x*sW, MouseData.cursorPos[2] or y*sH)
-			dgsMemoSetCaretPosition(MouseData.focused,pos,line,true)
+	local dgsMemo = MouseData.focused
+	if dgsGetType(dgsMemo) == "dgs-dxmemo" then
+		local mouseButtons = dgsElementData[dgsMemo].mouseButtons
+		local clickedEle 
+		if mouseButtons and not mouseButtons[1] then 
+			clickedEle = (mouseButtons[2] and MouseData.click.right) or (mouseButtons[3] and MouseData.click.middle)
+		else 
+			clickedEle = MouseData.click.left
+		end
+		if dgsMemo == clickedEle then
+			local pos,line = searchMemoMousePosition(dgsMemo,MouseData.cursorPos[1] or x*sW, MouseData.cursorPos[2] or y*sH)
+			dgsMemoSetCaretPosition(dgsMemo,pos,line,true)
 		end
 	end
 end
