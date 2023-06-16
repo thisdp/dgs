@@ -84,7 +84,7 @@ local mathMin = math.min
 local mathMax = math.max
 ----Initialize
 function dgsGlobalEditDestroyDetector(oldGlobalEdit)
-	outputDebugString("DGS Global Edit has been destroyed by external resource, recreating",1)
+	outputDebugString("DGS Global Edit has been destroyed by external resource ("..(sourceResource and getResourceName(sourceResource) or "Unknown").."), recreating",1)
 	local dgsEdit = dgsElementData[oldGlobalEdit].linkedDxEdit
 	dgsInitializeGlobalEdit()
 	dgsElementData[GlobalEdit].linkedDxEdit = dgsEdit

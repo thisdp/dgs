@@ -87,7 +87,7 @@ local utf8Byte = utf8.byte
 
 ----Initialize
 function dgsGlobalMemoDestroyDetector(oldGlobalEdit)
-	outputDebugString("DGS Global Memo has been destroyed by external resource, recreating",1)
+	outputDebugString("DGS Global Memo has been destroyed by external resource ("..(sourceResource and getResourceName(sourceResource) or "Unknown").."), recreating",1)
 	local dgsMemo = dgsElementData[GlobalMemo].linkedDxMemo
 	dgsInitializeGlobalMemo()
 	dgsElementData[GlobalMemo].linkedDxMemo = dgsMemo
