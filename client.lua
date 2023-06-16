@@ -1618,7 +1618,7 @@ end
 MouseHolder = {}
 function onDGSMouseCheck(source,button,state)
 	local eleData = dgsElementData[source]
-	local mouseButtons = eleData.mouseButtons
+	local mouseButtons = eleData and eleData.mouseButtons
 	local canLeftClick,canRightClick,canMiddleClick = true
 	if mouseButtons then
 		canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
