@@ -1617,7 +1617,6 @@ end
 
 MouseHolder = {}
 function onDGSMouseCheck(source,button,statex,y,isCoolingDown)
-	iprint(source)
 	local eleData = dgsElementData[source]
 	local mouseButtons = eleData.mouseButtons
 	local canLeftClick,canRightClick,canMiddleClick = true
