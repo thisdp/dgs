@@ -1648,7 +1648,7 @@ function onDGSMouseCheck(source,button,state)
 		MouseHolder = {}
 	end
 end
-dgsRegisterFastEvent("onDgsMouseClick","onDGSMouseCheck")
+dgsRegisterFastEventHandler("onDgsMouseClick","onDGSMouseCheck")
 
 function DGSDestroy(element)
 	if isElement(MouseData.entered) and MouseData.entered == element then
@@ -1656,7 +1656,7 @@ function DGSDestroy(element)
 		MouseData.entered = false
 	end
 end
-dgsRegisterFastEvent("onDgsDestroy","DGSDestroy")
+dgsRegisterFastEventHandler("onDgsDestroy","DGSDestroy")
 
 function dgsCleanElement(source)
 	local isAlive = isElement(source)
@@ -2302,7 +2302,7 @@ function DGSPositionChange(source,oldx,oldy)
 		end
 	end
 end
-dgsRegisterFastEvent("onDgsPositionChange","DGSPositionChange")
+dgsRegisterFastEventHandler("onDgsPositionChange","DGSPositionChange")
 
 function DGSSizeChange(source,oldSizeAbsx,oldSizeAbsy)
 	local eleData = dgsElementData[source]
@@ -2364,7 +2364,7 @@ function DGSSizeChange(source,oldSizeAbsx,oldSizeAbsy)
 		end
 	end
 end
-dgsRegisterFastEvent("onDgsSizeChange","DGSSizeChange")
+dgsRegisterFastEventHandler("onDgsSizeChange","DGSSizeChange")
 
 -------------------------onCreateHandler
 dgsRegisterProperties("dgsBasic",{

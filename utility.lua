@@ -432,13 +432,13 @@ function removeElementData(element,key)
 end
 
 DGSFastEvent = {}
-function dgsRegisterFastEvent(eventName,fncName)
+function dgsRegisterFastEventHandler(eventName,fncName)
 	if not DGSFastEvent[eventName] then DGSFastEvent[eventName] = {} end
 	DGSFastEvent[eventName][#DGSFastEvent[eventName]+1] = fncName
 	return true
 end
 
-function dgsRemoveFastEvent(eventName,fncName)
+function dgsRemoveFastEventHandler(eventName,fncName)
 	if not DGSFastEvent[eventName] then return false end
 	return table.removeItemFromArray(DGSFastEvent[eventName],fncName)
 end

@@ -629,7 +629,7 @@ function DGSMouseClickConvert(source,button,state,x,y,isCoolingDown)
 		dgsTriggerEvent("onDgsMouseClickUp",source,button,state,x,y,isCoolingDown)
 	end
 end
-dgsRegisterFastEvent("onDgsMouseClick","DGSMouseClickConvert")
+dgsRegisterFastEventHandler("onDgsMouseClick","DGSMouseClickConvert")
 
 function DGSMouseDoubleClickConvert(source,button,state,x,y)
 	if not isElement(source) then return end
@@ -639,7 +639,7 @@ function DGSMouseDoubleClickConvert(source,button,state,x,y)
 		dgsTriggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y)
 	end
 end
-dgsRegisterFastEvent("onDgsMouseDoubleClick","DGSMouseDoubleClickConvert")
+dgsRegisterFastEventHandler("onDgsMouseDoubleClick","DGSMouseDoubleClickConvert")
 
 function dgsGetMouseClickGUI(button)
 	if button == "left" then

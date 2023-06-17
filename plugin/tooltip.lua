@@ -98,17 +98,17 @@ function DGSToolTipShow(enterElement,x,y)
 			dgsSetData(showingToolTip,"text",appliedTooltip[2])
 			dgsSetData(showingToolTip,"font",appliedTooltip[3] or dgsElementData[showingToolTip].font)
 			dgsSetData(showingToolTip,"maxWidth",appliedTooltip[4] or dgsElementData[showingToolTip].maxWidth)
-			dgsRegisterFastEvent("onDgsRender","DGSTooltipRender")
+			dgsRegisterFastEventHandler("onDgsRender","DGSTooltipRender")
 		end
 	end
 end
-dgsRegisterFastEvent("onDgsMouseStay","DGSToolTipShow")
+dgsRegisterFastEventHandler("onDgsMouseStay","DGSToolTipShow")
 
 function DGSMouseLeaveForToolTip(leaveElement)
 	local eleData = dgsElementData[leaveElement]
 	if not showingToolTip then return end
 	if eleData.appliedTooltip and eleData.appliedTooltip[1] == showingToolTip then
-		dgsRemoveFastEvent("onDgsRender","DGSTooltipRender")
+		dgsRemoveFastEventHandler("onDgsRender","DGSTooltipRender")
 	end
 end
-dgsRegisterFastEvent("onDgsMouseLeave","DGSMouseLeaveForToolTip")
+dgsRegisterFastEventHandler("onDgsMouseLeave","DGSMouseLeaveForToolTip")
