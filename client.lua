@@ -1616,7 +1616,8 @@ function onClientMouseTriggered(button)
 end
 
 MouseHolder = {}
-function onDGSMouseCheck(source,button,state)
+function onDGSMouseCheck(source,button,statex,y,isCoolingDown)
+	iprint(source)
 	local eleData = dgsElementData[source]
 	local mouseButtons = eleData.mouseButtons
 	local canLeftClick,canRightClick,canMiddleClick = true
@@ -2194,18 +2195,22 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		if not isElement(dgsEle) then return end
 		if state == "up" then
 			if MouseData.click[button] == dgsEle then
-				dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 				if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button].up then
 					local sound = playSound(eleData.clickingSound[button].up)
 					setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
 				end
+				dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+				if not isElement(dgsEle) then return end
+				dgsTriggerEvent("onDgsMouseClickUp",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 			end
 		else
-			dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 			if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button].down then
 				local sound = playSound(eleData.clickingSound[button].down)
 				setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
 			end
+			dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+			if not isElement(dgsEle) then return end
+			dgsTriggerEvent("onDgsMouseClickDown",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 		end
 		if not isElement(dgsEle) then return end
 		if state == "down" then
@@ -2220,6 +2225,12 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			multiClick[button][state][1] = multiClick[button][state][1]+1
 			if multiClick[button][state][1] == 2 then
 				dgsTriggerEvent("onDgsMouseDoubleClick",dgsEle,button,state,mouseX,mouseY)
+				if not isElement(dgsEle) then return end
+				if state == "down" then
+					dgsTriggerEvent("onDgsMouseDoubleClickDown",dgsEle,button,state,mouseX,mouseY)
+				else
+					dgsTriggerEvent("onDgsMouseDoubleClickUp",dgsEle,button,state,mouseX,mouseY)
+				end
 			end
 			if not isElement(dgsEle) then return end
 			dgsTriggerEvent("onDgsMouseMultiClick",dgsEle,button,state,mouseX,mouseY,multiClick[button][state][1])

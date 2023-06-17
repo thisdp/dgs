@@ -621,26 +621,6 @@ function dgsSimulateClick(dgsGUI,button)
 	dgsTriggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
 
-function DGSMouseClickConvert(source,button,state,x,y,isCoolingDown)
-	if not isElement(source) then return end
-	if state == "down" then
-		dgsTriggerEvent("onDgsMouseClickDown",source,button,state,x,y,isCoolingDown)
-	elseif state == "up" then
-		dgsTriggerEvent("onDgsMouseClickUp",source,button,state,x,y,isCoolingDown)
-	end
-end
-dgsRegisterFastEventHandler("onDgsMouseClick","DGSMouseClickConvert")
-
-function DGSMouseDoubleClickConvert(source,button,state,x,y)
-	if not isElement(source) then return end
-	if state == "down" then
-		dgsTriggerEvent("onDgsMouseDoubleClickDown",source,button,state,x,y)
-	elseif state == "up" then
-		dgsTriggerEvent("onDgsMouseDoubleClickUp",source,button,state,x,y)
-	end
-end
-dgsRegisterFastEventHandler("onDgsMouseDoubleClick","DGSMouseDoubleClickConvert")
-
 function dgsGetMouseClickGUI(button)
 	if button == "left" then
 		return MouseData.click.left
