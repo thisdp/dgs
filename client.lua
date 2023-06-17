@@ -1618,7 +1618,7 @@ end
 MouseHolder = {}
 function onDGSMouseCheck(source,button,state)
 	local eleData = dgsElementData[source]
-	local mouseButtons = eleData and eleData.mouseButtons
+	local mouseButtons = eleData.mouseButtons
 	local canLeftClick,canRightClick,canMiddleClick = true
 	if mouseButtons then
 		canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
@@ -1650,20 +1650,19 @@ function onDGSMouseCheck(source,button,state)
 end
 dgsRegisterFastEventHandler("onDgsMouseClick","onDGSMouseCheck")
 
-function DGSDestroy(element)
-	if isElement(MouseData.entered) and MouseData.entered == element then
-		dgsTriggerEvent("onDgsMouseLeave",MouseData.entered,mx,my,hits)
-		MouseData.entered = false
-	end
-end
-dgsRegisterFastEventHandler("onDgsDestroy","DGSDestroy")
-
 function dgsCleanElement(source)
 	local isAlive = isElement(source)
 	local dgsType = dgsIsType(source)
 	if dgsType then
 		local eleData = dgsElementData[source] or {}
 		if isAlive then
+			if MouseData.entered == source then
+				dgsTriggerEvent("onDgsMouseLeave",MouseData.entered,mx,my,hits)
+				MouseData.entered = nil
+			end
+			if MouseData.click.left == source then MouseData.click.left = nil end
+			if MouseData.click.middle == source then MouseData.click.middle = nil end
+			if MouseData.click.right == source then MouseData.click.right = nil end
 			dgsTriggerEvent("onDgsDestroy",source)
 		end
 		local isAttachedToGridList = eleData.attachedToGridList
@@ -1773,10 +1772,6 @@ function dgsCleanElement(source)
 	if tresource and boundResource[tresource] then
 		boundResource[tresource][source] = nil
 	end
-	if MouseData.entered == source then MouseData.entered = nil end
-	if MouseData.click.left == source then MouseData.click.left = nil end
-	if MouseData.click.middle == source then MouseData.click.middle = nil end
-	if MouseData.click.right == source then MouseData.click.right = nil end
 	dgsElementData[source] = nil
 	dgsElementType[source] = nil
 end
