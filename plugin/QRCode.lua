@@ -10,7 +10,7 @@ function dgsRequestQRCode(str,w,h)
 	dgsSetData(QRCode,"loaded",false)
 	local index = math.seekEmpty(QRCodeQueue)
 	QRCodeQueue[index] = QRCode
-	triggerServerEvent("DGSI_RequestQRCode",resourceRoot,encodedStr,w,h,index)
+	triggerServerEvent("DGSI_RequestQRCode",localPlayer,encodedStr,w,h,index)
 	dgsTriggerEvent("onDgsPluginCreate",QRCode,sourceResource)
 	return QRCode
 end
@@ -20,7 +20,7 @@ function dgsGetQRCodeLoaded(QRCode)
 	return dgsElementData[QRCode].loaded
 end
 
-addEventHandler("DGSI_ReceiveQRCode",resourceRoot,function(data,isSuccess,index)
+addEventHandler("DGSI_ReceiveQRCode",localPlayer,function(data,isSuccess,index)
 	local QRCode = QRCodeQueue[index]
 	QRCodeQueue[index] = nil
 	if isSuccess and isElement(QRCode) then

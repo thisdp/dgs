@@ -102,18 +102,18 @@ addEvent("DGSI_RequestIP",true)
 addEvent("DGSI_RequestRemoteImage",true)
 addEventHandler("DGSI_RequestQRCode",resourceRoot,function(str,w,h,id)
 	fetchRemote("https://api.qrserver.com/v1/create-qr-code/?size="..w.."x"..h.."&data="..str,{},function(data,info,player,id)
-		triggerClientEvent(player,"DGSI_ReceiveQRCode",resourceRoot,data,info.success,id)
+		triggerClientEvent(player,"DGSI_ReceiveQRCode",player,data,info.success,id)
 	end,{client,id})
 end)
 
 addEventHandler("DGSI_RequestRemoteImage",resourceRoot,function(website,id)
 	fetchRemote(website,{},function(data,info,player,id)
-		triggerClientEvent(player,"DGSI_ReceiveRemoteImage",resourceRoot,data,info,id)
+		triggerClientEvent(player,"DGSI_ReceiveRemoteImage",player,data,info,id)
 	end,{client,id})
 end)
 
 function getMyIP()
-	triggerClientEvent(client,"DGSI_ReceiveIP",resourceRoot,getPlayerIP(client))
+	triggerClientEvent(client,"DGSI_ReceiveIP",client,getPlayerIP(client))
 end
 addEventHandler("DGSI_RequestIP",resourceRoot,getMyIP)
 
