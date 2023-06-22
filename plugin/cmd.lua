@@ -197,7 +197,6 @@ function executeCmdCommand(cmd,str,...)
 end
 --------------DGS CMD
 dgs_MyIP = "Unknown"
-triggerServerEvent("DGSI_RequestIP",resourceRoot)
 addEventHandler("DGSI_ReceiveIP",resourceRoot,function(ip)
 	dgs_MyIP = ip
 end)
