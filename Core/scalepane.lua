@@ -142,6 +142,13 @@ function dgsScalePaneRecreateRenderTarget(scalepane,lateAlloc)
 	end
 end
 
+function dgsScalePaneCheckTopScrollableMove(button,state)
+	if button ~= "middle" then return end
+	if dgsGetType(MouseData.topScrollable) ~= "dgs-dxscalepane" then return end
+	dgsScalePaneCheckMove(MouseData.topScrollable)
+end
+dgsAddEventHandler("onDgsMouseClick",root,"dgsScalePaneCheckTopScrollableMove")
+
 function checkScalePaneScrollBar(scb,new,old)
 	local parent = dgsElementData[source].attachedToParent
 	if dgsGetType(parent) == "dgs-dxscalepane" then

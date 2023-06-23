@@ -246,6 +246,16 @@ function dgsCheckBoxUpdateTextWidth(cb)
 	end
 	eleData.textWidth = dxGetTextSize(text,w-buttonSizeX,textSize[1],textSize[2],font,wordBreak,colorCoded)
 end
+
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxcheckbox"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	dgsCheckBoxSetSelected(dgsEle,not eleData.state)
+end
+
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
@@ -285,6 +295,7 @@ dgsOnPropertyChange["dgs-dxcheckbox"] = {
 		dgsCheckBoxUpdateTextWidth(dgsEle)
 	end,
 }
+
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------

@@ -368,6 +368,18 @@ function dgsSetSelectedTab(tabpanel,id)
 	return false
 end
 
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxtab"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	local tabpanel = eleData.parent
+	dgsBringToFront(tabpanel)
+	if dgsElementData[tabpanel]["preSelect"] ~= -1 then
+		dgsSetData(tabpanel,"selected",dgsElementData[tabpanel]["preSelect"])
+	end
+end
 
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------

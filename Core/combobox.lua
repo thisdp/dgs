@@ -839,6 +839,35 @@ function dgsComboBoxSort(combobox)
 end
 
 ----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxcombobox"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	dgsSetData(dgsEle,"listState",eleData.listState == 1 and -1 or 1)
+end
+
+dgsOnMouseClickAction["dgs-dxcombobox-Box"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	local combobox = eleData.myCombo
+	local comboEleData = dgsElementData[combobox]
+	local preSelect = comboEleData.preSelect
+	local oldSelect = comboEleData.select
+	comboEleData.select = preSelect
+	local captionEdit = comboEleData.captionEdit
+	if isElement(captionEdit) then
+		local selection = comboEleData.select
+		local itemData = comboEleData.itemData
+		dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
+	end
+	if comboEleData.autoHideAfterSelected then
+		dgsSetData(combobox,"listState",-1)
+	end
+	dgsTriggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
+end
+
+----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxcombobox"] = {

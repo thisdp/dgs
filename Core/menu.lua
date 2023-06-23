@@ -2,7 +2,6 @@ dgsLogLuaMemory()
 dgsRegisterType("dgs-dxmenu","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxmenu",{
 })
-
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage
@@ -59,6 +58,8 @@ function dgsCreateMenu(...)
 	local hoveringImage = dgsCreateTextureFromStyle(using,res,style.itemImage[2])
 	
 	dgsElementData[menu] = {
+		autoHide = true,	--Hide when mouse click
+
 		bgColor = style.bgColor,
 		bgImage = style.bgImage,
 		itemData = {},
@@ -90,8 +91,24 @@ function dgsCreateMenu(...)
 	dgsSetParent(menu,parent,true,true)
 	dgsAttachToTranslation(menu,resourceTranslation[sRes])
 	calculateGuiPositionSize(menu,x,y,relative or false,w,h,relative or false,true)
+	if not isElement(parent) or getElementType(parent) ~= "dgs-dxmenu" then
+		addEventHandler("onClientClick",root,function()
+			dgsMenuClean(menu)
+		end,false,"LOW")
+	end
 	onDGSElementCreate(menu,sRes)
+	dgsSetVisible(menu,false)
+
 	return menu
+end
+
+function dgsMenuClean(menu)
+	local eleData = dgsElementData[menu]
+	if isElement(eleData.subMenu) then
+		destroyElement(eleData.subMenu)
+	end
+	eleData.subMenu = nil
+	return true
 end
 
 function dgsMenuAutoResize(menu)
@@ -206,21 +223,28 @@ function dgsMenuRemoveItem(menu,uniqueID)
 	return true
 end
 
+function onDGSMenuClickHide(menu)
+	local eleData = dgsElementData[menu]
+	if eleData.autoHide then
+		dgsMenuClean(menu)
+		dgsSetVisible(menu)
+	end
+end
+
 addEventHandler("onDgsMenuHover",resourceRoot,function(nPreSelect,oPreSelect,nPreSelectDrawPos)
 	if dgsGetType(source) == "dgs-dxmenu" then
 		local eleData = dgsElementData[source]
 		local itemMap = eleData.itemMap
-		if isElement(eleData.subMenu) then
-			destroyElement(eleData.subMenu)
-			eleData.subMenu = nil
-		end
+		dgsMenuClean(source)
 		if nPreSelect ~= -1 and itemMap[nPreSelect] and #itemMap[nPreSelect] >= 1 then
 			local width,height = eleData.absSize[1],eleData.absSize[2]
-			eleData.subMenu = dgsCreateMenu(width,nPreSelectDrawPos,width,height,false,source)
+			local padding = eleData.padding
+			eleData.subMenu = dgsCreateMenu(width,nPreSelectDrawPos-padding[2],width,height,false,source)
 			local subMenuEleData = dgsElementData[eleData.subMenu]
 			subMenuEleData.itemData = itemMap[nPreSelect]
 			subMenuEleData.itemMap = itemMap
 			subMenuEleData.autoResizeMenu = true
+			subMenuEleData.rootMenu = eleData.rootMenu or source
 		end
 	end
 end)
@@ -229,6 +253,9 @@ end)
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxmenu"] = {
+	visible = function(source)
+	end,
+
 }
 ----------------------------------------------------------------
 ------------------------PreRenderer-----------------------------
@@ -243,7 +270,6 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-
 	local itemData = eleData.itemData
 	local itemHeight = eleData.itemHeight
 	local itemGap = eleData.itemGap/2

@@ -1921,10 +1921,6 @@ mouseStay = {
 	tick = false,
 }
 
-GirdListDoubleClick = {}
-GirdListDoubleClick.down = false
-GirdListDoubleClick.up = false
-
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local dgsEle = dgsGetMouseEnterGUI()
 	local mouseX,mouseY = MouseData.cursorPos[0] and MouseData.cursorPos[1] or x,MouseData.cursorPos[0] and MouseData.cursorPos[2] or y
@@ -1944,279 +1940,48 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			end
 			eleData.lastClickTick = lastClickTick
 		end
-
-		if not isElement(dgsEle) then return end
-		if state == "up" then
-			if button == "left" then
-				if MouseData.click.left == dgsEle then
-					dgsTriggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
-				end
-			elseif button == "right" then
-				if MouseData.click.right == dgsEle then
-					dgsTriggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
-				end
-			elseif button == "middle" then
-				if MouseData.click.middle == dgsEle then
-					dgsTriggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
-				end
-			end
-		else
-			dgsTriggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+		if state == "down" then
+			dgsTriggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)	--Down
+		elseif MouseData.click[button] == dgsEle then
+			dgsTriggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)	--Up
 		end
 		if not isElement(dgsEle) then return end
 		if wasEventCancelled() then return end
 
 		local mouseButtons = eleData.mouseButtons
-		local canLeftClick,canRightClick,canMiddleClick = true
+		local canLeftClick,canRightClick,canMiddleClick = true,false,false
 		if mouseButtons then
 			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
 		end		
 		local mouseClicked = (button == "left" and canLeftClick) or (button == "right" and canRightClick) or (button == "middle" and canMiddleClick)
 
-		local guitype = dgsGetType(dgsEle)
-		if guitype == "dgs-dxbrowser" then
-			focusBrowser(dgsEle)
-		else
-			focusBrowser()
-		end
-		local parent = dgsGetParent(dgsEle)
-		if guitype == "dgs-dxswitchbutton" then
-			if eleData.clickState == state and mouseClicked then
-				dgsSetData(dgsEle,"state", not eleData.state)
+		--Check Grid List Click
+		if mouseClicked then
+			local dgsEleType = dgsGetType(dgsEle)
+			if state == "down" then
+				if not checkScale(dgsEle) then checkMove(dgsEle,button) end
+				dgsBringToFront(dgsEle,button)
 			end
-		end
-		if state == "down" then
-			dgsBringToFront(dgsEle,button)
-			if guitype == "dgs-dxscrollpane" or guitype == "dgs-dxscalepane" then
-				local scrollbar = eleData.scrollbars
-				dgsBringToFront(scrollbar[1],_,_,true)
-				dgsBringToFront(scrollbar[2],_,_,true)
-			end
-			if mouseClicked then
-				if not checkScale(dgsEle) then
-					checkMove(dgsEle,button)
-				end
-			end
-			if mouseClicked then
-				if guitype == "dgs-dxscrollbar" then
-					local scrollArrow = eleData.scrollArrow
-					local x,y = dgsGetPosition(dgsEle,false,true)
-					local w,h = dgsGetSize(dgsEle,false)
-					local isHorizontal = eleData.isHorizontal
-					local length,lrlt = eleData.length[1],eleData.length[2]
-					local slotRange
-					local arrowWid = eleData.arrowWidth
-					if isHorizontal then
-						slotRange = w-(scrollArrow and (arrowWid[2] and h*arrowWid[1] or arrowWid[1])*2 or 0)
-					else
-						slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1])*2 or 0)
-					end
-					local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
-					checkScrollBar(dgsEle,eleData.scrollPosition*0.01*(slotRange-cursorRange),isHorizontal)
-				elseif guitype == "dgs-dxradiobutton" then
-					dgsRadioButtonSetSelected(dgsEle,true)
-				elseif guitype == "dgs-dxcheckbox" then
-					dgsCheckBoxSetSelected(dgsEle,not eleData.state)
-				elseif guitype == "dgs-dxcombobox-Box" then
-					local combobox = eleData.myCombo
-					local comboEleData = dgsElementData[combobox]
-					local preSelect = comboEleData.preSelect
-					local oldSelect = comboEleData.select
-					comboEleData.select = preSelect
-					local captionEdit = comboEleData.captionEdit
-					if isElement(captionEdit) then
-						local selection = comboEleData.select
-						local itemData = comboEleData.itemData
-						dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
-					end
-					if comboEleData.autoHideAfterSelected then
-						dgsSetData(combobox,"listState",-1)
-					end
-					dgsTriggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
-				elseif guitype == "dgs-dxtab" then
-					local tabpanel = eleData.parent
-					dgsBringToFront(tabpanel)
-					if dgsElementData[tabpanel]["preSelect"] ~= -1 then
-						dgsSetData(tabpanel,"selected",dgsElementData[tabpanel]["preSelect"])
-					end
-				elseif guitype == "dgs-dxcombobox" then
-					dgsSetData(dgsEle,"listState",eleData.listState == 1 and -1 or 1)
-				--elseif guitype == "dgs-dxselector" then
-				end
-			end
-			if button == "middle" then
-				if dgsGetType(MouseData.topScrollable) == "dgs-dxscalepane" then
-					dgsScalePaneCheckMove(MouseData.topScrollable)
-				end
-			end
-			if guitype == "dgs-dxgridlist" then
-				if mouseClicked then
-					local oPreSelect = eleData.oPreSelect
-					local rowData = eleData.rowData
-					----Sort
-					if eleData.sortEnabled then
-						local column = eleData.selectedColumn
-						if column and column >= 1 then
-							local sortFunction = eleData.sortFunction
-							local defSortFnc = eleData.defaultSortFunctions
-							local upperSortFnc = gridlistSortFunctions[defSortFnc[1]]
-							local lowerSortFnc = gridlistSortFunctions[defSortFnc[2]]
-							local targetfunction = (sortFunction == upperSortFnc or eleData.sortColumn ~= column) and lowerSortFnc or upperSortFnc
-							dgsGridListSetSortFunction(dgsEle,targetfunction)
-							dgsGridListSetSortColumn(dgsEle,column)
-						end
-					end
-					--------
-					if oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] ~= false then
-						local selectionMode = eleData.selectionMode
-						local multiSelection = eleData.multiSelection
-						local preSelect = eleData.preSelect
-						local clicked = eleData.itemClick
-						local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
-						if #preSelect == 2 then
-							if selectionMode == 1 then
-								if multiSelection then
-									if ctrl then
-										dgsGridListSelectItem(dgsEle,preSelect[1],1,not dgsGridListItemIsSelected(dgsEle,preSelect[1],1))
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(dgsEle,-1,-1)
-											local startRow,endRow = mathMin(clicked[1],preSelect[1]),mathMax(clicked[1],preSelect[1])
-											for row = startRow,endRow do
-												dgsGridListSelectItem(dgsEle,row,1,true)
-											end
-											eleData.itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(dgsEle,preSelect[1],preSelect[2])
-										eleData.itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(dgsEle,preSelect[1],preSelect[2])
-									eleData.itemClick = preSelect
-								end
-							elseif selectionMode == 2 then
-								if multiSelection then
-									if ctrl then
-										dgsGridListSelectItem(dgsEle,preSelect[1],preSelect[2],not dgsGridListItemIsSelected(dgsEle,1,preSelect[2]))
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(dgsEle,-1,-1)
-											local startColumn,endColumn = mathMin(clicked[2],preSelect[2]),mathMax(clicked[2],preSelect[2])
-											for column = startColumn, endColumn do
-												dgsGridListSelectItem(dgsEle,preSelect[1],column,true)
-											end
-											eleData.itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(dgsEle,preSelect[1],preSelect[2])
-										eleData.itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(dgsEle,preSelect[1],preSelect[2])
-									eleData.itemClick = preSelect
-								end
-							elseif selectionMode == 3 then
-								if multiSelection then
-									if ctrl then
-										dgsGridListSelectItem(dgsEle,preSelect[1],preSelect[2],not dgsGridListItemIsSelected(dgsEle,preSelect[1],preSelect[2]))
-									elseif shift then
-										if clicked and #clicked == 2 then
-											dgsGridListSetSelectedItem(dgsEle,-1,-1)
-											local startRow,endRow = mathMin(clicked[1],preSelect[1]),mathMax(clicked[1],preSelect[1])
-											local startColumn,endColumn = mathMin(clicked[2],preSelect[2]),mathMax(clicked[2],preSelect[2])
-											for row = startRow,endRow do
-												for column = startColumn, endColumn do
-													dgsGridListSelectItem(dgsEle,row,column,true)
-												end
-											end
-											eleData.itemClick = clicked
-										end
-									else
-										dgsGridListSetSelectedItem(dgsEle,preSelect[1],preSelect[2])
-										eleData.itemClick = preSelect
-									end
-								else
-									dgsGridListSetSelectedItem(dgsEle,preSelect[1],preSelect[2])
-									eleData.itemClick = preSelect
-								end
-							end
-						end
-					end
-				end
-			end
+			if dgsOnMouseClickAction[dgsEleType] then dgsOnMouseClickAction[dgsEleType](dgsEle,button,state) end
 		end
 		if not isElement(dgsEle) then return end
-		if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
-			local clicked = eleData.itemClick
-			local selectionMode = eleData.selectionMode
-			if dgsGetType(dgsEle) == "dgs-dxgridlist" and GirdListDoubleClick[state].gridlist == dgsEle and GirdListDoubleClick[state].but == button then
-				local pass = true
-				if selectionMode == 1 then
-					if GirdListDoubleClick[state].item ~= clicked[1] then
-						pass = false
-					end
-				elseif selectionMode == 2 then
-					if GirdListDoubleClick[state].column ~= clicked[2] then
-						pass = false
-					end
-				elseif selectionMode == 3 then
-					if GirdListDoubleClick[state].item ~= clicked[1] or GirdListDoubleClick[state].column ~= clicked[2] then
-						pass = false
-					end
-				end
-				if pass then
-					dgsTriggerEvent("onDgsGridListItemDoubleClick",dgsEle,GirdListDoubleClick[state].but,state,clicked[1],clicked[2])
-				end
-			end
-			killTimer(GirdListDoubleClick[state].timer)
-			GirdListDoubleClick[state] = {}
-		else
-			if GirdListDoubleClick[state] then
-				if isTimer(GirdListDoubleClick[state].timer) then
-					killTimer(GirdListDoubleClick[state].timer)
-				end
-			end
-			if dgsGetType(dgsEle) == "dgs-dxgridlist" then
-				local clicked = eleData.itemClick
-				if clicked[1] ~= -1 and clicked[2] ~= -1 then
-					GirdListDoubleClick[state] = {}
-					GirdListDoubleClick[state].item,GirdListDoubleClick[state].column = clicked[1],clicked[2]
-					GirdListDoubleClick[state].gridlist = dgsEle
-					GirdListDoubleClick[state].but = button
-					GirdListDoubleClick[state].timer = setTimer(function()
-						GirdListDoubleClick[state].gridlist = false
-					end,multiClick.Interval,1)
-				end
-			end
-		end
-
-		if not isElement(dgsEle) then return end
-		if state == "up" then
-			if MouseData.click[button] == dgsEle then
-				if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button].up then
-					local sound = playSound(eleData.clickingSound[button].up)
-					setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
-				end
-				dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
-				if not isElement(dgsEle) then return end
-				dgsTriggerEvent("onDgsMouseClickUp",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
-			end
-		else
-			if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button].down then
-				local sound = playSound(eleData.clickingSound[button].down)
-				setSoundVolume(sound,dgsGetClickingSoundVolume(dgsEle,button,state))
+		if state == "down" then	--Down
+			if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button][state] then
+				setSoundVolume(playSound(eleData.clickingSound[button][state]),dgsGetClickingSoundVolume(dgsEle,button,state))
 			end
 			dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 			if not isElement(dgsEle) then return end
 			dgsTriggerEvent("onDgsMouseClickDown",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+		elseif MouseData.click[button] == dgsEle then	--Up
+			if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button][state] then
+				setSoundVolume(playSound(eleData.clickingSound[button][state]),dgsGetClickingSoundVolume(dgsEle,button,state))
+			end
+			dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+			if not isElement(dgsEle) then return end
+			dgsTriggerEvent("onDgsMouseClickUp",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 		end
 		if not isElement(dgsEle) then return end
-		if state == "down" then
-			dgsTriggerEvent("onDgsMouseDown",dgsEle,button,mouseX,mouseY,isCoolingDown)
-		elseif state == "up" then
-			dgsTriggerEvent("onDgsMouseUp",dgsEle,button,mouseX,mouseY,isCoolingDown)
-		end
+		dgsTriggerEvent(state == "down" and "onDgsMouseDown" or "onDgsMouseUp",dgsEle,button,mouseX,mouseY,isCoolingDown)
 		if not isElement(dgsEle) then return end
 		if isTimer(multiClick[button][state][3]) then killTimer(multiClick[button][state][3]) end
 		if multiClick[button][state][1] == 0 then multiClick[button][state][2] = dgsEle end
@@ -2225,31 +1990,34 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			if multiClick[button][state][1] == 2 then
 				dgsTriggerEvent("onDgsMouseDoubleClick",dgsEle,button,state,mouseX,mouseY)
 				if not isElement(dgsEle) then return end
-				if state == "down" then
-					dgsTriggerEvent("onDgsMouseDoubleClickDown",dgsEle,button,state,mouseX,mouseY)
-				else
-					dgsTriggerEvent("onDgsMouseDoubleClickUp",dgsEle,button,state,mouseX,mouseY)
-				end
+				dgsTriggerEvent(state == "down" and "onDgsMouseDoubleClickDown" or "onDgsMouseDoubleClickUp",dgsEle,button,state,mouseX,mouseY)
 			end
-			if not isElement(dgsEle) then return end
-			dgsTriggerEvent("onDgsMouseMultiClick",dgsEle,button,state,mouseX,mouseY,multiClick[button][state][1])
-			multiClick[button][state][3] = setTimer(function(button,state)
-				multiClick[button][state] = {0,false,false}
-			end,multiClick.Interval,1,button,state)
+			if isElement(dgsEle) then
+				dgsTriggerEvent("onDgsMouseMultiClick",dgsEle,button,state,mouseX,mouseY,multiClick[button][state][1])
+				multiClick[button][state][3] = setTimer(function(button,state)
+					multiClick[button][state] = {0,false,false}
+				end,multiClick.Interval,1,button,state)
+			end
 		else
 			multiClick[button][state] = {0,false,false}
 		end
-		if not isElement(dgsEle) then return end
-
 	elseif state == "down" then
 		if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
 			blurEditMemo()
 		end
 		if isElement(MouseData.focused) then
 			dgsTriggerEvent("onDgsBlur",MouseData.focused,false)
+			MouseData.focused = nil
 		end
 	end
-	if state == "up" then
+	if state == "down" then
+		if isElement(dgsEle) then
+			MouseData.clickPosition[button][0] = true
+			local posX,posY = dgsGetPosition(dgsEle,false,true)
+			MouseData.clickPosition[button][1] = mouseX
+			MouseData.clickPosition[button][2] = mouseY
+		end
+	elseif state == "up" then
 		MouseData.click[button] = false
 		if button == "left" then
 			MouseData.click.left = false
@@ -2266,8 +2034,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		end
 		dgsDragDropBoard.button = nil
 		dgsDragDropBoard.lock = false
-
-
 		MouseData.Move[0] = false
 		MouseData.Move[3] = nil
 		MouseData.MoveScale[0] = false
@@ -2275,15 +2041,6 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		MouseData.scbClickData = nil
 		MouseData.scbClickButton = nil
 		MouseData.selectorClickData = nil
-	end
-	if state == "down" then
-		if isElement(dgsEle) then
-			MouseData.clickPosition[button][0] = true
-			local posX,posY = dgsGetPosition(dgsEle,false,true)
-			MouseData.clickPosition[button][1] = mouseX
-			MouseData.clickPosition[button][2] = mouseY
-		end
-	else
 		MouseData.clickPosition[button][0] = false
 	end
 end)

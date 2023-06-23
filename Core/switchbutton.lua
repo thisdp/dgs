@@ -179,6 +179,15 @@ function dgsSwitchButtonGetText(switchbutton)
 	return dgsElementData[switchbutton].textOn,dgsElementData[switchbutton].textOff
 end
 
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxswitchbutton"] = function(dgsEle,button,state)
+	local eleData = dgsElementData[dgsEle]
+	if eleData.clickState == state then
+		dgsSetData(dgsEle,"state", not eleData.state)
+	end
+end
 
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------

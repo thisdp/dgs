@@ -117,6 +117,8 @@ local tonumber = tonumber
 local loadstring = loadstring
 local type = type
 local mathLerp = math.lerp
+local mathMin = math.min
+local mathMax = math.max
 local tableSort = table.sort
 local tableInsert = table.insert
 local tableRemove = table.remove
@@ -2148,7 +2150,7 @@ function dgsGridListGetSelectedCount(gridlist,r,c)
 	end
 end
 
-function dgsGridListSetSelectedItem(gridlist,r,c,scrollTo,isOrigin)
+function dgsGridListSetSelectedItem(gridlist,r,c,scrollTo)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetSelectedItem",1,"dgs-dxgridlist")) end
 	local r,c = r or -1,c or -1
 	local eleData = dgsElementData[gridlist]
@@ -2198,6 +2200,13 @@ function dgsGridListSetSelectedItem(gridlist,r,c,scrollTo,isOrigin)
 	if scrollTo then
 		dgsGridListScrollTo(gridlist,r,c)
 	end
+	return true
+end
+
+function dgsGridListClearSelectedItem(gridlist)
+	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetSelectedItem",1,"dgs-dxgridlist")) end
+	local eleData = dgsElementData[gridlist]
+	dgsSetData(gridlist,"rowSelect",{})
 	return true
 end
 
@@ -2648,6 +2657,131 @@ function configGridList(gridlist)
 	eleData.configNextFrame = false
 end
 
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+GirdListDoubleClick = {}
+GirdListDoubleClick.down = false
+GirdListDoubleClick.up = false
+dgsOnMouseClickAction["dgs-dxgridlist"] = function(dgsEle,button,state)
+	local eleData = dgsElementData[dgsEle]
+	while true do
+		if state ~= "down" then break end
+		--------
+		local oPreSelect = eleData.oPreSelect
+		local rowData = eleData.rowData
+		----Sort
+		if eleData.sortEnabled then
+			local column = eleData.selectedColumn
+			if column and column >= 1 then
+				local sortFunction = eleData.sortFunction
+				local defSortFnc = eleData.defaultSortFunctions
+				local upperSortFnc = gridlistSortFunctions[defSortFnc[1]]
+				local lowerSortFnc = gridlistSortFunctions[defSortFnc[2]]
+				local targetfunction = (sortFunction == upperSortFnc or eleData.sortColumn ~= column) and lowerSortFnc or upperSortFnc
+				dgsGridListSetSortFunction(dgsEle,targetfunction)
+				dgsGridListSetSortColumn(dgsEle,column)
+			end
+		end
+		if not(oPreSelect and rowData[oPreSelect] and rowData[oPreSelect][-1] ~= false) then break end
+		local selectionMode = eleData.selectionMode
+		local multiSelection = eleData.multiSelection
+		local preSelect = eleData.preSelect
+		local clicked = eleData.itemClick
+		local shift,ctrl = getKeyState("lshift") or getKeyState("rshift"),getKeyState("lctrl") or getKeyState("rctrl")
+		if #preSelect ~= 2 then break end
+		if multiSelection then
+			if selectionMode == 1 then
+				if ctrl then
+					dgsGridListSelectItem(dgsEle,preSelect[1],1,not dgsGridListItemIsSelected(dgsEle,preSelect[1],1))
+					break
+				elseif shift then
+					if clicked and #clicked == 2 then
+						dgsGridListClearSelectedItem(dgsEle)
+						local startRow,endRow = mathMin(clicked[1],preSelect[1]),mathMax(clicked[1],preSelect[1])
+						for row = startRow,endRow do
+							dgsGridListSelectItem(dgsEle,row,1,true)
+						end
+						--eleData.itemClick = clicked
+					end
+					break
+				end
+			elseif selectionMode == 2 then
+				if ctrl then
+					dgsGridListSelectItem(dgsEle,preSelect[1],preSelect[2],not dgsGridListItemIsSelected(dgsEle,1,preSelect[2]))
+					break
+				elseif shift then
+					if clicked and #clicked == 2 then
+						dgsGridListClearSelectedItem(dgsEle)
+						local startColumn,endColumn = mathMin(clicked[2],preSelect[2]),mathMax(clicked[2],preSelect[2])
+						for column = startColumn, endColumn do
+							dgsGridListSelectItem(dgsEle,preSelect[1],column,true)
+						end
+						--eleData.itemClick = clicked
+					end
+					break
+				end
+			elseif selectionMode == 3 then
+				if ctrl then
+					dgsGridListSelectItem(dgsEle,preSelect[1],preSelect[2],not dgsGridListItemIsSelected(dgsEle,preSelect[1],preSelect[2]))
+					break
+				elseif shift then
+					if clicked and #clicked == 2 then
+						dgsGridListClearSelectedItem(dgsEle)
+						local startRow,endRow = mathMin(clicked[1],preSelect[1]),mathMax(clicked[1],preSelect[1])
+						local startColumn,endColumn = mathMin(clicked[2],preSelect[2]),mathMax(clicked[2],preSelect[2])
+						for row = startRow,endRow do
+							for column = startColumn, endColumn do
+								dgsGridListSelectItem(dgsEle,row,column,true)
+							end
+						end
+						--eleData.itemClick = clicked
+					end
+					break
+				end
+			end
+		end
+		dgsGridListSetSelectedItem(dgsEle,preSelect[1],preSelect[2])
+		break
+	end
+	--Grid List Double Click
+	if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
+		local clicked = eleData.itemClick
+		local selectionMode = eleData.selectionMode
+		if GirdListDoubleClick[state].gridlist == dgsEle and MouseData.focus == GirdListDoubleClick[state].gridlist and GirdListDoubleClick[state].but == button then
+			local pass = true
+			if selectionMode == 1 then
+				if GirdListDoubleClick[state].item ~= clicked[1] then
+					pass = false
+				end
+			elseif selectionMode == 2 then
+				if GirdListDoubleClick[state].column ~= clicked[2] then
+					pass = false
+				end
+			elseif selectionMode == 3 then
+				if GirdListDoubleClick[state].item ~= clicked[1] or GirdListDoubleClick[state].column ~= clicked[2] then
+					pass = false
+				end
+			end
+			if pass then
+				dgsTriggerEvent("onDgsGridListItemDoubleClick",dgsEle,GirdListDoubleClick[state].but,state,clicked[1],clicked[2])
+			end
+		end
+		killTimer(GirdListDoubleClick[state].timer)
+		GirdListDoubleClick[state] = {}
+	else
+		local clicked = eleData.itemClick
+		if clicked[1] ~= -1 and clicked[2] ~= -1 then
+			GirdListDoubleClick[state] = {}
+			GirdListDoubleClick[state].item,GirdListDoubleClick[state].column = clicked[1],clicked[2]
+			GirdListDoubleClick[state].gridlist = dgsEle
+			GirdListDoubleClick[state].but = button
+			GirdListDoubleClick[state].timer = setTimer(function()
+				GirdListDoubleClick[state].gridlist = false
+			end,multiClick.Interval,1)
+		end
+	end
+end
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------

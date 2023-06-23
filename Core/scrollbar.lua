@@ -324,6 +324,28 @@ function dgsScrollBarGetTroughClickAction(scb)
 end
 
 ----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxscrollbar"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	local scrollArrow = eleData.scrollArrow
+	local x,y = dgsGetPosition(dgsEle,false,true)
+	local w,h = dgsGetSize(dgsEle,false)
+	local isHorizontal = eleData.isHorizontal
+	local length,lrlt = eleData.length[1],eleData.length[2]
+	local slotRange
+	local arrowWid = eleData.arrowWidth
+	if isHorizontal then
+		slotRange = w-(scrollArrow and (arrowWid[2] and h*arrowWid[1] or arrowWid[1])*2 or 0)
+	else
+		slotRange = h-(scrollArrow and (arrowWid[2] and w*arrowWid[1] or arrowWid[1])*2 or 0)
+	end
+	local cursorRange = (lrlt and length*slotRange) or (length <= slotRange and length or slotRange*0.01)
+	checkScrollBar(dgsEle,eleData.scrollPosition*0.01*(slotRange-cursorRange),isHorizontal)
+end
+
+----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxscrollbar"] = {

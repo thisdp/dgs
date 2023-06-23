@@ -233,6 +233,15 @@ function dgsRadioButtonUpdateTextWidth(rb)
 	end
 	eleData.textWidth = dxGetTextSize(text,w-buttonSizeX,textSize[1],textSize[2],font,wordBreak,colorCoded)
 end
+
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxradiobutton"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	dgsRadioButtonSetSelected(dgsEle,true)
+end
+
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
