@@ -1616,7 +1616,7 @@ function onClientMouseTriggered(button)
 end
 
 MouseHolder = {}
-function onDGSMouseCheck(source,button,statex,y,isCoolingDown)
+function onDGSMouseCheck(source,button,state,x,y,isCoolingDown)
 	local eleData = dgsElementData[source]
 	local mouseButtons = eleData.mouseButtons
 	local canLeftClick,canRightClick,canMiddleClick = true
