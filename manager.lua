@@ -39,6 +39,8 @@ dgsBackEndRenderer = {
 		self[dgsType] = theFunction
 	end,
 }
+--On Click Action
+dgsOnMouseClickAction = {}
 --Collider
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)
@@ -930,6 +932,7 @@ function dgsEasingFunctionExists(name)
 end
 
 ------------------------DGS Property Saver
+--[[
 dgsElementKeeper = {}
 function dgsSetElementKeeperEnabled(state)
 	if sourceResource then
@@ -945,7 +948,6 @@ function dgsGetElementKeeperEnabled()
 	end
 	return false
 end
-
 function DGSI_SaveData()
 	--Properties
 	setElementData(root,"DGSI_Properties",dgsElementData,false)
@@ -973,7 +975,7 @@ function DGSI_SaveData()
 	setElementData(root,"DGSI_Animations",animQueue,false)
 	--Others
 	setElementData(root,"DGSI_SaveData",true,false)
-end
+end]]
 
 --[[
 Logger type:
@@ -981,6 +983,8 @@ Logger type:
 2.Shader
 3.Font
 ]]
+
+--[[
 function DGSI_AllocateDxElement(e,oldDgsElementLogger)
 	if oldDgsElementLogger[e] then
 		if isElement(oldDgsElementLogger[e][3]) then
@@ -1128,23 +1132,25 @@ function DGSI_ReadData()
 
 	setElementData(root,"DGSI_SaveData",false,false)
 end
-
+addEventHandler("onClientResourceStart",resourceRoot,DGSI_ReadData,false)
+]]
 addEventHandler("onClientResourceStop",resourceRoot,function()
 	--Element Logger
-	setElementData(root,"DGSI_ElementLogger",dgsElementLogger,false)
+	--setElementData(root,"DGSI_ElementLogger",dgsElementLogger,false)
 	if isElement(GlobalEdit) then
 		removeEventHandler("onClientElementDestroy",GlobalEdit,dgsGlobalEditDestroyDetector)	--shutdown global edit destroy detector 
 	end
 	if isElement(GlobalMemo) then
 		removeEventHandler("onClientElementDestroy",GlobalMemo,dgsGlobalMemoDestroyDetector)	--shutdown global memo destroy detector 
 	end
+	--[[
 	local terminator = createElement("dgs-dxterminator")
 	addEventHandler("onClientElementDestroy",terminator,function()
 		DGSI_SaveData()
 	end,false)
+	]]
 end,false)
 
-addEventHandler("onClientResourceStart",resourceRoot,DGSI_ReadData,false)
 
 addEventHandler("onClientResourceStop",root,function(res)
 	if boundResource[res] then
