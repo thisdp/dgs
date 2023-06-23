@@ -1138,7 +1138,7 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 			wordWrapShowLine[2] = startWeakLine
 		end
 	else
-		if #textTable > canHold and eleData.showLine-1+canHold > #textTable then
+		if #textTable >= canHold and eleData.showLine-1+canHold > #textTable then
 			eleData.showLine = 1-canHold+#textTable
 		end
 	end
@@ -1338,14 +1338,14 @@ function configMemo(memo)
 
 	local scbLengthVrt = eleData.scrollBarLength[1]
 	local higLen = 1-(textCnt-canHold)/textCnt
-	higLen = higLen >= 0.95 and 0.95 or higLen
+	higLen = higLen >= 1 and 1 or higLen
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = eleData.scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 
 	local scbLengthHoz = eleData.scrollBarLength[2]
 	local widLen = 1-(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)/eleData.rightLength[1]
-	widLen = widLen >= 0.95 and 0.95 or widLen
+	widLen = widLen >= 1 and 1 or widLen
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = eleData.scrollSize*5/(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
@@ -1395,6 +1395,7 @@ function checkMemoScrollBar(source,new,old)
 			wordWrapShowLine[2] = startWeakLine
 		else
 			local temp = mathFloor((#textTable-canHold)*new*0.01)+1
+			if temp <= 1 then temp = 1 end
 			dgsSetData(memo,"showLine",temp)
 		end
 	elseif source == scrollbars[2] then
