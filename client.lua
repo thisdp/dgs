@@ -541,7 +541,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 						if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
 							if type(checkPixel) == "function" then
 								local checkFnc = daEleData.checkFunction
-								if checkFnc(_mx,_my,mx,my) then
+								if checkFnc(_mx,_my,mx,my,xNRT,yNRT,w,h) then
 									if enabledInherited then
 										MouseData.hit = source
 									elseif checkDisabledElement then

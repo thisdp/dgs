@@ -69,8 +69,7 @@ end
 
 detectAreaPreDefine = [[
 	local args = {...}
-	local mx,my,x,y,w,h = args[1],args[2],args[3],args[4],args[5],args[6]
-	local mxRlt,myRlt = (mx-x)/w,(my-y)/h
+	local mxRlt,myRlt,mx,my,x,y,w,h = args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8]
 ]]
 
 function dgsDetectAreaDefaultFunction(mxRlt,myRlt,mxAbs,myAbs)
@@ -154,7 +153,7 @@ dgsRenderer["dgs-dxdetectarea"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 			if _mx > 0 and _my > 0 and _mx <= 1 and _my <= 1 then
 				if type(checkPixel) == "function" then
 					local checkFnc = eleData.checkFunction
-					if checkFnc(mx,my,x,y,w,h) then
+					if checkFnc(_mx,_my,mx,my,x,y,w,h) then
 						MouseData.hit = source
 						color = 0xFFFF0000
 					end
