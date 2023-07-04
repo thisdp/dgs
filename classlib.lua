@@ -860,7 +860,7 @@ class {
 		getCaretPosition = gObjFnc("dgsEditGetCaretPosition"),
 		setCaretStyle = gObjFnc("dgsEditSetCaretStyle",true),
 		getCaretStyle = gObjFnc("dgsEditGetCaretStyle"),
-		setWhiteList = gObjFnc("dgsEditSetWhiteList",true),
+		setTextFilter = gObjFnc("dgsEditSetTextFilter",true),
 		setMaxLength = gObjFnc("dgsEditSetMaxLength",true),
 		getMaxLength = gObjFnc("dgsEditGetMaxLength"),
 		setReadOnly = gObjFnc("dgsEditSetReadOnly",true),
