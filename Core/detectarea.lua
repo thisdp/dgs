@@ -69,7 +69,7 @@ end
 
 detectAreaPreDefine = [[
 	local args = {...}
-	local mx,my,x,y,w,h = args[1],args[2],args[3],args[4]
+	local mx,my,x,y,w,h = args[1],args[2],args[3],args[4],args[5],args[6]
 	local mxRlt,myRlt = (mx-x)/w,(my-y)/h
 ]]
 
