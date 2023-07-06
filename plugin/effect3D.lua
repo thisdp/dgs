@@ -25,7 +25,7 @@ end
 
 function dgsEffect3DMouseMoveCheck()
 	local filter = dgsElementData[source].filter
-	if not isElement(filter[1]) then 
+	if not isElement(filter[1]) then
 		removeEventHandler("onDgsElementRender",source,dgsEffect3DMouseMoveCheck)
 		dgsEffect3DRemoveFromScrollPane(source)
 	end
@@ -37,7 +37,7 @@ function dgsEffect3DMouseMoveCheck()
 		local w,h = dgsElementData[source].absSize[1],dgsElementData[source].absSize[2]
 		local rotFactor = dgsElementData[filter[1]].rotFactor
 		local dx,dy = (spx+w/2)-x,(spy+h/2)-y
-		local dx,dy = -dx/w*rotFactor,dy/h*rotFactor
+		dx,dy = -dx/w*rotFactor,dy/h*rotFactor
 		filter[2] = dx
 		filter[3] = dy
 	end
@@ -64,7 +64,7 @@ function dgsEffect3DGetAlwaysEnabled(effect3d)
 	if not(dgsGetPluginType(effect3d) == "dgs-dxeffect3d") then error(dgsGenAsrt(rectShader,"dgsEffect3DGetAlwaysEnabled",1,"plugin dgs-dxeffect3d")) end
 	return dgsElementData[effect3d].alwaysEnable
 end
-	
+
 function dgsEffect3DRemoveFromScrollPane(effect3d)
 	if dgsGetPluginType(effect3d) == "dgs-dxeffect3d" then
 		local sp = dgsElementData[effect3d].applyToScrollPane
@@ -79,7 +79,7 @@ function dgsEffect3DRemoveFromScrollPane(effect3d)
 		local sp = effect3d
 		local filter = dgsElementData[sp].filter
 		if filter then
-			local effect3d = filter[1]
+			effect3d = filter[1]
 			dgsSetData(sp,"renderEventCall",false)
 			removeEventHandler("onDgsElementRender",sp,dgsEffect3DMouseMoveCheck)
 			if isElement(effect3d) then

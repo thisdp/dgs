@@ -2,7 +2,6 @@ dgsLogLuaMemory()
 dgsRegisterType("dgs-dxmenu","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxmenu",{
 })
-
 --Dx Functions
 local dxDrawLine = dxDrawLine
 local dxDrawImage = dxDrawImage
@@ -47,18 +46,20 @@ function dgsCreateMenu(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateMenu",4,"number")) end
 	local menu = createElement("dgs-dxmenu")
 	dgsSetType(menu,"dgs-dxmenu")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
 	style = style.menu
-	
+
 	local normalImage = dgsCreateTextureFromStyle(using,res,style.itemImage[1])
 	local hoveringImage = dgsCreateTextureFromStyle(using,res,style.itemImage[2])
-	
+
 	dgsElementData[menu] = {
+		autoHide = true,	--Hide when mouse click
+
 		bgColor = style.bgColor,
 		bgImage = style.bgImage,
 		itemData = {},
@@ -90,8 +91,24 @@ function dgsCreateMenu(...)
 	dgsSetParent(menu,parent,true,true)
 	dgsAttachToTranslation(menu,resourceTranslation[sRes])
 	calculateGuiPositionSize(menu,x,y,relative or false,w,h,relative or false,true)
+	if not isElement(parent) or getElementType(parent) ~= "dgs-dxmenu" then
+		addEventHandler("onClientClick",root,function()
+			dgsMenuClean(menu)
+		end,false,"LOW")
+	end
 	onDGSElementCreate(menu,sRes)
+	dgsSetVisible(menu,false)
+
 	return menu
+end
+
+function dgsMenuClean(menu)
+	local eleData = dgsElementData[menu]
+	if isElement(eleData.subMenu) then
+		destroyElement(eleData.subMenu)
+	end
+	eleData.subMenu = nil
+	return true
 end
 
 function dgsMenuAutoResize(menu)
@@ -100,7 +117,7 @@ function dgsMenuAutoResize(menu)
 	local itemHeight = eleData.itemHeight
 	local itemGap = eleData.itemGap/2
 	local padding = eleData.padding
-	
+
 	local separatorHeight = eleData.separatorHeight
 	local separatorGap = eleData.separatorGap/2
 
@@ -191,7 +208,7 @@ function dgsMenuRemoveItem(menu,uniqueID)
 				end
 			end
 		else
-			local parent = itemMap[parentUniqueID] 
+			local parent = itemMap[parentUniqueID]
 			if parent and parent[3] then
 				for i=1,#parent[3] do	--Find item in parent
 					if parent[3][i] == item then
@@ -206,21 +223,28 @@ function dgsMenuRemoveItem(menu,uniqueID)
 	return true
 end
 
+function onDGSMenuClickHide(menu)
+	local eleData = dgsElementData[menu]
+	if eleData.autoHide then
+		dgsMenuClean(menu)
+		dgsSetVisible(menu)
+	end
+end
+
 addEventHandler("onDgsMenuHover",resourceRoot,function(nPreSelect,oPreSelect,nPreSelectDrawPos)
 	if dgsGetType(source) == "dgs-dxmenu" then
 		local eleData = dgsElementData[source]
 		local itemMap = eleData.itemMap
-		if isElement(eleData.subMenu) then
-			destroyElement(eleData.subMenu)
-			eleData.subMenu = nil
-		end
+		dgsMenuClean(source)
 		if nPreSelect ~= -1 and itemMap[nPreSelect] and #itemMap[nPreSelect] >= 1 then
 			local width,height = eleData.absSize[1],eleData.absSize[2]
-			eleData.subMenu = dgsCreateMenu(width,nPreSelectDrawPos,width,height,false,source)
+			local padding = eleData.padding
+			eleData.subMenu = dgsCreateMenu(width,nPreSelectDrawPos-padding[2],width,height,false,source)
 			local subMenuEleData = dgsElementData[eleData.subMenu]
 			subMenuEleData.itemData = itemMap[nPreSelect]
 			subMenuEleData.itemMap = itemMap
 			subMenuEleData.autoResizeMenu = true
+			subMenuEleData.rootMenu = eleData.rootMenu or source
 		end
 	end
 end)
@@ -229,6 +253,9 @@ end)
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxmenu"] = {
+	visible = function(source)
+	end,
+
 }
 ----------------------------------------------------------------
 ------------------------PreRenderer-----------------------------
@@ -243,11 +270,10 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-
 	local itemData = eleData.itemData
 	local itemHeight = eleData.itemHeight
 	local itemGap = eleData.itemGap/2
-	local buttonState = 1
+	--[[local buttonState = 1
 	if MouseData.entered == source then
 		buttonState = 2
 		if eleData.clickType == 1 then
@@ -263,7 +289,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				buttonState = 3
 			end
 		end
-	end
+	end]]
 	local bgImage = eleData.bgImage
 	local bgColor = eleData.bgColor
 	dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
@@ -279,7 +305,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local drawWidth = w-padding[2]*2
 	local drawPosX = padding[1]
 	local drawPosY = padding[2]
-	
+
 	local separatorHeight = eleData.separatorHeight
 	local separatorLineStart = eleData.separatorLine[3] and eleData.separatorLine[1]*drawWidth or eleData.separatorLine[1]
 	local separatorLineEnd = eleData.separatorLine[3] and eleData.separatorLine[2]*drawWidth or eleData.separatorLine[2]

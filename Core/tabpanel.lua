@@ -93,21 +93,21 @@ function dgsCreateTabPanel(...)
 	end
 	local tabpanel = createElement("dgs-dxtabpanel")
 	dgsSetType(tabpanel,"dgs-dxtabpanel")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.tabpanel
-	local tabHeight = tabHeight or style.tabHeight
-	local nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
-	local hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2])) or nImage
-	local cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3])) or nImage
-	local nColor = nColor or (style.tabColor and style.tabColor[1])
-	local hColor = hColor or (style.tabColor and style.tabColor[2])
-	local cColor = cColor or (style.tabColor and style.tabColor[3])
+	tabHeight = tabHeight or style.tabHeight
+	nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
+	hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2])) or nImage
+	cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3])) or nImage
+	nColor = nColor or (style.tabColor and style.tabColor[1])
+	hColor = hColor or (style.tabColor and style.tabColor[2])
+	cColor = cColor or (style.tabColor and style.tabColor[3])
 	dgsElementData[tabpanel] = {
 		tabHeight = {tabHeight,false},
 		tabMaxWidth = {10000,false},
@@ -185,7 +185,7 @@ function dgsCreateTab(...)
 	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsCreateTab",2,"dgs-dxtabpanel")) end
 	local tab = createElement("dgs-dxtab")
 	dgsSetType(tab,"dgs-dxtab")
-						
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
@@ -207,12 +207,12 @@ function dgsCreateTab(...)
 	local tabGapSize = eleData.tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
-	local nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
-	local hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2]))
-	local cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3]))
-	local nColor = nColor or (style.tabColor and style.tabColor[1])
-	local hColor = hColor or (style.tabColor and style.tabColor[2])
-	local cColor = cColor or (style.tabColor and style.tabColor[3])
+	nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
+	hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2]))
+	cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3]))
+	nColor = nColor or (style.tabColor and style.tabColor[1])
+	hColor = hColor or (style.tabColor and style.tabColor[2])
+	cColor = cColor or (style.tabColor and style.tabColor[3])
 	dgsElementData[tab] = {
 		parent = tabpanel,
 		id = id,
@@ -368,6 +368,18 @@ function dgsSetSelectedTab(tabpanel,id)
 	return false
 end
 
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxtab"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	local tabpanel = eleData.parent
+	dgsBringToFront(tabpanel)
+	if dgsElementData[tabpanel]["preSelect"] ~= -1 then
+		dgsSetData(tabpanel,"selected",dgsElementData[tabpanel]["preSelect"])
+	end
+end
 
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
@@ -441,7 +453,7 @@ dgsOnPropertyChange["dgs-dxtab"] = {
 			dgsElementData[dgsEle]._translation_font = nil
 		end
 		dgsElementData[dgsEle].font = value
-		
+
 		local tabpanel = dgsElementData[dgsEle].parent
 		local w = dgsElementData[tabpanel].absSize[1]
 		local t_minWid = dgsElementData[tabpanel].tabMinWidth
@@ -482,7 +494,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	local font = eleData.font or systemFont
 	local colorCoded = eleData.colorCoded
 	local shadow = eleData.shadow
@@ -517,10 +529,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local t = tabs[d]
 				local tabData = dgsElementData[t]
 				if tabData.visible then
-					local twordBreak,tcolorCoded,tshadow = tabData.wordBreak,tabData.colorCoded,tabData.shadow
-					if twordBreak == nil then twordBreak = wordBreak end
-					if tcolorCoded == nil then tcolorCoded = colorCoded end
-					if tshadow == nil then tshadow = shadow end
+					local tshadow = tabData.shadow or shadow
 					local width = tabData.width+tabPadding*2
 					if tabX+width >= 0 and tabX <= w then
 						local tabTextColor = tabData.textColor
@@ -627,7 +636,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 				end
 				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-			end		
+			end
 		end
 		eleData.preSelect = -1
 		dxSetRenderTarget(rndtgt)

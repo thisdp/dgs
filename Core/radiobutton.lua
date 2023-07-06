@@ -5,7 +5,7 @@ dgsRegisterProperties("dgs-dxradiobutton",{
 	buttonSize = 		{	{ PArg.Number, PArg.Number+PArg.Nil, PArg.Bool }	},
 	buttonSide = 			{	PArg.String	},
 	buttonAlignment = 		{	PArg.String	},
-	clip = 				{	PArg.Bool	},  
+	clip = 				{	PArg.Bool	},
 	colorChecked = 		{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	colorCoded = 		{	PArg.Bool	},
 	colorUnchecked = 	{	{ PArg.Color, PArg.Color, PArg.Color }	},
@@ -13,7 +13,7 @@ dgsRegisterProperties("dgs-dxradiobutton",{
 	imageChecked = 		{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	imageUnchecked = 	{	{ PArg.Nil+PArg.Material, PArg.Nil+PArg.Material, PArg.Nil+PArg.Material }	},
 	shadow = 			{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
-	text = 				{	PArg.Text	}, 
+	text = 				{	PArg.Text	},
 	textColor = 		{	PArg.Color	},
 	textPadding = 		{	{ PArg.Number, PArg.Bool }	},
 	textOffset = 		{	PArg.Nil, { PArg.Number, PArg.Number, PArg.Bool }, {	{ PArg.Number, PArg.Number, PArg.Bool }, { PArg.Number, PArg.Number, PArg.Bool }, { PArg.Number, PArg.Number, PArg.Bool }	}	},
@@ -80,13 +80,13 @@ function dgsCreateRadioButton(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateRadioButton",4,"number")) end
 	local rb = createElement("dgs-dxradiobutton")
 	dgsSetType(rb,"dgs-dxradiobutton")
-			
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.radiobutton
 	local imageUnchecked = style.imageUnchecked
 	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
@@ -233,6 +233,15 @@ function dgsRadioButtonUpdateTextWidth(rb)
 	end
 	eleData.textWidth = dxGetTextSize(text,w-buttonSizeX,textSize[1],textSize[2],font,wordBreak,colorCoded)
 end
+
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxradiobutton"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	dgsRadioButtonSetSelected(dgsEle,true)
+end
+
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
@@ -297,9 +306,9 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	local colorimgid = 1
 	if MouseData.entered == source then
 		colorimgid = 2
-		local mouseButtons = eleData.mouseButtons 
-		local canLeftClick,canRightClick,canMiddleClick = true 
-		if mouseButtons then 
+		local mouseButtons = eleData.mouseButtons
+		local canLeftClick,canRightClick,canMiddleClick = true
+		if mouseButtons then
 			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
 		end
 		if (MouseData.click.left == source and canLeftClick) or (MouseData.click.right == source and canRightClick) or (MouseData.click.middle == source and canMiddleClick) then

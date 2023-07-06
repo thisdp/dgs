@@ -1,9 +1,9 @@
-﻿function outputDGSMessage(message,title,level,visibleTo) -- level: 3 = info, 2 = warning, 1 = error, default is info
+function outputDGSMessage(message,title,level,visibleTo) -- level: 3 = info, 2 = warning, 1 = error, default is info
 	message = "[DGS"..(title and " "..title or "").."] "..message
 	if type(visibleTo) ~= "table" then
 		visibleTo = {visibleTo or "console"}
 	end
-	local r,g,b = 0,255,0 
+	local r,g,b = 0,255,0
 	if level == 2 then
 		r,g,b = 255, 147, 0
 	elseif level == 1 then
@@ -37,14 +37,14 @@ DGSConfig = {
 
 
 function loadConfig()
-	if fileExists("config.txt") then 
+	if fileExists("config.txt") then
 		local file = fileOpen ("config.txt")
-		if file then 
+		if file then
 			local configUpdateRequired = false
 			local str = fileRead(file,fileGetSize(file))
 			fileClose(file)
 			local fnc = loadstring(str)
-			if fnc then 
+			if fnc then
 				local dgsConfig = {}
 				setfenv(fnc,{dgsConfig=dgsConfig})
 				fnc()
@@ -62,8 +62,8 @@ function loadConfig()
 			end
 			if configUpdateRequired then
 				fileDelete("config.txt")
-				local file = fileCreate("config.txt")
-				local str = ""
+				file = fileCreate("config.txt")
+				str = ""
 				for k,v in pairs(DGSConfig) do
 					local value = type(v) == "string" and '"'..v..'"' or tostring(v)
 					str = str.."\r\ndgsConfig."..k.." = "..value
@@ -100,14 +100,14 @@ loadConfig()
 addEvent("DGSI_RequestQRCode",true)
 addEvent("DGSI_RequestRemoteImage",true)
 addEventHandler("DGSI_RequestQRCode",resourceRoot,function(str,w,h,id)
-	fetchRemote("https://api.qrserver.com/v1/create-qr-code/?size="..w.."x"..h.."&data="..str,{},function(data,info,player,id)
-		triggerClientEvent(player,"DGSI_ReceiveQRCode",resourceRoot,data,info.success,id)
+	fetchRemote("https://api.qrserver.com/v1/create-qr-code/?size="..w.."x"..h.."&data="..str,{},function(data,info,player,id2)
+		triggerClientEvent(player,"DGSI_ReceiveQRCode",player,data,info.success,id2)
 	end,{client,id})
 end)
 
 addEventHandler("DGSI_RequestRemoteImage",resourceRoot,function(website,id)
-	fetchRemote(website,{},function(data,info,player,id)
-		triggerClientEvent(player,"DGSI_ReceiveRemoteImage",resourceRoot,data,info,id)
+	fetchRemote(website,{},function(data,info,player,id2)
+		triggerClientEvent(player,"DGSI_ReceiveRemoteImage",player,data,info,id2)
 	end,{client,id})
 end)
 
@@ -144,15 +144,15 @@ verifyFile()
 addEvent("DGSI_AbnormalDetected",true)
 addEventHandler("DGSI_AbnormalDetected",root,function(fData)
 	local pName = getPlayerName(client)
-	for fName,fData in pairs(fData) do
+	for fName,_ in pairs(fData) do
 		outputDGSMessage("Abnormal Detected at '"..fName.."' of player '"..pName.."'","Security")
 	end
 end)
 
 addEventHandler("onElementDataChange",resourceRoot,
 function (key,old)
-	if client and (string.sub(key,0,4) == "DGS-" or key == "DGSI_FileInfo") then 
+	if client and (string.sub(key,0,4) == "DGS-" or key == "DGSI_FileInfo") then
 		setElementData(source,key,old)
 		outputDGSMessage("Illegal attempt to modify element data ("..key..") by "..getPlayerName(client),"Security",1)
 	end
-end,false)	
+end,false)

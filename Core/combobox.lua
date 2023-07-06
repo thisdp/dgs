@@ -109,20 +109,20 @@ function dgsCreateComboBox(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateComboBox",4,"number")) end
 	local combobox = createElement("dgs-dxcombobox")
 	dgsSetType(combobox,"dgs-dxcombobox")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.combobox
-	local nColor = nColor or style.color[1]
-	local hColor = hColor or style.color[2]
-	local cColor = cColor or style.color[3]
-	local nImage = nImage or dgsCreateTextureFromStyle(using,res,style.image[1])
-	local hImage = hImage or dgsCreateTextureFromStyle(using,res,style.image[2]) or nImage
-	local cImage = cImage or dgsCreateTextureFromStyle(using,res,style.image[3]) or nImage
+	nColor = nColor or style.color[1]
+	hColor = hColor or style.color[2]
+	cColor = cColor or style.color[3]
+	nImage = nImage or dgsCreateTextureFromStyle(using,res,style.image[1])
+	hImage = hImage or dgsCreateTextureFromStyle(using,res,style.image[2]) or nImage
+	cImage = cImage or dgsCreateTextureFromStyle(using,res,style.image[3]) or nImage
 	local inColor = style.itemColor[1]
 	local ihColor = style.itemColor[2]
 	local icColor = style.itemColor[3]
@@ -238,7 +238,7 @@ function checkComboBoxScrollBar(scb,new,old)
 		if source == scrollBar then
 			local itemLength = #dgsElementData[combobox].itemData*dgsElementData[combobox].itemHeight
 			local temp = -new*(itemLength-sy)/100
-			local temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp
+			temp = dgsElementData[combobox].scrollFloor and mathFloor(temp) or temp
 			dgsSetData(combobox,"itemMoveOffset",temp)
 			dgsTriggerEvent("onDgsElementScroll",combobox,source,new,old)
 		end
@@ -405,7 +405,7 @@ function dgsComboBoxSetItemText(combobox,i,text)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	if type(text) == "table" then
 		iData[i]._translation_text = text
 		text = dgsTranslate(combobox,text,sourceResource)
@@ -426,7 +426,7 @@ function dgsComboBoxGetItemText(combobox,i)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	return iData[i][1]
 end
 
@@ -437,7 +437,7 @@ function dgsComboBoxSetItemData(combobox,i,data,...)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	if select("#",...) == 0 then
 		iData[i][-7] = data
 		return true
@@ -446,7 +446,6 @@ function dgsComboBoxSetItemData(combobox,i,data,...)
 		iData[i][-8][data] = ...
 		return true
 	end
-	return false
 end
 
 function dgsComboBoxGetItemData(combobox,i,key)
@@ -456,13 +455,12 @@ function dgsComboBoxGetItemData(combobox,i,key)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	if not key then
 		return iData[i][-7]
 	else
 		return (iData[i][-8] or {})[key] or false
 	end
-	return false
 end
 
 function dgsComboBoxGetItemCount(combobox)
@@ -477,7 +475,7 @@ function dgsComboBoxSetItemColor(combobox,i,color)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	iData[i][-2] = color
 	return true
 end
@@ -489,7 +487,7 @@ function dgsComboBoxGetItemColor(combobox,i)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	return iData[i][-2]
 end
 
@@ -500,7 +498,7 @@ function dgsComboBoxSetItemFont(combobox,i,font)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 
 	--Multilingual
 	if type(font) == "table" then
@@ -520,7 +518,7 @@ function dgsComboBoxGetItemFont(combobox,i)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	return iData[i][-4]
 end
 
@@ -531,7 +529,7 @@ function dgsComboBoxSetItemImage(combobox,i,image,color,offx,offy,w,h,relative)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	local imageData = iData[i][-6] or {}
 	imageData[1] = image or imageData[1]
 	imageData[2] = color or imageData[2] or white
@@ -551,7 +549,7 @@ function dgsComboBoxGetItemImage(combobox,i)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	return unpack(iData[i][-6] or {})
 end
 
@@ -562,7 +560,7 @@ function dgsComboBoxRemoveItemImage(combobox,i)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxRemoveItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	iData[i][-6] = nil
 	return true
 end
@@ -584,7 +582,7 @@ function dgsComboBoxRemoveItem(combobox,i)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxRemoveItem",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	tableRemove(iData,i)
 	dgsElementData[combobox].configNextFrame = true
 	return true
@@ -619,7 +617,7 @@ function dgsComboBoxSetSelectedItem(combobox,i)
 	local iIsNum = type(i) == "number"
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen or i == -1)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetSelectedItem",2,"number","-1,1~"..iLen,iNInRange and "Out Of Range")) end
-	local i = i-i%1
+	i = i-i%1
 	local old = dgsElementData[combobox].select
 	dgsSetData(combobox,"select",i)
 	dgsTriggerEvent("onDgsComboBoxSelect",combobox,i,old)
@@ -664,7 +662,7 @@ function configComboBox(combobox,remainBox)
 	---------------Caption edit
 	local edit = eleData.captionEdit
 	if edit then
-		local size = eleData.absSize
+		size = eleData.absSize
 		local w,h = size[1],size[2]
 		local buttonLen_t = eleData.buttonLen
 		local buttonLen = 0
@@ -728,8 +726,8 @@ end
 
 comboSortFunctions.numGreaterUpperNumFirst = function(...)
 	local a,b = ...
-	local a = tonumber(a[1]) or a[1]
-	local b = tonumber(b[1]) or b[1]
+	a = tonumber(a[1]) or a[1]
+	b = tonumber(b[1]) or b[1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -742,8 +740,8 @@ end
 
 comboSortFunctions.numGreaterLowerNumFirst = function(...)
 	local a,b = ...
-	local a = tonumber(a[1]) or a[1]
-	local b = tonumber(b[1]) or b[1]
+	a = tonumber(a[1]) or a[1]
+	b = tonumber(b[1]) or b[1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -754,13 +752,13 @@ comboSortFunctions.numGreaterLowerNumFirst = function(...)
 	return a > b
 end
 
-comboSortFunctions.numGreaterUpper = comboSortFunctions.numGreaterUpperNumFirst 
-comboSortFunctions.numGreaterLower = comboSortFunctions.numGreaterLowerNumFirst 
+comboSortFunctions.numGreaterUpper = comboSortFunctions.numGreaterUpperNumFirst
+comboSortFunctions.numGreaterLower = comboSortFunctions.numGreaterLowerNumFirst
 
 comboSortFunctions.numGreaterUpperStrFirst = function(...)
 	local a,b = ...
-	local a = tonumber(a[1]) or a[1]
-	local b = tonumber(b[1]) or b[1]
+	a = tonumber(a[1]) or a[1]
+	b = tonumber(b[1]) or b[1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -773,8 +771,8 @@ end
 
 comboSortFunctions.numGreaterLowerStrFirst = function(...)
 	local a,b = ...
-	local a = tonumber(a[1]) or a[1]
-	local b = tonumber(b[1]) or b[1]
+	a = tonumber(a[1]) or a[1]
+	b = tonumber(b[1]) or b[1]
 	local aType = type(a)
 	local bType = type(b)
 	if aType == "string" and bType == "number" then
@@ -839,6 +837,35 @@ function dgsComboBoxSort(combobox)
 end
 
 ----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxcombobox"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	dgsSetData(dgsEle,"listState",eleData.listState == 1 and -1 or 1)
+end
+
+dgsOnMouseClickAction["dgs-dxcombobox-Box"] = function(dgsEle,button,state)
+	if state ~= "down" then return end
+	local eleData = dgsElementData[dgsEle]
+	local combobox = eleData.myCombo
+	local comboEleData = dgsElementData[combobox]
+	local preSelect = comboEleData.preSelect
+	local oldSelect = comboEleData.select
+	comboEleData.select = preSelect
+	local captionEdit = comboEleData.captionEdit
+	if isElement(captionEdit) then
+		local selection = comboEleData.select
+		local itemData = comboEleData.itemData
+		dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
+	end
+	if comboEleData.autoHideAfterSelected then
+		dgsSetData(combobox,"listState",-1)
+	end
+	dgsTriggerEvent("onDgsComboBoxSelect",combobox,preSelect,oldSelect)
+end
+
+----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxcombobox"] = {
@@ -859,7 +886,7 @@ dgsOnPropertyChange["dgs-dxcombobox"] = {
 		end
 	end,
 	arrow = function (dgsEle,key,value,oldValue)
-		if dgsElementData[oldValue] and dgsElementData[oldValue].styleResource then 
+		if dgsElementData[oldValue] and dgsElementData[oldValue].styleResource then
 			destroyElement(oldValue)
 		end
 	end,
@@ -876,7 +903,7 @@ dgsOnTranslationUpdate["dgs-dxcombobox"] = function(dgsEle,key,value)
 	end
 	local itemData = dgsElementData[dgsEle].itemData
 	for itemID=1,#itemData do
-		local text = itemData[itemID]._translation_text
+		text = itemData[itemID]._translation_text
 		if text then
 			if key then text[key] = value end
 			itemData[itemID][1] = dgsTranslate(dgsEle,text,sourceResource)
@@ -917,7 +944,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local canLeftClick,canRightClick,canMiddleClick = true
 		if mouseButtons then
 			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
-		end		
+		end
 		if (canLeftClick and MouseData.click.left == source) or (canRightClick and MouseData.click.right == source) or (canMiddleClick and MouseData.click.middle == source) then
 			selectState = 3
 		end
@@ -957,23 +984,23 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		end
 		local r,g,b,a = fromcolor(arrowColor,true)
 		dxSetShaderValue(arrow,"_color",r,g,b,a*parentAlpha)
-		local r,g,b,a = fromcolor(arrowOutSideColor,true)
+		r,g,b,a = fromcolor(arrowOutSideColor,true)
 		dxSetShaderValue(arrow,"ocolor",r,g,b,a*parentAlpha)
 		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
-	else 
+	else
 		local rotation = (90 * (eleData.listStateAnim)) - 90
 		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,rotation,0,0,applyColorAlpha(eleData.arrowColor,parentAlpha),isPostGUI,rndtgt)
 	end
 	if textBox and not captionEdit then
 		local item = eleData.itemData[eleData.select] or {}
 		local itemTextPadding = dgsElementData[source].itemTextPadding
-		
+
 		local res = eleData.resource or "global"
 		local style = styleManager.styles[res]
 		local using = style.using
 		style = style.loaded[using]
 		local systemFont = style.systemFontElement
-		
+
 		local font = item[-4] or eleData.font or systemFont
 		local tColor = item[-2] or eleData.textColor
 		local textColor = type(tColor) ~= "table" and tColor or tColor[1]
@@ -1019,7 +1046,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	--Smooth Item
 	local _itemMoveOffset = DataTab.itemMoveOffset
 	local scrollbar = DataTab.scrollbar
-	
+
 	local itemMoveOffset = DataTab.itemMoveOffsetTemp
 	if DataTab.itemMoveOffsetTemp ~= _itemMoveOffset then
 		local mHardness = 1

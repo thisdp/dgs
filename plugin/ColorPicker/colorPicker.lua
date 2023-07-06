@@ -164,7 +164,6 @@ function dgsColorPickerComponentChange()
 	local cx,cy = dgsGetCursorPosition(source)
 	local absSize = dgsElementData[source].absSize
 	local voh = dgsElementData[source].voh
-	local absSize = dgsElementData[source].absSize
 	local position
 	if voh then
 		position = cx/absSize[1]*100
@@ -188,7 +187,7 @@ function dgsColorPickerSetComponentSelectorValue(cs,value)
 	local offset =  dgsElementData[cs].offset
 	local voh = dgsElementData[cs].voh
 	local oldV = dgsElementData[cs].value
-	local value = math.clamp(value,0,100)
+	value = math.clamp(value,0,100)
 	dgsSetData(cs,"value",value)
 	local absSize = dgsElementData[cs].absSize
 	local images = dgsElementData[cs].cp_images
@@ -564,27 +563,27 @@ function dgsColorPickerUpdate(cp)
 		local pAbsSize = dgsElementData[ images[2] ].absSize
 		local absSize = dgsElementData[ images[3] ].absSize
 		local x,y = dgsProjectHSVToXY(dgsElementData[cp].HSV[1],dgsElementData[cp].HSV[2],dgsElementData[cp].HSV[3])
-		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
+		x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[3],x,y,true)
 	elseif style == "HSLSquare" then
 		local pAbsSize = dgsElementData[ images[1] ].absSize
 		local absSize = dgsElementData[ images[2] ].absSize
 		local x,y = HSLToXY(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[2])
-		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
+		x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[2],x,y,true)
 	elseif style == "HSDisk" then
 		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSL[1]/360)
 		local pAbsSize = dgsElementData[ images[1] ].absSize
 		local absSize = dgsElementData[ images[2] ].absSize
 		local x,y = HSToRR(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[2])
-		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
+		x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[2],x,y,true)
 	elseif style == "HLDisk" then
 		dxSetShaderValue(shaders[2],"Hue",dgsElementData[cp].HSL[1]/360)
 		local pAbsSize = dgsElementData[ images[1] ].absSize
 		local absSize = dgsElementData[ images[2] ].absSize
 		local x,y = HLToRR(dgsElementData[cp].HSL[1],dgsElementData[cp].HSL[3])
-		local x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
+		x,y = x-absSize[1]/pAbsSize[1]/2,y-absSize[2]/pAbsSize[2]/2
 		dgsSetPosition(images[2],x,y,true)
 	end
 end
@@ -705,21 +704,20 @@ function HSVRingChange()
 end
 
 function dgsProjectHSVToXY(H,S,V)
-	local H = math.rad(H+180)
-	local S,V = S/100,V/100
-	y = (6*V-3-3*V*S)/2/math.sqrt(3)/2
-	x = (1-3*V*S)/2/2
+	H = math.rad(H+180)
+	S,V = S/100,V/100
 	local rotedi = {math.cos(H),math.sin(H)}
 	local rotedj = {math.cos(H-math.rad(90)),math.sin(H-math.rad(90))}
-	local x,y = x*rotedi[1]+y*rotedi[2],x*rotedj[1]+y*rotedj[2]
+	local x,y = (1-3*V*S)/2/2,(6*V-3-3*V*S)/2/math.sqrt(3)/2
+	x,y = x*rotedi[1]+y*rotedi[2],x*rotedj[1]+y*rotedj[2]
 	return x+0.5,y+0.5
 end
 
 function dgsProjectHXYToSV(H,x,y)
-	local H = math.rad(H+180)
+	H = math.rad(H+180)
 	local rotedi = {math.cos(H-math.rad(90)),math.sin(H-math.rad(90))}
 	local rotedj = {math.cos(H),math.sin(H)}
-	local x,y = x*rotedi[1]+y*rotedi[2],x*rotedj[1]+y*rotedj[2]
+	x,y = x*rotedi[1]+y*rotedi[2],x*rotedj[1]+y*rotedj[2]
 	x,y = x/0.4,y/0.4
 	local S,V = (1-2*y)/(math.sqrt(3)*x-y+2)*100,(math.sqrt(3)*x-y+2)/3*100
 	return S-S%1,V-V%1
@@ -736,8 +734,8 @@ function HSDiskChange()
 end
 
 function HSToRR(H,S)
-	local H = math.rad(H)
-	local S = S/100/2
+	H = math.rad(H)
+	S = S/100/2
 	local x,y = math.cos(H)*S,math.sin(H)*S
 	return x+0.5,y+0.5
 end
@@ -752,8 +750,8 @@ function HLDiskChange()
 end
 
 function HLToRR(H,L)
-	local H = math.rad(H)
-	local L = 0.5-L/100/2
+	H = math.rad(H)
+	L = 0.5-L/100/2
 	local x,y = math.cos(H)*L*2,math.sin(H)*L*2
 	return x+0.5,y+0.5
 end

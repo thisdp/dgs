@@ -22,10 +22,10 @@ function dgsAnimTo(...)
 	else
 		dgsEle,property,targetValue,easing,duration,delay,reversedProgress,splitTable = ...
 	end
-	local delay = tonumber(delay) or 0
+	delay = tonumber(delay) or 0
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAnimTo",1,"dgs-dxelement/table")) end
 	if not(type(property) == "string") then error(dgsGenAsrt(property,"dgsAnimTo",2,"string")) end
-	local easing = easing or "Linear"
+	easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAnimTo",4,_,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAnimTo",5,"number")) end
 	if type(dgsEle) == "table" then
@@ -83,7 +83,7 @@ function dgsStopAniming(...)
 			if anim[-2] == dgsEle  then --Confirm by unique animation ID
 				local theEle = anim[1]
 				table.remove(animQueue,index)	--Remove
-				local property = anim[2]
+				property = anim[2]
 				dgsTriggerEvent("onDgsStopAniming",theEle,anim[-2],property,anim[3],anim[4],anim[5],anim[7],anim[6],stopTick)
 				if property == "rltPos" or property == "absPos" then
 					dgsTriggerEvent("onDgsStopMoving",theEle,anim[-2])
@@ -191,8 +191,8 @@ local easingSettings = {}
 function onAnimQueueProcess()
 	local animIndex,animItem = 1
 	local dgsEle,property,startValue,targetValue,easing,duration,startTick
-	local rTick,rProgress = getTickCount()
-	local dbgResult,dbgErr
+	local rTick = getTickCount()
+	local dbgResult,rProgress
 	while animIndex <= #animQueue do
 		animItem = animQueue[animIndex]
 		dgsEle = animItem[1]
@@ -227,11 +227,11 @@ function onAnimQueueProcess()
 						animItem[0] = startValue+(targetValue-startValue)*easingValue
 					end
 				end
-				dbgResult,dbgErr = pcall(dgsSetProperty,dgsEle,property,animItem[0])
+				dbgResult = pcall(dgsSetProperty,dgsEle,property,animItem[0])
 				if not dbgResult then
 					outputDebugString("DGS runtime error: Animation",4,255,180,100)
 					if animItem[-1] and animItem[-3] then
-						local debugContext = animItem[-3] 
+						local debugContext = animItem[-3]
 						if type(debugContext) == "table" then
 							dgsTriggerEvent("DGSI_onDebug",animItem[-1],"AnimationError",property,debugContext.file,debugContext.line,debugContext.fncName)
 						end
@@ -278,11 +278,11 @@ function dgsMoveTo(...)
 	else
 		dgsEle,x,y,relative,easing,duration,delay,reversedProgress = ...
 	end
-	local delay = tonumber(delay) or 0
+	delay = tonumber(delay) or 0
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsMoveTo",1,"dgs-dxelement/table")) end
 	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsMoveTo",2,"number")) end
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsMoveTo",3,"number")) end
-	local easing = easing or "Linear"
+	easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsMoveTo",5,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsMoveTo",6,"number")) end
 	return dgsAnimTo(dgsEle,relative and "rltPos" or "absPos",{x,y},easing,duration,delay,reversedProgress,true)
@@ -318,11 +318,11 @@ function dgsSizeTo(...)
 	else
 		dgsEle,w,h,relative,easing,duration,delay,reversedProgress = ...
 	end
-	local delay = tonumber(delay) or 0
+	delay = tonumber(delay) or 0
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSizeTo",1,"dgs-dxelement/table")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsSizeTo",2,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsSizeTo",3,"number")) end
-	local easing = easing or "Linear"
+	easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsSizeTo",5,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsSizeTo",6,"number")) end
 	return dgsAnimTo(dgsEle,relative and "rltSize" or "absSize",{w,h},easing,duration,delay,reversedProgress,true)
@@ -356,10 +356,10 @@ function dgsAlphaTo(...)
 	else
 		dgsEle,alpha,easing,duration,delay,reversedProgress = ...
 	end
-	local delay = tonumber(delay) or 0
+	delay = tonumber(delay) or 0
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAlphaTo",1,"dgs-dxelement/table")) end
 	if not(type(alpha) == "number") then error(dgsGenAsrt(alpha,"dgsAlphaTo",2,"number")) end
-	local easing = easing or "Linear"
+	easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsAlphaTo",3,_,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAlphaTo",4,"number")) end
 	return dgsAnimTo(dgsEle,"alpha",alpha,easing,duration,delay,reversedProgress,true)

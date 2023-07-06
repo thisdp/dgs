@@ -86,7 +86,7 @@ function dgsImportFunction(name,nameAs)
 										isLocated = true	--Need to get the next index
 									end
 								end
-							until data and data.source:sub(1,1) == "@" 
+							until data and data.source:sub(1,1) == "@"
 							if data then
 								functionCallLogger = fncCallLoggerSelf
 								functionCallLogger.line=data.currentline
@@ -139,8 +139,8 @@ function dgsImportFunction(name,nameAs)
 			triggerEvent("DGSI_onImport",root,resourceRoot)
 		end
 		]]
-		for i,name in ipairs(getResourceExportedFunctions()) do
-			allCode = allCode.."\n "..name.." = DGS."..name..";"
+		for i,fnName in ipairs(getResourceExportedFunctions()) do
+			allCode = allCode.."\n "..fnName.." = DGS."..fnName..";"
 		end
 		return allCode
 	else
@@ -152,7 +152,7 @@ end
 
 G2DHookerEvents = {}
 function dgsG2DLoadHooker(isLocal)
-	if table.count(G2DHookerEvents) == 0 then 
+	if table.count(G2DHookerEvents) == 0 then
 		addEventHandler("onDgsEditAccepted",root,handleHookerEvents)
 		addEventHandler("onDgsTextChange",root,handleHookerEvents)
 		addEventHandler("onDgsComboBoxSelect",root,handleHookerEvents)
@@ -196,7 +196,7 @@ function dgsG2DLoadHooker(isLocal)
 		guiSetPosition = dgsSetPosition
 		guiSetSize = function (gl,w,h,relative)
 			local v = dgsSetSize(gl,w,h,relative)
-			if _getElementType(gl) == "dgs-dxcombobox" then 
+			if _getElementType(gl) == "dgs-dxcombobox" then
 				local width,height = dgsGetSize(gl,false)
 				dgsSetSize(gl,width,22,false)
 				dgsComboBoxSetBoxHeight(gl,height-22,false)
@@ -382,24 +382,24 @@ function dgsG2DLoadHooker(isLocal)
 			return dgsGridListSetItemColor(gl,row,column,...)
 		end
 		guiGridListSetSelectedItem = function(gl,row,column,...)
-    		if column then 
-        		if column <= 0 then 
-            		column = -1
-        		elseif dgsGridListGetColumnCount(gl) < column then 
-            		return false 
-        		end
-    		end
-    		if row then 
-        		if row <= -1 then 
-            		row = -1
-        		elseif isGUIGridList[gl] then 
-            		row = row+1
-            		if dgsGridListGetRowCount(gl) < row then 
-                		return false 
-            		end
-       			 end
-    		end
-    		return dgsGridListSetSelectedItem(gl,row,column,...)
+			if column then
+				if column <= 0 then
+					column = -1
+				elseif dgsGridListGetColumnCount(gl) < column then
+					return false
+				end
+			end
+			if row then
+				if row <= -1 then
+					row = -1
+				elseif isGUIGridList[gl] then
+					row = row+1
+					if dgsGridListGetRowCount(gl) < row then
+						return false
+					end
+				end
+			end
+			return dgsGridListSetSelectedItem(gl,row,column,...)
 		end
 		guiGridListAutoSizeColumn = function (gl,column)
 			if column and dgsGridListGetColumnCount(gl) < column then return false end
@@ -489,15 +489,15 @@ function dgsG2DLoadHooker(isLocal)
 		guiGetBrowser = dgsGetBrowser
 
 		local fontReplace = {
-            ["default-normal"]="default",
+			["default-normal"]="default",
 			["default-small"]="arial",
 			["default-bold-small"]="default-bold",
 			["clear-normal"]="clear",
 			["sa-gothic"]="beckett",
 			["sa-header"]="diploma",
-        }
-        guiSetFont = function(gl,font)
-            return dgsSetFont(gl,fontReplace[font] or font)
+		}
+		guiSetFont = function(gl,font)
+			return dgsSetFont(gl,fontReplace[font] or font)
 		end
 
 		guiSetProperty = function(gl,prop,v)
@@ -550,9 +550,9 @@ function dgsG2DLoadHooker(isLocal)
 		addEventHandler = function(event,...)
 			return _addEventHandler(eventReplace[event] or event,...)
 		end
-		
+
 		_removeEventHandler = removeEventHandler
-		
+
 		removeEventHandler = function(event,...)
 			return _removeEventHandler(eventReplace[event] or event,...)
 		end
@@ -585,7 +585,7 @@ end
 function handleHookerEvents(...)
 	triggerEvent(eventName.."-C",source,source,...)
 end
-	
+
 -------Inside DGS
 setElementData(root,"__DGSRes",getThisResource(),false)
 addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)
@@ -599,13 +599,13 @@ function dgsImportOOPClass()
 	if not matched then return outputChatBox("[DGS] Failed to load classlib.lua (File mismatch)",255,0,0) end
 	local str = content
 	if fileExists("customOOP.lua") then
-		local matched,content = verifyFile("customOOP.lua",true)
+		matched,content = verifyFile("customOOP.lua",true)
 		if not matched then outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)",255,0,0) end
 		local s = content:gsub("\r\n","\n")
 		local list = split(s,"\n")
 		for i=1,#list do
 			if fileExists(list[i]) then
-				local matched,content = verifyFile(list[i],true)
+				matched,content = verifyFile(list[i],true)
 				if not matched then outputChatBox("[DGS] Failed to load "..list[i].." (File mismatch)",255,0,0) end
 				local f,e = loadstring(content)
 				if f then

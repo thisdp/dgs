@@ -2,11 +2,10 @@ dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxcanvas")
 local dxDrawImage = dxDrawImage
 g_DGSCanvasIndex = 0
-function dgsCreateCanvas(renderSource,w,h,color)
+function dgsCreateCanvas(renderSource,w,h)
 	if not(isMaterial(renderSource) or dgsGetType(renderSource) == "dgs-dxcustomrenderer") then error(dgsGenAsrt(renderSource,"dgsCreateCanvas",1,"material/dgs-dxcustomrenderer")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateCanvas",2,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateCanvas",3,"number")) end
-	color = color or 0xFFFFFFFF
 	local canvas = dgsCreateRenderTarget(w,h,true) -- Main Render Target
 	dgsElementData[canvas] = {
 		blendMode="blend",
@@ -45,7 +44,7 @@ function dgsCanvasRender(canvas)
 	--dxSetBlendMode(blendMode)
 end
 
-dgsCustomTexture["dgs-dxcanvas"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
+dgsCustomTexture["dgs-dxcanvas"] = function(posX,posY,width,height,u,v,usize,vsize,image)
 	return dgsCanvasRender(image)
 	--return __dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 end

@@ -164,7 +164,7 @@ chartProcessFunction = {
 				end
 				local gridVertical = eleData.gridVertical
 				local labels = #eleData.labels
-				local deltaGrid = (eleData.enableGridVertical and labels or 1)-#gridVertical-1
+				deltaGrid = (eleData.enableGridVertical and labels or 1)-#gridVertical-1
 				if deltaGrid > 0 then
 					for i=1,deltaGrid do
 						table.insert(gridVertical,dgsSVGCreateNode(gridDef,"line"))

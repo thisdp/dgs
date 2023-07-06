@@ -180,13 +180,13 @@ function dgsCreateMemo(...)
 	text = tostring(text or "")
 	local memo = createElement("dgs-dxmemo")
 	dgsSetType(memo,"dgs-dxmemo")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.memo
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[memo] = {
@@ -312,14 +312,14 @@ function dgsMemoMultiClickCheck(button,state,x,y,times)
 			mouseClicked = button == "left"
 		end
 		if not mouseClicked then return end
-		
+
 		local pos,line,side = searchMemoMousePosition(source,x,y)
 		if not eleData.multiClickCounter[1] then
 			eleData.multiClickCounter = {pos,line,times-1}
 		elseif eleData.multiClickCounter[1] ~= pos or eleData.multiClickCounter[2] ~= line then
 			eleData.multiClickCounter = {pos,line,times-1}
 		end
-		
+
 		local t = times-eleData.multiClickCounter[3]
 		if t == 1 then
 			local shift = getKeyState("lshift") or getKeyState("rshift")
@@ -350,13 +350,13 @@ end
 function dgsMemoGetTextBoundingBox(memo,excludePadding)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTextBoundingBox",1,"dgs-dxmemo")) end
 	local eleData = dgsElementData[memo]
-	
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-			
+
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],eleData.font or systemFont)
 	if eleData.wordWrap then
 		if eleData.rebuildMapTableNextFrame then dgsMemoRebuildWordWrapMapTable(memo) end
@@ -425,7 +425,8 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 		end
 	else
 		local text = (textTable[line] or {[0]=""})[0]
-		local pos,line = dgsMemoSeekPosition(textTable,index+mathFloor(indexOffset),line+mathFloor(lineOffset),noMoveLine)
+		local pos
+		pos,line = dgsMemoSeekPosition(textTable,index+mathFloor(indexOffset),line+mathFloor(lineOffset),noMoveLine)
 		local showLine = eleData.showLine
 		local targetLine = line-showLine
 		local showPos = eleData.showPos
@@ -460,7 +461,7 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 end
 
 function dgsMemoSeekPosition(textTable,pos,line,noMoveLine)
-	local line = (line < 1 and 1) or (line > #textTable and #textTable) or line
+	line = (line < 1 and 1) or (line > #textTable and #textTable) or line
 	local text = (textTable[line] or {[0]=""})[0]
 	local strCount = utf8Len(text)
 	if not noMoveLine then
@@ -632,10 +633,10 @@ function resetMemo(x,y)
 	local dgsMemo = MouseData.focused
 	if dgsGetType(dgsMemo) == "dgs-dxmemo" then
 		local mouseButtons = dgsElementData[dgsMemo].mouseButtons
-		local clickedEle 
-		if mouseButtons and not mouseButtons[1] then 
+		local clickedEle
+		if mouseButtons and not mouseButtons[1] then
 			clickedEle = (mouseButtons[2] and MouseData.click.right) or (mouseButtons[3] and MouseData.click.middle)
-		else 
+		else
 			clickedEle = MouseData.click.left
 		end
 		if dgsMemo == clickedEle then
@@ -648,13 +649,13 @@ addEventHandler("onClientCursorMove",root,resetMemo)
 
 function searchMemoMousePosition(memo,posx,posy)
 	local eleData = dgsElementData[memo]
-	
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	local font = eleData.font or systemFont
 	local txtSizX = eleData.textSize[1]
 	local padding = eleData.padding
@@ -769,8 +770,7 @@ wordArea = {
 function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
 	local splitTable = {}
 
-	local textSizeX = textSizeX or 1
-	local textWidth = textWidth or dxGetTextWidth(text,textSizeX,font)
+	textSizeX,textWidth = textSizeX or 1,textWidth or dxGetTextWidth(text,textSizeX,font)
 	if maxWidth > textWidth then
 		return {text},1
 	end
@@ -792,8 +792,8 @@ function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
 					for i=index,1,-1 do
 						local checkCharByte = utf8Byte(text,i,i)
 						local isContinue = false
-						for i=1,#wordArea do
-							if checkCharByte >= wordArea[i][1] and checkCharByte <= wordArea[i][2] then
+						for i2=1,#wordArea do
+							if checkCharByte >= wordArea[i2][1] and checkCharByte <= wordArea[i2][2] then
 								isContinue = true
 								break
 							end
@@ -821,7 +821,6 @@ function dgsMemoWordSplit(text,maxWidth,textWidth,font,textSizeX,isSplitByWord)
 		end
 		return splitTable,cnt-1
 	end
-	return false,false
 end
 
 function dgsMemoGetInsertLine(textTable,mapTable,theLine)
@@ -928,26 +927,26 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 			dgsMemoRebuildWordWrapMapTable(memo)
 		end
 		configMemo(memo)
-		
+
 		eleData.updateRTNextFrame = true
 	end
-	
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local _index,_line = dgsMemoGetCaretPosition(memo,true)
-	local index,line = index or _index,line or _line
+	index,line = index or _index,line or _line
 	local fixed = utf8Gsub(text,splitChar,splitChar2)
-	local fixed = " "..utf8Gsub(fixed,"	"," ").." "
+	fixed = " "..utf8Gsub(fixed,"	"," ").." "
 	local tab = string.split(fixed,splitChar2)
 	tab[1] = utf8Sub(tab[1],2)
 	tab[#tab] = utf8Sub(tab[#tab],1,utf8Len(tab[#tab])-1)
-	local text = dgsGetText(memo)
+	text = dgsGetText(memo)
 	local textLen = utf8Len(text)
 	if textLen >= maxLength then return false end
 	local isWordWrap = eleData.wordWrap
@@ -973,8 +972,8 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 			offset = offset+utf8Len(tab[i])+1
 			theline = line+i-1
 			if i ~= 1 and i ~= newTextLines then
-				local textLen = dxGetTextWidth(tab[i],textSize[1],font)
-				local text = tab[i]
+				textLen = dxGetTextWidth(tab[i],textSize[1],font)
+				text = tab[i]
 				tableInsert(textTable,theline,{[-1]=textLen,[0]=text})
 			else
 				if i == 1 then
@@ -986,7 +985,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 					textTable[theline][-1] = dxGetTextWidth(textTable[theline][0],textSize[1],font)
 				end
 				if i == newTextLines and i ~= 1 then
-					local text = {}
+					text = {}
 					text[0] = (tab[i] or "")..textRear
 					text[-1] = dxGetTextWidth(text[0],textSize[1],font)
 					tableInsert(textTable,theline,text)
@@ -1007,7 +1006,7 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 		eleData.text = textTable
 		local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 		local scbTakes = {dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0}
-		local canHold = mathFloor((size[2]-padding[2]*2-scbTakes[2])/fontHeight)
+		canHold = mathFloor((size[2]-padding[2]*2-scbTakes[2])/fontHeight)
 		if dgsElementData[scrollbars[1]].visible or eleData.rightLength[1] > size[1]-padding[1]*2-scbTakes[1] or dgsElementData[scrollbars[2]].visible or #textTable > canHold then
 			configMemo(memo)
 		end
@@ -1046,13 +1045,13 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 	local eleData = dgsElementData[memo]
 	local textTable = eleData.text
 	local mapTable = eleData.wordWrapMapText
-		
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
@@ -1099,7 +1098,6 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 	if isWordWrap then
 		local splitedText,splitedTextLine = dgsMemoWordSplit(textTable[fromLine][0],size[1]-padding[2]*2-scbTakes[1],textTable[fromLine][-1],font,textSize[1],isWordWrap)
 		textTable[fromLine][1] = dgsMemoInsertMapTable(mapTable,insertLine,splitedText,textTable[fromLine])
-		insertLine = insertLine + splitedTextLine
 	end
 	eleData.text = textTable
 	local line,len = seekMaxLengthLine(memo)
@@ -1115,9 +1113,9 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 			dgsMemoSetCaretPosition(memo,fromIndex,fromLine)
 		end
 	end
-	local textTable = eleData.text
+	textTable = eleData.text
 	if isWordWrap then
-		local mapTable = eleData.wordWrapMapText
+		mapTable = eleData.wordWrapMapText
 		local mapTableCnt = #mapTable
 		local wordWrapShowLine = eleData.wordWrapShowLine
 		if mapTableCnt> canHold and wordWrapShowLine[3]-1+canHold > mapTableCnt then
@@ -1138,7 +1136,7 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 			wordWrapShowLine[2] = startWeakLine
 		end
 	else
-		if #textTable > canHold and eleData.showLine-1+canHold > #textTable then
+		if #textTable >= canHold and eleData.showLine-1+canHold > #textTable then
 			eleData.showLine = 1-canHold+#textTable
 		end
 	end
@@ -1313,13 +1311,13 @@ function configMemo(memo)
 	local textSize = eleData.textSize
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 	local scbThick = eleData.scrollBarThick
-	local scbStateV,scbStateH = false,false
+	local scbStateH = false
 	if not eleData.wordWrap then
 		scbStateH = eleData.rightLength[1] > size[1]-padding[1]*2
 	end
 	local scbTakes2 = scbStateH and scbThick or 0
 	local canHold = mathFloor((size[2]-padding[2]*2-scbTakes2)/fontHeight)
-	scbStateV = textCnt > canHold
+	local scbStateV = textCnt > canHold
 	local scbTakes1 = scbStateV and scbThick or 0
 	if not eleData.wordWrap then
 		scbStateH = eleData.rightLength[1] > size[1]-padding[1]*2-scbTakes1
@@ -1329,8 +1327,8 @@ function configMemo(memo)
 	if forceState[2] ~= nil then scbStateH = forceState[2] end
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
-	local scbTakes1 = scbStateV and scbThick or 0
-	local scbTakes2 = scbStateH and scbThick or 0
+	scbTakes1 = scbStateV and scbThick or 0
+	scbTakes2 = scbStateH and scbThick or 0
 	dgsSetPosition(scrollbar[1],size[1]-scbThick,0,false)
 	dgsSetPosition(scrollbar[2],0,size[2]-scbThick,false)
 	dgsSetSize(scrollbar[1],scbThick,size[2]-scbTakes2,false)
@@ -1338,14 +1336,14 @@ function configMemo(memo)
 
 	local scbLengthVrt = eleData.scrollBarLength[1]
 	local higLen = 1-(textCnt-canHold)/textCnt
-	higLen = higLen >= 0.95 and 0.95 or higLen
+	higLen = higLen >= 1 and 1 or higLen
 	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = eleData.scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 
 	local scbLengthHoz = eleData.scrollBarLength[2]
 	local widLen = 1-(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)/eleData.rightLength[1]
-	widLen = widLen >= 0.95 and 0.95 or widLen
+	widLen = widLen >= 1 and 1 or widLen
 	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = eleData.scrollSize*5/(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
@@ -1395,6 +1393,7 @@ function checkMemoScrollBar(source,new,old)
 			wordWrapShowLine[2] = startWeakLine
 		else
 			local temp = mathFloor((#textTable-canHold)*new*0.01)+1
+			if temp <= 1 then temp = 1 end
 			dgsSetData(memo,"showLine",temp)
 		end
 	elseif source == scrollbars[2] then
@@ -1504,13 +1503,13 @@ function dgsMemoRebuildWordWrapMapTable(memo)
 		local textTable = eleData.text
 		local size = eleData.absSize
 		local padding = eleData.padding
-			
+
 		local res = eleData.resource or "global"
 		local style = styleManager.styles[res]
 		local using = style.using
 		style = style.loaded[using]
 		local systemFont = style.systemFontElement
-		
+
 		local font = eleData.font or systemFont
 		local textSizeX = eleData.textSize[1]
 		local scbThick = eleData.scrollBarThick
@@ -1573,7 +1572,7 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 			dgsElementData[dgsEle]._translation_font = nil
 		end
 		dgsElementData[dgsEle].font = value
-		
+
 		dgsMemoRebuildTextTable(dgsEle)
 		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
@@ -1640,7 +1639,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		renderBuffer.isFocused = isFocused
 		eleData.updateRTNextFrame = true
 	end
-	
+
 	local shadow = eleData.shadow
 	local text = eleData.text
 	local caretPos = eleData.caretPos
@@ -1651,7 +1650,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 	local fontHeight = dxGetFontHeight(txtSizY,font)
@@ -1664,8 +1663,8 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local textRenderBuffer = eleData.textRenderBuffer
 	textRenderBuffer.count = 0
 	local textColor = eleData.textColor
-	
-	local isPlaceHolderShown = (#text == 1 and text[1][0] == "") and placeHolder ~= "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus) 
+
+	local isPlaceHolderShown = (#text == 1 and text[1][0] == "") and placeHolder ~= "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus)
 	if renderBuffer.placeHolderState ~= isPlaceHolderShown then
 		renderBuffer.placeHolderState = isPlaceHolderShown
 		eleData.updateRTNextFrame = true
@@ -1714,9 +1713,9 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				local lineCnt = 0
 				local rndLine,rndPos,totalLine = eleData.wordWrapShowLine[1],eleData.wordWrapShowLine[2],eleData.wordWrapShowLine[3]
 				if rndLine <= 1 then rndLine = 1 end
-				local weakLinePos,nextWeakLineLen,yPos,renderingText
+				local weakLinePos,yPos,renderingText
 				for a=rndLine,#text do
-					weakLinePos,nextWeakLineLen = 0,0
+					weakLinePos = 0
 					for b=1,#text[a][1] do
 						weakLineLen = text[a][1][b][3]
 						if b >= rndPos then
@@ -1782,10 +1781,10 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					if lineCnt > canHoldLines then break end
 				end
 			end
-			
+
 			eleData.updateRTNextFrame = nil
 			dxSetBlendMode("modulate_add")
-			
+
 			if not placeHolderIgnoreRndTgt then
 				if isPlaceHolderShown then
 					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
@@ -1801,7 +1800,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					dgsDrawText(placeHolder,0+placeHolderOffset[1],0+placeHolderOffset[2],pw+placeHolderOffset[1],fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
 				end
 			end
-			
+
 			local tRB
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 			if shadow then
@@ -1849,7 +1848,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-		
+
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
 			if eleData.readOnly then
@@ -1939,10 +1938,10 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					textRenderBuffer[textRenderBuffer.count][9] = font
 				end
 			end
-			
+
 			eleData.updateRTNextFrame = nil
 			dxSetBlendMode("modulate_add")
-			
+
 			if not placeHolderIgnoreRndTgt then
 				if isPlaceHolderShown then
 					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
@@ -1958,7 +1957,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 					dgsDrawText(placeHolder,0+placeHolderOffset[1],0+placeHolderOffset[2],pw+placeHolderOffset[1],fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
 				end
 			end
-			
+
 			local tRB
 			local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 			if shadow then
@@ -1971,7 +1970,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		dxSetRenderTarget(rndtgt)
-		
+
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		local finalcolor = bgColor
 		if not enabledInherited and not enabledSelf then
@@ -1984,7 +1983,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 		dxDrawImage(x,y,w,h,eleData.bgImage,0,0,0,finalcolor,isPostGUI,rndtgt)
-		
+
 		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick or 0,dgsElementData[scrollbars[2]].visible and scbThick or 0
 		if eleData.bgRT then
@@ -2006,7 +2005,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				dgsDrawText(placeHolder,px+placeHolderOffset[1],py+placeHolderOffset[2],px+pw+placeHolderOffset[1],py+fontHeight+placeHolderOffset[2],pColor,pHolderTextSizeX,pHolderTextSizeY,pFont,"left","top",false,false,false,pColorcoded)
 			end
 		end
-		
+
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 		if MouseData.focused == source and MouseData.EditMemoCursor then
 			local CaretShow = true
@@ -2014,7 +2013,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				CaretShow = eleData.readOnlyCaretShow
 			end
 			if CaretShow then
-				local showLine = eleData.showLine
+				showLine = eleData.showLine
 				local currentLine = eleData.caretPos[2]
 				if currentLine >= showLine and currentLine <= showLine+canHoldLines then
 					local lineStart = fontHeight*(currentLine-showLine)

@@ -24,7 +24,7 @@ G2DHelp = {
 }
 
 addCommandHandler("g2d",function(player,command,...)
-	if not DGSConfig.enableG2DCMD then end
+	if not DGSConfig.enableG2DCMD then return end
 	local account = getPlayerAccount(player)
 	if account then
 		local accn = getAccountName(account)
@@ -145,7 +145,7 @@ end
 AnalyzerState = {}
 
 setmetatable(AnalyzerState,{
-	__call = function(self,lexResult)
+	__call = function(_,lexResult)
 			return {
 				tokenIndex=0,
 				separatorDepth = 0,
@@ -153,7 +153,7 @@ setmetatable(AnalyzerState,{
 				lexResult=lexResult,
 				replacedFunction = {},
 				replacedEvent = {},
-				executeProcess = function(self)
+				executeProcess = function(iself)
 					local GUIFnc = self.replacedFunction[1]
 					local DGSFnc = self.replacedFunction[2]
 					local GUIEvt = self.replacedEvent[1]
@@ -522,7 +522,7 @@ function processFileConvertor(filename)
 			coroutine.yield()
 		end
 	end
-	local convTabCnt = #convertEventTable
+	convTabCnt = #convertEventTable
 	outputDGSMessage("Replacing Events","G2D")
 	for i=1,convTabCnt do
 		az:set(convertEventTable[i],true)
@@ -567,7 +567,7 @@ function processFileHooker(filename)
 			coroutine.yield()
 		end
 	end
-	local convTabCnt = #convertEventTable
+	convTabCnt = #convertEventTable
 	outputDGSMessage("Replacing Events","G2D")
 	for i=1,convTabCnt do
 		az:set(convertEventTable[i],true)
@@ -592,16 +592,16 @@ local threadPoolSize = 2
 function CrawlWikiFromMTA(t)
 	local targetURL = mainWikiURL.."/wiki/Template:DGSFUNCTIONS"
 	outputDGSMessage("Crawling wiki..",nil,"DGS")
-	fetchRemote(targetURL,{},function(data,info,t)
-		if info.success then
+	fetchRemote(targetURL,{},function(tempData,tempInfo,typ)
+		if tempInfo.success then
 			local startPos = 0
 			outputDGSMessage("Wiki data has been retrieved. Reading now..","G2D")
-			local fncList = {type=t}
+			local fncList = {type=typ}
 			while(true) do
-				liStart_1,liStart_2 = string.find(data,"%<li%>",startPos)
-				liEnd_1,liEnd_2 = string.find(data,"%<%/li%>",startPos)
+				liStart_1,liStart_2 = string.find(tempData,"%<li%>",startPos)
+				liEnd_1,liEnd_2 = string.find(tempData,"%<%/li%>",startPos)
 				if not liStart_1 or not liEnd_1 then break end
-				local str = string.sub(data,liStart_2+1,liEnd_1-1)
+				local str = string.sub(tempData,liStart_2+1,liEnd_1-1)
 				local xmlNode = xmlLoadStr(str)
 				local fncName = xmlNodeGetValue(xmlNode)
 				local nTable = {
@@ -633,13 +633,13 @@ function CrawlWikiFromMTA(t)
 										end
 									end
 									fRProg.thread = fRProg.thread+1
-									fRProg[poolID] = fetchRemote(mainWikiURL.."/index.php?title="..item.title.."&action=edit",{queueName=poolID},function(data,info,poolID,index)
+									fRProg[poolID] = fetchRemote(mainWikiURL.."/index.php?title="..item.title.."&action=edit",{queueName=poolID},function(data,info,poolID2,index)
 										fRProg.progress = fRProg.progress+1
 										fRProg.thread = fRProg.thread-1
-										fRProg[poolID] = false
+										fRProg[poolID2] = false
 										if info.success then
 											outputDGSMessage("Recorded ("..fRProg.progress.."/"..fRProg.total..")["..fncList[index].name.."]","Crawl")
-											local startPos = data:find("%<textarea")
+											startPos = data:find("%<textarea")
 											local _,endPos = data:find("%<%/textarea>",startPos)
 											local line = data:sub(startPos,endPos)
 											local xmlNode = xmlLoadStr(line)
@@ -647,8 +647,7 @@ function CrawlWikiFromMTA(t)
 											local _,rangeStart = pageSource:find("==Syntax==")
 											local _,syntaxStart = pageSource:find("%<syntaxhighlight lang%=\"lua\"%>",rangeStart+1)
 											local syntaxEnd = pageSource:find("%<%/syntaxhighlight%>",syntaxStart+1)
-											local targetSyntax = pageSource:sub(syntaxStart+1,syntaxEnd-1)
-											local targetSyntax = targetSyntax:gsub("\r",""):gsub("\n","")
+											local targetSyntax = pageSource:sub(syntaxStart+1,syntaxEnd-1):gsub("\r",""):gsub("\n","")
 											fncList[index].syntax = targetSyntax
 										else
 											outputDGSMessage("Failed to get remote wiki data ("..info.statusCode ..")","Crawl")
@@ -707,11 +706,11 @@ function AnalyzeFunction(tab)
 				rets[_i] = rets[_i]:gsub(",",""):gsub(" ","")
 			end
 
-			for i=1,#emptyArgCheck.req do
-				table.remove(reqArgs,emptyArgCheck.req[i])
+			for _i=1,#emptyArgCheck.req do
+				table.remove(reqArgs,emptyArgCheck.req[_i])
 			end
-			for i=1,#emptyArgCheck.opt do
-				table.remove(optArgs,emptyArgCheck.opt[i])
+			for _i=1,#emptyArgCheck.opt do
+				table.remove(optArgs,emptyArgCheck.opt[_i])
 			end
 			local resultTable = {returns=rets,fncName=item.name,requiredArguments=reqArgs,optionalArguments=optArgs}
 			table.insert(nTable,resultTable)

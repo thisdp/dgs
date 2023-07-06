@@ -52,7 +52,7 @@ function dgsRemoteImageRequest(remoteImage,website,forceReload)
 	local index = math.seekEmpty(remoteImageQueue)
 	remoteImageQueue[index] = remoteImage
 	dgsSetData(remoteImage,"queueIndex",index)
-	return triggerServerEvent("DGSI_RequestRemoteImage",resourceRoot,website,index)
+	return triggerServerEvent("DGSI_RequestRemoteImage",localPlayer,website,index)
 end
 
 function dgsRemoteImageAbort(remoteImage)
@@ -70,7 +70,7 @@ function dgsGetRemoteImageLoadState(remoteImage)
 	return dgsElementData[remoteImage].loadState
 end
 
-addEventHandler("DGSI_ReceiveRemoteImage",resourceRoot,function(data,response,index)
+addEventHandler("DGSI_ReceiveRemoteImage",localPlayer,function(data,response,index)
 	local remoteImage = remoteImageQueue[index]
 	remoteImageQueue[index] = nil
 	if isElement(remoteImage) then
@@ -84,7 +84,7 @@ addEventHandler("DGSI_ReceiveRemoteImage",resourceRoot,function(data,response,in
 			local texture = dxCreateTexture(data)
 			dgsSetData(texture,"DGSContainer",remoteImage)
 			addEventHandler("onClientElementDestroy",texture,function()
-				local remoteImage = dgsElementData[texture].DGSContainer
+				remoteImage = dgsElementData[texture].DGSContainer
 				if isElement(remoteImage) then
 					dgsSetData(remoteImage,"textureRef",false)
 					dgsSetData(remoteImage,"loadState",0)	--Unload

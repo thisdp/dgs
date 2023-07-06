@@ -65,12 +65,12 @@ function dgsCreateScrollPane(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateScrollPane",4,"number")) end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	
+
 	style = style.scrollpane
 	local scbThick = style.scrollBarThick
 	dgsElementData[scrollpane] = {
@@ -97,7 +97,7 @@ function dgsCreateScrollPane(...)
 	dgsSetParent(scrollpane,parent,true,true)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,w,h,relative or false,true)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
-	local x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
+	x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local titleOffset = 0
 	if isElement(parent) then
 		if not dgsElementData[scrollpane].ignoreParentTitle and not dgsElementData[parent].ignoreTitle then
@@ -192,8 +192,7 @@ addEventHandler("onDgsDestroy",root,function()
 			ntempx = 0
 			for k,v in ipairs(dgsGetChildren(parent)) do
 				if v ~= source then
-					local pos = dgsElementData[v].absPos
-					local size = dgsElementData[v].absSize
+					pos,size = dgsElementData[v].absPos,dgsElementData[v].absSize
 					ntempx = ntempx > pos[1]+size[1] and ntempx or pos[1]+size[1]
 				end
 			end
@@ -202,8 +201,7 @@ addEventHandler("onDgsDestroy",root,function()
 			ntempy = 0
 			for k,v in ipairs(dgsGetChildren(parent)) do
 				if v ~= source then
-					local pos = dgsElementData[v].absPos
-					local size = dgsElementData[v].absSize
+					pos,size = dgsElementData[v].absPos,dgsElementData[v].absSize
 					ntempy = ntempy > pos[2]+size[2] and ntempy or pos[2]+size[2]
 				end
 			end
@@ -349,15 +347,15 @@ function dgsScrollPaneGetViewOffset(scrollpane)
 	local mViewSizeH = mViewSize[3] and mViewSize[2]*size[2] or mViewSize[2]
 	local childBoundingW = math.max(eleData.maxChildSize[1],mViewSizeW)
 	local childBoundingH = math.max(eleData.maxChildSize[2],mViewSizeH)
-	local OffsetX = -(size[1]-childBoundingW-(dgsElementData[scrollbar[1]].visible and scbThick or 0))*dgsElementData[scrollbar[1]].scrollPosition*0.01
-	local OffsetY = -(size[2]-childBoundingH-(dgsElementData[scrollbar[2]].visible and scbThick or 0))*dgsElementData[scrollbar[2]].scrollPosition*0.01
-	if OffsetX < 0 then
-		OffsetX = 0
+	local offsetX = -(size[1]-childBoundingW-(dgsElementData[scrollbar[1]].visible and scbThick or 0))*dgsElementData[scrollbar[1]].scrollPosition*0.01
+	local offsetY = -(size[2]-childBoundingH-(dgsElementData[scrollbar[2]].visible and scbThick or 0))*dgsElementData[scrollbar[2]].scrollPosition*0.01
+	if offsetX < 0 then
+		offsetX = 0
 	end
-	if OffsetY < 0 then
-		OffsetY = 0
+	if offsetY < 0 then
+		offsetY = 0
 	end
-	return OffsetX,OffsetY
+	return offsetX,offsetY
 end
 
 function dgsScrollPaneSetViewOffset(scrollpane,x,y)
@@ -461,7 +459,7 @@ end
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
+dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,offsetX,offsetY,visible)
 	if MouseData.hit == source then
 		MouseData.topScrollable = source
 	end
@@ -486,10 +484,10 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 	local relSizX,relSizY = w-xthick,h-ythick
 	local maxX,maxY = childBoundingW-relSizX+paddingX*2,childBoundingH-relSizY+paddingY*2
 	maxX,maxY = maxX > 0 and maxX or 0,maxY > 0 and maxY or 0
-	
-	local _OffsetX = -maxX*dgsElementData[ scrollbar[2] ].scrollPosition*0.01
-	local OffsetX = eleData.horizontalMoveOffset
-	if eleData.horizontalMoveOffset ~= _OffsetX then
+
+	local _offsetX = -maxX*dgsElementData[ scrollbar[2] ].scrollPosition*0.01
+	offsetX = eleData.horizontalMoveOffset
+	if eleData.horizontalMoveOffset ~= _offsetX then
 		local mHardness = 1
 		local moveType = dgsElementData[ scrollbar[2] ].moveType
 		if moveType == "slow" then
@@ -497,19 +495,19 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		elseif moveType == "fast" then
 			mHardness = eleData.moveHardness[2]
 		end
-		OffsetX = mathLerp(mHardness,OffsetX,_OffsetX)
-		if _OffsetX-OffsetX <= 0.5 and _OffsetX-OffsetX >= -0.5 then
-			OffsetX = _OffsetX
+		offsetX = mathLerp(mHardness,offsetX,_offsetX)
+		if _offsetX-offsetX <= 0.5 and _offsetX-offsetX >= -0.5 then
+			offsetX = _offsetX
 			dgsElementData[ scrollbar[2] ].moveType = "sync"
 		end
-		if OffsetX >= 0 then OffsetX = 0 end
-		eleData.horizontalMoveOffset = OffsetX
-		eleData.horizontalMoveOffsetRelative = -OffsetX/maxX
-		OffsetX = OffsetX-OffsetX%1
+		if offsetX >= 0 then offsetX = 0 end
+		eleData.horizontalMoveOffset = offsetX
+		eleData.horizontalMoveOffsetRelative = -offsetX/maxX
+		offsetX = offsetX-offsetX%1
 	end
-	local _OffsetY = -maxY*dgsElementData[ scrollbar[1] ].scrollPosition*0.01
-	local OffsetY = eleData.verticalMoveOffset
-	if eleData.verticalMoveOffset ~= _OffsetY then
+	local _offsetY = -maxY*dgsElementData[ scrollbar[1] ].scrollPosition*0.01
+	offsetY = eleData.verticalMoveOffset
+	if eleData.verticalMoveOffset ~= _offsetY then
 		local mHardness = 1
 		local moveType = dgsElementData[ scrollbar[1] ].moveType
 		if moveType == "slow" then
@@ -517,20 +515,20 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		elseif moveType == "fast" then
 			mHardness = eleData.moveHardness[2]
 		end
-		OffsetY = mathLerp(mHardness,OffsetY,_OffsetY)
-		if _OffsetY-OffsetY <= 0.5 and _OffsetY-OffsetY >= -0.5 then
-			OffsetY = _OffsetY
+		offsetY = mathLerp(mHardness,offsetY,_offsetY)
+		if _offsetY-offsetY <= 0.5 and _offsetY-offsetY >= -0.5 then
+			offsetY = _offsetY
 			dgsElementData[ scrollbar[1] ].moveType = "sync"
 		end
-		if OffsetY >= 0 then OffsetY = 0 end
-		eleData.verticalMoveOffset = OffsetY
-		eleData.verticalMoveOffsetRelative = -OffsetY/maxY
-		OffsetY = OffsetY-OffsetY%1
+		if offsetY >= 0 then offsetY = 0 end
+		eleData.verticalMoveOffset = offsetY
+		eleData.verticalMoveOffsetRelative = -offsetY/maxY
+		offsetY = offsetY-offsetY%1
 	end
-	
+
 	local basePointOffset = eleData.basePointOffset
-	OffsetX = OffsetX+(basePointOffset[3] and basePointOffset[1]*w or basePointOffset[1])+paddingX
-	OffsetY = OffsetY+(basePointOffset[3] and basePointOffset[2]*h or basePointOffset[2])+paddingY
+	offsetX = offsetX+(basePointOffset[3] and basePointOffset[1]*w or basePointOffset[1])+paddingX
+	offsetY = offsetY+(basePointOffset[3] and basePointOffset[2]*h or basePointOffset[2])+paddingY
 	local newRndTgt = eleData.mainRT
 	local drawTarget
 	if newRndTgt then
@@ -563,8 +561,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 			enabledInherited = false
 		end
 	end
-	local scrollPaneStartX = -OffsetX
-	local scrollPaneStartY = -OffsetY
+	local scrollPaneStartX = -offsetX
+	local scrollPaneStartY = -offsetY
 	local scrollPaneEndX = scrollPaneStartX+w
 	local scrollPaneEndY = scrollPaneStartY+h
 	for i=1, #children do
@@ -573,22 +571,20 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		local childAbsSize = dgsElementData[child].absSize
 		local childMinX, childMinY, childMaxX, childMaxY = childAbsPos[1],childAbsPos[2], childAbsPos[1] + childAbsSize[1], childAbsPos[2] + childAbsSize[2]
 		if (scrollPaneEndX > childMinX) and (scrollPaneStartX < childMaxX) and (scrollPaneEndY > childMinY) and (scrollPaneStartY < childMaxY) then
-			renderGUI(child,mx,my,enabledInherited,enabledSelf,newRndTgt,0,0,xNRT,yNRT,OffsetX,OffsetY,parentAlpha,visible)
+			renderGUI(child,mx,my,enabledInherited,enabledSelf,newRndTgt,0,0,xNRT,yNRT,offsetX,offsetY,parentAlpha,visible)
 		end
 	end
 	dxSetRenderTarget(rndtgt)
 	dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 	if bgColor then
-		bgColor = bgColor or 0xFFFFFFFF
-		local color = applyColorAlpha(bgColor,parentAlpha)
-		dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,color,isPostGUI,rndtgt)
-		bgColor = applyColorAlpha(bgColor,parentAlpha)
+		bgColor = applyColorAlpha(bgColor or 0xFFFFFFFF,parentAlpha)
+		dxDrawImage(x,y,relSizX,relSizY,eleData.bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
 	end
 	if drawTarget then
 		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		dxDrawImage(x,y,relSizX,relSizY,drawTarget,0,0,0,white,isPostGUI)
 	end
-	return rndtgt,false,mx,my,OffsetX,OffsetY
+	return rndtgt,false,mx,my,offsetX,offsetY
 end
 
 ----------------------------------------------------------------

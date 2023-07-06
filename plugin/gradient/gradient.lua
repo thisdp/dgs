@@ -4,7 +4,7 @@ dgsRegisterPluginType("dgs-dxgradient")
 function dgsCreateGradient(colorFrom,colorTo,rotation)
 	assert(type(colorFrom) == "number","Bad argument @dgsCreateGradient at argument 1, expect number got "..type(color1))
 	assert(type(colorTo) == "number","Bad argument @dgsCreateGradient at argument 2, expect number got "..type(color2))
-	local rotation = rotation or 0
+	rotation = rotation or 0
 	local shader = dxCreateShader("plugin/gradient/gradient.fx")
 	dgsSetData(shader,"asPlugin","dgs-dxgradient")
 	dgsSetData(shader,"colorFrom",colorFrom)
@@ -14,7 +14,7 @@ function dgsCreateGradient(colorFrom,colorTo,rotation)
 	dxSetShaderValue(shader,"colorTo",fromcolor(colorTo,true))
 	dxSetShaderValue(shader,"rotation",rotation)
 	dgsTriggerEvent("onDgsPluginCreate",shader,sourceResource)
-	return shader 
+	return shader
 end
 
 function dgsGradientSetColor(gradShader,colorFrom,colorTo)
@@ -25,7 +25,7 @@ function dgsGradientSetColor(gradShader,colorFrom,colorTo)
 	dgsSetData(gradShader,"colorTo",colorTo)
 	dxSetShaderValue(gradShader,"colorFrom",fromcolor(colorFrom,true))
 	dxSetShaderValue(gradShader,"colorTo",fromcolor(colorTo,true))
-	return true 
+	return true
 end
 
 function dgsGradientGetColor(gradShader,rotation)
@@ -37,7 +37,7 @@ function dgsGradientSetRotation(gradShader,rotation)
 	assert(dgsGetPluginType(gradShader) == "dgs-dxgradient","Bad argument @dgsGradientSetRotation at argument 1, expect dgs-dxgradient got "..type(gradShader))
 	dgsSetData(gradShader,"rotation",rotation)
 	dxSetShaderValue(gradShader,"rotation",rotation)
-	return true 
+	return true
 end
 
 function dgsGradientGetRotation(gradShader)

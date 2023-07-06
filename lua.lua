@@ -429,8 +429,6 @@ function createLuaLexer(luaVer,onThrow)
 				ls:next()
 			end
 		end}
-	else
-
 	end
 end
 
@@ -442,7 +440,6 @@ end
 
 TKOPRTransf = {
 ["~"]=OPR.NOT,
-["-"]=OPR.MINUS,
 ["#"]=OPR.LEN,
 ["+"]=OPR.ADD,
 ["-"]=OPR.SUB,

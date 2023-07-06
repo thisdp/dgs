@@ -26,7 +26,7 @@ function dgsCircleSetRadius(circle,outsideRadius,insideRadius)
 	local outside,inside = outsideRadius or dgsElementData[circle].outsideRadius,insideRadius or dgsElementData[circle].insideRadius
 	dxSetShaderValue(circle,"outsideRadius",outside)
 	dxSetShaderValue(circle,"insideRadius",inside)
-	return dgsSetData(circle,"outsideRadius",outside) and dgsSetData(circle,"insideRadius",inside) 
+	return dgsSetData(circle,"outsideRadius",outside) and dgsSetData(circle,"insideRadius",inside)
 end
 
 function dgsCircleGetRadius(circle)

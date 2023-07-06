@@ -39,6 +39,8 @@ dgsBackEndRenderer = {
 		self[dgsType] = theFunction
 	end,
 }
+--On Click Action
+dgsOnMouseClickAction = {}
 --Collider
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)
@@ -141,7 +143,7 @@ function dgsSetCurrentLayerIndex(dgsEle,index)
 	local layer = dgsElementData[dgsEle].alwaysOn or "center"
 	local parent = dgsElementData[dgsEle].parent
 	local theTable = isElement(parent) and dgsElementData[parent].children or LayerCastTable[layer]
-	local index = mathClamp(index,1,#theTable+1)
+	index = mathClamp(index,1,#theTable+1)
 	local id = tableFind(theTable,dgsEle)
 	if id then
 		tableRemove(theTable,id)
@@ -174,7 +176,7 @@ function dgsGetElementsInLayer(layer)
 end
 
 function dgsGetElementsFromResource(res)
-	local res = res or sourceResource
+	res = res or sourceResource
 	if res == "all" then
 		local serialized,cnt = {},0
 		for r,storeTable in pairs(boundResource) do
@@ -192,7 +194,6 @@ function dgsGetElementsFromResource(res)
 		end
 		return serialized
 	end
-	return false
 end
 
 function dgsGetChild(dgsEle,id)
@@ -276,13 +277,13 @@ end
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 	local eleType = dgsIsType(dgsEle)
 	if not(eleType) then error(dgsGenAsrt(dgsEle,"dgsBringToFront",1,"dgs-dxelement")) end
-	if mouse then 
+	if mouse then
 		local mouseButtons = dgsElementData[dgsEle].mouseButtons
-		if mouseButtons then 
-			if (mouse == "left" and not mouseButtons[1]) 
-			or (mouse == "right" and not mouseButtons[2]) 
+		if mouseButtons then
+			if (mouse == "left" and not mouseButtons[1])
+			or (mouse == "right" and not mouseButtons[2])
 			or (mouse == "middle" and not mouseButtons[3]) then
-				return 
+				return
 			end
 		end
 	end
@@ -315,7 +316,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 			local parents = dgsEle
 			while true do
 				local uparents = dgsElementData[parents].parent	--Get Parent
-				local eleType = dgsIsType(uparents)
+				eleType = dgsIsType(uparents)
 				if isElement(uparents) then
 					local children = dgsElementData[uparents].children
 					local id = tableFind(children,parents)
@@ -326,7 +327,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 							local scrollbar = dgsElementData[parents].scrollbars
 							local clickedButton = "left"
 							local mouseButtons = dgsElementData[parents].mouseButtons
-							if mouseButtons and not mouseButtons[1] then 
+							if mouseButtons and not mouseButtons[1] then
 								clickedButton = (mouseButtons[2] and "right") or (mouseButtons[3] and "middle") or "left"
 							end
 							dgsBringToFront(scrollbar[1],clickedButton,_,true,false)
@@ -360,7 +361,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 								local scrollbar = dgsElementData[parents].scrollbars
 								local clickedButton = "left"
 								local mouseButtons = dgsElementData[parents].mouseButtons
-								if mouseButtons and not mouseButtons[1] then 
+								if mouseButtons and not mouseButtons[1] then
 									clickedButton = (mouseButtons[2] and "right") or (mouseButtons[3] and "middle") or "left"
 								end
 								dgsBringToFront(scrollbar[1],clickedButton,_,true,false)
@@ -384,7 +385,7 @@ function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
 		MouseData.clickData = nil
 	elseif mouse == "right" then
 		MouseData.click.right = dgsEle
-	elseif mouse == "middle" then 
+	elseif mouse == "middle" then
 		MouseData.click.middle = dgsEle
 	end
 	return true
@@ -483,7 +484,6 @@ function dgsIsType(dgsEle,isType)
 		end
 		return dgsType[dgsElementType[dgsEle] or getElementType(dgsEle)]
 	end
-	return false
 end
 
 function dgsGetPluginType(dgsEle) return dgsEle and (dgsElementData[dgsEle] and dgsElementData[dgsEle].asPlugin or false) or dgsGetType(dgsEle) end
@@ -605,8 +605,8 @@ function dgsRegisterProperty(eleType,propertyName,propertyArgTemplate)
 	if not(type(propertyName) == "string") then error(dgsGenAsrt(propertyName,"dgsRegisterProperty",2,"string")) end
 	if not(type(propertyArgTemplate) == "table") then error(dgsGenAsrt(propertyArgTemplate,"dgsRegisterProperty",3,"table")) end
 	if _G[eleType] then
-		for eleType in pairs(_G[eleType]) do
-			dgsRegisterProperty(eleType,propertyName,propertyArgTemplate)
+		for eleType2 in pairs(_G[eleType]) do
+			dgsRegisterProperty(eleType2,propertyName,propertyArgTemplate)
 		end
 	else
 		if not dgsElementPropertyList[eleType] then dgsElementPropertyList[eleType] = {} end
@@ -619,8 +619,8 @@ function dgsRegisterProperties(eleType,propertyList)
 	if not(type(eleType) == "string") then error(dgsGenAsrt(eleType,"dgsRegisterProperties",1,"string")) end
 	if not(type(propertyList) == "table") then error(dgsGenAsrt(propertyList,"dgsRegisterProperties",2,"table")) end
 	if _G[eleType] then
-		for eleType in pairs(_G[eleType]) do
-			dgsRegisterProperties(eleType,propertyList)
+		for eleType2 in pairs(_G[eleType]) do
+			dgsRegisterProperties(eleType2,propertyList)
 		end
 	else
 		if not dgsElementPropertyList[eleType] then dgsElementPropertyList[eleType] = {} end
@@ -856,7 +856,7 @@ function dgsSetProperties(dgsEle,theTable)
 	if not(type(theTable) == "table") then error(dgsGenAsrt(theTable,"dgsSetProperties",2,"table")) end
 	local dxElements = isTable and dgsEle or {dgsEle}
 	for i=1,#dxElements do
-		local dgsEle = dxElements[i]
+		dgsEle = dxElements[i]
 		for key,value in pairs(theTable) do
 			dgsSetProperty(dgsEle,key,value)
 		end
@@ -882,7 +882,7 @@ function dgsSetPropertyInherit(dgsEle,key,value,...)
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetPropertyInherit",1,"dgs-dxelement/table")) end
 	local dxElements = isTable and dgsEle or {dgsEle}
 	for i=1,#dxElements do
-		local dgsEle = dxElements[i]
+		dgsEle = dxElements[i]
 		dgsSetProperty(dgsEle,key,value)
 		for index,child in ipairs(dgsGetChildren(dgsEle)) do
 			dgsSetPropertyInherit(child,key,value,...)
@@ -906,7 +906,7 @@ function dgsAddEasingFunction(name,str,isOverWrite)
 	if not(type(str) == "string") then error(dgsGenAsrt(str,"dgsAddEasingFunction",2,"string")) end
 	if easingBuiltIn[name] then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,_,_,"duplicated name with built-in easing function ("..name..")")) end
 	if not isOverWrite and dgsEasingFunction[name] then error(dgsGenAsrt(name,"dgsAddEasingFunction",1,_,_,"this name has been used ("..name..")")) end
-	local str = SEInterface..str
+	str = SEInterface..str
 	local fnc,err = loadstring(str)
 	if not fnc then error(dgsGenAsrt(fnc,"dgsAddEasingFunction",2,_,_,_,"Failed to load function:"..err)) end
 	dgsEasingFunction[name] = fnc
@@ -930,6 +930,7 @@ function dgsEasingFunctionExists(name)
 end
 
 ------------------------DGS Property Saver
+--[[
 dgsElementKeeper = {}
 function dgsSetElementKeeperEnabled(state)
 	if sourceResource then
@@ -945,7 +946,6 @@ function dgsGetElementKeeperEnabled()
 	end
 	return false
 end
-
 function DGSI_SaveData()
 	--Properties
 	setElementData(root,"DGSI_Properties",dgsElementData,false)
@@ -973,7 +973,7 @@ function DGSI_SaveData()
 	setElementData(root,"DGSI_Animations",animQueue,false)
 	--Others
 	setElementData(root,"DGSI_SaveData",true,false)
-end
+end]]
 
 --[[
 Logger type:
@@ -981,6 +981,8 @@ Logger type:
 2.Shader
 3.Font
 ]]
+
+--[[
 function DGSI_AllocateDxElement(e,oldDgsElementLogger)
 	if oldDgsElementLogger[e] then
 		if isElement(oldDgsElementLogger[e][3]) then
@@ -989,9 +991,9 @@ function DGSI_AllocateDxElement(e,oldDgsElementLogger)
 			local dxElement
 			if oldDgsElementLogger[e][1] == 1 then
 				dxElement = __dxCreateTexture(oldDgsElementLogger[e][2])
-			elseif oldDgsElementLogger[e][1] == 2 then 
+			elseif oldDgsElementLogger[e][1] == 2 then
 				dxElement = __dxCreateShader(oldDgsElementLogger[e][2])
-			elseif oldDgsElementLogger[e][1] == 3 then 
+			elseif oldDgsElementLogger[e][1] == 3 then
 				dxElement = __dxCreateFont(unpack(oldDgsElementLogger[e][2]))
 			end
 			if dxElement then
@@ -1021,7 +1023,7 @@ function DGSI_ReadData()
 				end
 				if data.eventHandlers then
 					local eventHandlers = data.eventHandlers
-					if eventHandlers then 
+					if eventHandlers then
 						for i=1,#eventHandlers do
 							addEventHandler(eventHandlers[i][1],dgsElement,_G[ eventHandlers[i][2] ],eventHandlers[i][3],eventHandlers[i][4])
 						end
@@ -1066,10 +1068,10 @@ function DGSI_ReadData()
 		--Translations
 		resourceTranslation = getElementData(root,"DGSI_TranslationResRegister") or {}
 		removeElementData(root,"DGSI_TranslationResRegister")
-		
+
 		LanguageTranslation = getElementData(root,"DGSI_TranslationLanguage") or {}
 		removeElementData(root,"DGSI_TranslationLanguage")
-		
+
 		LanguageTranslationAttach = getElementData(root,"DGSI_TranslationLanguageAttach") or {}
 		removeElementData(root,"DGSI_TranslationLanguageAttach")
 		--Easing Functions
@@ -1119,7 +1121,7 @@ function DGSI_ReadData()
 		dgsWorld3DTable = table.merger(dgsWorld3DTable,_dgsWorld3DTable)
 		dgsScreen3DTable = table.merger(dgsScreen3DTable,_dgsScreen3DTable)
 		removeElementData(root,"DGSI_LayerData")
-		
+
 		--Animations
 		animQueue = getElementData(root,"DGSI_Animations") or {}
 		removeElementData(root,"DGSI_Animations")
@@ -1128,28 +1130,31 @@ function DGSI_ReadData()
 
 	setElementData(root,"DGSI_SaveData",false,false)
 end
-
+addEventHandler("onClientResourceStart",resourceRoot,DGSI_ReadData,false)
+]]
 addEventHandler("onClientResourceStop",resourceRoot,function()
 	--Element Logger
-	setElementData(root,"DGSI_ElementLogger",dgsElementLogger,false)
+	--setElementData(root,"DGSI_ElementLogger",dgsElementLogger,false)
 	if isElement(GlobalEdit) then
-		removeEventHandler("onClientElementDestroy",GlobalEdit,dgsGlobalEditDestroyDetector)	--shutdown global edit destroy detector 
+		removeEventHandler("onClientElementDestroy",GlobalEdit,dgsGlobalEditDestroyDetector)	--shutdown global edit destroy detector
 	end
 	if isElement(GlobalMemo) then
-		removeEventHandler("onClientElementDestroy",GlobalMemo,dgsGlobalMemoDestroyDetector)	--shutdown global memo destroy detector 
+		removeEventHandler("onClientElementDestroy",GlobalMemo,dgsGlobalMemoDestroyDetector)	--shutdown global memo destroy detector
 	end
+	--[[
 	local terminator = createElement("dgs-dxterminator")
 	addEventHandler("onClientElementDestroy",terminator,function()
 		DGSI_SaveData()
 	end,false)
+	]]
 end,false)
 
-addEventHandler("onClientResourceStart",resourceRoot,DGSI_ReadData,false)
 
 addEventHandler("onClientResourceStop",root,function(res)
 	if boundResource[res] then
 		dgsClear(nil,res)
 		resourceTranslation[res] = nil
+		boundResource[res] = nil
 	end
 	externalElementPool[res] = nil	--Clear external element pool
 	if dgsElementKeeper[res] then dgsElementKeeper[res] = nil end
@@ -1157,8 +1162,8 @@ addEventHandler("onClientResourceStop",root,function(res)
 		setCursorAlpha(255)
 	end
 	if G2DHookerEvents[res] then -- G2D Hooker
-		G2DHookerEvents[res] = nil 
-		if table.count(G2DHookerEvents) == 0 then 
+		G2DHookerEvents[res] = nil
+		if table.count(G2DHookerEvents) == 0 then
 			removeEventHandler("onDgsEditAccepted",root,handleHookerEvents)
 			removeEventHandler("onDgsTextChange",root,handleHookerEvents)
 			removeEventHandler("onDgsComboBoxSelect",root,handleHookerEvents)

@@ -454,7 +454,7 @@ class {
 		retrieveDragNDropData = gNObjFnc("dgsRetrieveDragNDropData"),
 		sendDragNDropData = gNObjFnc("dgsSendDragNDropData"),
 		on = function(self,eventName,theFnc,p)
-			local eventName = dgsOOP.transfromEventName(eventName)
+			eventName = dgsOOP.transfromEventName(eventName)
 			removeEventHandler(eventName,self.dgsElement,theFnc)
 			dgsOOP.eventHandler[eventName] = dgsOOP.eventHandler[eventName] or {}
 			dgsOOP.eventHandler[eventName][self.dgsElement] = dgsOOP.eventHandler[eventName][self.dgsElement] or {}
@@ -474,7 +474,7 @@ class {
 			return addEventHandler(eventName,self.dgsElement,callBack,p and true or false) and self or false
 		end,
 		removeOn = function(self,eventName,theFnc)
-			local eventName = dgsOOP.transfromEventName(eventName)
+			eventName = dgsOOP.transfromEventName(eventName)
 			dgsOOP.eventHandler[eventName] = dgsOOP.eventHandler[eventName] or {}
 			dgsOOP.eventHandler[eventName][self.dgsElement] = dgsOOP.eventHandler[eventName][self.dgsElement] or {}
 			if dgsOOP.eventHandler[eventName][self.dgsElement][theFnc] then
@@ -515,7 +515,7 @@ class {
 		dgsColorPicker = function(...) return dgsOOP.dgsColorPicker(...) end,
 		dgsComponentSelector = function(...) return dgsOOP.dgsComponentSelector(...) end,
 		dgsSVG = function(...) return dgsOOP.dgsSVG(...) end,
-		
+
 		--Alias
 		alias = {
 			--A = B
@@ -860,7 +860,7 @@ class {
 		getCaretPosition = gObjFnc("dgsEditGetCaretPosition"),
 		setCaretStyle = gObjFnc("dgsEditSetCaretStyle",true),
 		getCaretStyle = gObjFnc("dgsEditGetCaretStyle"),
-		setWhiteList = gObjFnc("dgsEditSetWhiteList",true),
+		setTextFilter = gObjFnc("dgsEditSetTextFilter",true),
 		setMaxLength = gObjFnc("dgsEditSetMaxLength",true),
 		getMaxLength = gObjFnc("dgsEditGetMaxLength"),
 		setReadOnly = gObjFnc("dgsEditSetReadOnly",true),
@@ -1445,8 +1445,6 @@ class {
 		setResolution = gObjFnc("dgs3DInterfaceSetResolution",true),
 		attachToElement = gObjFnc("dgs3DInterfaceAttachToElement",true),
 		isAttached = gObjFnc("dgs3DInterfaceIsAttached",true),
-		getResolution = gObjFnc("dgs3DInterfaceGetResolution"),
-		setResolution = gObjFnc("dgs3DInterfaceSetResolution",true),
 		detachFromElement = gObjFnc("dgs3DInterfaceDetachFromElement",true),
 		setAttachedOffsets = gObjFnc("dgs3DInterfaceSetAttachedOffsets",true),
 		getAttachedOffsets = gObjFnc("dgs3DInterfaceGetAttachedOffsets"),

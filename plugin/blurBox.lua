@@ -104,8 +104,8 @@ function dgsBlurBoxSetResolution(bb,w,h)
 	local bufferRTV = dgsElementData[bb].bufferRTV
 	if isElement(bufferRTH) then destroyElement(bufferRTH) end
 	if isElement(bufferRTV) then destroyElement(bufferRTV) end
-	local bufferRTH = dgsCreateRenderTarget(w,h,true,bb)
-	local bufferRTV = dgsCreateRenderTarget(w,h,true,bb)
+	bufferRTH = dgsCreateRenderTarget(w,h,true,bb)
+	bufferRTV = dgsCreateRenderTarget(w,h,true,bb)
 	if bufferRTH then
 		dxSetTextureEdge(bufferRTH,"mirror")
 		dgsAttachToAutoDestroy(bufferRTH,bb,-3)
@@ -134,7 +134,7 @@ function dgsBlurBoxSetLevel(bb,level)
 	if not(dgsGetPluginType(bb) == "dgs-dxblurbox") then error(dgsGenAsrt(bb,"dgsBlurBoxSetLevel",1,"dgs-dxblurbox")) end
 	local inRange = level>=0 and level <=15
 	if not(type(level) == "number" and inRange) then error(dgsGenAsrt(level,"dgsBlurBoxSetLevel",2,"number","0~15",not inRange and "Out of range")) end
-	local level = level-level%1
+	level = level-level%1
 	local shaders = dgsElementData[bb].shaders
 	destroyElement(shaders[1])
 	destroyElement(shaders[2])

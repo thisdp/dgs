@@ -67,11 +67,11 @@ function dgsCreateBrowser(...)
 	resizeBrowser(browser,resX or size[1],resY or size[2])
 	dgsElementData[browser].browserSize = {resX or size[1],resY or size[2]}
 	onDGSElementCreate(browser,sRes)
-	addEventHandler("onDgsMouseMove",browser,function(x,y)
-		local size = dgsElementData[source].absSize
+	addEventHandler("onDgsMouseMove",browser,function(x2,y2)
+		local size2 = dgsElementData[source].absSize
 		local brosize = dgsElementData[source].browserSize
 		local startX,startY = dgsGetPosition(source,false,true)
-		injectBrowserMouseMove(source,(x-startX)/size[1]*brosize[1],(y-startY)/size[2]*brosize[2])
+		injectBrowserMouseMove(source,(x2-startX)/size2[1]*brosize[1],(y2-startY)/size2[2]*brosize[2])
 	end,false)
 	addEventHandler("onDgsMouseWheel",browser,function(upOrDown)
 		injectBrowserMouseWheel(source,upOrDown*40,0)

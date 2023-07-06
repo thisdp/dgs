@@ -78,20 +78,20 @@ function dgsCreateButton(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateButton",4,"number")) end
 	local button = createElement("dgs-dxbutton")
 	dgsSetType(button,"dgs-dxbutton")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
 	style = style.button
-	
-	local normalColor = normalColor or style.color[1]
-	local hoveringColor = hoveringColor or style.color[2]
-	local clickedColor = clickedColor or style.color[3]
-	local normalImage = normalImage or dgsCreateTextureFromStyle(using,res,style.image[1])
-	local hoveringImage = hoveringImage or dgsCreateTextureFromStyle(using,res,style.image[2]) or normalImage
-	local clickedImage = clickedImage or dgsCreateTextureFromStyle(using,res,style.image[3]) or normalImage
+
+	normalColor = normalColor or style.color[1]
+	hoveringColor = hoveringColor or style.color[2]
+	clickedColor = clickedColor or style.color[3]
+	normalImage = normalImage or dgsCreateTextureFromStyle(using,res,style.image[1])
+	hoveringImage = hoveringImage or dgsCreateTextureFromStyle(using,res,style.image[2]) or normalImage
+	clickedImage = clickedImage or dgsCreateTextureFromStyle(using,res,style.image[3]) or normalImage
 	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
 	dgsElementData[button] = {
 		alignment = {"center","center"},
@@ -234,7 +234,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		local canLeftClick,canRightClick,canMiddleClick = true
 		if mouseButtons then
 			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
-		end		
+		end
 		if (canLeftClick and MouseData.click.left == source) or (canRightClick and MouseData.click.right == source) or (canMiddleClick and MouseData.click.middle == source) then
 			buttonState = 3
 		end
@@ -252,9 +252,9 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		renderBuffer.startColor = renderBuffer.currentColor or (type(color) ~= "table" and color or color[eleData.lastState])
 		renderBuffer.startTextColor = renderBuffer.currentTextColor or (type(textColor) ~= "table" and textColor or textColor[eleData.lastState])
 	end
-	local bgColor = type(color) ~= "table" and color or color[buttonState] 
+	local bgColor = type(color) ~= "table" and color or color[buttonState]
 	local bgImage = type(image) ~= "table" and image or image[buttonState]
-	local textColor = type(textColor) ~= "table" and textColor or (textColor[buttonState] or textColor[1])
+	textColor = type(textColor) ~= "table" and textColor or (textColor[buttonState] or textColor[1])
 	local finalcolor
 	if not enabledInherited and not enabledSelf then
 		if type(eleData.disabledColor) == "number" then
@@ -293,13 +293,13 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	end
 	local text = eleData.text
 	local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
-	
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[style.using]
 	local systemFont = style.systemFontElement
-	
+
 	local wordBreak = eleData.wordBreak
 	local font = eleData.font or systemFont
 	local colorCoded = eleData.colorCoded
@@ -400,14 +400,14 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		iconColor = type(iconColor) ~= "table" and iconColor or iconColor[buttonState]
 		if iconImage then
 			if iconShadow then
-				local shadowoffx,shadowoffy,shadowc,shadowIsOutline = iconShadow[1],iconShadow[2],iconShadow[3],iconShadow[4]
-				if shadowoffx and shadowoffy and shadowc then
-					local shadowc = applyColorAlpha(shadowc,parentAlpha)
+				local shadowoffx,shadowoffy,shadowColor,shadowIsOutline = iconShadow[1],iconShadow[2],iconShadow[3],iconShadow[4]
+				if shadowoffx and shadowoffy and shadowColor then
+					shadowColor = applyColorAlpha(shadowColor,parentAlpha)
 					dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
 					if shadowIsOutline then
-						dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
-						dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
-						dxDrawImage(posX+shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
+						dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowColor,isPostGUI,rndtgt)
+						dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowColor,isPostGUI,rndtgt)
+						dxDrawImage(posX+shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowColor,isPostGUI,rndtgt)
 					end
 				end
 			end
@@ -427,7 +427,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 			shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 		end
-		
+
 		dgsDrawText(text,textX,textY,textX+w,textY+h,applyColorAlpha(textColor,parentAlpha),textSizeX,textSizeY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	end
 
