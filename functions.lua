@@ -44,7 +44,7 @@ function dgsGetElementPositionOnScreen(dgsEle,relativeTo)
 		parent = parentList[i+1]
 		local eleData = dgsElementData[dgsEle]
 		local eleType = dgsElementType[dgsEle]
-		--Process Position Alignment 
+		--Process Position Alignment
 		local eleTypeP,eleDataP
 		local elePAlignH,elePAlignV
 		if parent then
@@ -56,7 +56,8 @@ function dgsGetElementPositionOnScreen(dgsEle,relativeTo)
 		local absPos,absSize = eleData.absPos,eleData.absSize
 		if not absPos then absX,absY = 0,0 else absX,absY = absPos[1],absPos[2] end
 		if not absSize then absW,absH = 0,0 else absW,absH = absSize[1],absSize[2] end
-		local PosX,PosY,w,h = absX,absY,absW,absH
+		local PosX,PosY = absX,absY
+		local w,h
 		local eleAlign = eleData.positionAlignment
 		local eleAlignH,eleAlignV = eleAlign[1] or elePAlignH, eleAlign[2] or elePAlignV
 		if eleAlignH == "right" then	--Horizontal
@@ -73,7 +74,7 @@ function dgsGetElementPositionOnScreen(dgsEle,relativeTo)
 			local pHeight = parent and eleDataP.absSize[2] or sH
 			PosY = PosY+pHeight/2-eleData.absSize[2]/2
 		end
-		
+
 		if eleTypeP == "dgs-dxwindow" and eleData.ignoreParentTitle then OffsetY = 0 end
 		x,y = x+(OffsetX+PosX)*ScaleX,y+(OffsetY+PosY)*ScaleY
 		OffsetX,OffsetY = 0,0
@@ -83,7 +84,7 @@ function dgsGetElementPositionOnScreen(dgsEle,relativeTo)
 				OffsetY = eleData.titleHeight
 			end
 		elseif eleType == "dgs-dxtab" then
-			local h = eleDataP.absSize[2]
+			h = eleDataP.absSize[2]
 			OffsetY = eleDataP.tabHeight[2] and eleDataP.tabHeight[1]*h or eleDataP.tabHeight[1]
 		elseif eleType == "dgs-dxscrollpane" then
 			OffsetX,OffsetY = eleData.horizontalMoveOffset,eleData.verticalMoveOffset
@@ -105,7 +106,7 @@ function dgsGetElementPositionOnScreen(dgsEle,relativeTo)
 					local columnMoveOffset = eleData.columnMoveOffsetTemp
 					local rowHeight = eleData.rowHeight
 					local leading = eleData.leading
-					local w = eleData.absSize[1]
+					w = eleData.absSize[1]
 					OffsetX,OffsetY = columnMoveOffset+columnOffset+columnData[data[3]][3]*(eleData.columnRelative and (w-scbThickV) or 1),eleData.rowMoveOffsetTemp+(data[2]-1)*(leading+rowHeight)+eleData.columnHeight
 				end
 			end
@@ -136,7 +137,7 @@ function dgsSetPosition(dgsEle,x,y,relative,...)
 	if (x and type(x) ~= "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"nil/number")) end
 	if (y and type(y) ~= "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
 	local pos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
-	local x,y = x or pos[1],y or pos[2]
+	x,y = x or pos[1],y or pos[2]
 	local pivot = dgsElementData[dgsEle].posPivot
 	if select("#",...) == 2 or pivot then
 		local pivotX,pivotY
@@ -189,7 +190,7 @@ function dgsSetSize(dgsEle,w,h,relative,...)
 	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
 	local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
-	local w,h = w or size[1], h or size[2]
+	w,h = w or size[1], h or size[2]
 	local pivot = dgsElementData[dgsEle].sizePivot
 	if select("#",...) == 2 or pivot then
 		local pivotX,pivotY
@@ -230,7 +231,6 @@ function dgsAttachElements(dgsEle,attachTo,offsetX,offsetY,offsetW,offsetH,relat
 	tableInsert(attachedBy,dgsEle)
 	dgsSetData(attachTo,"attachedBy",attachedBy)
 	dgsSetData(dgsEle,"attachedTo",attachedTable)
-	local attachedTable = dgsElementData[dgsEle].attachedTo
 	local absx,absy = dgsGetPosition(attachTo,false,true)
 	local absw,absh = dgsElementData[attachTo].absSize[1],dgsElementData[attachTo].absSize[2]
 	offsetX,offsetY = relativePos and (absx+absw*offsetX)/sW or offsetX+absx, relativePos and (absy+absh*offsetY)/sH or offsetY+absy
@@ -282,7 +282,7 @@ function dgsApplyEnabledInherited(parent,enabled)
 end
 
 function dgsSetEnabled(dgsEle,enabled)
-	local enabled = enabled and true or false
+	enabled = enabled and true or false
 	if type(dgsEle) == "table" then
 		for i=1,#dgsEle do
 			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetEnabled",1,"dgs-dxelement",_,_,"at table index "..i)) end
@@ -320,7 +320,7 @@ function dgsApplyVisibleInherited(parent,visible)
 end
 
 function dgsSetVisible(dgsEle,visible)
-	local visible = visible and true or false
+	visible = visible and true or false
 	if type(dgsEle) == "table" then
 		local result = true
 		for i=1,#dgsEle do
@@ -367,11 +367,11 @@ function configPosSize(dgsEle,pos,size)
 	local rlt = eleData.relative
 	local x,y,rltPos,w,h,rltSize
 	if pos then
-		local pos = rlt[1] and eleData.rltPos or eleData.absPos
+		pos = rlt[1] and eleData.rltPos or eleData.absPos
 		x,y,rltPos = pos[1],pos[2],rlt[1]
 	end
 	if size then
-		local size = rlt[1] and eleData.rltSize or eleData.absSize
+		size = rlt[1] and eleData.rltSize or eleData.absSize
 		w,h,rltSize = size[1],size[2],rlt[2]
 	end
 	calculateGuiPositionSize(dgsEle,x,y,rltPos,w,h,rltSize)
@@ -490,8 +490,6 @@ function dgsSetFont(dgsEle,font)
 	local fontType = dgsGetType(font)
 	if fontType == "string" then
 		if not(fontBuiltIn[font]) then error(dgsGenAsrt(font,"dgsSetFont",2,_,_,_,"font "..font.." doesn't exist")) end
-	elseif fontType == "table" then
-		--nothing
 	elseif fontType ~= "dx-font" then
 		error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font/table"))
 	end
@@ -511,9 +509,9 @@ function dgsGetSystemFont(sres)
 	return systemFont
 end
 
-function dgsSetSystemFont(font,size,bold,quality,styleName,res)
+function dgsSetSystemFont(font,size,bold,quality,styleName,sres)
 	if not(type(font) == "string") then error(dgsGenAsrt(font,"dgsSetSystemFont",1,"string")) end
-	local res = sres or sourceResource or "global"
+	res = sres or sourceResource or "global"
 	local style = styleManager.styles[res]
 	style = style.loaded[styleName or style.using]
 	local systemFont = style.systemFontElement
@@ -527,7 +525,7 @@ function dgsSetSystemFont(font,size,bold,quality,styleName,res)
 	else
 		local path = font:find(":") and font or ":"..getResourceName(sResource).."/"..font
 		if not fileExists(path) then error(dgsGenAsrt(path,"dgsSetSystemFont",1,_,_,_,"Couldn't find such file '"..path.."'")) end
-		local font = dxCreateFont({path,size,bold,quality},sres or sResource)
+		font = dxCreateFont({path,size,bold,quality},sres or sResource)
 		if isElement(font) then
 			style.systemFontElement = font
 		end
@@ -616,7 +614,7 @@ end
 function dgsSimulateClick(dgsGUI,button)
 	local x,y = dgsGetPosition(dgsGUI,false)
 	local sx,sy = dgsGetSize(dgsGUI,false)
-	local x,y = x+sx*0.5,y+sy*0.5
+	x,y = x+sx*0.5,y+sy*0.5
 	dgsTriggerEvent("onDgsMouseClick",dgsGUI,button,"down",x,y)
 	dgsTriggerEvent("onDgsMouseClick",dgsGUI,button,"up",x,y)
 end
@@ -730,7 +728,7 @@ function dgsGetCursorPosition(rltEle,rlt,forceOnScreen)
 			local posX,posY = dgsGetElementPositionOnScreen(rltEle)
 			if rlt then
 				local sizeX, sizeY = false,false
-				local parent = rltEle
+				parent = rltEle
 				while(parent) do
 					local size = dgsElementData[parent].absSize
 					if size then
@@ -791,8 +789,8 @@ end
 ------------Move Scale Handler
 function dgsAddMoveHandler(dgsEle,x,y,w,h,xRel,yRel,wRel,hRel,forceReplace)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAddMoveHandler",1,"dgs-dxelement")) end
-	local x,y,xRel,yRel = x or 0,y or 0,xRel ~= false and true,yRel ~= false and true
-	local w,h,wRel,hRel = w or 1,h or 1,wRel ~= false and true,hRel ~= false and true
+	x,y,xRel,yRel = x or 0,y or 0,xRel ~= false and true,yRel ~= false and true
+	w,h,wRel,hRel = w or 1,h or 1,wRel ~= false and true,hRel ~= false and true
 	local moveData = dgsElementData[dgsEle].moveHandlerData
 	if not moveData or forceReplace then
 		dgsSetData(dgsEle,"moveHandlerData",{x,y,w,h,xRel,yRel,wRel,hRel})
@@ -814,14 +812,14 @@ end
 
 function dgsAddSizeHandler(dgsEle,left,right,top,bottom,leftRel,rightRel,topRel,bottomRel,forceReplace)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsAddSizeHandler",1,"dgs-dxelement")) end
-	local left = left or 0
-	local right = right or left
-	local top = top or right
-	local bottom = bottom or top
-	local leftRel = leftRel ~= false and true
-	local rightRel = rightRel ~= false and true
-	local topRel = topRel ~= false and true
-	local bottomRel = bottomRel ~= false and true
+	left = left or 0
+	right = right or left
+	top = top or right
+	bottom = bottom or top
+	leftRel = leftRel ~= false and true
+	rightRel = rightRel ~= false and true
+	topRel = topRel ~= false and true
+	bottomRel = bottomRel ~= false and true
 	local sizeData = dgsElementData[dgsEle].sizeHandlerData
 	if not sizeData or forceReplace then
 		dgsSetData(dgsEle,"sizeHandlerData",{left,right,top,bottom,leftRel,rightRel,topRel,bottomRel})
@@ -1175,9 +1173,9 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 				result = _value
 			end
 		end
-		for name,value in pairs(textTable) do
+		for name,value2 in pairs(textTable) do
 			if type(name) == "string" then
-				result = result:gsub("$"..name,value)
+				result = result:gsub("$"..name,value2)
 			end
 		end
 		if not skipPropertyListener and eleData.translationListener then	--Dynamic Translation
@@ -1204,9 +1202,9 @@ function dgsCreateFromXML(xmlFile)
 			local eleType = xmlNodeGetName(xmlNode)
 			if eleType ~= "root" then
 				local attrs = xmlNodeGetAttributes(xmlNode)
-				
-				
-				
+
+
+
 				local xmlChildren = xmlNodeGetChildren(xmlNode)
 				for i=1,#xmlChildren do
 					local child = xmlChildren[i]

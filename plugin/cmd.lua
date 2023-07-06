@@ -47,7 +47,7 @@ function dgsCreateCmd(x,y,w,h,relative,parent)
 	dgsSetData(edit,"mycmd",cmdMemo)
 	addEventHandler("onDgsTextChange",edit,function()
 		local text = dgsElementData[source].text
-		local parent = dgsElementData[source].mycmd
+		parent = dgsElementData[source].mycmd
 		if isElement(parent) then
 			if dgsGetPluginType(parent) == "dgs-dxcmd" then
 				local hisid = dgsElementData[parent].cmdCurrentHistory
@@ -281,15 +281,15 @@ function dgsBuildInCMD(command)
 		dgsSetProperty(cmdSystem["window"],"outline",{"out",1,tocolor(100,100,100,255)})
 		dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.5,false,"OutQuad",300)
 		dgsSizeTo(cmdSystem["window"],sW*0.5,25,false,"OutQuad",300)
-		setTimer(function(command)
+		setTimer(function(icommand)
 			dgsMoveTo(cmdSystem["window"],sW*0.25,sH*0.25,false,"InQuad",300)
 			dgsSizeTo(cmdSystem["window"],sW*0.5,sH*0.6,false,"InQuad",300)
-			setTimer(function(command)
+			setTimer(function(iicommand)
 				cmdSystem["cmd"] = dgsCreateCmd(0,0,sW*0.5,sH*0.6-45,false,cmdSystem["window"],1,1)
 				dgsCmdApplyDefaultCommands(cmdSystem["cmd"])
 				local version = getElementData(resourceRoot,"Version") or "N/A"
 				outputCmdMessage(cmdSystem["cmd"],"( Thisdp's Dx Graphical User Interface System ) Version: "..version)
-			end,310,1,command)
+			end,310,1,icommand)
 			dgsShowCursor(true,"cmd")
 		end,310,1,command)
 	else
@@ -514,10 +514,10 @@ function dgsCreateAnimationWindow(...)
 	dgsSetData(window,"animated",1)
 	dgsMoveTo(window,x,y+sy/2-12.5,false,"OutQuad",200)
 	dgsSizeTo(window,sx,25,false,"OutQuad",200)
-	setTimer(function(window)
-		dgsMoveTo(window,x,y,false,"InQuad",200)
-		dgsSizeTo(window,sx,sy,false,"InQuad",200)
-		setTimer(onAnimationWindowCreate,202,1,window)
+	setTimer(function(iwindow)
+		dgsMoveTo(iwindow,x,y,false,"InQuad",200)
+		dgsSizeTo(iwindow,sx,sy,false,"InQuad",200)
+		setTimer(onAnimationWindowCreate,202,1,iwindow)
 	end,210,1,window)
 	return window
 end
@@ -660,10 +660,10 @@ function onAnimationWindowCreate(window)
 						dgsGridListAddRow(source)
 					end
 				end
-				for i=1,#rows do
-					for k,v in pairs(rows[i]) do
-						rowData[i][k] = rowData[i][k] or {}
-						rowData[i][k][1] = v
+				for i2=1,#rows do
+					for ik,v2 in pairs(rows[i]) do
+						rowData[i][k] = rowData[i][i2] or {}
+						rowData[i][k][1] = v2
 						rowData[i][k][2] = white
 					end
 				end

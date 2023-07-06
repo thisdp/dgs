@@ -90,13 +90,13 @@ function dgsCreateCheckBox(...)
 	if not(type(state) == "boolean") then error(dgsGenAsrt(state,"dgsCreateCheckBox",6,"boolean")) end
 	local cb = createElement("dgs-dxcheckbox")
 	dgsSetType(cb,"dgs-dxcheckbox")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.checkbox
 	local imageUnchecked = style.imageUnchecked
 	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
@@ -326,7 +326,7 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local canLeftClick,canRightClick,canMiddleClick = true
 		if mouseButtons then
 			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
-		end		
+		end
 		if (canLeftClick and MouseData.click.left == source) or (canRightClick and MouseData.click.right == source) or (canMiddleClick and MouseData.click.middle == source) then
 			colorimgid = 3
 		end
@@ -345,12 +345,12 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	else
 		finalcolor = applyColorAlpha(color[colorimgid],parentAlpha)
 	end
-	
+
 	local res = eleData.resource or "global"
 	local style = styleManager.styles[res]
 	style = style.loaded[style.using]
 	local systemFont = style.systemFontElement
-	
+
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip

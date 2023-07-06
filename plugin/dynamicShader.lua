@@ -73,14 +73,14 @@ struct VSInput{
 	--Main Render (If Enabled)
 	local mainRenderFunction = shaderData.mainRenderFunction
 	if mainRenderFunction then
-		local fncString = "//-----------Main Render Function\n"
-		fncString = fncString.."float4 Main(PSInput PS):COLOR0{\n"
+		local fncMainString = "//-----------Main Render Function\n"
+		fncMainString = fncMainString.."float4 Main(PSInput PS):COLOR0{\n"
 		for index,fncName in ipairs(mainRenderFunction) do
-			fncString = fncString.."	PS = "..fncName.."(PS);\n"
+			fncMainString = fncMainString.."	PS = "..fncName.."(PS);\n"
 		end
-		fncString = fncString.."	return PS.Diffuse;\n"
-		fncString = fncString.."}\n"
-		shaderString = shaderString..fncString.."\n"
+		fncMainString = fncMainString.."	return PS.Diffuse;\n"
+		fncMainString = fncMainString.."}\n"
+		shaderString = shaderString..fncMainString.."\n"
 	end
 	--Techniques
 	local techniqueString = "//-----------Techniques\n"

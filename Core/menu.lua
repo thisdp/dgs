@@ -46,17 +46,17 @@ function dgsCreateMenu(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateMenu",4,"number")) end
 	local menu = createElement("dgs-dxmenu")
 	dgsSetType(menu,"dgs-dxmenu")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
 	style = style.menu
-	
+
 	local normalImage = dgsCreateTextureFromStyle(using,res,style.itemImage[1])
 	local hoveringImage = dgsCreateTextureFromStyle(using,res,style.itemImage[2])
-	
+
 	dgsElementData[menu] = {
 		autoHide = true,	--Hide when mouse click
 
@@ -117,7 +117,7 @@ function dgsMenuAutoResize(menu)
 	local itemHeight = eleData.itemHeight
 	local itemGap = eleData.itemGap/2
 	local padding = eleData.padding
-	
+
 	local separatorHeight = eleData.separatorHeight
 	local separatorGap = eleData.separatorGap/2
 
@@ -208,7 +208,7 @@ function dgsMenuRemoveItem(menu,uniqueID)
 				end
 			end
 		else
-			local parent = itemMap[parentUniqueID] 
+			local parent = itemMap[parentUniqueID]
 			if parent and parent[3] then
 				for i=1,#parent[3] do	--Find item in parent
 					if parent[3][i] == item then
@@ -273,7 +273,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local itemData = eleData.itemData
 	local itemHeight = eleData.itemHeight
 	local itemGap = eleData.itemGap/2
-	local buttonState = 1
+	--[[local buttonState = 1
 	if MouseData.entered == source then
 		buttonState = 2
 		if eleData.clickType == 1 then
@@ -289,7 +289,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				buttonState = 3
 			end
 		end
-	end
+	end]]
 	local bgImage = eleData.bgImage
 	local bgColor = eleData.bgColor
 	dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
@@ -305,7 +305,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local drawWidth = w-padding[2]*2
 	local drawPosX = padding[1]
 	local drawPosY = padding[2]
-	
+
 	local separatorHeight = eleData.separatorHeight
 	local separatorLineStart = eleData.separatorLine[3] and eleData.separatorLine[1]*drawWidth or eleData.separatorLine[1]
 	local separatorLineEnd = eleData.separatorLine[3] and eleData.separatorLine[2]*drawWidth or eleData.separatorLine[2]

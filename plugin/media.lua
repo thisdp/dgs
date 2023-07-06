@@ -69,7 +69,7 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 	end
 	if not(fileExists(path)) then error(dgsGenAsrt(path,"dgsMediaLoadMedia",2,_,_,"file doesn't exist("..path..")")) end
 	if not(type(theType) == "string") then error(dgsGenAsrt(theType,"dgsMediaLoadMedia",3,"string")) end
-	local theType = theType:upper()
+	theType = theType:upper()
 	if not(DGSMediaType[theType]) then error(dgsGenAsrt(theType,"dgsMediaLoadMedia",3,"string","Audio/Video/Image","unsupported type")) end
 	if not dgsElementData[media].started then
 		local buffer = dgsElementData[media].functionBuffer
@@ -79,7 +79,7 @@ function dgsMediaLoadMedia(media,path,theType,sourceRes)
 		dgsSetData(media,"sourcePath",path)
 		local size = dgsElementData[media].size
 		local filled = dgsElementData[media].filled
-		local str = ""
+		local str
 		if DGSMediaType[theType] == "img" then
 			str = [[
 				var element = document.createElement("]]..DGSMediaType[theType]..[[");
@@ -257,8 +257,8 @@ function dgsMediaSetSize(media,w,h)
 	else
 		resizeBrowser(media,w,h)
 		local str = JS.setSize
-		local str = str:gsub("REP1",w)
-		local str = str:gsub("REP2",h)
+		str = str:gsub("REP1",w)
+		str = str:gsub("REP2",h)
 		dgsSetData(media,"size",{w,h})
 		return executeBrowserJavascript(media,str)
 	end
@@ -283,7 +283,7 @@ function dgsMediaSetCurrentPosition(media,position) --Failed to Set current posi
 	else
 		if not(dgsElementData[media].sourcePath) then error(dgsGenAsrt(media,"dgsMediaSetCurrentPosition",_,_,_,_,"no media source loaded in dgs-dxmedia")) end
 		local str = JS.setTime
-		local str = str:gsub("REP1",position)
+		str = str:gsub("REP1",position)
 		return executeBrowserJavascript(media,str)
 	end
 end

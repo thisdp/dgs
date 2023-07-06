@@ -177,7 +177,7 @@ end
 function dgs3DLineAttachToElement(line,element,offX,offY,offZ,offRX,offRY,offRZ)
 	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineAttachToElement",1,"dgs-dx3dline")) end
 	if not(isElement(element)) then error(dgsGenAsrt(element,"dgs3DLineAttachToElement",2,"element")) end
-	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
+	offX,offY,offZ = offX or 0,offY or 0,offZ or 0
 	return dgsSetData(line,"attachTo",{element,offX,offY,offZ,offRX,offRY,offRZ})
 end
 
@@ -195,8 +195,8 @@ function dgs3DLineSetAttachedOffsets(line,offX,offY,offZ,offRX,offRY,offRZ)
 	if not(dgsGetType(line) == "dgs-dx3dline") then error(dgsGenAsrt(line,"dgs3DLineSetAttachedOffsets",1,"dgs-dx3dline")) end
 	local attachTable = dgsElementData[line].attachTo
 	if attachTable then
-		local offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
-		local offRX,offRY,offRZ = offRX or attachTable[5],offRY or attachTable[6],offRZ or attachTable[7]
+		offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
+		offRX,offRY,offRZ = offRX or attachTable[5],offRY or attachTable[6],offRZ or attachTable[7]
 		return dgsSetData(line,"attachTo",{attachTable[1],offX,offY,offZ,offRX,offRY,offRZ})
 	end
 	return false
@@ -330,7 +330,7 @@ local dgs3DLineDraw = {
 	plane = dxDrawLine3D,
 	cylinder = function(startX,startY,startZ,endX,endY,endZ,color,width)
 		dxSetShaderValue(cylinderShader3DLine,"shapeConfig",startX,startY,startZ,endX,endY,endZ,width,0,0)
-		dxDrawImage(0,0,sW,sH,cylinderShader3DLine,0,0,0,color)	
+		dxDrawImage(0,0,sW,sH,cylinderShader3DLine,0,0,0,color)
 	end,
 }
 

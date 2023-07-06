@@ -86,7 +86,7 @@ function dgsCreateScalePane(...)
 	dgsSetParent(scalepane,parent,true,true)
 	calculateGuiPositionSize(scalepane,x,y,relative or false,w,h,relative or false,true)
 	local sx,sy = dgsElementData[scalepane].absSize[1],dgsElementData[scalepane].absSize[2]
-	local x,y = dgsElementData[scalepane].absPos[1],dgsElementData[scalepane].absPos[2]
+	x,y = dgsElementData[scalepane].absPos[1],dgsElementData[scalepane].absPos[2]
 	dgsElementData[scalepane].resolution = {resolX or sx,resolY or sy}
 	
 	local titleOffset = 0

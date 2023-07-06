@@ -110,7 +110,7 @@ end
 function dgs3DImageAttachToElement(image,element,offX,offY,offZ)
 	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageAttachToElement",1,"dgs-dx3dimage")) end
 	if not(isElement(element)) then error(dgsGenAsrt(element,"dgs3DImageAttachToElement",2,"element")) end
-	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
+	offX,offY,offZ = offX or 0,offY or 0,offZ or 0
 	return dgsSetData(image,"attachTo",{element,offX,offY,offZ})
 end
 
@@ -128,18 +128,17 @@ function dgs3DImageSetAttachedOffsets(image,offX,offY,offZ)
 	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageSetAttachedOffsets",1,"dgs-dx3dimage")) end
 	local attachTable = dgsElementData[image].attachTo
 	if attachTable then
-		local offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
+		offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
 		return dgsSetData(image,"attachTo",{attachTable[1],offX,offY,offZ})
 	end
 	return false
 end
 
-function dgs3DImageGetAttachedOffsets(image,offX,offY,offZ)
+function dgs3DImageGetAttachedOffsets(image)
 	if not(dgsGetType(image) == "dgs-dx3dimage") then error(dgsGenAsrt(image,"dgs3DImageGetAttachedOffsets",1,"dgs-dx3dimage")) end
 	local attachTable = dgsElementData[image].attachTo
 	if attachTable then
-		local offX,offY,offZ = attachTable[2],attachTable[3],attachTable[4]
-		return offX,offY,offZ
+		return attachTable[2],attachTable[3],attachTable[4]
 	end
 	return false
 end
@@ -249,18 +248,17 @@ dgsRenderer["dgs-dx3dimage"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInheri
 				if maxDistance > fadeDistance and distance >= fadeDistance then
 					fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
 				end
-				local x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
+				x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
 				eleData.isOnScreen = x and y
 				if eleData.isOnScreen then
-					local x,y = x-x%1,y-y%1
+					x,y = x-x%1,y-y%1
 					if eleData.fixImageSize then
 						distance = 50
 					end
 					local antiDistance = 1/distance
-					local w = imageSizeX/distance*50
-					local h = imageSizeY/distance*50
+					w,h = imageSizeX/distance*50,imageSizeY/distance*50
 					local color = applyColorAlpha(eleData.color,parentAlpha*fadeMulti)
-					local x,y=x-w*0.5,y-h*0.5
+					x,y=x-w*0.5,y-h*0.5
 					
 					if image then
 						local rotOffx,rotOffy = eleData.rotationCenter[1],eleData.rotationCenter[2]

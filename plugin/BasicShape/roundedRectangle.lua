@@ -66,7 +66,7 @@ function dgsRoundRectSetRadius(rectShader,radius,relative)
 	local radType = dgsGetType(radius)
 	if not(radType == "number" or radType == "table") then error(dgsGenAsrt(radius,"dgsRoundRectSetRadius",2,"number/table")) end
 	if radType ~= "table" then
-		local relative = relative ~= false
+		relative = relative ~= false
 		dxSetShaderValue(rectShader,"radius",{radius,radius,radius,radius})
 		dxSetShaderValue(rectShader,"isRelative",{relative and 1 or 0,relative and 1 or 0,relative and 1 or 0,relative and 1 or 0})
 		dgsSetData(rectShader,"radius",{{radius,relative},{radius,relative},{radius,relative},{radius,relative}})

@@ -84,7 +84,7 @@ addEventHandler("DGSI_ReceiveRemoteImage",localPlayer,function(data,response,ind
 			local texture = dxCreateTexture(data)
 			dgsSetData(texture,"DGSContainer",remoteImage)
 			addEventHandler("onClientElementDestroy",texture,function()
-				local remoteImage = dgsElementData[texture].DGSContainer
+				remoteImage = dgsElementData[texture].DGSContainer
 				if isElement(remoteImage) then
 					dgsSetData(remoteImage,"textureRef",false)
 					dgsSetData(remoteImage,"loadState",0)	--Unload

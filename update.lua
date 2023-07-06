@@ -165,7 +165,6 @@ function checkFiles()
 				table.insert(preUpdate,path)
 			end
 		end
-		break
 		until true
 	end
 	DownloadFiles()

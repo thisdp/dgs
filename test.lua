@@ -65,7 +65,7 @@ function createFullDemoOOP()
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255),1})
 			local sBtn2 = parent:dgsButton(270,150,120,60,"Button\nShadow2",false)
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255),2})
-			local sBtn2 = parent:dgsButton(400,150,120,60,"Button\nText\nColor",false)
+			local sBtn3 = parent:dgsButton(400,150,120,60,"Button\nText\nColor",false)
 				:setProperty("textColor",{tocolor(255,255,255,255),tocolor(255,0,0,255),tocolor(0,255,255,255)})
 				
 		end,
@@ -368,25 +368,25 @@ function createFullDemoOOP()
 		["TabPanel"] = function(parent)
 			local tabPanelA = parent
 				:dgsTabPanel(10,10,630,250,false)
-			local tab1 = tabPanelA:dgsTab("Tab1")
-			tab1:dgsLabel(10,10,100,20,"This is tab 1",false)
+			local tabA1 = tabPanelA:dgsTab("Tab1")
+			tabA1:dgsLabel(10,10,100,20,"This is tab 1",false)
 				:setProperty("textSize",{1.5,1.5})
-			local tab2 = tabPanelA:dgsTab("Tab2")
-			tab2:dgsLabel(10,10,100,20,"This is tab 2",false)
+			local tabA2 = tabPanelA:dgsTab("Tab2")
+			tabA2:dgsLabel(10,10,100,20,"This is tab 2",false)
 				:setProperty("textSize",{1.5,1.5})
 			
 			local tabPanelB = parent
 				:dgsTabPanel(10,280,630,250,false)
 				:setProperty("tabAlignment","center")
 				:setProperty("tabHeight",{40,false})
-			local tab1 = tabPanelB:dgsTab("Tab1")
+			local tabB1 = tabPanelB:dgsTab("Tab1")
 				:setProperty("textSize",{2,2})
-			tab1:dgsLabel(10,10,100,20,"This is tab 1",false)
+			tabB1:dgsLabel(10,10,100,20,"This is tab 1",false)
 				:setProperty("textSize",{1.5,1.5})
-			local tab2 = tabPanelB:dgsTab("Tab2")
+			local tabB2 = tabPanelB:dgsTab("Tab2")
 				:setProperty("textSize",{2,2})
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255),2})
-			tab2:dgsLabel(10,10,100,20,"This is tab 2",false)
+			tabB2:dgsLabel(10,10,100,20,"This is tab 2",false)
 				:setProperty("textSize",{1.5,1.5})
 		end,
 		["Selector"] = function(parent)
@@ -556,7 +556,7 @@ function GridListSortingTest()
 		]]
 
 		--Be More Clear
-		local sortfnc = [[
+		local sortfnc2 = [[
 			local arg = {...}
 			local a = arg[1]
 			local b = arg[2]
@@ -708,8 +708,8 @@ function _3DLineTest()
 	local i = 1
 	local items = 200
 	dgs3DLineAddItem(line,4,0,0,math.cos(i/items*math.pi*2)*4,math.sin(i/items*math.pi*2)*4,0,2,tocolor(i/items*255,255-i/items*255,0,255),true)
-	for i=2,items do
-		dgs3DLineAddItem(line,_,_,_,math.cos(i/items*math.pi*2)*4,math.sin(i/items*math.pi*2)*4,0,2,tocolor(i/items*255,255-i/items*255,0,255),true)
+	for i2=2,items do
+		dgs3DLineAddItem(line,_,_,_,math.cos(i2/items*math.pi*2)*4,math.sin(i2/items*math.pi*2)*4,0,2,tocolor(i2/items*255,255-i2/items*255,0,255),true)
 	end
 	local veh = getPedOccupiedVehicle(localPlayer)
 	dgs3DLineAttachToElement(line,veh)

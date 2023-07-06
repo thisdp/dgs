@@ -423,7 +423,7 @@ function createElement(eleType,sRes)
 			ele = dgsPopElement(eleType,sRes)
 		end
 	end
-	local ele = ele or __createElement(eleType)
+	ele = ele or __createElement(eleType)
 	return ele
 end
 
@@ -471,7 +471,7 @@ function dgsRemoveEventHandler(eventName,element,fncName)
 		if eventHandlers[i][1] == eventName and eventHandlers[i][2] == fncName then
 			table.remove(eventHandlers,i)
 			removeEventHandler(eventName,element,_G[fncName])
-			return 
+			return
 		end
 	end
 	return false
@@ -749,7 +749,7 @@ function findRotation(x1,y1,x2,y2,offsetFix)
 	return t<0 and t+360 or t
 end
 
-function findRotation3D(x1,y1,z1,x2,y2,z2) 
+function findRotation3D(x1,y1,z1,x2,y2,z2)
 	local dx = x1-x2
 	local dy = y1-y2
 	local rotx = atan2(z2-z1,(dx*dx+dy*dy)^0.5)/pi180
@@ -824,7 +824,7 @@ function getPositionFromElementOffset(element,offX,offY,offZ)
 end
 
 function getRotationMatrix(rx,ry,rz)	--Super fast
-    local rx,ry,rz = rx*pi180,ry*pi180,rz*pi180
+	rx,ry,rz = rx*pi180,ry*pi180,rz*pi180
 	local rxCos,ryCos,rzCos,rxSin,rySin,rzSin = cos(rx),cos(ry),cos(rz),sin(rx),sin(ry),sin(rz)
 	--m11,m12,m13,m21,m22,m23,m31,m32,m33 For extreme performance, using upvalue instead of table
 	return rzCos*ryCos-rzSin*rxSin*rySin,ryCos*rzSin+rzCos*rxSin*rySin,-rxCos*rySin,-rxCos*rzSin,rzCos*rxCos,rxSin,rzCos*rySin+ryCos*rzSin*rxSin,rzSin*rySin-rzCos*ryCos*rxSin,rxCos*ryCos
@@ -837,7 +837,7 @@ end
 function dgsFindRotationByCenter(dgsEle,x,y,offsetFix)
 	local posX,posY = dgsGetElementPositionOnScreen(dgsEle)
 	local absSize = dgsElementData[dgsEle].absSize
-	local posX,posY = posX+absSize[1]/2,posY+absSize[2]/2
+	posX,posY = posX+absSize[1]/2,posY+absSize[2]/2
 	local rot = findRotation(posX,posY,x,y,offsetFix)
 	return rot,(x-posX)/absSize[1],(y-posY)/absSize[2]
 end
@@ -927,7 +927,7 @@ end
 
 --HSL and HSV are not the same thing, while HSB is the same as HSV...
 function HSL2RGB(H,S,L)
-	local H,S,L = H/360,S/100,L/100
+	H,S,L = H/360,S/100,L/100
 	local R,G,B
 	if S == 0 then
 		R,G,B = L,L,L
@@ -958,7 +958,7 @@ function HUE2RGB(v1,v2,vH)
 end
 
 function RGB2HSL(R,G,B)
-	local R,G,B = R/255,G/255,B/255
+	R,G,B = R/255,G/255,B/255
 	local min,max = math.min(R,G,B),math.max(R,G,B)
 	local delta = max-min
 	local L,H,S = (max+min)/2,0,0
@@ -982,10 +982,11 @@ function RGB2HSL(R,G,B)
 end
 
 function RGB2HSV(R,G,B)
-	local R,G,B = R/255,G/255,B/255
+	R,G,B = R/255,G/255,B/255
 	local min,max = math.min(R,G,B),math.max(R,G,B)
-	local V,H,S,delta = max,0,0,max - min
-	S = max == 0 and 0 or delta / max
+	local V,delta = max,max - min
+	local H
+	local S = max == 0 and 0 or delta / max
 	local dR = R/6
 	local dG = G/6
 	local dB = B/6
@@ -1053,7 +1054,7 @@ function dgsGenAsrt(x,funcName,argx,reqType,reqValueStr,appends,ends)
 	local argIndex = argx and (" at argument "..argx) or ""
 	local expected = reqType and " expected "..reqType..reqValue or ""
 	local got = reqType and " got "..dgsGetType(x).."("..inspectV..")" or ""
-	local ends = ends and (" "..ends) or ""
+	ends = ends and (" "..ends) or ""
 	local str = "Bad Argument @'"..funcName.."'"..appendInfo..expected..argIndex..","..got..ends
 	return str
 end
@@ -1249,7 +1250,7 @@ end]]
 local richTextMeta = {
 	insert = function(text,isColorCoded,textSizeX,textSizeY,font)
 		while text do
-			
+
 		end
 	end,
 }
@@ -1270,7 +1271,7 @@ function dgsDrawRichText(buffer,x,y)
 			local text,offx,offy,color = block[1],block[2],block[3],block[4]
 			dxDrawText(text,x+offx,y+offy,_,_,color)
 		end
-	end	
+	end
 end
 local rt = dgsCreateTextBuffer("123#FF0000123")
 addEventHandler("onClientRender",root,function()

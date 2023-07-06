@@ -10,8 +10,8 @@ dgsRegisterProperties("dgs-dxprogressbar",{
 	padding = 			{	{ PArg.Number, PArg.Number } },
 	progress = 			{	PArg.Number },
 	style = 			{	PArg.String },
-	
-	__Special = 		{	
+
+	__Special = 		{
 		{	__Basis  = "style",
 			["normal-horizontal"] = {},
 			["normal-vertical"] = {},
@@ -77,7 +77,7 @@ local ProgressBarStyle = {
 			if type(indicatorColor) == "table" then
 				indicatorColor1,indicatorColor2 = indicatorColor[1],indicatorColor[2]
 			else
-				indicatorColor1,indicatorColor2 = indicatorColor
+				indicatorColor1 = indicatorColor
 			end
 			if indicatorMode then
 				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
@@ -131,7 +131,7 @@ local ProgressBarStyle = {
 			if type(indicatorColor) == "table" then
 				indicatorColor1,indicatorColor2 = indicatorColor[1],indicatorColor[2]
 			else
-				indicatorColor1,indicatorColor2 = indicatorColor
+				indicatorColor1 = indicatorColor
 			end
 			if indicatorMode then
 				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
@@ -193,7 +193,7 @@ local ProgressBarStyle = {
 		dxSetShaderValue(circle,"thickness",eleData.thickness)
 		dxSetShaderValue(circle,"radius",eleData.radius)
 		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)
-		
+
 		dxSetShaderValue(circleBG,"progress",bgStartPoint,bgEndPoint)
 		if bgStartPoint == bgEndPoint then
 			dxSetShaderValue(circleBG,"indicatorColor",0,0,0,0)
@@ -224,7 +224,7 @@ local ProgressBarStyle = {
 		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
 		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
 		dxDrawImage(x,y,w,h,circleBG,eleData.bgRotation or eleData.rotation,0,0,0,isPostGUI)
-		
+
 		dxSetShaderValue(circle,"progress",progress)
 		dxSetShaderValue(circle,"isClockwise",eleData.isClockwise)
 		dxSetShaderValue(circle,"indicatorColor",fromcolor(indicatorColor,true))
@@ -266,12 +266,12 @@ function dgsCreateProgressBar(...)
 	end
 	local progressbar = createElement("dgs-dxprogressbar")
 	dgsSetType(progressbar,"dgs-dxprogressbar")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	
+
 	style = style.progressbar
 	dgsElementData[progressbar] = {
 		renderBuffer = {},
@@ -310,8 +310,7 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 		for k,v in pairs(eleData.elements or {}) do
 			destroyElement(v)
 		end
-		if style == "normal-horizontal" or style == "normal-vertical" then
-		elseif style == "ring-round" then
+		if style == "ring-round" then
 			eleData.elements = {}
 			eleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-round"])
 			eleData.elements.circleShaderBG = dxCreateShader(ProgressBarShaders["ring-round"])

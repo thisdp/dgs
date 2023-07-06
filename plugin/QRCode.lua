@@ -2,7 +2,7 @@ dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxqrcode")
 QRCodeQueue = {}
 function dgsRequestQRCode(str,w,h)
-	local w,h = w or 128,h or 128
+	w,h = w or 128,h or 128
 	local encodedStr = urlEncode(str)
 	local QRCode = dxCreateEmptyTexture(w,h,sourceResource)
 	dgsSetData(QRCode,"asPlugin","dgs-dxqrcode")

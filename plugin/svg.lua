@@ -224,7 +224,7 @@ function dgsSVGNodeSetAttribute(svgEle,attr,...)
 	local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
 	local result = ...
 	if handleFunction and handleFunction.set then
-		if select("#",...) ~= 1 or type(result) ~= "string" then	
+		if select("#",...) ~= 1 or type(result) ~= "string" then
 			result = handleFunction.set(...)
 		end
 	end
@@ -315,7 +315,7 @@ function dgsSVGGetRawDocument(svgDoc)
 		local f = xmlCreateFile(fName,xmlNodeGetName(svgDoc))
 		dgsSVGCopyNodeContent(svgDoc,f)
 		xmlSaveFile(f)
-		local f = fileOpen(fName)
+		f = fileOpen(fName)
 		local content = fileRead(f,fileGetSize(f))
 		fileClose(f)
 		fileDelete(fName)
@@ -329,10 +329,9 @@ end
 ------SVG Util
 svgGetColor = function(value,retType)
 	if not value then value = "#ffffff" end
-	retType = retType or "raw"
-	local retType = string.lower(retType)
+	retType = retType and string.lower(retType) or "raw"
 	if retType == "raw" then return value end
-	local value = string.gsub(value,"%s+"," ")
+	value = string.gsub(value,"%s+"," ")
 	if string.sub(value,1,1) == "#" then
 		if retType == "rgb" then
 			return {getColorFromString(value)}
@@ -376,17 +375,15 @@ svgSetHRef = function(ref)
 end
 
 svgGetHRef = function(value,retType)
-	retType = retType or "raw"
-	local retType = string.lower(retType)
+	retType = retType and string.lower(retType) or "raw"
 	if retType == "raw" then return value end
 	return string.sub(value,2)
 end
 
 svgGetCoordinate = function(value,retType)
-	retType = retType or "raw"
-	local retType = string.lower(retType)
+	retType = retType and string.lower(retType) or "raw"
 	if retType == "raw" then return value end
-	local value = string.gsub(value,"%s+"," ")
+	value = string.gsub(value,"%s+"," ")
 	local coord = string.match(value,"(%d+)")
 	return coord
 end
@@ -418,8 +415,7 @@ svgSetPoints = function(...)
 end
 
 svgGetPoints = function(value,retType)
-	retType = retType or "raw"
-	local retType = string.lower(retType)
+	retType = retType and string.lower(retType) or "raw"
 	if retType == "raw" then return value end
 	if retType == "table" then
 		local points = {}
@@ -434,8 +430,7 @@ end
 
 local svgPathParaCount = {m=2,l=2,h=1,v=1,c=6,s=4,q=4,t=2,a=7,z=0}
 svgGetPath = function(value,retType)
-	retType = retType or "raw"
-	local retType = string.lower(retType)
+	retType = retType and string.lower(retType) or "raw"
 	if retType == "raw" then return value end
 	if retType == "table" then
 		local cmds = {index = 0}
@@ -463,7 +458,7 @@ svgSetPath = function(path)
 	if pathType == "string" then
 		return path
 	elseif pathType == "table" then
-		local pathData = "" 
+		local pathData = ""
 		for i=1,#path do
 			pathData = pathData..table.concat(path[i]," ").." "
 		end

@@ -63,13 +63,13 @@ function dgsCreate3DText(...)
 	local text3d = createElement("dgs-dx3dtext")
 	tableInsert(dgsScreen3DTable,text3d)
 	dgsSetType(text3d,"dgs-dx3dtext")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.text3D
 	dgsElementData[text3d] = {
 		alignment = {"center", "center"},
@@ -104,7 +104,7 @@ end
 function dgs3DTextAttachToElement(text,element,offX,offY,offZ)
 	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextAttachToElement",1,"dgs-dx3dtext")) end
 	if not isElement(element) then error(dgsGenAsrt(element,"dgs3DTextAttachToElement",2,"element")) end
-	local offX,offY,offZ = offX or 0,offY or 0,offZ or 0
+	offX,offY,offZ = offX or 0,offY or 0,offZ or 0
 	return dgsSetData(text,"attachTo",{element,offX,offY,offZ})
 end
 
@@ -122,18 +122,17 @@ function dgs3DTextSetAttachedOffsets(text,offX,offY,offZ)
 	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextSetAttachedOffsets",1,"dgs-dx3dtext")) end
 	local attachTable = dgsElementData[text].attachTo
 	if attachTable then
-		local offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
+		offX,offY,offZ = offX or attachTable[2],offY or attachTable[3],offZ or attachTable[4]
 		return dgsSetData(text,"attachTo",{attachTable[1],offX,offY,offZ})
 	end
 	return false
 end
 
-function dgs3DTextGetAttachedOffsets(text,offX,offY,offZ)
+function dgs3DTextGetAttachedOffsets(text)
 	if not(dgsGetType(text) == "dgs-dx3dtext") then error(dgsGenAsrt(text,"dgs3DTextGetAttachedOffsets",1,"dgs-dx3dtext")) end
 	local attachTable = dgsElementData[text].attachTo
 	if attachTable then
-		local offX,offY,offZ = attachTable[2],attachTable[3],attachTable[4]
-		return offX,offY,offZ
+		return attachTable[2],attachTable[3],attachTable[4]
 	end
 	return false
 end
@@ -185,7 +184,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			if maxDistance > fadeDistance and distance >= fadeDistance then
 				fadeMulti = 1-(distance-fadeDistance)/(maxDistance-fadeDistance)
 			end
-			local x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
+			x,y = getScreenFromWorldPosition(wx,wy,wz,0.5)
 			eleData.isOnScreen = x and y
 			if eleData.isOnScreen then
 				local offsetX,offsetY = eleData.textOffset[1],eleData.textOffset[2]
@@ -195,7 +194,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 				local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
 				local font = eleData.font or systemFont
 				local alignment = eleData.alignment
-				local x,y = x+offsetX-x%1,y+offsetY-y%1
+				x,y = x+offsetX-x%1,y+offsetY-y%1
 				if eleData.fixTextSize then
 					distance = 50
 				end
@@ -214,8 +213,8 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 				local outlineData = eleData.outline
 				if outlineData then
 					local shadowText = colorCoded and text:gsub('#%x%x%x%x%x%x','') or text
-					local w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
-					local x,y=x-w*0.5,y-h*0.5
+					w,h = dxGetTextWidth(shadowText,sizeX,font),dxGetFontHeight(sizeY,font)
+					x,y=x-w*0.5,y-h*0.5
 					local sideColor = outlineData[3]
 					local sideSize = outlineData[2]*antiDistance*25
 					local hSideSize = sideSize*0.5
@@ -241,7 +240,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 						if outlineData[4] ~= false then
 							dxDrawLine(x,y+hSideSize,x,y+h-hSideSize,sideColor,sideSize)
 						end
-						if outlineData[5] ~= false then 
+						if outlineData[5] ~= false then
 							dxDrawLine(x+w,y+hSideSize,x+w,y+h-hSideSize,sideColor,sideSize)
 						end
 						if outlineData[7] ~= false then
@@ -254,7 +253,7 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 						if outlineData[4] ~= false then
 							dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize)
 						end
-						if outlineData[5] ~= false then 
+						if outlineData[5] ~= false then
 							dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize)
 						end
 						if outlineData[7] ~= false then

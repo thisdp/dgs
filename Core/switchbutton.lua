@@ -79,13 +79,13 @@ function dgsCreateSwitchButton(...)
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateSwitchButton",4,"number")) end
 	local switchbutton = createElement("dgs-dxswitchbutton")
 	dgsSetType(switchbutton,"dgs-dxswitchbutton")
-	
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	style = style.switchbutton
 	local imageOff = style.imageOff
 	local norimg_o = dgsCreateTextureFromStyle(using,res,imageOff[1])
@@ -221,7 +221,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	local using = style.using
 	style = style.loaded[using]
 	local systemFont = style.systemFontElement
-	
+
 	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
@@ -245,15 +245,13 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
-	
-	local style = eleData.style
-	local colorImgBgID = 1
+
+	style = eleData.style
 	local colorImgID = 1
 	local animProgress = (-eleData.stateAnim+1)*0.5
 	local cursorX,cursorY,cursorW,cursorH = x+animProgress*(w-cursorLength),y+h/2-cursorWidth/2,cursorLength,cursorWidth
 	if MouseData.entered == source then
 		local isHitCursor = mx >= cursorX and mx <= cursorX+cursorLength
-		colorImgBgID = 2
 		if isHitCursor then
 			colorImgID = 2
 		end
@@ -261,9 +259,8 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		local canLeftClick,canRightClick,canMiddleClick = true
 		if mouseButtons then
 			canLeftClick,canRightClick,canMiddleClick = mouseButtons[1],mouseButtons[2],mouseButtons[3]
-		end		
+		end
 		if (canLeftClick and MouseData.click.left == source) or (canRightClick and MouseData.click.right == source) or (canMiddleClick and MouseData.click.middle == source) then
-			colorImgBgID = 3
 			colorImgID = isHitCursor and 3 or colorImgID
 		end
 	end
@@ -293,8 +290,8 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 				local r,g,b,a = fromcolor(colorOff)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOff = tocolor(average,average,average,a*parentAlpha)
-				local r,g,b,a = fromcolor(colorOn)
-				local average = (r+g+b)/3*eleData.disabledColorPercent
+				r,g,b,a = fromcolor(colorOn)
+				average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOn = tocolor(average,average,average,a*parentAlpha)
 			end
 		else
@@ -327,15 +324,15 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 				local r,g,b,a = fromcolor(colorOff)
 				local average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOff = tocolor(average,average,average,a*parentAlpha)
-				local r,g,b,a = fromcolor(colorOn)
-				local average = (r+g+b)/3*eleData.disabledColorPercent
+				r,g,b,a = fromcolor(colorOn)
+				average = (r+g+b)/3*eleData.disabledColorPercent
 				colorOn = tocolor(average,average,average,a*parentAlpha)
 			end
 		else
 			colorOff = applyColorAlpha(colorOff,parentAlpha)
 			colorOn = applyColorAlpha(colorOn,parentAlpha)
 		end
-		
+
 		local xOff,yOff,wOff,hOff,xOn,yOn,wOn,hOn
 		if isReverse then
 			xOff,yOff,wOff,hOff = cursorX+cursorLength/2,y,w-(cursorX-x+cursorLength/2),h
@@ -397,18 +394,6 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		----Cursor
 		dxDrawImage(cursorX,cursorY,cursorW,cursorH,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)
 	elseif style == 4 then
-		local color = colorOn+(colorOff-colorOn)*animProgress
-		if not enabledInherited and not enabledSelf then
-			if type(eleData.disabledColor) == "number" then
-				color = applyColorAlpha(eleData.disabledColor,parentAlpha)
-			elseif eleData.disabledColor == true then
-				local r,g,b,a = fromcolor(color)
-				local average = (r+g+b)/3*eleData.disabledColorPercent
-				color = tocolor(average,average,average,a*parentAlpha)
-			end
-		else
-			color = applyColorAlpha(color,parentAlpha)
-		end
 		local xOn,yOn,wOn,hOn = x,y,w,h
 		yOn = yOn+hOn/2-troughWidth/2
 		hOn = troughWidth

@@ -65,7 +65,7 @@ function newSvg(styleName, res, svg, width, height)
 		dgsSetData(svg, "height", height)
 		dgsAddEventHandler("onClientElementDestroy",svg,"deleteSvg")
 	end
-	local res = res or "global"
+	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.svg = styleManager.styles[res].loaded[styleName].created.svg or {}
 	styleManager.styles[res].loaded[styleName].created.svg[svg] = true
 	dgsSetData(svg,"styleResource",res)
@@ -80,7 +80,7 @@ function newTexture(styleName,res,texturePath)
 		dgsSetData(texture,"path",texturePath)
 		dgsAddEventHandler("onClientElementDestroy",texture,"deleteTexture")
 	end
-	local res = res or "global"
+	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.texture = styleManager.styles[res].loaded[styleName].created.texture or {}
 	styleManager.styles[res].loaded[styleName].created.texture[texture] = true	--Add a texture into created list in a specific style with a specific resource
 	dgsSetData(texture,"styleResource",res)
@@ -102,7 +102,7 @@ function newShader(styleName,res,shader)
 		shader = dxCreateShader(shader,false)
 		dgsAddEventHandler("onClientElementDestroy",shader,"deleteShader")
 	end
-	local res = res or "global"
+	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.shader = styleManager.styles[res].loaded[styleName].created.shader or {}
 	styleManager.styles[res].loaded[styleName].created.shader[shader] = true	--Add a shader into created list in a specific style with a specific resource
 	dgsSetData(shader,"styleResource",res or "global")
@@ -129,7 +129,7 @@ function newFont(styleName,res,font,...)
 	if not isElement(font) then
 		outputDebugString("Failed to create font "..tostring(v).." at style '"..styleName.."'")
 	end
-	local res = res or "global"
+	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.font = styleManager.styles[res].loaded[styleName].created.font or {}
 	styleManager.styles[res].loaded[styleName].created.font[font] = true	--Add a font into created list in a specific style with a specific resource
 	dgsSetData(font,"styleResource",res or "global")
@@ -247,7 +247,7 @@ function dgsAddStyle(styleName,stylePath,res)
 		loaded = setmetatable({},{__index=styleManager.styles.global.loaded}),
 		using = "Default",
 	}
-	local stylePath = string.getPath(res,stylePath)
+	stylePath = string.getPath(res,stylePath)
 	assert(fileExists(stylePath.."/styleSettings.txt"),"Bad argument @dgsAddStyle at argument 3, Failed to add resource style [ styleSettings.txt not found at '"..stylePath.."']")
 	styleManager.styles[res].mapper[styleName] = stylePath
 	return true
@@ -281,7 +281,7 @@ function dgsLoadStyle(styleName,res)
 						if newStyle[dgsType][dgsProperty] ~= nil then
 							gStyle[dgsType] = gStyle[dgsType] or {}
 							if type(newStyle[dgsType][dgsProperty]) == "table" then
-								for key,value in pairs(newStyle[dgsType][dgsProperty]) do
+								for key,value2 in pairs(newStyle[dgsType][dgsProperty]) do
 									if type(newStyle[dgsType][dgsProperty][key]) == "table" then
 										if type(newStyle[dgsType][dgsProperty][key][1]) == "string" then
 											newStyle[dgsType][dgsProperty][key][1] = getStyleFilePath(styleName,res,newStyle[dgsType][dgsProperty][key][1])
@@ -338,8 +338,8 @@ function dgsUnloadStyle(styleName,res)
 				styleManager.styles[res].loaded[styleName] = nil
 			end
 		else
-			for styleName in pairs(styleManager.styles[res].loaded) do
-				dgsUnloadStyle(styleName,res)
+			for istyleName in pairs(styleManager.styles[res].loaded) do
+				dgsUnloadStyle(istyleName,res)
 			end
 		end
 	end
@@ -362,15 +362,6 @@ end
 
 function dgsGetLoadedStyleList(includeGlobal,res)
 	res = res or sourceResource or "global"
-	local loadedListIndex = {}
-	if includeGlobal then
-		for name,data in pairs(styleManager.styles.global.loaded) do
-			loadedListIndex[name] = true
-		end
-	end
-	for name,data in pairs(styleManager.styles[res].loaded) do
-		loadedListIndex[name] = true
-	end
 	local loadedList = {}
 	for name in pairs(loadedList) do
 		loadedList[#loadedList+1] = name
@@ -380,15 +371,6 @@ end
 
 function dgsGetAddedStyleList(includeGlobal,res)
 	res = res or sourceResource or "global"
-	local addedListIndex = {}
-	if includeGlobal then
-		for name,data in pairs(styleManager.styles.global.mapper) do
-			addedListIndex[name] = true
-		end
-	end
-	for name,data in pairs(styleManager.styles[res].mapper) do
-		addedListIndex[name] = true
-	end
 	local addedList = {}
 	for name in pairs(addedList) do
 		addedList[#addedList+1] = name
