@@ -1,4 +1,4 @@
-dgsLogLuaMemory()
+﻿dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxcmd")
 cmdBaseWhiteList = {}
 commandHandlers = {}
@@ -197,7 +197,7 @@ function executeCmdCommand(cmd,str,...)
 end
 --------------DGS CMD
 dgs_MyIP = "Unknown"
-addEventHandler("DGSI_ReceiveIP",resourceRoot,function(ip)
+addEventHandler("DGSI_ReceiveIP",localPlayer,function(ip)
 	dgs_MyIP = ip
 end)
 

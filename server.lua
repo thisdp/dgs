@@ -112,9 +112,9 @@ addEventHandler("DGSI_RequestRemoteImage",resourceRoot,function(website,id)
 end)
 
 function getMyIP()
-	triggerClientEvent(source,"DGSI_ReceiveIP",resourceRoot,getPlayerIP(source))
+	triggerClientEvent(source,"DGSI_ReceiveIP",source,getPlayerIP(source))
 end
-addEventHandler("onPlayerResourceStart",resourceRoot,getMyIP)
+addEventHandler("onPlayerResourceStart",root,getMyIP)
 
 setElementData(root,"DGS-ResName",getResourceName(getThisResource()))
 
