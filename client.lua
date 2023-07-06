@@ -1190,7 +1190,7 @@ function onClientKeyTriggered(button)
 end
 
 function dgsCheckHit(hits,cursorShowing)
-	if not cursorShowing then -- Also checks if main menu is visible https://github.com/multitheftauto/mtasa-blue/issues/2944
+	if not cursorShowing then
 		if CursorData.enabled and CursorData[MouseData.cursorType] then
 			setCursorAlpha(255)
 		end
