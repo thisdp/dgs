@@ -331,9 +331,9 @@ function dgsDeleteTab(tab)
 		end
 		tableRemove(tabs,id)
 		if id == dgsElementData[tabpanel].selected then
-			local id = dgsElementData[tabpanel].selected-1
-			if id ~= 0 then
-				dgsSetData(tabpanel,"selected",id)
+			local newSelectedID = dgsElementData[tabpanel].selected-1
+			if newSelectedID ~= 0 then
+				dgsSetData(tabpanel,"selected",newSelectedID)
 			else
 				dgsSetData(tabpanel,"selected",-1)
 			end
@@ -397,7 +397,9 @@ dgsOnPropertyChange["dgs-dxtabpanel"] = {
 		local old,new = oldValue,value
 		local tabs = dgsElementData[dgsEle].tabs
 		dgsTriggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
-		dgsApplyVisibleInherited(tabs[old],false)
+		if isElement(tabs[old]) then
+			dgsApplyVisibleInherited(tabs[old],false)
+		end
 		if isElement(tabs[new]) then
 			dgsTriggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
 			dgsApplyVisibleInherited(tabs[new],true)

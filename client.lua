@@ -1713,9 +1713,9 @@ function dgsCleanElement(source)
 					end
 					tableRemove(tabs,id)
 					if id == dgsElementData[tabpanel].selected then
-						id = dgsElementData[tabpanel].selected-1
-						if id ~= 0 then
-							dgsSetData(tabpanel,"selected",id)
+						local newSelectedID = dgsElementData[tabpanel].selected-1
+						if newSelectedID ~= 0 then
+							dgsSetData(tabpanel,"selected",newSelectedID)
 						else
 							dgsSetData(tabpanel,"selected",-1)
 						end
