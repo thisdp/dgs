@@ -330,6 +330,14 @@ function dgsDeleteTab(tab)
 			dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
 		end
 		tableRemove(tabs,id)
+		if id == dgsElementData[tabpanel].selected then
+			local id = dgsElementData[tabpanel].selected-1
+			if id ~= 0 then
+				dgsSetData(tabpanel,"selected",id)
+			else
+				dgsSetData(tabpanel,"selected",-1)
+			end
+		end
 	end
 	for k,v in pairs(dgsGetChildren(tab)) do
 		destroyElement(v)
