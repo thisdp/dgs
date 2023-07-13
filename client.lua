@@ -1713,7 +1713,7 @@ function dgsCleanElement(source)
 					end
 					tableRemove(tabs,id)
 					if id == dgsElementData[tabpanel].selected then
-						local id = dgsElementData[tabpanel].selected-1
+						id = dgsElementData[tabpanel].selected-1
 						if id ~= 0 then
 							dgsSetData(tabpanel,"selected",id)
 						else
