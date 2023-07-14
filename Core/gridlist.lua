@@ -2,7 +2,7 @@ dgsLogLuaMemory()
 dgsRegisterType("dgs-dxgridlist","dgsBasic","dgsType2D")
 dgsRegisterProperties('dgs-dxgridlist',{
 	autoSort = 				{	PArg.Bool	},
-	backgroundOffset = 		{	PArg.Number	},
+	bgOffset = 		{	PArg.Number	},
 	bgColor = 				{	PArg.Color	},
 	bgImage = 				{	PArg.Number	},
 	clip = 					{	PArg.Bool 	},
@@ -181,7 +181,7 @@ function dgsCreateGridList(...)
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsElementData[gridlist] = {
 		autoSort = true,
-		backgroundOffset = style.backgroundOffset,
+		bgOffset = style.bgOffset,
 		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
 		bgColor = bgColor or style.bgColor,
 		colorCoded = false,
@@ -2955,7 +2955,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			eleData.nextRenderSort = false
 		end
 	end
-	local backgroundOffset = eleData.backgroundOffset
+	local bgOffset = eleData.bgOffset
 
 	local renderBuffer = eleData.renderBuffer
 	local columnPos = renderBuffer.columnPos
@@ -3064,15 +3064,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local color = cRow[glRow_bgColor] or rowColor
 				local rowpos = i*rowHeight+rowMoveOffset+(i-1)*leading--_RowHeight
 				local rowpos_1 = rowpos-rowHeight--_RowHeight
-				local _x,_y,_sy = rowStartX+tempColumnOffset,rowpos_1,rowpos
+				local rowX,rowY,rowH = rowStartX+tempColumnOffset,rowpos_1,rowpos
 				for id = cPosStart,cPosEnd do
 					local cItem = cRow[id]
 					local text = cItem[glItem_text]
-					isSection = cItem[glItem_isSection] == nil and isSection or cItem[glItem_isSection]
-					columnOffset = (isSection and sectionColumnOffset or cItem[glItem_columnOffset] or 0)
-					local _txtFont = isSection and (cItem[glItem_textFont] or sectionFont) or (cItem[glItem_textFont] or eleData.rowFont or eleData.columnFont or font)
-					local _txtScalex = cItem[glItem_textScaleX] or rowTextSx
-					local _txtScaley = cItem[glItem_textScaleY] or rowTextSy
+					local isSection = cItem[glItem_isSection] == nil and isSection or cItem[glItem_isSection]
+					local columnOffset = (isSection and sectionColumnOffset or cItem[glItem_columnOffset] or 0)
 					local alignment = cItem[glItem_textAlignment] or columnData[id][glCol_textAlignment]
 
 					local itemBGColor,itemBGImage = cItem[glItem_bgColor],cItem[glItem_bgImage] or image
@@ -3110,65 +3107,64 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							rowState = 3
 						end
 					end
-					_x = _x+columnPos[id]
-					local _sx = columnEndPos[id]
+					local rowX = rowX+columnPos[id]
+					local rowW = columnEndPos[id]
 					local columnWidth = columnData[id][glCol_width]*multiplier
-					local _bgX = _x
+					local rowBGX = rowX
 					local backgroundWidth = columnWidth
 					if id == 1 then
-						_bgX = _x+backgroundOffset
-						backgroundWidth = columnWidth-backgroundOffset
+						rowBGX = rowX+bgOffset
+						backgroundWidth = columnWidth-bgOffset
 					end
 					local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
 					if itemUsingBGImage then
 						if not eleData.rowImageStyle or eleData.rowImageStyle == 1 then
-							dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
 						elseif eleData.rowImageStyle == 2 then
-							columnWidth = dgsGridListGetColumnAllWidth(source,#eleData.columnData)
-							if viewWidth > columnWidth then
-								columnWidth = viewWidth+backgroundOffset
+							local allColumnWidth = dgsGridListGetColumnAllWidth(source,#eleData.columnData)
+							if viewWidth > allColumnWidth then
+								allColumnWidth = viewWidth+bgOffset
 							end
-							if id == columnCount and _bgX+backgroundWidth <= viewWidth then
-								backgroundWidth = viewWidth-_bgX
+							if id == columnCount and rowBGX+backgroundWidth <= viewWidth then
+								backgroundWidth = viewWidth-rowBGX
 							end
 							local imageType = dgsGetType(itemUsingBGImage)
 							local materialWidth,materialHeight = backgroundWidth,rowHeight
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(_bgX,_y,backgroundWidth,rowHeight,-materialWidth*(columnMoveOffset-_bgX)/(columnWidth-backgroundOffset),0,materialWidth*backgroundWidth/(columnWidth-backgroundOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,-materialWidth*(columnMoveOffset-rowBGX)/(allColumnWidth-bgOffset),0,materialWidth*backgroundWidth/(allColumnWidth-bgOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
 						elseif eleData.rowImageStyle == 3 then
-							if _bgX+backgroundWidth >= viewWidth then
-								backgroundWidth = viewWidth-_bgX
-							elseif id == columnCount and _bgX+backgroundWidth <= viewWidth then
-								backgroundWidth = viewWidth-_bgX
+							if rowBGX+backgroundWidth >= viewWidth then
+								backgroundWidth = viewWidth-rowBGX
+							elseif id == columnCount and rowBGX+backgroundWidth <= viewWidth then
+								backgroundWidth = viewWidth-rowBGX
 							end
 							local imageType = dgsGetType(itemUsingBGImage)
 							local materialWidth,materialHeight = backgroundWidth,rowHeight
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(_bgX,_y,backgroundWidth,rowHeight,materialWidth*_bgX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,materialWidth*rowBGX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
 						end
 					else
-						dxDrawImage(_bgX,_y,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+						dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
 					end
 					elementBuffer[i][id] = elementBuffer[i][id] or {}
 					local eBuffer = elementBuffer[i][id]
 					eBuffer[1] = cItem[glItem_attachedElement]
-					eBuffer[2] = _x
-					eBuffer[3] = _y
+					eBuffer[2] = rowX
+					eBuffer[3] = rowY
 					if text then
-						colorCoded = cItem[glItem_textColorCoded] == nil and colorCoded or cItem[glItem_textColorCoded]
 						if cItem[glItem_image] then
 							local imageData = cItem[glItem_image]
-							local imagex = _x+(imageData[7] and imageData[3]*columnWidth or imageData[3])
-							local imagey = _y+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
+							local imagex = rowX+(imageData[7] and imageData[3]*columnWidth or imageData[3])
+							local imagey = rowY+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
 							local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
 							local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
 							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha))
 						end
-						local textXS,textYS,textXE,textYE = _x+columnOffset,_y,_sx,_sy
+						local textXS,textYS,textXE,textYE = rowX+columnOffset,rowY,rowW,rowH
 						if cItem[glItem_textOffset] then
 							local itemTextOffsetX = cItem[glItem_textOffset][3] and columnWidth*cItem[glItem_textOffset][1] or cItem[glItem_textOffset][1]
 							local itemTextOffsetY = cItem[glItem_textOffset][3] and rowHeight*cItem[glItem_textOffset][2] or cItem[glItem_textOffset][2]--_RowHeight
@@ -3182,11 +3178,11 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						tBuffer[3] = textYS-textYS%1			--startY
 						tBuffer[4] = textXE-textXE%1			--endX
 						tBuffer[5] = textYE-textYE%1			--endY
-						tBuffer[6] = applyColorAlpha(type(cItem[glItem_textColor]) == "table" and cItem[glItem_textColor][rowState] or cItem[glItem_textColor],parentAlpha)
-						tBuffer[7] = _txtScalex
-						tBuffer[8] = _txtScaley
-						tBuffer[9] = _txtFont
-						tBuffer[10] = colorCoded
+						tBuffer[6] = applyColorAlpha(type(cItem[glItem_textColor]) == "table" and cItem[glItem_textColor][rowState] or cItem[glItem_textColor],parentAlpha)	--Text Color
+						tBuffer[7] = cItem[glItem_textScaleX] or rowTextSx	--Text Size X
+						tBuffer[8] = cItem[glItem_textScaleY] or rowTextSy	--Text Size Y
+						tBuffer[9] = isSection and (cItem[glItem_textFont] or sectionFont) or (cItem[glItem_textFont] or eleData.rowFont or eleData.columnFont or font)	-- Text Font
+						tBuffer[10] = cItem[glItem_textColorCoded] == nil and colorCoded or cItem[glItem_textColorCoded]	--Text Color Coded
 						tBuffer[11] = alignment
 					end
 				end
