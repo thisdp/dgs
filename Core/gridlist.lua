@@ -2741,7 +2741,7 @@ dgsOnMouseClickAction["dgs-dxgridlist"] = function(dgsEle,button,state)
 	if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
 		local clicked = eleData.itemClick
 		local selectionMode = eleData.selectionMode
-		if GirdListDoubleClick[state].gridlist == dgsEle and MouseData.focus == GirdListDoubleClick[state].gridlist and GirdListDoubleClick[state].but == button then
+		if GirdListDoubleClick[state].gridlist == dgsEle and MouseData.focused == GirdListDoubleClick[state].gridlist and GirdListDoubleClick[state].but == button then
 			local pass = true
 			if selectionMode == 1 then
 				if GirdListDoubleClick[state].item ~= clicked[1] then
