@@ -2653,9 +2653,10 @@ end
 ----------------------------------------------------------------
 ----------------------OnMouseClickAction------------------------
 ----------------------------------------------------------------
-GirdListDoubleClick = {}
-GirdListDoubleClick.down = false
-GirdListDoubleClick.up = false
+GirdListDoubleClick = {
+	down = false,
+	up = false,
+}
 dgsOnMouseClickAction["dgs-dxgridlist"] = function(dgsEle,button,state)
 	local eleData = dgsElementData[dgsEle]
 	while true do
@@ -2741,7 +2742,7 @@ dgsOnMouseClickAction["dgs-dxgridlist"] = function(dgsEle,button,state)
 	if GirdListDoubleClick[state] and isTimer(GirdListDoubleClick[state].timer) then
 		local clicked = eleData.itemClick
 		local selectionMode = eleData.selectionMode
-		if GirdListDoubleClick[state].gridlist == dgsEle and MouseData.focus == GirdListDoubleClick[state].gridlist and GirdListDoubleClick[state].but == button then
+		if GirdListDoubleClick[state].gridlist == dgsEle and MouseData.focused == GirdListDoubleClick[state].gridlist and GirdListDoubleClick[state].button == button then
 			local pass = true
 			if selectionMode == 1 then
 				if GirdListDoubleClick[state].item ~= clicked[1] then
@@ -2757,7 +2758,7 @@ dgsOnMouseClickAction["dgs-dxgridlist"] = function(dgsEle,button,state)
 				end
 			end
 			if pass then
-				dgsTriggerEvent("onDgsGridListItemDoubleClick",dgsEle,GirdListDoubleClick[state].but,state,clicked[1],clicked[2])
+				dgsTriggerEvent("onDgsGridListItemDoubleClick",dgsEle,GirdListDoubleClick[state].button,state,clicked[1],clicked[2])
 			end
 		end
 		killTimer(GirdListDoubleClick[state].timer)
@@ -2768,7 +2769,7 @@ dgsOnMouseClickAction["dgs-dxgridlist"] = function(dgsEle,button,state)
 			GirdListDoubleClick[state] = {}
 			GirdListDoubleClick[state].item,GirdListDoubleClick[state].column = clicked[1],clicked[2]
 			GirdListDoubleClick[state].gridlist = dgsEle
-			GirdListDoubleClick[state].but = button
+			GirdListDoubleClick[state].button = button
 			GirdListDoubleClick[state].timer = setTimer(function()
 				GirdListDoubleClick[state].gridlist = false
 			end,multiClick.Interval,1)
