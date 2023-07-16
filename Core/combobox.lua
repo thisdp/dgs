@@ -976,7 +976,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local stat = eleData.listStateAnim+listState*0.08
 		eleData.listStateAnim = listState == -1 and mathMax(stat,listState) or mathMin(stat,listState)
 	end
-	if getElementType(arrow) == "shader" then
+	if arrow and getElementType(arrow) == "shader" then
 		if eleData.arrowSettings then
 			dxSetShaderValue(arrow,"width",eleData.arrowSettings[1])
 			dxSetShaderValue(arrow,"height",eleData.arrowSettings[2]*eleData.listStateAnim)
