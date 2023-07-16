@@ -670,7 +670,7 @@ function dgsGridListScrollTo(gridlist,r,c,smoothMove)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListScrollTo",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	if eleData.configNextFrame then configGridList(gridlist) end
-	if r then
+	if r and r ~= -1 then
 		local rData = eleData.rowData
 		local rLen = #rData
 		if rLen == 0 then return false end
@@ -696,7 +696,7 @@ function dgsGridListScrollTo(gridlist,r,c,smoothMove)
 			dgsGridListSetScrollPosition(gridlist,scrollPos)
 		end
 	end
-	if c then
+	if c and c ~= -1 then
 		local cData = eleData.columnData
 		local cLen = #cData
 		if cLen == 0 then return false end
