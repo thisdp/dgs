@@ -63,6 +63,7 @@ function dgsCreateBrowser(...)
 	}
 	dgsSetParent(browser,parent,true,true)
 	calculateGuiPositionSize(browser,x,y,relative,w,h,relative,true)
+	dgsApplyGeneralProperties(browser,sRes)
 	local size = dgsElementData[browser].absSize
 	resizeBrowser(browser,resX or size[1],resY or size[2])
 	dgsElementData[browser].browserSize = {resX or size[1],resY or size[2]}

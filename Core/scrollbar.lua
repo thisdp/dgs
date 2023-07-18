@@ -137,6 +137,7 @@ function dgsCreateScrollBar(...)
 	}
 	dgsSetParent(scrollbar,parent,true,true)
 	calculateGuiPositionSize(scrollbar,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(scrollbar,sRes)
 	onDGSElementCreate(scrollbar,sRes)
 	return scrollbar
 end

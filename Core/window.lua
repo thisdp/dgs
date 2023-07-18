@@ -129,6 +129,7 @@ function dgsCreateWindow(...)
 		dgsSetData(window,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(window,x,y,relative,w,h,relative,true)
+	dgsApplyGeneralProperties(window,sRes)
 	
 	local createCloseButton = true
 	if noCloseButton == nil then

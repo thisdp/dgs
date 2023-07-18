@@ -287,6 +287,7 @@ function dgsCreateProgressBar(...)
 	}
 	dgsSetParent(progressbar,parent,true,true)
 	calculateGuiPositionSize(progressbar,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(progressbar,sRes)
 	local mx,my = false,false
 	if isElement(indicatorImage) then
 		mx,my = dxGetMaterialSize(indicatorImage)

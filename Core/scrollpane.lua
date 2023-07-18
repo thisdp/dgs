@@ -96,6 +96,7 @@ function dgsCreateScrollPane(...)
 	}
 	dgsSetParent(scrollpane,parent,true,true)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(scrollpane,sRes)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local titleOffset = 0

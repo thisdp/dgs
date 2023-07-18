@@ -91,13 +91,14 @@ function dgsCreateMenu(...)
 	dgsSetParent(menu,parent,true,true)
 	dgsAttachToTranslation(menu,resourceTranslation[sRes])
 	calculateGuiPositionSize(menu,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(menu,sRes)
 	if not isElement(parent) or getElementType(parent) ~= "dgs-dxmenu" then
 		addEventHandler("onClientClick",root,function()
 			dgsMenuClean(menu)
 		end,false,"LOW")
 	end
 	onDGSElementCreate(menu,sRes)
-	dgsSetVisible(menu,false)
+	--dgsSetVisible(menu,false)
 
 	return menu
 end
@@ -254,8 +255,8 @@ end)
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxmenu"] = {
 	visible = function(source)
+		
 	end,
-
 }
 ----------------------------------------------------------------
 ------------------------PreRenderer-----------------------------

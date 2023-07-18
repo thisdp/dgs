@@ -151,6 +151,7 @@ function dgsCreateCheckBox(...)
 	dgsSetParent(cb,parent,true,true)
 	dgsAttachToTranslation(cb,resourceTranslation[sRes])
 	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(cb,sRes)
 	if type(text) == "table" then
 		dgsElementData[cb]._translation_text = text
 		dgsSetData(cb,"text",text)

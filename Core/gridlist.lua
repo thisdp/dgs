@@ -253,6 +253,7 @@ function dgsCreateGridList(...)
 	dgsAttachToTranslation(gridlist,resourceTranslation[sRes or resource])
 	dgsElementData[gridlist].configNextFrame = false
 	calculateGuiPositionSize(gridlist,x,y,relative,w,h,relative,true)
+	dgsApplyGeneralProperties(gridlist,sRes)
 	local absSize = dgsElementData[gridlist].absSize
 	local scrollbar1 = dgsCreateScrollBar(absSize[1]-scbThick,0,scbThick,absSize[2]-scbThick,false,false,gridlist)
 	dgsSetData(scrollbar1,"attachedToParent",gridlist)

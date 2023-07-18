@@ -133,6 +133,7 @@ function dgsCreateTabPanel(...)
 	}
 	dgsSetParent(tabpanel,parent,true,true)
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
+	dgsApplyGeneralProperties(tabpanel,sRes)
 	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
 	onDGSElementCreate(tabpanel,sRes)
 	dgsTabPanelRecreateRenderTarget(tabpanel,true)
@@ -233,6 +234,7 @@ function dgsCreateTab(...)
 		wordBreak = nil,
 	}
 	dgsSetParent(tab,tabpanel,true,true)
+	dgsApplyGeneralProperties(tab,sRes)
 	if eleData.selected == -1 then eleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sRes])
 	if type(text) == "table" then

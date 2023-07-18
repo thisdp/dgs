@@ -245,6 +245,7 @@ function dgsCreateEdit(...)
 	editsCount = editsCount+1
 	dgsAttachToTranslation(edit,resourceTranslation[sRes])
 	calculateGuiPositionSize(edit,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(edit,sRes)
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
 	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)

@@ -97,6 +97,7 @@ function dgsCreateScalePane(...)
 	end
 	local scrollbar1 = dgsCreateScrollBar(x+sx-scbThick,y-titleOffset,scbThick,sy-scbThick,false,false,parent)
 	local scrollbar2 = dgsCreateScrollBar(x,y+sy-scbThick-titleOffset,sx-scbThick,scbThick,true,false,parent)
+	dgsApplyGeneralProperties(scalepane,sRes)
 	dgsAttachToAutoDestroy(scrollbar1,scalepane,-2)
 	dgsAttachToAutoDestroy(scrollbar2,scalepane,-3)
 	dgsSetVisible(scrollbar1,false)

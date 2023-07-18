@@ -80,6 +80,7 @@ function dgsCreate3DImage(...)
 		materialInfo = {},
 	}
 	dgsElementData[image3d].image = type(img) == "string" and dgsImageCreateTextureExternal(image3d,sRes,img) or img
+	dgsApplyGeneralProperties(image3d,sRes)
 	onDGSElementCreate(image3d,sRes)
 	return image3d
 end

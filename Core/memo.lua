@@ -252,7 +252,7 @@ function dgsCreateMemo(...)
 	}
 	dgsSetParent(memo,parent,true,true)
 	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
-	onDGSElementCreate(memo,sRes)	--This event should be called before child element attachment, to make sure every property is ready
+	dgsApplyGeneralProperties(memo,sRes)	--This event should be called before child element attachment, to make sure every property is ready
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
@@ -268,6 +268,7 @@ function dgsCreateMemo(...)
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
 	dgsMemoRecreateRenderTarget(memo,true)
+	onDGSElementCreate(memo,sRes)
 	return memo
 end
 

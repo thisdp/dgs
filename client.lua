@@ -2149,7 +2149,7 @@ function DGSI_onDGSWindowBlur()
 	dgsElementData[this].isFocused = false
 end
 
-function onDGSElementCreate(source,theResource)
+function dgsApplyGeneralProperties(source,theResource)
 	local style
 	local res = theResource or "global"
 	if styleManager.styles[res] and styleManager.styles[res].using then
@@ -2196,7 +2196,6 @@ function onDGSElementCreate(source,theResource)
 	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
 	dgsAddEventHandler("onDgsBlur",source,"DGSI_onDGSWindowBlur",getPropagated)
 	dgsAddEventHandler("onDgsFocus",source,"DGSI_onDGSWindowFocus",getPropagated)
-	triggerEvent("onDgsCreate",source,theResource)
 
 	local dgsType = dgsGetType(source)
 	if dgsTypeWorld3D[dgsType] or dgsTypeScreen3D[dgsType] then
@@ -2204,6 +2203,10 @@ function onDGSElementCreate(source,theResource)
 			dgsCore3DStartRender()	--Add renderer if there are 3d elements
 		end
 	end
+end
+
+function onDGSElementCreate(source,theResource)
+	return triggerEvent("onDgsCreate",source,theResource)
 end
 
 function dgsClear(theType,res)

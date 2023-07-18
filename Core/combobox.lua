@@ -186,6 +186,7 @@ function dgsCreateComboBox(...)
 		dgsSetData(combobox,"caption",tostring(caption or ""))
 	end
 	calculateGuiPositionSize(combobox,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(combobox,sRes)
 	local box = dgsComboBoxCreateBox(0,1,1,3,true,combobox)
 	dgsElementData[combobox].myBox = box
 	dgsElementData[box].myCombo = combobox
@@ -606,6 +607,7 @@ function dgsComboBoxCreateBox(x,y,w,h,relative,parent)
 	dgsSetType(box,"dgs-dxcombobox-Box")
 	dgsSetParent(box,parent,true,true)
 	calculateGuiPositionSize(box,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(box,sRes)
 	onDGSElementCreate(box,sRes)
 	return box
 end

@@ -57,6 +57,7 @@ function dgsCreate3DLine(...)
 		lineType = "plane",
 		lineData = {},
 	}
+	dgsApplyGeneralProperties(line3d,sRes)
 	onDGSElementCreate(line3d,sRes)
 	return line3d
 end

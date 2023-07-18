@@ -73,6 +73,7 @@ function dgsCreate3DInterface(...)
 		doublesided = true,
 	}
 	dgsAttachToAutoDestroy(renderer,interface,-2)
+	dgsApplyGeneralProperties(interface,sRes)
 	onDGSElementCreate(interface,sRes)
 	dgs3DInterfaceRecreateRenderTarget(interface,true)
 	return interface
