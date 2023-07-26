@@ -315,6 +315,7 @@ function dgsApplyVisibleInherited(parent,visible)
 		dgsElementData[child].visibleInherited = visible
 		local eleType = dgsElementType[child]
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](child) end
+		if not visible and MouseData.focused == child then dgsBlur(child) end
 		dgsApplyVisibleInherited(child,dgsElementData[child].visibleInherited)
 	end
 end
@@ -338,6 +339,7 @@ function dgsSetVisible(dgsEle,visible)
 		dgsElementData[dgsEle].visibleInherited = parentInherited
 		local eleType = dgsElementType[dgsEle]
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](dgsEle) end
+		if not visible and MouseData.focused == dgsEle then dgsBlur(dgsEle) end
 		dgsApplyVisibleInherited(dgsEle,visible and dgsElementData[dgsEle].visibleInherited)
 		return dgsSetData(dgsEle,"visible",visible)
 	end
