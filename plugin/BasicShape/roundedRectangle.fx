@@ -5,7 +5,7 @@ bool textureLoad = false;
 bool textureRotated = false;
 float4 isRelative = 1;
 float4 radius = 0.2;
-float borderSoft = 0.012;
+float borderSoft = 0.01;
 bool colorOverwritten = true;
 float2 borderThickness = 0.2;
 float radiusMultipler = 0.95;
@@ -53,19 +53,44 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	
 	if(leftTopSideX && leftTopSideY){					//LTCorner
 		float dis = distance(-fixedPos,corner[0]);
-		alp *= saturate(1-(dis-nRadius.x+aA/2)/aA);
+		alp *= saturate(1-(dis-nRadius.x)/aA-0.5);
 	}
 	if(rightTopSideX && rightTopSideY){			//RTCorner
 		float dis = distance(float2(fixedPos.x,-fixedPos.y),corner[1]);
-		alp *= saturate(1-(dis-nRadius.y+aA/2)/aA);
+		alp *= saturate(1-(dis-nRadius.y)/aA-0.5);
 	}
 	if(rightBottomSideX && rightBottomSideY){		//RBCorner
 		float dis = distance(float2(fixedPos.x,fixedPos.y),corner[2]);
-		alp *= saturate(1-(dis-nRadius.z+aA/2)/aA);
+		alp *= saturate(1-(dis-nRadius.z)/aA-0.5);
 	}
 	if(leftBottomSideX && leftBottomSideY){		//LBCorner
 		float dis = distance(float2(-fixedPos.x,fixedPos.y),corner[3]);
-		alp *= saturate(1-(dis-nRadius.w+aA/2)/aA);
+		alp *= saturate(1-(dis-nRadius.w)/aA-0.5);
+	}
+	if(fixedPos.x <= 0){
+		if(fixedPos.y <= 0){
+			if (!leftTopSideX && (nRadius[0] || nRadius[1]))
+				alp *= saturate((fixedPos.y+center.y)/aA+0.5);
+			if (!leftTopSideY && (nRadius[0] || nRadius[3]))
+				alp *= saturate((fixedPos.x+center.x)/aA+0.5);
+		}else{
+			if (!leftBottomSideX && (nRadius[2] || nRadius[3]))
+				alp *= saturate((-fixedPos.y+center.y)/aA+0.5);
+			if (!leftBottomSideY && (nRadius[0] || nRadius[3]))
+				alp *= saturate((fixedPos.x+center.x)/aA+0.5);
+		}
+	}else{
+		if(fixedPos.y <= 0){
+			if (!rightTopSideX && (nRadius[0] || nRadius[1]))
+				alp *= saturate((fixedPos.y+center.y)/aA+0.5);
+			if (!rightTopSideY && (nRadius[1] || nRadius[2]))
+				alp *= saturate((-fixedPos.x+center.x)/aA+0.5);
+		}else{
+			if (!rightBottomSideX && (nRadius[2] || nRadius[3]))
+				alp *= saturate((-fixedPos.y+center.y)/aA+0.5);
+			if (!rightBottomSideY && (nRadius[1] || nRadius[2]))
+				alp *= saturate((-fixedPos.x+center.x)/aA+0.5);
+		}
 	}
 	alp = saturate(alp);
 	float nAlp = 1;
@@ -111,19 +136,44 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 
 		if(leftTopSideX && leftTopSideY){					//LTCorner
 			float dis = distance(-fixedPos,corner[0]);
-			nAlp *= saturate(1-(dis-nRadiusHalf.x+aA/2)/aA);
+			nAlp *= saturate(1-(dis-nRadiusHalf.x)/aA-0.5);
 		}
 		if(rightTopSideX && rightTopSideY){			//RTCorner
 			float dis = distance(float2(fixedPos.x,-fixedPos.y),corner[1]);
-			nAlp *= saturate(1-(dis-nRadiusHalf.y+aA/2)/aA);
+			nAlp *= saturate(1-(dis-nRadiusHalf.y)/aA-0.5);
 		}
 		if(rightBottomSideX && rightBottomSideY){		//RBCorner
 			float dis = distance(float2(fixedPos.x,fixedPos.y),corner[2]);
-			nAlp *= saturate(1-(dis-nRadiusHalf.z+aA/2)/aA);
+			nAlp *= saturate(1-(dis-nRadiusHalf.z)/aA-0.5);
 		}
 		if(leftBottomSideX && leftBottomSideY){		//LBCorner
 			float dis = distance(float2(-fixedPos.x,fixedPos.y),corner[3]);
-			nAlp *= saturate(1-(dis-nRadiusHalf.w+aA/2)/aA);
+			nAlp *= saturate(1-(dis-nRadiusHalf.w)/aA-0.5);
+		}
+	}
+	if(fixedPos.x <= 0){
+		if(fixedPos.y <= 0){
+			if (!leftTopSideX)
+				nAlp *= saturate((fixedPos.y+center.y)/aA+0.5);
+			if (!leftTopSideY)
+				nAlp *= saturate((fixedPos.x+center.x)/aA+0.5);
+		}else{
+			if (!leftBottomSideX)
+				nAlp *= saturate((-fixedPos.y+center.y)/aA+0.5);
+			if (!leftBottomSideY)
+				nAlp *= saturate((fixedPos.x+center.x)/aA+0.5);
+		}
+	}else{
+		if(fixedPos.y <= 0){
+			if (!rightTopSideX)
+				nAlp *= saturate((fixedPos.y+center.y)/aA+0.5);
+			if (!rightTopSideY)
+				nAlp *= saturate((-fixedPos.x+center.x)/aA+0.5);
+		}else{
+			if (!rightBottomSideX)
+				nAlp *= saturate((-fixedPos.y+center.y)/aA+0.5);
+			if (!rightBottomSideY)
+				nAlp *= saturate((-fixedPos.x+center.x)/aA+0.5);
 		}
 	}
 	nAlp = 1-saturate(nAlp);
