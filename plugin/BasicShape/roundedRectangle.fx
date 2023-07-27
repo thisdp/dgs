@@ -7,7 +7,7 @@ float4 isRelative = 1;
 float4 radius = 0.2;
 float borderSoft = 0.01;
 bool colorOverwritten = true;
-float2 borderThickness = 0.2;
+float2 borderThickness = 0.12;
 float radiusMultipler = 0.95;
 float4 UV = float4(0,0,1,1);
 
