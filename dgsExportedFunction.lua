@@ -446,7 +446,7 @@ function dgsG2DLoadHooker(isLocal)
 				[8] = {mode=3,multi=false},
 				[9] = {mode=3,multi=true},
 			}
-			local g2dMode = selectionModes[mode]hen
+			local g2dMode = selectionModes[mode]
 			dgsGridListSetSelectedItems(gl,{})
 			dgsGridListSetMultiSelectionEnabled(gl,g2dMode.multi)
 			return dgsGridListSetSelectionMode(gl,g2dMode.mode)
