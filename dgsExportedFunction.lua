@@ -295,15 +295,8 @@ function dgsG2DLoadHooker(isLocal)
 				return dgsGridListInsertRowAfter(gl,row,...)
 			end
 		end
-		guiGridListAddRow = function(gl,row,...)
-			local rowData = dgsGetProperty(gl,"rowData")
-			if isGUIGridList[gl] then
-				row = tonumber(row) or #rowData
-				return dgsGridListAddRow(gl,row+1,...)-1
-			else
-				row = tonumber(row) or #rowData+1
-				return dgsGridListAddRow(gl,row,...)
-			end
+		guiGridListAddRow = function(gl,...)
+			return dgsGridListAddRow(gl,nil,...)
 		end
 		guiGridListGetItemColor = function(gl,row,column)
 			if column and dgsGridListGetColumnCount(gl) < column then return false end
