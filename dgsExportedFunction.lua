@@ -433,7 +433,24 @@ function dgsG2DLoadHooker(isLocal)
 		guiGridListSetColumnTitle = dgsGridListSetColumnTitle
 		guiGridListSetColumnWidth = dgsGridListSetColumnWidth
 		guiGridListSetScrollBars = dgsGridListSetScrollBarState
-		guiGridListSetSelectionMode = dgsGridListSetSelectionMode
+		guiGridListSetSelectionMode = function (gl,mode)
+			local selectionModes = {
+				[0] = {mode=1,multi=false},
+				[1] = {mode=1,multi=true},
+				[2] = {mode=3,multi=false},
+				[3] = {mode=3,multi=true},
+				[4] = {mode=2,multi=false},
+				[5] = {mode=2,multi=true},
+				[6] = {mode=2,multi=false},
+				[7] = {mode=2,multi=true}, 
+				[8] = {mode=3,multi=false},
+				[9] = {mode=3,multi=true},
+			}
+			local g2dMode = selectionModes[mode]hen
+			dgsGridListSetSelectedItems(gl,{})
+			dgsGridListSetMultiSelectionEnabled(gl,g2dMode.multi)
+			return dgsGridListSetSelectionMode(gl,g2dMode.mode)
+		end
 		guiGridListSetSortingEnabled = dgsGridListSetSortEnabled
 		guiCreateMemo = dgsCreateMemo
 		guiMemoGetCaretIndex = dgsMemoGetCaretPosition
@@ -522,6 +539,9 @@ function dgsG2DLoadHooker(isLocal)
 				return dgsSetProperty(gl,"readOnly",v:lower() == "true")
 			elseif prop == "Alpha" or prop == "Font" or prop == "Text" then
 				return dgsSetProperty(gl,prop:lower(),v)
+			elseif prop == "AlwaysOnTop" then 
+				v = v:lower() == "true"
+				return dgsSetLayer(gl,v and "top" or "center")
 			else
 				return dgsSetProperty(gl,prop,v)
 			end
