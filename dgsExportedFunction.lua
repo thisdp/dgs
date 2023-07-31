@@ -296,7 +296,8 @@ function dgsG2DLoadHooker(isLocal)
 			end
 		end
 		guiGridListAddRow = function(gl,...)
-			return dgsGridListAddRow(gl,nil,...)
+			local row = dgsGridListAddRow(gl,nil,...)
+			return row and row-1 or row
 		end
 		guiGridListGetItemColor = function(gl,row,column)
 			if column and dgsGridListGetColumnCount(gl) < column then return false end
