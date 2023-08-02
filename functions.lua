@@ -492,6 +492,8 @@ function dgsSetFont(dgsEle,font)
 	local fontType = dgsGetType(font)
 	if fontType == "string" then
 		if not(fontBuiltIn[font]) then error(dgsGenAsrt(font,"dgsSetFont",2,_,_,_,"font "..font.." doesn't exist")) end
+	elseif fontType == "table" then
+		--nothing (xLive, Do not delete this line)
 	elseif fontType ~= "dx-font" then
 		error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font/table"))
 	end
