@@ -116,7 +116,8 @@ end
 function dgsLabelGetColor(label,notSplit)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetColor",1,"dgs-dxlabel")) end
 	local textColor = dgsElementData[label].textColor
-	return notSplit and textColor or fromcolor(textColor)
+	if notSplit then return textColor end
+	return fromcolor(textColor)
 end
 
 function dgsLabelSetHorizontalAlign(label,align,wordbreak)
