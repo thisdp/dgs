@@ -2,37 +2,39 @@ dgsLogLuaMemory()
 dgsRegisterType("dgs-dxcombobox","dgsBasic","dgsType2D")
 dgsRegisterType("dgs-dxcombobox-Box","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxcombobox",{
-	arrow = 				{	PArg.Material	},
-	alignment = 			{	{ PArg.String, PArg.String }	},
-	autoHideAfterSelected = {	PArg.Bool	},
-	autoSort = 				{	PArg.Bool	},
-	clip = 					{	PArg.Bool	},
-	caption = 				{	PArg.Text	},
-	scrollBarThick = 		{	PArg.Number	},
-	color = 				{	{ PArg.Color, PArg.Color, PArg.Color }	},
-	bgColor = 				{	PArg.Color	},
-	bgImage = 				{	PArg.Material	},
-	image = 				{	{ PArg.Material,PArg.Material,PArg.Material }	},
-	colorCoded = 			{	PArg.Bool	},
-	font = 					{	PArg.Font+PArg.String	},
-	state = 				{	PArg.Bool	},
-	shadow = 				{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
-	textColor = 			{	PArg.Color	},
-	textPadding = 			{	{ PArg.Number,PArg.Number }	},
-	textSize = 				{	{ PArg.Number, PArg.Number }	},
-	textBox = 				{	PArg.Bool	},
-	wordBreak = 			{	PArg.Bool	},
-	itemAlignment = 		{	{ PArg.Number,PArg.Number }	},
-	itemTextPadding = 		{	{ PArg.Number,PArg.Number }	},
-	itemColor = 			{	{ PArg.Color,PArg.Color,PArg.Color }	},
-	itemImage = 			{	{ PArg.Material,PArg.Material,PArg.Material }	},
-	itemMoveOffset = 		{	PArg.Number	},
-	itemTextColor = 		{	PArg.Color	},
-	itemTextSize = 			{	{ PArg.Number, PArg.Number}	},
-	listState = 			{	PArg.Number	},
-	moveHardness = 			{	{ PArg.Number, PArg.Number }	},
-	select = 				{	PArg.Number	},
-	buttonLen = 			{	{ PArg.Number, PArg.Bool }	},
+	arrow = 							{	PArg.Material	},
+	alignment = 						{	{ PArg.String, PArg.String }	},
+	autoHideAfterSelected = 			{	PArg.Bool	},
+	autoSort = 							{	PArg.Bool	},
+	clip = 								{	PArg.Bool	},
+	caption = 							{	PArg.Text	},
+	scrollBarThick = 					{	PArg.Number	},
+	color = 							{	{ PArg.Color, PArg.Color, PArg.Color }	},
+	bgColor = 							{	PArg.Color	},
+	bgImage = 							{	PArg.Material	},
+	image = 							{	{ PArg.Material,PArg.Material,PArg.Material }	},
+	colorCoded = 						{	PArg.Bool	},
+	font = 								{	PArg.Font+PArg.String	},
+	state = 							{	PArg.Bool	},
+	shadow = 							{	{ PArg.Number, PArg.Number, PArg.Color, PArg.Number+PArg.Bool+PArg.Nil, PArg.Font+PArg.Nil }, PArg.Nil	},
+	textBoundingBoxIncludeArrow = 		{	PArg.Bool	},
+	textOffset = 						{	{ PArg.Number, PArg.Number, PArg.Bool }	},
+	textColor = 						{	PArg.Color	},
+	textPadding = 						{	{ PArg.Number,PArg.Number }	},
+	textSize = 							{	{ PArg.Number, PArg.Number }	},
+	textBox = 							{	PArg.Bool	},
+	wordBreak = 						{	PArg.Bool	},
+	itemAlignment = 					{	{ PArg.Number,PArg.Number }	},
+	itemTextPadding = 					{	{ PArg.Number,PArg.Number }	},
+	itemColor = 						{	{ PArg.Color,PArg.Color,PArg.Color }	},
+	itemImage = 						{	{ PArg.Material,PArg.Material,PArg.Material }	},
+	itemMoveOffset = 					{	PArg.Number	},
+	itemTextColor = 					{	PArg.Color	},
+	itemTextSize = 						{	{ PArg.Number, PArg.Number}	},
+	listState = 						{	PArg.Number	},
+	moveHardness = 						{	{ PArg.Number, PArg.Number }	},
+	select = 							{	PArg.Number	},
+	buttonLen = 						{	{ PArg.Number, PArg.Bool }	},
 })
 --Dx Functions
 local dxDrawImage = dxDrawImage
@@ -158,6 +160,8 @@ function dgsCreateComboBox(...)
 		autoHideAfterSelected = style.autoHideAfterSelected,
 		itemTextPadding = style.itemTextPadding,
 		textPadding = style.textPadding,
+		textOffset = {0,0,false},
+		textBoundingBoxIncludeArrow = false,
 		arrow = dgsCreateTextureFromStyle(using,res,style.arrow),
 		arrowColor = style.arrowColor,
 		arrowSettings = style.arrowSettings or {0.3,0.15,0.04},
@@ -1006,6 +1010,9 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local font = item[-4] or eleData.font or systemFont
 		local tColor = item[-2] or eleData.textColor
 		local textColor = type(tColor) ~= "table" and tColor or tColor[1]
+		local textOffset = eleData.textOffset
+		local textOffsetX = textOffset[3] and textOffset[1]*w or textOffset[1]
+		local textOffsetY = textOffset[3] and textOffset[2]*h or textOffset[2]
 		local rb = eleData.alignment
 		local txtSizX,txtSizY = item[-3] and item[-3][1] or eleData.textSize[1],item[-3] and (item[-3][2] or item[-3][1]) or eleData.textSize[2] or eleData.textSize[1]
 		local colorCoded = item[-5] or eleData.colorCoded
@@ -1021,12 +1028,15 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxDrawImage(imagex,imagey,imagew,imageh,image[1],0,0,0,applyColorAlpha(image[2],parentAlpha),isPostGUI,rndtgt)
 		end
 		local nx,ny,nw,nh = x+itemTextPadding[1],y,x+textBoxLen-itemTextPadding[2],y+h
+		if eleData.textBoundingBoxIncludeArrow then
+			nw = nw+buttonLen
+		end
 		local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
 		if shadow then
 			shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
 			shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 		end
-		dgsDrawText(text,nx,ny,nw,nh,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+		dgsDrawText(text,nx+textOffsetX,ny+textOffsetY,nw+textOffsetX,nh+textOffsetY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,rb[1],rb[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	end
 	if eleData.nextRenderSort then
 		dgsComboBoxSort(source)
