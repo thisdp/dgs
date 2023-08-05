@@ -1378,7 +1378,7 @@ function dgsGridListInsertRowAfter(gridlist,r,...)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListInsertRowAfter",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData = eleData.columnData
-	assert(#cData > 0 ,"Bad argument @dgsGridListInsertRowAfter, no columns in the grid list")
+	if not (#cData > 0) then error("Bad argument @dgsGridListInsertRowAfter, no columns in the grid list") end
 	return dgsGridListAddRow(gridlist,r+1,...)
 end
 
