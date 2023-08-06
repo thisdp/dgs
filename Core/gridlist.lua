@@ -3121,7 +3121,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
 					if itemUsingBGImage then
 						if not eleData.rowImageStyle or eleData.rowImageStyle == 1 then
-							dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						elseif eleData.rowImageStyle == 2 then
 							local allColumnWidth = dgsGridListGetColumnAllWidth(source,#eleData.columnData)
 							if viewWidth > allColumnWidth then
@@ -3135,7 +3135,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,-materialWidth*(columnMoveOffset-rowBGX)/(allColumnWidth-bgOffset),0,materialWidth*backgroundWidth/(allColumnWidth-bgOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,-materialWidth*(columnMoveOffset-rowBGX)/(allColumnWidth-bgOffset),0,materialWidth*backgroundWidth/(allColumnWidth-bgOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						elseif eleData.rowImageStyle == 3 then
 							if rowBGX+backgroundWidth >= viewWidth then
 								backgroundWidth = viewWidth-rowBGX
@@ -3147,10 +3147,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,materialWidth*rowBGX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,materialWidth*rowBGX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						end
 					else
-						dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+						dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 					end
 					elementBuffer[i][id] = elementBuffer[i][id] or {}
 					local eBuffer = elementBuffer[i][id]
@@ -3164,7 +3164,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							local imagey = rowY+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
 							local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
 							local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
-							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha))
+							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha),false,true)
 						end
 						local textXS,textYS,textXE,textYE = rowX+columnOffset,rowY,rowW,rowH
 						if cItem[glItem_textOffset] then

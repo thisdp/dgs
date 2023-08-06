@@ -10,6 +10,8 @@ bool colorOverwritten = true;
 float2 borderThickness = 0.12;
 float radiusMultipler = 0.95;
 float4 UV = float4(0,0,1,1);
+float textureRot = 0;
+float2 textureRotCenter = float2(0.5,0.5);
 
 SamplerState tSampler{
 	Texture = sourceTexture;
@@ -19,6 +21,10 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	float4 result = borderColor;
 	float alp = 1;
 	float2 tempTex = (tex*UV.zw+UV.xy);
+	/*float thetaCos = cos(-textureRot/180.0*PI);
+	float thetaSin = sin(-textureRot/180.0*PI);
+	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
+	float2 rotedTex = mul(tempTex-textureRotCenter,rot)+textureRotCenter;*/
 	float2 tex_bk = tempTex;
 	float2 dx = ddx(tempTex);
 	float2 dy = ddy(tempTex);
