@@ -350,10 +350,10 @@ function dgsCoreRender()
 					local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
 					local hSideSize = sideSize*0.5
 					local x,y,w,h = debugData[5],debugData[6],absW,absH
-					dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize,y-hSideSize,sideColor,sideSize,isPostGUI)
+					dxDrawLine(x-sideSize,y-hSideSize,x+w+sideSize-1,y-hSideSize,sideColor,sideSize,isPostGUI)
 					dxDrawLine(x-hSideSize,y,x-hSideSize,y+h,sideColor,sideSize,isPostGUI)
-					dxDrawLine(x+w+hSideSize,y,x+w+hSideSize,y+h,sideColor,sideSize,isPostGUI)
-					dxDrawLine(x-sideSize,y+h+hSideSize,x+w+sideSize,y+h+hSideSize,sideColor,sideSize,isPostGUI)
+					dxDrawLine(x+w+hSideSize-1,y,x+w+hSideSize-1,y+h,sideColor,sideSize,isPostGUI)
+					dxDrawLine(x-sideSize,y+h+hSideSize-1,x+w+sideSize-1,y+h+hSideSize-1,sideColor,sideSize,isPostGUI)
 				end
 			end
 			local parent = debugHitElement
