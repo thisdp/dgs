@@ -1127,6 +1127,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 						end
 					end
 				end
+				dxSetShaderValue(image,"UV",0,0,1,1)
 			else
 				if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
 					if debugMode then
