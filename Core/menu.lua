@@ -214,7 +214,7 @@ function dgsMenuGetItemCommand(menu,uniqueID)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemCommand",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemCommand",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	return item[-3]
 end
 
@@ -224,7 +224,7 @@ function dgsMenuSetItemCommand(menu,uniqueID,command)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemCommand",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemCommand",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	item[-3] = command
 	eleData.autoResizeMenu = true
 	return true
@@ -236,7 +236,7 @@ function dgsMenuGetItemText(menu,uniqueID)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemText",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemText",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	return item[-2]
 end
 
@@ -246,7 +246,7 @@ function dgsMenuSetItemText(menu,uniqueID,text)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemText",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemText",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	item[-2] = text
 	return true
 end
@@ -257,7 +257,7 @@ function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	if notSplitColor then
 		return item[-5][1],item[-5][2]
 	else
@@ -273,7 +273,7 @@ function dgsMenuSetItemColor(menu,uniqueID,...)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemColor",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemColor",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	--Deal with the color
 	local colors
 	local args = {...}
@@ -303,7 +303,7 @@ function dgsMenuGetItemTextSize(menu,uniqueID)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemTextSize",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemTextSize",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	return item[-6][1],item[-6][2]
 end
 
@@ -313,7 +313,7 @@ function dgsMenuSetItemTextSize(menu,uniqueID,textSizeX,textSizeY)
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemTextSize",2,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemTextSize",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	item[-6][1] = textSizeX
 	item[-6][2] = textSizeY or textSizeX
 	return true
