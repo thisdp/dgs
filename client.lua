@@ -1667,8 +1667,7 @@ function dgsCleanElement(source)
 			if MouseData.click.right == source then MouseData.click.right = nil end
 			dgsTriggerEvent("onDgsDestroy",source)
 		end
-		local isAttachedToGridList = eleData.attachedToGridList
-		if isAttachedToGridList and isAlive then dgsDetachFromGridList(source) end
+		if eleData.attachedToGridList and isAlive then dgsDetachFromGridList(source) end
 		local child = dgsElementData[source].children or {}
 		for i=1,#child do
 			if isElement(child[1]) then destroyElement(child[1]) end
@@ -1973,6 +1972,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			dgsTriggerEvent("onDgsMouseClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
 			if not isElement(dgsEle) then return end
 			dgsTriggerEvent("onDgsMouseClickDown",dgsEle,button,state,mouseX,mouseY,isCoolingDown)
+			MouseData.click[button] = dgsEle
 		elseif MouseData.click[button] == dgsEle then	--Up
 			if eleData.clickingSound and eleData.clickingSound[button] and eleData.clickingSound[button][state] then
 				setSoundVolume(playSound(eleData.clickingSound[button][state]),dgsGetClickingSoundVolume(dgsEle,button,state))
