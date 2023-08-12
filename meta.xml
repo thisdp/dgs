@@ -544,26 +544,12 @@
 	<export function="dgsMemoGetMaxLength" type="client" />
 	<export function="dgsMemoSetMaxLength" type="client" />
 
-	<export function="dgsCreateMediaBrowser" type="client" />
-	<export function="dgsMediaLoadMedia" type="client" />
-	<export function="dgsMediaGetMediaPath" type="client" />
-	<export function="dgsMediaClearMedia" type="client" />
-	<export function="dgsMediaIsStreamMedia" type="client" />
-	<export function="dgsMediaPlay" type="client" />
-	<export function="dgsMediaPause" type="client" />
-	<export function="dgsMediaStop" type="client" />
-	<export function="dgsMediaSetSize" type="client" />
-	<export function="dgsMediaSetSpeed" type="client" />
-	<export function="dgsMediaGetSpeed" type="client" />
-	<export function="dgsMediaSetFilled" type="client" />
-	<export function="dgsMediaGetFilled" type="client" />
-	<export function="dgsMediaSetFullScreen" type="client" />
-	<export function="dgsMediaGetFullScreen" type="client" />
-	<export function="dgsMediaGetDuration" type="client" />
-	<export function="dgsMediaGetCurrentPosition" type="client" />
-	<export function="dgsMediaSetCurrentPosition" type="client" />
-	<export function="dgsMediaGetLooped" type="client" />
-	<export function="dgsMediaSetLooped" type="client" />
+	<export function="dgsCreateMenu" type="client" />
+	<export function="dgsMenuShow" type="client" />
+	<export function="dgsMenuHide" type="client" />
+	<export function="dgsMenuAddItem" type="client" />
+	<export function="dgsMenuAddSeparator" type="client" />
+	<export function="dgsMenuRemoveItem" type="client" />
 
 	<export function="dgsCreateImage" type="client" />
 	<export function="dgsImageSetImage" type="client" />
@@ -854,6 +840,27 @@
 	<export function="dgsMaskSetTexture" type="client" />
 	<export function="dgsMaskCenterTexturePosition" type="client" />
 	<export function="dgsMaskAdaptTextureSize" type="client" />
+
+	<export function="dgsCreateMediaBrowser" type="client" />
+	<export function="dgsMediaLoadMedia" type="client" />
+	<export function="dgsMediaGetMediaPath" type="client" />
+	<export function="dgsMediaClearMedia" type="client" />
+	<export function="dgsMediaIsStreamMedia" type="client" />
+	<export function="dgsMediaPlay" type="client" />
+	<export function="dgsMediaPause" type="client" />
+	<export function="dgsMediaStop" type="client" />
+	<export function="dgsMediaSetSize" type="client" />
+	<export function="dgsMediaSetSpeed" type="client" />
+	<export function="dgsMediaGetSpeed" type="client" />
+	<export function="dgsMediaSetFilled" type="client" />
+	<export function="dgsMediaGetFilled" type="client" />
+	<export function="dgsMediaSetFullScreen" type="client" />
+	<export function="dgsMediaGetFullScreen" type="client" />
+	<export function="dgsMediaGetDuration" type="client" />
+	<export function="dgsMediaGetCurrentPosition" type="client" />
+	<export function="dgsMediaSetCurrentPosition" type="client" />
+	<export function="dgsMediaGetLooped" type="client" />
+	<export function="dgsMediaSetLooped" type="client" />
 
 	<export function="dgsCreateRemoteImage" type="client" />
 	<export function="dgsRemoteImageRequest" type="client" />

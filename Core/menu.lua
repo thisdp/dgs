@@ -93,23 +93,40 @@ function dgsCreateMenu(...)
 	calculateGuiPositionSize(menu,x,y,relative or false,w,h,relative or false,true)
 	dgsApplyGeneralProperties(menu,sRes)
 	if not isElement(parent) or getElementType(parent) ~= "dgs-dxmenu" then
-		addEventHandler("onClientClick",root,function()
-			dgsMenuClean(menu)
+		addEventHandler("onDgsBlur",menu,function()
+			dgsMenuHide(menu)
 		end,false,"LOW")
 	end
 	onDGSElementCreate(menu,sRes)
-	--dgsSetVisible(menu,false)
-
+	dgsMenuHide(menu)
 	return menu
 end
 
 function dgsMenuClean(menu)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuClean",1,"dgs-dxmenu")) end
 	local eleData = dgsElementData[menu]
 	if isElement(eleData.subMenu) then
 		destroyElement(eleData.subMenu)
 	end
 	eleData.subMenu = nil
 	return true
+end
+
+function dgsMenuShow(menu,x,y)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuShow",1,"dgs-dxmenu")) end
+	dgsSetVisible(menu,true)
+	if not x or not y then
+		x,y = dgsGetCursorPosition()
+	end
+	dgsSetPosition(menu,x,y,false)
+	dgsBringToFront(menu)
+end
+
+function dgsMenuHide(menu)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuHide",1,"dgs-dxmenu")) end
+	dgsBlur(menu)
+	dgsMenuClean(menu)
+	dgsSetVisible(menu,false)
 end
 
 function dgsMenuAutoResize(menu)
@@ -142,6 +159,7 @@ function dgsMenuAutoResize(menu)
 end
 
 function dgsMenuAddItem(menu,text,command,parentItemID,pos)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuAddItem",1,"dgs-dxmenu")) end
 	local eleData = dgsElementData[menu]
 	local itemData = eleData.itemData
 	local itemMap = eleData.itemMap
@@ -153,7 +171,7 @@ function dgsMenuAddItem(menu,text,command,parentItemID,pos)
 		[-6] = nil,						--Text Size
 		[-5] = nil,						--Text Color
 		[-4] = true,					--Selectable
-		[-3] = commandOrIsSeparator,	--Command
+		[-3] = command,	--Command
 		[-2] = text,					--Text
 		[-1] = eleData.itemUniqueIndex,	--Unique Index
 		[0] = parentItemID or 0,	--Parent Item Unique Index
@@ -166,6 +184,7 @@ function dgsMenuAddItem(menu,text,command,parentItemID,pos)
 end
 
 function dgsMenuAddSeparator(menu,text,parentItemID,pos)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuAddSeparator",1,"dgs-dxmenu")) end
 	local eleData = dgsElementData[menu]
 	local itemData = eleData.itemData
 	local itemMap = eleData.itemMap
@@ -189,11 +208,23 @@ function dgsMenuAddSeparator(menu,text,parentItemID,pos)
 	return eleData.itemUniqueIndex,pos
 end
 
-function dgsMenuRemoveItem(menu,uniqueID)
+function dgsMenuGetItemCommand(menu,uniqueID)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuGetItemCommand",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuGetItemCommand",2,"number")) end
 	local eleData = dgsElementData[menu]
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
-	if not item then return end
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemCommand",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	return item[-3]
+end
+
+function dgsMenuRemoveItem(menu,uniqueID)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuRemoveItem",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuRemoveItem",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then return false end
 	if item[3] then	--If has children
 		for i=1,#item[3] do
 			item[3][i][0] = nil	--Skip parent
@@ -224,32 +255,34 @@ function dgsMenuRemoveItem(menu,uniqueID)
 	return true
 end
 
-function onDGSMenuClickHide(menu)
-	local eleData = dgsElementData[menu]
-	if eleData.autoHide then
-		dgsMenuClean(menu)
-		dgsSetVisible(menu)
+function onDgsMenuHover(source,nPreSelect,nPreSelectDrawPos)
+	local eleData = dgsElementData[source]
+	local rootMenu = eleData.rootMenu or source
+	local itemMap = eleData.itemMap
+	dgsMenuClean(source)
+	if nPreSelect ~= -1 and itemMap[nPreSelect] and #itemMap[nPreSelect] >= 1 then
+		local width,height = eleData.absSize[1],eleData.absSize[2]
+		local padding = eleData.padding
+		eleData.subMenu = dgsCreateMenu(width,nPreSelectDrawPos-padding[2],width,height,false,source)
+		local subMenuEleData = dgsElementData[eleData.subMenu]
+		subMenuEleData.itemData = itemMap[nPreSelect]
+		subMenuEleData.itemMap = itemMap
+		subMenuEleData.autoResizeMenu = true
+		subMenuEleData.rootMenu = eleData.rootMenu or source
+		dgsMenuShow(eleData.subMenu,width,nPreSelectDrawPos-padding[2])
 	end
+	dgsTriggerEvent("onDgsMenuHover",rootMenu,source,nPreSelect,nPreSelectDrawPos)
 end
 
-addEventHandler("onDgsMenuHover",resourceRoot,function(nPreSelect,oPreSelect,nPreSelectDrawPos)
-	if dgsGetType(source) == "dgs-dxmenu" then
-		local eleData = dgsElementData[source]
-		local itemMap = eleData.itemMap
-		dgsMenuClean(source)
-		if nPreSelect ~= -1 and itemMap[nPreSelect] and #itemMap[nPreSelect] >= 1 then
-			local width,height = eleData.absSize[1],eleData.absSize[2]
-			local padding = eleData.padding
-			eleData.subMenu = dgsCreateMenu(width,nPreSelectDrawPos-padding[2],width,height,false,source)
-			local subMenuEleData = dgsElementData[eleData.subMenu]
-			subMenuEleData.itemData = itemMap[nPreSelect]
-			subMenuEleData.itemMap = itemMap
-			subMenuEleData.autoResizeMenu = true
-			subMenuEleData.rootMenu = eleData.rootMenu or source
-		end
-	end
-end)
-
+----------------------------------------------------------------
+----------------------OnMouseClickAction------------------------
+----------------------------------------------------------------
+dgsOnMouseClickAction["dgs-dxmenu"] = function(dgsEle,button,state)
+	if state ~= "up" then return end
+	local eleData = dgsElementData[dgsEle]
+	local rootMenu = eleData.rootMenu or dgsEle
+	dgsTriggerEvent("onDgsMenuSelect",rootMenu,dgsEle,eleData.preSelect)
+end
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
@@ -352,13 +385,13 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	if MouseData.entered == source then
 		if preSelect ~= nPreSelect then
 			eleData.preSelect = nPreSelect
-			dgsTriggerEvent("onDgsMenuHover",source,nPreSelect,preSelect,nPreSelectDrawPos)
+			onDgsMenuHover(source,nPreSelect,nPreSelectDrawPos)
 		end
 	elseif not eleData.subMenu then
 		nPreSelect = -1
 		if preSelect ~= nPreSelect then
 			eleData.preSelect = -1
-			dgsTriggerEvent("onDgsMenuHover",source,nPreSelect,preSelect,nPreSelectDrawPos)
+			onDgsMenuHover(source,nPreSelect,nPreSelectDrawPos)
 		end
 	end
 
