@@ -691,14 +691,20 @@ function dgsBlur(dgsEle)
 	local oFocusedChain = MouseData.focusedChain
 	if oFocusedChain[dgsEle] then	--If found
 		local index = tableFind(oFocusedChain,dgsEle)	--Get index
+		local blurredEle = {}
 		for i=index,1,-1 do
 			local dgsEleToBlur = oFocusedChain[i]
 			if MouseData.focused == dgsEleToBlur then	--If the blurred element is MouseData.focused
 				MouseData.focused = oFocusedChain[i+1]	--Select its parent, nil if no focused
 			end
+			blurredEle[#blurredEle+1] = dgsEleToBlur
 			oFocusedChain[dgsEleToBlur] = nil
 			table.remove(oFocusedChain,i)	--Remove
-			dgsTriggerEvent("onDgsBlur",dgsEleToBlur)
+		end
+		for i=1,#blurredEle do
+			if isElement(blurredEle[i]) then
+				dgsTriggerEvent("onDgsBlur",blurredEle[i])
+			end
 		end
 	end
 	return true

@@ -1654,6 +1654,9 @@ function dgsCleanElement(source)
 	local dgsType = dgsIsType(source)
 	if dgsType then
 		local eleData = dgsElementData[source] or {}
+		if dgsIsFocused(source) then
+			dgsBlur(source)
+		end
 		if isAlive then
 			if MouseData.entered == source then
 				dgsTriggerEvent("onDgsMouseLeave",MouseData.entered,mx,my,hits)
@@ -1662,7 +1665,6 @@ function dgsCleanElement(source)
 			if MouseData.click.left == source then MouseData.click.left = nil end
 			if MouseData.click.middle == source then MouseData.click.middle = nil end
 			if MouseData.click.right == source then MouseData.click.right = nil end
-			dgsBlur(source)
 			dgsTriggerEvent("onDgsDestroy",source)
 		end
 		local isAttachedToGridList = eleData.attachedToGridList
