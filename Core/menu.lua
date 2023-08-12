@@ -171,7 +171,7 @@ function dgsMenuAddItem(menu,text,command,parentItemID,pos)
 		[-6] = nil,						--Text Size
 		[-5] = nil,						--Text Color
 		[-4] = true,					--Selectable
-		[-3] = command,	--Command
+		[-3] = command,					--Command
 		[-2] = text,					--Text
 		[-1] = eleData.itemUniqueIndex,	--Unique Index
 		[0] = parentItemID or 0,	--Parent Item Unique Index
@@ -216,6 +216,107 @@ function dgsMenuGetItemCommand(menu,uniqueID)
 	local item = itemMap[uniqueID]
 	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemCommand",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
 	return item[-3]
+end
+
+function dgsMenuSetItemCommand(menu,uniqueID,command)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuSetItemCommand",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuSetItemCommand",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemCommand",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	item[-3] = command
+	eleData.autoResizeMenu = true
+	return true
+end
+
+function dgsMenuGetItemText(menu,uniqueID)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuGetItemText",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuGetItemText",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemText",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	return item[-2]
+end
+
+function dgsMenuSetItemText(menu,uniqueID,text)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuSetItemText",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuSetItemText",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemText",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	item[-2] = text
+	return true
+end
+
+function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	if notSplitColor then
+		return item[-5][1],item[-5][2]
+	else
+		local dR,dG,dB,dA = fromColor(item[-5][1])
+		local hR,hG,hB,hA = fromColor(item[-5][2])
+		return dR,dG,dB,dA,hR,hG,hB,hA
+	end
+end
+
+function dgsMenuSetItemColor(menu,uniqueID,...)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuSetItemColor",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuSetItemColor",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemColor",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	--Deal with the color
+	local colors
+	local args = {...}
+	if #args == 0 then
+		error(dgsGenAsrt(args[1],"dgsMenuSetItemColor",3,"table/number"))
+	elseif #args == 1 then
+		if type(args[1]) == "table" then
+			colors = {args[1][1],args[1][2] or args[1][1]}
+		else
+			colors = {args[1],args[1]}
+		end
+	elseif #args >= 3 then
+		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsMenuSetItemColor",2,"number")) end
+		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsMenuSetItemColor",3,"number")) end
+		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsMenuSetItemColor",4,"number")) end
+		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsMenuSetItemColor",5,"nil/number")) end
+		local clr = tocolor(...)
+		colors = {clr,clr}
+	end
+	item[-5] = colors
+	return true
+end
+
+function dgsMenuGetItemTextSize(menu,uniqueID)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuGetItemTextSize",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuGetItemTextSize",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemTextSize",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	return item[-6][1],item[-6][2]
+end
+
+function dgsMenuSetItemTextSize(menu,uniqueID,textSizeX,textSizeY)
+	if not dgsIsType(menu,"dgs-dxmenu") then error(dgsGenAsrt(menu,"dgsMenuSetItemTextSize",1,"dgs-dxmenu")) end
+	if type(uniqueID) ~= "number" then error(dgsGenAsrt(menu,"dgsMenuSetItemTextSize",2,"number")) end
+	local eleData = dgsElementData[menu]
+	local itemMap = eleData.itemMap
+	local item = itemMap[uniqueID]
+	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemTextSize",2,_,"Invalid index '"+tostring(uniqueID)+"'")) end
+	item[-6][1] = textSizeX
+	item[-6][2] = textSizeY or textSizeX
+	return true
 end
 
 function dgsMenuRemoveItem(menu,uniqueID)
@@ -354,6 +455,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		local text = item[-2]
 		local commandOrIsSeparator = item[-3]
 		local selectable = item[-4]
+		local textColor = item[-5] or itemTextColor
 		if commandOrIsSeparator == true then
 			drawPosY = drawPosY+separatorGap
 			if text == nil then	--If no text specified, use "line" instead
@@ -373,10 +475,13 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			if preSelect == itemUniqueID then
 				clickState = 2
 			end
+			if type(textColor) == "table" then
+				textColor = textColor[clickState]
+			end
 			dxDrawImage(x+drawPosX,y+drawPosY,drawWidth,itemHeight,itemImage[clickState],0,0,0,itemColor[clickState],isPostGUI,rndtgt)
-			dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,itemTextColor,itemTextSize[1],itemTextSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+			dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,textColor,itemTextSize[1],itemTextSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			if #item >= 1 then
-				dgsDrawText(">",x+w-padding[1],y+drawPosY,x+w-padding[1],y+drawPosY+itemHeight,itemTextColor,itemTextSize[1],itemTextSize[2],font,"right","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(">",x+w-padding[1],y+drawPosY,x+w-padding[1],y+drawPosY+itemHeight,textColor,itemTextSize[1],itemTextSize[2],font,"right","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 			drawPosY = drawPosY+itemHeight
 			drawPosY = drawPosY+itemGap

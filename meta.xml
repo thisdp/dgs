@@ -548,6 +548,14 @@
 	<export function="dgsMenuShow" type="client" />
 	<export function="dgsMenuHide" type="client" />
 	<export function="dgsMenuAddItem" type="client" />
+	<export function="dgsMenuSetItemCommand" type="client" />
+	<export function="dgsMenuGetItemCommand" type="client" />
+	<export function="dgsMenuSetItemText" type="client" />
+	<export function="dgsMenuGetItemText" type="client" />
+	<export function="dgsMenuSetItemTextSize" type="client" />
+	<export function="dgsMenuGetItemTextSize" type="client" />
+	<export function="dgsMenuSetItemColor" type="client" />
+	<export function="dgsMenuGetItemColor" type="client" />
 	<export function="dgsMenuAddSeparator" type="client" />
 	<export function="dgsMenuRemoveItem" type="client" />
 
