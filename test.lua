@@ -47,7 +47,7 @@ function createFullDemoOOP()
 					:setProperty("image",rndRect)
 					:setProperty("colorTransitionPeriod",100)
 					
-			local iBtn = parent:dgsButton(10,80,120,60,"Button\nText\nColor",false)
+			local iBtn = parent:dgsButton(10,80,120,60,"Button\nIcon",false)
 				:setProperty("iconImage",rndRect)
 				:setProperty("iconOffset",{0,0,true})
 				:setProperty("iconRelative",false)
@@ -607,17 +607,19 @@ function GridListTest()
 	dgsSetProperty(gridlist,"clip",false)
 	--dgsSetProperty(gridlist,"leading",10)
 	--dgsSetProperty(gridlist,"mode",true)
-	dgsGridListAddColumn(gridlist,"test1",0.2,nil,"center")
+	dgsGridListAddColumn(gridlist,"test1",0.2,nil)
 	dgsGridListAddColumn(gridlist,"test2",0.3)
-	--dgsGridListAddColumn(gridlist,"test3",0.6)
+	dgsGridListAddColumn(gridlist,"test3",0.6)
 	dgsSetProperty(gridlist,"leading",-4)
 	local tick = getTickCount()
 	dgsSetProperty(gridlist,"scrollBarThick",50)
 	dgsSetProperty(gridlist,"rowHeight",30)
 	dgsSetProperty(gridlist,"rowTextSize",{1.3,1.3})
-	for i=1,100 do
+	for i=1,10 do
 		local row = dgsGridListAddRow(gridlist)
 		dgsGridListSetItemText(gridlist,row,1,i.."xx")
+		dgsGridListSetItemText(gridlist,row,2,i.."xx")
+		dgsGridListSetItemText(gridlist,row,3,i.."xx")
 		--[[local window = dgsCreateGridList(0,1,400,198,false)
 		dgsGridListAddColumn(window,"t1",0.2)
 		dgsGridListAddColumn(window,"t2",0.6)
@@ -629,11 +631,11 @@ function GridListTest()
 		dgsAttachToGridList(window,gridlist,row,3)
 		dgsGridListSetItemText(gridlist,row,1,i.."xx")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")]]
-		dgsGridListSetItemHoverable(gridlist,row,1,false)
-		dgsGridListSetItemHoverable(gridlist,row,2,false)
+		--dgsGridListSetItemHoverable(gridlist,row,1,false)
+		--dgsGridListSetItemHoverable(gridlist,row,2,false)
 	end
 	--dgsGridListAutoSizeColumn(gridlist,1,0,false,true)
-	dgsSetProperty(gridlist,"rowShowEntireOnly",true)
+	--dgsSetProperty(gridlist,"rowShowEntireOnly",true)
 	--[[dgsGridListSetItemAsSection(gridlist,1,1,true)
 	dgsGridListSetRowAsSection(gridlist,2,true)
 	dgsGridListSetItemAsSection(gridlist,2,1,false)]]
@@ -691,16 +693,9 @@ function PasteHandlerTest()
 end
 
 function _3DInterfaceAttachTest()
-	material1 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
-	material2 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),1,1,0,_,0)
-	dgs3DInterfaceAttachToElement(material1,localPlayer,0,0,1)
-	dgs3DInterfaceSetRoll(material2,0)
-	dgsSetProperty(material1,"faceRelativeTo","world")
-	local window1 = dgsCreateWindow(0,0,600,600,"test",false)
-	local window2 = dgsCreateWindow(0,0,600,600,"test",false)
-	dgsCreateEdit(0,0,200,50,"test",false,window1)
+	material1 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),0,1,0,_,0)
+	local window1 = dgsCreateButton(0,0,600,600,"",false,material1)
 	dgsSetParent(window1,material1)
-	dgsSetParent(window2,material2)
 end
 
 function _3DLineTest()
@@ -1344,51 +1339,56 @@ function multilingualTest()
 	dgsSetProperty(label,"health",40)
 	print(dgsGetTranslationName(label))
 end
---[[
-local edit = dgsCreateEdit(200,200,300,50,"",false)
-history = {}
-addEventHandler("onDgsEditAccepted",edit,function()
-	if not history[source] then history[source] = { current = 0 } end
-	history[source].current = 0
-	local text = dgsGetText(source)
-	table.insert(history[source],text)
-	dgsSetText(source,"")
-end,false)
 
-addEventHandler("onDgsKey",edit,function(button,state)
-	if state then
-		if not history[source] then return end
-		if button == "arrow_u" then
-			if history[source].current == 0 then
-				history[source].editing = dgsGetText(source)
-			end
-			history[source].current = history[source].current + 1
-			if history[source].current >= #history[source] then
-				history[source].current = #history[source]
-			end
-			dgsSetText(source,history[source][history[source].current])
-		elseif button == "arrow_d" then
-			if history[source].current ~= 0 then
-				history[source].current = history[source].current - 1
-				if history[source].current == 0 then
-					dgsSetText(source,history[source].editing or "")
-					history[source].editing = nil
-				else
-					dgsSetText(source,history[source][history[source].current])
-				end
-			end
+function MenuTest()
+	local menu = dgsCreateMenu(200,200,200,600,false)
+	local timeItem = dgsMenuAddItem(menu,"Time","time")
+		dgsMenuAddItem(menu,"Day","t.Day",timeItem)
+		dgsMenuAddItem(menu,"Night","t.Night",timeItem)
+	dgsMenuAddSeparator(menu)
+	local weatherItem = dgsMenuAddItem(menu,"Weather","weather")
+		dgsMenuAddItem(menu,"Clear Day","w.ClearDay",weatherItem)
+		dgsMenuAddItem(menu,"Storming","w.Storming",weatherItem)
+	local optionItem = dgsMenuAddItem(menu,"Option","option")
+
+	local button = dgsCreateButton(400,400,100,50,"Right Click Here",false)
+	addEventHandler("onDgsMouseClickUp",button,function(button)
+		if button == "right" then
+			dgsMenuShow(menu)
 		end
-	end
-end,false)]]
+	end)
+	addEventHandler("onDgsMenuSelect",menu,function(subMenu,uniqueID)
+		local command = dgsMenuGetItemCommand(source,uniqueID)
+		if command == "t.Day" then
+			setTime(12,0)
+		elseif command == "t.Night" then
+			setTime(0,0)
+		elseif command == "w.ClearDay" then
+			setWeather(0)
+		elseif command == "w.Storming" then
+			setWeather(8)
+		else
+			return
+		end
+		dgsMenuHide(source)
+	end,false)
+	
+	testWindow = false
+	addEventHandler("onDgsMenuHover",menu,function(subMenu,uniqueID,drawPosY)
+		if uniqueID == -1 then return end
+		if isElement(testWindow) then
+			destroyElement(testWindow)
+		end
+		local command = dgsMenuGetItemCommand(source,uniqueID)
+		if command == "option" then
+			local x,y = dgsGetPosition(subMenu,false)
+			local width,height = dgsGetSize(subMenu,false)
+			testWindow = dgsCreateWindow(width,drawPosY,200,200,"Option",false)
+			dgsSetParent(testWindow,subMenu)
+		end
+	end,false)
+end
 
---[[
-local window = dgsCreateWindow(0,0, 512, 512, "test", false)
-local sp = dgsCreateScalePane(0,0,500,500,false,window,2000,1000)
-button = dgsCreateButton(100,100,100,100,"testt",false,sp)
-addEventHandler("onClientRender",root,function()
-	x,y = dgsGetPosition(button,false,"screen")
-	dxDrawText("test",x,y)
-end)]]
 
 end
 addEventHandler("onClientResourceStart",resourceRoot,executeTest)
