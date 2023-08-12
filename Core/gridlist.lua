@@ -2332,7 +2332,7 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 	local colors
 	local args = {...}
 	if #args == 0 then
-		error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"table/number"))
+		error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",4,"table/number"))
 	elseif #args == 1 then
 		if type(args[1]) == "table" then
 			colors = {args[1][1],args[1][2] or args[1][1],args[1][3] or args[1][1]}
@@ -2340,10 +2340,10 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 			colors = {args[1],args[1],args[1]}
 		end
 	elseif #args >= 3 then
-		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"number")) end
-		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemColor",3,"number")) end
-		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemColor",4,"number")) end
-		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemColor",5,"nil/number")) end
+		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",4,"number")) end
+		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemColor",5,"number")) end
+		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemColor",6,"number")) end
+		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemColor",7,"nil/number")) end
 		local clr = tocolor(...)
 		colors = {clr,clr,clr}
 	end
