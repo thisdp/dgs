@@ -100,7 +100,12 @@ function dgsInitializeGlobalMemo()
 	if not isElement(GlobalMemo) then
 		GlobalMemo = guiCreateMemo(-1,0,0,0,"",true,GlobalMemoParent)
 		dgsSetData(GlobalMemo,"linkedDxMemo",nil)
-		addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
+		addEventHandler("onClientGUIBlur",GlobalMemo,function()
+			local dgsMemo = dgsElementData[source].linkedDxMemo
+			if isElement(dgsMemo) and dgsIsFocused(dgsMemo) then
+				dgsBlur(dgsMemo)
+			end
+		end,false)
 		addEventHandler("onClientGUIChanged",GlobalMemo,function()
 			if not dgsElementData[GlobalMemo] then return end
 			if getElementType(GlobalMemo) == "gui-memo" then
@@ -267,6 +272,8 @@ function dgsCreateMemo(...)
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
+	dgsAddEventHandler("onDgsFocus",memo,"dgsMemoFocus",false)
+	dgsAddEventHandler("onDgsBlur",memo,"dgsMemoBlur",false)
 	dgsMemoRecreateRenderTarget(memo,true)
 	onDGSElementCreate(memo,sRes)
 	return memo
@@ -293,6 +300,19 @@ function dgsMemoRecreateRenderTarget(memo,lateAlloc)
 		dgsSetData(memo,"bgRT",bgRT)
 		dgsSetData(memo,"retrieveRT",nil)
 	end
+end
+
+function dgsMemoFocus()
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.EditMemoCursor = true
+	guiFocus(GlobalMemo)
+	dgsElementData[GlobalMemo].linkedDxMemo = source
+end
+
+function dgsMemoBlur()
+	guiBlur(GlobalMemo)
+	if not dgsElementData[GlobalMemo] then dgsElementData[GlobalMemo] = {} end
+	dgsElementData[GlobalMemo].linkedDxMemo = nil
 end
 
 function dgsMemoMultiClickCheck(button,state,x,y,times)

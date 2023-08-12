@@ -68,6 +68,7 @@ function dgsSetRenderSetting(name,value)
 end
 -----------------------------dx-GUI
 MouseData = {
+	focusedChain = {},
 	focused = false,
 	hit = false,
 	entered = false,
@@ -182,7 +183,7 @@ function dgsCoreRender()
 	MouseData.cursorPos[1],MouseData.cursorPos[2] = mx,my
 	MouseData.hit = false
 	MouseData.hitDebug = false
-	if #BottomFatherTable+#CenterFatherTable+#TopFatherTable+#BackEndTable+#dgsWorld3DTable+#dgsScreen3DTable ~= 0 then
+	if #BottomRootTable+#CenterRootTable+#TopRootTable+#BackEndTable+#dgsWorld3DTable+#dgsScreen3DTable ~= 0 then
 		local preBlendMode = dxGetBlendMode()
 		--Animation Processing
 		onAnimQueueProcess()
@@ -236,19 +237,19 @@ function dgsCoreRender()
 		frameEnd3DOnScreen = getTickCount()
 
 		MouseData.hitData2D[0] = false
-		for i=1,#BottomFatherTable do
-			local v = BottomFatherTable[i]
+		for i=1,#BottomRootTable do
+			local v = BottomRootTable[i]
 			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1)
 		end
-		for i=1,#CenterFatherTable do
-			local v = CenterFatherTable[i]
+		for i=1,#CenterRootTable do
+			local v = CenterRootTable[i]
 			local eleData = dgsElementData[v]
 			local enabled = eleData.enabled
 			renderGUI(v,mx,my,enabled,enabled,nil,0,0,0,0,0,0,1)
 		end
-		for i=1,#TopFatherTable do
-			local v = TopFatherTable[i]
+		for i=1,#TopRootTable do
+			local v = TopRootTable[i]
 			local eleData = dgsElementData[v]
 			renderGUI(v,mx,my,eleData.enabled,eleData.enabled,nil,0,0,0,0,0,0,1)
 		end
@@ -1661,6 +1662,7 @@ function dgsCleanElement(source)
 			if MouseData.click.left == source then MouseData.click.left = nil end
 			if MouseData.click.middle == source then MouseData.click.middle = nil end
 			if MouseData.click.right == source then MouseData.click.right = nil end
+			dgsBlur(source)
 			dgsTriggerEvent("onDgsDestroy",source)
 		end
 		local isAttachedToGridList = eleData.attachedToGridList
@@ -1685,8 +1687,6 @@ function dgsCleanElement(source)
 					destroyElement(arrow)
 				end
 			end
-		elseif dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
-			blurEditMemo()
 		elseif dgsType == "dgs-dxtabpanel" then
 			local tabs = eleData.tabs
 			if tabs then
@@ -1754,11 +1754,11 @@ function dgsCleanElement(source)
 			if not parent or parent == root then
 				local layer = eleData.alwaysOn or "center"
 				if layer == "bottom" then
-					tableRemoveItemFromArray(BottomFatherTable,source)
+					tableRemoveItemFromArray(BottomRootTable,source)
 				elseif layer == "center" then
-					tableRemoveItemFromArray(CenterFatherTable,source)
+					tableRemoveItemFromArray(CenterRootTable,source)
 				elseif layer == "top" then
-					tableRemoveItemFromArray(TopFatherTable,source)
+					tableRemoveItemFromArray(TopRootTable,source)
 				end
 			else
 				if dgsElementData[parent].children then
@@ -1923,7 +1923,7 @@ mouseStay = {
 addEventHandler("onClientClick",root,function(button,state,x,y)
 	local dgsEle = dgsGetMouseEnterGUI()
 	local mouseX,mouseY = MouseData.cursorPos[0] and MouseData.cursorPos[1] or x,MouseData.cursorPos[0] and MouseData.cursorPos[2] or y
-	if isElement(dgsEle) then
+	if isElement(dgsEle) then	--If clicked on a dgs element
 		local eleData = dgsElementData[dgsEle]
 		local isCoolingDown = false
 		local clickCoolDown = eleData.clickCoolDown
@@ -2000,14 +2000,8 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 		else
 			multiClick[button][state] = {0,false,false}
 		end
-	elseif state == "down" then
-		if dgsType == "dgs-dxedit" or dgsType == "dgs-dxmemo" then
-			blurEditMemo()
-		end
-		if isElement(MouseData.focused) then
-			dgsTriggerEvent("onDgsBlur",MouseData.focused,false)
-			MouseData.focused = nil
-		end
+	elseif state == "down" then	--If clicked at the empty space
+		dgsBlur()
 	end
 	if state == "down" then
 		if isElement(dgsEle) then
@@ -2141,14 +2135,6 @@ dgsRegisterProperties("dgsType2D",{
 	relative = 				{	{ PArg.Bool, PArg.Bool }	},
 })
 
-function DGSI_onDGSWindowFocus()
-	dgsElementData[this].isFocused = true
-end
-
-function DGSI_onDGSWindowBlur()
-	dgsElementData[this].isFocused = false
-end
-
 function dgsApplyGeneralProperties(source,theResource)
 	local style
 	local res = theResource or "global"
@@ -2193,9 +2179,6 @@ function dgsApplyGeneralProperties(source,theResource)
 	eleData.cursorPosition = {[0]=0}
 	if not eleData.children then eleData.children = {} end
 	insertResource(theResource,source)
-	local getPropagated = dgsElementType[source] == "dgs-dxwindow"
-	dgsAddEventHandler("onDgsBlur",source,"DGSI_onDGSWindowBlur",getPropagated)
-	dgsAddEventHandler("onDgsFocus",source,"DGSI_onDGSWindowFocus",getPropagated)
 
 	local dgsType = dgsGetType(source)
 	if dgsTypeWorld3D[dgsType] or dgsTypeScreen3D[dgsType] then

@@ -97,7 +97,12 @@ function dgsInitializeGlobalEdit()
 	if not isElement(GlobalEdit) then
 		GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
 		dgsSetData(GlobalEdit,"linkedDxEdit",nil)
-		addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
+		addEventHandler("onClientGUIBlur",GlobalEdit,function()
+			local dgsEdit = dgsElementData[source].linkedDxEdit
+			if isElement(dgsEdit) and dgsIsFocused(dgsEdit) then
+				dgsBlur(dgsEdit)
+			end
+		end,false)
 		addEventHandler("onClientGUIAccepted",GlobalEdit,function()
 			local dgsEdit = dgsElementData[source].linkedDxEdit
 			if dgsGetType(dgsEdit) == "dgs-dxedit" then
@@ -251,6 +256,8 @@ function dgsCreateEdit(...)
 	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)
 	dgsAddEventHandler("onDgsMouseMultiClick",edit,"dgsEditCheckMultiClick",false)
 	dgsAddEventHandler("onDgsEditPreSwitch",edit,"dgsEditCheckPreSwitch",false)
+	dgsAddEventHandler("onDgsFocus",edit,"dgsEditFocus",false)
+	dgsAddEventHandler("onDgsBlur",edit,"dgsEditBlur",false)
 	onDGSElementCreate(edit,sRes)
 	dgsEditRecreateRenderTarget(edit,true)
 	return edit
@@ -274,6 +281,19 @@ function dgsEditRecreateRenderTarget(edit,lateAlloc)
 		dgsSetData(edit,"bgRT",bgRT)
 		dgsSetData(edit,"retrieveRT",nil)
 	end
+end
+
+function dgsEditFocus()
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.EditMemoCursor = true
+	guiFocus(GlobalEdit)
+	dgsElementData[GlobalEdit].linkedDxEdit = source
+end
+
+function dgsEditBlur()
+	guiBlur(GlobalEdit)
+	if not dgsElementData[GlobalEdit] then dgsElementData[GlobalEdit] = {} end
+	dgsElementData[GlobalEdit].linkedDxEdit = nil
 end
 
 function dgsEditCheckMultiClick(button,state,x,y,times)
