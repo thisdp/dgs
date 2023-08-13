@@ -269,7 +269,6 @@ function dgsScrollBarGetCursorWidth(scrollbar,relative)
 	end
 end
 
-
 function dgsScrollBarSetTroughWidth(scrollbar,width,relative)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetTroughWidth",1,"dgs-dxscrollbar")) end
 	if not(type(width) == "number") then error(dgsGenAsrt(width,"dgsScrollBarSetTroughWidth",2,"number")) end
