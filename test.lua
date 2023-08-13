@@ -1302,7 +1302,7 @@ end
 addEventHandler("onClientResourceStart",resourceRoot,executeTest)
 executeTest = nil
 
-
+--[[
 setTimer(function()
 	local columns, rows = getPerformanceStats("Lua memory","","dgs")
 	outputChatBox("----------------")
@@ -1311,3 +1311,4 @@ setTimer(function()
 	end
 		collectgarbage()
 end,1000,0)
+]]
