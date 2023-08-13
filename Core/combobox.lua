@@ -830,6 +830,18 @@ function dgsComboBoxSort(combobox)
 end
 
 ----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxcombobox-Box"] = function(dgsEle,isWheelDown)
+	local combo = dgsElementData[dgsEle].myCombo
+	local scrollbar = dgsElementData[combo].scrollbar
+	if dgsGetVisible(scrollbar) then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
+end
+
+----------------------------------------------------------------
 ----------------------OnMouseClickAction------------------------
 ----------------------------------------------------------------
 dgsOnMouseClickAction["dgs-dxcombobox"] = function(dgsEle,button,state)

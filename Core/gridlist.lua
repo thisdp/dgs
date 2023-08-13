@@ -2652,6 +2652,24 @@ function configGridList(gridlist)
 end
 
 ----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxgridlist"] = function(dgsEle,isWheelDown)
+	local scrollbar
+	local scrollbar1,scrollbar2 = dgsElementData[dgsEle].scrollbars[1],dgsElementData[dgsEle].scrollbars[2]
+	local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+	if visibleScb1 then
+		scrollbar = scrollbar1
+	elseif visibleScb2 and not visibleScb1 then
+		scrollbar = scrollbar2
+	end
+	if scrollbar then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
+end
+
+----------------------------------------------------------------
 ----------------------OnMouseClickAction------------------------
 ----------------------------------------------------------------
 GirdListDoubleClick = {

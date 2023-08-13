@@ -1564,6 +1564,16 @@ function dgsMemoRebuildTextTable(memo)
 	configMemo(memo)
 end
 
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxmemo"] = function(dgsEle,isWheelDown)
+	local scrollbar = dgsElementData[dgsEle].scrollbars[1]
+	if dgsGetVisible(scrollbar) then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
+end
 
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------

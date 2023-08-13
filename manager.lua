@@ -41,6 +41,7 @@ dgsBackEndRenderer = {
 }
 --On Click Action
 dgsOnMouseClickAction = {}
+dgsOnMouseScrollAction = {}
 --Collider
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)

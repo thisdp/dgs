@@ -124,7 +124,7 @@ function dgsCreateScrollBar(...)
 		troughColor = troughColor or style.troughColor,
 		troughImageSectionMode = false,
 		troughImage = troughImage,
-		troughClickAction = "none",
+		troughClickAction = "step",
 		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
 		wheelReversed = false,
 		renderBuffer = {
@@ -312,16 +312,24 @@ function dgsScrollBarGetArrowSize(scrollbar,relative)
 	end
 end
 
-local allowedClickAction = { none=1, step=2, jump=3 }
+local allowedClickAction = { none=true, step=true, jump=true }
 function dgsScrollBarSetTroughClickAction(scrollbar,action)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetTroughClickAction",1,"dgs-dxscrollbar")) end
-	if not(allowedClickAction[action]) then error(dgsGenAsrt(action,"dgsScrollBarSetTroughClickAction",2,"number","1/2/3")) end
+	if not(allowedClickAction[action]) then error(dgsGenAsrt(action,"dgsScrollBarSetTroughClickAction",2,"string","'none'/'step'/'jump'")) end
 	return dgsSetData(scrollbar,"troughClickAction",action)
 end
 
 function dgsScrollBarGetTroughClickAction(scb)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarGetTroughClickAction",1,"dgs-dxscrollbar")) end
 	return dgsElementData[scrollbar].troughClickAction or "none"
+end
+
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxscrollbar"] = function(dgsEle,isWheelDown)
+	dgsSetData(dgsEle,"moveType","slow")
+	scrollScrollBar(dgsEle,isWheelDown)
 end
 
 ----------------------------------------------------------------
@@ -514,6 +522,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 				preEnterPos = (myRlt-arrowWidth-cursorRange/2)/csRange
 			end
 		end
+		MouseData.scbEnterDataDynamic = preEnterData
 		if not MouseData.scbClickData then
 			MouseData.scbEnterData = preEnterData
 			MouseData.scbEnterRltPos = preEnterPos

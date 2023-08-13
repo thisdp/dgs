@@ -427,6 +427,25 @@ function dgsScrollPaneGetScrollBarState(scrollpane)
 end
 
 ----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxscrollpane"] = function(dgsEle,isWheelDown)
+	local eleData = dgsElementData[dgsEle]
+	local scrollbar
+	local scrollbar1,scrollbar2 = dgsElementData[dgsEle].scrollbars[1],dgsElementData[dgsEle].scrollbars[2]
+	local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+	if visibleScb1 then
+		scrollbar = scrollbar1
+	elseif visibleScb2 and not visibleScb1 then
+		scrollbar = scrollbar2
+	end
+	if scrollbar then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
+end
+
+----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxscrollpane"] = {
