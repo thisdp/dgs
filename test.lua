@@ -27,7 +27,7 @@ function randomLetter(len)
     end
     return rt
 end
-------------Full demo
+------------Full Demo OOP
 function createFullDemoOOP()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
 	DGSOOPFnc()
@@ -186,6 +186,7 @@ function createFullDemoOOP()
 				:setText(dgsImportOOPClass())
 				:setCaretPosition(10,20)
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
+				:setProperty("padding",{10,10})
 		end,
 		["Edit"] = function(parent)
 			--Normal
@@ -208,20 +209,20 @@ function createFullDemoOOP()
 			--dgsEditSetMasked (edit4, true)
 		end,
 		["GridList"] = function(parent)
-			--[[local colorA = {tocolor(255,0,0,255),tocolor(255,0,0,255),tocolor(255,0,0,255)}
-			local colorB = {tocolor(0,255,0,255),tocolor(0,255,0,255),tocolor(0,255,0,255)}
-			local colorC = {tocolor(0,0,255,255),tocolor(0,0,255,255),tocolor(0,0,255,255)}]]
+			local colorA1 = {tocolor(220,145,120,255),tocolor(255,140,50,255),tocolor(255,200,50,255)}
+			local colorA2 = {tocolor(220,145,120,200),tocolor(255,140,50,200),tocolor(255,200,50,200)}
+			local colorB1 = {tocolor(120,145,255,255),tocolor(50,140,255,255),tocolor(50,200,255,255)}
+			local colorB2 = {tocolor(120,145,255,200),tocolor(50,140,255,200),tocolor(50,200,255,200)}
 			local gridlist = parent
 				:dgsGridList(10,10,630,250,false)
 				:setMultiSelectionEnabled(true)
 				:setProperty("columnShadow",{1,1,tocolor(0,0,0,255),2})
 				:setProperty("rowTextSize",{1.2,1.2})
 				:setProperty("rowHeight",20)
-				--[[:setProperty("itemColorTemplate",{
-					{colorA,colorB,colorC},
-					{colorB,colorC,colorA},
-					{colorC,colorA,colorB},
-				})]]
+				:setProperty("itemColorTemplate",{
+					{colorA1,colorB1},
+					{colorA2,colorB2},
+				})
 				:setProperty("clip",true)
 				:setProperty("rowWordBreak",true)
 				:setProperty("rowShadow",{1,1,tocolor(0,0,0,255),2})
@@ -441,66 +442,9 @@ function createFullDemoOOP()
 	end)
 	demoUI.window.alpha = 1
 end
---createFullDemoOOP()
 
-function ProgressBarTest()
-	local pb= dgsCreateProgressBar(500,200,600,600,false)
-	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
-	dgsProgressBarSetStyle(pb,"ring-plain")
-	dgsSetProperty(pb,"isReverse",true)
-	dgsSetAlpha(pb,0.5)
-	local start = 0
-	addEventHandler("onClientRender",root,function()
-		dgsProgressBarSetProgress(pb,start)
-		start = start + 0.1
-	end)
-end
 
-function MemoTest()
-	local sW,sH = dgsGetScreenSize()
-	local memo = dgsCreateMemo(200,200,500,500,[[]],false)
-	--dgsSetFont(memo,"default-bold")
-	--dgsSetProperty(memo,"selectVisible",false)
-	dgsSetProperty(memo,"padding",{20,10})
-	--dgsMemoSetWordWrapState(memo,true)
-	--local x,y = dgsMemoGetTextBoundingBox(memo)
-	--dgsSetSize(memo,x,y)
-
-	dgsSetText(memo,[[
-	This is a dgs-dxmemo
-
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-
-	Test UTF8: 你好]])
-	dgsMemoSetCaretPosition(memo,10,20)
-	dgsSetProperty(memo,"shadow",{1,1,tocolor(0,0,0,255)})
-end
+------------Full Demo POP
 
 --[[
 local arabicUnicode = {{0x0600,0x06FF},{0x08A0,0x08FF},{0x0750,0x077F},{0xFB50,0xFDFF},{0xFE70,0xFEFF},{0x1EE00,0x1EEFF}}
@@ -747,13 +691,6 @@ function _3DImageTest()
 	dgsBringToFront(image1)
 end
 
-function ScrollBarTest()
-	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
-	--dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
-	--dgsSetProperty(scrollbar,"scrollArrow",false)
-	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
-end
-
 function ScalePaneTest()
 	local sp = dgsCreateScalePane(0,0,500,800,false,_,2000,1000)
 	dgsSetProperty(sp,"bgColor",tocolor(128,128,128,128))
@@ -979,7 +916,6 @@ end
 
 ---------------QRCode
 function QRCodeTest()
-	
 	local blurbox = dgsCreateBlurBox(sW/2,sH)
 	dgsSetProperty(blurbox,"updateScreenSource",true)
 	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
@@ -998,12 +934,10 @@ function QRCodeTest()
 	outputChatBox(dgsGetQRCodeLoaded(QRCode) and "Loaded" or "Loading")
 	addEventHandler("onDgsQRCodeLoad",QRCode,function()
 		outputChatBox(dgsGetQRCodeLoaded(source) and "Loaded" or "Loading")
-		
 		dxSetRenderTarget(rt,true)
 		dxDrawImage(0,0,128,128,QRCode)
 		dxSetRenderTarget()
 	end,false)
-	
 end
 
 ---------------Blur Box
@@ -1091,24 +1025,6 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler,false)
 end
 
---[[
-function clampIntoSuperEllipse(orgX,orgY,x,y,w,h,times)
-	local result = (math.abs((orgX-x)/w)^times+math.abs((orgY-y)/h)^times)^(1/times)
-	if result > 1 then
-		orgX = (orgX-x)/result+x
-		orgY = (orgY-y)/result+y
-	end
-	return orgX,orgY
-end
-
-e = dgsCreateImage(200,200,200,200,z,false)
-dgsAddMoveHandler(e,0,0,1,1)
-addEventHandler("onClientRender",root,function()
-	local x,y = dgsGetPosition(e,false)
-	local w,h = dgsGetSize(e,false)
-	local _x,_y = clampIntoSuperEllipse(x+w/2,y+h/2,sW/2,sH/2,600,300,4)
-	dgsSetPosition(e,_x-w/2,_y-h/2,false)
-end)]]
 ---------------------StressTest
 function animStress()
 	for i=1,50 do
@@ -1251,12 +1167,9 @@ function SVGTest()
 	setClipboard(dgsSVGGetRawDocument(svg))
 end
 
-
 function SVGTest_OOP()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
-	print(err)
 	DGSOOPFnc()
-
 	svg = dgsSVG(500,500)
 	doc = svg:getDocument()
 	path = doc:path({
@@ -1275,11 +1188,6 @@ function SVGTest_OOP()
 		:radius(20,20)
 		:fill("#ff0")
 		:stroke({width=5,color="rgb(128,128,0)"})
-
-	--[[doc:text("123",100,100)
-		:fill("#00FF00")
-		:stroke({width=5,color=0xFF0000})]]
-
 	--setClipboard(dgsSVGGetRawDocument(doc.dgsElement))
 	img = dgsImage(200,200,500,500,svg,false)
 end
@@ -1358,6 +1266,7 @@ function MenuTest()
 		end
 	end)
 	addEventHandler("onDgsMenuSelect",menu,function(subMenu,uniqueID)
+		if uniqueID == -1 then return end
 		local command = dgsMenuGetItemCommand(source,uniqueID)
 		if command == "t.Day" then
 			setTime(12,0)
@@ -1389,12 +1298,11 @@ function MenuTest()
 	end,false)
 end
 
-
 end
 addEventHandler("onClientResourceStart",resourceRoot,executeTest)
 executeTest = nil
 
---[[
+
 setTimer(function()
 	local columns, rows = getPerformanceStats("Lua memory","","dgs")
 	outputChatBox("----------------")
@@ -1402,4 +1310,4 @@ setTimer(function()
 		outputChatBox(table.concat(row, "  "))
 	end
 		collectgarbage()
-end,1000,0)]]
+end,1000,0)
