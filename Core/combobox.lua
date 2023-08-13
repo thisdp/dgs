@@ -205,8 +205,7 @@ function dgsCreateComboBox(...)
 	dgsSetVisible(box,false)
 	dgsAddEventHandler("onDgsElementScroll",scrollbar,"checkComboBoxScrollBar",false)
 	dgsAddEventHandler("onDgsComboBoxStateChange",combobox,"dgsComboBoxCheckState",false)
-	dgsAddEventHandler("onDgsBlur",box,"closeComboBoxWhenBoxBlur",false)
-	dgsAddEventHandler("onDgsBlur",scrollbar,"closeComboBoxWhenScrollBarBlur",false)
+	dgsAddEventHandler("onDgsBlur",combobox,"closeComboBoxWhenBlur",false)
 	dgsAddEventHandler("onDgsSizeChange",combobox,"updateBoxSizeWhenComboBoxResize",false)
 	dgsAddEventHandler("onDgsSizeChange",box,"updateBoxContentWhenBoxResize",false)
 	dgsElementData[combobox].scrollbar = scrollbar
@@ -263,20 +262,8 @@ function dgsComboBoxCheckState(state)
 	end
 end
 
-function closeComboBoxWhenBoxBlur(nextFocused)
-	local combobox = dgsElementData[source].myCombo
-	local scb = dgsElementData[combobox].scrollbar
-	if nextFocused ~= combobox and nextFocused ~= scb then
-		dgsComboBoxSetState(combobox,false)
-	end
-end
-
-function closeComboBoxWhenScrollBarBlur(nextFocused)
-	local combobox = dgsElementData[source].myCombo
-	local box = dgsElementData[combobox].myBox
-	if nextFocused ~= combobox and nextFocused ~= box then
-		dgsComboBoxSetState(combobox,false)
-	end
+function closeComboBoxWhenBlur()
+	dgsComboBoxSetState(source,false)
 end
 
 function updateBoxSizeWhenComboBoxResize()
