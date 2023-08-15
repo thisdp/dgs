@@ -557,6 +557,52 @@ function dgsComboBoxRemoveItemImage(combobox,i)
 	return true
 end
 
+function dgsComboBoxSetItemBackGroundImage(combobox,i,imageDefault,imageHoving,imageSelected)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetItemBackGroundImage",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemBackGroundImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	i = i-i%1
+	iData[i][-1] = {imageDefault,imageHoving,imageSelected}
+	return true
+end
+
+function dgsComboBoxGetItemBackGroundImage(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemBackGroundImage",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemBackGroundImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	i = i-i%1
+	return iData[i][-1][1],iData[i][-1][2],iData[i][-1][3]
+end
+
+function dgsComboBoxSetItemBackGroundColor(combobox,i,colorDefault,colorHoving,colorSelected)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetItemBackGroundColor",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemBackGroundColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	i = i-i%1
+	iData[i][0] = {colorDefault,colorHoving,colorSelected}
+	return true
+end
+
+function dgsComboBoxGetItemBackGroundColor(combobox,i)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetItemBackGroundColor",1,"dgs-dxcombobox")) end
+	local iData = dgsElementData[combobox].itemData
+	local iLen = #iData
+	local iIsNum = type(i) == "number"
+	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
+	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemBackGroundColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
+	i = i-i%1
+	return iData[i][0][1],iData[i][0][2],iData[i][0][3]
+end
+
 function dgsComboBoxSetState(combobox,state)
 	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxSetState",1,"dgs-dxcombobox")) end
 	return dgsSetData(combobox,"listState",state and 1 or -1)

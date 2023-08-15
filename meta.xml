@@ -437,8 +437,15 @@
 	<export function="dgsComboBoxGetSelectedItem" type="client" />
 	<export function="dgsComboBoxSetItemColor" type="client" />
 	<export function="dgsComboBoxGetItemColor" type="client" />
+	<export function="dgsComboBoxSetItemImage" type="client" />
+	<export function="dgsComboBoxGetItemImage" type="client" />
+	<export function="dgsComboBoxRemoveItemImage" type="client" />
 	<export function="dgsComboBoxSetItemData" type="client" />
 	<export function="dgsComboBoxGetItemData" type="client" />
+	<export function="dgsComboBoxSetItemBackGroundImage" type="client" />
+	<export function="dgsComboBoxGetItemBackGroundImage" type="client" />
+	<export function="dgsComboBoxSetItemBackGroundColor" type="client" />
+	<export function="dgsComboBoxGetItemBackGroundColor" type="client" />
 	<export function="dgsComboBoxSetState" type="client" />
 	<export function="dgsComboBoxGetState" type="client" />
 	<export function="dgsComboBoxSetBoxHeight" type="client" />
@@ -456,9 +463,6 @@
 	<export function="dgsComboBoxGetViewCount" type="client" />
 	<export function="dgsComboBoxSetItemFont" type="client" />
 	<export function="dgsComboBoxGetItemFont" type="client" />
-	<export function="dgsComboBoxSetItemImage" type="client" />
-	<export function="dgsComboBoxGetItemImage" type="client" />
-	<export function="dgsComboBoxRemoveItemImage" type="client" />
 	<export function="dgsComboBoxSetSortFunction" type="client" />
 	<export function="dgsComboBoxSortSetAutoSortEnabled" type="client" />
 	<export function="dgsComboBoxSortGetAutoSortEnabled" type="client" />
