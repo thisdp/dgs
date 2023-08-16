@@ -1044,10 +1044,10 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetShaderValue(arrow,"_color",r,g,b,a*parentAlpha)
 		r,g,b,a = fromcolor(arrowOutSideColor,true)
 		dxSetShaderValue(arrow,"ocolor",r,g,b,a*parentAlpha)
-		dxDrawImage(x+w-buttonLen+arrowSizeX/2,y+(h-arrowSizeY)/2,arrowSizeX,arrowSizeY,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
+		dxDrawImage(x+w-(buttonLen+arrowSizeX)/2,y+(h-arrowSizeY)/2,arrowSizeX,arrowSizeY,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
 	else
 		local rotation = (90 * (eleData.listStateAnim)) - 90
-		dxDrawImage(x+w-buttonLen+arrowSizeX/2,y+(h-arrowSizeY)/2,arrowSizeX,arrowSizeY,arrow,rotation,0,0,applyColorAlpha(eleData.arrowColor,parentAlpha),isPostGUI,rndtgt)
+		dxDrawImage(x+w-(buttonLen+arrowSizeX)/2,y+(h-arrowSizeY)/2,arrowSizeX,arrowSizeY,arrow,rotation,0,0,applyColorAlpha(eleData.arrowColor,parentAlpha),isPostGUI,rndtgt)
 	end
 	if textBox and not captionEdit then
 		local item = eleData.itemData[eleData.select] or {}
