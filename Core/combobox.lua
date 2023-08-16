@@ -1212,7 +1212,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		dxSetRenderTarget(rndtgt)
 		if DataTab.bgRT then
-			__dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,white,isPostGUI,rndtgt)
+			__dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,white,isPostGUI)
 		end
 	end
 	return rndtgt,false,mx,my,0,0
