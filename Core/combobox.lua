@@ -3,6 +3,8 @@ dgsRegisterType("dgs-dxcombobox","dgsBasic","dgsType2D")
 dgsRegisterType("dgs-dxcombobox-Box","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxcombobox",{
 	arrow = 							{	PArg.Material	},
+	arrowSize = 						{	PArg.Number,PArg.Number, PArg.Number,PArg.Bool	},
+	arrowColor = 						{	PArg.Number	},
 	alignment = 						{	{ PArg.String, PArg.String }	},
 	autoHideAfterSelected = 			{	PArg.Bool	},
 	autoSort = 							{	PArg.Bool	},
@@ -163,6 +165,7 @@ function dgsCreateComboBox(...)
 		textOffset = {0,0,false},
 		textBoundingBoxIncludeArrow = false,
 		arrow = dgsCreateTextureFromStyle(using,res,style.arrow),
+		arrowSize = {1,1,true},
 		arrowColor = style.arrowColor,
 		arrowSettings = style.arrowSettings or {0.3,0.15,0.04},
 		arrowOutSideColor = style.arrowOutSideColor,
@@ -1016,7 +1019,7 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	end
 	local bgColor = eleData.bgColor and applyColorAlpha(eleData.bgColor,parentAlpha) or finalcolor
 	local bgImage = eleData.bgImage
-	dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[selectState],0,0,0,finalcolor,isPostGUI,rndtgt)
+	--dxDrawImage(x+w-buttonLen,y,buttonLen,h,imgs[selectState],0,0,0,finalcolor,isPostGUI,rndtgt)
 	local arrowColor = eleData.arrowColor
 	local arrowOutSideColor = eleData.arrowOutSideColor
 	local textBoxLen = w-buttonLen
@@ -1027,6 +1030,10 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local stat = eleData.listStateAnim+listState*0.08
 		eleData.listStateAnim = listState == -1 and mathMax(stat,listState) or mathMin(stat,listState)
 	end
+	local arrowSize = eleData.arrowSize
+	local arrowSizeX,arrowSizeY
+	local arrowSizeX = arrowSize[3] and arrowSize[1]*buttonLen or arrowSize[1]
+	local arrowSizeY = arrowSize[3] and arrowSize[2]*h or arrowSize[2]
 	if arrow and getElementType(arrow) == "shader" then
 		if eleData.arrowSettings then
 			dxSetShaderValue(arrow,"width",eleData.arrowSettings[1])
@@ -1037,10 +1044,10 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		dxSetShaderValue(arrow,"_color",r,g,b,a*parentAlpha)
 		r,g,b,a = fromcolor(arrowOutSideColor,true)
 		dxSetShaderValue(arrow,"ocolor",r,g,b,a*parentAlpha)
-		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
+		dxDrawImage(x+w-buttonLen+arrowSizeX/2,y+(h-arrowSizeY)/2,arrowSizeX,arrowSizeY,arrow,arrowRotation,0,0,white,isPostGUI,rndtgt)
 	else
 		local rotation = (90 * (eleData.listStateAnim)) - 90
-		dxDrawImage(x+textBoxLen,y,buttonLen,h,arrow,rotation,0,0,applyColorAlpha(eleData.arrowColor,parentAlpha),isPostGUI,rndtgt)
+		dxDrawImage(x+w-buttonLen+arrowSizeX/2,y+(h-arrowSizeY)/2,arrowSizeX,arrowSizeY,arrow,rotation,0,0,applyColorAlpha(eleData.arrowColor,parentAlpha),isPostGUI,rndtgt)
 	end
 	if textBox and not captionEdit then
 		local item = eleData.itemData[eleData.select] or {}
