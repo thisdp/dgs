@@ -98,6 +98,7 @@ function dgsCreateLabel(...)
 		dgsSetData(label,"text",tostring(text or ""))
 	end
 	calculateGuiPositionSize(label,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(label,sRes)
 	onDGSElementCreate(label,sRes)
 	return label
 end
@@ -115,7 +116,8 @@ end
 function dgsLabelGetColor(label,notSplit)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetColor",1,"dgs-dxlabel")) end
 	local textColor = dgsElementData[label].textColor
-	return notSplit and textColor or fromcolor(textColor)
+	if notSplit then return textColor end
+	return fromcolor(textColor)
 end
 
 function dgsLabelSetHorizontalAlign(label,align,wordbreak)

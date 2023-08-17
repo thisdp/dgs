@@ -58,6 +58,7 @@ events = {
 "onDgsSelectorSelect",
 "onDgsGridListSelect",
 "onDgsGridListHover",
+"onDgsMenuSelect",
 "onDgsMenuHover",
 "onDgsMouseHover",
 "onDgsGridListItemDoubleClick",
@@ -1127,6 +1128,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 						end
 					end
 				end
+				dxSetShaderValue(image,"UV",0,0,1,1)	--Reset UV
 			else
 				if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
 					if debugMode then

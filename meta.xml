@@ -437,8 +437,15 @@
 	<export function="dgsComboBoxGetSelectedItem" type="client" />
 	<export function="dgsComboBoxSetItemColor" type="client" />
 	<export function="dgsComboBoxGetItemColor" type="client" />
+	<export function="dgsComboBoxSetItemImage" type="client" />
+	<export function="dgsComboBoxGetItemImage" type="client" />
+	<export function="dgsComboBoxRemoveItemImage" type="client" />
 	<export function="dgsComboBoxSetItemData" type="client" />
 	<export function="dgsComboBoxGetItemData" type="client" />
+	<export function="dgsComboBoxSetItemBackGroundImage" type="client" />
+	<export function="dgsComboBoxGetItemBackGroundImage" type="client" />
+	<export function="dgsComboBoxSetItemBackGroundColor" type="client" />
+	<export function="dgsComboBoxGetItemBackGroundColor" type="client" />
 	<export function="dgsComboBoxSetState" type="client" />
 	<export function="dgsComboBoxGetState" type="client" />
 	<export function="dgsComboBoxSetBoxHeight" type="client" />
@@ -456,9 +463,6 @@
 	<export function="dgsComboBoxGetViewCount" type="client" />
 	<export function="dgsComboBoxSetItemFont" type="client" />
 	<export function="dgsComboBoxGetItemFont" type="client" />
-	<export function="dgsComboBoxSetItemImage" type="client" />
-	<export function="dgsComboBoxGetItemImage" type="client" />
-	<export function="dgsComboBoxRemoveItemImage" type="client" />
 	<export function="dgsComboBoxSetSortFunction" type="client" />
 	<export function="dgsComboBoxSortSetAutoSortEnabled" type="client" />
 	<export function="dgsComboBoxSortGetAutoSortEnabled" type="client" />
@@ -544,26 +548,20 @@
 	<export function="dgsMemoGetMaxLength" type="client" />
 	<export function="dgsMemoSetMaxLength" type="client" />
 
-	<export function="dgsCreateMediaBrowser" type="client" />
-	<export function="dgsMediaLoadMedia" type="client" />
-	<export function="dgsMediaGetMediaPath" type="client" />
-	<export function="dgsMediaClearMedia" type="client" />
-	<export function="dgsMediaIsStreamMedia" type="client" />
-	<export function="dgsMediaPlay" type="client" />
-	<export function="dgsMediaPause" type="client" />
-	<export function="dgsMediaStop" type="client" />
-	<export function="dgsMediaSetSize" type="client" />
-	<export function="dgsMediaSetSpeed" type="client" />
-	<export function="dgsMediaGetSpeed" type="client" />
-	<export function="dgsMediaSetFilled" type="client" />
-	<export function="dgsMediaGetFilled" type="client" />
-	<export function="dgsMediaSetFullScreen" type="client" />
-	<export function="dgsMediaGetFullScreen" type="client" />
-	<export function="dgsMediaGetDuration" type="client" />
-	<export function="dgsMediaGetCurrentPosition" type="client" />
-	<export function="dgsMediaSetCurrentPosition" type="client" />
-	<export function="dgsMediaGetLooped" type="client" />
-	<export function="dgsMediaSetLooped" type="client" />
+	<export function="dgsCreateMenu" type="client" />
+	<export function="dgsMenuShow" type="client" />
+	<export function="dgsMenuHide" type="client" />
+	<export function="dgsMenuAddItem" type="client" />
+	<export function="dgsMenuSetItemCommand" type="client" />
+	<export function="dgsMenuGetItemCommand" type="client" />
+	<export function="dgsMenuSetItemText" type="client" />
+	<export function="dgsMenuGetItemText" type="client" />
+	<export function="dgsMenuSetItemTextSize" type="client" />
+	<export function="dgsMenuGetItemTextSize" type="client" />
+	<export function="dgsMenuSetItemColor" type="client" />
+	<export function="dgsMenuGetItemColor" type="client" />
+	<export function="dgsMenuAddSeparator" type="client" />
+	<export function="dgsMenuRemoveItem" type="client" />
 
 	<export function="dgsCreateImage" type="client" />
 	<export function="dgsImageSetImage" type="client" />
@@ -638,6 +636,8 @@
 	<export function="dgsScrollBarGetTroughWidth" type="client" />
 	<export function="dgsScrollBarSetArrowSize" type="client" />
 	<export function="dgsScrollBarGetArrowSize" type="client" />
+	<export function="dgsScrollBarSetTroughClickAction" type="client" />
+	<export function="dgsScrollBarGetTroughClickAction" type="client" />
 
 	<export function="dgsCreateSelector" type="client" />
 	<export function="dgsSelectorAddItem" type="client" />
@@ -854,6 +854,27 @@
 	<export function="dgsMaskSetTexture" type="client" />
 	<export function="dgsMaskCenterTexturePosition" type="client" />
 	<export function="dgsMaskAdaptTextureSize" type="client" />
+
+	<export function="dgsCreateMediaBrowser" type="client" />
+	<export function="dgsMediaLoadMedia" type="client" />
+	<export function="dgsMediaGetMediaPath" type="client" />
+	<export function="dgsMediaClearMedia" type="client" />
+	<export function="dgsMediaIsStreamMedia" type="client" />
+	<export function="dgsMediaPlay" type="client" />
+	<export function="dgsMediaPause" type="client" />
+	<export function="dgsMediaStop" type="client" />
+	<export function="dgsMediaSetSize" type="client" />
+	<export function="dgsMediaSetSpeed" type="client" />
+	<export function="dgsMediaGetSpeed" type="client" />
+	<export function="dgsMediaSetFilled" type="client" />
+	<export function="dgsMediaGetFilled" type="client" />
+	<export function="dgsMediaSetFullScreen" type="client" />
+	<export function="dgsMediaGetFullScreen" type="client" />
+	<export function="dgsMediaGetDuration" type="client" />
+	<export function="dgsMediaGetCurrentPosition" type="client" />
+	<export function="dgsMediaSetCurrentPosition" type="client" />
+	<export function="dgsMediaGetLooped" type="client" />
+	<export function="dgsMediaSetLooped" type="client" />
 
 	<export function="dgsCreateRemoteImage" type="client" />
 	<export function="dgsRemoteImageRequest" type="client" />

@@ -96,6 +96,7 @@ function dgsCreateScrollPane(...)
 	}
 	dgsSetParent(scrollpane,parent,true,true)
 	calculateGuiPositionSize(scrollpane,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(scrollpane,sRes)
 	local sx,sy = dgsElementData[scrollpane].absSize[1],dgsElementData[scrollpane].absSize[2]
 	x,y = dgsElementData[scrollpane].absPos[1],dgsElementData[scrollpane].absPos[2]
 	local titleOffset = 0
@@ -423,6 +424,25 @@ end
 function dgsScrollPaneGetScrollBarState(scrollpane)
 	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetScrollBarState",1,"dgs-dxscrollpane")) end
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
+end
+
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxscrollpane"] = function(dgsEle,isWheelDown)
+	local eleData = dgsElementData[dgsEle]
+	local scrollbar
+	local scrollbar1,scrollbar2 = dgsElementData[dgsEle].scrollbars[1],dgsElementData[dgsEle].scrollbars[2]
+	local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+	if visibleScb1 then
+		scrollbar = scrollbar1
+	elseif visibleScb2 and not visibleScb1 then
+		scrollbar = scrollbar2
+	end
+	if scrollbar then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
 end
 
 ----------------------------------------------------------------

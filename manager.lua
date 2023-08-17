@@ -41,6 +41,7 @@ dgsBackEndRenderer = {
 }
 --On Click Action
 dgsOnMouseClickAction = {}
+dgsOnMouseScrollAction = {}
 --Collider
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)
@@ -55,12 +56,12 @@ dgsOnVisibilityChange = {}
 dgsPluginTable = {}
 --Parent System
 BackEndTable = {}			--Store Back-end Render Element (If it has back-end renderer)
-BottomFatherTable = {}		--Store Bottom Father Element
-CenterFatherTable = {}		--Store Center Father Element (Default)
-TopFatherTable = {}			--Store Top Father Element
+BottomRootTable = {}		--Store Bottom Root Element
+CenterRootTable = {}		--Store Center Root Element (Default)
+TopRootTable = {}			--Store Top Root Element
 dgsWorld3DTable = {}
 dgsScreen3DTable = {}
-LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
+LayerCastTable = {center=CenterRootTable,top=TopRootTable,bottom=BottomRootTable}
 --
 --Element Data System
 dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
@@ -167,11 +168,11 @@ end
 
 function dgsGetElementsInLayer(layer)
 	if layer == true or layer:lower() == "bottom" then
-		return BottomFatherTable
+		return BottomRootTable
 	elseif layer:lower() == "top" then
-		return TopFatherTable
+		return TopRootTable
 	else
-		return CenterFatherTable
+		return CenterRootTable
 	end
 end
 
@@ -215,16 +216,16 @@ function dgsGetParent(dgsEle)
 	return dgsElementData[dgsEle] and dgsElementData[dgsEle].parent or false
 end
 
-function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
+function dgsSetParent(child,newParent,nocheckRoot,noUpdatePosSize)
 	if newParent == resourceRoot then newParent = nil end
 	if not(dgsIsType(child)) then error(dgsGenAsrt(child,"dgsSetParent",1,"dgs-dxelement")) end
 	if not(not dgsElementData[child] or not dgsElementData[child].attachTo) then error(dgsGenAsrt(child,"dgsSetParent",1,_,_,_,"attached dgs element can not have a parent")) end
 	if not dgsElementData[child] then dgsElementData[child] = {} end
 	local oldParent = dgsElementData[child].parent
-	local parentTable = isElement(oldParent) and dgsElementData[oldParent].children or CenterFatherTable
+	local parentTable = isElement(oldParent) and dgsElementData[oldParent].children or CenterRootTable
 	if isElement(newParent) then
 		if not dgsIsType(newParent) then return end
-		if not nocheckfather then
+		if not nocheckRoot then
 			local id = tableFind(parentTable,child)
 			if id then
 				tableRemove(parentTable,id)
@@ -240,7 +241,7 @@ function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
 			tableRemove(parentTable,id)
 		end
 		dgsElementData[child].parent = nil
-		tableInsert(CenterFatherTable,child)
+		tableInsert(CenterRootTable,child)
 		setElementParent(child,resourceRoot)
 	end
 	---Update Position and Size
@@ -259,19 +260,6 @@ function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
 		end
 	end
 	return true
-end
-
-function blurEditMemo(dgsEle)
-	local dgsType = dgsGetType(dgsEle or MouseData.focused)
-	if dgsType == "dgs-dxedit" then
-		guiBlur(GlobalEdit)
-		if not dgsElementData[GlobalEdit] then dgsElementData[GlobalEdit] = {} end
-		dgsElementData[GlobalEdit].linkedDxEdit = nil
-	elseif dgsType == "dgs-dxmemo" then
-		guiBlur(GlobalMemo)
-		if not dgsElementData[GlobalMemo] then dgsElementData[GlobalMemo] = {} end
-		dgsElementData[GlobalMemo].linkedDxMemo = nil
-	end
 end
 
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
@@ -566,13 +554,6 @@ dgsOnPropertyChange = {
 		end,
 	},
 }
---------------Edit/Memo Blur Check
-function GlobalEditMemoBlurCheck()
-	local dxChild = source == GlobalEdit and dgsElementData[source].linkedDxEdit or dgsElementData[source].linkedDxMemo
-	if isElement(dxChild) and MouseData.focused == dxChild then
-		dgsBlur(dxChild,true)
-	end
-end
 
 --[[
 {}: table with item checked
@@ -963,9 +944,9 @@ function DGSI_SaveData()
 	setElementData(root,"DGSI_ElementKeeper",dgsElementKeeper,false)
 	--Layer Data
 	setElementData(root,"DGSI_LayerData",{
-		bottom=BottomFatherTable,
-		center=CenterFatherTable,
-		top=TopFatherTable,
+		bottom=BottomRootTable,
+		center=CenterRootTable,
+		top=TopRootTable,
 		world3d=dgsWorld3DTable,
 		screen3d=dgsScreen3DTable,
 	},false)
@@ -1094,22 +1075,22 @@ function DGSI_ReadData()
 		removeElementData(root,"DGSI_ElementKeeper")
 		--Layer Data
 		local layerData = getElementData(root,"DGSI_LayerData") or {}
-		local _BottomFatherTable = layerData.bottom
-		local _CenterFatherTable = layerData.center
-		local _TopFatherTable = layerData.top
-		for index,dgsElement in pairs(_BottomFatherTable) do
-			if not isElement(dgsElement) then _BottomFatherTable[index] = nil end
+		local _BottomRootTable = layerData.bottom
+		local _CenterRootTable = layerData.center
+		local _TopRootTable = layerData.top
+		for index,dgsElement in pairs(_BottomRootTable) do
+			if not isElement(dgsElement) then _BottomRootTable[index] = nil end
 		end
-		for index,dgsElement in pairs(_CenterFatherTable) do
-			if not isElement(dgsElement) then _CenterFatherTable[index] = nil end
+		for index,dgsElement in pairs(_CenterRootTable) do
+			if not isElement(dgsElement) then _CenterRootTable[index] = nil end
 		end
-		for index,dgsElement in pairs(_TopFatherTable) do
-			if not isElement(dgsElement) then _TopFatherTable[index] = nil end
+		for index,dgsElement in pairs(_TopRootTable) do
+			if not isElement(dgsElement) then _TopRootTable[index] = nil end
 		end
-		BottomFatherTable = table.merger(BottomFatherTable,_BottomFatherTable)
-		CenterFatherTable = table.merger(CenterFatherTable,_CenterFatherTable)
-		TopFatherTable = table.merger(TopFatherTable,_TopFatherTable)
-		LayerCastTable = {bottom=BottomFatherTable,center=CenterFatherTable,top=TopFatherTable}
+		BottomRootTable = table.merger(BottomRootTable,_BottomRootTable)
+		CenterRootTable = table.merger(CenterRootTable,_CenterRootTable)
+		TopRootTable = table.merger(TopRootTable,_TopRootTable)
+		LayerCastTable = {bottom=BottomRootTable,center=CenterRootTable,top=TopRootTable}
 		local _dgsWorld3DTable = layerData.world3d
 		for index,dgsElement in pairs(_dgsWorld3DTable) do
 			if not isElement(dgsElement) then _dgsWorld3DTable[index] = nil end

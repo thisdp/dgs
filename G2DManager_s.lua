@@ -436,7 +436,7 @@ function showProgress(progress)
 end
 
 G2DRunningData = {
-	File=false,
+	Files=false,
 	Timer= false
 }
 
@@ -458,7 +458,7 @@ function G2DStart()
 		G2D.Running = coroutine.create(function()
 			G2D.StartTick = getTickCount()
 			for i=1,#G2D.Files do
-				processFileConvertor(G2D.File[i])
+				processFileConvertor(G2D.Files[i])
 			end
 			outputDGSMessage("Process Done","G2D")
 			G2D.Process = false
