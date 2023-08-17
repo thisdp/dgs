@@ -233,6 +233,7 @@ function updateFile(remoteData,resInfo,args)
             for i=1,#updateInfo.deletedFiles do
                 path = updateInfo.deletedFiles[i]
                 if fileExists(path) then
+                    fileCopy(path,"deleted/"..path,true)
                     if fileDelete(path) then
                         outputDGSMessage("Deleted "..path,"Updater",2)
                     else
