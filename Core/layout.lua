@@ -164,13 +164,13 @@ function dgsCreateLayout(...)
 end
 
 function dgsLayoutChildrenCreateHandler()
+	if this == source then return end
 	dgsLayoutAddItem(this,source)
 end
 
 function dgsLayoutChildrenDestroyHandler()
-	if this ~= source then
-		dgsLayoutRemoveItem(this,source)
-	end
+	if this == source then return end
+	dgsLayoutRemoveItem(this,source)
 end
 
 function dgsLayoutUpdate(layout)
