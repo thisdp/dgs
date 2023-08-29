@@ -287,7 +287,7 @@ function handleMetaUpdate(remoteMetaContent)
     if DGSConfig.enableMetaBackup then
         fileCopy("meta.xml","backup/meta.xml",true)
     end
-    
+
     fileDelete("meta.xml")
     local newMeta = fileCreate("meta.xml")
     if newMeta then
@@ -344,8 +344,8 @@ function getMetaDeletedFiles(localMetaFiles, remoteMetaFiles, excludedFiles)
         end
         if not found then
             local excluded = false
-            for k=1,#exludedFiles do
-                if localMetaFile == exludedFiles[k] then
+            for k=1,#excludedFiles do
+                if localMetaFile == excludedFiles[k] then
                     excluded = true
                     break
                 end
