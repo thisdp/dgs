@@ -285,14 +285,17 @@ function handleMetaUpdate(remoteMetaContent)
     end
 
     if DGSConfig.enableMetaBackup then
-        if fileExists("backup/meta.xml") then
-            fileDelete("backup/meta.xml")
-        end
-        local backupFile = fileCreate("backup/meta.xml")
-        if backupFile then
-            fileWrite(backupFile,localMetaContent)
-            fileClose(backupFile)
-        end
+        fileCopy("meta.xml","backup/meta.xml",true)
+    end
+    
+    fileDelete("meta.xml")
+    local newMeta = fileCreate("meta.xml")
+    if newMeta then
+        fileWrite(newMeta,newMetaContent)
+        fileClose(newMeta)
+    else
+        outputDGSMessage("Failed to update meta.xml","Updater",1)
+        updateInfo.errorsCount = updateInfo.errorsCount+1
     end
 end
 
