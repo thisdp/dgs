@@ -1536,7 +1536,12 @@ function dgsCleanElement(source)
 		if eleData.attachedToGridList and isAlive then dgsDetachFromGridList(source) end
 		local child = dgsElementData[source].children or {}
 		for i=1,#child do
-			if isElement(child[1]) then destroyElement(child[1]) end
+			if child[1] == source then
+				outputDebugString("[DGS]Runtime ERROR: wrong relationship (child[1] = self)")	--To prevent some error and tell developer
+				table.remove(child,1)	--Just remove
+			else
+				if isElement(child[1]) then destroyElement(child[1]) end
+			end
 		end
 		local autoDestroyList = eleData.autoDestroyList
 		if autoDestroyList then

@@ -379,7 +379,8 @@ dgsOnPropertyChange["dgs-dxscrollbar"] = {
 				else
 					dgsElementData[dgsEle][key] = nValue
 				end
-				dgsTriggerEvent("onDgsElementScroll",dgsEle,dgsEle,dgsElementData[dgsEle][key],oldValue,nValue,oValue)
+				nValue,oValue = nValue/100*(scaler[2]-scaler[1])+scaler[1],oValue/100*(scaler[2]-scaler[1])+scaler[1]
+				dgsTriggerEvent("onDgsElementScroll",dgsEle,dgsEle,nValue,oValue,dgsElementData[dgsEle][key],oldValue)
 			else
 				dgsElementData[dgsEle][key] = oldValue
 			end
