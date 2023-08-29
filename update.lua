@@ -240,7 +240,7 @@ function updateFile(remoteData,resInfo,args)
                             outputDGSMessage("Failed to delete "..path,"Updater",1)
                             updateInfo.errorsCount = updateInfo.errorsCount+1
                         end
-                    else 
+                    else
                         outputDGSMessage("Failed to backup "..path,"Updater",1) -- we don't want to delete the file if we can't backup it
                         updateInfo.errorsCount = updateInfo.errorsCount+1
                     end
