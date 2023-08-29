@@ -266,11 +266,12 @@ function handleMetaUpdate(remoteMetaContent)
     local localMetaContent = fileRead(localMeta,fileGetSize(localMeta))
     fileClose(localMeta)
 
-    local localMetaFiles,remoteMetaFiles = getMetaFiles(localMetaContent),getMetaFiles(remoteMetaContent)
-    updateInfo.deletedFiles = getMetaDeletedFiles(localMetaFiles,remoteMetaFiles) -- TODO custom plugins files should be excluded
+	local customPlugins,remoteCustomPlugins = getCustomPluginsFromMeta(localMetaContent),getCustomPluginsFromMeta(remoteMetaContent)
+    local localCustomPluginsFiles = getMetaFiles("<meta> "..customPlugins.." </meta>")
+    newMetaContent = remoteMetaContent:gsub(remoteCustomPlugins,customPlugins)
 
-    local customPlugins,remoteCustomPlugins = getCustomPluginsFromMeta(localMetaContent),getCustomPluginsFromMeta(remoteMetaContent)
-    newMetaContent = remoteMetaContent:gsub(remoteCustomPlugins,customPlugins) -- replace custom plugins with local ones
+    local localMetaFiles,remoteMetaFiles = getMetaFiles(localMetaContent,customPluginsFiles),getMetaFiles(remoteMetaContent)
+    updateInfo.deletedFiles = getMetaDeletedFiles(localMetaFiles,remoteMetaFiles,localCustomPluginsFiles)
 
     if DGSConfig.enableStyleMetaBackup then
         if fileExists("backup/customPlugins.xml") then
@@ -327,20 +328,28 @@ function getMetaFiles(xml)
     end
 end
 
-function getMetaDeletedFiles(localMetaFiles,remoteMetaFiles)
+function getMetaDeletedFiles(localMetaFiles, remoteMetaFiles, excludedFiles)
     local deletedFiles = {}
     for i=1,#localMetaFiles do
         local localMetaFile = localMetaFiles[i]
-        local found
+        local found = false
         for j=1,#remoteMetaFiles do
-            local remoteMetaFile = remoteMetaFiles[j]
-            if localMetaFile == remoteMetaFile then
+            if localMetaFile == remoteMetaFiles[j] then
                 found = true
                 break
             end
         end
         if not found then
-            table.insert(deletedFiles,localMetaFile)
+            local excluded = false
+            for k=1,#exludedFiles do
+                if localMetaFile == exludedFiles[k] then
+                    excluded = true
+                    break
+                end
+            end
+            if not excluded then
+                table.insert(deletedFiles,localMetaFile)
+            end
         end
     end
     return deletedFiles
