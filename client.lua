@@ -41,7 +41,13 @@ local _getElementID = getElementID
 local getElementID = function(ele) return isElement(ele) and _getElementID(ele) or tostring(ele) end
 ----
 self,renderArguments = false,{}
-
+----
+if not getColorFilter then	--For old MTA version
+	function getColorFilter()
+		return 255,255,255,255,127,255,255,127
+	end
+end
+----
 function dgsGetRenderSetting(name) return dgsRenderSetting[name] end
 
 function dgsSetRenderSetting(name,value)
@@ -139,12 +145,12 @@ addEventHandler("onClientRestore",root,function()
 	dgsRenderInfo.RTRestoreNeed = true	--RT is not working when minimized, force to restore the draw result is needed.
 end)
 
-cameraPos = {}
+cameraPos = {0,0,0}
+colorFilter = {127,127,127}
 function dgsCoreRender()
 	dgsRenderInfo.frames = dgsRenderInfo.frames+1
 	dgsRenderInfo.frameStartScreen = getTickCount()
 	dgsRenderInfo.rendering = 0
-	--dgsTriggerEvent("onDgsPreRender",resourceRoot)
 	local frameStart3DOnScreen,frameEnd3DOnScreen = 0,0
 	MouseData.cursorPos3D[0] = false
 	local mx,my
@@ -684,6 +690,8 @@ function dgsCore3DRender()	--This renderer will only be attached to onClientPreR
 	local rendering3D = 0
 	if #dgsWorld3DTable ~= 0 then
 		cameraPos[1],cameraPos[2],cameraPos[3] = getCameraMatrix()
+		local aR,aG,aB,aA,bR,bG,bB,bA = getColorFilter(false)							--Get current color filter
+		colorFilter[1],colorFilter[2],colorFilter[3] = 127/255+(aR*aA+bR*bA)/65535*0.5, 127/255+(aG*aA+bG*bA)/65535*0.5, 127/255+(aB*aA+bB*bA)/65535*0.5	--Calculate the result color of color filter
 		local dimension = getElementDimension(localPlayer)
 		local interior = getCameraInterior()
 		local preBlendMode = dxGetBlendMode()
