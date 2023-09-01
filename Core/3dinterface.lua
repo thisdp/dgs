@@ -72,6 +72,7 @@ function dgsCreate3DInterface(...)
 		hit = {},
 		renderer = renderer,
 		doublesided = true,
+		enableColorFilter = false,
 	}
 	dgsAttachToAutoDestroy(renderer,interface,-2)
 	dgsApplyGeneralProperties(interface,sRes)
@@ -518,8 +519,12 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 					fx,fy,fz = fx-x,fy-y,fz-z
 				end
 				if eleData.mainRT then
-					dxSetShaderValue(eleData.renderer,"colorFilter",colorFilter)
-					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.renderer,w,h,applyColorAlpha(eleData.color,eleData.alpha*addalp),roll)
+					if eleData.enableColorFilter then
+						dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,applyColorAlpha(eleData.color,eleData.alpha*addalp),roll)
+					else
+						dxSetShaderValue(eleData.renderer,"colorFilter",colorFilter)
+						dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.renderer,w,h,applyColorAlpha(eleData.color,eleData.alpha*addalp),roll)
+					end
 				end
 				return true
 			end
