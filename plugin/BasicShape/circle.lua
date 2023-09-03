@@ -125,9 +125,6 @@ end
 function dgsCircleSetAngle(circle,angle)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetAngle",1,"plugin dgs-dxcircle")) end
 	if not(type(angle) == "number") then error(dgsGenAsrt(angle,"dgsCircleSetAngle",2,"number")) end
-	if angle < 0 then
-		angle = angle+360
-	end
 	angle = mathClamp(angle,0,360)
 	dxSetShaderValue(circle,"angle",angle)
 	return dgsSetData(circle,"angle",angle)
