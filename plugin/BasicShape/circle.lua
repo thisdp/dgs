@@ -123,23 +123,23 @@ end
 function dgsCircleSetAngle(circle,angle)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetAngle",1,"plugin dgs-dxcircle")) end
 	if not(type(angle) == "number") then error(dgsGenAsrt(angle,"dgsCircleSetAngle",2,"number")) end
-	dxSetShaderValue(circle,"angle",angle/180*math.pi)
-	return dgsSetData(circle,"angle",angle/180*math.pi)
+	dxSetShaderValue(circle,"angle",angle)
+	return dgsSetData(circle,"angle",angle)
 end
 
 function dgsCircleGetAngle(circle)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetAngle",1,"plugin dgs-dxcircle")) end
-	return dgsElementData[circle].angle*180/math.pi
+	return dgsElementData[circle].angle
 end
 
 function dgsCircleSetRotation(circle,angle)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetRotation",1,"plugin dgs-dxcircle")) end
 	if not(type(angle) == "number") then error(dgsGenAsrt(angle,"dgsCircleSetRotation",2,"number")) end
-	dxSetShaderValue(circle,"rotation",angle/180*math.pi)
-	return dgsSetData(circle,"rotation",angle/180*math.pi)
+	dxSetShaderValue(circle,"rotation",angle)
+	return dgsSetData(circle,"rotation",angle)
 end
 
 function dgsCircleGetAngle(circle)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetAngle",1,"plugin dgs-dxcircle")) end
-	return dgsElementData[circle].rotation*180/math.pi
+	return dgsElementData[circle].rotation
 end

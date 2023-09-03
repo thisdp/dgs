@@ -2,7 +2,7 @@
 #define PI2 PI*2
 float4 color = float4(1,1,1,1);
 float borderSoft = 0.01;
-float angle = PI2;
+float angle = 360;
 float outsideRadius = 0.9;
 float insideRadius = 0.2;
 float textureRot = 0;
@@ -42,8 +42,8 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	if(angle_p>PI2) angle_p -= PI2;
 	if(angle_p<0) angle_p += PI2;
 	float2 P = float2(xDistance,yDistance);
-	float ang = angle;
-	if(!direction) ang = PI2-angle;
+	float ang = angle/180.0*PI;
+	if(!direction) ang = PI2-angle/180.0*PI;
 	float2 Q = float2(cos(ang),sin(ang));
 	float2 N = float2(-Q.y,Q.x)*nBorderSoft;
 	float oRadius = 1-outsideRadius;
