@@ -915,6 +915,8 @@
 	<export function="dgsCircleGetDirection" type="client" />
 	<export function="dgsCircleSetAngle" type="client" />
 	<export function="dgsCircleGetAngle" type="client" />
+	<export function="dgsCircleSetRotation" type="client" />
+	<export function="dgsCircleSetRotation" type="client" />
 	<export function="dgsCircleSetTextureRotation" type="client" />
 	<export function="dgsCircleGetTextureRotation" type="client" />
 	

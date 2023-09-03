@@ -6,6 +6,7 @@ float angle = PI2;
 float outsideRadius = 0.9;
 float insideRadius = 0.2;
 float textureRot = 0;
+float rotation = 0;
 float2 textureRotCenter = float2(0.5,0.5);
 texture sourceTexture;
 bool direction = true; //anticlockwise
@@ -22,6 +23,12 @@ SamplerState tSampler{
 
 float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	float2 tempTex = (tex*UV.zw+UV.xy)%1;
+	
+	float thetaCosTex = cos(-rotation/180.0*PI);
+	float thetaSinTex = sin(-rotation/180.0*PI);
+	float2x2 rotTex = float4(thetaCosTex,-thetaSinTex,thetaSinTex,thetaCosTex);
+	tempTex = mul(tempTex-0.5,rotTex)+0.5;
+
 	float thetaCos = cos(-textureRot/180.0*PI);
 	float thetaSin = sin(-textureRot/180.0*PI);
 	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
@@ -84,7 +91,8 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		if(a >= 0 && dis1 < nBorderSoft && _a>=0) alpha = max(alpha,clamp(dis1/nBorderSoft,0,1));
 		if(b >= 0 && dis2 < nBorderSoft && _b<=0) alpha = max(alpha,clamp(dis2/nBorderSoft,0,1));
 	}
-	alpha *= clamp((1-distance(tempTex,0.5)-oRadius)/nBorderSoft,0,1)*clamp((distance(tempTex,0.5)-insideRadius)/nBorderSoft,0,1);
+	float centerDistance = distance(tempTex,0.5);
+	alpha *= clamp((1-centerDistance-oRadius)/nBorderSoft+0.5,0,1)*clamp((centerDistance-insideRadius)/nBorderSoft+0.5,0,1);
 	result.a *= alpha;
 	return result;
 }
