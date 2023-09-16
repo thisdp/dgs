@@ -397,7 +397,7 @@ function dgsEditCheckPreSwitch()
 	if not wasEventCancelled() then
 		if not dgsElementData[source].enableTabSwitch then return end
 		local parent = dgsElementData[source].parent
-		local theTable = isElement(parent) and dgsElementData[parent].children or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or CenterFatherTable)
+		local theTable = isElement(parent) and dgsElementData[parent].children or (dgsElementData[source].alwaysOnBottom and BottomRootTable or CenterRootTable)
 		local id = dgsElementData[source].editCounts
 		if id then
 			local Next,theFirst
