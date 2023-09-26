@@ -1997,7 +1997,7 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 	end
 	rData[r][c][glItem_text] = tostring(text or "")
 	if isSection then
-		dgsGridListSetItemAsSection(gridlist,r,c,true)
+		dgsGridListSetRowAsSection(gridlist,r,true)
 	end
 	if dgsElementData[gridlist].autoSort then
 		dgsElementData[gridlist].nextRenderSort = true
