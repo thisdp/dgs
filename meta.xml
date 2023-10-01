@@ -766,6 +766,8 @@
 	<export function="dgsGridListGetHorizontalScrollPosition" type="client" />
 	<export function="dgsGridListSetVerticalScrollPosition" type="client" />
 	<export function="dgsGridListGetVerticalScrollPosition" type="client" />
+	<export function="dgsGridListSetScrollBarState" type="client" />
+	<export function="dgsGridListGetScrollBarState" type="client" />
 	<export function="dgsGridListSetNavigationEnabled" type="client" />
 	<export function="dgsGridListGetNavigationEnabled" type="client" />
 	<export function="dgsAttachToGridList" type="client" />

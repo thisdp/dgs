@@ -67,6 +67,7 @@ function dgsCreateScalePane(...)
 		scrollBarThick = scbThick,
 		scrollBarAlignment = {"right","bottom"},
 		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
+		wheelScrollable = {true,true},
 		scrollBarLength = {},
 		horizontalMoveOffsetTemp = 0,
 		verticalMoveOffsetTemp = 0,
@@ -390,6 +391,8 @@ dgsOnMouseScrollAction["dgs-dxscalepane"] = function(dgsEle,isWheelDown)
 			scrollbar = scrollbar1
 		elseif visibleScb2 and not visibleScb1 then
 			scrollbar = scrollbar2
+		elseif not visibleScb1 and not visibleScb2 then
+			scrollbar = scrollbar1
 		end
 		if scrollbar then
 			dgsSetData(scrollbar,"moveType","slow")

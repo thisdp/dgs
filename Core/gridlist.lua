@@ -230,6 +230,7 @@ function dgsCreateGridList(...)
 		scrollBarThick = scbThick,
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
+		wheelScrollable = {true,true},
 		scrollFloor = {false,false},--move offset ->int or float
 		scrollBarAlignment = {"right","bottom"},
 		scrollSize = 60,			--60 pixels
@@ -457,6 +458,18 @@ function dgsGridListSetVerticalScrollPosition(gridlist,vertical)
 	if not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsGridListSetVerticalScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[gridlist].scrollbars
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
+end
+
+function dgsGridListSetScrollBarState(gridlist,vertical,horizontal)
+	if not dgsIsType(gridlist,"dgs-dxgridlist") then error(dgsGenAsrt(gridlist,"dgsGridListSetScrollBarState",1,"dgs-dxgridlist")) end
+	dgsSetData(gridlist,"scrollBarState",{vertical,horizontal},true)
+	dgsSetData(gridlist,"configNextFrame",true)
+	return true
+end
+
+function dgsGridListGetScrollBarState(gridlist)
+	if not dgsIsType(gridlist,"dgs-dxgridlist") then error(dgsGenAsrt(gridlist,"dgsGridListGetScrollBarState",1,"dgs-dxgridlist")) end
+	return dgsElementData[gridlist].scrollBarState[1],dgsElementData[gridlist].scrollBarState[2]
 end
 
 function dgsAttachToGridList(element,gridlist,r,c)
@@ -2662,6 +2675,8 @@ dgsOnMouseScrollAction["dgs-dxgridlist"] = function(dgsEle,isWheelDown)
 		scrollbar = scrollbar1
 	elseif visibleScb2 and not visibleScb1 then
 		scrollbar = scrollbar2
+	elseif not visibleScb1 and not visibleScb2 then
+		scrollbar = scrollbar1
 	end
 	if scrollbar then
 		dgsSetData(scrollbar,"moveType","slow")

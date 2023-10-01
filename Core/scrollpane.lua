@@ -7,7 +7,7 @@ dgsRegisterProperties("dgs-dxscrollpane",{
 	basePointOffset = 	{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	minViewSize = 		{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	scrollBarThick = 	{	PArg.Number	},
-	scrollBarState = 	{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
+	scrollBarState = 	{	{ PArg.Bool+PArg.String+PArg.Nil, PArg.Bool+PArg.String+PArg.Nil }	},
 	scrollBarLength = 	{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
 })
 --Dx Functions
@@ -78,6 +78,7 @@ function dgsCreateScrollPane(...)
 		scrollBarThick = scbThick,
 		scrollBarAlignment = {"right","bottom"},
 		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
+		wheelScrollable = {true,true},
 		scrollBarLength = {},
 		maxChildSize = {0,0},
 		horizontalMoveOffset = 0,
@@ -438,6 +439,8 @@ dgsOnMouseScrollAction["dgs-dxscrollpane"] = function(dgsEle,isWheelDown)
 		scrollbar = scrollbar1
 	elseif visibleScb2 and not visibleScb1 then
 		scrollbar = scrollbar2
+	elseif not visibleScb1 and not visibleScb2 then
+		scrollbar = scrollbar1
 	end
 	if scrollbar then
 		dgsSetData(scrollbar,"moveType","slow")
