@@ -881,7 +881,11 @@ function onClientKeyTriggered(button)
 			if autoCompleteShow.result then
 				dgsSetText(edit,autoCompleteShow.result)
 			else
-				dgsTriggerEvent("onDgsEditPreSwitch",edit)
+				if getKeyState("lshift") or getKeyState("lshift") then
+					dgsTriggerEvent("onDgsEditPreSwitch",edit,true)
+				else
+					dgsTriggerEvent("onDgsEditPreSwitch",edit,false)
+				end
 			end
 		elseif button == "a" and ctrl then
 			dgsSetData(edit,"caretPos",0)
