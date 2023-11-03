@@ -379,7 +379,7 @@ function dgsComboBoxAddItem(combobox,text)
 		[-7] = nil,										--single Data
 		[-6] = nil,										--built-in image {[1]=image,[2]=color,[3]=offsetX,[4]=offsetY,[5]=width,[6]=height,[7]=relative}
 		[-5] = dgsElementData[combobox].colorCoded,		--use color code
-		[-4] = dgsElementData[combobox].font,			--font
+		[-4] = nil,										--font
 		[-3] = dgsElementData[combobox].itemTextSize,	--text size of item
 		[-2] = dgsElementData[combobox].itemTextColor,	--text color of item
 		[-1] = dgsElementData[combobox].itemImage,		--background image of item
