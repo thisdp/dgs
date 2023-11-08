@@ -1298,10 +1298,37 @@ function MenuTest()
 	end,false)
 end
 
+function interpolateAlpha(startAlpha, finishAlpha, progress)
+    return startAlpha + (finishAlpha - startAlpha) * progress
+end
+
+--[[
+gridlist = dgsCreateGridList(500,50,600,600,false)
+dgsSetProperty(gridlist,"clip",false)
+dgsGridListAddColumn(gridlist,"test1",0.2,nil)
+dgsGridListAddColumn(gridlist,"test2",0.3)
+dgsGridListAddColumn(gridlist,"test3",0.6)
+local tick = getTickCount()
+dgsSetProperty(gridlist,"rowHeight",30)
+dgsSetProperty(gridlist,"rowTextSize",{1.3,1.3})
+for i=1,100 do
+	local row = dgsGridListAddRow(gridlist)
+	dgsGridListSetItemText(gridlist,row,1,i.."xx")
+	dgsGridListSetItemText(gridlist,row,2,i.."xx")
+	dgsGridListSetItemText(gridlist,row,3,i.."xx")
+end
+--dgsGridListSetScrollBarState(gridlist,false,false)
+]]
+
+
+local btn3 = dgsCreateButton(500,500,200,200,"Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive",false)
+dgsSetProperty(btn3,"textPadding",{20,20,false})
+dgsSetProperty(btn3,"wordBreak",true)
+
+
 end
 addEventHandler("onClientResourceStart",resourceRoot,executeTest)
 executeTest = nil
-
 --[[
 setTimer(function()
 	local columns, rows = getPerformanceStats("Lua memory","","dgs")

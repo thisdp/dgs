@@ -22,6 +22,7 @@ dgsRegisterProperties("dgs-dxbutton",{
 	textColor = 			{	PArg.Color, { PArg.Color, PArg.Color, PArg.Color }	},
 	textOffset = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	textSize = 				{	{ PArg.Number, PArg.Number }	},
+	textPadding = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	wordBreak = 			{	PArg.Bool	},
 })
 
@@ -114,6 +115,7 @@ function dgsCreateButton(...)
 		textColor = tonumber(textColor) or style.textColor,
 		textOffset = {0,0,false},
 		textSize = {textSizeX, textSizeY},
+		textPadding = {0,0,false},
 		wordBreak = nil,
 		renderBuffer = {
 			lastState = 0,
@@ -307,6 +309,11 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local textOffset = eleData.textOffset
 	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]
 	local txtoffsetsY = textOffset[3] and textOffset[2]*h or textOffset[2]
+
+	local textPadding = eleData.textPadding
+	local txtPaddingX = textPadding[3] and textPadding[1]*w or textPadding[1]
+	local txtPaddingY = textPadding[3] and textPadding[2]*h or textPadding[2]
+
 	local alignment = eleData.alignment
 	local subPixelPos = eleData.subPixelPositioning
 	local iconImage = eleData.iconImage
@@ -429,7 +436,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 			shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 		end
 
-		dgsDrawText(text,textX,textY,textX+w,textY+h,applyColorAlpha(textColor,parentAlpha),textSizeX,textSizeY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+		dgsDrawText(text,textX+txtPaddingX,textY+txtPaddingY,textX+w-txtPaddingX,textY+h-txtPaddingY,applyColorAlpha(textColor,parentAlpha),textSizeX,textSizeY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	end
 
 	return rndtgt,false,mx,my,0,0
