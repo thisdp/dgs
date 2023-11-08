@@ -1320,12 +1320,6 @@ end
 --dgsGridListSetScrollBarState(gridlist,false,false)
 ]]
 
-
-local btn3 = dgsCreateButton(500,500,200,200,"Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive Receive",false)
-dgsSetProperty(btn3,"textPadding",{20,20,false})
-dgsSetProperty(btn3,"wordBreak",true)
-
-
 end
 addEventHandler("onClientResourceStart",resourceRoot,executeTest)
 executeTest = nil
