@@ -322,6 +322,10 @@ function dgsSizeTo(...)
 	if not(type(dgsEle) == "table" or dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSizeTo",1,"dgs-dxelement/table")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsSizeTo",2,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsSizeTo",3,"number")) end
+	if relative then 
+		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsSizeTo",2,"float between [0, 1]")) end
+		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsSizeTo",3,"float between [0, 1]")) end
+	end
 	easing = easing or "Linear"
 	if not(dgsEasingFunctionExists(easing)) then error(dgsGenAsrt(easing,"dgsSizeTo",5,"easing function doesn't exist ("..tostring(easing)..")")) end
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsSizeTo",6,"number")) end

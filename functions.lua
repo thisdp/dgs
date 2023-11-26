@@ -189,6 +189,10 @@ function dgsSetSize(dgsEle,w,h,relative,...)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSize",1,"dgs-dxelement")) end
 	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
+	if relative then 
+		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsSetSize",2,"float between [0, 1]")) end
+		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsSetSize",3,"float between [0, 1]")) end
+	end
 	local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 	w,h = w or size[1], h or size[2]
 	local pivot = dgsElementData[dgsEle].sizePivot
