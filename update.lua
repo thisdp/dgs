@@ -167,6 +167,7 @@ function checkFiles()
 		end
 		until true
 	end
+	xmlUnloadFile(xml)
 	DownloadFiles()
 end
 

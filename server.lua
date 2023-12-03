@@ -35,7 +35,6 @@ DGSConfig = {
 	enableDebug 					= true,			-- Enable /debugdgs
 }
 
-
 function loadConfig()
 	if fileExists("config.txt") then
 		local file = fileOpen ("config.txt")
@@ -118,37 +117,6 @@ end
 addEventHandler("DGSI_RequestIP",root,getMyIP)
 
 setElementData(root,"DGS-ResName",getResourceName(getThisResource()))
-
-function hashFile(fName)
-	local f = fileOpen(fName)
-	local fSize = fileGetSize(f)
-	local fContent = fileRead(f,fSize)
-	fileClose(f)
-	return hash("sha256",fContent),fSize
-end
-
-function verifyFile()
-	local xml = xmlLoadFile("meta.xml")
-	local children = xmlNodeGetChildren(xml)
-	local DGSRecordedFiles = {}
-	for index,child in ipairs(children) do
-		local nodeName = xmlNodeGetName(child)
-		if nodeName == "file" then
-			local src = xmlNodeGetAttribute(child,"src")
-			DGSRecordedFiles[src] = {hashFile(src)}
-		end
-	end
-	setElementData(resourceRoot,"DGSI_FileInfo",DGSRecordedFiles)
-end
-verifyFile()
-
-addEvent("DGSI_AbnormalDetected",true)
-addEventHandler("DGSI_AbnormalDetected",root,function(fData)
-	local pName = getPlayerName(client)
-	for fName,_ in pairs(fData) do
-		outputDGSMessage("Abnormal Detected at '"..fName.."' of player '"..pName.."'","Security")
-	end
-end)
 
 addEventHandler("onElementDataChange",resourceRoot,
 function (key,old)

@@ -305,7 +305,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 		local relSizX,relSizY = w-(scbAlignmentV ~= "left" and scbThickV or 0),h-scbThickH
 		local rowShowRange = relSizY-columnHeight
 		if relSizX*columnHeight ~= 0 then
-			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
+			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist)
 			if columnRT ~= false then
 				dgsAttachToAutoDestroy(columnRT,gridlist,-1)
 			else
@@ -313,7 +313,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 			end
 		end
 		if relSizX*rowShowRange ~= 0 then
-			rowRT,err = dgsCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
+			rowRT,err = dgsCreateRenderTarget(relSizX,rowShowRange,true,gridlist)
 			if rowRT ~= false then
 				dgsAttachToAutoDestroy(rowRT,gridlist,-3)
 			else

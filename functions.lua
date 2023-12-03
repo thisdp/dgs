@@ -190,8 +190,8 @@ function dgsSetSize(dgsEle,w,h,relative,...)
 	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
 	if relative then 
-		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsSetSize",2,"float between [0, 1]")) end
-		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsSetSize",3,"float between [0, 1]")) end
+		if w and (w > 10 or w < -10) then error(dgsGenAsrt(w,"dgsSetSize",2,"float between [0, 1]")) end
+		if h and (h > 10 or h < -10) then error(dgsGenAsrt(h,"dgsSetSize",3,"float between [0, 1]")) end
 	end
 	local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 	w,h = w or size[1], h or size[2]
@@ -344,7 +344,6 @@ function dgsSetVisible(dgsEle,visible)
 		local eleType = dgsElementType[dgsEle]
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](dgsEle) end
 		if not visible and MouseData.focused == dgsEle then dgsBlur(dgsEle) end
-		dgsApplyVisibleInherited(dgsEle,visible and dgsElementData[dgsEle].visibleInherited)
 		return dgsSetData(dgsEle,"visible",visible)
 	end
 end
