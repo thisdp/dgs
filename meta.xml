@@ -18,6 +18,7 @@
 	<script src="Core/combobox.lua" type="client" />
 	<script src="Core/customRenderer.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
+	<script src="Core/effectview.lua" type="client" />
 	<script src="Core/detectarea.lua" type="client" />
 	<script src="Core/gridlist.lua" type="client" />
 	<script src="Core/image.lua" type="client" />
@@ -374,6 +375,9 @@
 	<export function="dgsCustomRendererSetRenderTargetSize" type="client" />
 	<export function="dgsCustomRendererGetRenderTargetSize" type="client" />
 	<export function="dgsCustomRendererGetRenderTarget" type="client" />
+
+	<export function="dgsCreateEffectView" type="client" />
+	<export function="dgsEffectViewSetEffectShader" type="client" />
 
 	<export function="dgsCreateScalePane" type="client" />
 	<export function="dgsScalePaneGetScrollBar" type="client" />

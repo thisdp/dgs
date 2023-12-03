@@ -1982,6 +1982,8 @@ function DGSSizeChange(source,oldSizeAbsx,oldSizeAbsy)
 			configComboBox(eleData.myCombo)
 		elseif typ == "dgs-dxmemo" then
 			dgsSetData(source,"configNextFrame",true)
+		elseif typ == "dgs-dxeffectview" then
+			configEffectView(source)
 		end
 		local parent = dgsGetParent(source)
 		if isElement(parent) then
