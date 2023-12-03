@@ -13,6 +13,7 @@ end
 function dgsCreateCircle(outsideRadius,insideRadius,angle,color,texture)
 	local circle = dxCreateShader(requestCircleShader())
 	if not circle then return false end
+	dxSetShaderValue(circle,"sourceTexture",DGSBuiltInTex.white_1x1)
 	dgsSetData(circle,"asPlugin","dgs-dxcircle")
 	dgsCircleSetColorOverwritten(circle,true)
 	dgsCircleSetRadius(circle,outsideRadius or 0.5,insideRadius or 0.2)
@@ -42,12 +43,10 @@ function dgsCircleSetTexture(circle,texture)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetTexture",1,"plugin dgs-dxcircle")) end
 	if isElement(texture) then
 		if not(isMaterial(texture) == "texture") then error(dgsGenAsrt(dgsCircleSetTexture,"dgsCreateMask",1,"texture")) end
-		dxSetShaderValue(circle,"textureLoad",true)
 		dxSetShaderValue(circle,"sourceTexture",texture)
 		dgsSetData(circle,"sourceTexture",texture)
 	else
-		dxSetShaderValue(circle,"textureLoad",false)
-		dxSetShaderValue(circle,"sourceTexture",0)
+		dxSetShaderValue(circle,"sourceTexture",DGSBuiltInTex.white_1x1)
 		dgsSetData(circle,"sourceTexture",nil)
 	end
 	return true
