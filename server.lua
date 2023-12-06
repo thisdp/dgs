@@ -98,6 +98,21 @@ function loadConfig()
 end
 loadConfig()
 
+local settingsPrefix = string.format("*%s.", getResourceName(resource))
+addEventHandler("onSettingChange", root,
+function (gsetting,_,jsonValue)
+	if string.sub(gsetting,1,#settingsPrefix) == settingsPrefix then
+		local setting = string.sub(gsetting,#settingsPrefix+1)
+		local value = fromJSON(jsonValue)
+		if setting == "CMD" then
+			setElementData(resourceRoot,"DGS-allowCMD",value == true or value == "true")
+		elseif setting == "debugging" then
+			setElementData(resourceRoot,"DGS-enableDebug",value == true or value == "true")
+		end
+	end
+end)
+
+
 -----------Remote Stuff
 addEvent("DGSI_RequestQRCode",true)
 addEvent("DGSI_RequestRemoteImage",true)
