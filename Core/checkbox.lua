@@ -151,6 +151,7 @@ function dgsCreateCheckBox(...)
 	dgsSetParent(cb,parent,true,true)
 	dgsAttachToTranslation(cb,resourceTranslation[sRes])
 	calculateGuiPositionSize(cb,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(cb,sRes)
 	if type(text) == "table" then
 		dgsElementData[cb]._translation_text = text
 		dgsSetData(cb,"text",text)
@@ -302,7 +303,6 @@ dgsOnPropertyChange["dgs-dxcheckbox"] = {
 dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local imageUnchecked,imageChecked,imageIndeterminate = eleData.imageUnchecked,eleData.imageChecked,eleData.imageIndeterminate
 	local colorUnchecked,colorChecked,colorIndeterminate = eleData.colorUnchecked,eleData.colorChecked,eleData.colorIndeterminate
-	local image,color
 	local _buttonSize = eleData.buttonSize
 	local buttonSizeX,buttonSizeY
 	if tonumber(_buttonSize[2]) then
@@ -312,6 +312,7 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		buttonSizeX = _buttonSize[2] and _buttonSize[1]*h or _buttonSize[1]
 		buttonSizeY = buttonSizeX
 	end
+	local image,color
 	if eleData.state == true then
 		image,color = imageChecked,colorChecked
 	elseif eleData.state == false then

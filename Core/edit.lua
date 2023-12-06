@@ -97,7 +97,12 @@ function dgsInitializeGlobalEdit()
 	if not isElement(GlobalEdit) then
 		GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
 		dgsSetData(GlobalEdit,"linkedDxEdit",nil)
-		addEventHandler("onClientGUIBlur",GlobalEdit,GlobalEditMemoBlurCheck,false)
+		addEventHandler("onClientGUIBlur",GlobalEdit,function()
+			local dgsEdit = dgsElementData[source].linkedDxEdit
+			if isElement(dgsEdit) and dgsIsFocused(dgsEdit) then
+				dgsBlur(dgsEdit)
+			end
+		end,false)
 		addEventHandler("onClientGUIAccepted",GlobalEdit,function()
 			local dgsEdit = dgsElementData[source].linkedDxEdit
 			if dgsGetType(dgsEdit) == "dgs-dxedit" then
@@ -245,11 +250,14 @@ function dgsCreateEdit(...)
 	editsCount = editsCount+1
 	dgsAttachToTranslation(edit,resourceTranslation[sRes])
 	calculateGuiPositionSize(edit,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(edit,sRes)
 	handleDxEditText(edit,text,false,true)
 	dgsEditSetCaretPosition(edit,utf8Len(text))
 	dgsAddEventHandler("onDgsTextChange",edit,"dgsEditCheckAutoComplete",false)
 	dgsAddEventHandler("onDgsMouseMultiClick",edit,"dgsEditCheckMultiClick",false)
 	dgsAddEventHandler("onDgsEditPreSwitch",edit,"dgsEditCheckPreSwitch",false)
+	dgsAddEventHandler("onDgsFocus",edit,"dgsEditFocus",false)
+	dgsAddEventHandler("onDgsBlur",edit,"dgsEditBlur",false)
 	onDGSElementCreate(edit,sRes)
 	dgsEditRecreateRenderTarget(edit,true)
 	return edit
@@ -273,6 +281,19 @@ function dgsEditRecreateRenderTarget(edit,lateAlloc)
 		dgsSetData(edit,"bgRT",bgRT)
 		dgsSetData(edit,"retrieveRT",nil)
 	end
+end
+
+function dgsEditFocus()
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.EditMemoCursor = true
+	guiFocus(GlobalEdit)
+	dgsElementData[GlobalEdit].linkedDxEdit = source
+end
+
+function dgsEditBlur()
+	guiBlur(GlobalEdit)
+	if not dgsElementData[GlobalEdit] then dgsElementData[GlobalEdit] = {} end
+	dgsElementData[GlobalEdit].linkedDxEdit = nil
 end
 
 function dgsEditCheckMultiClick(button,state,x,y,times)
@@ -372,36 +393,63 @@ function dgsEditCheckAutoComplete()
 	end
 end
 
-function dgsEditCheckPreSwitch()
+function dgsEditCheckPreSwitch(isGoPrevious)
 	if not wasEventCancelled() then
 		if not dgsElementData[source].enableTabSwitch then return end
-		local parent = dgsElementData[source].parent
-		local theTable = isElement(parent) and dgsElementData[parent].children or (dgsElementData[source].alwaysOnBottom and BottomFatherTable or CenterFatherTable)
 		local id = dgsElementData[source].editCounts
-		if id then
+		if not id then return end
+		local parent = dgsElementData[source].parent
+		local theTable = isElement(parent) and dgsElementData[parent].children or (dgsElementData[source].alwaysOnBottom and BottomRootTable or CenterRootTable)
+		local theResult
+		if isGoPrevious then
+			local Previous,theLast
+			for i=1,#theTable do while(true) do
+				local newEdit = theTable[i]
+				if dgsGetType(newEdit) ~= "dgs-dxedit" then break end	--First it is an edit
+				local eleData = dgsElementData[newEdit]
+				if not eleData.enabled then break end  --is enabled
+				if not eleData.visible then break end  --is visible
+				if eleData.readOnly then break end --is editable
+				if not eleData.enableTabSwitch then break end --is tab key switch enabled
+				local prevIndex = eleData.editCounts
+				if not prevIndex then break end --has index  
+				if id == prevIndex then break end	--not me
+				if prevIndex > id then
+					theLast = theLast and (dgsElementData[theLast].editCounts < prevIndex and newEdit or theLast) or newEdit
+				else
+					Previous = Previous and (dgsElementData[Previous].editCounts < prevIndex and newEdit or Previous) or newEdit
+				end
+				break
+			end end
+			theResult = Previous or theLast
+		else
 			local Next,theFirst
-			for i=1,#theTable do
-				local edit = theTable[i]
-				local eleData = dgsElementData[edit]
-				local editCounts = eleData.editCounts
-				if editCounts and eleData.enabled and eleData.visible and not eleData.readOnly then
-					if id ~= editCounts and dgsGetType(edit) == "dgs-dxedit" and eleData.enableTabSwitch then
-						if editCounts < id then
-							theFirst = theFirst and (dgsElementData[theFirst].editCounts > editCounts and edit or theFirst) or edit
-						else
-							Next = Next and (dgsElementData[Next].editCounts > editCounts and edit or Next) or edit
-						end
-					end
+			for i=1,#theTable do while(true) do
+				local newEdit = theTable[i]
+				if dgsGetType(newEdit) ~= "dgs-dxedit" then break end	--First it is an edit
+				local eleData = dgsElementData[newEdit]
+				if not eleData.enabled then break end  --is enabled
+				if not eleData.visible then break end  --is visible
+				if eleData.readOnly then break end --is editable
+				if not eleData.enableTabSwitch then break end --is tab key switch enabled
+				local nextIndex = eleData.editCounts
+				if not nextIndex then break end --has index  
+				if id == nextIndex then break end	--not me
+				if nextIndex < id then
+					theFirst = theFirst and (dgsElementData[theFirst].editCounts > nextIndex and newEdit or theFirst) or newEdit
+				else
+					Next = Next and (dgsElementData[Next].editCounts > nextIndex and newEdit or Next) or newEdit
 				end
+				break
+			end end
+			theResult = Next or theFirst
+		end
+		if theResult then
+			if dgsElementData[theResult].clearSwitchPos then
+				dgsEditSetCaretPosition(theResult,utf8Len(dgsElementData[theResult].text or ""))
 			end
-			local theResult = Next or theFirst
-			if theResult then
-				if dgsElementData[theResult].clearSwitchPos then
-					dgsEditSetCaretPosition(theResult,utf8Len(dgsElementData[theResult].text or ""))
-				end
-				dgsBringToFront(theResult)
-				dgsTriggerEvent("onDgsEditSwitched",theResult,source)
-			end
+			dgsBringToFront(theResult)
+			dgsTriggerEvent("onDgsEditSwitched",theResult,source)
 		end
 	end
 end

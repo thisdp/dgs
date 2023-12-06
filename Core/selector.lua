@@ -119,6 +119,7 @@ function dgsCreateSelector(...)
 	}
 	dgsSetParent(selector,parent,true,true)
 	calculateGuiPositionSize(selector,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(selector,sRes)
 	onDGSElementCreate(selector,sRes)
 	return selector
 end
@@ -391,10 +392,18 @@ function dgsSelectorRemoveItemImage(selector,i)
 	iData[i][9] = nil
 	return true
 end
-
 ----------------------------------------------------------------
---------------------------onClicked-----------------------------
+---------------------OnMouseScrollAction------------------------
 ----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxselector"] = function(dgsEle,isWheelDown)
+	if dgsElementData[dgsEle].enableScroll and MouseData.focused == dgsEle then
+		local itemData = dgsElementData[dgsEle].itemData
+		local currentItem = dgsElementData[dgsEle].select
+		local isReversed = dgsElementData[dgsEle].isReversed
+		local itemIndex = mathClamp(currentItem+(isWheelDown and 1 or -1)*(isReversed and -1 or 1),1,#itemData)
+		dgsSelectorSetSelectedItem(dgsEle,itemIndex-itemIndex%1)
+	end
+end
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------

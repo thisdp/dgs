@@ -27,7 +27,7 @@ function randomLetter(len)
     end
     return rt
 end
-------------Full demo
+------------Full Demo OOP
 function createFullDemoOOP()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
 	DGSOOPFnc()
@@ -47,7 +47,7 @@ function createFullDemoOOP()
 					:setProperty("image",rndRect)
 					:setProperty("colorTransitionPeriod",100)
 					
-			local iBtn = parent:dgsButton(10,80,120,60,"Button\nText\nColor",false)
+			local iBtn = parent:dgsButton(10,80,120,60,"Button\nIcon",false)
 				:setProperty("iconImage",rndRect)
 				:setProperty("iconOffset",{0,0,true})
 				:setProperty("iconRelative",false)
@@ -186,6 +186,7 @@ function createFullDemoOOP()
 				:setText(dgsImportOOPClass())
 				:setCaretPosition(10,20)
 				:setProperty("shadow",{1,1,tocolor(0,0,0,255)})
+				:setProperty("padding",{10,10})
 		end,
 		["Edit"] = function(parent)
 			--Normal
@@ -208,20 +209,20 @@ function createFullDemoOOP()
 			--dgsEditSetMasked (edit4, true)
 		end,
 		["GridList"] = function(parent)
-			--[[local colorA = {tocolor(255,0,0,255),tocolor(255,0,0,255),tocolor(255,0,0,255)}
-			local colorB = {tocolor(0,255,0,255),tocolor(0,255,0,255),tocolor(0,255,0,255)}
-			local colorC = {tocolor(0,0,255,255),tocolor(0,0,255,255),tocolor(0,0,255,255)}]]
+			local colorA1 = {tocolor(220,145,120,255),tocolor(255,140,50,255),tocolor(255,200,50,255)}
+			local colorA2 = {tocolor(220,145,120,200),tocolor(255,140,50,200),tocolor(255,200,50,200)}
+			local colorB1 = {tocolor(120,145,255,255),tocolor(50,140,255,255),tocolor(50,200,255,255)}
+			local colorB2 = {tocolor(120,145,255,200),tocolor(50,140,255,200),tocolor(50,200,255,200)}
 			local gridlist = parent
 				:dgsGridList(10,10,630,250,false)
 				:setMultiSelectionEnabled(true)
 				:setProperty("columnShadow",{1,1,tocolor(0,0,0,255),2})
 				:setProperty("rowTextSize",{1.2,1.2})
 				:setProperty("rowHeight",20)
-				--[[:setProperty("itemColorTemplate",{
-					{colorA,colorB,colorC},
-					{colorB,colorC,colorA},
-					{colorC,colorA,colorB},
-				})]]
+				:setProperty("itemColorTemplate",{
+					{colorA1,colorB1},
+					{colorA2,colorB2},
+				})
 				:setProperty("clip",true)
 				:setProperty("rowWordBreak",true)
 				:setProperty("rowShadow",{1,1,tocolor(0,0,0,255),2})
@@ -441,66 +442,9 @@ function createFullDemoOOP()
 	end)
 	demoUI.window.alpha = 1
 end
---createFullDemoOOP()
 
-function ProgressBarTest()
-	local pb= dgsCreateProgressBar(500,200,600,600,false)
-	dgsSetProperty(pb,"bgColor",tocolor(0,0,0,255))
-	dgsProgressBarSetStyle(pb,"ring-plain")
-	dgsSetProperty(pb,"isReverse",true)
-	dgsSetAlpha(pb,0.5)
-	local start = 0
-	addEventHandler("onClientRender",root,function()
-		dgsProgressBarSetProgress(pb,start)
-		start = start + 0.1
-	end)
-end
 
-function MemoTest()
-	local sW,sH = dgsGetScreenSize()
-	local memo = dgsCreateMemo(200,200,500,500,[[]],false)
-	--dgsSetFont(memo,"default-bold")
-	--dgsSetProperty(memo,"selectVisible",false)
-	dgsSetProperty(memo,"padding",{20,10})
-	--dgsMemoSetWordWrapState(memo,true)
-	--local x,y = dgsMemoGetTextBoundingBox(memo)
-	--dgsSetSize(memo,x,y)
-
-	dgsSetText(memo,[[
-	This is a dgs-dxmemo
-
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-	Thisdp's DirectX Graphical User Interface System, Thisdp's DirectX Graphical User Interface System
-
-	Test UTF8: 你好]])
-	dgsMemoSetCaretPosition(memo,10,20)
-	dgsSetProperty(memo,"shadow",{1,1,tocolor(0,0,0,255)})
-end
+------------Full Demo POP
 
 --[[
 local arabicUnicode = {{0x0600,0x06FF},{0x08A0,0x08FF},{0x0750,0x077F},{0xFB50,0xFDFF},{0xFE70,0xFEFF},{0x1EE00,0x1EEFF}}
@@ -607,17 +551,19 @@ function GridListTest()
 	dgsSetProperty(gridlist,"clip",false)
 	--dgsSetProperty(gridlist,"leading",10)
 	--dgsSetProperty(gridlist,"mode",true)
-	dgsGridListAddColumn(gridlist,"test1",0.2,nil,"center")
+	dgsGridListAddColumn(gridlist,"test1",0.2,nil)
 	dgsGridListAddColumn(gridlist,"test2",0.3)
-	--dgsGridListAddColumn(gridlist,"test3",0.6)
+	dgsGridListAddColumn(gridlist,"test3",0.6)
 	dgsSetProperty(gridlist,"leading",-4)
 	local tick = getTickCount()
 	dgsSetProperty(gridlist,"scrollBarThick",50)
 	dgsSetProperty(gridlist,"rowHeight",30)
 	dgsSetProperty(gridlist,"rowTextSize",{1.3,1.3})
-	for i=1,100 do
+	for i=1,10 do
 		local row = dgsGridListAddRow(gridlist)
 		dgsGridListSetItemText(gridlist,row,1,i.."xx")
+		dgsGridListSetItemText(gridlist,row,2,i.."xx")
+		dgsGridListSetItemText(gridlist,row,3,i.."xx")
 		--[[local window = dgsCreateGridList(0,1,400,198,false)
 		dgsGridListAddColumn(window,"t1",0.2)
 		dgsGridListAddColumn(window,"t2",0.6)
@@ -629,11 +575,11 @@ function GridListTest()
 		dgsAttachToGridList(window,gridlist,row,3)
 		dgsGridListSetItemText(gridlist,row,1,i.."xx")
 		dgsGridListSetItemText(gridlist,row,2,tostring(50-i).." Test DGS")]]
-		dgsGridListSetItemHoverable(gridlist,row,1,false)
-		dgsGridListSetItemHoverable(gridlist,row,2,false)
+		--dgsGridListSetItemHoverable(gridlist,row,1,false)
+		--dgsGridListSetItemHoverable(gridlist,row,2,false)
 	end
 	--dgsGridListAutoSizeColumn(gridlist,1,0,false,true)
-	dgsSetProperty(gridlist,"rowShowEntireOnly",true)
+	--dgsSetProperty(gridlist,"rowShowEntireOnly",true)
 	--[[dgsGridListSetItemAsSection(gridlist,1,1,true)
 	dgsGridListSetRowAsSection(gridlist,2,true)
 	dgsGridListSetItemAsSection(gridlist,2,1,false)]]
@@ -691,16 +637,9 @@ function PasteHandlerTest()
 end
 
 function _3DInterfaceAttachTest()
-	material1 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),1,0,0,_,0)
-	material2 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),1,1,0,_,0)
-	dgs3DInterfaceAttachToElement(material1,localPlayer,0,0,1)
-	dgs3DInterfaceSetRoll(material2,0)
-	dgsSetProperty(material1,"faceRelativeTo","world")
-	local window1 = dgsCreateWindow(0,0,600,600,"test",false)
-	local window2 = dgsCreateWindow(0,0,600,600,"test",false)
-	dgsCreateEdit(0,0,200,50,"test",false,window1)
+	material1 = dgsCreate3DInterface(0,0,4,2,2,600,600,tocolor(255,255,255,255),0,1,0,_,0)
+	local window1 = dgsCreateButton(0,0,600,600,"",false,material1)
 	dgsSetParent(window1,material1)
-	dgsSetParent(window2,material2)
 end
 
 function _3DLineTest()
@@ -750,13 +689,6 @@ function _3DImageTest()
 	dgsSetProperty(image,"outline",{"out",1,tocolor(255,255,255,255)})
 	--dgs3DImageAttachToElement(image,localPlayer,0,5)
 	dgsBringToFront(image1)
-end
-
-function ScrollBarTest()
-	scrollbar = dgsCreateScrollBar(400,500,20,180,false,false)
-	--dgsSetProperty(scrollbar,"troughWidth",{0.2,true})
-	--dgsSetProperty(scrollbar,"scrollArrow",false)
-	scrollbar = dgsCreateScrollBar(500,530,180,20,true,false)
 end
 
 function ScalePaneTest()
@@ -984,7 +916,6 @@ end
 
 ---------------QRCode
 function QRCodeTest()
-	
 	local blurbox = dgsCreateBlurBox(sW/2,sH)
 	dgsSetProperty(blurbox,"updateScreenSource",true)
 	img = dgsCreateImage(0,0,sW/2,sH,blurbox,false)
@@ -1003,12 +934,10 @@ function QRCodeTest()
 	outputChatBox(dgsGetQRCodeLoaded(QRCode) and "Loaded" or "Loading")
 	addEventHandler("onDgsQRCodeLoad",QRCode,function()
 		outputChatBox(dgsGetQRCodeLoaded(source) and "Loaded" or "Loading")
-		
 		dxSetRenderTarget(rt,true)
 		dxDrawImage(0,0,128,128,QRCode)
 		dxSetRenderTarget()
 	end,false)
-	
 end
 
 ---------------Blur Box
@@ -1096,24 +1025,6 @@ function testButtonEffect()
 	addEventHandler("onDgsMouseLeave",button,dgsButtonEffectHandler,false)
 end
 
---[[
-function clampIntoSuperEllipse(orgX,orgY,x,y,w,h,times)
-	local result = (math.abs((orgX-x)/w)^times+math.abs((orgY-y)/h)^times)^(1/times)
-	if result > 1 then
-		orgX = (orgX-x)/result+x
-		orgY = (orgY-y)/result+y
-	end
-	return orgX,orgY
-end
-
-e = dgsCreateImage(200,200,200,200,z,false)
-dgsAddMoveHandler(e,0,0,1,1)
-addEventHandler("onClientRender",root,function()
-	local x,y = dgsGetPosition(e,false)
-	local w,h = dgsGetSize(e,false)
-	local _x,_y = clampIntoSuperEllipse(x+w/2,y+h/2,sW/2,sH/2,600,300,4)
-	dgsSetPosition(e,_x-w/2,_y-h/2,false)
-end)]]
 ---------------------StressTest
 function animStress()
 	for i=1,50 do
@@ -1256,12 +1167,9 @@ function SVGTest()
 	setClipboard(dgsSVGGetRawDocument(svg))
 end
 
-
 function SVGTest_OOP()
 	local DGSOOPFnc,err = loadstring(dgsImportOOPClass())
-	print(err)
 	DGSOOPFnc()
-
 	svg = dgsSVG(500,500)
 	doc = svg:getDocument()
 	path = doc:path({
@@ -1280,11 +1188,6 @@ function SVGTest_OOP()
 		:radius(20,20)
 		:fill("#ff0")
 		:stroke({width=5,color="rgb(128,128,0)"})
-
-	--[[doc:text("123",100,100)
-		:fill("#00FF00")
-		:stroke({width=5,color=0xFF0000})]]
-
 	--setClipboard(dgsSVGGetRawDocument(doc.dgsElement))
 	img = dgsImage(200,200,500,500,svg,false)
 end
@@ -1344,56 +1247,82 @@ function multilingualTest()
 	dgsSetProperty(label,"health",40)
 	print(dgsGetTranslationName(label))
 end
---[[
-local edit = dgsCreateEdit(200,200,300,50,"",false)
-history = {}
-addEventHandler("onDgsEditAccepted",edit,function()
-	if not history[source] then history[source] = { current = 0 } end
-	history[source].current = 0
-	local text = dgsGetText(source)
-	table.insert(history[source],text)
-	dgsSetText(source,"")
-end,false)
 
-addEventHandler("onDgsKey",edit,function(button,state)
-	if state then
-		if not history[source] then return end
-		if button == "arrow_u" then
-			if history[source].current == 0 then
-				history[source].editing = dgsGetText(source)
-			end
-			history[source].current = history[source].current + 1
-			if history[source].current >= #history[source] then
-				history[source].current = #history[source]
-			end
-			dgsSetText(source,history[source][history[source].current])
-		elseif button == "arrow_d" then
-			if history[source].current ~= 0 then
-				history[source].current = history[source].current - 1
-				if history[source].current == 0 then
-					dgsSetText(source,history[source].editing or "")
-					history[source].editing = nil
-				else
-					dgsSetText(source,history[source][history[source].current])
-				end
-			end
+function MenuTest()
+	local menu = dgsCreateMenu(200,200,200,600,false)
+	local timeItem = dgsMenuAddItem(menu,"Time","time")
+		dgsMenuAddItem(menu,"Day","t.Day",timeItem)
+		dgsMenuAddItem(menu,"Night","t.Night",timeItem)
+	dgsMenuAddSeparator(menu)
+	local weatherItem = dgsMenuAddItem(menu,"Weather","weather")
+		dgsMenuAddItem(menu,"Clear Day","w.ClearDay",weatherItem)
+		dgsMenuAddItem(menu,"Storming","w.Storming",weatherItem)
+	local optionItem = dgsMenuAddItem(menu,"Option","option")
+
+	local button = dgsCreateButton(400,400,100,50,"Right Click Here",false)
+	addEventHandler("onDgsMouseClickUp",button,function(button)
+		if button == "right" then
+			dgsMenuShow(menu)
 		end
-	end
-end,false)]]
+	end)
+	addEventHandler("onDgsMenuSelect",menu,function(subMenu,uniqueID)
+		if uniqueID == -1 then return end
+		local command = dgsMenuGetItemCommand(source,uniqueID)
+		if command == "t.Day" then
+			setTime(12,0)
+		elseif command == "t.Night" then
+			setTime(0,0)
+		elseif command == "w.ClearDay" then
+			setWeather(0)
+		elseif command == "w.Storming" then
+			setWeather(8)
+		else
+			return
+		end
+		dgsMenuHide(source)
+	end,false)
+	
+	testWindow = false
+	addEventHandler("onDgsMenuHover",menu,function(subMenu,uniqueID,drawPosY)
+		if uniqueID == -1 then return end
+		if isElement(testWindow) then
+			destroyElement(testWindow)
+		end
+		local command = dgsMenuGetItemCommand(source,uniqueID)
+		if command == "option" then
+			local x,y = dgsGetPosition(subMenu,false)
+			local width,height = dgsGetSize(subMenu,false)
+			testWindow = dgsCreateWindow(width,drawPosY,200,200,"Option",false)
+			dgsSetParent(testWindow,subMenu)
+		end
+	end,false)
+end
+
+function interpolateAlpha(startAlpha, finishAlpha, progress)
+    return startAlpha + (finishAlpha - startAlpha) * progress
+end
 
 --[[
-local window = dgsCreateWindow(0,0, 512, 512, "test", false)
-local sp = dgsCreateScalePane(0,0,500,500,false,window,2000,1000)
-button = dgsCreateButton(100,100,100,100,"testt",false,sp)
-addEventHandler("onClientRender",root,function()
-	x,y = dgsGetPosition(button,false,"screen")
-	dxDrawText("test",x,y)
-end)]]
+gridlist = dgsCreateGridList(500,50,600,600,false)
+dgsSetProperty(gridlist,"clip",false)
+dgsGridListAddColumn(gridlist,"test1",0.2,nil)
+dgsGridListAddColumn(gridlist,"test2",0.3)
+dgsGridListAddColumn(gridlist,"test3",0.6)
+local tick = getTickCount()
+dgsSetProperty(gridlist,"rowHeight",30)
+dgsSetProperty(gridlist,"rowTextSize",{1.3,1.3})
+for i=1,100 do
+	local row = dgsGridListAddRow(gridlist)
+	dgsGridListSetItemText(gridlist,row,1,i.."xx")
+	dgsGridListSetItemText(gridlist,row,2,i.."xx")
+	dgsGridListSetItemText(gridlist,row,3,i.."xx")
+end
+--dgsGridListSetScrollBarState(gridlist,false,false)
+]]
 
 end
 addEventHandler("onClientResourceStart",resourceRoot,executeTest)
 executeTest = nil
-
 --[[
 setTimer(function()
 	local columns, rows = getPerformanceStats("Lua memory","","dgs")
@@ -1402,4 +1331,5 @@ setTimer(function()
 		outputChatBox(table.concat(row, "  "))
 	end
 		collectgarbage()
-end,1000,0)]]
+end,1000,0)
+]]

@@ -100,7 +100,12 @@ function dgsInitializeGlobalMemo()
 	if not isElement(GlobalMemo) then
 		GlobalMemo = guiCreateMemo(-1,0,0,0,"",true,GlobalMemoParent)
 		dgsSetData(GlobalMemo,"linkedDxMemo",nil)
-		addEventHandler("onClientGUIBlur",GlobalMemo,GlobalEditMemoBlurCheck,false)
+		addEventHandler("onClientGUIBlur",GlobalMemo,function()
+			local dgsMemo = dgsElementData[source].linkedDxMemo
+			if isElement(dgsMemo) and dgsIsFocused(dgsMemo) then
+				dgsBlur(dgsMemo)
+			end
+		end,false)
 		addEventHandler("onClientGUIChanged",GlobalMemo,function()
 			if not dgsElementData[GlobalMemo] then return end
 			if getElementType(GlobalMemo) == "gui-memo" then
@@ -252,10 +257,10 @@ function dgsCreateMemo(...)
 	}
 	dgsSetParent(memo,parent,true,true)
 	calculateGuiPositionSize(memo,x,y,relative or false,w,h,relative or false,true)
+	dgsApplyGeneralProperties(memo,sRes)	--This event should be called before child element attachment, to make sure every property is ready
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
-	dgsSetVisible(scrollbar1,false)
 	dgsSetData(scrollbar1,"length",{0,true})
 	dgsSetData(scrollbar2,"length",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
@@ -267,8 +272,10 @@ function dgsCreateMemo(...)
 	dgsElementData[memo].scrollbars = {scrollbar1,scrollbar2}
 	handleDxMemoText(memo,text,false,true)
 	dgsAddEventHandler("onDgsMouseMultiClick",memo,"dgsMemoMultiClickCheck",false)
-	onDGSElementCreate(memo,sRes)
+	dgsAddEventHandler("onDgsFocus",memo,"dgsMemoFocus",false)
+	dgsAddEventHandler("onDgsBlur",memo,"dgsMemoBlur",false)
 	dgsMemoRecreateRenderTarget(memo,true)
+	onDGSElementCreate(memo,sRes)
 	return memo
 end
 
@@ -293,6 +300,19 @@ function dgsMemoRecreateRenderTarget(memo,lateAlloc)
 		dgsSetData(memo,"bgRT",bgRT)
 		dgsSetData(memo,"retrieveRT",nil)
 	end
+end
+
+function dgsMemoFocus()
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.EditMemoCursor = true
+	guiFocus(GlobalMemo)
+	dgsElementData[GlobalMemo].linkedDxMemo = source
+end
+
+function dgsMemoBlur()
+	guiBlur(GlobalMemo)
+	if not dgsElementData[GlobalMemo] then dgsElementData[GlobalMemo] = {} end
+	dgsElementData[GlobalMemo].linkedDxMemo = nil
 end
 
 function dgsMemoMultiClickCheck(button,state,x,y,times)
@@ -1544,6 +1564,16 @@ function dgsMemoRebuildTextTable(memo)
 	configMemo(memo)
 end
 
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxmemo"] = function(dgsEle,isWheelDown)
+	local scrollbar = dgsElementData[dgsEle].scrollbars[1]
+	if dgsGetVisible(scrollbar) then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
+end
 
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------

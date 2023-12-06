@@ -226,12 +226,11 @@ function dgsG2DLoadHooker(isLocal)
 		guiComboBoxAddItem = dgsComboBoxAddItem
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
-		guiComboBoxGetItemText = function(combobox,item,...)
-			if item and item ~= -1 then
-				item = isGUIComboBox[combobox] and item+1 or item
-			end
-			if item and dgsComboBoxGetItemCount(combobox) < item then return false end
-			return dgsComboBoxGetItemText(combobox,item,...)
+		guiComboBoxGetItemText = function(combobox,item)
+			if not item or item == -1 then return false end
+			item = isGUIComboBox[combobox] and item+1 or item
+			if dgsComboBoxGetItemCount(combobox) < item then return false end
+			return dgsComboBoxGetItemText(combobox,item)
 		end
 		guiComboBoxGetSelected = function(combobox,...)
 			if isGUIComboBox[combobox] then
@@ -295,15 +294,9 @@ function dgsG2DLoadHooker(isLocal)
 				return dgsGridListInsertRowAfter(gl,row,...)
 			end
 		end
-		guiGridListAddRow = function(gl,row,...)
-			local rowData = dgsGetProperty(gl,"rowData")
-			if isGUIGridList[gl] then
-				row = tonumber(row) or #rowData
-				return dgsGridListAddRow(gl,row+1,...)-1
-			else
-				row = tonumber(row) or #rowData+1
-				return dgsGridListAddRow(gl,row,...)
-			end
+		guiGridListAddRow = function(gl,...)
+			local row = dgsGridListAddRow(gl,nil,...)
+			return row and row-1 or row
 		end
 		guiGridListGetItemColor = function(gl,row,column)
 			if column and dgsGridListGetColumnCount(gl) < column then return false end
@@ -433,7 +426,24 @@ function dgsG2DLoadHooker(isLocal)
 		guiGridListSetColumnTitle = dgsGridListSetColumnTitle
 		guiGridListSetColumnWidth = dgsGridListSetColumnWidth
 		guiGridListSetScrollBars = dgsGridListSetScrollBarState
-		guiGridListSetSelectionMode = dgsGridListSetSelectionMode
+		guiGridListSetSelectionMode = function (gl,mode)
+			local selectionModes = {
+				[0] = {mode=1,multi=false},
+				[1] = {mode=1,multi=true},
+				[2] = {mode=3,multi=false},
+				[3] = {mode=3,multi=true},
+				[4] = {mode=2,multi=false},
+				[5] = {mode=2,multi=true},
+				[6] = {mode=2,multi=false},
+				[7] = {mode=2,multi=true}, 
+				[8] = {mode=3,multi=false},
+				[9] = {mode=3,multi=true},
+			}
+			local g2dMode = selectionModes[mode]
+			dgsGridListSetSelectedItems(gl,{})
+			dgsGridListSetMultiSelectionEnabled(gl,g2dMode.multi)
+			return dgsGridListSetSelectionMode(gl,g2dMode.mode)
+		end
 		guiGridListSetSortingEnabled = dgsGridListSetSortEnabled
 		guiCreateMemo = dgsCreateMemo
 		guiMemoGetCaretIndex = dgsMemoGetCaretPosition
@@ -522,6 +532,9 @@ function dgsG2DLoadHooker(isLocal)
 				return dgsSetProperty(gl,"readOnly",v:lower() == "true")
 			elseif prop == "Alpha" or prop == "Font" or prop == "Text" then
 				return dgsSetProperty(gl,prop:lower(),v)
+			elseif prop == "AlwaysOnTop" then 
+				v = v:lower() == "true"
+				return dgsSetLayer(gl,v and "top" or "center")
 			else
 				return dgsSetProperty(gl,prop,v)
 			end

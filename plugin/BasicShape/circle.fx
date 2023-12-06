@@ -2,10 +2,11 @@
 #define PI2 PI*2
 float4 color = float4(1,1,1,1);
 float borderSoft = 0.01;
-float angle = PI2;
+float angle = 360;
 float outsideRadius = 0.9;
 float insideRadius = 0.2;
 float textureRot = 0;
+float rotation = 0;
 float2 textureRotCenter = float2(0.5,0.5);
 texture sourceTexture;
 bool direction = true; //anticlockwise
@@ -22,8 +23,15 @@ SamplerState tSampler{
 
 float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	float2 tempTex = (tex*UV.zw+UV.xy)%1;
-	float thetaCos = cos(-textureRot/180.0*PI);
-	float thetaSin = sin(-textureRot/180.0*PI);
+	float tRotation = -radians(rotation);
+	float thetaCosTex = cos(tRotation);
+	float thetaSinTex = sin(tRotation);
+	float2x2 rotTex = float4(thetaCosTex,-thetaSinTex,thetaSinTex,thetaCosTex);
+	tempTex = mul(tempTex-0.5,rotTex)+0.5;
+
+	float tTexRotation = -radians(textureRot);
+	float thetaCos = cos(tTexRotation);
+	float thetaSin = sin(tTexRotation);
 	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
 	float2 rotedTex = mul(tempTex-textureRotCenter,rot)+textureRotCenter;
 	float4 result = colorOverwritten?color:_color;
@@ -35,20 +43,20 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	if(angle_p>PI2) angle_p -= PI2;
 	if(angle_p<0) angle_p += PI2;
 	float2 P = float2(xDistance,yDistance);
-	float ang = angle;
-	if(!direction) ang = PI2-angle;
+	float ang = radians(angle);
+	if(!direction) ang = PI2-ang;
 	float2 Q = float2(cos(ang),sin(ang));
 	float2 N = float2(-Q.y,Q.x)*nBorderSoft;
 	float oRadius = 1-outsideRadius;
 	Q *= oRadius;
+	float len0Q = length(Q);
 	float2 Start = float2(oRadius,0);
 	float2 StartN = float2(-Start.y,Start.x);
 	float alpha = !direction;
-	if(angle_p<ang) alpha = direction;
+	if(angle_p <= ang) alpha = direction;
 	if(direction){
 		float2 P1 = P-N;
 		float len0P = length(P1);
-		float len0Q = length(Q);
 		float lenPQ = distance(P1,Q);
 		float a = dot(Q,P1)/(len0Q*len0P);
 		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
@@ -62,12 +70,11 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
 		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
 		float _b = dot(StartN,P)/(length(StartN)*len0P);
-		if(a >= 0 && dis1 < nBorderSoft && _a<=0) alpha = max(alpha,clamp(dis1/nBorderSoft,0,1));
-		if(b >= 0 && dis2 < nBorderSoft && _b>=0) alpha = max(alpha,clamp(dis2/nBorderSoft,0,1));
+		if(a >= 0 && dis1-0.000001 < nBorderSoft && _a<=0) alpha = max(alpha,clamp(dis1/nBorderSoft-0.5,0,1));
+		if(b >= 0 && dis2 < nBorderSoft && _b>=0) alpha = max(alpha,clamp(dis2/nBorderSoft-0.5,0,1));
 	}else{
 		float2 P1 = P+N;
 		float len0P = length(P1);
-		float len0Q = length(Q);
 		float lenPQ = distance(P1,Q);
 		float a = dot(Q,P1)/(len0Q*len0P);
 		float halfC1 = 0.5*(len0P+len0Q+lenPQ);
@@ -81,10 +88,11 @@ float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 		float halfC2 = 0.5*(len0P+len0S+lenPS);
 		float dis2 = 2*sqrt(halfC2*(halfC2-len0P)*(halfC2-len0S)*(halfC2-lenPS))/len0S;
 		float _b = dot(StartN,P)/(length(StartN)*len0P);
-		if(a >= 0 && dis1 < nBorderSoft && _a>=0) alpha = max(alpha,clamp(dis1/nBorderSoft,0,1));
-		if(b >= 0 && dis2 < nBorderSoft && _b<=0) alpha = max(alpha,clamp(dis2/nBorderSoft,0,1));
+		if(a >= 0 && dis1-0.000001 <= nBorderSoft && _a>=0) alpha = max(alpha,clamp(dis1/nBorderSoft-0.5,0,1));
+		if(b >= 0 && dis2 <= nBorderSoft && _b<=0) alpha = max(alpha,clamp(dis2/nBorderSoft-0.5,0,1));
 	}
-	alpha *= clamp((1-distance(tempTex,0.5)-oRadius)/nBorderSoft,0,1)*clamp((distance(tempTex,0.5)-insideRadius)/nBorderSoft,0,1);
+	float centerDistance = distance(tempTex,0.5);
+	alpha *= clamp((1-centerDistance-oRadius)/nBorderSoft+0.5,0,1)*clamp((centerDistance-insideRadius)/nBorderSoft+0.5,0,1);
 	result.a *= alpha;
 	return result;
 }

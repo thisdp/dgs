@@ -133,6 +133,7 @@ function dgsCreateTabPanel(...)
 	}
 	dgsSetParent(tabpanel,parent,true,true)
 	calculateGuiPositionSize(tabpanel,x,y,relative,w,h,relative,true)
+	dgsApplyGeneralProperties(tabpanel,sRes)
 	dgsAddEventHandler("onDgsSizeChange",tabpanel,"configTabPanelWhenResize",false)
 	onDGSElementCreate(tabpanel,sRes)
 	dgsTabPanelRecreateRenderTarget(tabpanel,true)
@@ -233,6 +234,7 @@ function dgsCreateTab(...)
 		wordBreak = nil,
 	}
 	dgsSetParent(tab,tabpanel,true,true)
+	dgsApplyGeneralProperties(tab,sRes)
 	if eleData.selected == -1 then eleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sRes])
 	if type(text) == "table" then
@@ -330,6 +332,14 @@ function dgsDeleteTab(tab)
 			dgsElementData[tabs[i]].id = dgsElementData[tabs[i]].id-1
 		end
 		tableRemove(tabs,id)
+		if id == dgsElementData[tabpanel].selected then
+			local newSelectedID = dgsElementData[tabpanel].selected-1
+			if newSelectedID ~= 0 then
+				dgsSetData(tabpanel,"selected",newSelectedID)
+			else
+				dgsSetData(tabpanel,"selected",-1)
+			end
+		end
 	end
 	for k,v in pairs(dgsGetChildren(tab)) do
 		destroyElement(v)
@@ -369,6 +379,50 @@ function dgsSetSelectedTab(tabpanel,id)
 end
 
 ----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxtabpanel"] = function(dgsEle,isWheelDown)
+	local scroll = isWheelDown and 1 or -1
+	local width = dgsTabPanelGetWidth(dgsEle)
+	local eleData = dgsElementData[dgsEle]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	if width > w then
+		local mx,my = dgsGetCursorPosition()
+		--local mx = (mx or -1)*sW
+		my = (my or -1)*sH
+		local _,y = dgsGetPosition(dgsEle,false,true)
+		local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+		if my < y+height then
+			local speed = eleData.scrollSpeed[2] and eleData.scrollSpeed[1] or eleData.scrollSpeed[1]/width
+			local orgoff = eleData.showPos
+			orgoff = mathClamp(orgoff+scroll*speed,0,1)
+			dgsSetData(dgsEle,"showPos",orgoff)
+		end
+	end
+end
+
+dgsOnMouseScrollAction["dgs-dxtab"] = function(dgsEle,isWheelDown)
+	local scroll = isWheelDown and 1 or -1
+	tabpanel = dgsElementData[dgsEle].parent
+	local width = dgsTabPanelGetWidth(dgsEle)
+	local eleData = dgsElementData[dgsEle]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	if width > w then
+		local mx,my = dgsGetCursorPosition()
+		--local mx = (mx or -1)*sW
+		my = (my or -1)*sH
+		local _,y = dgsGetPosition(dgsEle,false,true)
+		local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+		if my < y+height then
+			local speed = eleData.scrollSpeed[2] and eleData.scrollSpeed[1] or eleData.scrollSpeed[1]/width
+			local orgoff = eleData.showPos
+			orgoff = mathClamp(orgoff+scroll*speed,0,1)
+			dgsSetData(dgsEle,"showPos",orgoff)
+		end
+	end
+end
+
+----------------------------------------------------------------
 ----------------------OnMouseClickAction------------------------
 ----------------------------------------------------------------
 dgsOnMouseClickAction["dgs-dxtab"] = function(dgsEle,button,state)
@@ -389,7 +443,9 @@ dgsOnPropertyChange["dgs-dxtabpanel"] = {
 		local old,new = oldValue,value
 		local tabs = dgsElementData[dgsEle].tabs
 		dgsTriggerEvent("onDgsTabPanelTabSelect",dgsEle,new,old,tabs[new],tabs[old])
-		dgsApplyVisibleInherited(tabs[old],false)
+		if isElement(tabs[old]) then
+			dgsApplyVisibleInherited(tabs[old],false)
+		end
 		if isElement(tabs[new]) then
 			dgsTriggerEvent("onDgsTabSelect",tabs[new],new,old,tabs[new],tabs[old])
 			dgsApplyVisibleInherited(tabs[new],true)

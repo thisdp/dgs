@@ -633,16 +633,16 @@ function onAnimationWindowCreate(window)
 		dgsSetProperty(performanceBrowser["dxList"],"rowTextSize",{1.5,1.5})
 		dgsGridListAddColumn(performanceBrowser["dxList"],"",1)
 		local k = 0
-		for v,t in pairs(pBCat) do
+		for catalogue,items in pairs(pBCat) do
 			k=k+1
-			dgsGridListAddRow(performanceBrowser["dxList"],_,v)
+			dgsGridListAddRow(performanceBrowser["dxList"],_,catalogue)
 			performanceBrowser[k] = dgsCreateGridList(140,10,750,460,false,performanceBrowser["window"])
 			dgsGridListSetSortEnabled(performanceBrowser[k],false)
 			dgsSetProperty(performanceBrowser[k],"rowHeight",25)
 			dgsSetProperty(performanceBrowser[k],"columnHeight",25)
 			dgsSetProperty(performanceBrowser[k],"columnTextSize",{1.3,1.3})
 			dgsSetProperty(performanceBrowser[k],"rowTextSize",{1.3,1.3})
-			for index,name in ipairs(t) do
+			for index,name in ipairs(items) do
 				dgsGridListAddColumn(performanceBrowser[k],name,0.3)
 			end
 			addEventHandler("onDgsElementRender",performanceBrowser[k],function()
@@ -659,17 +659,17 @@ function onAnimationWindowCreate(window)
 						dgsGridListAddRow(source)
 					end
 				end
-				for i2=1,#rows do
-					for ik,v2 in pairs(rows[i]) do
-						rowData[i][k] = rowData[i][i2] or {}
-						rowData[i][k][1] = v2
-						rowData[i][k][2] = white
+				for rowIndex=1,#rows do
+					for columnIndex,itemName in pairs(rows[rowIndex]) do
+						rowData[rowIndex][columnIndex] = rowData[rowIndex][columnIndex] or {}
+						rowData[rowIndex][columnIndex][1] = itemName
+						rowData[rowIndex][columnIndex][2] = white
 					end
 				end
 				dgsSetProperty(source,"rowData",rowData)
 			end,false)
 			dgsSetProperty(performanceBrowser[k],"renderEventCall",true)
-			dgsSetProperty(performanceBrowser[k],"myType",v)
+			dgsSetProperty(performanceBrowser[k],"myType",catalogue)
 			dgsSetProperty(performanceBrowser[k],"myIndex",k)
 			dgsSetProperty(performanceBrowser[k],"startTick",getTickCount()-5000)
 			dgsSetVisible(performanceBrowser[k],false)
