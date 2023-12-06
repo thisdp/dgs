@@ -18,6 +18,7 @@
 	<script src="Core/combobox.lua" type="client" />
 	<script src="Core/customRenderer.lua" type="client" />
 	<script src="Core/edit.lua" type="client" />
+	<script src="Core/effectview.lua" type="client" />
 	<script src="Core/detectarea.lua" type="client" />
 	<script src="Core/gridlist.lua" type="client" />
 	<script src="Core/image.lua" type="client" />
@@ -132,7 +133,6 @@
 	<!--(Custom Style 2) -->
 
 	<!--&Add Your Styles Here-->
-
 	<export function="dgsAddEasingFunction" type="client" />
 	<export function="dgsEasingFunctionExists" type="client" />
 	<export function="dgsRemoveEasingFunction" type="client" />
@@ -240,10 +240,6 @@
 	<export function="dgsGetDetectArea" type="client" />
 	<export function="dgsApplyDetectArea" type="client" />
 	<export function="dgsRemoveDetectArea" type="client" />
-	<export function="dgsPushElement" type="client" />
-	<export function="dgsPopElement" type="client" />
-	<export function="dgsSetElementKeeperEnabled" type="client" />
-	<export function="dgsGetElementKeeperEnabled" type="client" />
 	<export function="dgsSetDebugTracerEnabled" type="client" />
 	<export function="dgsGetRegisteredProperties" type="client" />
 	<export function="dgsListPropertyTypes" type="client" />
@@ -378,6 +374,9 @@
 	<export function="dgsCustomRendererSetRenderTargetSize" type="client" />
 	<export function="dgsCustomRendererGetRenderTargetSize" type="client" />
 	<export function="dgsCustomRendererGetRenderTarget" type="client" />
+
+	<export function="dgsCreateEffectView" type="client" />
+	<export function="dgsEffectViewSetEffectShader" type="client" />
 
 	<export function="dgsCreateScalePane" type="client" />
 	<export function="dgsScalePaneGetScrollBar" type="client" />
@@ -960,7 +959,7 @@
 	<export function="dgsImportOOPClass" type="client" />
 	<export function="dgsG2DLoadHooker" type="client" />
 
-	<min_mta_version client="1.5.8-9.20998" server="1.5.8-9.20957" />
+	<min_mta_version client="1.6.0-9.21938" server="1.5.4-9.11342" />
 	<aclrequest>
 		<right name="function.fetchRemote" access="true" />
 		<right name="function.loadstring" access="true" />

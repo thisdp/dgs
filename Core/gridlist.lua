@@ -160,6 +160,12 @@ function dgsCreateGridList(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
+	if relative then 
+		if x > 100 or x < -100 then error(dgsGenAsrt(x,"dgsCreateGridList",1,"float between [0, 1]")) end
+		if y > 100 or y < -100 then error(dgsGenAsrt(y,"dgsCreateGridList",2,"float between [0, 1]")) end
+		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsCreateGridList",3,"float between [0, 1]")) end
+		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsCreateGridList",4,"float between [0, 1]")) end
+	end
 
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
@@ -299,7 +305,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 		local relSizX,relSizY = w-(scbAlignmentV ~= "left" and scbThickV or 0),h-scbThickH
 		local rowShowRange = relSizY-columnHeight
 		if relSizX*columnHeight ~= 0 then
-			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
+			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist)
 			if columnRT ~= false then
 				dgsAttachToAutoDestroy(columnRT,gridlist,-1)
 			else
@@ -307,7 +313,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 			end
 		end
 		if relSizX*rowShowRange ~= 0 then
-			rowRT,err = dgsCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
+			rowRT,err = dgsCreateRenderTarget(relSizX,rowShowRange,true,gridlist)
 			if rowRT ~= false then
 				dgsAttachToAutoDestroy(rowRT,gridlist,-3)
 			else

@@ -10,7 +10,6 @@ float rotation = 0;
 float2 textureRotCenter = float2(0.5,0.5);
 texture sourceTexture;
 bool direction = true; //anticlockwise
-bool textureLoad = false;
 bool colorOverwritten = true;
 float4 UV = float4(0,0,1,1);
 
@@ -24,18 +23,18 @@ SamplerState tSampler{
 float4 circleShader(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
 	float2 tempTex = (tex*UV.zw+UV.xy)%1;
 	float tRotation = -radians(rotation);
-	float thetaCosTex = cos(tRotation);
-	float thetaSinTex = sin(tRotation);
+	float thetaCosTex,thetaSinTex;
+	sincos(tRotation,thetaSinTex,thetaCosTex);
 	float2x2 rotTex = float4(thetaCosTex,-thetaSinTex,thetaSinTex,thetaCosTex);
 	tempTex = mul(tempTex-0.5,rotTex)+0.5;
 
 	float tTexRotation = -radians(textureRot);
-	float thetaCos = cos(tTexRotation);
-	float thetaSin = sin(tTexRotation);
+	float thetaCos,thetaSin;
+	sincos(tTexRotation,thetaSin,thetaCos);
 	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
 	float2 rotedTex = mul(tempTex-textureRotCenter,rot)+textureRotCenter;
 	float4 result = colorOverwritten?color:_color;
-	if(textureLoad) result *= tex2D(tSampler,rotedTex);
+	result *= tex2D(tSampler,rotedTex);
 	float2 dxy = float2(length(ddx(tempTex)),length(ddy(tempTex)));
 	float nBorderSoft = borderSoft*sqrt(dxy.x*dxy.y)*100;
 	float xDistance = tempTex.x-0.5,yDistance = 0.5-tempTex.y;

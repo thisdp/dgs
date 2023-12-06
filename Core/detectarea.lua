@@ -125,7 +125,7 @@ function dgsDetectAreaUpdateDebugView(detectarea)
 		end
 	end
 	if not isElement(dgsElementData[detectarea].debugTexture) then
-		local texture = dxCreateEmptyTexture(absSize[1],absSize[2])
+		local texture = dxCreateTexture(absSize[1],absSize[2])
 		dgsSetData(detectarea,"debugTexture",texture)
 	end
 	if type(checkFunction) == "function" then

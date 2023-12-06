@@ -1,7 +1,6 @@
 texture sourceTexture;
 float4 color = float4(1,1,1,1);
 float4 borderColor = float4(1,1,1,1);
-bool textureLoad = false;
 bool textureRotated = false;
 float4 isRelative = 1;
 float4 radius = 0.2;
@@ -186,7 +185,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	result += (color-result)*(1-clamp(nAlp,0,1));
 	result.rgb = colorOverwritten?result.rgb:_color.rgb;
 	result.a *= _color.a*alp;
-	result *= textureLoad?tex2D(tSampler,textureRotated?tex_bk.yx:tex_bk):1;
+	result *= tex2D(tSampler,textureRotated?tex_bk.yx:tex_bk);
 	return result;
 }
 
