@@ -51,22 +51,12 @@ function checkUpdate()
 	end)
 end
 
-function checkServerVersion(player)
-	if getVersion().sortable < "1.5.4-9.11342" then
-		outputDGSMessage("Your server version is too old to support dgs update system.",nil,2,player)
-		return false
-	end
-	return true
-end
-
 if DGSConfig.updateCheckAuto then
-	if not checkServerVersion() then return end
 	checkUpdate()
 	updatePeriodTimer = setTimer(checkUpdate,DGSConfig.updateCheckInterval*3600000,0)
 end
 
 addCommandHandler(DGSConfig.updateCommand,function(player)
-	if not checkServerVersion(player) then return end
 	local account = getPlayerAccount(player)
 	local isPermit = hasObjectPermissionTo(player,"command."..DGSConfig.updateCommand,false)
 	if not isPermit then

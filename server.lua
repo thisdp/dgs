@@ -97,7 +97,6 @@ loadConfig()
 
 -----------Remote Stuff
 addEvent("DGSI_RequestQRCode",true)
-addEvent("DGSI_RequestIP",true)
 addEvent("DGSI_RequestRemoteImage",true)
 addEventHandler("DGSI_RequestQRCode",root,function(str,w,h,id)
 	fetchRemote("https://api.qrserver.com/v1/create-qr-code/?size="..w.."x"..h.."&data="..str,{},function(data,info,player,id2)
@@ -112,9 +111,9 @@ addEventHandler("DGSI_RequestRemoteImage",root,function(website,id)
 end)
 
 function getMyIP()
-	triggerClientEvent(client,"DGSI_ReceiveIP",client,getPlayerIP(client))
+	triggerClientEvent(source,"DGSI_ReceiveIP",source,getPlayerIP(source))
 end
-addEventHandler("DGSI_RequestIP",root,getMyIP)
+addEventHandler("onPlayerResourceStart",root,getMyIP)
 
 setElementData(root,"DGS-ResName",getResourceName(getThisResource()))
 
