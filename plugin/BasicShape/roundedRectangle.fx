@@ -1,7 +1,6 @@
 texture sourceTexture;
 float4 color = float4(1,1,1,1);
 float4 borderColor = float4(1,1,1,1);
-bool textureLoad = false;
 bool textureRotated = false;
 float4 isRelative = 1;
 float4 radius = 0.2;
@@ -10,6 +9,8 @@ bool colorOverwritten = true;
 float2 borderThickness = 0.12;
 float radiusMultipler = 0.95;
 float4 UV = float4(0,0,1,1);
+float textureRot = 0;
+float2 textureRotCenter = float2(0.5,0.5);
 
 SamplerState tSampler{
 	Texture = sourceTexture;
@@ -19,6 +20,10 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	float4 result = borderColor;
 	float alp = 1;
 	float2 tempTex = (tex*UV.zw+UV.xy);
+	/*float thetaCos = cos(-textureRot/180.0*PI);
+	float thetaSin = sin(-textureRot/180.0*PI);
+	float2x2 rot = float4(thetaCos,-thetaSin,thetaSin,thetaCos);
+	float2 rotedTex = mul(tempTex-textureRotCenter,rot)+textureRotCenter;*/
 	float2 tex_bk = tempTex;
 	float2 dx = ddx(tempTex);
 	float2 dy = ddy(tempTex);
@@ -180,7 +185,7 @@ float4 rndRect(float2 tex: TEXCOORD0, float4 _color : COLOR0):COLOR0{
 	result += (color-result)*(1-clamp(nAlp,0,1));
 	result.rgb = colorOverwritten?result.rgb:_color.rgb;
 	result.a *= _color.a*alp;
-	result *= textureLoad?tex2D(tSampler,textureRotated?tex_bk.yx:tex_bk):1;
+	result *= tex2D(tSampler,textureRotated?tex_bk.yx:tex_bk);
 	return result;
 }
 

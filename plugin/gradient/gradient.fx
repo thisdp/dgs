@@ -1,4 +1,3 @@
-bool textureLoad = false;
 bool textureRotated = false;
 texture sourceTexture;
 float rotation = 0;
@@ -15,10 +14,10 @@ SamplerState tSampler{
 };
 
 float4 gradientShader(float2 tex:TEXCOORD0,float4 color:COLOR0):COLOR0{
-	float4 result = textureLoad?tex2D(tSampler,textureRotated?tex.yx:tex)*color:color;
+	float4 result = tex2D(tSampler,textureRotated?tex.yx:tex)*color;
 	float rad = rotation/180*PI;
-	float rotSin = sin(rad);
-	float rotCos = cos(rad);
+	float rotSin,rotCos;
+	sincos(rad,rotSin,rotCos);
 	tex -= 0.5;
 	float2 kValue = float2(tex.x*rotCos-tex.y*rotSin,tex.x*rotSin+tex.y*rotCos)+0.5;
 	float4 colorCalculated = colorFrom+(colorTo-colorFrom)*(kValue.x);

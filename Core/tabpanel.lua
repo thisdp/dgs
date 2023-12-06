@@ -88,6 +88,12 @@ function dgsCreateTabPanel(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateTabPanel",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateTabPanel",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateTabPanel",4,"number")) end
+	if relative then 
+		if x > 100 or x < -100 then error(dgsGenAsrt(x,"dgsCreateTabPanel",1,"float between [0, 1]")) end
+		if y > 100 or y < -100 then error(dgsGenAsrt(y,"dgsCreateTabPanel",2,"float between [0, 1]")) end
+		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsCreateTabPanel",3,"float between [0, 1]")) end
+		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsCreateTabPanel",4,"float between [0, 1]")) end
+	end
 	if bgImage then
 		if not isMaterial(bgImage) then error(dgsGenAsrt(bgImage,"dgsCreateTabPanel",8,"material")) end
 	end
@@ -376,6 +382,50 @@ function dgsSetSelectedTab(tabpanel,id)
 		return dgsSetData(tabpanel,"selected",id)
 	end
 	return false
+end
+
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxtabpanel"] = function(dgsEle,isWheelDown)
+	local scroll = isWheelDown and 1 or -1
+	local width = dgsTabPanelGetWidth(dgsEle)
+	local eleData = dgsElementData[dgsEle]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	if width > w then
+		local mx,my = dgsGetCursorPosition()
+		--local mx = (mx or -1)*sW
+		my = (my or -1)*sH
+		local _,y = dgsGetPosition(dgsEle,false,true)
+		local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+		if my < y+height then
+			local speed = eleData.scrollSpeed[2] and eleData.scrollSpeed[1] or eleData.scrollSpeed[1]/width
+			local orgoff = eleData.showPos
+			orgoff = mathClamp(orgoff+scroll*speed,0,1)
+			dgsSetData(dgsEle,"showPos",orgoff)
+		end
+	end
+end
+
+dgsOnMouseScrollAction["dgs-dxtab"] = function(dgsEle,isWheelDown)
+	local scroll = isWheelDown and 1 or -1
+	tabpanel = dgsElementData[dgsEle].parent
+	local width = dgsTabPanelGetWidth(dgsEle)
+	local eleData = dgsElementData[dgsEle]
+	local w,h = eleData.absSize[1],eleData.absSize[2]
+	if width > w then
+		local mx,my = dgsGetCursorPosition()
+		--local mx = (mx or -1)*sW
+		my = (my or -1)*sH
+		local _,y = dgsGetPosition(dgsEle,false,true)
+		local height = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
+		if my < y+height then
+			local speed = eleData.scrollSpeed[2] and eleData.scrollSpeed[1] or eleData.scrollSpeed[1]/width
+			local orgoff = eleData.showPos
+			orgoff = mathClamp(orgoff+scroll*speed,0,1)
+			dgsSetData(dgsEle,"showPos",orgoff)
+		end
+	end
 end
 
 ----------------------------------------------------------------

@@ -1,27 +1,3 @@
-xmlLoadStr = _G["xmlLoad".."String"]
-if not xmlLoadStr then
-	tempXmlLogger = {count=0}
-	xmlLoadStr = function(str)
-		local tick = tempXmlLogger.count
-		tempXmlLogger.count = tempXmlLogger.count+1
-		local xmlFile = fileCreate("g2dCrawlTmp_"..tick..".xml")
-		fileWrite(xmlFile,str)
-		fileClose(xmlFile)
-		local xml = xmlLoadFile("g2dCrawlTmp_"..tick..".xml")
-		tempXmlLogger[xml] = {path="g2dCrawlTmp_"..tick..".xml"}
-		return xml
-	end
-	xmlReleaseTempFiles = function(xml)
-		if tempXmlLogger[xml] then
-			xmlUnloadFile(xml)
-			fileDelete(tempXmlLogger[xml].path)
-			tempXmlLogger[xml] = nil
-		end
-	end
-else
-	xmlReleaseTempFiles = function() end
-end
-
 local function tableCount(tabl)
 	local cnt = 0
 	for k,v in pairs(tabl) do
@@ -118,7 +94,6 @@ addCommandHandler("g2d",function(player,command,...)
 					outputDGSMessage("G2D is not running!","G2D")
 				end
 			elseif args[1] == "crawl" then
-				if not checkServerVersion() then return end
 				if args[2] and args[2] ~= "" then
 					if args[2] == "npp" or args[2] == "n++" then
 						CrawlWikiFromMTA("npp")
@@ -436,7 +411,7 @@ function showProgress(progress)
 end
 
 G2DRunningData = {
-	File=false,
+	Files=false,
 	Timer= false
 }
 
@@ -458,7 +433,7 @@ function G2DStart()
 		G2D.Running = coroutine.create(function()
 			G2D.StartTick = getTickCount()
 			for i=1,#G2D.Files do
-				processFileConvertor(G2D.File[i])
+				processFileConvertor(G2D.Files[i])
 			end
 			outputDGSMessage("Process Done","G2D")
 			G2D.Process = false
@@ -637,7 +612,6 @@ function CrawlWikiFromMTA(t)
 				}
 				table.insert(fncList,nTable)
 				startPos = liEnd_2
-				xmlReleaseTempFiles(xmlNode)
 			end
 			local fncListLen = #fncList
 			outputDGSMessage(fncList.." function"..fncListLen > 1 and "s" or "".." has been found. Crawling..","G2D")
@@ -670,7 +644,6 @@ function CrawlWikiFromMTA(t)
 											local line = data:sub(startPos,endPos)
 											local xmlNode = xmlLoadStr(line)
 											local pageSource = xmlNodeGetValue(xmlNode)
-											xmlReleaseTempFiles(xmlNode)
 											local _,rangeStart = pageSource:find("==Syntax==")
 											local _,syntaxStart = pageSource:find("%<syntaxhighlight lang%=\"lua\"%>",rangeStart+1)
 											local syntaxEnd = pageSource:find("%<%/syntaxhighlight%>",syntaxStart+1)

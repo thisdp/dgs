@@ -160,6 +160,12 @@ function dgsCreateGridList(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateGridList",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateGridList",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateGridList",4,"number")) end
+	if relative then 
+		if x > 100 or x < -100 then error(dgsGenAsrt(x,"dgsCreateGridList",1,"float between [0, 1]")) end
+		if y > 100 or y < -100 then error(dgsGenAsrt(y,"dgsCreateGridList",2,"float between [0, 1]")) end
+		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsCreateGridList",3,"float between [0, 1]")) end
+		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsCreateGridList",4,"float between [0, 1]")) end
+	end
 
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
@@ -230,6 +236,7 @@ function dgsCreateGridList(...)
 		scrollBarThick = scbThick,
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
+		wheelScrollable = {true,true},
 		scrollFloor = {false,false},--move offset ->int or float
 		scrollBarAlignment = {"right","bottom"},
 		scrollSize = 60,			--60 pixels
@@ -298,7 +305,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 		local relSizX,relSizY = w-(scbAlignmentV ~= "left" and scbThickV or 0),h-scbThickH
 		local rowShowRange = relSizY-columnHeight
 		if relSizX*columnHeight ~= 0 then
-			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist,res)
+			columnRT,err = dgsCreateRenderTarget(relSizX,columnHeight,true,gridlist)
 			if columnRT ~= false then
 				dgsAttachToAutoDestroy(columnRT,gridlist,-1)
 			else
@@ -306,7 +313,7 @@ function dgsGridListRecreateRenderTarget(gridlist,lateAlloc)
 			end
 		end
 		if relSizX*rowShowRange ~= 0 then
-			rowRT,err = dgsCreateRenderTarget(relSizX,rowShowRange,true,gridlist,res)
+			rowRT,err = dgsCreateRenderTarget(relSizX,rowShowRange,true,gridlist)
 			if rowRT ~= false then
 				dgsAttachToAutoDestroy(rowRT,gridlist,-3)
 			else
@@ -457,6 +464,18 @@ function dgsGridListSetVerticalScrollPosition(gridlist,vertical)
 	if not (type(vertical) == "number" and vertical>= 0 and vertical <= 100) then error(dgsGenAsrt(vertical,"dgsGridListSetVerticalScrollPosition",2,"nil/number","0~100")) end
 	local scb = dgsElementData[gridlist].scrollbars
 	return dgsScrollBarSetScrollPosition(scb[1],vertical)
+end
+
+function dgsGridListSetScrollBarState(gridlist,vertical,horizontal)
+	if not dgsIsType(gridlist,"dgs-dxgridlist") then error(dgsGenAsrt(gridlist,"dgsGridListSetScrollBarState",1,"dgs-dxgridlist")) end
+	dgsSetData(gridlist,"scrollBarState",{vertical,horizontal},true)
+	dgsSetData(gridlist,"configNextFrame",true)
+	return true
+end
+
+function dgsGridListGetScrollBarState(gridlist)
+	if not dgsIsType(gridlist,"dgs-dxgridlist") then error(dgsGenAsrt(gridlist,"dgsGridListGetScrollBarState",1,"dgs-dxgridlist")) end
+	return dgsElementData[gridlist].scrollBarState[1],dgsElementData[gridlist].scrollBarState[2]
 end
 
 function dgsAttachToGridList(element,gridlist,r,c)
@@ -1378,7 +1397,7 @@ function dgsGridListInsertRowAfter(gridlist,r,...)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListInsertRowAfter",1,"dgs-dxgridlist")) end
 	local eleData = dgsElementData[gridlist]
 	local cData = eleData.columnData
-	assert(#cData > 0 ,"Bad argument @dgsGridListInsertRowAfter, no columns in the grid list")
+	if not (#cData > 0) then error("Bad argument @dgsGridListInsertRowAfter, no columns in the grid list") end
 	return dgsGridListAddRow(gridlist,r+1,...)
 end
 
@@ -1997,7 +2016,7 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 	end
 	rData[r][c][glItem_text] = tostring(text or "")
 	if isSection then
-		dgsGridListSetItemAsSection(gridlist,r,c,true)
+		dgsGridListSetRowAsSection(gridlist,r,true)
 	end
 	if dgsElementData[gridlist].autoSort then
 		dgsElementData[gridlist].nextRenderSort = true
@@ -2332,7 +2351,7 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 	local colors
 	local args = {...}
 	if #args == 0 then
-		error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"table/number"))
+		error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",4,"table/number"))
 	elseif #args == 1 then
 		if type(args[1]) == "table" then
 			colors = {args[1][1],args[1][2] or args[1][1],args[1][3] or args[1][1]}
@@ -2340,10 +2359,10 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 			colors = {args[1],args[1],args[1]}
 		end
 	elseif #args >= 3 then
-		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",2,"number")) end
-		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemColor",3,"number")) end
-		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemColor",4,"number")) end
-		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemColor",5,"nil/number")) end
+		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemColor",4,"number")) end
+		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemColor",5,"number")) end
+		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemColor",6,"number")) end
+		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemColor",7,"nil/number")) end
 		local clr = tocolor(...)
 		colors = {clr,clr,clr}
 	end
@@ -2423,14 +2442,14 @@ function dgsGridListSetItemBackGroundColor(gridlist,r,c,...)
 	local colors
 	local args = {...}
 	if #args == 0 then
-		error(dgsGenAsrt(args[1],"dgsGridListSetItemBackGroundColor",2,"table/number"))
+		error(dgsGenAsrt(args[1],"dgsGridListSetItemBackGroundColor",4,"table/number"))
 	elseif #args == 1 and type(args[1]) == "table" then
 		colors = args[1]
 	elseif #args >= 3 then
-		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemBackGroundColor",2,"number")) end
-		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemBackGroundColor",3,"number")) end
-		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemBackGroundColor",4,"number")) end
-		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemBackGroundColor",5,"nil/number")) end
+		if not (type(args[1]) == "number") then error(dgsGenAsrt(args[1],"dgsGridListSetItemBackGroundColor",4,"number")) end
+		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemBackGroundColor",5,"number")) end
+		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemBackGroundColor",6,"number")) end
+		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemBackGroundColor",7,"nil/number")) end
 		local clr = tocolor(...)
 		colors = {clr,clr,clr}
 	end
@@ -2649,6 +2668,26 @@ function configGridList(gridlist)
 	dgsGridListRecreateRenderTarget(gridlist,true)
 	dgsGridListUpdateRowMoveOffset(gridlist)
 	eleData.configNextFrame = false
+end
+
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxgridlist"] = function(dgsEle,isWheelDown)
+	local scrollbar
+	local scrollbar1,scrollbar2 = dgsElementData[dgsEle].scrollbars[1],dgsElementData[dgsEle].scrollbars[2]
+	local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+	if visibleScb1 then
+		scrollbar = scrollbar1
+	elseif visibleScb2 and not visibleScb1 then
+		scrollbar = scrollbar2
+	elseif not visibleScb1 and not visibleScb2 then
+		scrollbar = scrollbar1
+	end
+	if scrollbar then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
 end
 
 ----------------------------------------------------------------
@@ -3121,7 +3160,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
 					if itemUsingBGImage then
 						if not eleData.rowImageStyle or eleData.rowImageStyle == 1 then
-							dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						elseif eleData.rowImageStyle == 2 then
 							local allColumnWidth = dgsGridListGetColumnAllWidth(source,#eleData.columnData)
 							if viewWidth > allColumnWidth then
@@ -3135,7 +3174,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,-materialWidth*(columnMoveOffset-rowBGX)/(allColumnWidth-bgOffset),0,materialWidth*backgroundWidth/(allColumnWidth-bgOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,-materialWidth*(columnMoveOffset-rowBGX)/(allColumnWidth-bgOffset),0,materialWidth*backgroundWidth/(allColumnWidth-bgOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						elseif eleData.rowImageStyle == 3 then
 							if rowBGX+backgroundWidth >= viewWidth then
 								backgroundWidth = viewWidth-rowBGX
@@ -3147,10 +3186,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,materialWidth*rowBGX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,materialWidth*rowBGX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						end
 					else
-						dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor)--_RowHeight
+						dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 					end
 					elementBuffer[i][id] = elementBuffer[i][id] or {}
 					local eBuffer = elementBuffer[i][id]
@@ -3164,7 +3203,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							local imagey = rowY+(imageData[7] and imageData[4]*rowHeight or imageData[4])--_RowHeight
 							local imagew = imageData[7] and imageData[5]*columnWidth or imageData[5]
 							local imageh = imageData[7] and imageData[6]*rowHeight or imageData[6]--_RowHeight
-							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha))
+							dxDrawImage(imagex,imagey,imagew,imageh,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha),false,true)
 						end
 						local textXS,textYS,textXE,textYE = rowX+columnOffset,rowY,rowW,rowH
 						if cItem[glItem_textOffset] then

@@ -52,6 +52,12 @@ function dgsCreateScalePane(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateScalePane",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateScalePane",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateScalePane",4,"number")) end
+	if relative then 
+		if x > 100 or x < -100 then error(dgsGenAsrt(x,"dgsCreateScalePane",1,"float between [0, 1]")) end
+		if y > 100 or y < -100 then error(dgsGenAsrt(y,"dgsCreateScalePane",2,"float between [0, 1]")) end
+		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsCreateScalePane",3,"float between [0, 1]")) end
+		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsCreateScalePane",4,"float between [0, 1]")) end
+	end
 	local scalepane = createElement("dgs-dxscalepane")
 	dgsSetType(scalepane,"dgs-dxscalepane")
 	
@@ -67,6 +73,7 @@ function dgsCreateScalePane(...)
 		scrollBarThick = scbThick,
 		scrollBarAlignment = {"right","bottom"},
 		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
+		wheelScrollable = {true,true},
 		scrollBarLength = {},
 		horizontalMoveOffsetTemp = 0,
 		verticalMoveOffsetTemp = 0,
@@ -329,6 +336,75 @@ end
 function dgsScalePaneGetScrollBarState(scalepane)
 	if not dgsIsType(scalepane,"dgs-dxscalepane") then error(dgsGenAsrt(scalepane,"dgsScalePaneSetScrollBarState",1,"dgs-dxscalepane")) end
 	return dgsElementData[scalepane].scrollBarState[1],dgsElementData[scalepane].scrollBarState[2]
+end
+
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxscalepane"] = function(dgsEle,isWheelDown)
+	local eleData = dgsElementData[dgsEle]
+	if getKeyState("lalt") then
+		local scale = eleData.scale
+		local scaleMultipler = eleData.scaleMultipler
+		local maxScale = eleData.maxScale
+		local minScale = eleData.minScale
+		local newScaleX,newScaleY
+		if isWheelDown then
+			newScaleX = scale[1]-scaleMultipler*scale[1]
+			newScaleY = scale[2]-scaleMultipler*scale[2]
+			if newScaleX <= minScale[1] or newScaleY <= minScale[2] then
+				if newScaleX <= minScale[1] then
+					newScaleX = minScale[1]
+					newScaleY = scale[2]/scale[1]*newScaleX
+				else
+					newScaleY = minScale[2]
+					newScaleX = scale[1]/scale[2]*newScaleY
+				end
+			end
+			if scale[1] > 1 and newScaleX < 1 then
+				newScaleX = 1
+				newScaleY = scale[2]/scale[1]*newScaleX
+			elseif scale[2] > 1 and newScaleY < 1 then
+				newScaleY = 1
+				newScaleX = scale[1]/scale[2]*newScaleY
+			end
+		else
+			newScaleX = scale[1]+scaleMultipler*scale[1]
+			newScaleY = scale[2]+scaleMultipler*scale[2]
+			if newScaleX >= maxScale[1] or newScaleY >= maxScale[2] then
+				if newScaleX >= maxScale[1] then
+					newScaleX = maxScale[1]
+					newScaleY = scale[2]/scale[1]*newScaleX
+				else
+					newScaleY = maxScale[2]
+					newScaleX = scale[1]/scale[2]*newScaleY
+				end
+			end
+			if scale[1] < 1 and newScaleX > 1 then
+				newScaleX = 1
+				newScaleY = scale[2]/scale[1]*newScaleX
+			elseif scale[2] < 1 and newScaleY > 1 then
+				newScaleY = 1
+				newScaleX = scale[1]/scale[2]*newScaleY
+			end
+		end
+		dgsSetData(dgsEle,"scale",{newScaleX,newScaleY})
+	else
+		local scrollbar
+		local scrollbar1,scrollbar2 = dgsElementData[dgsEle].scrollbars[1],dgsElementData[dgsEle].scrollbars[2]
+		local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+		if visibleScb1 then
+			scrollbar = scrollbar1
+		elseif visibleScb2 and not visibleScb1 then
+			scrollbar = scrollbar2
+		elseif not visibleScb1 and not visibleScb2 then
+			scrollbar = scrollbar1
+		end
+		if scrollbar then
+			dgsSetData(scrollbar,"moveType","slow")
+			scrollScrollBar(scrollbar,isWheelDown)
+		end
+	end
 end
 
 ----------------------------------------------------------------

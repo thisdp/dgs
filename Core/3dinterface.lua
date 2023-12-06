@@ -20,6 +20,7 @@ local type = type
 local tableInsert = table.insert
 local dxSetShaderValue = dxSetShaderValue
 local dxDrawImage = dxDrawImage
+local dxDrawMaterialLine3D = dxDrawMaterialLine3D
 
 function dgsCreate3DInterface(...)
 	local sRes = sourceResource or resource
@@ -50,7 +51,7 @@ function dgsCreate3DInterface(...)
 	if not(type(resX) == "number") then error(dgsGenAsrt(resX,"dgsCreate3DInterface",6,"number")) end
 	if not(type(resY) == "number") then error(dgsGenAsrt(resY,"dgsCreate3DInterface",7,"number")) end
 	local interface = createElement("dgs-dx3dinterface")
-	local renderer = dxCreateShader(interface3DShader)
+	local renderer = dxCreateShader(RendererShader3DInterface)
 	tableInsert(dgsWorld3DTable,interface)
 	dgsSetType(interface,"dgs-dx3dinterface")
 	dgsElementData[interface] = {
@@ -63,7 +64,7 @@ function dgsCreate3DInterface(...)
 		resolution = {resX,resY},
 		maxDistance = distance or 200,
 		fadeDistance = distance or 180,
-		blendMode = "add",
+		blendMode = "blend",
 		attachTo = false,
 		dimension = -1,
 		interior = -1,
@@ -71,6 +72,7 @@ function dgsCreate3DInterface(...)
 		hit = {},
 		renderer = renderer,
 		doublesided = true,
+		enableColorFilter = false,
 	}
 	dgsAttachToAutoDestroy(renderer,interface,-2)
 	dgsApplyGeneralProperties(interface,sRes)
@@ -91,8 +93,8 @@ function dgs3DInterfaceRecreateRenderTarget(interface,lateAlloc)
 		else
 			dxSetTextureEdge(mainRT,"mirror")
 			dgsAttachToAutoDestroy(mainRT,interface,-1)
-			dxSetShaderValue(dgsElementData[interface].renderer,"sourceTexture",mainRT)
 		end
+		dxSetShaderValue(dgsElementData[interface].renderer,"sourceTexture",mainRT)
 		dgsSetData(interface,"mainRT",mainRT)
 		dgsSetData(interface,"retrieveRT",nil)
 	end
@@ -332,8 +334,21 @@ end
 ----------------------------------------------------------------
 ----------------3D Interface Renderer Shader--------------------
 ----------------------------------------------------------------
-local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0,0},{0,0,0,0,1,1},{0,0,0,0,1,0}
 function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,roll)
+	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
+	local offFaceZ = atan2(vx,vy)
+	local cRoll = cos(roll)*h*0.5
+	local sRoll = sin(roll)*h*0.5
+	local cZ = cos(offFaceZ)
+	local sZ = sin(offFaceZ)
+	local cX = cos(offFaceX)
+	local sX = sin(offFaceX)
+	local x1,y1,z1 = sX*cRoll*sZ + cZ*sRoll, sX*cRoll*cZ - sZ*sRoll, -cX*cRoll
+	dxDrawMaterialLine3D(x-x1,y-y1,z-z1,x+x1,y+y1,z+z1,material,w,color,x+vx,y+vy,z+vz)
+end
+
+local rightBottom3D,rightTop3D,leftBottom3D,leftTop3D = {0,0,0,0,0,1},{0,0,0,0,0,0},{0,0,0,0,1,1},{0,0,0,0,1,0}
+function dgsDrawMaterialLine3DPrimitive(x,y,z,vx,vy,vz,material,w,h,color,roll)
 	local offFaceX = atan2(vz,(vx*vx+vy*vy)^0.5)
 	local offFaceZ = atan2(vx,vy)
 	local cRoll = cos(roll)
@@ -366,19 +381,11 @@ function dgsDrawMaterialLine3D(x,y,z,vx,vy,vz,material,w,h,color,roll)
 	dxDrawMaterialPrimitive3D("trianglestrip",material,false,leftTop3D,leftBottom3D,rightTop3D,rightBottom3D)
 end
 
-interface3DShader = [[
-float3x3 shapeConfig = {
-	float3(0, 0, 0),	//Position
-	float3(0, 0, 0),	//Face To
-	float3(0, 0, 0),	//Width Height Roll
-};
-bool doublesided = true;
+RendererShader3DInterface = [[
+float3 colorFilter = float3(1,1,1);
 texture sourceTexture;
-float4x4 gProjectionMainScene : PROJECTION_MAIN_SCENE;
-float4x4 gViewMainScene : VIEW_MAIN_SCENE;
-#define HalfPI 1.5707963267948966192313216916398
 
-sampler2D SamplerColor = sampler_state{
+sampler2D SamplerTex = sampler_state{
     Texture = sourceTexture;
     MipFilter = Linear;
     MinFilter = Linear;
@@ -387,85 +394,18 @@ sampler2D SamplerColor = sampler_state{
     AddressV = Mirror;
 };
 
-struct VSInput{
-    float3 Position : POSITION0;
-    float2 TexCoord : TEXCOORD0;
-    float4 Diffuse : COLOR0;
-};
-
-struct PSInput{
-    float4 Position : POSITION0;
-    float2 TexCoord : TEXCOORD0;
-    float4 Diffuse : COLOR0;
-};
-
-float3 findRotation3DByFaceRad(float3 faceTo) {
-	return float3(atan2(faceTo.z,length(faceTo.xy))+HalfPI,0,-atan2(faceTo.x,faceTo.y));
+float4 colorFilterRemover(float4 color:COLOR0, float2 UV:TEXCOORD0) : COLOR0{
+	color *= tex2D(SamplerTex, UV);
+	color.rgb /= colorFilter;
+	return color;
 }
 
-float3x3 rodriguesFucksEuler(float3 rotVector, float angle){
-	rotVector = normalize(rotVector);
-    float c, s;
-    sincos(angle,s,c);
-    float t = 1-c;
-    float x = rotVector.x;
-    float y = rotVector.y;
-    float z = rotVector.z;
-    return float3x3(
-        t*x*x+c,   t*x*y-s*z, t*x*z+s*y,
-        t*x*y+s*z, t*y*y+c,   t*y*z-s*x,
-        t*x*z-s*y, t*y*z+s*x, t*z*z+c
-    );
-}
-
-float4x4 createWorldMatrix(float3 pos, float3 faceTo, float roll){
-	float3 faceToRot = findRotation3DByFaceRad(faceTo);
-    float3 cRot, sRot;
-    sincos(faceToRot, sRot, cRot);
-	float3x3 rotXZ = float3x3(
-        cRot.z * cRot.y - sRot.z * sRot.x * sRot.y, cRot.y * sRot.z + cRot.z * sRot.x * sRot.y, -cRot.x * sRot.y,
-        -cRot.x * sRot.z, cRot.z * cRot.x, sRot.x,
-        cRot.z * sRot.y + cRot.y * sRot.z * sRot.x, sRot.z * sRot.y - cRot.z * cRot.y * sRot.x, cRot.x * cRot.y
-	);
-	float3x3 rot = mul(rotXZ,rodriguesFucksEuler(faceTo,roll));
-    float4x4 eleMatrix = {
-        float4(rot[0], 0),
-        float4(rot[1], 0),
-        float4(rot[2], 0),
-        float4(pos, 1),
-    };
-    return eleMatrix;
-}
-
-PSInput VertexShaderFunction(VSInput VS){
-    PSInput PS = (PSInput)0;
-    VS.Position.xyz = float3((VS.TexCoord.xy-0.5)*shapeConfig[2].xy, 0);
-    float4x4 sWorld = createWorldMatrix(shapeConfig[0], shapeConfig[1], shapeConfig[2].z);
-	PS.Position = mul(mul(mul(float4(VS.Position,1),sWorld),gViewMainScene), gProjectionMainScene);
-    PS.TexCoord = 1-VS.TexCoord;
-    PS.Diffuse = VS.Diffuse;
-    return PS;
-}
-
-float4 PixelShaderFunction(PSInput PS) : COLOR0{
-    return tex2D(SamplerColor, PS.TexCoord.xy)*PS.Diffuse;
-}
-
-technique interface3D{
-  pass P0  {
-    ZEnable = true;
-    ZFunc = LessEqual;
-	SeparateAlphaBlendEnable = true;
-	SrcBlendAlpha = One;
-	DestBlendAlpha = InvSrcAlpha;
-    ZWriteEnable = true;
-	CullMode = doublesided?1:3;
-    VertexShader = compile vs_2_0 VertexShaderFunction();
-    PixelShader  = compile ps_2_0 PixelShaderFunction();
-  }
+technique cFilterRemover{
+	pass P0{
+		PixelShader = compile ps_2_0 colorFilterRemover();
+	}
 }
 ]]
-
 ----------------------------------------------------------------
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
@@ -579,12 +519,13 @@ dgs3DRenderer["dgs-dx3dinterface"] = function(source)
 					fx,fy,fz = fx-x,fy-y,fz-z
 				end
 				if eleData.mainRT then
-					dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,applyColorAlpha(eleData.color,eleData.alpha*addalp),roll)
+					if eleData.enableColorFilter then
+						dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.mainRT,w,h,applyColorAlpha(eleData.color,eleData.alpha*addalp),roll)
+					else
+						dxSetShaderValue(eleData.renderer,"colorFilter",colorFilter)
+						dgsDrawMaterialLine3D(x,y,z,fx,fy,fz,eleData.renderer,w,h,applyColorAlpha(eleData.color,eleData.alpha*addalp),roll)
+					end
 				end
-				--[[if eleData.mainRT then
-					dxSetShaderValue(eleData.renderer,"shapeConfig",x,y,z,fx,fy,fz,w,h,roll/180*math.pi)
-					dxDrawImage(0,0,sW,sH,eleData.renderer,0,0,0,applyColorAlpha(eleData.color,eleData.alpha*addalp))
-				end]]
 				return true
 			end
 		end

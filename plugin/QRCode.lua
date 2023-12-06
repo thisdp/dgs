@@ -4,7 +4,7 @@ QRCodeQueue = {}
 function dgsRequestQRCode(str,w,h)
 	w,h = w or 128,h or 128
 	local encodedStr = urlEncode(str)
-	local QRCode = dxCreateEmptyTexture(w,h,sourceResource)
+	local QRCode = dxCreateTexture(w,h)
 	dgsSetData(QRCode,"asPlugin","dgs-dxqrcode")
 	dgsSetData(QRCode,"data",{str,encodedStr})
 	dgsSetData(QRCode,"loaded",false)

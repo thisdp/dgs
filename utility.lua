@@ -58,6 +58,7 @@ events = {
 "onDgsSelectorSelect",
 "onDgsGridListSelect",
 "onDgsGridListHover",
+"onDgsMenuSelect",
 "onDgsMenuHover",
 "onDgsMouseHover",
 "onDgsGridListItemDoubleClick",
@@ -114,9 +115,7 @@ events = {
 -------
 }
 local addEvent = addEvent
-for i=1,#events do
-	addEvent(events[i],true)
-end
+for i=1,#events do addEvent(events[i],true) end
 events = nil
 local cos,sin,rad,atan2,deg = math.cos,math.sin,math.rad,math.atan2,math.deg
 local gsub,sub,len,find,format,byte,char = string.gsub,string.sub,string.len,string.find,string.format,string.byte,string.char
@@ -126,13 +125,8 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 local pi180 = math.pi/180
 sW,sH = guiGetScreenSize()
-__createElement = createElement
-__dxCreateShader = dxCreateShader
-__dxCreateFont = dxCreateFont
-__dxCreateTexture = dxCreateTexture
 __dxDrawImageSection = dxDrawImageSection
 __dxDrawImage = dxDrawImage
-
 -------Built-in DX Fonts
 fontBuiltIn = {
 	["default"]=true,
@@ -206,7 +200,15 @@ g_canBeBlocked = {
 -------DGS Built-in Texture
 DGSBuiltInTex = {
 	transParent_1x1 = dxCreateTexture(1,1,"dxt5"),
+	white_1x1 = dxCreateTexture(1,1,"argb"),
 }
+
+function initDGSBuiltInTex()
+	local pixels = dxGetTexturePixels(DGSBuiltInTex.white_1x1)
+	dxSetPixelColor(pixels, 0, 0, 255, 255, 255, 255)
+	dxSetTexturePixels(DGSBuiltInTex.white_1x1, pixels)
+end
+initDGSBuiltInTex()
 
 -------DEBUG
 addCommandHandler("debugdgs",function(command,arg)
@@ -245,35 +247,12 @@ function dgsSetDebugTracerEnabled(state)
 	return setElementData(localPlayer,"DGS-DebugTracer",state,false)
 end
 --------------------------------Element Utility
---------Element Pool
-externalElementPool = {}
-function dgsPushElement(element,eleType,sRes)
-	eleType = eleType or dgsGetType(element)
-	local sourceRes = sRes or sourceResource or resource
-	externalElementPool[sourceRes] = externalElementPool[sourceRes] or {}
-	externalElementPool[sourceRes][eleType] = externalElementPool[sourceRes][eleType] or {}
-	local elePool = externalElementPool[sourceRes][eleType]
-	elePool[#elePool+1] = element
-	return true
-end
-
-function dgsPopElement(eleType,sRes)
-	eleType = eleType or dgsGetType(element)
-	local sourceRes = sRes or sourceResource or resource
-	externalElementPool[sourceRes] = externalElementPool[sourceRes] or {}
-	externalElementPool[sourceRes][eleType] = externalElementPool[sourceRes][eleType] or {}
-	local elePool = externalElementPool[sourceRes][eleType]
-	local ele = elePool[#elePool]
-	if not ele then return false end
-	elePool[#elePool] = nil
-	return ele
-end
 
 --Built in
 dgsMaterialType = {
-	texture = "texture",
-	shader = "shader",
-	svg = "texture",
+	["shader"] = "shader",
+	["texture"] = "texture",
+	["svg"] = "texture",
 	["dgs-dxcanvas"] = "texture",
 	["render-target-texture"] = "texture",
 }
@@ -287,121 +266,8 @@ function isMaterial(ele)
 	return dgsMaterialType[eleType] or false
 end
 
-dgsElementLogger = {}	--0:Empty texture 1:texture; 2:shader
-dgsElementKeeper = {}
-function dxCreateEmptyTexture(width,height,sRes)
-	local texture
-	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sRes = sRes or sourceResource
-		if dgsElementKeeper[sRes] then
-			local sResRoot = getResourceRootElement(sRes)
-			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",width,height)
-			texture = dgsPopElement("texture",sRes)
-		end
-	end
-	if not texture then
-		texture = __dxCreateTexture(width,height)
-		dgsElementLogger[texture] = {0,false,texture}	--Log internally created texture
-		addEventHandler("onClientElementDestroy",texture,function()
-			dgsElementLogger[texture] = nil	--Clear logging
-		end,false)
-		return texture
-	else
-		return texture
-	end
-end
-
-function dxCreateTexture(pathOrData,sRes)
-	local texture
-	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sRes = sRes or sourceResource
-		if dgsElementKeeper[sRes] then
-			local textureData = fileGetContent(pathOrData) or pathOrData
-			local sResRoot = getResourceRootElement(sRes)
-			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"texture",textureData)
-			texture = dgsPopElement("texture",sRes)
-		end
-	end
-	if not texture then
-		texture = __dxCreateTexture(pathOrData)
-		if not texture then return false end
-		dgsElementLogger[texture] = {1,pathOrData,texture}	--Log internally created texture
-		addEventHandler("onClientElementDestroy",texture,function()
-			dgsElementLogger[texture] = nil	--Clear logging
-		end,false)
-		return texture
-	else
-		return texture
-	end
-end
-
-function dxCreateShader(pathOrData,sRes)
-	local shader
-	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sRes = sRes or sourceResource
-		if dgsElementKeeper[sRes] then
-			local shaderData = fileGetContent(pathOrData) or pathOrData
-			local sResRoot = getResourceRootElement(sRes)
-			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"shader",shaderData)
-			shader = dgsPopElement("shader",sRes)
-		end
-	end
-	if not shader then
-		shader = __dxCreateShader(pathOrData)
-		if not shader then return false end
-		dgsElementLogger[shader] = {2,pathOrData,shader}	--Log internally created shader
-		addEventHandler("onClientElementDestroy",shader,function()
-			dgsElementLogger[shader] = nil	--Clear logging
-		end,false)
-		return shader
-	else
-		return shader
-	end
-end
-
---[[
-creationInfo
-1.path
-2.raw data
-3.{path/raw data,size,isBold,quality}
-]]
-function dxCreateFont(creationInfo,sRes)
-	local pathOrData,font,size,isbold,quality = creationInfo
-	if type(creationInfo) == "table" then
-		pathOrData,size,isbold,quality = creationInfo[1],creationInfo[2],creationInfo[3],creationInfo[4]
-	end
-	if sRes ~= false then	--Read the data instead of create from path, and create remotely
-		sRes = sRes or sourceResource
-		if dgsElementKeeper[sRes] then
-			local sResRoot = getResourceRootElement(sRes)
-			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"font",pathOrData,size,isbold,quality)
-			font = dgsPopElement("font",sRes)
-		end
-	end
-	if not font then
-		font = __dxCreateFont(pathOrData,size,isbold,quality)
-		if not font then return false end
-		dgsElementLogger[font] = {3,{pathOrData,size,isbold,quality},font}	--Log internally created font
-		addEventHandler("onClientElementDestroy",font,function()
-			dgsElementLogger[font] = nil	--Clear logging
-		end,false)
-		return font
-	else
-		return font
-	end
-end
-
-function dgsCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
-	local rt
-	if sRes ~= false then	--Create remotely
-		sRes = sRes or sourceResource
-		if dgsElementKeeper[sRes] then
-			local sResRoot = getResourceRootElement(sRes)
-			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,"rendertarget",w,h,isTransparent)
-			rt = dgsPopElement("rendertarget",sRes)
-		end
-	end
-	local rendertarget = rt or dxCreateRenderTarget(w,h,isTransparent)
+function dgsCreateRenderTarget(w,h,isTransparent,dgsElement)
+	local rendertarget = dxCreateRenderTarget(w,h,isTransparent)
 	if not isElement(rendertarget) then
 		if w < 1 or h < 1 then return nil end	--Pass
 		local videoMemory = dxGetStatus().VideoMemoryFreeForMTA
@@ -411,20 +277,6 @@ function dgsCreateRenderTarget(w,h,isTransparent,dgsElement,sRes)
 		return false,"Failed to create render target"..forWhat.." ("..w.."x"..h..") [Expected:"..reqSize..reqUnit.."/Free:"..freeSize..freeUnit.."]"
 	end
 	return rendertarget
-end
-
-function createElement(eleType,sRes)
-	local ele
-	sRes = sRes or sourceResource
-	if sRes then	--Create remotely
-		if dgsElementKeeper[sRes] then
-			local sResRoot = getResourceRootElement(sRes)
-			dgsTriggerEvent("onDgsRequestCreateRemoteElement",sResRoot,eleType)
-			ele = dgsPopElement(eleType,sRes)
-		end
-	end
-	ele = ele or __createElement(eleType)
-	return ele
 end
 
 function removeElementData(element,key)
@@ -601,71 +453,7 @@ function table.getKeys(obj)
 	table.sort(newTable)
 	return newTable
 end
---------------------------------File Utility
-function hashFile(fName,exportContent)
-	local f = fileOpen(fName,true)
-	local fSize = fileGetSize(f)
-	local fContent = fileRead(f,fSize)
-	fileClose(f)
-	return hash("sha256",fContent),fSize,exportContent and fContent or nil
-end
-
-function fileGetContent(fName)
-	if not fileExists(fName) then outputDebugString("Bad argument @'fileGetContent' at argument 1, Couldn't find file \""..tostring(fName).."\"") return false end
-	local matched,fileInfo = verifyFile(fName)
-	if not matched then
-		triggerServerEvent("DGSI_AbnormalDetected",localPlayer,{[fName]=fileInfo})
-		return ""
-	end
-	local f = fileOpen(fName,true)
-	local str = fileRead(f,fileGetSize(f))
-	fileClose(f)
-	return str
-end
---[[
-streamer = setmetatable({
-		readPos = 0,
-		file = nil,
-	},{
-	__index = {
-		read = function(self,bits)
-			fileSetPos(self.file,self.readPos)
-			local str = fileRead(self.file,bits)
-			self.readPos = self.readPos+bits
-			return str
-		end,
-		getSize = function(self)
-			return fileGetSize(self.file)
-		end,
-		seek = function(self,op,bits)
-			if op == "set" then
-				fileSetPos(self.file,bits)
-				self.readPos = bits
-			elseif op == "cur" then
-				self.readPos = self.readPos+bits
-				fileSetPos(self.file,self.readPos)
-			elseif op == "end" then
-				self.readPos = fileGetSize(self.file)+bits
-				fileSetPos(self.file,self.readPos)
-			end
-			return true
-		end,
-		open = function(self,fName)
-			self.file = fileOpen(fName)
-		end,
-		close = function(self)
-			if self.file then fileClose(self.file) end
-		end,
-	}
-})]]
 --------------------------------String Utility
---[[
-ASCIIBuffer = {}
-for i=0,255 do
-	ASCIIBuffer[char(i)] = i
-	ASCIIBuffer[i] = char(i)
-end]]
-
 function string.split(s,delim)
 	local delimLen = len(delim)
     if type(delim) ~= "string" or delimLen <= 0 then return false end
@@ -759,21 +547,6 @@ function findRotation3D(x1,y1,z1,x2,y2,z2)
 end
 
 function math.clamp(value,n_min,n_max)
-	--[[if type(value) ~= "number" then
-		local dbInfo = debug.getinfo(2)
-		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.clamp at argument 1, expect a number, got "..type(value),4,255,128,0)
-		return false
-	end
-	if type(n_min) ~= "number" then
-		local dbInfo = debug.getinfo(2)
-		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.clamp at argument 2, expect a number, got "..type(n_min),4,255,128,0)
-		return false
-	end
-	if type(n_max) ~= "number" then
-		local dbInfo = debug.getinfo(2)
-		outputDebugString("WARNING: "..dbInfo.short_src..":"..dbInfo.currentline..": Bad argument @math.clamp at argument 3, expect a number, got "..type(n_max),4,255,128,0)
-		return false
-	end]]
 	if value <= n_min then
 		return n_min
 	elseif value >= n_max then
@@ -1127,6 +900,7 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 						end
 					end
 				end
+				dxSetShaderValue(image,"UV",0,0,1,1)	--Reset UV
 			else
 				if not __dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI) then
 					if debugMode then
@@ -1494,34 +1268,3 @@ addEventHandler("DGSI_onDebugSendContext",root,function(context)
 		table.remove(debugContextQueue,1)
 	end
 end)
-
------------------------------SECURITY
-DGSFileVerify = false
-DGSFileInfo = getElementData(resourceRoot,"DGSI_FileInfo")
-function verifyFile(fName,exportContent)
-	if fileExists(fName) then
-		local _hash,_size,_content = hashFile(fName,exportContent)
-		local localFileInfo = {_hash,_size}
-		local targetFileInfo = DGSFileInfo[fName]
-		if localFileInfo[1] ~= targetFileInfo[1] or localFileInfo[2] ~= targetFileInfo[2] then
-			return false,localFileInfo
-		end
-		return true,_content
-	end
-	return true
-end
-
-function verifyFiles()
-	local mismatched = {}
-	for fName,fData in pairs(DGSFileInfo) do
-		local matched,fileInfo = verifyFile(fName)
-		if not matched then
-			mismatched[fName] = fileInfo
-		end
-	end
-	if table.count(mismatched) > 0 then
-		triggerServerEvent("DGSI_AbnormalDetected",localPlayer,mismatched)
-	end
-	setTimer(collectgarbage,1000,1)
-end
-addEventHandler("onDgsStart",resourceRoot,verifyFiles)

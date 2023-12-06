@@ -41,6 +41,7 @@ dgsBackEndRenderer = {
 }
 --On Click Action
 dgsOnMouseClickAction = {}
+dgsOnMouseScrollAction = {}
 --Collider
 dgsCollider = {
 	default = function(source,mx,my,x,y,w,h)
@@ -55,12 +56,12 @@ dgsOnVisibilityChange = {}
 dgsPluginTable = {}
 --Parent System
 BackEndTable = {}			--Store Back-end Render Element (If it has back-end renderer)
-BottomFatherTable = {}		--Store Bottom Father Element
-CenterFatherTable = {}		--Store Center Father Element (Default)
-TopFatherTable = {}			--Store Top Father Element
+BottomRootTable = {}		--Store Bottom Root Element
+CenterRootTable = {}		--Store Center Root Element (Default)
+TopRootTable = {}			--Store Top Root Element
 dgsWorld3DTable = {}
 dgsScreen3DTable = {}
-LayerCastTable = {center=CenterFatherTable,top=TopFatherTable,bottom=BottomFatherTable}
+LayerCastTable = {center=CenterRootTable,top=TopRootTable,bottom=BottomRootTable}
 --
 --Element Data System
 dgsElementData = {[resourceRoot] = {}}		----The Global BuiltIn DGS Element Data Table
@@ -167,11 +168,11 @@ end
 
 function dgsGetElementsInLayer(layer)
 	if layer == true or layer:lower() == "bottom" then
-		return BottomFatherTable
+		return BottomRootTable
 	elseif layer:lower() == "top" then
-		return TopFatherTable
+		return TopRootTable
 	else
-		return CenterFatherTable
+		return CenterRootTable
 	end
 end
 
@@ -215,16 +216,16 @@ function dgsGetParent(dgsEle)
 	return dgsElementData[dgsEle] and dgsElementData[dgsEle].parent or false
 end
 
-function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
+function dgsSetParent(child,newParent,nocheckRoot,noUpdatePosSize)
 	if newParent == resourceRoot then newParent = nil end
 	if not(dgsIsType(child)) then error(dgsGenAsrt(child,"dgsSetParent",1,"dgs-dxelement")) end
 	if not(not dgsElementData[child] or not dgsElementData[child].attachTo) then error(dgsGenAsrt(child,"dgsSetParent",1,_,_,_,"attached dgs element can not have a parent")) end
 	if not dgsElementData[child] then dgsElementData[child] = {} end
 	local oldParent = dgsElementData[child].parent
-	local parentTable = isElement(oldParent) and dgsElementData[oldParent].children or CenterFatherTable
+	local parentTable = isElement(oldParent) and dgsElementData[oldParent].children or CenterRootTable
 	if isElement(newParent) then
 		if not dgsIsType(newParent) then return end
-		if not nocheckfather then
+		if not nocheckRoot then
 			local id = tableFind(parentTable,child)
 			if id then
 				tableRemove(parentTable,id)
@@ -240,7 +241,7 @@ function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
 			tableRemove(parentTable,id)
 		end
 		dgsElementData[child].parent = nil
-		tableInsert(CenterFatherTable,child)
+		tableInsert(CenterRootTable,child)
 		setElementParent(child,resourceRoot)
 	end
 	---Update Position and Size
@@ -259,19 +260,6 @@ function dgsSetParent(child,newParent,nocheckfather,noUpdatePosSize)
 		end
 	end
 	return true
-end
-
-function blurEditMemo(dgsEle)
-	local dgsType = dgsGetType(dgsEle or MouseData.focused)
-	if dgsType == "dgs-dxedit" then
-		guiBlur(GlobalEdit)
-		if not dgsElementData[GlobalEdit] then dgsElementData[GlobalEdit] = {} end
-		dgsElementData[GlobalEdit].linkedDxEdit = nil
-	elseif dgsType == "dgs-dxmemo" then
-		guiBlur(GlobalMemo)
-		if not dgsElementData[GlobalMemo] then dgsElementData[GlobalMemo] = {} end
-		dgsElementData[GlobalMemo].linkedDxMemo = nil
-	end
 end
 
 function dgsBringToFront(dgsEle,mouse,dontMoveParent,dontFocus)
@@ -564,15 +552,11 @@ dgsOnPropertyChange = {
 		asPlugin = function(dgsEle,key,value,oldValue)
 			dgsRegisterPluginType(value)
 		end,
+		visible = function(dgsEle,key,value,oldValue)
+			dgsApplyVisibleInherited(dgsEle,value and dgsElementData[dgsEle].visibleInherited)
+		end
 	},
 }
---------------Edit/Memo Blur Check
-function GlobalEditMemoBlurCheck()
-	local dxChild = source == GlobalEdit and dgsElementData[source].linkedDxEdit or dgsElementData[source].linkedDxMemo
-	if isElement(dxChild) and MouseData.focused == dxChild then
-		dgsBlur(dxChild,true)
-	end
-end
 
 --[[
 {}: table with item checked
@@ -929,224 +913,13 @@ function dgsEasingFunctionExists(name)
 	return easingBuiltIn[name] or (dgsEasingFunction[name] and true)
 end
 
-------------------------DGS Property Saver
---[[
-dgsElementKeeper = {}
-function dgsSetElementKeeperEnabled(state)
-	if sourceResource then
-		dgsElementKeeper[sourceResource] = state and true or nil
-		return true
-	end
-	return false
-end
-
-function dgsGetElementKeeperEnabled()
-	if sourceResource then
-		return dgsElementKeeper[sourceResource]
-	end
-	return false
-end
-function DGSI_SaveData()
-	--Properties
-	setElementData(root,"DGSI_Properties",dgsElementData,false)
-	--Types
-	setElementData(root,"DGSI_ElementType",dgsElementType,false)
-	--Bound Resource
-	setElementData(root,"DGSI_BoundResource",boundResource,false)
-	--Translations
-	setElementData(root,"DGSI_TranslationResRegister",resourceTranslation,false)
-	setElementData(root,"DGSI_TranslationLanguage",LanguageTranslation,false)
-	setElementData(root,"DGSI_TranslationLanguageAttach",LanguageTranslationAttach,false)
-	--Easing Functions
-	setElementData(root,"DGSI_EasingFunctions",dgsEasingFunctionOrg,false)
-	--Element Keeper
-	setElementData(root,"DGSI_ElementKeeper",dgsElementKeeper,false)
-	--Layer Data
-	setElementData(root,"DGSI_LayerData",{
-		bottom=BottomFatherTable,
-		center=CenterFatherTable,
-		top=TopFatherTable,
-		world3d=dgsWorld3DTable,
-		screen3d=dgsScreen3DTable,
-	},false)
-	--Animations
-	setElementData(root,"DGSI_Animations",animQueue,false)
-	--Others
-	setElementData(root,"DGSI_SaveData",true,false)
-end]]
-
---[[
-Logger type:
-1.Texutre
-2.Shader
-3.Font
-]]
-
---[[
-function DGSI_AllocateDxElement(e,oldDgsElementLogger)
-	if oldDgsElementLogger[e] then
-		if isElement(oldDgsElementLogger[e][3]) then
-			return oldDgsElementLogger[e][3]
-		else
-			local dxElement
-			if oldDgsElementLogger[e][1] == 1 then
-				dxElement = __dxCreateTexture(oldDgsElementLogger[e][2])
-			elseif oldDgsElementLogger[e][1] == 2 then
-				dxElement = __dxCreateShader(oldDgsElementLogger[e][2])
-			elseif oldDgsElementLogger[e][1] == 3 then
-				dxElement = __dxCreateFont(unpack(oldDgsElementLogger[e][2]))
-			end
-			if dxElement then
-				oldDgsElementLogger[e][3] = dxElement
-				dgsElementLogger[dxElement] = oldDgsElementLogger[e]
-				return dxElement
-			end
-		end
-	end
-	return nil
-end
-
-function DGSI_ReadData()
-	local SaveData = getElementData(root,"DGSI_SaveData")
-	if SaveData == true then
-		--Element Logger
-		local oldDgsElementLogger = getElementData(root,"DGSI_ElementLogger") or {}
-		--Properties
-		local _dgsElementData = getElementData(root,"DGSI_Properties") or {}
-		for dgsElement,data in pairs(_dgsElementData) do
-			if not isElement(dgsElement) then
-				_dgsElementData[dgsElement] = nil
-			else
-				if data.functions_string then
-					local fnc = loadstring(data.functions_string[1])
-					data.functions = {fnc,data.functions_string[2]}
-				end
-				if data.eventHandlers then
-					local eventHandlers = data.eventHandlers
-					if eventHandlers then
-						for i=1,#eventHandlers do
-							addEventHandler(eventHandlers[i][1],dgsElement,_G[ eventHandlers[i][2] ],eventHandlers[i][3],eventHandlers[i][4])
-						end
-					end
-				end
-				for key,value in pairs(data) do
-					local dataType = type(value)
-					if dataType == "table" then
-						for i,e in pairs(value) do
-							local eType = type(e)
-							if eType == "userdata" and not isElement(e) then
-								value[i] = DGSI_AllocateDxElement(e,oldDgsElementLogger)
-							end
-						end
-					elseif dataType == "userdata" and not isElement(value) then
-						data[key] = DGSI_AllocateDxElement(value,oldDgsElementLogger)
-					end
-				end
-			end
-		end
-		removeElementData(root,"DGSI_Properties")
-		dgsElementData = table.merger(dgsElementData,_dgsElementData)
-		--Types
-		local _dgsElementType = getElementData(root,"DGSI_ElementType") or {}
-		for dgsElement,data in pairs(_dgsElementType) do
-			if not isElement(dgsElement) then _dgsElementType[dgsElement] = nil end
-		end
-		dgsElementType = table.merger(dgsElementType,_dgsElementType)
-		removeElementData(root,"DGSI_ElementType")
-		--Bound Resource
-		local _boundResource = getElementData(root,"DGSI_BoundResource") or {}
-		for res,t in pairs(_boundResource) do
-			local resType = type(res)
-			if resType ~= "userdata" then
-				_boundResource[res] = nil
-			elseif getUserdataType(res) ~= "resource-data" then
-				_boundResource[res] = nil
-			end
-		end
-		boundResource = table.merger(boundResource,_boundResource)
-		removeElementData(root,"DGSI_BoundResource")
-		--Translations
-		resourceTranslation = getElementData(root,"DGSI_TranslationResRegister") or {}
-		removeElementData(root,"DGSI_TranslationResRegister")
-
-		LanguageTranslation = getElementData(root,"DGSI_TranslationLanguage") or {}
-		removeElementData(root,"DGSI_TranslationLanguage")
-
-		LanguageTranslationAttach = getElementData(root,"DGSI_TranslationLanguageAttach") or {}
-		removeElementData(root,"DGSI_TranslationLanguageAttach")
-		--Easing Functions
-		local easingOrg = getElementData(root,"DGSI_EasingFunctions") or {}
-		for name,data in pairs(easingOrg) do
-			local fnc = loadstring(data)
-			dgsEasingFunction[name] = fnc
-		end
-		removeElementData(root,"DGSI_EasingFunctions")
-		--Element Keeper
-		dgsElementKeeper = getElementData(root,"DGSI_ElementKeeper") or {}
-		for res,t in pairs(dgsElementKeeper) do
-			local resType = type(res)
-			if resType ~= "userdata" then
-				dgsElementKeeper[res] = nil
-			elseif getUserdataType(res) ~= "resource-data" then
-				dgsElementKeeper[res] = nil
-			end
-		end
-		removeElementData(root,"DGSI_ElementKeeper")
-		--Layer Data
-		local layerData = getElementData(root,"DGSI_LayerData") or {}
-		local _BottomFatherTable = layerData.bottom
-		local _CenterFatherTable = layerData.center
-		local _TopFatherTable = layerData.top
-		for index,dgsElement in pairs(_BottomFatherTable) do
-			if not isElement(dgsElement) then _BottomFatherTable[index] = nil end
-		end
-		for index,dgsElement in pairs(_CenterFatherTable) do
-			if not isElement(dgsElement) then _CenterFatherTable[index] = nil end
-		end
-		for index,dgsElement in pairs(_TopFatherTable) do
-			if not isElement(dgsElement) then _TopFatherTable[index] = nil end
-		end
-		BottomFatherTable = table.merger(BottomFatherTable,_BottomFatherTable)
-		CenterFatherTable = table.merger(CenterFatherTable,_CenterFatherTable)
-		TopFatherTable = table.merger(TopFatherTable,_TopFatherTable)
-		LayerCastTable = {bottom=BottomFatherTable,center=CenterFatherTable,top=TopFatherTable}
-		local _dgsWorld3DTable = layerData.world3d
-		for index,dgsElement in pairs(_dgsWorld3DTable) do
-			if not isElement(dgsElement) then _dgsWorld3DTable[index] = nil end
-		end
-		local _dgsScreen3DTable = layerData.screen3d
-		for index,dgsElement in pairs(_dgsScreen3DTable) do
-			if not isElement(dgsElement) then _dgsScreen3DTable[index] = nil end
-		end
-		dgsWorld3DTable = table.merger(dgsWorld3DTable,_dgsWorld3DTable)
-		dgsScreen3DTable = table.merger(dgsScreen3DTable,_dgsScreen3DTable)
-		removeElementData(root,"DGSI_LayerData")
-
-		--Animations
-		animQueue = getElementData(root,"DGSI_Animations") or {}
-		removeElementData(root,"DGSI_Animations")
-	end
-	--Others
-
-	setElementData(root,"DGSI_SaveData",false,false)
-end
-addEventHandler("onClientResourceStart",resourceRoot,DGSI_ReadData,false)
-]]
 addEventHandler("onClientResourceStop",resourceRoot,function()
-	--Element Logger
-	--setElementData(root,"DGSI_ElementLogger",dgsElementLogger,false)
 	if isElement(GlobalEdit) then
 		removeEventHandler("onClientElementDestroy",GlobalEdit,dgsGlobalEditDestroyDetector)	--shutdown global edit destroy detector
 	end
 	if isElement(GlobalMemo) then
 		removeEventHandler("onClientElementDestroy",GlobalMemo,dgsGlobalMemoDestroyDetector)	--shutdown global memo destroy detector
 	end
-	--[[
-	local terminator = createElement("dgs-dxterminator")
-	addEventHandler("onClientElementDestroy",terminator,function()
-		DGSI_SaveData()
-	end,false)
-	]]
 end,false)
 
 
@@ -1156,8 +929,6 @@ addEventHandler("onClientResourceStop",root,function(res)
 		resourceTranslation[res] = nil
 		boundResource[res] = nil
 	end
-	externalElementPool[res] = nil	--Clear external element pool
-	if dgsElementKeeper[res] then dgsElementKeeper[res] = nil end
 	if res == getThisResource() and CursorData.enabled then --Recover Cursor Alpha
 		setCursorAlpha(255)
 	end

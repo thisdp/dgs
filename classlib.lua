@@ -372,8 +372,6 @@ class {
 		setCursorColor = gNObjFnc("dgsSetCursorColor"),
 		getCursorColor = gNObjFnc("dgsGetCursorColor"),
 		getCursorType = gNObjFnc("dgsGetCursorType"),
-		getElementKeeperEnabled = gNObjFnc("dgsGetElementKeeperEnabled"),
-		setElementKeeperEnabled = gNObjFnc("dgsSetElementKeeperEnabled"),
 		RGBToHSV = gNObjFnc("dgsRGBToHSV"),
 		RGBToHSL = gNObjFnc("dgsRGBToHSL"),
 		HSLToRGB = gNObjFnc("dgsHSLToRGB"),

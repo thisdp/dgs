@@ -4,9 +4,9 @@ local loadstring = loadstring
 styleSecEnv = {
 	tocolor = tocolor,
 	dxCreateFont = dxCreateFont,
-	dxCreateTexture = function(path) return dxCreateTexture(path,false) end,
+	dxCreateTexture = function(path) return dxCreateTexture(path) end,
 	dxCreateScreenSource = dxCreateScreenSource,
-	dxCreateShader = function(path) return dxCreateShader(path,false) end,
+	dxCreateShader = function(path) return dxCreateShader(path) end,
 	dgsCreateRenderTarget = dgsCreateRenderTarget,
 }
 
@@ -76,7 +76,7 @@ end
 function newTexture(styleName,res,texturePath)
 	local texture = texturePath
 	if not isElement(texturePath) then
-		texture = dxCreateTexture(texturePath,false)
+		texture = dxCreateTexture(texturePath)
 		dgsSetData(texture,"path",texturePath)
 		dgsAddEventHandler("onClientElementDestroy",texture,"deleteTexture")
 	end
@@ -99,7 +99,7 @@ end
 
 function newShader(styleName,res,shader)
 	if not isElement(shader) then
-		shader = dxCreateShader(shader,false)
+		shader = dxCreateShader(shader)
 		dgsAddEventHandler("onClientElementDestroy",shader,"deleteShader")
 	end
 	res = res or "global"
@@ -145,7 +145,10 @@ function getStyleFilePath(styleName,res,path)
 end
 ------------------------------------
 function dgsScanGlobalStyle()
-	local fnc,err = loadstring("return {\n"..fileGetContent("styleManager/styleMapper.lua").."\n}")
+	local handle = fileOpen("styleManager/styleMapper.lua", true)
+	local buffer = fileGetContents(handle)
+	fileClose(handle)
+	local fnc,err = loadstring("return {\n"..buffer.."\n}")
 	if not fnc then
 		error("Failed to load styleMapper ("..err..")")
 	end
@@ -262,7 +265,10 @@ function dgsLoadStyle(styleName,res)
 	if not styleManager.styles[res].loaded[styleName] then
 		local path = styleManager.styles[res].mapper[styleName]
 		assert(fileExists(path.."/styleSettings.txt"),"[DGS Style] Missing style setting ("..path.."/styleSettings.txt)")
-		local fnc,err = loadstring("return {\n"..fileGetContent(path.."/styleSettings.txt").."\n}")
+		local handle = fileOpen(path.."/styleSettings.txt", true)
+		local buffer = fileGetContents(handle)
+		fileClose(handle)
+		local fnc,err = loadstring("return {\n"..buffer.."\n}")
 		if not fnc then
 			error("Error when loading "..path.."/styleSettings.txt ("..err..")")
 		end
@@ -394,4 +400,4 @@ addEventHandler("onClientResourceStart",resourceRoot,function()
 	dgsLoadStyle("Default")
 	dgsLoadStyle(using)
 	dgsSetStyle(using)
-end)
+end,false,"high+9999")

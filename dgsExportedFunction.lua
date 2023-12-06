@@ -7,147 +7,122 @@ addEventHandler("onClientResourceStart",resourceRoot,function()
 	triggerEvent("onDgsStart",resourceRoot,dgsResName)
 end)
 
-function dgsImportFunction(name,nameAs)
+function dgsImportFunction()
 	if not sourceResource or sourceResource == getThisResource() then return "return true" end
-	if not name then
-		local allCode = [[
-		--Check Error Message Above
-		if not dgsImportHead then
-			local getResourceRootElement = getResourceRootElement
-			local call = call
-			local getResourceFromName = getResourceFromName
-			local tostring = tostring
-			local unpack = unpack
-			local outputDebugString = outputDebugString
-			local DGSCallMT = {}
-			local functionCallLogger = {}
-			dgsImportHead = {}
-			dgsImportHead.dgsName = "]]..dgsResName..[["
-			dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
-			dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
-			dgsImportHead.dgsTypes = getElementData(dgsRoot,"DGSType")
-			addEvent("onDgsRequestCreateRemoteElement",true)
-			addEventHandler("onDgsRequestCreateRemoteElement",resourceRoot,function(createType,...)
-				if createType == "shader" then
-					local shader = dxCreateShader(...)
-					call(dgsImportHead.dgsResource, "dgsPushElement",shader,createType)
-				elseif createType == "rendertarget" then
-					local RT = dxCreateRenderTarget(...)
-					call(dgsImportHead.dgsResource, "dgsPushElement",RT,createType)
-				elseif createType == "texture" then
-					local tex = dxCreateTexture(...)
-					call(dgsImportHead.dgsResource, "dgsPushElement",tex,createType)
-				elseif createType == "font" then
-					local font = dxCreateFont(...)
-					call(dgsImportHead.dgsResource, "dgsPushElement",font,createType)
-				elseif createType:sub(1,6) == "dgs-dx" then
-					local dgsElement = createElement(createType)
-					call(dgsImportHead.dgsResource, "dgsPushElement",dgsElement,createType)
-				end
-			end)
-			addEventHandler("onClientResourceStop",dgsRoot,function()
-				outputDebugString("[DGS] Alert! DGS has stopped. Everything keeps disconnected from DGS till the next time DGS starts!",2)
-				function onDgsStart(dResN)
-					outputDebugString("[DGS] DGS has started, reconnecting to DGS...",3)
+	local allCode = [[
+	--Check Error Message Above
+	if not dgsImportHead then
+		local getResourceRootElement = getResourceRootElement
+		local call = call
+		local getResourceFromName = getResourceFromName
+		local tostring = tostring
+		local unpack = unpack
+		local outputDebugString = outputDebugString
+		local DGSCallMT = {}
+		local functionCallLogger = {}
+		dgsImportHead = {}
+		dgsImportHead.dgsName = "]]..dgsResName..[["
+		dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
+		dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
+		dgsImportHead.dgsTypes = getElementData(dgsRoot,"DGSType")
+		addEventHandler("onClientResourceStop",dgsRoot,function()
+			outputDebugString("[DGS] Alert! DGS has stopped. Everything keeps disconnected from DGS till the next time DGS starts!",2)
+			function onDgsStart(dResN)
+				outputDebugString("[DGS] DGS has started, reconnecting to DGS...",3)
+				dgsImportHead = nil
+				dgsRoot = nil
+				loadstring(exports[dResN]:dgsImportFunction())()
+				removeEventHandler("onDgsStart",root,onDgsStart)
+			end
+			addEventHandler("onDgsStart",root,onDgsStart)
+		end)
+		local isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") or (getElementData(localPlayer,"DGS-DEBUG") == 3)
+		addEventHandler("onClientElementDataChange",localPlayer,function(key,_,v)
+			if key == "DGS-DebugTracer" or key == "DGS-DEBUG" then
+				isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") and (getElementData(localPlayer,"DGS-DEBUG") == 3)
+			end
+		end,false)
+		local fncCallLoggerDef = {line=-1,file="Unknown",fncName="Unknown"}
+		local fncCallLoggerSelf = {line=-1,file="Unknown",fncName="Unknown"}
+		function DGSCallMT:__index(fncName)
+			if type(fncName) ~= 'string' then fncName = tostring(fncName) end
+			self[fncName] = function(...)
+				if not dgsImportHead then return outputDebugString("[DGS] "..getResourceName(getThisResource())..": DGS import data is missing or DGS is not running, please reimport dgs functions",4,255,0,0) end
+				if isElement(dgsRoot) then
+					local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
+					if isTraceDebug then
+						local data
+						local index = 1
+						local isLocated = false
+						repeat
+							local d = debug.getinfo(index)
+							if not d then break end
+							data = d
+							index = index+1
+							if data.func == self[fncName] then
+								if isLocated == true then
+									break
+								else
+									isLocated = true	--Need to get the next index
+								end
+							end
+						until data and data.source:sub(1,1) == "@"
+						if data then
+							functionCallLogger = fncCallLoggerSelf
+							functionCallLogger.line=data.currentline
+							functionCallLogger.file=data.source
+							functionCallLogger.fncName=fncName
+							local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
+							if isCreateFunction and isElement(retValue[1]) and dgsGetType(retValue[1],true) then
+								call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",functionCallLogger)
+							end
+							return unpack(retValue)
+						else
+							functionCallLogger = fncCallLoggerDef
+						end
+					end
+					return call(dgsImportHead.dgsResource, fncName, ...)
+				else
 					dgsImportHead = nil
 					dgsRoot = nil
-					loadstring(exports[dResN]:dgsImportFunction())()
-					removeEventHandler("onDgsStart",root,onDgsStart)
+					return nil
 				end
-				addEventHandler("onDgsStart",root,onDgsStart)
-			end)
-			local isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") or (getElementData(localPlayer,"DGS-DEBUG") == 3)
-			addEventHandler("onClientElementDataChange",localPlayer,function(key,_,v)
-				if key == "DGS-DebugTracer" or key == "DGS-DEBUG" then
-					isTraceDebug = getElementData(localPlayer,"DGS-DebugTracer") and (getElementData(localPlayer,"DGS-DEBUG") == 3)
-				end
-			end,false)
-			local fncCallLoggerDef = {line=-1,file="Unknown",fncName="Unknown"}
-			local fncCallLoggerSelf = {line=-1,file="Unknown",fncName="Unknown"}
-			function DGSCallMT:__index(fncName)
-				if type(fncName) ~= 'string' then fncName = tostring(fncName) end
-				self[fncName] = function(...)
-					if not dgsImportHead then return outputDebugString("[DGS] "..getResourceName(getThisResource())..": DGS import data is missing or DGS is not running, please reimport dgs functions",4,255,0,0) end
-					if isElement(dgsRoot) then
-						local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
-						if isTraceDebug then
-							local data
-							local index = 1
-							local isLocated = false
-							repeat
-								local d = debug.getinfo(index)
-								if not d then break end
-								data = d
-								index = index+1
-								if data.func == self[fncName] then
-									if isLocated == true then
-										break
-									else
-										isLocated = true	--Need to get the next index
-									end
-								end
-							until data and data.source:sub(1,1) == "@"
-							if data then
-								functionCallLogger = fncCallLoggerSelf
-								functionCallLogger.line=data.currentline
-								functionCallLogger.file=data.source
-								functionCallLogger.fncName=fncName
-								local retValue = {call(dgsImportHead.dgsResource, fncName, ...)}
-								if isCreateFunction and isElement(retValue[1]) and dgsGetType(retValue[1],true) then
-									call(dgsImportHead.dgsResource, "dgsSetProperty",retValue[1],"debugTrace",functionCallLogger)
-								end
-								return unpack(retValue)
-							else
-								functionCallLogger = fncCallLoggerDef
-							end
-						end
-						return call(dgsImportHead.dgsResource, fncName, ...)
-					else
-						dgsImportHead = nil
-						dgsRoot = nil
-						return nil
-					end
-				end
-				return self[fncName]
 			end
-			addEventHandler("DGSI_onDebugRequestContext",resourceRoot,function()
-				triggerEvent("DGSI_onDebugSendContext",resourceRoot,functionCallLogger)
-			end,false)
-			addEventHandler("DGSI_onDebug",resourceRoot,function(debugType,...)
-				if isTraceDebug then
-					if debugType == "PropertyCompatibility" then
-						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
-						local oldPropertyName,newPropertyName = ...
-						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', replace property '"..oldPropertyName.."' with '"..newPropertyName.."'",4,255,180,100)
-					elseif debugType == "FunctionCompatibility" then
-						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
-						local oldFunctionName,newFunctionName = ...
-						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', replace function '"..oldFunctionName.."' with '"..newFunctionName.."'",4,255,180,100)
-					elseif debugType == "ArgumentCompatibility" then
-						local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
-						local argument,detail = ...
-						outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', at argument "..argument..". "..detail,4,255,180,100)
-					elseif debugType == "AnimationError" then
-						local property,file,line,fncName = ...
-						if file and line and fncName then
-							outputDebugString("Traced "..file..":"..line.." @'"..fncName.."'",4,255,180,100)
-						end
+			return self[fncName]
+		end
+		addEventHandler("DGSI_onDebugRequestContext",resourceRoot,function()
+			triggerEvent("DGSI_onDebugSendContext",resourceRoot,functionCallLogger)
+		end,false)
+		addEventHandler("DGSI_onDebug",resourceRoot,function(debugType,...)
+			if isTraceDebug then
+				if debugType == "PropertyCompatibility" then
+					local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
+					local oldPropertyName,newPropertyName = ...
+					outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', replace property '"..oldPropertyName.."' with '"..newPropertyName.."'",4,255,180,100)
+				elseif debugType == "FunctionCompatibility" then
+					local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
+					local oldFunctionName,newFunctionName = ...
+					outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', replace function '"..oldFunctionName.."' with '"..newFunctionName.."'",4,255,180,100)
+				elseif debugType == "ArgumentCompatibility" then
+					local line,file,fncName = functionCallLogger.line,functionCallLogger.file,functionCallLogger.fncName
+					local argument,detail = ...
+					outputDebugString("Compatibility Check "..file..":"..line.." @'"..fncName.."', at argument "..argument..". "..detail,4,255,180,100)
+				elseif debugType == "AnimationError" then
+					local property,file,line,fncName = ...
+					if file and line and fncName then
+						outputDebugString("Traced "..file..":"..line.." @'"..fncName.."'",4,255,180,100)
 					end
 				end
-			end,false)
-			DGS = setmetatable({}, DGSCallMT)
-			triggerEvent("DGSI_onImport",root,resourceRoot)
-		end
-		]]
-		for i,fnName in ipairs(getResourceExportedFunctions()) do
-			allCode = allCode.."\n "..fnName.." = DGS."..fnName..";"
-		end
-		return allCode
-	else
-		assert(dgsExportedFunctionName[name],"Bad Argument @dgsImportFunction at argument 1, the function is undefined")
-		nameAs = nameAs or name
-		return nameAs.." = DGS['"..name.."'];"
+			end
+		end,false)
+		DGS = setmetatable({}, DGSCallMT)
+		triggerEvent("DGSI_onImport",root,resourceRoot)
 	end
+	]]
+	for i,fnName in ipairs(getResourceExportedFunctions()) do
+		allCode = allCode.."\n "..fnName.." = DGS."..fnName..";"
+	end
+	return allCode
 end
 
 G2DHookerEvents = {}
@@ -226,12 +201,11 @@ function dgsG2DLoadHooker(isLocal)
 		guiComboBoxAddItem = dgsComboBoxAddItem
 		guiComboBoxClear = dgsComboBoxClear
 		guiComboBoxGetItemCount = dgsComboBoxGetItemCount
-		guiComboBoxGetItemText = function(combobox,item,...)
-			if item and item ~= -1 then
-				item = isGUIComboBox[combobox] and item+1 or item
-			end
-			if item and dgsComboBoxGetItemCount(combobox) < item then return false end
-			return dgsComboBoxGetItemText(combobox,item,...)
+		guiComboBoxGetItemText = function(combobox,item)
+			if not item or item == -1 then return false end
+			item = isGUIComboBox[combobox] and item+1 or item
+			if dgsComboBoxGetItemCount(combobox) < item then return false end
+			return dgsComboBoxGetItemText(combobox,item)
 		end
 		guiComboBoxGetSelected = function(combobox,...)
 			if isGUIComboBox[combobox] then
@@ -296,7 +270,8 @@ function dgsG2DLoadHooker(isLocal)
 			end
 		end
 		guiGridListAddRow = function(gl,...)
-			return dgsGridListAddRow(gl,nil,...)
+			local row = dgsGridListAddRow(gl,nil,...)
+			return row and row-1 or row
 		end
 		guiGridListGetItemColor = function(gl,row,column)
 			if column and dgsGridListGetColumnCount(gl) < column then return false end
@@ -608,21 +583,27 @@ OOPImportTimer = nil
 
 function dgsImportOOPClass()
 	if OOPImportCache then return OOPImportCache end
-	local matched,content = verifyFile("classlib.lua",true)
-	if not matched then return outputChatBox("[DGS] Failed to load classlib.lua (File mismatch)",255,0,0) end
-	local str = content
+	local handle = fileOpen("classlib.lua", true)
+	local buffer = fileGetContents(handle)
+	fileClose(handle)
+	if not buffer then return outputChatBox("[DGS] Failed to load classlib.lua (File mismatch)",255,0,0) end
+	local str = buffer
 	if fileExists("customOOP.lua") then
-		matched,content = verifyFile("customOOP.lua",true)
-		if not matched then outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)",255,0,0) end
+		local handle = fileOpen("customOOP.lua", true)
+		local buffer = fileGetContents(handle)
+		fileClose(handle)
+		if not buffer then outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)",255,0,0) end
 		local s = content:gsub("\r\n","\n")
 		local list = split(s,"\n")
 		for i=1,#list do
 			if fileExists(list[i]) then
-				matched,content = verifyFile(list[i],true)
-				if not matched then outputChatBox("[DGS] Failed to load "..list[i].." (File mismatch)",255,0,0) end
-				local f,e = loadstring(content)
+				local handle = fileOpen(list[i], true)
+				local buffer = fileGetContents(handle)
+				fileClose(handle)
+				if not buffer then outputChatBox("[DGS] Failed to load "..list[i].." (File mismatch)",255,0,0) end
+				local f,e = loadstring(buffer)
 				if f then
-					str = str.."\n"..content
+					str = str.."\n"..buffer
 				else
 					outputDebugString("[DGS]Failed to load custom OOP script ("..list[i]..":"..e..")",1)
 				end

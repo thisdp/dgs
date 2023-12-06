@@ -189,6 +189,10 @@ function dgsSetSize(dgsEle,w,h,relative,...)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSize",1,"dgs-dxelement")) end
 	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
+	if relative then 
+		if w and (w > 10 or w < -10) then error(dgsGenAsrt(w,"dgsSetSize",2,"float between [0, 1]")) end
+		if h and (h > 10 or h < -10) then error(dgsGenAsrt(h,"dgsSetSize",3,"float between [0, 1]")) end
+	end
 	local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
 	w,h = w or size[1], h or size[2]
 	local pivot = dgsElementData[dgsEle].sizePivot
@@ -340,7 +344,6 @@ function dgsSetVisible(dgsEle,visible)
 		local eleType = dgsElementType[dgsEle]
 		if dgsOnVisibilityChange[eleType] then dgsOnVisibilityChange[eleType](dgsEle) end
 		if not visible and MouseData.focused == dgsEle then dgsBlur(dgsEle) end
-		dgsApplyVisibleInherited(dgsEle,visible and dgsElementData[dgsEle].visibleInherited)
 		return dgsSetData(dgsEle,"visible",visible)
 	end
 end
@@ -492,6 +495,8 @@ function dgsSetFont(dgsEle,font)
 	local fontType = dgsGetType(font)
 	if fontType == "string" then
 		if not(fontBuiltIn[font]) then error(dgsGenAsrt(font,"dgsSetFont",2,_,_,_,"font "..font.." doesn't exist")) end
+	elseif fontType == "table" then
+		--nothing (xLive, Do not delete this line)
 	elseif fontType ~= "dx-font" then
 		error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font/table"))
 	end
@@ -657,43 +662,60 @@ function dgsGetRootElement() return resourceRoot end
 
 function dgsFocus(dgsEle)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsFocus",1,"dgs-dxelement")) end
-	local lastFront = MouseData.focused
-	local eleType = dgsElementType[dgsEle]
-	if eleType == "dgs-dxbrowser" then
-		focusBrowser(dgsEle)
-	elseif eleType == "dgs-dxedit" then
-		resetTimer(MouseData.EditMemoTimer)
-		MouseData.EditMemoCursor = true
-		guiFocus(GlobalEdit)
-		dgsElementData[GlobalEdit].linkedDxEdit = dgsEle
-	elseif eleType == "dgs-dxmemo" then
-		resetTimer(MouseData.EditMemoTimer)
-		MouseData.EditMemoCursor = true
-		guiFocus(GlobalMemo)
-		dgsElementData[GlobalMemo].linkedDxMemo = dgsEle
+	local nFocusedChain = {}
+	local oFocusedChain = MouseData.focusedChain
+	local logEle = dgsEle
+	repeat
+		nFocusedChain[logEle] = true
+		nFocusedChain[#nFocusedChain+1] = logEle
+		logEle = dgsElementData[logEle].parent
+	until not logEle
+	for index=#oFocusedChain,1,-1 do
+		local ele = oFocusedChain[index]
+		if oFocusedChain[ele] and not nFocusedChain[ele] then	--Blur if new focused chain doesn't include
+			dgsTriggerEvent("onDgsBlur",oFocusedChain[index])
+		end
 	end
-	if isElement(lastFront) and dgsEle ~= lastFront then
-		dgsTriggerEvent("onDgsBlur",lastFront,dgsEle)
+	for index=#nFocusedChain,1,-1 do
+		local ele = nFocusedChain[index]
+		if nFocusedChain[ele] and not oFocusedChain[ele] then	--Focus if old focused chain doesn't include
+			dgsTriggerEvent("onDgsFocus",nFocusedChain[index])
+		end
 	end
+	MouseData.focusedChain = nFocusedChain
 	MouseData.focused = dgsEle
-	dgsTriggerEvent("onDgsFocus",dgsEle,isElement(lastFront) and lastFront or nil)
 	return true
 end
 
 function dgsBlur(dgsEle)
-	if not dgsEle then dgsEle = MouseData.focused end
-	if not isElement(dgsEle) or dgsEle ~= MouseData.focused then return true end
-	local eleType = dgsElementType[dgsEle]
-	MouseData.focused = nil
-	if eleType == "dgs-dxbrowser" then
-		focusBrowser()
-	else
-		blurEditMemo(dgsEle)
+	if not dgsEle then
+		dgsEle = MouseData.focusedChain[#MouseData.focusedChain]	--Just blur all
 	end
-	dgsTriggerEvent("onDgsBlur",dgsEle)
+	local oFocusedChain = MouseData.focusedChain
+	if oFocusedChain[dgsEle] then	--If found
+		local index = tableFind(oFocusedChain,dgsEle)	--Get index
+		local blurredEle = {}
+		for i=index,1,-1 do
+			local dgsEleToBlur = oFocusedChain[i]
+			if MouseData.focused == dgsEleToBlur then	--If the blurred element is MouseData.focused
+				MouseData.focused = oFocusedChain[i+1]	--Select its parent, nil if no focused
+			end
+			blurredEle[#blurredEle+1] = dgsEleToBlur
+			oFocusedChain[dgsEleToBlur] = nil
+			table.remove(oFocusedChain,i)	--Remove
+		end
+		for i=1,#blurredEle do
+			if isElement(blurredEle[i]) then
+				dgsTriggerEvent("onDgsBlur",blurredEle[i])
+			end
+		end
+	end
 	return true
 end
 
+function dgsIsFocused(dgsEle)
+	return MouseData.focusedChain[dgsEle]
+end
 ------------------Cursor Management
 local CursorPosX,CursorPosY = sW/2,sH/2
 local CursorPosXVisible,CursorPosYVisible = CursorPosX,CursorPosY

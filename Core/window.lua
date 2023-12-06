@@ -358,7 +358,7 @@ dgsOnPropertyChange["dgs-dxwindow"] = {
 dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
 	local img = eleData.image
 	local color = applyColorAlpha(eleData.color,parentAlpha)
-	local titimg,titleColor,titsize = eleData.titleImage,eleData.isFocused and eleData.titleColor or (eleData.titleColorBlur or eleData.titleColor),eleData.titleHeight
+	local titimg,titleColor,titsize = eleData.titleImage,dgsIsFocused(source) and eleData.titleColor or (eleData.titleColorBlur or eleData.titleColor),eleData.titleHeight
 	titleColor = applyColorAlpha(titleColor,parentAlpha)
 	dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,isPostGUI,rndtgt)
 	dxDrawImage(x,y,w,titsize,titimg,0,0,0,titleColor,isPostGUI,rndtgt)

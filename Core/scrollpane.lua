@@ -7,7 +7,7 @@ dgsRegisterProperties("dgs-dxscrollpane",{
 	basePointOffset = 	{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	minViewSize = 		{	{ PArg.Number, PArg.Number, PArg.Bool }	},
 	scrollBarThick = 	{	PArg.Number	},
-	scrollBarState = 	{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
+	scrollBarState = 	{	{ PArg.Bool+PArg.String+PArg.Nil, PArg.Bool+PArg.String+PArg.Nil }	},
 	scrollBarLength = 	{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
 })
 --Dx Functions
@@ -63,6 +63,12 @@ function dgsCreateScrollPane(...)
 	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateScrollPane",2,"number")) end
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateScrollPane",3,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateScrollPane",4,"number")) end
+	if relative then 
+		if x > 100 or x < -100 then error(dgsGenAsrt(x,"dgsCreateScrollPane",1,"float between [0, 1]")) end
+		if y > 100 or y < -100 then error(dgsGenAsrt(y,"dgsCreateScrollPane",2,"float between [0, 1]")) end
+		if w > 10 or w < -10 then error(dgsGenAsrt(w,"dgsCreateScrollPane",3,"float between [0, 1]")) end
+		if h > 10 or h < -10 then error(dgsGenAsrt(h,"dgsCreateScrollPane",4,"float between [0, 1]")) end
+	end
 	local scrollpane = createElement("dgs-dxscrollpane")
 	dgsSetType(scrollpane,"dgs-dxscrollpane")
 
@@ -78,6 +84,7 @@ function dgsCreateScrollPane(...)
 		scrollBarThick = scbThick,
 		scrollBarAlignment = {"right","bottom"},
 		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
+		wheelScrollable = {true,true},
 		scrollBarLength = {},
 		maxChildSize = {0,0},
 		horizontalMoveOffset = 0,
@@ -424,6 +431,27 @@ end
 function dgsScrollPaneGetScrollBarState(scrollpane)
 	if not dgsIsType(scrollpane,"dgs-dxscrollpane") then error(dgsGenAsrt(scrollpane,"dgsScrollPaneSetScrollBarState",1,"dgs-dxscrollpane")) end
 	return dgsElementData[scrollpane].scrollBarState[1],dgsElementData[scrollpane].scrollBarState[2]
+end
+
+----------------------------------------------------------------
+---------------------OnMouseScrollAction------------------------
+----------------------------------------------------------------
+dgsOnMouseScrollAction["dgs-dxscrollpane"] = function(dgsEle,isWheelDown)
+	local eleData = dgsElementData[dgsEle]
+	local scrollbar
+	local scrollbar1,scrollbar2 = dgsElementData[dgsEle].scrollbars[1],dgsElementData[dgsEle].scrollbars[2]
+	local visibleScb1,visibleScb2 = dgsGetVisible(scrollbar1),dgsGetVisible(scrollbar2)
+	if visibleScb1 then
+		scrollbar = scrollbar1
+	elseif visibleScb2 and not visibleScb1 then
+		scrollbar = scrollbar2
+	elseif not visibleScb1 and not visibleScb2 then
+		scrollbar = scrollbar1
+	end
+	if scrollbar then
+		dgsSetData(scrollbar,"moveType","slow")
+		scrollScrollBar(scrollbar,isWheelDown)
+	end
 end
 
 ----------------------------------------------------------------

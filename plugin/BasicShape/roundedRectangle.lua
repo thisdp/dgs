@@ -5,6 +5,7 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 	local radType = dgsGetType(radius)
 	if not(radType == "number" or radType == "table") then error(dgsGenAsrt(radius,"dgsCreateRoundRect",1,"number/table")) end
 	local shader = dxCreateShader("plugin/BasicShape/roundedRectangle.fx")
+	dxSetShaderValue(shader,"sourceTexture",DGSBuiltInTex.white_1x1)
 	dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
 	if type(radius) ~= "table" then
 		local rlt = dgsGetType(relative) == "boolean"
@@ -45,12 +46,10 @@ function dgsRoundRectSetTexture(rectShader,texture)
 	if not(dgsGetPluginType(rectShader) == "dgs-dxroundrectangle") then error(dgsGenAsrt(rectShader,"dgsRoundRectSetTexture",1,"plugin dgs-dxroundrectangle")) end
 	if isElement(texture) then
 		if not(isMaterial(texture) == "texture") then error(dgsGenAsrt(dgsCircleSetTexture,"dgsRoundRectSetTexture",1,"texture")) end
-		dxSetShaderValue(rectShader,"textureLoad",true)
 		dxSetShaderValue(rectShader,"sourceTexture",texture)
 		dgsSetData(rectShader,"sourceTexture",texture)
 	else
-		dxSetShaderValue(rectShader,"textureLoad",false)
-		dxSetShaderValue(rectShader,"sourceTexture",0)
+		dxSetShaderValue(rectShader,"sourceTexture",DGSBuiltInTex.white_1x1)
 		dgsSetData(rectShader,"sourceTexture",nil)
 	end
 	return true

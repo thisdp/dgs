@@ -51,22 +51,12 @@ function checkUpdate()
 	end)
 end
 
-function checkServerVersion(player)
-	if getVersion().sortable < "1.5.4-9.11342" then
-		outputDGSMessage("Your server version is too old to support dgs update system.",nil,2,player)
-		return false
-	end
-	return true
-end
-
 if DGSConfig.updateCheckAuto then
-	if not checkServerVersion() then return end
 	checkUpdate()
 	updatePeriodTimer = setTimer(checkUpdate,DGSConfig.updateCheckInterval*3600000,0)
 end
 
 addCommandHandler(DGSConfig.updateCommand,function(player)
-	if not checkServerVersion(player) then return end
 	local account = getPlayerAccount(player)
 	local isPermit = hasObjectPermissionTo(player,"command."..DGSConfig.updateCommand,false)
 	if not isPermit then
@@ -116,27 +106,20 @@ end
 preUpdate = {}
 fileHash = {}
 UpdateCount = 0
-folderGetting = {}
 function getGitHubTree(path,nextPath)
 	nextPath = nextPath or ""
-	fetchRemote(path or "https://api.github.com/repos/thisdp/dgs/git/trees/master",function(data,err)
+	fetchRemote(path or "https://api.github.com/repos/thisdp/dgs/git/trees/master?recursive=1",function(data,err)
 		if err == 0 then
 			local theTable = fromJSON(data)
-			folderGetting[theTable.sha] = nil
 			for k,v in pairs(theTable.tree) do
 				if (v.path ~= "styleMapper.lua" and fileExists("styleManager/styleMapper.lua")) and v.path ~= "meta.xml" then
 					local thePath = nextPath..(v.path)
-					if v.mode == "040000" then
-						folderGetting[v.sha] = true
-						getGitHubTree(v.url,thePath.."/")
-					else
+					if v.mode ~= "040000" then
 						fileHash[thePath] = v.sha
 					end
 				end
 			end
-			if not next(folderGetting) then
-				checkFiles()
-			end
+			checkFiles()
 		else
 			outputDGSMessage("Failed to get verification data, please try again later (API Cool Down 60 mins)","Updater",2)
 		end
@@ -167,6 +150,7 @@ function checkFiles()
 		end
 		until true
 	end
+	xmlUnloadFile(xml)
 	DownloadFiles()
 end
 
