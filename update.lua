@@ -6,7 +6,7 @@ local verRaw = fileRead(check,fileGetSize(check))
 fileClose(check)
 setElementData(resourceRoot,"Version",verRaw)
 local version = tonumber(verRaw) or 0
-if not DGSConfig.enableUpdateSystem then return end
+if not DGSConfig.updater then return end
 
 local _fetchRemote = fetchRemote
 function fetchRemote(...)
@@ -55,7 +55,7 @@ if DGSConfig.updateCheckAuto then
 	checkUpdate()
 	updatePeriodTimer = setTimer(checkUpdate,DGSConfig.updateCheckInterval*3600000,0)
 end
-
+outputChatBox(DGSConfig.updateCommand)
 addCommandHandler(DGSConfig.updateCommand,function(player)
 	local account = getPlayerAccount(player)
 	local isPermit = hasObjectPermissionTo(player,"command."..DGSConfig.updateCommand,false)
@@ -134,7 +134,7 @@ function checkFiles()
 			local path = xmlNodeGetAttribute(v,"src")
 			if string.find(path,"styleMapper.lua") then break end
 			if path == "meta.xml" then break end
-			if string.find(path,"test.lua") and not DGSConfig.enableTestFile then break end
+			if string.find(path,"test.lua") and not DGSConfig.testFile then break end
 			local sha = ""
 			if fileExists(path) then
 				local file = fileOpen(path)
@@ -199,7 +199,7 @@ function DownloadFinish()
 		fileDelete("meta.xml")
 	end
 	recoverStyleMapper()
-	if not DGSConfig.enableTestFile then	--Remove test.lua from meta.xml
+	if not DGSConfig.testFile then	--Remove test.lua from meta.xml
 		local xml = xmlLoadFile("meta.xml")
 		for k,v in ipairs(xmlNodeGetChildren(xml)) do
 			if xmlNodeGetName(v) == "script" then
@@ -238,7 +238,7 @@ end)
 styleBackupStr = ""
 locator = [[	<export]]
 function backupStyleMapper()
-	if DGSConfig.enableMetaBackup then
+	if DGSConfig.metaBackup then
 		fileCopy("meta.xml","meta.xml.bak",true)
 	end
 	if not fileExists("meta.xml") then return outputDGSMessage("Please rename the meta xml as meta.xml",nil,"Updater",2) end
@@ -253,7 +253,7 @@ function backupStyleMapper()
 	if fileExists("styleMapperBackup.bak") then
 		fileDelete("styleMapperBackup.bak")
 	end
-	if DGSConfig.enableStyleMetaBackup then
+	if DGSConfig.metaStyleBackup then
 		local file = fileCreate("styleMapperBackup.bak")
 		fileWrite(file,styleBackupStr)
 		fileClose(file)
