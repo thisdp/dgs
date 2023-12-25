@@ -590,6 +590,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			for d=1,#tabs do
 				local t = tabs[d]
 				local tabData = dgsElementData[t]
+				local tabColorCoded = tabData.colorCoded ~= nil and tabData.colorCoded or colorCoded
 				if tabData.visible then
 					local tshadow = tabData.shadow or shadow
 					local width = tabData.width+tabPadding*2
@@ -676,7 +677,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
 						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
-						textRenderBuffer[textRenderBuffer.count][10] = colorCoded	--Color Coded
+						textRenderBuffer[textRenderBuffer.count][10] = tabColorCoded	--Color Coded
 						textRenderBuffer[textRenderBuffer.count][11] = tshadow	--Shadow
 						if mx and my and mx >= tabX+cx and mx <= tabX+cx+width and my > cy and my < cy+tabHeight and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
