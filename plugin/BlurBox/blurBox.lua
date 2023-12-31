@@ -49,9 +49,10 @@ function dgsBlurBoxDraw(x,y,w,h,self,rotation,rotationCenterOffsetX,rotationCent
 	end
 end
 
-function dgsCreateBlurBox(w,h,sourceTexture)
+function dgsCreateBlurBox(w,h,sourceTexture,level)
 	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateBlurBox",1,"number")) end
 	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateBlurBox",2,"number")) end
+	level = tonumber(level) or 5
 	local bb = dgsCreateCustomRenderer(dgsBlurBoxDraw)
 	if isElement(sourceTexture) then
 		dgsSetData(bb,"sourceTexture",sourceTexture)
@@ -61,9 +62,8 @@ function dgsCreateBlurBox(w,h,sourceTexture)
 			BlurBoxGlobalScreenSource = dxCreateScreenSource(sW*blurboxFactor,sH*blurboxFactor)
 		end
 	end
-	local horz,vert = getBlurBoxShader(5)
-	local shaderH = dxCreateShader(horz)
-	local shaderV = dxCreateShader(vert)
+	local shaderH = dxCreateShader("plugin/BlurBox/blurBox.fx",{MACRO_IsHorizontal=1,MACRO_Level=level})
+	local shaderV = dxCreateShader("plugin/BlurBox/blurBox.fx",{MACRO_Level=level})
 	dgsAttachToAutoDestroy(shaderH,bb,-1)
 	dgsAttachToAutoDestroy(shaderV,bb,-2)
 	dgsSetData(bb,"asPlugin","dgs-dxblurbox")
@@ -138,9 +138,8 @@ function dgsBlurBoxSetLevel(bb,level)
 	local shaders = dgsElementData[bb].shaders
 	destroyElement(shaders[1])
 	destroyElement(shaders[2])
-	local horz,vert = getBlurBoxShader(level)
-	local shaderH = dxCreateShader(horz)
-	local shaderV = dxCreateShader(vert)
+	local shaderH = dxCreateShader("plugin/BlurBox/blurBox.fx",{MACRO_IsHorizontal=1,MACRO_Level=level})
+	local shaderV = dxCreateShader("plugin/BlurBox/blurBox.fx",{MACRO_Level=level})
 	dgsAttachToAutoDestroy(shaderH,bb,1)
 	dgsAttachToAutoDestroy(shaderV,bb,2)
 	dxSetShaderValue(shaderH,"intensity",dgsElementData[bb].intensity)
@@ -191,65 +190,4 @@ end
 
 dgsCustomTexture["dgs-dxblurbox"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	return dgsElementData[image].customRenderer(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
-end
-
-----------------Shader
-function getBlurBoxShader(level)
-	local blurBoxShaderHorizontal = [[
-	texture screenSource;
-	float intensity = 1;
-	float brightness = 1;
-	#define Level ]]..level..[[
-
-	sampler2D Sampler0 = sampler_state{
-		Texture  = screenSource;
-		AddressU = Mirror;
-		AddressV  = Mirror;
-	};
-
-	float4 HorizontalBlur( float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
-		float4 Color = 0;
-		float2 dx = ddx(tex);
-		float2 dy = ddy(tex);
-		float2 dd = float2(length(float2(dx.x,dy.x)),length(float2(dx.y,dy.y)));
-		for(float i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x+i*intensity*dd.x,tex.y))*(1-abs(i/Level))/Level*brightness;
-		return Color*diffuse;
-	}
-
-	technique fxBlur{
-		pass P0{
-			PixelShader = compile ps_2_a HorizontalBlur();
-		}
-	}
-	]]
-	local blurBoxShaderVertical = [[
-	texture screenSource;
-	float intensity = 1;
-	float brightness = 1;
-	#define Level ]]..level..[[
-
-	sampler2D Sampler0 = sampler_state{
-		Texture  = screenSource;
-		AddressU = Mirror;
-		AddressV  = Mirror;
-	};
-
-	float4 VerticalBlur(float2 tex : TEXCOORD0, float4 diffuse : COLOR0 ) : COLOR0{
-		float4 Color = 0;
-		float2 dx = ddx(tex);
-		float2 dy = ddy(tex);
-		float2 dd = float2(length(float2(dx.x,dy.x)),length(float2(dx.y,dy.y)));
-		for(float i = -Level; i <= Level; i++)
-			Color += tex2D(Sampler0,float2(tex.x,tex.y+i*intensity*dd.y))*(1-abs(i/Level))/Level*brightness;
-		return Color*diffuse;
-	}
-
-	technique fxBlur{
-		pass P0{
-			PixelShader = compile ps_2_a VerticalBlur();
-		}
-	}
-	]]
-	return blurBoxShaderHorizontal,blurBoxShaderVertical
 end

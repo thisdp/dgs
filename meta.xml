@@ -75,12 +75,14 @@
 
 	<script src="plugin/canvas.lua" type="client" />
 	
-	<script src="plugin/gradient/gradient.lua" type="client" />
-	<file src="plugin/gradient/gradient.fx" type="client" />
+	<script src="plugin/Gradient/gradient.lua" type="client" />
+	<file src="plugin/Gradient/gradient.fx" type="client" />
 
-	<script src="plugin/nineSlice.lua" type="client" />
+	<script src="plugin/NineSlice/nineSlice.lua" type="client" />
+	<file src="plugin/NineSlice/nineSlice.fx" type="client" />
 
-	<script src="plugin/blurBox.lua" type="client" />
+	<script src="plugin/BlurBox/blurBox.lua" type="client" />
+	<file src="plugin/BlurBox/blurBox.fx" type="client" />
 	
 	<script src="plugin/screenSource.lua" type="client" />
 	
