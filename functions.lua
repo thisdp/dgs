@@ -133,49 +133,65 @@ function dgsGetPosition(dgsEle,relative,relativeTo)
 end
 
 function dgsSetPosition(dgsEle,x,y,relative,...)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPosition",1,"dgs-dxelement")) end
 	if (x and type(x) ~= "number") then error(dgsGenAsrt(x,"dgsSetPosition",2,"nil/number")) end
 	if (y and type(y) ~= "number") then error(dgsGenAsrt(y,"dgsSetPosition",3,"nil/number")) end
-	local pos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
-	x,y = x or pos[1],y or pos[2]
-	local pivot = dgsElementData[dgsEle].posPivot
-	if select("#",...) == 2 or pivot then
-		local pivotX,pivotY
-		if select("#",...) == 2 then
-			pivotX,pivotY = ...
-		else
-			pivotX,pivotY = pivot[1],pivot[2]
+	if type(dgsEle) == "table" then
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsSetPosition",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetPosition(dgsEleItem,x,y,relative,...)
 		end
-		if (type(pivotX) ~= "number") then error(dgsGenAsrt(pivotX,"dgsSetPosition",5,"number")) end
-		if (type(pivotY) ~= "number") then error(dgsGenAsrt(pivotY,"dgsSetPosition",6,"number")) end
-		local size = dgsElementData[dgsEle].absSize
-		calculateGuiPositionSize(dgsEle,x-size[1]*pivotX,y-size[2]*pivotX,relative)
+		return true
 	else
-		local isCenterPosition = ...
-		if isCenterPosition then
-			local size = dgsElementData[dgsEle][relative and "rltSize" or "absSize"]
-			calculateGuiPositionSize(dgsEle,x-size[1]/2,y-size[2]/2,relative)
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetPosition",1,"dgs-dxelement")) end
+		local pos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
+		x,y = x or pos[1],y or pos[2]
+		local pivot = dgsElementData[dgsEle].posPivot
+		if select("#",...) == 2 or pivot then
+			local pivotX,pivotY
+			if select("#",...) == 2 then
+				pivotX,pivotY = ...
+			else
+				pivotX,pivotY = pivot[1],pivot[2]
+			end
+			if (type(pivotX) ~= "number") then error(dgsGenAsrt(pivotX,"dgsSetPosition",5,"number")) end
+			if (type(pivotY) ~= "number") then error(dgsGenAsrt(pivotY,"dgsSetPosition",6,"number")) end
+			local size = dgsElementData[dgsEle].absSize
+			calculateGuiPositionSize(dgsEle,x-size[1]*pivotX,y-size[2]*pivotX,relative)
 		else
-			calculateGuiPositionSize(dgsEle,x,y,relative)
+			local isCenterPosition = ...
+			if isCenterPosition then
+				local size = dgsElementData[dgsEle][relative and "rltSize" or "absSize"]
+				calculateGuiPositionSize(dgsEle,x-size[1]/2,y-size[2]/2,relative)
+			else
+				calculateGuiPositionSize(dgsEle,x,y,relative)
+			end
 		end
+		return true
 	end
-	return true
 end
 
 function dgsCenterElement(dgsEle,remainX,remainY)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsCenterElement",1,"dgs-dxelement")) end
-	local rlt = dgsElementData[dgsEle].relative[1]
-	if rlt then
-		local remainPos = dgsElementData[dgsEle].rltPos
-		local size = dgsElementData[dgsEle].rltSize
-		return dgsSetPosition(dgsEle,remainX and remainPos[1] or 0.5-size[1]/2,remainY and remainPos[2] or 0.5-size[2]/2,true)
+	if type(dgsEle) == "table" then
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsCenterElement",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsCenterElement(dgsEleItem,remainX,remainY)
+		end
+		return true
 	else
-		local parent = dgsGetParent(dgsEle)
-		local windowSize = parent and dgsElementData[parent].absSize or {sW,sH}
-		local remainPos = dgsElementData[dgsEle].absPos
-		local size = dgsElementData[dgsEle].absSize
-		return dgsSetPosition(dgsEle,remainX and remainPos[1] or windowSize[1]/2-size[1]/2,remainY and remainPos[2] or windowSize[2]/2-size[2]/2,false)
-   end
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsCenterElement",1,"dgs-dxelement")) end
+		local rlt = dgsElementData[dgsEle].relative[1]
+		if rlt then
+			local remainPos = dgsElementData[dgsEle].rltPos
+			local size = dgsElementData[dgsEle].rltSize
+			return dgsSetPosition(dgsEle,remainX and remainPos[1] or 0.5-size[1]/2,remainY and remainPos[2] or 0.5-size[2]/2,true)
+		else
+			local parent = dgsGetParent(dgsEle)
+			local windowSize = parent and dgsElementData[parent].absSize or {sW,sH}
+			local remainPos = dgsElementData[dgsEle].absPos
+			local size = dgsElementData[dgsEle].absSize
+			return dgsSetPosition(dgsEle,remainX and remainPos[1] or windowSize[1]/2-size[1]/2,remainY and remainPos[2] or windowSize[2]/2-size[2]/2,false)
+		end
+	end
 end
 
 function dgsGetSize(dgsEle,relative)
@@ -186,32 +202,40 @@ function dgsGetSize(dgsEle,relative)
 end
 
 function dgsSetSize(dgsEle,w,h,relative,...)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetSize",1,"dgs-dxelement")) end
 	if (w and type(w) ~= "number") then error(dgsGenAsrt(w,"dgsSetSize",2,"nil/number")) end
 	if (h and type(h) ~= "number") then error(dgsGenAsrt(h,"dgsSetSize",3,"nil/number")) end
 	if relative then 
 		if w and (w > 10 or w < -10) then error(dgsGenAsrt(w,"dgsSetSize",2,"float between [0, 1]")) end
 		if h and (h > 10 or h < -10) then error(dgsGenAsrt(h,"dgsSetSize",3,"float between [0, 1]")) end
 	end
-	local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
-	w,h = w or size[1], h or size[2]
-	local pivot = dgsElementData[dgsEle].sizePivot
-	if select("#",...) == 2 or pivot then
-		local pivotX,pivotY
-		if select("#",...) == 2 then
-			pivotX,pivotY = ...
-		else
-			pivotX,pivotY = pivot[1],pivot[2]
+	if type(dgsEle) == "table" then
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsSetSize",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetSize(dgsEleItem,w,h,relative,...)
 		end
-		if (type(pivotX) ~= "number") then error(dgsGenAsrt(pivotX,"dgsSetSize",5,"number")) end
-		if (type(pivotY) ~= "number") then error(dgsGenAsrt(pivotY,"dgsSetSize",6,"number")) end
-		local oldSize = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
-		calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
-		local oldPos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
-		local newSize = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
-		calculateGuiPositionSize(dgsEle,oldPos[1]-(newSize[1]-oldSize[1])*pivotX,oldPos[2]-(newSize[2]-oldSize[2])*pivotY,relative)
+		return true
 	else
-		calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsCenterElement",1,"dgs-dxelement")) end
+		local size = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
+		w,h = w or size[1], h or size[2]
+		local pivot = dgsElementData[dgsEle].sizePivot
+		if select("#",...) == 2 or pivot then
+			local pivotX,pivotY
+			if select("#",...) == 2 then
+				pivotX,pivotY = ...
+			else
+				pivotX,pivotY = pivot[1],pivot[2]
+			end
+			if (type(pivotX) ~= "number") then error(dgsGenAsrt(pivotX,"dgsSetSize",5,"number")) end
+			if (type(pivotY) ~= "number") then error(dgsGenAsrt(pivotY,"dgsSetSize",6,"number")) end
+			local oldSize = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
+			calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
+			local oldPos = relative and dgsElementData[dgsEle].rltPos or dgsElementData[dgsEle].absPos
+			local newSize = relative and dgsElementData[dgsEle].rltSize or dgsElementData[dgsEle].absSize
+			calculateGuiPositionSize(dgsEle,oldPos[1]-(newSize[1]-oldSize[1])*pivotX,oldPos[2]-(newSize[2]-oldSize[2])*pivotY,relative)
+		else
+			calculateGuiPositionSize(dgsEle,_,_,_,w,h,relative or false)
+		end
 	end
 	return true
 end
@@ -288,9 +312,9 @@ end
 function dgsSetEnabled(dgsEle,enabled)
 	enabled = enabled and true or false
 	if type(dgsEle) == "table" then
-		for i=1,#dgsEle do
-			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetEnabled",1,"dgs-dxelement",_,_,"at table index "..i)) end
-			dgsSetEnabled(dgsEle[i],enabled)
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsSetEnabled",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetEnabled(dgsEleItem,enabled)
 		end
 		return true
 	else
@@ -328,9 +352,9 @@ function dgsSetVisible(dgsEle,visible)
 	visible = visible and true or false
 	if type(dgsEle) == "table" then
 		local result = true
-		for i=1,#dgsEle do
-			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetVisible",1,"dgs-dxelement",_,_,"at table index "..i)) end
-			dgsSetVisible(dgsEle[i],visible)
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsSetVisible",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetVisible(dgsEleItem,visible)
 		end
 		return true
 	else
@@ -453,15 +477,16 @@ end
 function dgsSetAlpha(dgsEle,alpha,absolute)
 	if not(type(alpha) == "number") then error(dgsGenAsrt(alpha,"dgsSetAlpha",2,"number")) end
 	if type(dgsEle) == "table" then
-		for i=1,#dgsEle do
-			if not(dgsIsType(dgsEle[i])) then error(dgsGenAsrt(dgsEle[i],"dgsSetAlpha",1,"dgs-dxelement",_,_,"at table index "..i)) end
-			dgsSetAlpha(dgsEle[i],alpha,absolute)
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsSetAlpha",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetAlpha(dgsEleItem,alpha,absolute)
 		end
 		return true
+	else
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetAlpha",1,"dgs-dxelement")) end
+		alpha = absolute and alpha/255 or alpha
+		return dgsSetData(dgsEle,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 	end
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetAlpha",1,"dgs-dxelement")) end
-	alpha = absolute and alpha/255 or alpha
-	return dgsSetData(dgsEle,"alpha",(alpha > 1 and 1) or (alpha < 0 and 0) or alpha)
 end
 
 function dgsGetAlpha(dgsEle,absolute,includeParent)
@@ -491,16 +516,25 @@ function dgsCreateFont(path,size,bold,quality)
 end
 
 function dgsSetFont(dgsEle,font)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetFont",1,"dgs-dxelement")) end
-	local fontType = dgsGetType(font)
-	if fontType == "string" then
-		if not(fontBuiltIn[font]) then error(dgsGenAsrt(font,"dgsSetFont",2,_,_,_,"font "..font.." doesn't exist")) end
-	elseif fontType == "table" then
-		--nothing (xLive, Do not delete this line)
-	elseif fontType ~= "dx-font" then
-		error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font/table"))
+	if type(dgsEle) == "table" then
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsSetFont",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetFont(dgsEleItem,font)
+		end
+		return true
+	else
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetFont",1,"dgs-dxelement")) end
+		local fontType = dgsGetType(font)
+		if fontType == "string" then
+			if not(fontBuiltIn[font]) then error(dgsGenAsrt(font,"dgsSetFont",2,_,_,_,"font "..font.." doesn't exist")) end
+		elseif fontType == "table" then
+			--nothing (xLive, Do not delete this line)
+		elseif fontType ~= "dx-font" then
+			error(dgsGenAsrt(font,"dgsSetFont",2,"string/dx-font/table"))
+		end
+		dgsSetData(dgsEle,"font",font)
+		return true
 	end
-	dgsSetData(dgsEle,"font",font)
 end
 
 function dgsGetFont(dgsEle)
@@ -541,8 +575,16 @@ function dgsSetSystemFont(font,size,bold,quality,styleName,sres)
 end
 
 function dgsSetText(dgsEle,text)
-	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetText",1,"dgs-dxelement")) end
-	return dgsSetData(dgsEle,"text",text)
+	if type(dgsEle) == "table" then
+		for index,dgsEleItem in pairs(dgsEle) do
+			if not(dgsIsType(dgsEleItem)) then error(dgsGenAsrt(dgsEleItem,"dgsSetText",1,"dgs-dxelement",_,_,"at table index "..i)) end
+			dgsSetText(dgsEleItem,text)
+		end
+		return true
+	else
+		if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsSetText",1,"dgs-dxelement")) end
+		return dgsSetData(dgsEle,"text",text)
+	end
 end
 
 function dgsGetText(dgsEle)

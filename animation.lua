@@ -30,8 +30,8 @@ function dgsAnimTo(...)
 	if not(type(duration) == "number") then error(dgsGenAsrt(duration,"dgsAnimTo",5,"number")) end
 	if type(dgsEle) == "table" then
 		local animIDs = {}
-		for i=1,#dgsEle do
-			animIDs[i] = dgsAnimTo(dgsEle[i],property,targetValue,easing,duration,delay,reversedProgress,splitTable)
+		for index,dgsEleItem in pairs(dgsEle) do
+			animIDs[index] = dgsAnimTo(dgsEleItem,property,targetValue,easing,duration,delay,reversedProgress,splitTable)
 		end
 		return animIDs
 	else
@@ -76,7 +76,7 @@ function dgsStopAniming(...)
 	end
 	if not(dgsIsType(dgsEle) or type(dgsEle) == "number") then error(dgsGenAsrt(dgsEle,"dgsStopAniming",1,"dgs-dxelement/number")) end
 	if type(dgsEle) == "number" then
-	--Kill the specific animation
+		--Kill the specific animation
 		local index = 1
 		while index <= #animQueue do
 			local anim = animQueue[index]
