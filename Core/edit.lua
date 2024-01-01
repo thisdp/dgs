@@ -201,7 +201,6 @@ function dgsCreateEdit(...)
 		maskText = style.maskText,
 		showPos = 0,
 		placeHolder = style.placeHolder,
-		placeHolderFont = systemFont,
 		placeHolderVisibleWhenFocus = false,
 		placeHolderColor = style.placeHolderColor,
 		placeHolderColorCoded = style.placeHolderColorCoded,
@@ -1384,7 +1383,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if not placeHolderIgnoreRndTgt then
 			if isPlaceHolderShown then
 				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
-				local pFont = eleData.placeHolderFont
+				local pFont = eleData.placeHolderFont or font
 				local pColorCoded = eleData.placeHolderColorCoded
 				local pHolderTextSizeX,pHolderTextSizeY
 				local placeHolderTextSize = eleData.placeHolderTextSize
@@ -1427,7 +1426,7 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	if placeHolderIgnoreRndTgt then
 		if isPlaceHolderShown then
 			local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
-			local pFont = eleData.placeHolderFont
+			local pFont = eleData.placeHolderFont or font
 			local pColorCoded = eleData.placeHolderColorCoded
 			dxSetBlendMode(rndtgt and "modulate_add" or "blend")
 			dgsDrawText(placeHolder,px+textLeft+placeHolderOffset[1],py+placeHolderOffset[2],px+textRight-posFix+placeHolderOffset[1],py+textBottom+placeHolderOffset[2],pColor,txtSizX,txtSizY,pFont,alignment[1],alignment[2],false,false,isPostGUI,pColorcoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)

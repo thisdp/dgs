@@ -197,7 +197,6 @@ function dgsCreateTab(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
 	style = style.tab
 	local eleData = dgsElementData[tabpanel]
@@ -206,7 +205,7 @@ function dgsCreateTab(...)
 	local tabs = eleData.tabs
 	local id = #tabs+1
 	tableInsert(tabs,id,tab)
-	local font = style.font or eleData.font
+	local usingFont = style.font or eleData.font or style.systemFontElement
 	local t_minWid,t_maxWid = eleData.tabMinWidth,eleData.tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
 	local tabPadding = eleData.tabPadding
@@ -223,7 +222,6 @@ function dgsCreateTab(...)
 	dgsElementData[tab] = {
 		parent = tabpanel,
 		id = id,
-		font = style.font or systemFont,
 		width = wid,
 		textColor = tonumber(textColor) or style.textColor or pTextColor,
 		textSize = {textSizeX,textSizeY},
@@ -245,12 +243,12 @@ function dgsCreateTab(...)
 	dgsAttachToTranslation(tab,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[tab]._translation_text = text
-		local wid = mathClamp(dxGetTextWidth(dgsTranslate(tab,text,sRes),scaleX or 1,font),minwidth,maxwidth)
+		local wid = mathClamp(dxGetTextWidth(dgsTranslate(tab,text,sRes),scaleX or 1,usingFont),minwidth,maxwidth)
 		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
 		dgsElementData[tab].width = wid
 	else
 		text = tostring(text or "")
-		local wid = mathClamp(dxGetTextWidth(text,scaleX or 1,font),minwidth,maxwidth)
+		local wid = mathClamp(dxGetTextWidth(text,scaleX or 1,usingFont),minwidth,maxwidth)
 		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
 		dgsElementData[tab].width = wid
 	end
@@ -320,6 +318,12 @@ function dgsTabPanelGetTabID(tab)
 	return dgsElementData[tab].id
 end
 
+function configTabPanel(source)
+	local eleData = dgsElementData[source]
+	dgsTabPanelRecreateRenderTarget(source,true)
+	eleData.configNextFrame = false
+end
+
 function dgsDeleteTab(tab)
 	if not dgsIsType(tab,"dgs-dxtab") then error(dgsGenAsrt(tab,"dgsDeleteTab",1,"dgs-dxtab")) end
 	local tabpanel = dgsElementData[tab].parent
@@ -355,12 +359,6 @@ function dgsDeleteTab(tab)
 	return true
 end
 
-function configTabPanel(source)
-	local eleData = dgsElementData[source]
-	dgsTabPanelRecreateRenderTarget(source,true)
-	eleData.configNextFrame = false
-end
-
 function dgsGetSelectedTab(tabpanel,useNumber)
 	if not dgsIsType(tabpanel,"dgs-dxtabpanel") then error(dgsGenAsrt(tabpanel,"dgsGetSelectedTab",1,"dgs-dxtabpanel")) end
 	local id = dgsElementData[tabpanel].selected
@@ -382,6 +380,26 @@ function dgsSetSelectedTab(tabpanel,id)
 		return dgsSetData(tabpanel,"selected",id)
 	end
 	return false
+end
+
+function configTab(source)
+	local eleData = dgsElementData[source]
+	local tabpanel = eleData.parent
+	local pEleData = dgsElementData[tabpanel]
+	local w = pEleData.absSize[1]
+	local tabMinWidth = pEleData.tabMinWidth
+	local tabMaxWidth = pEleData.tabMaxWidth
+	local minWidth = tabMinWidth[2] and tabMinWidth[1]*w or tabMinWidth[1]
+	local maxWidth = tabMaxWidth[2] and tabMaxWidth[1]*w or tabMaxWidth[1]
+	
+	local style = styleManager.styles[eleData.reource]
+	local using = style.using
+	style = style.loaded[using]
+
+	style = style.tab
+	local usingFont = eleData.font or style.font or pEleData.font or style.systemFontElement
+	dgsSetData(source,"width",mathClamp(dxGetTextWidth(eleData.text,eleData.textSize[1],usingFont),minWidth,maxWidth))
+
 end
 
 ----------------------------------------------------------------
@@ -481,48 +499,32 @@ dgsOnPropertyChange["dgs-dxtabpanel"] = {
 
 dgsOnPropertyChange["dgs-dxtab"] = {
 	text = function(dgsEle,key,value,oldValue)
+		local eleData = dgsElementData[dgsEle]
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translation_text = value
+			eleData._translation_text = value
 			value = dgsTranslate(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translation_text = nil
+			eleData._translation_text = nil
 		end
-		local tabpanel = dgsElementData[dgsEle].parent
-		local w = dgsElementData[tabpanel].absSize[1]
-		local t_minWid = dgsElementData[tabpanel].tabMinWidth
-		local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-		local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-		local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-		dgsElementData[dgsEle].text = tostring(value)
-		dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(tostring(value),dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+
+		eleData.text = tostring(value)
+		configTab(dgsEle)
 		return dgsTriggerEvent("onDgsTextChange",dgsEle)
 	end,
 	textSize = function(dgsEle,key,value,oldValue)
-		local tabpanel = dgsElementData[dgsEle].parent
-		local w = dgsElementData[tabpanel].absSize[1]
-		local t_minWid = dgsElementData[tabpanel].tabMinWidth
-		local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-		local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-		local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-		dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+		configTab(dgsEle)
 	end,
 	font = function(dgsEle,key,value,oldValue)
+		local eleData = dgsElementData[dgsEle]
 		--Multilingual
 		if type(value) == "table" then
-			dgsElementData[dgsEle]._translation_font = value
+			eleData._translation_font = value
 			value = dgsGetTranslationFont(dgsEle,value,sourceResource)
 		else
-			dgsElementData[dgsEle]._translation_font = nil
+			eleData._translation_font = nil
 		end
-		dgsElementData[dgsEle].font = value
-
-		local tabpanel = dgsElementData[dgsEle].parent
-		local w = dgsElementData[tabpanel].absSize[1]
-		local t_minWid = dgsElementData[tabpanel].tabMinWidth
-		local t_maxWid = dgsElementData[tabpanel].tabMaxWidth
-		local minwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1]
-		local maxwidth = t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-		dgsSetData(dgsEle,"width",mathClamp(dxGetTextWidth(dgsElementData[dgsEle].text,dgsElementData[dgsEle].textSize[1],dgsElementData[dgsEle].font or dgsElementData[tabpanel].font),minwidth,maxwidth))
+		eleData.font = value
+		configTab(dgsEle)
 	end,
 	width = function(dgsEle,key,value,oldValue)
 		local tabpanel = dgsElementData[dgsEle].parent
@@ -555,9 +557,8 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	local font = eleData.font or systemFont
+	local font = eleData.font or style.systemFontElement
 	local colorCoded = eleData.colorCoded
 	local shadow = eleData.shadow
 	local wordBreak = eleData.wordBreak
