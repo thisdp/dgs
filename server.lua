@@ -67,7 +67,7 @@ function loadConfig()
 				end
 				outputDGSMessage("Old config file has been converting to meta settings.","Config")
 				if customSettings then 
-					outputDGSMessage("However the custom settings were detected, so the was not delete.","Config")
+					outputDGSMessage("However, custom settings were detected, so the file was not deleted.","Config")
 					fileRename("config.txt","config-OLD.txt")
 				else 
 					fileDelete("config.txt")
