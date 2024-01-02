@@ -701,8 +701,8 @@ function dgsAddPropertyListener(dgsEle,propertyNames)
 	local isTable = type(dgsEle) == "table"
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsAddPropertyListener",1,"dgs-dxelement/table")) end
 	if isTable then
-		for i=1,#dgsEle do
-			dgsAddPropertyListener(dgsEle[i],propertyNames)
+		for index,dgsEleItem in pairs(dgsEle) do
+			dgsAddPropertyListener(dgsEleItem,propertyNames)
 		end
 		return true
 	else
@@ -722,8 +722,8 @@ function dgsRemovePropertyListener(dgsEle,propertyNames)
 	local isTable = type(dgsEle) == "table"
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsRemovePropertyListener",1,"dgs-dxelement/table")) end
 	if isTable then
-		for i=1,#dgsEle do
-			dgsRemovePropertyListener(dgsEle[i],propertyNames)
+		for index,dgsEleItem in pairs(dgsEle) do
+			dgsRemovePropertyListener(dgsEleItem,propertyNames)
 		end
 		return true
 	else
@@ -792,8 +792,8 @@ function dgsSetProperty(dgsEle,key,value,...)
 	local isTable = type(dgsEle) == "table"
 	if not(dgsIsType(dgsEle) or isTable) then error(dgsGenAsrt(dgsEle,"dgsSetProperty",1,"dgs-dxelement/table")) end
 	if isTable then
-		for i=1,#dgsEle do
-			dgsSetProperty(dgsEle[i],key,value,...)
+		for index,dgsEleItem in pairs(dgsEle) do
+			dgsSetProperty(dgsEleItem,key,value,...)
 		end
 		return true
 	else
