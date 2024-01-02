@@ -55,7 +55,6 @@ if DGSConfig.updateCheckAuto then
 	checkUpdate()
 	updatePeriodTimer = setTimer(checkUpdate,DGSConfig.updateCheckInterval*3600000,0)
 end
-outputChatBox(DGSConfig.updateCommand)
 addCommandHandler(DGSConfig.updateCommand,function(player)
 	local account = getPlayerAccount(player)
 	local isPermit = hasObjectPermissionTo(player,"command."..DGSConfig.updateCommand,false)
