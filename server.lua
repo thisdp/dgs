@@ -60,7 +60,7 @@ function loadConfig()
 				for name,value in pairs(dgsConfig) do
 					local setting = convertSettings[name]
 					if setting or get(name) then 
-						set(setting or name,value)
+						set("*"..(setting or name),value)
 					else 
 						customSettings = true 
 					end
