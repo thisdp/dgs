@@ -1035,8 +1035,7 @@ end
 function dgsEditSetAutoComplete(edit,acTable)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditSetAutoComplete",1,"dgs-dxedit")) end
 	if not (type(acTable) == "table") then error(dgsGenAsrt(acTable,"dgsEditSetAutoComplete",2,"table")) end
-	local autoComplete = dgsElementData[edit].autoComplete
-	dgsElementData[edit].autoCompleteCount = table.count(autoComplete)
+	dgsElementData[edit].autoCompleteCount = table.count(acTable)
 	return dgsSetData(edit,"autoComplete",acTable)
 end
 
