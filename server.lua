@@ -39,40 +39,45 @@ function loadConfig()
 	if fileExists("config.txt") then
 		local file = fileOpen ("config.txt")
 		if file then
-			local str = fileRead(file,fileGetSize(file))
-			fileClose(file)
-			local fnc = loadstring(str)
-			if fnc then
-				local convertSettings = {
-					["enableUpdateSystem"] = "updater",
-					["enableMetaBackup"] = "metaBackup",
-					["enableStyleMetaBackup"] = "metaStyleBackup",
-					["enableG2DCMD"] = "G2DCMD",
-					["enableBuiltInCMD"] = "CMD",
-					["enableTestFile"] = "testFile",
-					["enableCompatibilityCheck"] = "compatibilityChecks",
-					["enableDebug"] = "debugging"
-				}
-				local dgsConfig = {}
-				local customSettings
-				setfenv(fnc,{dgsConfig=dgsConfig})
-				fnc()
-				for name,value in pairs(dgsConfig) do
-					local setting = convertSettings[name]
-					if setting or get(name) then 
-						set("*"..(setting or name),value)
+			if hasObjectPermissionTo(resource,"function.loadstring",true) then
+				local str = fileRead(file,fileGetSize(file))
+				fileClose(file)
+				local fnc = loadstring(str)
+				if fnc then
+					local convertSettings = {
+						["enableUpdateSystem"] = "updater",
+						["enableMetaBackup"] = "metaBackup",
+						["enableStyleMetaBackup"] = "metaStyleBackup",
+						["enableG2DCMD"] = "G2DCMD",
+						["enableBuiltInCMD"] = "CMD",
+						["enableTestFile"] = "testFile",
+						["enableCompatibilityCheck"] = "compatibilityChecks",
+						["enableDebug"] = "debugging"
+					}
+					local dgsConfig = {}
+					local customSettings
+					setfenv(fnc,{dgsConfig=dgsConfig})
+					fnc()
+					for name,value in pairs(dgsConfig) do
+						local setting = convertSettings[name]
+						if setting or get(name) then 
+							set("*"..(setting or name),value)
+						else 
+							customSettings = true 
+						end
+					end
+					outputDGSMessage("Old config file has been converting to meta settings.","Config")
+					if customSettings then 
+						outputDGSMessage("However, custom settings were detected, so the file was not deleted.","Config")
+						fileRename("config.txt","deleted/config.txt")
 					else 
-						customSettings = true 
+						fileDelete("config.txt")
+						outputDGSMessage("The old config file was deleted.","Config")
 					end
 				end
-				outputDGSMessage("Old config file has been converting to meta settings.","Config")
-				if customSettings then 
-					outputDGSMessage("However, custom settings were detected, so the file was not deleted.","Config")
-					fileRename("config.txt","config-OLD.txt")
-				else 
-					fileDelete("config.txt")
-					outputDGSMessage("The old config file was deleted.","Config")
-				end
+			else
+				outputDGSMessage("Failed to convert the old config file to MTA settings since function.loadstring is disabled. config.txt was backed up","Config",2)
+				fileRename("config.txt","deleted/config.txt")
 			end
 		else
 			outputDGSMessage("Failed to open the old config file.","Config",2)
