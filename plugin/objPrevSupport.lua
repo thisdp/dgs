@@ -122,7 +122,7 @@ function dgsConfigureObjectPreview()
 	return [[
 	objectPreview._drawRenderTarget = objectPreview.drawRenderTarget
 	function objectPreview.drawRenderTarget(self)
-		local resName = "]]..getResourceName(getThisResource())..[["
+		local resName = "]]..getResourceName(resource)..[["
 		local dgsRes = getResourceFromName(resName)
 		if dgsRes then
 			if getResourceState(dgsRes) == "running" then

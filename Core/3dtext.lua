@@ -90,7 +90,7 @@ function dgsCreate3DText(...)
 		isBlocked = false,
 		isOnScreen = false,
 	}
-	dgsAttachToTranslation(text3d,resourceTranslation[sRes or getThisResource()])
+	dgsAttachToTranslation(text3d,resourceTranslation[sRes or resource])
 	if type(text) == "table" then
 		dgsElementData[text3d]._translation_text = text
 		dgsSetData(text3d,"text",text)

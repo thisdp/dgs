@@ -456,10 +456,10 @@ function G2DStart()
 							local findA,findB = string.find(str,"loadstring%s*%(.*dgsG2DLoadHooker%s*%(%s*%)%s*%)")
 							if not findA then	--if not, add
 								fileSetPos(file,0)
-								fileWrite(file,"loadstring(exports."..getResourceName(getThisResource())..":dgsG2DLoadHooker())()\n\n"..str)
+								fileWrite(file,"loadstring(exports."..getResourceName(resource)..":dgsG2DLoadHooker())()\n\n"..str)
 							else	--if exists, update (maybe solve dgs resource name problems)
 								local oldStrLen = #str
-								str = string.sub(str,1,findA-1).."loadstring(exports."..getResourceName(getThisResource())..":dgsG2DLoadHooker())"..string.sub(str,findB+1)
+								str = string.sub(str,1,findA-1).."loadstring(exports."..getResourceName(resource)..":dgsG2DLoadHooker())"..string.sub(str,findB+1)
 								local diff = oldStrLen-#str
 								fileSetPos(file,0)
 								fileWrite(file,str)

@@ -3,7 +3,7 @@ if EnableDGSMemoryLog then
 	dgsStartUpMemoryMonitor = {}
 	function dgsLogLuaMemory()
 		collectgarbage()
-		local columns,rows = getPerformanceStats("Lua memory","",getResourceName(getThisResource()))
+		local columns,rows = getPerformanceStats("Lua memory","",getResourceName(resource))
 		local debugInfo = debug.getinfo(2)
 		local src = debugInfo.short_src:gsub("%\\","/")
 		local res = src:find("/")
@@ -470,7 +470,7 @@ function string.split(s,delim)
 end
 
 function string.getPath(res,path)
-	if res and res ~= "global" and res ~= getThisResource() then
+	if res and res ~= "global" and res ~= resource then
 		path = path:gsub("\\","/")
 		if not path:find(":") then
 			path = ":"..getResourceName(res).."/"..path

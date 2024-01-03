@@ -10,7 +10,7 @@ if not DGSConfig.enableUpdateSystem then return end
 
 local _fetchRemote = fetchRemote
 function fetchRemote(...)
-	if not hasObjectPermissionTo(getThisResource(),"function.fetchRemote",true) then
+	if not hasObjectPermissionTo(resource,"function.fetchRemote",true) then
 		outputDGSMessage("fetchRemote' was called, but access was denied. To resolve this issue, use the command 'aclrequest allow dgs all'.",2)
 		return false
 	end

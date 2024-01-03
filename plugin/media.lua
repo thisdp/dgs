@@ -39,7 +39,7 @@ function dgsCreateMediaBrowser(w,h,transparent)
 	dgsElementData[media].current = false
 	dgsTriggerEvent("onDgsPluginCreate",media,sourceResource)
 	addEventHandler("onClientBrowserCreated",media,function()
-		loadBrowserURL(source,"http://mta/"..getResourceName(getThisResource()).."/html/media.html")
+		loadBrowserURL(source,"http://mta/"..getResourceName(resource).."/html/media.html")
 	end,false)
 	addEventHandler("onClientBrowserDocumentReady",media,function()
 		dgsSetData(source,"started",true)
@@ -58,7 +58,7 @@ DGSMediaType = {
 function dgsMediaLoadMedia(media,path,theType,sourceRes)
 	if not(dgsGetType(media) == "dgs-dxmedia") then error(dgsGenAsrt(media,"dgsMediaLoadMedia",1,"plugin dgs-dxmedia")) end
 	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsMediaLoadMedia",2,"string")) end
-	local sR = sourceResource or sourceRes or getThisResource()
+	local sR = sourceResource or sourceRes or resource
 	local name = getResourceName(sR)
 	if not path:find(":") then
 		local firstOne = path:sub(1,1)

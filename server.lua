@@ -115,7 +115,7 @@ function getMyIP()
 end
 addEventHandler("onPlayerResourceStart",root,getMyIP)
 
-setElementData(root,"DGS-ResName",getResourceName(getThisResource()))
+setElementData(root,"DGS-ResName",getResourceName(resource))
 
 addEventHandler("onElementDataChange",resourceRoot,
 function (key,old)

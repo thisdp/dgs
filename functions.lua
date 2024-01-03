@@ -508,7 +508,7 @@ end
 function dgsCreateFont(path,size,bold,quality)
 	if not(type(path) == "string") then error(dgsGenAsrt(path,"dgsCreateFont",1,"string")) end
 	if not path:find(":") then
-		local resname = getResourceName(sourceResource or getThisResource())
+		local resname = getResourceName(sourceResource or resource)
 		path = ":"..resname.."/"..path
 	end
 	if not fileExists(path) then error(dgsGenAsrt(path,"dgsCreateFont",1,_,_,_,"Couldn't find such file '"..path.."'")) end
@@ -559,7 +559,7 @@ function dgsSetSystemFont(font,size,bold,quality,styleName,sres)
 	if isElement(systemFont) then
 		destroyElement(systemFont)
 	end
-	local sResource = sourceResource or getThisResource()
+	local sResource = sourceResource or resource
 	if fontBuiltIn[font] then
 		style.systemFontElement = font
 		return true
@@ -1040,7 +1040,7 @@ function dgsDetachFromTranslation(dgsEle)
 end
 
 function dgsSetAttachTranslation(name)
-	resourceTranslation[sourceResource or getThisResource()] = name
+	resourceTranslation[sourceResource or resource] = name
 	return true
 end
 
@@ -1072,7 +1072,7 @@ local cTranslationEnvMeta = {
 
 function dgsTranslateText(textTable,translationTableName)
 	if type(textTable) == "table" then
-		local translation = translationTableName or resourceTranslation[sourceResource or getThisResource()]
+		local translation = translationTableName or resourceTranslation[sourceResource or resource]
 		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1]
 		local result,status = value
 		if type(value) == "table" then	--Conditional Translation
@@ -1155,7 +1155,7 @@ end
 function dgsGetTranslationFont(dgsEle,fontTable,sourceResource)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
 	if type(fontTable) == "table" then
-		local translation = dgsElementData[dgsEle]._translang or resourceTranslation[sourceResource or getThisResource()]
+		local translation = dgsElementData[dgsEle]._translang or resourceTranslation[sourceResource or resource]
 		local font = translation and LanguageTranslation[translation] and LanguageTranslation[translation][fontTable[1]] or fontTable[1]
 		local fontType = dgsGetType(font)
 		if fontType == "dx-font" then
@@ -1182,7 +1182,7 @@ function dgsTranslate(dgsEle,textTable,sourceResource,skipPropertyListener)
 	if not(dgsIsType(dgsEle)) then error(dgsGenAsrt(dgsEle,"dgsTranslate",1,"dgs-dxelement")) end
 	local eleData = dgsElementData[dgsEle]
 	if type(textTable) == "table" then
-		local translation = eleData._translang or resourceTranslation[sourceResource or getThisResource()]
+		local translation = eleData._translang or resourceTranslation[sourceResource or resource]
 		local value = translation and LanguageTranslation[translation] and LanguageTranslation[translation][textTable[1]] or textTable[1] or ""
 		local result,status = value
 		if type(value) == "table" then	--Conditional Translation

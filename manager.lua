@@ -929,7 +929,7 @@ addEventHandler("onClientResourceStop",root,function(res)
 		resourceTranslation[res] = nil
 		boundResource[res] = nil
 	end
-	if res == getThisResource() and CursorData.enabled then --Recover Cursor Alpha
+	if res == resource and CursorData.enabled then --Recover Cursor Alpha
 		setCursorAlpha(255)
 	end
 	if G2DHookerEvents[res] then -- G2D Hooker

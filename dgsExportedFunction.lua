@@ -1,14 +1,14 @@
 dgsLogLuaMemory()
 local loadstring = loadstring
 dgsExportedFunctionName = {}
-dgsResName = getResourceName(getThisResource())
+dgsResName = getResourceName(resource)
 
 addEventHandler("onClientResourceStart",resourceRoot,function()
 	triggerEvent("onDgsStart",resourceRoot,dgsResName)
 end)
 
 function dgsImportFunction()
-	if not sourceResource or sourceResource == getThisResource() then return "return true" end
+	if not sourceResource or sourceResource == resource then return "return true" end
 	local allCode = [[
 	--Check Error Message Above
 	if not dgsImportHead then
@@ -47,7 +47,7 @@ function dgsImportFunction()
 		function DGSCallMT:__index(fncName)
 			if type(fncName) ~= 'string' then fncName = tostring(fncName) end
 			self[fncName] = function(...)
-				if not dgsImportHead then return outputDebugString("[DGS] "..getResourceName(getThisResource())..": DGS import data is missing or DGS is not running, please reimport dgs functions",4,255,0,0) end
+				if not dgsImportHead then return outputDebugString("[DGS] "..getResourceName(resource)..": DGS import data is missing or DGS is not running, please reimport dgs functions",4,255,0,0) end
 				if isElement(dgsRoot) then
 					local isCreateFunction = fncName:sub(1,9) == "dgsCreate"
 					if isTraceDebug then
@@ -575,7 +575,7 @@ function handleHookerEvents(...)
 end
 
 -------Inside DGS
-setElementData(root,"__DGSRes",getThisResource(),false)
+setElementData(root,"__DGSRes",resource,false)
 addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)
 
 OOPImportCache = nil
