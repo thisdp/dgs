@@ -77,8 +77,8 @@ function dgsCreateScrollPane(...)
 	local using = style.using
 	style = style.loaded[using]
 
-	style = style.scrollpane
-	local scbThick = style.scrollBarThick
+	local sStyle = style.scrollpane
+	local scbThick = sStyle.scrollBarThick
 	dgsElementData[scrollpane] = {
 		renderBuffer = {},
 		scrollBarThick = scbThick,

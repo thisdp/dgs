@@ -10,17 +10,17 @@ function dgsSetCustomCursorImage(cursorType,image,rotation,rotationCenter,offset
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
-	style = style.loaded[using].cursor
+	local sStyle = style.loaded[using].cursor
 	if not cursorType then	--Apply all (image in current style)
 		for k,v in pairs(cursorTypesBuiltIn) do
-			local texture = dgsCreateTextureFromStyle(using,res,style[k].image)
-			CursorData[k] = {texture,style[k].rotation or 0,style[k].rotationCenter or {0,0},style[k].offset or {0,0},style[k].scale,{dxGetMaterialSize(texture)}}
+			local texture = dgsCreateTextureFromStyle(using,res,sStyle[k].image)
+			CursorData[k] = {texture,sStyle[k].rotation or 0,sStyle[k].rotationCenter or {0,0},sStyle[k].offset or {0,0},sStyle[k].scale,{dxGetMaterialSize(texture)}}
 		end
-	elseif style[cursorType] then
+	elseif sStyle[cursorType] then
 		if not(type(cursorType) == "string" and cursorTypesBuiltIn[cursorType]) then error(dgsGenAsrt(cursorType,"dgsSetCustomCursorImage",1,"string",_,_,"unsupported type")) end
 		if image then
 			if not(isMaterial(image)) then error(dgsGenAsrt(image,"dgsSetCustomCursorImage",2,"material")) end
-			CursorData[cursorType] = {image,rotation or style[cursorType].rotation or 0,rotationCenter or style[cursorType].rotationCenter or {0,0},offset or style[cursorType].offset or {0,0},scale or style[cursorType].scale,{dxGetMaterialSize(image)}}
+			CursorData[cursorType] = {image,rotation or sStyle[cursorType].rotation or 0,rotationCenter or sStyle[cursorType].rotationCenter or {0,0},offset or sStyle[cursorType].offset or {0,0},scale or style[cursorType].scale,{dxGetMaterialSize(image)}}
 		else
 			CursorData[cursorType] = nil
 		end

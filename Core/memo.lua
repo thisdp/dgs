@@ -196,26 +196,24 @@ function dgsCreateMemo(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.memo
-	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
+	local sStyle = style.memo
+	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
 	dgsElementData[memo] = {
 		renderBuffer = {
 			placeHolderState = false,
 			parentAlphaLast = false,
 			isFocused = false,
 		},
-		bgColor = bgColor or style.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
-		bgColorBlur = style.bgColorBlur,
+		bgColor = bgColor or sStyle.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,sStyle.bgImage),
+		bgColorBlur = sStyle.bgColorBlur,
 		bgImageBlur = bgImageBlur,
-		font = style.font or systemFont,
 		text = {},
 		wordWrap = false,
 		wordWrapShowLine = {1,1,1},
 		wordWrapMapText = {},
-		textColor = textColor or style.textColor,
+		textColor = textColor or sStyle.textColor,
 		textSize = {textSizeX,textSizeY},
 		caretPos = {0,1},
 		selectForm = {0,1},
@@ -224,12 +222,12 @@ function dgsCreateMemo(...)
 		scrollSize = 3,
 		showPos = 0,
 		showLine = 1,
-		caretStyle = style.caretStyle,
-		caretThick = style.caretThick,
-		caretOffset = style.caretOffset,
-		caretColor = style.caretColor,
-		caretHeight = style.caretHeight,
-		scrollBarThick = style.scrollBarThick,
+		caretStyle = sStyle.caretStyle,
+		caretThick = sStyle.caretThick,
+		caretOffset = sStyle.caretOffset,
+		caretColor = sStyle.caretColor,
+		caretHeight = sStyle.caretHeight,
+		scrollBarThick = sStyle.scrollBarThick,
 		allowCopy = true,
 		readOnly = false,
 		readOnlyCaretShow = false,
@@ -238,20 +236,19 @@ function dgsCreateMemo(...)
 		enableRedoUndoRecord = true,
 		undoHistory = {},
 		redoHistory = {},
-		padding = style.padding,
-		placeHolder = style.placeHolder,
-		placeHolderFont = systemFont,
+		padding = sStyle.padding,
+		placeHolder = sStyle.placeHolder,
 		placeHolderVisibleWhenFocus = false,
-		placeHolderColor = style.placeHolderColor,
-		placeHolderColorCoded = style.placeHolderColorCoded,
-		placeHolderOffset = style.placeHolderOffset,
-		placeHolderTextSize = style.placeHolderTextSize,
-		placeHolderIgnoreRenderTarget = style.placeHolderIgnoreRenderTarget,
-		typingSound = style.typingSound,
-		typingSoundVolume = style.typingSoundVolume,
-		selectColor = style.selectColor,
-		selectColorBlur = style.selectColorBlur,
-		selectVisible = style.selectVisible,
+		placeHolderColor = sStyle.placeHolderColor,
+		placeHolderColorCoded = sStyle.placeHolderColorCoded,
+		placeHolderOffset = sStyle.placeHolderOffset,
+		placeHolderTextSize = sStyle.placeHolderTextSize,
+		placeHolderIgnoreRenderTarget = sStyle.placeHolderIgnoreRenderTarget,
+		typingSound = sStyle.typingSound,
+		typingSoundVolume = sStyle.typingSoundVolume,
+		selectColor = sStyle.selectColor,
+		selectColorBlur = sStyle.selectColorBlur,
+		selectVisible = sStyle.selectVisible,
 		configNextFrame = nil,
 		rebuildMapTableNextFrame = nil,
 		maxLength = 0x3FFFFFFF,
@@ -377,13 +374,11 @@ function dgsMemoGetTextBoundingBox(memo,excludePadding)
 	if dgsGetType(memo) ~= "dgs-dxmemo" then error(dgsGenAsrt(memo,"dgsMemoGetTextBoundingBox",1,"dgs-dxmemo")) end
 	local eleData = dgsElementData[memo]
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
-	local systemFont = style.systemFontElement
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
 
-	local fontHeight = dxGetFontHeight(eleData.textSize[2],eleData.font or systemFont)
+	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 	if eleData.wordWrap then
 		if eleData.rebuildMapTableNextFrame then dgsMemoRebuildWordWrapMapTable(memo) end
 		local textTable = eleData.wordWrapMapText
@@ -416,7 +411,11 @@ function dgsMemoMoveCaret(memo,indexOffset,lineOffset,noselect,noMoveLine)
 	local eleData = dgsElementData[memo]
 	local index = eleData.caretPos[1]
 	local line = eleData.caretPos[2]
-	local font = eleData.font
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
+
 	local size = eleData.absSize
 	local padding = eleData.padding
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
@@ -538,7 +537,11 @@ function dgsMemoSetCaretPosition(memo,tpos,tline,doSelect,noSeekPosition)
 	local index,line
 	local isWordWrap = eleData.wordWrap
 	local showLine = eleData.showLine
-	local font = eleData.font
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
+
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 	local padding = eleData.padding
 	local size = eleData.absSize
@@ -676,13 +679,10 @@ addEventHandler("onClientCursorMove",root,resetMemo)
 function searchMemoMousePosition(memo,posx,posy)
 	local eleData = dgsElementData[memo]
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
-	local systemFont = style.systemFontElement
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
 
-	local font = eleData.font or systemFont
 	local txtSizX = eleData.textSize[1]
 	local padding = eleData.padding
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
@@ -957,13 +957,10 @@ function handleDxMemoText(memo,text,noclear,noAffectCaret,index,line)
 		eleData.updateRTNextFrame = true
 	end
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
-	local systemFont = style.systemFontElement
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
 
-	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local _index,_line = dgsMemoGetCaretPosition(memo,true)
 	index,line = index or _index,line or _line
@@ -1072,13 +1069,10 @@ function dgsMemoDeleteText(memo,fromIndex,fromLine,toIndex,toLine,noAffectCaret)
 	local textTable = eleData.text
 	local mapTable = eleData.wordWrapMapText
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
-	local systemFont = style.systemFontElement
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
 
-	local font = eleData.font or systemFont
 	local textSize = eleData.textSize
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 	local size = eleData.absSize
@@ -1333,7 +1327,11 @@ function configMemo(memo)
 	else
 		textCnt = #eleData.text			--Strong Line for no word Wrap
 	end
-	local font = eleData.font
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
+
 	local textSize = eleData.textSize
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 	local scbThick = eleData.scrollBarThick
@@ -1388,7 +1386,11 @@ function checkMemoScrollBar(source,new,old)
 	local size = eleData.absSize
 	local padding = eleData.padding
 	local scbThick = eleData.scrollBarThick
-	local font = eleData.font
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
+
 	local textSize = eleData.textSize
 	local isWordWrap = eleData.wordWrap
 	local textTable = eleData.text
@@ -1436,7 +1438,11 @@ function syncScrollBars(memo,which)
 	local size = eleData.absSize
 	local padding = eleData.padding
 	local scbThick = eleData.scrollBarThick
-	local font = eleData.font
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
+
 	local textSize = eleData.textSize
 	local isWordWrap = eleData.wordWrap
 	local scbTakes1,scbTakes2 = dgsElementData[scrollbars[1]].visible and scbThick+2 or 4,dgsElementData[scrollbars[2]].visible and scbThick or 0
@@ -1530,13 +1536,10 @@ function dgsMemoRebuildWordWrapMapTable(memo)
 		local size = eleData.absSize
 		local padding = eleData.padding
 
-		local res = eleData.resource or "global"
-		local style = styleManager.styles[res]
-		local using = style.using
-		style = style.loaded[using]
-		local systemFont = style.systemFontElement
-
-		local font = eleData.font or systemFont
+		local style = styleManager.styles[eleData.resource or "global"]
+		style = style.loaded[style.using]
+		local font = eleData.font or style.memo.font or style.systemFontElement
+		
 		local textSizeX = eleData.textSize[1]
 		local scbThick = eleData.scrollBarThick
 		local scrollbars = eleData.scrollbars
@@ -1559,7 +1562,11 @@ function dgsMemoRebuildTextTable(memo)
 	local eleData = dgsElementData[memo]
 	local textTable = eleData.text
 	local textSize = eleData.textSize
-	local font = eleData.font
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
+
 	for i=1,#textTable do
 		local text = textTable[i][0]
 		textTable[i][-1] = dxGetTextWidth(text,textSize[1],font)
@@ -1681,13 +1688,11 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local caretPos = eleData.caretPos
 	local selectFro = eleData.selectFrom
 	local selectColor = applyColorAlpha(MouseData.focused == source and eleData.selectColor or eleData.selectColorBlur,parentAlpha)
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	local font = eleData.font or systemFont
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.memo.font or style.systemFontElement
+
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
 	local fontHeight = dxGetFontHeight(txtSizY,font)
 	local scbThick = eleData.scrollBarThick
@@ -1824,7 +1829,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			if not placeHolderIgnoreRndTgt then
 				if isPlaceHolderShown then
 					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
-					local pFont = eleData.placeHolderFont
+					local pFont = eleData.placeHolderFont or font
 					local pColorCoded = eleData.placeHolderColorCoded
 					local pHolderTextSizeX,pHolderTextSizeY
 					local placeHolderTextSize = eleData.placeHolderTextSize
@@ -1870,7 +1875,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if placeHolderIgnoreRndTgt then
 			if isPlaceHolderShown then
 				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
-				local pFont = eleData.placeHolderFont
+				local pFont = eleData.placeHolderFont or font
 				local pColorCoded = eleData.placeHolderColorCoded
 				local pHolderTextSizeX,pHolderTextSizeY
 				local placeHolderTextSize = eleData.placeHolderTextSize
@@ -1981,7 +1986,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			if not placeHolderIgnoreRndTgt then
 				if isPlaceHolderShown then
 					local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
-					local pFont = eleData.placeHolderFont
+					local pFont = eleData.placeHolderFont or font
 					local pColorCoded = eleData.placeHolderColorCoded
 					local pHolderTextSizeX,pHolderTextSizeY
 					local placeHolderTextSize = eleData.placeHolderTextSize
@@ -2029,7 +2034,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		if placeHolderIgnoreRndTgt then
 			if isPlaceHolderShown then
 				local pColor = applyColorAlpha(eleData.placeHolderColor,parentAlpha)
-				local pFont = eleData.placeHolderFont
+				local pFont = eleData.placeHolderFont or font
 				local pColorCoded = eleData.placeHolderColorCoded
 				local pHolderTextSizeX,pHolderTextSizeY
 				local placeHolderTextSize = eleData.placeHolderTextSize

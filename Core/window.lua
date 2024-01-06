@@ -94,22 +94,19 @@ function dgsCreateWindow(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	
-	local systemFont = style.systemFontElement
-
-	style = style.window
+	local sStyle = style.window
 	dgsElementData[window] = {
 		renderBuffer = {},
-		titleImage = titleImage or dgsCreateTextureFromStyle(using,res,style.titleImage),
-		textColor = tonumber(textColor) or style.textColor,
-		titleColorBlur = tonumber(titleColor) or style.titleColorBlur,
-		titleColor = tonumber(titleColor) or style.titleColor,
-		image = image or dgsCreateTextureFromStyle(using,res,style.image),
-		color = tonumber(color) or style.color,
-		textSize = style.textSize,
+		titleImage = titleImage or dgsCreateTextureFromStyle(using,res,sStyle.titleImage),
+		textColor = tonumber(textColor) or sStyle.textColor,
+		titleColorBlur = tonumber(titleColor) or sStyle.titleColorBlur,
+		titleColor = tonumber(titleColor) or sStyle.titleColor,
+		image = image or dgsCreateTextureFromStyle(using,res,sStyle.image),
+		color = tonumber(color) or sStyle.color,
+		textSize = sStyle.textSize,
 		textOffset = nil,	--nil if don't set
-		titleHeight = tonumber(titleHeight) or style.titleHeight,
-		borderSize = tonumber(borderSize) or style.borderSize,
+		titleHeight = tonumber(titleHeight) or sStyle.titleHeight,
+		borderSize = tonumber(borderSize) or sStyle.borderSize,
 		ignoreTitle = false,
 		colorCoded = false,
 		movable = true,
@@ -117,7 +114,6 @@ function dgsCreateWindow(...)
 		clip = true,
 		wordBreak = false,
 		alignment = {"center","center"},
-		font = style.font or systemFont,
 		minSize = {60,60},
 	}
 	dgsSetParent(window,nil,true,true)
@@ -133,18 +129,18 @@ function dgsCreateWindow(...)
 	
 	local createCloseButton = true
 	if noCloseButton == nil then
-		createCloseButton = style.closeButton
+		createCloseButton = sStyle.closeButton
 	elseif noCloseButton then
 		createCloseButton = false
 	end
 	if createCloseButton then
 		local closeIconTexture = nil
 
-		if style.closeIconImage and type(style.closeIconImage) == "table" then
-			closeIconTexture = dgsCreateTextureFromStyle(using,res,style.closeIconImage)
+		if sStyle.closeIconImage and type(sStyle.closeIconImage) == "table" then
+			closeIconTexture = dgsCreateTextureFromStyle(using,res,sStyle.closeIconImage)
 		end
 		
-		local closeBtn = dgsCreateButton(0,0,40,24,"",false,window,_,_,_,_,_,_,style.closeButtonColor[1],style.closeButtonColor[2],style.closeButtonColor[3],true)
+		local closeBtn = dgsCreateButton(0,0,40,24,"",false,window,_,_,_,_,_,_,sStyle.closeButtonColor[1],sStyle.closeButtonColor[2],sStyle.closeButtonColor[3],true)
 		dgsAddEventHandler("onDgsMouseClickUp",closeBtn,"closeWindowWhenCloseButtonClicked",false)
 
 		if closeIconTexture then
@@ -155,8 +151,8 @@ function dgsCreateWindow(...)
 			dgsElementData[window].closeIconImage = closeIconImg
 			dgsElementData[window].closeIconTexture = closeIconTexture
 		else
-			dgsElementData[window].closeButtonText = style.closeButtonText
-			dgsSetText(closeBtn, style.closeButtonText)
+			dgsElementData[window].closeButtonText = sStyle.closeButtonText
+			dgsSetText(closeBtn, sStyle.closeButtonText)
 		end
 
 		dgsElementData[window].closeButtonSize = {40,24,false}
@@ -317,7 +313,9 @@ end
 function dgsWindowGetTextExtent(window)
 	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetTextExtent",1,"dgs-dxwindow")) end
 	local eleData = dgsElementData[window]
-	local font = eleData.font or systemFont
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.window.font or style.systemFontElement
 	local textSizeX = eleData.textSize[1]
 	local text = eleData.text
 	local colorCoded = eleData.colorCoded
@@ -326,7 +324,10 @@ end
 
 function dgsWindowGetFontHeight(window)
 	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetFontHeight",1,"dgs-dxwindow")) end
-	local font = dgsElementData[window].font or systemFont
+	local eleData = dgsElementData[window]
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.window.font or style.systemFontElement
 	local textSizeY = dgsElementData[window].textSize[2]
 	return dxGetFontHeight(textSizeY,font)
 end
@@ -334,7 +335,9 @@ end
 function dgsWindowGetTextSize(window)
 	if dgsGetType(window) ~= "dgs-dxwindow" then error(dgsGenAsrt(window,"dgsWindowGetTextSize",1,"dgs-dxwindow")) end
 	local eleData = dgsElementData[window]
-	local font = eleData.font or systemFont
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.window.font or style.systemFontElement
 	local textSizeX = eleData.textSize[1]
 	local textSizeY = eleData.textSize[2]
 	local absSize = eleData.absSize
@@ -356,6 +359,10 @@ dgsOnPropertyChange["dgs-dxwindow"] = {
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.window.font or style.systemFontElement
+
 	local img = eleData.image
 	local color = applyColorAlpha(eleData.color,parentAlpha)
 	local titimg,titleColor,titsize = eleData.titleImage,dgsIsFocused(source) and eleData.titleColor or (eleData.titleColorBlur or eleData.titleColor),eleData.titleHeight
@@ -363,12 +370,6 @@ dgsRenderer["dgs-dxwindow"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	dxDrawImage(x,y+titsize,w,h-titsize,img,0,0,0,color,isPostGUI,rndtgt)
 	dxDrawImage(x,y,w,titsize,titimg,0,0,0,titleColor,isPostGUI,rndtgt)
 	local alignment = eleData.alignment
-
-	local style = styleManager.styles[eleData.resource or "global"]
-	style = style.loaded[style.using]
-	local systemFont = style.systemFontElement
-
-	local font = eleData.font or systemFont
 	local textColor = applyColorAlpha(eleData.textColor,parentAlpha)
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local textOffset = eleData.textOffset

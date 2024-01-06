@@ -68,9 +68,8 @@ function dgsCreate3DText(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.text3D
+	local sStyle = style.text3D
 	dgsElementData[text3d] = {
 		alignment = {"center", "center"},
 		renderBuffer = {},
@@ -78,7 +77,6 @@ function dgsCreate3DText(...)
 		textSize = {scaleX or 1,scaleY or 1},
 		textOffset = {0,0},
 		fixTextSize = false,
-		font = font or style.font or systemFont,
 		color = color or 0xFFFFFFFF,
 		colorCoded = colorCoded or false,
 		maxDistance = maxDistance or 80,
@@ -178,7 +176,6 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 		local style = styleManager.styles[res]
 		local using = style.using
 		style = style.loaded[style.using]
-		local systemFont = style.systemFontElement
 		eleData.isBlocked = (not canBeBlocked or (canBeBlocked and isLineOfSightClear(wx, wy, wz, camX, camY, camZ, canBeBlocked.checkBuildings, canBeBlocked.checkVehicles, canBeBlocked.checkPeds, canBeBlocked.checkObjects, canBeBlocked.checkDummies, canBeBlocked.seeThroughStuff,canBeBlocked.ignoreSomeObjectsForCamera)))
 		if eleData.isBlocked then
 			local fadeMulti = 1
@@ -193,7 +190,11 @@ dgsRenderer["dgs-dx3dtext"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 				local colorCoded = eleData.colorCoded
 				local text = eleData.text
 				local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2]
-				local font = eleData.font or systemFont
+
+				local style = styleManager.styles[eleData.resource or "global"]
+				style = style.loaded[style.using]
+				local font = eleData.font or style.text3D.font or style.systemFontElement
+				
 				local alignment = eleData.alignment
 				x,y = x+offsetX-x%1,y+offsetY-y%1
 				if eleData.fixTextSize then

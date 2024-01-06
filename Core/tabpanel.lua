@@ -104,29 +104,27 @@ function dgsCreateTabPanel(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.tabpanel
-	tabHeight = tabHeight or style.tabHeight
-	nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
-	hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2])) or nImage
-	cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3])) or nImage
-	nColor = nColor or (style.tabColor and style.tabColor[1])
-	hColor = hColor or (style.tabColor and style.tabColor[2])
-	cColor = cColor or (style.tabColor and style.tabColor[3])
+	local sStyle = style.tabpanel
+	tabHeight = tabHeight or sStyle.tabHeight
+	nImage = nImage or (sStyle.tabImage and dgsCreateTextureFromStyle(using,res,sStyle.tabImage[1]))
+	hImage = hImage or (sStyle.tabImage and dgsCreateTextureFromStyle(using,res,sStyle.tabImage[2])) or nImage
+	cImage = cImage or (sStyle.tabImage and dgsCreateTextureFromStyle(using,res,sStyle.tabImage[3])) or nImage
+	nColor = nColor or (sStyle.tabColor and sStyle.tabColor[1])
+	hColor = hColor or (sStyle.tabColor and sStyle.tabColor[2])
+	cColor = cColor or (sStyle.tabColor and sStyle.tabColor[3])
 	dgsElementData[tabpanel] = {
 		tabHeight = {tabHeight,false},
 		tabMaxWidth = {10000,false},
 		tabMinWidth = {10,false},
-		bgColor = tonumber(bgColor) or style.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
+		bgColor = tonumber(bgColor) or sStyle.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,sStyle.bgImage),
 		tabs = {},
-		font = style.font or systemFont,
 		selected = -1,
 		preSelect = -1,
-		tabPadding = style.tabPadding,
-		tabGapSize = style.tabGapSize,
-		scrollSpeed = style.scrollSpeed,
+		tabPadding = sStyle.tabPadding,
+		tabGapSize = sStyle.tabGapSize,
+		scrollSpeed = sStyle.scrollSpeed,
 		showPos = 0,
 		tabLengthAll = 0,
 		colorCoded = nil,
@@ -197,33 +195,34 @@ function dgsCreateTab(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
+	local pEleData = dgsElementData[tabpanel]
+	local usingFont =  style.tab.font or pEleData.font or style.tabpanel.font or style.systemFontElement
 
-	style = style.tab
-	local eleData = dgsElementData[tabpanel]
-	local pTextColor = eleData.textColor
-	local w = eleData.absSize[1]
-	local tabs = eleData.tabs
+	local pTextColor = pEleData.textColor
+	local w = pEleData.absSize[1]
+	local tabs = pEleData.tabs
 	local id = #tabs+1
 	tableInsert(tabs,id,tab)
-	local usingFont = style.font or eleData.font or style.systemFontElement
-	local t_minWid,t_maxWid = eleData.tabMinWidth,eleData.tabMaxWidth
+
+	local sStyle = style.tab
+	local t_minWid,t_maxWid = pEleData.tabMinWidth,pEleData.tabMaxWidth
 	local minwidth,maxwidth = t_minWid[2] and t_minWid[1]*w or t_minWid[1],t_maxWid[2] and t_maxWid[1]*w or t_maxWid[1]
-	local tabPadding = eleData.tabPadding
+	local tabPadding = pEleData.tabPadding
 	local padding = tabPadding[2] and tabPadding[1]*w or tabPadding[1]
-	local tabGapSize = eleData.tabGapSize
+	local tabGapSize = pEleData.tabGapSize
 	local gapSize = tabGapSize[2] and tabGapSize[1]*w or tabGapSize[1]
-	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
-	nImage = nImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[1]))
-	hImage = hImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[2]))
-	cImage = cImage or (style.tabImage and dgsCreateTextureFromStyle(using,res,style.tabImage[3]))
-	nColor = nColor or (style.tabColor and style.tabColor[1])
-	hColor = hColor or (style.tabColor and style.tabColor[2])
-	cColor = cColor or (style.tabColor and style.tabColor[3])
+	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
+	nImage = nImage or (sStyle.tabImage and dgsCreateTextureFromStyle(using,res,sStyle.tabImage[1]))
+	hImage = hImage or (sStyle.tabImage and dgsCreateTextureFromStyle(using,res,sStyle.tabImage[2]))
+	cImage = cImage or (sStyle.tabImage and dgsCreateTextureFromStyle(using,res,sStyle.tabImage[3]))
+	nColor = nColor or (sStyle.tabColor and sStyle.tabColor[1])
+	hColor = hColor or (sStyle.tabColor and sStyle.tabColor[2])
+	cColor = cColor or (sStyle.tabColor and sStyle.tabColor[3])
 	dgsElementData[tab] = {
 		parent = tabpanel,
 		id = id,
 		width = wid,
-		textColor = tonumber(textColor) or style.textColor or pTextColor,
+		textColor = tonumber(textColor) or sStyle.textColor or pTextColor,
 		textSize = {textSizeX,textSizeY},
 		bgColor = tonumber(bgColor),
 		bgImage = bgImage,
@@ -239,17 +238,17 @@ function dgsCreateTab(...)
 	}
 	dgsSetParent(tab,tabpanel,true,true)
 	dgsApplyGeneralProperties(tab,sRes)
-	if eleData.selected == -1 then eleData.selected = id end
+	if pEleData.selected == -1 then pEleData.selected = id end
 	dgsAttachToTranslation(tab,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[tab]._translation_text = text
 		local wid = mathClamp(dxGetTextWidth(dgsTranslate(tab,text,sRes),scaleX or 1,usingFont),minwidth,maxwidth)
-		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
+		dgsElementData[tab].tabLengthAll = pEleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
 		dgsElementData[tab].width = wid
 	else
 		text = tostring(text or "")
 		local wid = mathClamp(dxGetTextWidth(text,scaleX or 1,usingFont),minwidth,maxwidth)
-		dgsElementData[tab].tabLengthAll = eleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
+		dgsElementData[tab].tabLengthAll = pEleData.tabLengthAll+wid+padding*2+gapSize*mathMin(#tabs,1)
 		dgsElementData[tab].width = wid
 	end
 	dgsSetData(tab,"text",text)
@@ -392,13 +391,11 @@ function configTab(source)
 	local minWidth = tabMinWidth[2] and tabMinWidth[1]*w or tabMinWidth[1]
 	local maxWidth = tabMaxWidth[2] and tabMaxWidth[1]*w or tabMaxWidth[1]
 	
-	local style = styleManager.styles[eleData.reource]
-	local using = style.using
-	style = style.loaded[using]
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font =  eleData.font or style.tab.font or pEleData.font or style.tabpanel.font or style.systemFontElement
 
-	style = style.tab
-	local usingFont = eleData.font or style.font or pEleData.font or style.systemFontElement
-	dgsSetData(source,"width",mathClamp(dxGetTextWidth(eleData.text,eleData.textSize[1],usingFont),minWidth,maxWidth))
+	dgsSetData(source,"width",mathClamp(dxGetTextWidth(eleData.text,eleData.textSize[1],font),minWidth,maxWidth))
 
 end
 
@@ -553,12 +550,10 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local tabs = eleData.tabs
 	local tabHeight = eleData.tabHeight[2] and eleData.tabHeight[1]*h or eleData.tabHeight[1]
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font =  eleData.font or style.tabpanel.font or style.systemFontElement
 
-	local font = eleData.font or style.systemFontElement
 	local colorCoded = eleData.colorCoded
 	local shadow = eleData.shadow
 	local wordBreak = eleData.wordBreak
@@ -666,6 +661,9 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 								dxDrawImage(posX,posY,iconWidth,iconHeight,iconImage[buttonState],0,0,0,applyColorAlpha(iconColor[buttonState],parentAlpha),isPostGUI,rndtgt)
 							end
 						end]]
+						local style = styleManager.styles[tabData.resource or "global"]
+						style = style.loaded[style.using]
+						local tabFont =  tabData.font or style.tab.font or font
 
 						textRenderBuffer.count = textRenderBuffer.count+1
 						if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
@@ -677,7 +675,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(type(tabTextColor) == "table" and tabTextColor[selState] or tabTextColor,parentAlpha)
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
-						textRenderBuffer[textRenderBuffer.count][9] = tabData.font or font
+						textRenderBuffer[textRenderBuffer.count][9] = tabFont
 						textRenderBuffer[textRenderBuffer.count][10] = tabColorCoded	--Color Coded
 						textRenderBuffer[textRenderBuffer.count][11] = tshadow	--Shadow
 						if mx and my and mx >= tabX+cx and mx <= tabX+cx+width and my > cy and my < cy+tabHeight and tabData.enabled and enabledSelf then

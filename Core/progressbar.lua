@@ -272,15 +272,15 @@ function dgsCreateProgressBar(...)
 	local using = style.using
 	style = style.loaded[using]
 
-	style = style.progressbar
+	local sStyle = style.progressbar
 	dgsElementData[progressbar] = {
 		renderBuffer = {},
-		bgColor = bgColor or style.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
-		indicatorColor = indicatorColor or style.indicatorColor,
-		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(using,res,style.indicatorImage),
+		bgColor = bgColor or sStyle.bgColor,
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,sStyle.bgImage),
+		indicatorColor = indicatorColor or sStyle.indicatorColor,
+		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(using,res,sStyle.indicatorImage),
 		indicatorMode = indicatorMode and true or false,
-		padding = style.padding,
+		padding = sStyle.padding,
 		style = "normal-horizontal",
 		progress = 0,
 		map = {0,100},

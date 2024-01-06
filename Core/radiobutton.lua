@@ -85,26 +85,25 @@ function dgsCreateRadioButton(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.radiobutton
-	local imageUnchecked = style.imageUnchecked
+	local sStyle = style.radiobutton
+	local imageUnchecked = sStyle.imageUnchecked
 	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
 	hImageF = hImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[2]) or nImageF
 	cImageF = cImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[3]) or nImageF
-	local colorUnchecked = style.colorUnchecked
+	local colorUnchecked = sStyle.colorUnchecked
 	nColorF = nColorF or colorUnchecked[1]
 	hColorF = hColorF or colorUnchecked[2]
 	cColorF = cColorF or colorUnchecked[3]
-	local imageChecked = style.imageChecked
+	local imageChecked = sStyle.imageChecked
 	nImageT = nImageT or dgsCreateTextureFromStyle(using,res,imageChecked[1])
 	hImageT = hImageT or dgsCreateTextureFromStyle(using,res,imageChecked[2]) or nImageT
 	cImageT = cImageT or dgsCreateTextureFromStyle(using,res,imageChecked[3]) or nImageT
-	local colorChecked = style.colorChecked
+	local colorChecked = sStyle.colorChecked
 	nColorT = nColorT or colorChecked[1]
 	hColorT = hColorT or colorChecked[2]
 	cColorT = cColorT or colorChecked[3]
-	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
 	dgsElementData[rb] = {
 		renderBuffer = {},
 		imageUnchecked = {nImageF,hImageF,cImageF},
@@ -112,12 +111,11 @@ function dgsCreateRadioButton(...)
 		imageChecked = {nImageT,hImageT,cImageT},
 		colorChecked = {nColorT,hColorT,cColorT},
 		rbParent = dgsIsType(parent) and parent or resourceRoot,
-		textColor = textColor or style.textColor,
+		textColor = textColor or sStyle.textColor,
 		textSize = {textSizeX,textSizeY},
-		textPadding = style.textPadding,
-		buttonSize = style.buttonSize,
+		textPadding = sStyle.textPadding,
+		buttonSize = sStyle.buttonSize,
 		shadow = {},
-		font = style.font or systemFont,
 		textOffset = nil,
 		clip = nil,
 		wordBreak = nil,
@@ -222,7 +220,11 @@ function dgsRadioButtonUpdateTextWidth(rb)
 	local wordBreak = eleData.wordBreak
 	local colorCoded = eleData.colorCoded
 	local textSize = eleData.textSize
-	local font = eleData.font
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.radiobutton.font or style.systemFontElement
+
 	local text = eleData.text
 	local w = eleData.absSize[1]
 	local buttonSize = eleData.buttonSize
@@ -330,12 +332,11 @@ dgsRenderer["dgs-dxradiobutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	else
 		finalcolor = applyColorAlpha(color[colorimgid],parentAlpha)
 	end
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	style = style.loaded[style.using]
-	local systemFont = style.systemFontElement
 
-	local font = eleData.font or systemFont
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.radiobutton.font or style.systemFontElement
+	
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip
 	local wordBreak = eleData.wordBreak

@@ -49,11 +49,23 @@ local mathClamp = math.clamp
 --[[
 Selector Data Structure:
 {
-	{text,alignment,color,colorCoded,sizex,sizey,font,translationTest,data,imageData},
-	{text,alignment,color,colorCoded,sizex,sizey,font,translationTest,data,imageData},
-	{text,alignment,color,colorCoded,sizex,sizey,font,translationTest,data,imageData},
+	{text,alignment,color,colorCoded,sizex,sizey,font,data,imageData},
+	{text,alignment,color,colorCoded,sizex,sizey,font,data,imageData},
+	{text,alignment,color,colorCoded,sizex,sizey,font,data,imageData},
 }
 ]]
+
+--[[Selector Index]]
+Selector_itemText = 1
+Selector_itemAlignment = 2
+Selector_itemTextColor = 3
+Selector_itemColorCoded = 4
+Selector_itemTextScaleX = 5
+Selector_itemTextScaleY = 6
+Selector_itemFont = 7
+Selector_itemData = 8
+Selector_itemImage = 9
+
 function dgsCreateSelector(...)
 	local sRes = sourceResource or resource
 	local x,y,w,h,relative,parent,textColor,scaleX,scaleY,shadowoffsetx,shadowoffsety,shadowcolor
@@ -85,22 +97,21 @@ function dgsCreateSelector(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.selector
+	local sStyle = style.selector
 	local textSizeX,textSizeY = tonumber(scaleX),tonumber(scaleY)
 	dgsElementData[selector] = {
-		itemTextColor = tonumber(textColor or style.itemTextColor),
-		itemTextSize = {textSizeX or style.itemTextSize[1],textSizeY or textSizeX or style.itemTextSize[2]},
+		itemTextColor = tonumber(textColor or sStyle.itemTextColor),
+		itemTextSize = {textSizeX or sStyle.itemTextSize[1],textSizeY or textSizeX or sStyle.itemTextSize[2]},
 		clip = false,
-		selectorText = {style.selectorText[1],style.selectorText[2]},
-		selectorTextSize = style.selectorTextSize,
-		selectorTextColor = style.selectorTextColor,
+		selectorText = {sStyle.selectorText[1],sStyle.selectorText[2]},
+		selectorTextSize = sStyle.selectorTextSize,
+		selectorTextColor = sStyle.selectorTextColor,
 		selectorSize = {nil,1,true},
-		selectorImageColorLeft = style.selectorImageColorLeft,
-		selectorImageLeft = style.selectorImageLeft,
-		selectorImageColorRight = style.selectorImageColorRight,
-		selectorImageRight = style.selectorImageRight,
+		selectorImageColorLeft = sStyle.selectorImageColorLeft,
+		selectorImageLeft = sStyle.selectorImageLeft,
+		selectorImageColorRight = sStyle.selectorImageColorRight,
+		selectorImageRight = sStyle.selectorImageRight,
 		colorCoded = false,
 		quickLeap = 0.02,
 		quickLeapState = 0,
@@ -114,7 +125,6 @@ function dgsCreateSelector(...)
 		itemData = {},
 		subPixelPositioning = false,
 		shadow = {shadowoffsetx,shadowoffsety,shadowcolor},
-		font = style.font or systemFont,
 		select = -1,
 	}
 	dgsSetParent(selector,parent,true,true)
@@ -131,7 +141,6 @@ function dgsSelectorAddItem(selector,text,pos)
 	local itemTextColor = eleData.itemTextColor
 	local itemTextSize = eleData.itemTextSize
 	local colorCoded = eleData.colorCoded
-	local font = eleData.font
 	local itemData = eleData.itemData
 	pos = tonumber(pos) or #itemData+1
 
@@ -140,16 +149,16 @@ function dgsSelectorAddItem(selector,text,pos)
 		text = dgsTranslate(selector,text,sourceResource)
 	end
 	tableInsert(itemData,pos,{
-		tostring(text or ""),
-		alignment,
-		itemTextColor,
-		colorCoded,
-		itemTextSize[1],
-		itemTextSize[2],
-		font,
+		[Selector_itemText] = tostring(text or ""),
+		[Selector_itemAlignment] = alignment,
+		[Selector_itemTextColor] = itemTextColor,
+		[Selector_itemColorCoded] = colorCoded,
+		[Selector_itemTextScaleX] = itemTextSize[1],
+		[Selector_itemTextScaleY] = itemTextSize[2],
+		[Selector_itemFont] = nil,	-- font
+		[Selector_itemData] = {}, --item data
+		[Selector_itemImage] = nil, -- item image
 		_translation_text=_text,
-		{}, --item data
-		nil, -- item image
 	})
 	if eleData.select == -1 then
 		eleData.select = 1
@@ -199,7 +208,7 @@ function dgsSelectorGetItemText(selector,i,retTransOrig)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return retTransOrig and iData[i][8] or iData[i][1]
+	return retTransOrig and iData[i]._translation_text or iData[i][Selector_itemText]
 end
 
 function dgsSelectorSetItemText(selector,i,text)
@@ -214,8 +223,8 @@ function dgsSelectorSetItemText(selector,i,text)
 		_text = text
 		text = dgsTranslate(selector,text,sourceResource)
 	end
-	iData[i][1] = tostring(text or "")
-	iData[i][8] = _text
+	iData[i][Selector_itemText] = tostring(text or "")
+	iData[i]._translation_text = _text
 	return true
 end
 
@@ -227,13 +236,13 @@ function dgsSelectorSetItemData(selector,i,...)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	iData[i][9] = iData[i][9] or {}
+	iData[i][Selector_itemData] = iData[i][Selector_itemData] or {}
 	if select("#",...) == 2 then
 		local key,data = ...
-		iData[i][9][key] = data
+		iData[i][Selector_itemData][key] = data
 	else
 		local data = ...
-		iData[i][9]["_DGSI_NOKEY"] = data
+		iData[i][Selector_itemData]["_DGSI_NOKEY"] = data
 	end
 	return true
 end
@@ -247,9 +256,9 @@ function dgsSelectorGetItemData(selector,i,...)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
 	if select("#",...) == 0 then
-		return iData[i][9] and iData[i][9]["_DGSI_NOKEY"] or false
+		return iData[i][Selector_itemData] and iData[i][Selector_itemData]["_DGSI_NOKEY"] or false
 	else
-		return iData[i][9] and iData[i][9][key] or false
+		return iData[i][Selector_itemData] and iData[i][Selector_itemData][key] or false
 	end
 end
 
@@ -262,7 +271,7 @@ function dgsSelectorSetItemColor(selector,i,color)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	if not (type(color) == "number") then error(dgsGenAsrt(args[3],"dgsSelectorSetItemColor",3,"number")) end
 	i = i-i%1
-	iData[i][3] = color
+	iData[i][Selector_itemTextColor] = color
 	return true
 end
 
@@ -274,7 +283,7 @@ function dgsSelectorGetItemColor(selector,i,color)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][3]
+	return iData[i][Selector_itemTextColor]
 end
 
 function dgsSelectorSetItemFont(selector,i,font)
@@ -286,7 +295,7 @@ function dgsSelectorSetItemFont(selector,i,font)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	if not (fontBuiltIn[font] or dgsGetType(font) == "dx-font") then error(dgsGenAsrt(font,"dgsSelectorSetItemFont",3,"dx-font/string",_,"invalid font")) end
 	i = i-i%1
-	iData[i][7] = font
+	iData[i][Selector_itemFont] = font
 	return true
 end
 
@@ -298,7 +307,7 @@ function dgsSelectorGetItemFont(selector,i,font)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][7]
+	return iData[i][Selector_itemFont]
 end
 
 function dgsSelectorSetItemTextSize(selector,i,sizeX,sizeY)
@@ -310,8 +319,8 @@ function dgsSelectorSetItemTextSize(selector,i,sizeX,sizeY)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorSetItemTextSize",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	if not (type(sizeX) == "number") then error(dgsGenAsrt(sizeX,"dgsSelectorSetItemTextSize",3,"number")) end
 	i = i-i%1
-	iData[i][5] = sizeX
-	iData[i][6] = sizeY or sizeX
+	iData[i][Selector_itemTextScaleX] = sizeX
+	iData[i][Selector_itemTextScaleY] = sizeY or sizeX
 	return true
 end
 
@@ -323,7 +332,7 @@ function dgsSelectorGetItemTextSize(selector,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemTextSize",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][5],iData[i][6]
+	return iData[i][Selector_itemTextScaleX],iData[i][Selector_itemTextScaleY]
 end
 
 function dgsSelectorSetItemAlignment(selector,i,alignX,alignY)
@@ -336,7 +345,7 @@ function dgsSelectorSetItemAlignment(selector,i,alignX,alignY)
 	if not (alignX == nil or HorizontalAlign[alignX]) then error(dgsGenAsrt(alignX,"dgsSelectorSetItemAlignment",3,"string","left/center/right")) end
 	if not (alignY == nil or VerticalAlign[alignY]) then error(dgsGenAsrt(alignY,"dgsSelectorSetItemAlignment",4,"string","top/center/bottom")) end
 	i = i-i%1
-	iData[i][2] = {alignX,alignY}
+	iData[i][Selector_itemAlignment] = {alignX,alignY}
 	return true
 end
 
@@ -348,7 +357,7 @@ function dgsSelectorGetItemAlignment(selector,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemAlignment",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return unpack(iData[i][2])
+	return unpack(iData[i][Selector_itemAlignment])
 end
 
 function dgsSelectorSetItemImage(selector,i,image,color,offx,offy,w,h,relative)
@@ -367,7 +376,7 @@ function dgsSelectorSetItemImage(selector,i,image,color,offx,offy,w,h,relative)
 	imageData[5] = w or imageData[5] or relative and 1 or size[1]
 	imageData[6] = h or imageData[6] or relative and 1 or size[2]
 	imageData[7] = relative or false
-	iData[i][10] = imageData
+	iData[i][Selector_itemImage] = imageData
 end
 
 function dgsSelectorGetItemImage(selector,i)
@@ -378,7 +387,7 @@ function dgsSelectorGetItemImage(selector,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorGetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return unpack(iData[i][9] or {})
+	return unpack(iData[i][Selector_itemImage] or {})
 end
 
 function dgsSelectorRemoveItemImage(selector,i)
@@ -389,7 +398,7 @@ function dgsSelectorRemoveItemImage(selector,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsSelectorRemoveItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	iData[i][9] = nil
+	iData[i][Selector_itemImage] = nil
 	return true
 end
 ----------------------------------------------------------------
@@ -412,10 +421,14 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if MouseData.hit == source and MouseData.focused == source then
 		MouseData.topScrollable = source
 	end
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.selector.font or style.systemFontElement
+
 	local itemData = eleData.itemData
 	local selector = eleData.selectorText
 	local alignment = eleData.alignment
-	local font = eleData.font
 	local colorCoded = eleData.colorCoded
 	local placeHolder = eleData.placeHolder
 	local itemTextColorDef = eleData.itemTextColor
@@ -495,7 +508,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 
 	local renderItem = itemData[eleData.select]
 	if eleData.select ~= -1 and renderItem then
-		local imageData = renderItem[10]
+		local imageData = renderItem[Selector_itemImage]
 		if imageData then
 			local imageX = x+(imageData[7] and imageData[3]*w or imageData[3])
 			local imageY = y+(imageData[7] and imageData[4]*h or imageData[4])
@@ -503,8 +516,11 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			local imageH = imageData[7] and imageData[6]*h or imageData[6]
 			dxDrawImage(imageX,imageY,imageW,imageH,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha),isPostGUI)
 		end
-		local itemTextColor = type(renderItem[3]) == "table" and renderItem[3][selectorTextColors[2]] or renderItem[3]
-		dgsDrawText(renderItem[1],x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),renderItem[5],renderItem[6],renderItem[7],renderItem[2][1],renderItem[2][2],false,false,isPostGUI,renderItem[4])
+		local itemTextColor = type(renderItem[Selector_itemTextColor]) == "table" and renderItem[Selector_itemTextColor][selectorTextColors[2]] or renderItem[Selector_itemTextColor]
+		local itemFont = renderItem[Selector_itemFont]
+		local itemAlignment = renderItem[Selector_itemAlignment]
+		local itemColorCoded = renderItem[Selector_itemColorCoded] == nil and colorCoded or renderItem[Selector_itemColorCoded]
+		dgsDrawText(renderItem[Selector_itemText],x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),renderItem[Selector_itemTextScaleX],renderItem[Selector_itemTextScaleY],itemFont,itemAlignment[1],itemAlignment[2],false,false,isPostGUI,itemColorCoded)
 	else
 		local itemTextColor = type(itemTextColorDef) == "table" and itemTextColorDef[selectorTextColors[2]] or itemTextColorDef
 		dgsDrawText(placeHolder,x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),itemTextSizeDef[1],itemTextSizeDef[2],font,alignment[1],alignment[2],false,false,isPostGUI,colorCoded)

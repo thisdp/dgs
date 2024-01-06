@@ -95,36 +95,35 @@ function dgsCreateCheckBox(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.checkbox
-	local imageUnchecked = style.imageUnchecked
+	local sStyle = style.checkbox
+	local imageUnchecked = sStyle.imageUnchecked
 	nImageF = nImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[1])
 	hImageF = hImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[2]) or nImageF
 	cImageF = cImageF or dgsCreateTextureFromStyle(using,res,imageUnchecked[3]) or nImageF
-	local colorUnchecked = style.colorUnchecked
+	local colorUnchecked = sStyle.colorUnchecked
 	nColorF = nColorF or colorUnchecked[1]
 	hColorF = hColorF or colorUnchecked[2]
 	cColorF = cColorF or colorUnchecked[3]
 
-	local imageChecked = style.imageChecked
+	local imageChecked = sStyle.imageChecked
 	nImageT = nImageT or dgsCreateTextureFromStyle(using,res,imageChecked[1])
 	hImageT = hImageT or dgsCreateTextureFromStyle(using,res,imageChecked[2]) or nImageT
 	cImageT = cImageT or dgsCreateTextureFromStyle(using,res,imageChecked[3]) or nImageT
-	local colorChecked = style.colorChecked
+	local colorChecked = sStyle.colorChecked
 	nColorT = nColorT or colorChecked[1]
 	hColorT = hColorT or colorChecked[2]
 	cColorT = cColorT or colorChecked[3]
 
-	local imageIndeterminate = style.imageIndeterminate
+	local imageIndeterminate = sStyle.imageIndeterminate
 	nImageN = nImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[1])
 	hImageN = hImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[2]) or nImageN
 	cImageN = cImageN or dgsCreateTextureFromStyle(using,res,imageIndeterminate[3]) or nImageN
-	local colorIndeterminate = style.colorIndeterminate
+	local colorIndeterminate = sStyle.colorIndeterminate
 	nColorN = nColorN or colorIndeterminate[1]
 	hColorN = hColorN or colorIndeterminate[2]
 	cColorN = cColorN or colorIndeterminate[3]
-	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
 	dgsElementData[cb] = {
 		imageIndeterminate = {nImageN,hImageN,cImageN},
 		imageChecked = {nImageT,hImageT,cImageT},
@@ -133,12 +132,11 @@ function dgsCreateCheckBox(...)
 		colorChecked = {nColorT,hColorT,cColorT},
 		colorUnchecked = {nColorF,hColorF,cColorF},
 		cbParent = dgsIsType(parent) and parent or resourceRoot,
-		textColor = textColor or style.textColor,
+		textColor = textColor or sStyle.textColor,
 		textSize = {textSizeX,textSizeY},
-		textPadding = style.textPadding or {2,false},
+		textPadding = sStyle.textPadding or {2,false},
 		textOffset = nil,
-		buttonSize = style.buttonSize,
-		font = style.font or systemFont,
+		buttonSize = sStyle.buttonSize,
 		shadow = nil,
 		clip = nil,
 		wordBreak = nil,
@@ -235,7 +233,11 @@ function dgsCheckBoxUpdateTextWidth(cb)
 	local wordBreak = eleData.wordBreak
 	local colorCoded = eleData.colorCoded
 	local textSize = eleData.textSize
-	local font = eleData.font
+	
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.checkbox.font or style.systemFontElement
+
 	local text = eleData.text
 	local w = eleData.absSize[1]
 	local buttonSize = eleData.buttonSize
@@ -347,12 +349,10 @@ dgsRenderer["dgs-dxcheckbox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		finalcolor = applyColorAlpha(color[colorimgid],parentAlpha)
 	end
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
+	local style = styleManager.styles[eleData.resource or "global"]
 	style = style.loaded[style.using]
-	local systemFont = style.systemFontElement
+	local font = eleData.font or style.checkbox.font or style.systemFontElement
 
-	local font = eleData.font or systemFont
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local clip = eleData.clip
 	local wordBreak = eleData.wordBreak

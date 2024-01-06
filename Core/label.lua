@@ -71,18 +71,16 @@ function dgsCreateLabel(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.label
-	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
+	local sStyle = style.label
+	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
 	dgsElementData[label] = {
 		alignment = {hAlign or "left",vAlign or "top"},
-		font = style.font or systemFont,
 		rotation = 0,
 		rotationCenter = {0, 0},
 		shadow = (shadowOffestX and shadowOffsetY and shadowColor) and {shadowOffsetX,shadowOffsetY,shadowColor} or nil,
 		subPixelPositioning = nil,
-		textColor = textColor or style.textColor,
+		textColor = textColor or sStyle.textColor,
 		textSize = {textSizeX,textSizeY},
 		textOffset = {0,0,false},
 		clip = nil,
@@ -150,7 +148,9 @@ end
 function dgsLabelGetTextExtent(label)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetTextExtent",1,"dgs-dxlabel")) end
 	local eleData = dgsElementData[label]
-	local font = eleData.font or systemFont
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.label.font or style.systemFontElement
 	local textSizeX = eleData.textSize[1]
 	local text = eleData.text
 	local colorCoded = eleData.colorCoded
@@ -159,7 +159,10 @@ end
 
 function dgsLabelGetFontHeight(label)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetFontHeight",1,"dgs-dxlabel")) end
-	local font = dgsElementData[label].font or systemFont
+	local eleData = dgsElementData[label]
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.label.font or style.systemFontElement
 	local textSizeY = dgsElementData[label].textSize[2]
 	return dxGetFontHeight(textSizeY,font)
 end
@@ -167,7 +170,9 @@ end
 function dgsLabelGetTextSize(label)
 	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetTextSize",1,"dgs-dxlabel")) end
 	local eleData = dgsElementData[label]
-	local font = eleData.font or systemFont
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.label.font or style.systemFontElement
 	local textSizeX = eleData.textSize[1]
 	local textSizeY = eleData.textSize[2]
 	local absSize = eleData.absSize
@@ -181,9 +186,12 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
+	
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.label.font or style.systemFontElement
 	local alignment = eleData.alignment
 	local textColor = applyColorAlpha(eleData.textColor,parentAlpha)
-	local font = eleData.font or systemFont
 	local clip = eleData.clip
 	local wordBreak = eleData.wordBreak
 	local text = eleData.text

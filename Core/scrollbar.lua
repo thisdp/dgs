@@ -87,11 +87,11 @@ function dgsCreateScrollBar(...)
 	local using = style.using
 	style = style.loaded[using]
 
-	style = style.scrollbar
-	arrowImage = arrowImage or dgsCreateTextureFromStyle(using,res,style.arrowImage)
-	cursorImage = cursorImage or dgsCreateTextureFromStyle(using,res,style.cursorImage)
+	local sStyle = style.scrollbar
+	arrowImage = arrowImage or dgsCreateTextureFromStyle(using,res,sStyle.arrowImage)
+	cursorImage = cursorImage or dgsCreateTextureFromStyle(using,res,sStyle.cursorImage)
 	if not troughImage then
-		troughImage = isHorizontal and style.troughImageHorizontal or style.troughImage
+		troughImage = isHorizontal and sStyle.troughImageHorizontal or sStyle.troughImage
 		if troughImage and type(troughImage) == "table" then
 			if type(troughImage[1]) == "table" then
 				troughImage = {dgsCreateTextureFromStyle(using,res,troughImage[1]),dgsCreateTextureFromStyle(using,res,troughImage[2])}
@@ -101,16 +101,16 @@ function dgsCreateScrollBar(...)
 		end
 	end
 	dgsElementData[scrollbar] = {
-		arrowBgColor = style.arrowBgColor or false,
-		arrowColor = {nColorA or style.arrowColor[1],hColorA or style.arrowColor[2],cColorA or style.arrowColor[3]},
+		arrowBgColor = sStyle.arrowBgColor or false,
+		arrowColor = {nColorA or sStyle.arrowColor[1],hColorA or sStyle.arrowColor[2],cColorA or sStyle.arrowColor[3]},
 		arrowImage = arrowImage,
-		arrowWidth = style.arrowWidth or style.cursorWidth or {1,true},
+		arrowWidth = sStyle.arrowWidth or sStyle.cursorWidth or {1,true},
 		currentGrade = 0,
-		cursorColor = {nColorC or style.cursorColor[1],hColorC or style.cursorColor[2],cColorC or style.cursorColor[3]},
+		cursorColor = {nColorC or sStyle.cursorColor[1],hColorC or sStyle.cursorColor[2],cColorC or sStyle.cursorColor[3]},
 		cursorImage = cursorImage,
-		cursorWidth = style.cursorWidth or {1,true},
+		cursorWidth = sStyle.cursorWidth or {1,true},
 		grades = -1,
-		imageRotation = style.imageRotation,
+		imageRotation = sStyle.imageRotation,
 		isHorizontal = isHorizontal; --vertical or horizonta,
 		length = {30,false},
 		locked = false,
@@ -118,14 +118,14 @@ function dgsCreateScrollBar(...)
 		minLength = 5,
 		multiplier = {1,false},
 		scrollPosition = 0,
-		scrollArrow = style.scrollArrow,
+		scrollArrow = sStyle.scrollArrow,
 		bgImage = nil,
 		bgColor = nil,
-		troughColor = troughColor or style.troughColor,
+		troughColor = troughColor or sStyle.troughColor,
 		troughImageSectionMode = false,
 		troughImage = troughImage,
 		troughClickAction = "step",
-		troughWidth = style.troughWidth or style.cursorWidth or {1,true},
+		troughWidth = sStyle.troughWidth or sStyle.cursorWidth or {1,true},
 		wheelReversed = false,
 		renderBuffer = {
 			tempCursorColor = {},

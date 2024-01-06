@@ -51,36 +51,34 @@ function dgsCreateMenu(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
-	style = style.menu
+	local sStyle = style.menu
 
-	local normalImage = dgsCreateTextureFromStyle(using,res,style.itemImage[1])
-	local hoveringImage = dgsCreateTextureFromStyle(using,res,style.itemImage[2])
+	local normalImage = dgsCreateTextureFromStyle(using,res,sStyle.itemImage[1])
+	local hoveringImage = dgsCreateTextureFromStyle(using,res,sStyle.itemImage[2])
 
 	dgsElementData[menu] = {
 		autoHide = true,	--Hide when mouse click
 
-		bgColor = style.bgColor,
-		bgImage = style.bgImage,
+		bgColor = sStyle.bgColor,
+		bgImage = sStyle.bgImage,
 		itemData = {},
-		itemHeight = style.itemHeight,
-		itemGap = style.itemGap,
-		itemColor = {style.itemColor[1],style.itemColor[2]},
-		itemTextColor = style.itemTextColor,
-		itemTextOffset = {style.itemTextOffset[1],style.itemTextOffset[2]},
+		itemHeight = sStyle.itemHeight,
+		itemGap = sStyle.itemGap,
+		itemColor = {sStyle.itemColor[1],sStyle.itemColor[2]},
+		itemTextColor = sStyle.itemTextColor,
+		itemTextOffset = {sStyle.itemTextOffset[1],sStyle.itemTextOffset[2]},
 		itemImage = {normalImage,hoveringImage},
-		itemTextSize = {style.itemTextSize[1],style.itemTextSize[2]},
+		itemTextSize = {sStyle.itemTextSize[1],sStyle.itemTextSize[2]},
 		itemIconSize = {1,1,true},
 		itemIconOffset = {0,0,false},
 		-- to do
 
-		padding = {style.padding[1],style.padding[2]},
+		padding = {sStyle.padding[1],sStyle.padding[2]},
 		colorCoded = false,
-		font = style.font or systemFont,
-		separatorHeight = style.separatorHeight,
-		separatorTextColor = style.separatorTextColor,
-		separatorGap = style.separatorGap,
-		separatorLine = {style.separatorLine[1],style.separatorLine[2],style.separatorLine[3]},
+		separatorHeight = sStyle.separatorHeight,
+		separatorTextColor = sStyle.separatorTextColor,
+		separatorGap = sStyle.separatorGap,
+		separatorLine = {sStyle.separatorLine[1],sStyle.separatorLine[2],sStyle.separatorLine[3]},
 		itemUniqueIndex = 0,
 		itemMap = {},
 		subMenu = nil,
@@ -425,6 +423,10 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 		end
 	end]]
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.menu.font or style.systemFontElement
+
 	local bgImage = eleData.bgImage
 	local bgColor = eleData.bgColor
 	dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,isPostGUI,rndtgt)
@@ -436,7 +438,6 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local itemTextOffset = eleData.itemTextOffset[2] and eleData.itemTextOffset[1]*w or eleData.itemTextOffset[1]
 	local colorCoded = eleData.colorCoded
 	local padding = eleData.padding
-	local font = eleData.font
 	local drawWidth = w-padding[2]*2
 	local drawPosX = padding[1]
 	local drawPosY = padding[2]

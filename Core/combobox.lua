@@ -82,6 +82,17 @@ index:	-3			-2			-1					0					1
 }
 ]]
 
+ComboBox_itemMultiData = -8
+ComboBox_itemSingleData = -7
+ComboBox_itemImage = -6
+ComboBox_itemColorCoded = -5
+ComboBox_itemFont = -4
+ComboBox_itemTextScale = -3
+ComboBox_itemTextColor = -2
+ComboBox_itemBackGroundImage = -1
+ComboBox_itemBackGroundColor = 0
+ComboBox_itemText = 1
+
 function dgsCreateComboBox(...)
 	local sRes = sourceResource or resource
 	local x,y,w,h,caption,relative,parent,itemHeight,textColor,scaleX,scaleY,nImage,hImage,cImage,nColor,hColor,cColor
@@ -124,57 +135,55 @@ function dgsCreateComboBox(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.combobox
-	nColor = nColor or style.color[1]
-	hColor = hColor or style.color[2]
-	cColor = cColor or style.color[3]
-	nImage = nImage or dgsCreateTextureFromStyle(using,res,style.image[1])
-	hImage = hImage or dgsCreateTextureFromStyle(using,res,style.image[2]) or nImage
-	cImage = cImage or dgsCreateTextureFromStyle(using,res,style.image[3]) or nImage
-	local inColor = style.itemColor[1]
-	local ihColor = style.itemColor[2]
-	local icColor = style.itemColor[3]
-	local inImage = dgsCreateTextureFromStyle(using,res,style.itemImage[1])
-	local ihImage = dgsCreateTextureFromStyle(using,res,style.itemImage[2]) or inImage
-	local icliimage = dgsCreateTextureFromStyle(using,res,style.itemImage[3]) or inImage
+	local sStyle = style.combobox
+	nColor = nColor or sStyle.color[1]
+	hColor = hColor or sStyle.color[2]
+	cColor = cColor or sStyle.color[3]
+	nImage = nImage or dgsCreateTextureFromStyle(using,res,sStyle.image[1])
+	hImage = hImage or dgsCreateTextureFromStyle(using,res,sStyle.image[2]) or nImage
+	cImage = cImage or dgsCreateTextureFromStyle(using,res,sStyle.image[3]) or nImage
+	local inColor = sStyle.itemColor[1]
+	local ihColor = sStyle.itemColor[2]
+	local icColor = sStyle.itemColor[3]
+	local inImage = dgsCreateTextureFromStyle(using,res,sStyle.itemImage[1])
+	local ihImage = dgsCreateTextureFromStyle(using,res,sStyle.itemImage[2]) or inImage
+	local icliimage = dgsCreateTextureFromStyle(using,res,sStyle.itemImage[3]) or inImage
 	local textScaleX,textScaleY = tonumber(scaleX),tonumber(scaleY)
-	local scbThick = style.scrollBarThick
+	local scbThick = sStyle.scrollBarThick
 	dgsElementData[combobox] = {
 		renderBuffer = {},
 		color = {nColor,hColor,cColor},
 		image = {nImage,hImage,cImage},
 		itemColor = {inColor,ihColor,icColor},
 		itemImage = {inImage,ihImage,icliimage},
-		textColor = textColor or style.textColor,
-		itemTextColor = textColor or style.itemTextColor,
-		textSize = {textScaleX or style.textSize[1],textScaleY or style.textSize[2]},
-		itemTextSize = {textScaleX or style.itemTextSize[1],textScaleY or style.itemTextSize[2]},
+		textColor = textColor or sStyle.textColor,
+		itemTextColor = textColor or sStyle.itemTextColor,
+		textSize = {textScaleX or sStyle.textSize[1],textScaleY or sStyle.textSize[2]},
+		itemTextSize = {textScaleX or sStyle.itemTextSize[1],textScaleY or sStyle.itemTextSize[2]},
 		shadow = nil,
-		font = style.font or systemFont,
-		bgColor = style.bgColor,
-		bgImage = dgsCreateTextureFromStyle(using,res,style.bgImage),
+		bgColor = sStyle.bgColor,
+		bgImage = dgsCreateTextureFromStyle(using,res,sStyle.bgImage),
 		buttonLen = {1,true}, --1,isRelative
 		textBox = true,
 		select = -1,
 		clip = false,
 		wordBreak = false,
-		itemHeight = itemHeight or style.itemHeight,
+		itemHeight = itemHeight or sStyle.itemHeight,
 		viewCount = false,
 		colorCoded = false,
 		listState = -1,
 		listStateAnim = -1,
-		autoHideAfterSelected = style.autoHideAfterSelected,
-		itemTextPadding = style.itemTextPadding,
-		textPadding = style.textPadding,
+		autoHideAfterSelected = sStyle.autoHideAfterSelected,
+		itemTextPadding = sStyle.itemTextPadding,
+		textPadding = sStyle.textPadding,
 		textOffset = {0,0,false},
 		textBoundingBoxIncludeArrow = false,
-		arrow = dgsCreateTextureFromStyle(using,res,style.arrow),
+		arrow = dgsCreateTextureFromStyle(using,res,sStyle.arrow),
 		arrowSize = {1,1,true},
-		arrowColor = style.arrowColor,
-		arrowSettings = style.arrowSettings or {0.3,0.15,0.04},
-		arrowOutSideColor = style.arrowOutSideColor,
+		arrowColor = sStyle.arrowColor,
+		arrowSettings = sStyle.arrowSettings or {0.3,0.15,0.04},
+		arrowOutSideColor = sStyle.arrowOutSideColor,
 		scrollBarThick = scbThick,
 		itemData = {},
 		alignment = {"left","center"},
@@ -300,7 +309,7 @@ function dgsComboBoxGetText(combobox)
 	local captionEdit = eleData.captionEdit
 	local selection = eleData.select
 	local itemData = eleData.itemData
-	local text = itemData[selection] and itemData[selection][1]
+	local text = itemData[selection] and itemData[selection][ComboBox_itemText]
 	if captionEdit then
 		text = text or dgsGetText(captionEdit)
 	else
@@ -381,15 +390,15 @@ function dgsComboBoxAddItem(combobox,text)
 	end
 
 	local tab = {
-		[-8] = nil,										--multi Data
-		[-7] = nil,										--single Data
-		[-6] = nil,										--built-in image {[1]=image,[2]=color,[3]=offsetX,[4]=offsetY,[5]=width,[6]=height,[7]=relative}
-		[-5] = dgsElementData[combobox].colorCoded,		--use color code
-		[-4] = nil,										--font
-		[-3] = dgsElementData[combobox].itemTextSize,	--text size of item
-		[-2] = dgsElementData[combobox].itemTextColor,	--text color of item
-		[-1] = dgsElementData[combobox].itemImage,		--background image of item
-		[0] = dgsElementData[combobox].itemColor,		--background color of item
+		[ComboBox_itemMultiData] = nil,										--multi Data
+		[ComboBox_itemSingleData] = nil,										--single Data
+		[ComboBox_itemImage] = nil,										--built-in image {[1]=image,[2]=color,[3]=offsetX,[4]=offsetY,[5]=width,[6]=height,[7]=relative}
+		[ComboBox_itemColorCoded] = dgsElementData[combobox].colorCoded,		--use color code
+		[ComboBox_itemFont] = nil,										--font
+		[ComboBox_itemTextScale] = dgsElementData[combobox].itemTextSize,	--text size of item
+		[ComboBox_itemTextColor] = dgsElementData[combobox].itemTextColor,	--text color of item
+		[ComboBox_itemBackGroundImage] = dgsElementData[combobox].itemImage,		--background image of item
+		[ComboBox_itemBackGroundColor] = dgsElementData[combobox].itemColor,		--background color of item
 		tostring(text or ""),
 		_translation_text = _text,
 		_translation_font = dgsElementData[combobox]._translation_font,
@@ -413,7 +422,7 @@ function dgsComboBoxSetItemText(combobox,i,text)
 	else
 		iData[i]._translation_text = nil
 	end
-	iData[i][1] = tostring(text or "")
+	iData[i][ComboBox_itemText] = tostring(text or "")
 	if dgsElementData[combobox].autoSort then
 		dgsElementData[combobox].nextRenderSort = true
 	end
@@ -428,7 +437,7 @@ function dgsComboBoxGetItemText(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemText",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][1]
+	return iData[i][ComboBox_itemText]
 end
 
 function dgsComboBoxSetItemData(combobox,i,data,...)
@@ -440,11 +449,11 @@ function dgsComboBoxSetItemData(combobox,i,data,...)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
 	if select("#",...) == 0 then
-		iData[i][-7] = data
+		iData[i][ComboBox_itemSingleData] = data
 		return true
 	else
-		iData[i][-8] = iData[i][-8] or {}
-		iData[i][-8][data] = ...
+		iData[i][ComboBox_itemMultiData] = iData[i][ComboBox_itemMultiData] or {}
+		iData[i][ComboBox_itemMultiData][data] = ...
 		return true
 	end
 end
@@ -458,9 +467,9 @@ function dgsComboBoxGetItemData(combobox,i,key)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemData",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
 	if not key then
-		return iData[i][-7]
+		return iData[i][ComboBox_itemSingleData]
 	else
-		return (iData[i][-8] or {})[key] or false
+		return (iData[i][ComboBox_itemMultiData] or {})[key] or false
 	end
 end
 
@@ -477,7 +486,7 @@ function dgsComboBoxSetItemColor(combobox,i,color)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	iData[i][-2] = color
+	iData[i][ComboBox_itemTextColor] = color
 	return true
 end
 
@@ -489,7 +498,7 @@ function dgsComboBoxGetItemColor(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][-2]
+	return iData[i][ComboBox_itemTextColor]
 end
 
 function dgsComboBoxSetItemFont(combobox,i,font)
@@ -508,7 +517,7 @@ function dgsComboBoxSetItemFont(combobox,i,font)
 	else
 		iData[i]._translation_font = nil
 	end
-	iData[i][-4] = font
+	iData[i][ComboBox_itemFont] = font
 	return true
 end
 
@@ -520,7 +529,7 @@ function dgsComboBoxGetItemFont(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemFont",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][-4]
+	return iData[i][ComboBox_itemFont]
 end
 
 function dgsComboBoxSetItemImage(combobox,i,image,color,offx,offy,w,h,relative)
@@ -531,7 +540,7 @@ function dgsComboBoxSetItemImage(combobox,i,image,color,offx,offy,w,h,relative)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	local imageData = iData[i][-6] or {}
+	local imageData = iData[i][ComboBox_itemImage] or {}
 	imageData[1] = image or imageData[1]
 	imageData[2] = color or imageData[2] or white
 	imageData[3] = offx or imageData[3] or 0
@@ -539,7 +548,7 @@ function dgsComboBoxSetItemImage(combobox,i,image,color,offx,offy,w,h,relative)
 	imageData[5] = w or imageData[5] or relative and 1 or dgsGetSize(combobox)
 	imageData[6] = h or imageData[6] or relative and 1 or dgsElementData[combobox].itemHeight
 	imageData[7] = relative or false
-	iData[i][-6] = imageData
+	iData[i][ComboBox_itemImage] = imageData
 	return true
 end
 
@@ -551,7 +560,7 @@ function dgsComboBoxGetItemImage(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return unpack(iData[i][-6] or {})
+	return unpack(iData[i][ComboBox_itemImage] or {})
 end
 
 function dgsComboBoxRemoveItemImage(combobox,i)
@@ -562,7 +571,7 @@ function dgsComboBoxRemoveItemImage(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxRemoveItemImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	iData[i][-6] = nil
+	iData[i][ComboBox_itemImage] = nil
 	return true
 end
 
@@ -574,7 +583,7 @@ function dgsComboBoxSetItemBackGroundImage(combobox,i,imageDefault,imageHoving,i
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemBackGroundImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	iData[i][-1] = {imageDefault,imageHoving,imageSelected}
+	iData[i][ComboBox_itemBackGroundImage] = {imageDefault,imageHoving,imageSelected}
 	return true
 end
 
@@ -586,7 +595,7 @@ function dgsComboBoxGetItemBackGroundImage(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemBackGroundImage",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][-1][1],iData[i][-1][2],iData[i][-1][3]
+	return iData[i][ComboBox_itemBackGroundImage][1],iData[i][ComboBox_itemBackGroundImage][2],iData[i][ComboBox_itemBackGroundImage][3]
 end
 
 function dgsComboBoxSetItemBackGroundColor(combobox,i,colorDefault,colorHoving,colorSelected)
@@ -597,7 +606,7 @@ function dgsComboBoxSetItemBackGroundColor(combobox,i,colorDefault,colorHoving,c
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxSetItemBackGroundColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	iData[i][0] = {colorDefault,colorHoving,colorSelected}
+	iData[i][ComboBox_itemBackGroundColor] = {colorDefault,colorHoving,colorSelected}
 	return true
 end
 
@@ -609,7 +618,7 @@ function dgsComboBoxGetItemBackGroundColor(combobox,i)
 	local iNInRange = iIsNum and not (i>=1 and i<=iLen)
 	if not (iIsNum and not iNInRange) then error(dgsGenAsrt(i,"dgsComboBoxGetItemBackGroundColor",2,"number","1~"..iLen,iNInRange and "Out Of Range")) end
 	i = i-i%1
-	return iData[i][0][1],iData[i][0][2],iData[i][0][3]
+	return iData[i][ComboBox_itemBackGroundColor][1],iData[i][ComboBox_itemBackGroundColor][2],iData[i][ComboBox_itemBackGroundColor][3]
 end
 
 function dgsComboBoxSetState(combobox,state)
@@ -917,7 +926,7 @@ dgsOnMouseClickAction["dgs-dxcombobox-Box"] = function(dgsEle,button,state)
 	if isElement(captionEdit) then
 		local selection = comboEleData.select
 		local itemData = comboEleData.itemData
-		dgsSetText(captionEdit,itemData[selection] and itemData[selection][1] or "")
+		dgsSetText(captionEdit,itemData[selection] and itemData[selection][ComboBox_itemText] or "")
 	end
 	if comboEleData.autoHideAfterSelected then
 		dgsSetData(combobox,"listState",-1)
@@ -966,11 +975,11 @@ dgsOnTranslationUpdate["dgs-dxcombobox"] = function(dgsEle,key,value)
 		text = itemData[itemID]._translation_text
 		if text then
 			if key then text[key] = value end
-			itemData[itemID][1] = dgsTranslate(dgsEle,text,sourceResource)
+			itemData[itemID][ComboBox_itemText] = dgsTranslate(dgsEle,text,sourceResource)
 		end
 		local font = itemData[itemID]._translation_font
 		if font then
-			itemData[itemID][-4] = dgsGetTranslationFont(dgsEle,font,sourceResource)
+			itemData[itemID][ComboBox_itemFont] = dgsGetTranslationFont(dgsEle,font,sourceResource)
 		end
 	end
 	dgsSetData(dgsEle,"itemData",itemData)
@@ -1059,25 +1068,23 @@ dgsRenderer["dgs-dxcombobox"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		local item = eleData.itemData[eleData.select] or {}
 		local itemTextPadding = dgsElementData[source].itemTextPadding
 
-		local res = eleData.resource or "global"
-		local style = styleManager.styles[res]
-		local using = style.using
-		style = style.loaded[using]
-		local systemFont = style.systemFontElement
+		local style = styleManager.styles[eleData.resource or "global"]
+		style = style.loaded[style.using]
+		local font = item[ComboBox_itemFont] or eleData.font or style.combobox.font or style.systemFontElement
 
-		local font = item[-4] or eleData.font or systemFont
-		local tColor = item[-2] or eleData.textColor
+		local tColor = item[ComboBox_itemTextColor] or eleData.textColor
 		local textColor = type(tColor) ~= "table" and tColor or tColor[1]
 		local textOffset = eleData.textOffset
 		local textOffsetX = textOffset[3] and textOffset[1]*w or textOffset[1]
 		local textOffsetY = textOffset[3] and textOffset[2]*h or textOffset[2]
 		local rb = eleData.alignment
-		local txtSizX,txtSizY = item[-3] and item[-3][1] or eleData.textSize[1],item[-3] and (item[-3][2] or item[-3][1]) or eleData.textSize[2] or eleData.textSize[1]
-		local colorCoded = item[-5] or eleData.colorCoded
+		local txtSizX = item[ComboBox_itemTextScale] and item[ComboBox_itemTextScale][1] or eleData.textSize[1]
+		local txtSizY = item[ComboBox_itemTextScale] and (item[ComboBox_itemTextScale][2] or item[ComboBox_itemTextScale][1]) or eleData.textSize[2] or eleData.textSize[1]
+		local colorCoded = item[ComboBox_itemColorCoded] or eleData.colorCoded
 		local shadow = eleData.shadow
 		local wordBreak = eleData.wordBreak
-		local text = item[1] or eleData.caption
-		local image = item[-6]
+		local text = item[ComboBox_itemText] or eleData.caption
+		local image = item[ComboBox_itemImage]
 		if image then
 			local imagex = x+(image[7] and image[3]*textBoxLen or image[3])
 			local imagey = y+(image[7] and image[4]*h or image[4])
@@ -1108,76 +1115,80 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		MouseData.topScrollable = source
 	end
 	local combo = eleData.myCombo
-	local DataTab = dgsElementData[combo]
-	local itemData = DataTab.itemData
+	local pEleData = dgsElementData[combo]
+	local itemData = pEleData.itemData
 	local itemDataCount = #itemData
-	local scbThick = DataTab.scrollBarThick
-	local itemHeight = DataTab.itemHeight
-	--Smooth Item
-	local _itemMoveOffset = DataTab.itemMoveOffset
-	local scrollbar = DataTab.scrollbar
+	local scbThick = pEleData.scrollBarThick
+	local itemHeight = pEleData.itemHeight
 
-	local itemMoveOffset = DataTab.itemMoveOffsetTemp
-	if DataTab.itemMoveOffsetTemp ~= _itemMoveOffset then
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = pEleData.font or style.combobox.font or style.systemFontElement
+	--Smooth Item
+	local _itemMoveOffset = pEleData.itemMoveOffset
+	local scrollbar = pEleData.scrollbar
+
+	local itemMoveOffset = pEleData.itemMoveOffsetTemp
+	if pEleData.itemMoveOffsetTemp ~= _itemMoveOffset then
 		local mHardness = 1
 		local moveType = dgsElementData[scrollbar].moveType
 		if moveType == "slow" then
-			mHardness = DataTab.moveHardness[1]
+			mHardness = pEleData.moveHardness[1]
 		elseif moveType == "fast" then
-			mHardness = DataTab.moveHardness[2]
+			mHardness = pEleData.moveHardness[2]
 		end
-		itemMoveOffset = mathLerp(mHardness,DataTab.itemMoveOffsetTemp,_itemMoveOffset)
+		itemMoveOffset = mathLerp(mHardness,pEleData.itemMoveOffsetTemp,_itemMoveOffset)
 		if _itemMoveOffset-itemMoveOffset <= 0.5 and _itemMoveOffset-itemMoveOffset >= -0.5 then
 			itemMoveOffset = _itemMoveOffset
 			dgsElementData[scrollbar].moveType = "sync"
 		end
-		DataTab.itemMoveOffsetTemp = itemMoveOffset
+		pEleData.itemMoveOffsetTemp = itemMoveOffset
 		itemMoveOffset = itemMoveOffset-itemMoveOffset%1
 	end
 
 	local whichRowToStart = -mathFloor((itemMoveOffset+itemHeight)/itemHeight)+1
 	local whichRowToEnd = whichRowToStart+mathFloor(h/itemHeight)+1
-	DataTab.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}
-	local textRenderBuffer = DataTab.textRenderBuffer
+	pEleData.FromTo = {whichRowToStart > 0 and whichRowToStart or 1,whichRowToEnd <= itemDataCount and whichRowToEnd or itemDataCount}
+	local textRenderBuffer = pEleData.textRenderBuffer
 	textRenderBuffer.count = 0
-	if DataTab.bgRT then
-		dxSetRenderTarget(DataTab.bgRT,true)
-		local align = DataTab.itemAlignment
+	if pEleData.bgRT then
+		dxSetRenderTarget(pEleData.bgRT,true)
+		local align = pEleData.itemAlignment
 		local scbcheck = dgsElementData[scrollbar].visible and scbThick or 0
 		if MouseData.entered == source and mx >= cx and mx <= cx+w-scbcheck and my >= cy and my <= cy+h then
 			local toffset = (whichRowToStart*itemHeight)+itemMoveOffset
 			sid = mathFloor((my+2-cy-toffset)/itemHeight)+whichRowToStart+1
 			if sid <= itemDataCount then
-				DataTab.preSelect = sid
+				pEleData.preSelect = sid
 				MouseData.enterData = true
 			else
-				DataTab.preSelect = -1
+				pEleData.preSelect = -1
 			end
 		else
-			DataTab.preSelect = -1
+			pEleData.preSelect = -1
 		end
-		local preSelect = DataTab.preSelect
-		local Select = DataTab.select
-		local shadow = DataTab.shadow
+		local preSelect = pEleData.preSelect
+		local Select = pEleData.select
+		local shadow = pEleData.shadow
 		local wordBreak = eleData.wordBreak
 		local clip = eleData.clip
-		local itemTextPadding = DataTab.itemTextPadding
+		local itemTextPadding = pEleData.itemTextPadding
 		dxSetBlendMode("modulate_add")
-		for i=DataTab.FromTo[1],DataTab.FromTo[2] do
+		for i=pEleData.FromTo[1],pEleData.FromTo[2] do
 			local item = itemData[i]
-			local textSize = item[-3]
-			local tColor = item[-2]
-			local image = item[-1]
-			local color = item[0]
-			local font = item[-4]
-			local colorCoded = item[-5]
+			local itemTextSize = item[ComboBox_itemTextScale]
+			local itemTextColor = item[ComboBox_itemTextColor]
+			local itemBackGroundImage = item[ComboBox_itemBackGroundImage]
+			local itemBackGroundColor = item[ComboBox_itemBackGroundColor]
+			local itemFont = item[ComboBox_itemFont] or font
+			local itemColorCoded = item[ComboBox_itemColorCoded]
 			local itemState = 1
 			itemState = i == preSelect and 2 or itemState
 			itemState = i == Select and 3 or itemState
-			local textColor = type(tColor) ~= "table" and tColor or (tColor[itemState] or tColor[1])
+			local textColor = type(itemTextColor) ~= "table" and itemTextColor or (itemTextColor[itemState] or itemTextColor[1])
 			local rowpos = (i-1)*itemHeight
-			dxDrawImage(0,rowpos+itemMoveOffset,w,itemHeight,image[itemState],0,0,0,applyColorAlpha(color[itemState],parentAlpha),false,true)
-			local rowImage = item[-6]
+			dxDrawImage(0,rowpos+itemMoveOffset,w,itemHeight,itemBackGroundImage[itemState],0,0,0,applyColorAlpha(itemBackGroundColor[itemState],parentAlpha),false,true)
+			local rowImage = item[ComboBox_itemImage]
 			if rowImage then
 				local itemWidth = dgsElementData[scrollbar].visible and w-dgsElementData[scrollbar].absSize[1] or w
 				local imagex = rowImage[7] and rowImage[3]*itemWidth or rowImage[3]
@@ -1187,7 +1198,7 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 				dxDrawImage(imagex,imagey,imagew,imageh,rowImage[1],0,0,0,rowImage[2],false,true)
 			end
 			local _y,_sx,_sy = rowpos+itemMoveOffset,w-itemTextPadding[2],rowpos+itemHeight+itemMoveOffset
-			local text = itemData[i][1]
+			local text = itemData[i][ComboBox_itemText]
 			textRenderBuffer.count = textRenderBuffer.count+1
 			if not textRenderBuffer[textRenderBuffer.count] then textRenderBuffer[textRenderBuffer.count] = {} end
 			textRenderBuffer[textRenderBuffer.count][1] = text
@@ -1196,14 +1207,14 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 			textRenderBuffer[textRenderBuffer.count][4] = _sx
 			textRenderBuffer[textRenderBuffer.count][5] = _sy
 			textRenderBuffer[textRenderBuffer.count][6] = applyColorAlpha(textColor,parentAlpha)
-			textRenderBuffer[textRenderBuffer.count][7] = textSize[1]
-			textRenderBuffer[textRenderBuffer.count][8] = textSize[2]
+			textRenderBuffer[textRenderBuffer.count][7] = itemTextSize[1]
+			textRenderBuffer[textRenderBuffer.count][8] = itemTextSize[2]
 			textRenderBuffer[textRenderBuffer.count][9] = font
 			textRenderBuffer[textRenderBuffer.count][10] = align[1]
 			textRenderBuffer[textRenderBuffer.count][11] = align[2]
 			textRenderBuffer[textRenderBuffer.count][12] = clip
 			textRenderBuffer[textRenderBuffer.count][13] = wordBreak
-			textRenderBuffer[textRenderBuffer.count][14] = colorCoded
+			textRenderBuffer[textRenderBuffer.count][14] = itemColorCoded
 		end
 		local tRB
 		local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
@@ -1217,8 +1228,8 @@ dgsRenderer["dgs-dxcombobox-Box"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		end
 		dxSetBlendMode(rndtgt and "modulate_add" or "add")
 		dxSetRenderTarget(rndtgt)
-		if DataTab.bgRT then
-			__dxDrawImage(x,y,w,h,DataTab.bgRT,0,0,0,white,isPostGUI)
+		if pEleData.bgRT then
+			__dxDrawImage(x,y,w,h,pEleData.bgRT,0,0,0,white,isPostGUI)
 		end
 	end
 	return rndtgt,false,mx,my,0,0
@@ -1227,10 +1238,10 @@ end
 dgsCollider["dgs-dxcombobox-Box"] = function(source,mx,my,x,y,w,h)
 	local eleData = dgsElementData[source]
 	local combo = eleData.myCombo
-	local DataTab = dgsElementData[combo]
-	local itemData = DataTab.itemData
+	local pEleData = dgsElementData[combo]
+	local itemData = pEleData.itemData
 	local itemDataCount = #itemData
-	local itemHeight = DataTab.itemHeight
+	local itemHeight = pEleData.itemHeight
 	local height = itemDataCount*itemHeight
 	h = height > h and h or height
 	if mx >= x and mx <= x+w and my >= y and my <= y+h then

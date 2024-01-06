@@ -84,16 +84,15 @@ function dgsCreateButton(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
-	style = style.button
+	local sStyle = style.button
 
-	normalColor = normalColor or style.color[1]
-	hoveringColor = hoveringColor or style.color[2]
-	clickedColor = clickedColor or style.color[3]
-	normalImage = normalImage or dgsCreateTextureFromStyle(using,res,style.image[1])
-	hoveringImage = hoveringImage or dgsCreateTextureFromStyle(using,res,style.image[2]) or normalImage
-	clickedImage = clickedImage or dgsCreateTextureFromStyle(using,res,style.image[3]) or normalImage
-	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
+	normalColor = normalColor or sStyle.color[1]
+	hoveringColor = hoveringColor or sStyle.color[2]
+	clickedColor = clickedColor or sStyle.color[3]
+	normalImage = normalImage or dgsCreateTextureFromStyle(using,res,sStyle.image[1])
+	hoveringImage = hoveringImage or dgsCreateTextureFromStyle(using,res,sStyle.image[2]) or normalImage
+	clickedImage = clickedImage or dgsCreateTextureFromStyle(using,res,sStyle.image[3]) or normalImage
+	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
 	dgsElementData[button] = {
 		alignment = {"center","center"},
 		clickOffset = {0,0},
@@ -101,7 +100,6 @@ function dgsCreateButton(...)
 		colorTransitionPeriod = 0, --ms
 		color = {normalColor, hoveringColor, clickedColor},
 		colorCoded = nil,
-		font = style.font or systemFont,
 		iconColor = 0xFFFFFFFF,
 		iconAlignment = {"left","center"},
 		iconImage = nil,
@@ -112,7 +110,7 @@ function dgsCreateButton(...)
 		imageTransformTime = 0, --ms
 		image = {normalImage, hoveringImage, clickedImage},
 		--shadow = {},
-		textColor = tonumber(textColor) or style.textColor,
+		textColor = tonumber(textColor) or sStyle.textColor,
 		textOffset = {0,0,false},
 		textSize = {textSizeX, textSizeY},
 		textPadding = {0,0,false},
@@ -138,7 +136,11 @@ end
 function dgsButtonGetTextExtent(button)
 	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonGetTextExtent",1,"dgs-dxbutton")) end
 	local eleData = dgsElementData[button]
-	local font = eleData.font or systemFont
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.button.font or style.systemFontElement	
+
 	local textSizeX = eleData.textSize[1]
 	local text = eleData.text
 	local colorCoded = eleData.colorCoded
@@ -147,15 +149,24 @@ end
 
 function dgsButtonGetFontHeight(button)
 	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonGetFontHeight",1,"dgs-dxbutton")) end
-	local font = dgsElementData[button].font or systemFont
-	local textSizeY = dgsElementData[button].textSize[2]
+	local eleData = dgsElementData[button]
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.button.font or style.systemFontElement
+	
+	local textSizeY = eleData.textSize[2]
 	return dxGetFontHeight(textSizeY,font)
 end
 
 function dgsButtonGetTextSize(button)
 	if dgsGetType(button) ~= "dgs-dxbutton" then error(dgsGenAsrt(button,"dgsButtonGetTextSize",1,"dgs-dxbutton")) end
 	local eleData = dgsElementData[button]
-	local font = eleData.font or systemFont
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.button.font or style.systemFontElement
+
 	local textSizeX = eleData.textSize[1]
 	local textSizeY = eleData.textSize[2]
 	local absSize = eleData.absSize
@@ -297,14 +308,11 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 	local text = eleData.text
 	local textSizeX,textSizeY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
+	local style = styleManager.styles[eleData.resource or "global"]
 	style = style.loaded[style.using]
-	local systemFont = style.systemFontElement
+	local font = eleData.font or style.button.font or style.systemFontElement
 
 	local wordBreak = eleData.wordBreak
-	local font = eleData.font or systemFont
 	local colorCoded = eleData.colorCoded
 	local textOffset = eleData.textOffset
 	local txtoffsetsX = textOffset[3] and textOffset[1]*w or textOffset[1]

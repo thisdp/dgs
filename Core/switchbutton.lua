@@ -84,47 +84,45 @@ function dgsCreateSwitchButton(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.switchbutton
-	local imageOff = style.imageOff
+	local sStyle = style.switchbutton
+	local imageOff = sStyle.imageOff
 	local norimg_o = dgsCreateTextureFromStyle(using,res,imageOff[1])
 	local hovimg_o = dgsCreateTextureFromStyle(using,res,imageOff[2]) or norimg_o
 	local cliimg_o = dgsCreateTextureFromStyle(using,res,imageOff[3]) or norimg_o
-	local imageOn = style.imageOn
+	local imageOn = sStyle.imageOn
 	local norimg_f = dgsCreateTextureFromStyle(using,res,imageOn[1])
 	local hovimg_f = dgsCreateTextureFromStyle(using,res,imageOn[2]) or norimg_f
 	local cliimg_f = dgsCreateTextureFromStyle(using,res,imageOn[3]) or norimg_f
-	local cursorImage = style.cursorImage
+	local cursorImage = sStyle.cursorImage
 	local norimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[1])
 	local hovimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[2]) or norimg_c
 	local cliimg_c = dgsCreateTextureFromStyle(using,res,cursorImage[3]) or norimg_c
-	local textSizeX,textSizeY = tonumber(scaleX) or style.textSize[1], tonumber(scaleY) or style.textSize[2]
+	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
 	dgsElementData[switchbutton] = {
 		renderBuffer = {};
-		colorOff = style.colorOff,
-		colorOn = style.colorOn,
-		cursorColor = style.cursorColor,
+		colorOff = sStyle.colorOff,
+		colorOn = sStyle.colorOn,
+		cursorColor = sStyle.cursorColor,
 		imageOff = {norimg_o,hovimg_o,cliimg_o},
 		imageOn = {norimg_f,hovimg_f,cliimg_f},
 		cursorImage = {norimg_c,hovimg_c,cliimg_c},
-		textColorOn = tonumber(textColorOn) or style.textColorOn,
-		textColorOff = tonumber(textColorOff) or style.textColorOff,
+		textColorOn = tonumber(textColorOn) or sStyle.textColorOn,
+		textColorOff = tonumber(textColorOff) or sStyle.textColorOff,
 		textSize = {textSizeX,textSizeY},
 		shadow = nil,
-		font = style.font or systemFont,
 		textOffset = {0.25,true},
 		state = state and true or false,
 		cursorMoveSpeed = 0.2,
-		cursorWidth = style.cursorWidth,
-		troughWidth = style.troughWidth,
+		cursorWidth = sStyle.cursorWidth,
+		troughWidth = sStyle.troughWidth,
 		stateAnim = state and 1 or -1,
 		clickState = "up"; --"down":Down;"up":U,
-		cursorLength = style.cursorLength,
+		cursorLength = sStyle.cursorLength,
 		clip = false,
 		wordBreak = false,
 		colorCoded = false,
-		style = 1,
+		sStyle = 1,
 		isReverse = false,
 	}
 	dgsSetParent(switchbutton,parent,true,true)
@@ -217,13 +215,11 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	local font = eleData.font or systemFont
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.switchbutton.font or style.systemFontElement
+
 	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2] or eleData.textSize[1]
 	local xAdd = eleData.textOffset[2] and w*eleData.textOffset[1] or eleData.textOffset[1]
 	local clip = eleData.clip

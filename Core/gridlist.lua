@@ -171,44 +171,42 @@ function dgsCreateGridList(...)
 	local style = styleManager.styles[res]
 	local using = style.using
 	style = style.loaded[using]
-	local systemFont = style.systemFontElement
 
-	style = style.gridlist
+	local sStyle = style.gridlist
 	relative = relative or false
-	local scbThick = style.scrollBarThick
-	columnHeight = tonumber(columnHeight) or style.columnHeight
-	cColorR = cColorR or style.rowColor[1]
-	hColorR = hColorR or style.rowColor[2]
-	sColorR = sColorR or style.rowColor[3]
-	nImageR = nImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[1])
-	hImageR = hImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[2]) or nImageR
-	sImageR = sImageR or dgsCreateTextureFromStyle(using,res,style.rowImage[3]) or nImageR
+	local scbThick = sStyle.scrollBarThick
+	columnHeight = tonumber(columnHeight) or sStyle.columnHeight
+	cColorR = cColorR or sStyle.rowColor[1]
+	hColorR = hColorR or sStyle.rowColor[2]
+	sColorR = sColorR or sStyle.rowColor[3]
+	nImageR = nImageR or dgsCreateTextureFromStyle(using,res,sStyle.rowImage[1])
+	hImageR = hImageR or dgsCreateTextureFromStyle(using,res,sStyle.rowImage[2]) or nImageR
+	sImageR = sImageR or dgsCreateTextureFromStyle(using,res,sStyle.rowImage[3]) or nImageR
 	local gridlist = createElement("dgs-dxgridlist")
 	dgsSetType(gridlist,"dgs-dxgridlist")
 	dgsElementData[gridlist] = {
 		autoSort = true,
-		bgOffset = style.bgOffset,
-		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,style.bgImage),
-		bgColor = bgColor or style.bgColor,
+		bgOffset = sStyle.bgOffset,
+		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,sStyle.bgImage),
+		bgColor = bgColor or sStyle.bgColor,
 		colorCoded = false,
 		clip = true,
 		columnAlignment = {"left","center"},
 		columnWordBreak = nil,
-		columnColor = columnColor or style.columnColor,
+		columnColor = columnColor or sStyle.columnColor,
 		columnData = {},
 		columnHeight = columnHeight,
-		columnImage = columnImage or dgsCreateTextureFromStyle(using,res,style.columnImage),
+		columnImage = columnImage or dgsCreateTextureFromStyle(using,res,sStyle.columnImage),
 		columnMoveOffset = 0,
 		columnMoveOffsetTemp = 0,
-		columnTextColor = columnTextColor or style.columnTextColor,
+		columnTextColor = columnTextColor or sStyle.columnTextColor,
 		columnTextPosOffset = {0,0},
-		columnTextSize = style.columnTextSize,
-		columnOffset = style.columnOffset,
+		columnTextSize = sStyle.columnTextSize,
+		columnOffset = sStyle.columnOffset,
 		columnRelative = true,
 		columnShadow = nil,
-		defaultColumnOffset = style.defaultColumnOffset,
+		defaultColumnOffset = sStyle.defaultColumnOffset,
 		enableNavigation = true,
-		font = style.font or systemFont,
 		guiCompat = false,
 		itemClick = {},
 		lastSelectedItem = {1,1},
@@ -221,12 +219,12 @@ function dgsCreateGridList(...)
 		preSelectLastFrame = {-1,-1},
 		rowColor = {cColorR,hColorR,sColorR},	--Normal/Hover/Selected
 		rowData = {},
-		rowHeight = style.rowHeight,	--_RowHeight
+		rowHeight = sStyle.rowHeight,	--_RowHeight
 		rowImage = {nImageR,hImageR,sImageR},	--Normal/Hover/Selected
 		rowMoveOffset = 0,
 		rowMoveOffsetTemp = 0,
-		rowTextSize = style.rowTextSize,
-		rowTextColor = style.rowTextColor,
+		rowTextSize = sStyle.rowTextSize,
+		rowTextColor = sStyle.rowTextColor,
 		rowTextPosOffset = {0,0},
 		rowSelect = {},
 		rowShadow = nil,
@@ -241,8 +239,7 @@ function dgsCreateGridList(...)
 		scrollBarAlignment = {"right","bottom"},
 		scrollSize = 60,			--60 pixels
 		scrollBarCoverColumn = true,
-		sectionColumnOffset = style.sectionColumnOffset,
-		sectionFont = systemFont,
+		sectionColumnOffset = sStyle.sectionColumnOffset,
 		selectedColumn = -1,
 		selectionMode = 1,
 		sortColumn = nil,
@@ -825,7 +822,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 			colorCoded,
 			scale[1],
 			scale[2],
-			font,
+			nil,
 		}
 		if rData[r][glRow_isSection] then
 			rData[r][c][glItem_isSection] = true
@@ -1141,16 +1138,19 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 	c = c-c%1
 	if not (additionalLength == nil or type(additionalLength) == "number") then error(dgsGenAsrt(c,"dgsGridListAutoSizeColumn",3,"number")) end
 	if not additionalLength then relative = false end
+
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.gridlist.font or style.systemFontElement
+
 	if isByItem then
 		local rData = eleData.rowData
 		local maxWidth = 0
 		local colorCoded = eleData.colorCoded
-		local font = eleData.font
-		local sectionFont = eleData.sectionFont or font
 		local columnSize = eleData.absSize[1]-eleData.scrollBarThick
 		for i=1,#rData do
 			colorCoded = rData[i][c][glItem_textColorCoded] == nil and colorCoded or rData[i][c][glItem_textColorCoded]
-			local rowFont = rData[i][glRow_isSection] and (rData[i][c][glItem_textFont] or sectionFont) or (rData[i][c][glItem_textFont] or eleData.rowFont or eleData.columnFont or font)
+			local rowFont = rData[i][glRow_isSection] and (rData[i][c][glItem_textFont] or eleData.sectionFont) or (rData[i][c][glItem_textFont] or eleData.rowFont or eleData.columnFont or font)
 			local wid = dxGetTextWidth(rData[i][c][glItem_text],rData[i][c][glItem_textScaleX],rowFont,colorCoded)
 			if maxWidth < wid then
 				maxWidth = wid
@@ -1159,8 +1159,7 @@ function dgsGridListAutoSizeColumn(gridlist,c,additionalLength,relative,isByItem
 		maxWidth = maxWidth+(relative and additionalLength*columnSize or (additionalLength or 0))
 		return dgsGridListSetColumnWidth(gridlist,c,maxWidth,false)
 	else
-		local font = cData[c][glCol_textFont] or eleData.columnFont or eleData.font
-		local wid = dxGetTextWidth(cData[c][glCol_text],cData[c][glCol_textScaleX],font)
+		local wid = dxGetTextWidth(cData[c][glCol_text],cData[c][glCol_textScaleX],cData[c][glCol_textFont] or eleData.columnFont or eleData.font)
 		wid = wid+(relative and additionalLength*wid or (additionalLength or 0))
 		return dgsGridListSetColumnWidth(gridlist,c,wid,false)
 	end
@@ -2898,13 +2897,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local bgColor,bgImage = applyColorAlpha(eleData.bgColor,parentAlpha),eleData.bgImage
 	local columnColor,columnImage = applyColorAlpha(eleData.columnColor,parentAlpha),eleData.columnImage
 
-	local res = eleData.resource or "global"
-	local style = styleManager.styles[res]
-	local using = style.using
-	style = style.loaded[using]
-	local systemFont = style.systemFontElement
+	local style = styleManager.styles[eleData.resource or "global"]
+	style = style.loaded[style.using]
+	local font = eleData.font or style.gridlist.font or style.systemFontElement
 
-	local font = eleData.font or systemFont
 	local columnHeight = eleData.columnHeight
 	local columnData,rowData = eleData.columnData,eleData.rowData
 	local columnCount,rowCount = #columnData,#rowData
@@ -3084,7 +3080,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 		preSelectLastFrame[1],preSelectLastFrame[2] = preSelect[1],preSelect[2]
 	end
 	local Select = eleData.rowSelect
-	local sectionFont = eleData.sectionFont or font
+	local sectionFont = eleData.sectionFont
 	local textBufferCnt = 0
 	local elementBuffer = renderBuffer.elementBuffer
 	local textBuffer = renderBuffer.textBuffer
