@@ -558,6 +558,7 @@ function dgsSetSystemFont(font,size,bold,quality,styleName,sres)
 	local systemFont = style.systemFontElement
 	if isElement(systemFont) then
 		destroyElement(systemFont)
+		style.systemFontElement = "default"
 	end
 	local sResource = sourceResource or resource
 	if fontBuiltIn[font] then
@@ -566,7 +567,7 @@ function dgsSetSystemFont(font,size,bold,quality,styleName,sres)
 	else
 		local path = font:find(":") and font or ":"..getResourceName(sResource).."/"..font
 		if not fileExists(path) then error(dgsGenAsrt(path,"dgsSetSystemFont",1,_,_,_,"Couldn't find such file '"..path.."'")) end
-		font = dxCreateFont(path,size,bold,quality,sres or sResource)
+		font = dxCreateFont(path,size,bold,quality)
 		if isElement(font) then
 			style.systemFontElement = font
 		end
