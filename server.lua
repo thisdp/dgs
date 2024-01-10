@@ -21,79 +21,102 @@ end
 
 -----------Config Loader
 DGSConfig = {
-	updateCheck						= true,			-- Enable:true;Disable:false
-	updateCheckInterval				= 120,			-- Minutes
-	updateCheckNoticeInterval		= 120,			-- Minutes
-	updateCommand					= "updatedgs",	-- Command of update dgs
-	enableUpdateSystem				= true	,		-- Enable update system
-	enableMetaBackup				= true,			-- Backup meta.xml
-	enableStyleMetaBackup			= true,			-- Backup style files meta index from meta.xml
-	enableG2DCMD					= true,			-- Enable GUI To DGS command line
-	enableBuiltInCMD				= true,			-- Enable DGS Built-in CMD /dgscmd
-	enableTestFile					= true,			-- Loads DGS Test File (If you want to save some bytes of memory, disable this by set to false)
-	enableCompatibilityCheck	 	= true,			-- Enable compatibility check warnings
-	enableDebug 					= true,			-- Enable /debugdgs
+	updateCheck = true,
+	updateCheckInterval = 120,
+	updateCheckNoticeInterval = 120,
+	updateCommand = "updatedgs",
+	updater = true,
+	metaBackup = true,
+	metaStyleBackup = true,
+	G2DCMD = true,
+	CMD = true,
+	testFile = true,
+	compatibilityChecks = true,
+	debugging = true,
 }
 
 function loadConfig()
 	if fileExists("config.txt") then
 		local file = fileOpen ("config.txt")
 		if file then
-			local configUpdateRequired = false
-			local str = fileRead(file,fileGetSize(file))
-			fileClose(file)
-			local fnc = loadstring(str)
-			if fnc then
-				local dgsConfig = {}
-				setfenv(fnc,{dgsConfig=dgsConfig})
-				fnc()
-				for name,value in pairs(DGSConfig) do
-					if dgsConfig[name] == nil then
-						configUpdateRequired = true
-					else
-						DGSConfig[name] = dgsConfig[name]
+			if hasObjectPermissionTo(resource,"function.loadstring",true) then
+				local str = fileRead(file,fileGetSize(file))
+				fileClose(file)
+				local fnc = loadstring(str)
+				if fnc then
+					local convertSettings = {
+						["enableUpdateSystem"] = "updater",
+						["enableMetaBackup"] = "metaBackup",
+						["enableStyleMetaBackup"] = "metaStyleBackup",
+						["enableG2DCMD"] = "G2DCMD",
+						["enableBuiltInCMD"] = "CMD",
+						["enableTestFile"] = "testFile",
+						["enableCompatibilityCheck"] = "compatibilityChecks",
+						["enableDebug"] = "debugging"
+					}
+					local dgsConfig = {}
+					local customSettings
+					setfenv(fnc,{dgsConfig=dgsConfig})
+					fnc()
+					for name,value in pairs(dgsConfig) do
+						local setting = convertSettings[name]
+						if setting or get(name) then 
+							set("*"..(setting or name),value)
+						else 
+							customSettings = true 
+						end
+					end
+					outputDGSMessage("Old config file has been converting to meta settings.","Config")
+					if customSettings then 
+						outputDGSMessage("However, custom settings were detected, so the file was not deleted.","Config")
+						fileRename("config.txt","deleted/config.txt")
+					else 
+						fileDelete("config.txt")
+						outputDGSMessage("The old config file was deleted.","Config")
 					end
 				end
-				outputDGSMessage("The config file has been loaded.","Config")
 			else
-				configUpdateRequired = true
-				outputDGSMessage("Invalid config file.","Config",2)
-			end
-			if configUpdateRequired then
-				fileDelete("config.txt")
-				file = fileCreate("config.txt")
-				str = ""
-				for k,v in pairs(DGSConfig) do
-					local value = type(v) == "string" and '"'..v..'"' or tostring(v)
-					str = str.."\r\ndgsConfig."..k.." = "..value
-				end
-				fileWrite(file,str:sub(3))
-				fileClose(file)
-				outputDGSMessage("The config file has been updated.","Config")
+				outputDGSMessage("Failed to convert the old config file to MTA settings since function.loadstring is disabled. config.txt was backed up","Config",2)
+				fileRename("config.txt","deleted/config.txt")
 			end
 		else
-			outputDGSMessage("Failed to open the config file.","Config",2)
+			outputDGSMessage("Failed to open the old config file.","Config",2)
 		end
-	else
-		local file = fileCreate("config.txt")
-		local str = ""
-		for k,v in pairs(DGSConfig) do
-			local value = type(v) == "string" and '"'..v..'"' or tostring(v)
-			str = str.."\r\ndgsConfig."..k.." = "..value
-		end
-		fileWrite(file,str:sub(3))
-		fileClose(file)
-		outputDGSMessage("Config file was created.","Config")
 	end
+	
+	for setting,defaultValue in pairs (DGSConfig) do
+		local value = get("*"..setting) 
+		if type(defaultValue) == "boolean" then
+			value = value == "true" or value == true
+		elseif type(defaultValue) == "number" then
+			value = tonumber(value) or defaultValue
+		end
+		DGSConfig[setting] = value
+	end 
 
-	setElementData(resourceRoot,"DGS-allowCMD",DGSConfig.enableBuiltInCMD)
-	setElementData(resourceRoot,"DGS-enableDebug",DGSConfig.enableDebug)
-	setElementData(resourceRoot,"DGS-enableCompatibilityCheck",DGSConfig.enableCompatibilityCheck)
+	setElementData(resourceRoot,"DGS-allowCMD",DGSConfig.CMD)
+	setElementData(resourceRoot,"DGS-enableDebug",DGSConfig.debugging)
+	setElementData(resourceRoot,"DGS-enableCompatibilityCheck",DGSConfig.compatibilityChecks)
 	if DGSConfig.enableG2DCMD then
 		outputDGSMessage("G2D command line is enabled.","Config")
 	end
 end
 loadConfig()
+
+local settingsPrefix = string.format("*%s.", getResourceName(resource))
+addEventHandler("onSettingChange", root,
+function (gsetting,_,jsonValue)
+	if string.sub(gsetting,1,#settingsPrefix) == settingsPrefix then
+		local setting = string.sub(gsetting,#settingsPrefix+1)
+		local value = fromJSON(jsonValue)
+		if setting == "CMD" then
+			setElementData(resourceRoot,"DGS-allowCMD",value == true or value == "true")
+		elseif setting == "debugging" then
+			setElementData(resourceRoot,"DGS-enableDebug",value == true or value == "true")
+		end
+	end
+end)
+
 
 -----------Remote Stuff
 addEvent("DGSI_RequestQRCode",true)
