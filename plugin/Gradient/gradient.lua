@@ -19,8 +19,8 @@ end
 
 function dgsGradientSetColor(gradShader,colorFrom,colorTo)
 	assert(dgsGetPluginType(gradShader) == "dgs-dxgradient","Bad argument @dgsGradientSetColor at argument 1, expect dgs-dxgradient got "..type(gradShader))
-	assert(type(colorFrom) == "number","Bad argument @dgsGetGradientColor at argument 2, expect number got "..type(color1))
-	assert(type(color2) == "number","Bad argument @dgsGetGradientColor at argument 3, expect number got "..type(color2))
+	assert(type(colorFrom) == "number","Bad argument @dgsGetGradientColor at argument 2, expect number got "..type(colorFrom))
+	assert(type(colorTo) == "number","Bad argument @dgsGetGradientColor at argument 3, expect number got "..type(colorTo))
 	dgsSetData(gradShader,"colorFrom",colorFrom)
 	dgsSetData(gradShader,"colorTo",colorTo)
 	dxSetShaderValue(gradShader,"colorFrom",fromcolor(colorFrom,true))
