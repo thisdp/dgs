@@ -215,7 +215,7 @@ function dgsCreateComboBox(...)
 	local boxSize = dgsElementData[box].absSize
 
 	local scrollbar = dgsCreateScrollBar(boxSize[1]-scbThick,0,scbThick,boxSize[2],false,false,box)
-	dgsSetData(scrollbar,"length",{0,true})
+	dgsSetData(scrollbar,"cursorLength",{0,true})
 	dgsSetData(scrollbar,"multiplier",{1,true})
 	dgsSetData(scrollbar,"myCombo",combobox)
 	dgsSetData(scrollbar,"minLength",10)
@@ -709,7 +709,7 @@ function configComboBox(combobox,remainBox)
 		dgsSetSize(scrollbar,scbThick,boxSize[2],false)
 		local higLen = 1-(allHeight-boxSize[2])/allHeight
 		higLen = higLen >= 0.95 and 0.95 or higLen
-		dgsSetData(scrollbar,"length",{higLen,true})
+		dgsSetData(scrollbar,"cursorLength",{higLen,true})
 		local verticalScrollSize = eleData.scrollSize/(allHeight-boxSize[2])
 		dgsSetData(scrollbar,"multiplier",{verticalScrollSize,true})
 		dgsSetData(scrollbar,"moveType","sync")

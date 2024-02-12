@@ -117,8 +117,8 @@ function dgsCreateScalePane(...)
 	dgsSetData(scrollbar2,"childOutsideHit",true)
 	dgsSetData(scrollbar1,"scrollType","Vertical")
 	dgsSetData(scrollbar2,"scrollType","Horizontal")
-	dgsSetData(scrollbar1,"length",{0,true})
-	dgsSetData(scrollbar2,"length",{0,true})
+	dgsSetData(scrollbar1,"cursorLength",{0,true})
+	dgsSetData(scrollbar2,"cursorLength",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	dgsSetData(scrollbar1,"minLength",10)
@@ -225,7 +225,7 @@ function configScalePane(scalepane)
 	local higLen = 1-(scaleBoundingY-relSizY)/scaleBoundingY
 	higLen = higLen >= 0.95 and 0.95 or higLen
 	length = scbLengthVrt or {higLen,true}
-	dgsSetData(scrollbar[1],"length",length)
+	dgsSetData(scrollbar[1],"cursorLength",length)
 	local verticalScrollSize = eleData.scrollSize/(scaleBoundingY-relSizY)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 
@@ -233,7 +233,7 @@ function configScalePane(scalepane)
 	local widLen = 1-(scaleBoundingX-relSizX)/scaleBoundingX
 	widLen = widLen >= 0.95 and 0.95 or widLen
 	local length = scbLengthHoz or {widLen,true}
-	dgsSetData(scrollbar[2],"length",length)
+	dgsSetData(scrollbar[2],"cursorLength",length)
 	local horizontalScrollSize = eleData.scrollSize*5/(scaleBoundingX-relSizX)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	dgsSetData(scalepane,"configNextFrame",false)

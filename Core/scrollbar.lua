@@ -9,9 +9,9 @@ dgsRegisterProperties("dgs-dxscrollbar",{
 	cursorColor = 				{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	cursorImage = 				{	PArg.Material+PArg.Nil	},
 	cursorWidth = 				{	{ PArg.Number,PArg.Bool }	},
+	cursorLength = 				{	{ PArg.Number, PArg.Bool }	},
 	grades = 					{	PArg.Number	},
 	imageRotation = 			{	{	{ PArg.Number, PArg.Number,PArg.Number }, { PArg.Number, PArg.Number, PArg.Number }	}	},
-	length = 					{	{ PArg.Number, PArg.Bool }	},
 	locked = 					{	PArg.Bool	},
 	map = 						{	{ PArg.Number,PArg.Number }	},
 	multiplier = 				{	{ PArg.Number,PArg.Bool }	},
@@ -226,7 +226,7 @@ end
 function dgsScrollBarSetCursorLength(scrollbar,length,relative)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetCursorLength",1,"dgs-dxscrollbar")) end
 	if not(type(length) == "number") then error(dgsGenAsrt(length,"dgsScrollBarSetCursorLength",2,"number")) end
-	return dgsSetData(scrollbar,"length",{tonumber(length),relative or false})
+	return dgsSetData(scrollbar,"cursorLength",{tonumber(length),relative or false})
 end
 
 function dgsScrollBarGetCursorLength(scrollbar,relative)
@@ -341,7 +341,7 @@ dgsOnMouseClickAction["dgs-dxscrollbar"] = function(dgsEle,button,state)
 	local x,y = dgsGetPosition(dgsEle,false,true)
 	local w,h = dgsGetSize(dgsEle,false)
 	local isHorizontal = eleData.isHorizontal
-	local length,lrlt = eleData.length[1],eleData.length[2]
+	local length,lrlt = eleData.cursorLength[1],eleData.cursorLength[2]
 	local slotRange
 	local arrowWid = eleData.arrowWidth
 	if isHorizontal then
@@ -357,12 +357,12 @@ end
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxscrollbar"] = {
-	length = function(dgsEle,key,value,oldValue)
+	cursorLength = function(dgsEle,key,value,oldValue)
 		local absSize = dgsElementData[dgsEle].absSize
 		local w,h = absSize[1],absSize[2]
 		local isHorizontal = dgsElementData[dgsEle].isHorizontal
 		if (value[2] and value[1]*(isHorizontal and w-h*2 or h-w*2) or value[1]) < dgsElementData[dgsEle].minLength then
-			dgsElementData[dgsEle].length = {dgsElementData[dgsEle].minLength,false}
+			dgsElementData[dgsEle].cursorLength = {dgsElementData[dgsEle].minLength,false}
 		end
 	end,
 	scrollPosition = function(dgsEle,key,value,oldValue)
@@ -415,7 +415,7 @@ dgsRenderer["dgs-dxscrollbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInhe
 	end
 
 	local pos = eleData.scrollPosition
-	local length,lrlt = eleData.length[1],eleData.length[2]
+	local length,lrlt = eleData.cursorLength[1],eleData.cursorLength[2]
 	local cursorColor = eleData.cursorColor
 	local arrowColor = eleData.arrowColor
 	local arrowBgColor = eleData.arrowBgColor

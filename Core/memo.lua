@@ -264,8 +264,8 @@ function dgsCreateMemo(...)
 	local abx,aby = dgsElementData[memo].absSize[1],dgsElementData[memo].absSize[2]
 	local scrollbar1 = dgsCreateScrollBar(abx-20,0,20,aby-20,false,false,memo)
 	local scrollbar2 = dgsCreateScrollBar(0,aby-20,abx-20,20,true,false,memo)
-	dgsSetData(scrollbar1,"length",{0,true})
-	dgsSetData(scrollbar2,"length",{0,true})
+	dgsSetData(scrollbar1,"cursorLength",{0,true})
+	dgsSetData(scrollbar2,"cursorLength",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,true})
 	dgsSetData(scrollbar2,"multiplier",{1,true})
 	dgsSetData(scrollbar1,"minLength",10)
@@ -1361,14 +1361,14 @@ function configMemo(memo)
 	local scbLengthVrt = eleData.scrollBarLength[1]
 	local higLen = 1-(textCnt-canHold)/textCnt
 	higLen = higLen >= 1 and 1 or higLen
-	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
+	dgsSetData(scrollbar[1],"cursorLength",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = eleData.scrollSize/(textCnt-canHold)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 
 	local scbLengthHoz = eleData.scrollBarLength[2]
 	local widLen = 1-(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)/eleData.rightLength[1]
 	widLen = widLen >= 1 and 1 or widLen
-	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
+	dgsSetData(scrollbar[2],"cursorLength",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = eleData.scrollSize*5/(eleData.rightLength[1]-size[1]+scbTakes1+padding[1]*2)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	if dgsElementData[scrollbar[1]].visible ~= scrollBarBefore[1] or dgsElementData[scrollbar[2]].visible ~= scrollBarBefore[2] then

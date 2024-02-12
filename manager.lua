@@ -750,7 +750,11 @@ function dgsGetListenedProperties(dgsEle)
 	return listening
 end
 
-local compatibility = {}
+local compatibility = {
+	["dgs-dxscrollbar"] = {
+		length = "cursorLength"
+	}
+}
 function checkCompatibility(dgsEle,key,sResRoot)
 	local eleTyp = dgsGetType(dgsEle)
 	if getElementData(resourceRoot,"DGS-enableCompatibilityCheck") then return (compatibility[eleTyp] and compatibility[eleTyp][key]) or compatibility[key] or key end

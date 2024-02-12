@@ -265,8 +265,8 @@ function dgsCreateGridList(...)
 	dgsSetData(scrollbar2,"attachedToParent",gridlist)
 	dgsSetVisible(scrollbar1,false)
 	dgsSetVisible(scrollbar2,false)
-	dgsSetData(scrollbar1,"length",{0,true})
-	dgsSetData(scrollbar2,"length",{0,true})
+	dgsSetData(scrollbar1,"cursorLength",{0,true})
+	dgsSetData(scrollbar2,"cursorLength",{0,true})
 	dgsSetData(scrollbar1,"multiplier",{1,false})
 	dgsSetData(scrollbar2,"multiplier",{1,false})
 	dgsSetData(scrollbar1,"minLength",10)
@@ -1235,7 +1235,7 @@ function dgsGridListClearColumn(gridlist,notResetSelected,notResetScrollBar)
 	if not notResetScrollBar then
 		dgsSetData(gridlist,"columnMoveOffset",0)
 		dgsSetData(gridlist,"columnMoveOffsetTemp",0)
-		dgsSetData(scrollbars[2],"length",{0,true})
+		dgsSetData(scrollbars[2],"cursorLength",{0,true})
 		dgsSetData(scrollbars[2],"scrollPosition",0)
 		dgsSetVisible(scrollbars[2],false)
 	end
@@ -1683,7 +1683,7 @@ function dgsGridListClearRow(gridlist,notResetSelected,notResetScrollBar)
 	if not notResetScrollBar then
 		dgsSetData(gridlist,"rowMoveOffset",0)
 		dgsSetData(gridlist,"rowMoveOffsetTemp",0)
-		dgsSetData(scrollbars[1],"length",{0,true})
+		dgsSetData(scrollbars[1],"cursorLength",{0,true})
 		dgsSetData(scrollbars[1],"scrollPosition",0)
 		dgsSetVisible(scrollbars[1],false)
 	end
@@ -2652,7 +2652,7 @@ function configGridList(gridlist)
 	local scbLengthVrt = eleData.scrollBarLength[1]
 	local higLen = 1-(rowLength-rowShowRange)/rowLength
 	higLen = higLen >= 0.95 and 0.95 or higLen
-	dgsSetData(scrollbar[1],"length",scbLengthVrt or {higLen,true})
+	dgsSetData(scrollbar[1],"cursorLength",scbLengthVrt or {higLen,true})
 	local verticalScrollSize = eleData.scrollSize/(rowLength-rowShowRange)
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	dgsSetData(scrollbar[1],"moveType","sync")
@@ -2660,7 +2660,7 @@ function configGridList(gridlist)
 	local scbLengthHoz = dgsElementData[gridlist].scrollBarLength[2]
 	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
 	widLen = widLen >= 0.95 and 0.95 or widLen
-	dgsSetData(scrollbar[2],"length",scbLengthHoz or {widLen,true})
+	dgsSetData(scrollbar[2],"cursorLength",scbLengthHoz or {widLen,true})
 	local horizontalScrollSize = eleData.scrollSize*5/(columnWidth-columnShowRange)
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	dgsSetData(scrollbar[2],"moveType","sync")
