@@ -80,6 +80,7 @@ MouseData = {
 	entered = false,
 	left = false,
 	--2D Position
+	cursorState = false,
 	cursorPosScr = {[0]=false},
 	cursorPosWld = {[0]=false},
 	cursorPos = {[0]=false},
@@ -161,6 +162,10 @@ function dgsCoreRender()
 		MouseData.cursorPosWld[0],MouseData.cursorPosWld[1],MouseData.cursorPosWld[2] = true,mx,my
 		MouseData.cursorPos3D[0],MouseData.cursorPos3D[1],MouseData.cursorPos3D[2],MouseData.cursorPos3D[3] = true,getWorldFromScreenPosition(mx,my,1)
 	end
+	if cursorState ~= cursorShowing then
+		cursorState = cursorShowing
+		triggerEvent("onDgsCursorStateChange",root,cursorState)
+	end
 	if MouseData.visibleLastFrame ~= cursorShowing then
 		if not cursorShowing then
 			MouseData.MoveScroll[0] = false
@@ -177,7 +182,6 @@ function dgsCoreRender()
 			MouseData.cursorPosWld[0] = false
 			MouseData.cursorPosScr[0] = false
 			MouseData.cursorPos[0] = false
-			MouseData.entered = false
 		end
 		MouseData.visibleLastFrame = cursorShowing
 	end
@@ -1069,8 +1073,20 @@ end
 
 function dgsCheckHit(hits,cursorShowing)
 	if not cursorShowing then
+		hits = nil
 		if CursorData.enabled and CursorData[MouseData.cursorType] then
 			setCursorAlpha(255)
+		end
+		if MouseData.entered ~= hits then
+			if isElement(MouseData.entered) then
+				if enteredElementType == "dgs-dxgridlist" then
+					local preSelect = dgsElementData[MouseData.entered].preSelect
+					preSelect[1],preSelect[2] = -1,-1
+					dgsSetData(MouseData.entered,"preSelect",preSelect)
+				end
+				dgsTriggerEvent("onDgsMouseLeave",MouseData.entered,mx,my,hits)
+				MouseData.entered = nil
+			end
 		end
 		return false
 	end
