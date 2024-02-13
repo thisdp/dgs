@@ -112,7 +112,7 @@ function dgsCreateScrollBar(...)
 		grades = -1,
 		imageRotation = sStyle.imageRotation,
 		isHorizontal = isHorizontal; --vertical or horizonta,
-		length = {30,false},
+		cursorLength = {30,false},
 		locked = false,
 		map = {0,100},
 		minLength = 5,
