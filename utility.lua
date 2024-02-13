@@ -32,6 +32,7 @@ dgsLogLuaMemory()
 --------------------------------Events
 events = {
 "onDgsCursorTypeChange",
+"onDgsCursorStateChange",
 "onDgsMouseLeave",
 "onDgsMouseEnter",
 "onDgsMousePreClick",
@@ -266,6 +267,7 @@ function isMaterial(ele)
 	return dgsMaterialType[eleType] or false
 end
 
+GlobalRenderTarget = dxCreateRenderTarget(sW,sH,true)
 function dgsCreateRenderTarget(w,h,isTransparent,dgsElement)
 	local rendertarget = dxCreateRenderTarget(w,h,isTransparent)
 	if not isElement(rendertarget) then
