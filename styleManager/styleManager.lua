@@ -141,7 +141,12 @@ function getStyleFilePath(styleName,res,path)
 	res = res or sourceResource or "global"
 	styleName = styleName or "Default"
 	local testPath = styleManager.styles[res].mapper[styleName].."/"..path
-	return fileExists(testPath) and testPath or path
+	if fileExists(testPath) then
+		return testPath
+	else
+		outputDebugString("[DGS-Style] File "..testPath.." not found in style "..styleName..", use "..path,2)
+		return path
+	end
 end
 ------------------------------------
 function dgsScanGlobalStyle()
@@ -215,7 +220,6 @@ function dgsCreateTextureFromStyle(styleName,res,theTable)
 				return shader
 			elseif textureType == "svg" then
 				local width, height = tonumber(shaderSettings[1]), tonumber(shaderSettings[2])
-
 				if width and height then
 					return newSvg(styleName, res, thePath, width, height)
 				end
