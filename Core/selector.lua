@@ -517,7 +517,7 @@ dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			dxDrawImage(imageX,imageY,imageW,imageH,imageData[1],0,0,0,applyColorAlpha(imageData[2],parentAlpha),isPostGUI)
 		end
 		local itemTextColor = type(renderItem[Selector_itemTextColor]) == "table" and renderItem[Selector_itemTextColor][selectorTextColors[2]] or renderItem[Selector_itemTextColor]
-		local itemFont = renderItem[Selector_itemFont]
+		local itemFont = renderItem[Selector_itemFont] or font
 		local itemAlignment = renderItem[Selector_itemAlignment]
 		local itemColorCoded = renderItem[Selector_itemColorCoded] == nil and colorCoded or renderItem[Selector_itemColorCoded]
 		dgsDrawText(renderItem[Selector_itemText],x+selectorSizeX,y,x+w-selectorSizeX,y+h,applyColorAlpha(itemTextColor,parentAlpha),renderItem[Selector_itemTextScaleX],renderItem[Selector_itemTextScaleY],itemFont,itemAlignment[1],itemAlignment[2],false,false,isPostGUI,itemColorCoded)
