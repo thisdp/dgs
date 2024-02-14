@@ -122,7 +122,7 @@ function dgsCreateSwitchButton(...)
 		clip = false,
 		wordBreak = false,
 		colorCoded = false,
-		sStyle = 1,
+		style = 1,
 		isReverse = false,
 	}
 	dgsSetParent(switchbutton,parent,true,true)
@@ -215,7 +215,6 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-
 	local style = styleManager.styles[eleData.resource or "global"]
 	style = style.loaded[style.using]
 	local font = eleData.font or style.switchbutton.font or style.systemFontElement
@@ -243,7 +242,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 	end
 
-	style = eleData.style
+	local swStyle = eleData.style
 	local colorImgID = 1
 	local animProgress = (-eleData.stateAnim+1)*0.5
 	local cursorX,cursorY,cursorW,cursorH = x+animProgress*(w-cursorLength),y+h/2-cursorWidth/2,cursorLength,cursorWidth
@@ -278,7 +277,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 	else
 		cursorColor = applyColorAlpha(cursorColor,parentAlpha)
 	end
-	if style == 1 then
+	if swStyle == 1 then
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
@@ -312,7 +311,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		dgsDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 		----Cursor
 		dxDrawImage(cursorX,cursorY,cursorW,cursorH,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)
-	elseif style == 2 then
+	elseif swStyle == 2 then
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
 				colorOff = applyColorAlpha(eleData.disabledColor,parentAlpha)
@@ -357,7 +356,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		dgsDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 		----Cursor
 		dxDrawImage(cursorX,cursorY,cursorW,cursorH,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)
-	elseif style == 3 then
+	elseif swStyle == 3 then
 		local color = colorOn+(colorOff-colorOn)*animProgress
 		if not enabledInherited and not enabledSelf then
 			if type(eleData.disabledColor) == "number" then
@@ -390,7 +389,7 @@ dgsRenderer["dgs-dxswitchbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledI
 		dgsDrawText(text,textX,textY,textWX,textHY,applyColorAlpha(textColor,parentAlpha),txtSizX,txtSizY,font,"center","center",clip,wordBreak,isPostGUI,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 		----Cursor
 		dxDrawImage(cursorX,cursorY,cursorW,cursorH,cursorImage,0,0,0,cursorColor,isPostGUI,rndtgt)
-	elseif style == 4 then
+	elseif swStyle == 4 then
 		local xOn,yOn,wOn,hOn = x,y,w,h
 		yOn = yOn+hOn/2-troughWidth/2
 		hOn = troughWidth
