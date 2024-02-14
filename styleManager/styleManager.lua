@@ -57,13 +57,20 @@ function deleteSvg()
 	end
 end
 
-function newSvg(styleName, res, svg, width, height)
-	if not isElement(svg) then
+function newSvg(styleName, res, svgPath, width, height)
+	local svg = svgPath
+	if not isElement(svgPath) then
 		svg = svgCreate(width, height, svg)
-		dgsSetData(svg, "path", svg)
-		dgsSetData(svg, "width", width)
-		dgsSetData(svg, "height", height)
-		dgsAddEventHandler("onClientElementDestroy",svg,"deleteSvg")
+		if isElement(svg) then
+			dgsSetData(svg, "path", svg)
+			dgsSetData(svg, "width", width)
+			dgsSetData(svg, "height", height)
+			dgsAddEventHandler("onClientElementDestroy",svg,"deleteSvg")
+		else
+			outputDebugString("DGS-Style WARNING: Failed to create svg in style '"..styleName.."'",4,255,128,0)
+			outputDebugString("at path '"..tostring(svgPath).."'",4,255,128,0)
+			return false
+		end
 	end
 	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.svg = styleManager.styles[res].loaded[styleName].created.svg or {}
@@ -77,8 +84,14 @@ function newTexture(styleName,res,texturePath)
 	local texture = texturePath
 	if not isElement(texturePath) then
 		texture = dxCreateTexture(texturePath)
-		dgsSetData(texture,"path",texturePath)
-		dgsAddEventHandler("onClientElementDestroy",texture,"deleteTexture")
+		if isElement(texture) then
+			dgsSetData(texture,"path",texturePath)
+			dgsAddEventHandler("onClientElementDestroy",texture,"deleteTexture")
+		else
+			outputDebugString("DGS-Style WARNING: Failed to create texture in style '"..styleName.."'",4,255,128,0)
+			outputDebugString("at path '"..tostring(texturePath).."'",4,255,128,0)
+			return false
+		end
 	end
 	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.texture = styleManager.styles[res].loaded[styleName].created.texture or {}
@@ -97,17 +110,24 @@ function deleteShader()
 	end
 end
 
-function newShader(styleName,res,shader)
-	if not isElement(shader) then
-		shader = dxCreateShader(shader)
-		dgsAddEventHandler("onClientElementDestroy",shader,"deleteShader")
+function newShader(styleName,res,shaderPath)
+	local shader = shaderPath
+	if not isElement(shaderPath) then
+		shader = dxCreateShader(shaderPath)
+		if isElement(shader) then
+			dgsAddEventHandler("onClientElementDestroy",shader,"deleteShader")
+		else
+			outputDebugString("DGS-Style WARNING: Failed to create shader in style '"..styleName.."'",4,255,128,0)
+			outputDebugString("at path '"..tostring(shaderPath).."'",4,255,128,0)
+			return false
+		end
 	end
 	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.shader = styleManager.styles[res].loaded[styleName].created.shader or {}
 	styleManager.styles[res].loaded[styleName].created.shader[shader] = true	--Add a shader into created list in a specific style with a specific resource
 	dgsSetData(shader,"styleResource",res or "global")
 	dgsSetData(shader,"styleName",styleName)
-	return shader
+	return shaderPath
 end
 
 function deleteFont()
@@ -120,14 +140,17 @@ function deleteFont()
 	end
 end
 
-function newFont(styleName,res,font,...)
-	if not isElement(font) then
-		font = dxCreateFont(font,...)
-		dgsSetData(font,"path",font)
-		dgsAddEventHandler("onClientElementDestroy",font,"deleteFont")
-	end
-	if not isElement(font) then
-		outputDebugString("Failed to create font "..tostring(v).." at style '"..styleName.."'")
+function newFont(styleName,res,fontPath,...)
+	local font = fontPath
+	if not isElement(fontPath) then
+		font = dxCreateFont(fontPath,...)
+		if isElement(font) then
+			dgsAddEventHandler("onClientElementDestroy",font,"deleteFont")
+		else
+			outputDebugString("DGS-Style WARNING: Failed to create font in style '"..styleName.."'",4,255,128,0)
+			outputDebugString("at path '"..tostring(fontPath).."'",4,255,128,0)
+			return false
+		end
 	end
 	res = res or "global"
 	styleManager.styles[res].loaded[styleName].created.font = styleManager.styles[res].loaded[styleName].created.font or {}
