@@ -1485,7 +1485,8 @@ function onClientMouseTriggered(button)
 					else
 						dgsElementData[selector].quickLeapState = 0
 					end
-					dgsSelectorSetSelectedItem(selector,mathCeil(mathClamp(currentItem-offsetItem,1,itemCount)))
+					local itemIndex = dgsElementData[selector].circularNavigation and (currentItem-offsetItem-1)%itemCount+1 or mathClamp(currentItem-offsetItem,1,itemCount)
+					dgsSelectorSetSelectedItem(selector,itemIndex-itemIndex%1)
 				end
 			elseif MouseData.selectorEnterData == 3 then
 				local itemData = dgsElementData[selector].itemData
@@ -1499,7 +1500,8 @@ function onClientMouseTriggered(button)
 					else
 						dgsElementData[selector].quickLeapState = 0
 					end
-					dgsSelectorSetSelectedItem(selector,mathFloor(mathClamp(currentItem+offsetItem,1,itemCount)))
+					local itemIndex = dgsElementData[selector].circularNavigation and (currentItem+offsetItem-1)%itemCount+1 or mathClamp(currentItem+offsetItem,1,itemCount)
+					dgsSelectorSetSelectedItem(selector,itemIndex-itemIndex%1)
 				end
 			end
 		end
