@@ -405,7 +405,10 @@ end
 ---------------------OnMouseScrollAction------------------------
 ----------------------------------------------------------------
 dgsOnMouseScrollAction["dgs-dxselector"] = function(dgsEle,isWheelDown)
-	if dgsElementData[dgsEle].enableScroll and MouseData.focused == dgsEle then
+	if dgsElementData[dgsEle].enableScroll then
+		if MouseData.focused ~= dgsEle then 
+			dgsFocus(dgsEle)
+		end
 		local itemData = dgsElementData[dgsEle].itemData
 		local currentItem = dgsElementData[dgsEle].select
 		local isReversed = dgsElementData[dgsEle].isReversed
