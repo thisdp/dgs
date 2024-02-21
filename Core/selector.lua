@@ -423,7 +423,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	if MouseData.hit == source and MouseData.focused == source then
+	if MouseData.hit == source and eleData.enableScroll then
 		MouseData.topScrollable = source
 	end
 
