@@ -414,7 +414,7 @@ dgsOnMouseScrollAction["dgs-dxselector"] = function(dgsEle,isWheelDown)
 		local isReversed = dgsElementData[dgsEle].isReversed
 		local itemCount = #itemData
 		local itemIndex = currentItem+(isWheelDown and 1 or -1)*(isReversed and -1 or 1)
-		itemIndex = dgsElementData[dgsEle].circularNavigation and (itemIndex < 1 and itemCount or itemIndex > itemCount and 1) or itemIndex-itemIndex%1
+		itemIndex = dgsElementData[dgsEle].circularNavigation and (itemIndex < 1 and itemCount or itemIndex > itemCount and 1) or mathClamp(itemIndex-itemIndex%1,1,itemCount)
 		dgsSelectorSetSelectedItem(dgsEle,itemIndex)
 	end
 end
