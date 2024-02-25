@@ -405,12 +405,17 @@ end
 ---------------------OnMouseScrollAction------------------------
 ----------------------------------------------------------------
 dgsOnMouseScrollAction["dgs-dxselector"] = function(dgsEle,isWheelDown)
-	if dgsElementData[dgsEle].enableScroll and MouseData.focused == dgsEle then
+	if dgsElementData[dgsEle].enableScroll then
+		if MouseData.focused ~= dgsEle then 
+			dgsFocus(dgsEle)
+		end
 		local itemData = dgsElementData[dgsEle].itemData
 		local currentItem = dgsElementData[dgsEle].select
 		local isReversed = dgsElementData[dgsEle].isReversed
-		local itemIndex = mathClamp(currentItem+(isWheelDown and 1 or -1)*(isReversed and -1 or 1),1,#itemData)
-		dgsSelectorSetSelectedItem(dgsEle,itemIndex-itemIndex%1)
+		local itemCount = #itemData
+		local itemIndex = currentItem+(isWheelDown and 1 or -1)*(isReversed and -1 or 1)
+		itemIndex = dgsElementData[dgsEle].circularNavigation and (itemIndex < 1 and itemCount or itemIndex > itemCount and 1) or mathClamp(itemIndex-itemIndex%1,1,itemCount)
+		dgsSelectorSetSelectedItem(dgsEle,itemIndex)
 	end
 end
 
@@ -418,7 +423,7 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxselector"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	if MouseData.hit == source and MouseData.focused == source then
+	if MouseData.hit == source and eleData.enableScroll then
 		MouseData.topScrollable = source
 	end
 
