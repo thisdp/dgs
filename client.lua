@@ -66,6 +66,7 @@ function dgsSetRenderSetting(name,value)
 		local success = addEventHandler("onClientRender",root,dgsCoreRender,false,value)
 		if not success then
 			addEventHandler("onClientRender",root,dgsCoreRender,false,dgsRenderSetting.renderPriority)
+			value = dgsRenderSetting.renderPriority
 		end
 		assert(success,"Bad Argument @dgsSetRenderSetting at argument 2, failed to set the priority")
 	end
