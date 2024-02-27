@@ -127,7 +127,7 @@ function newShader(styleName,res,shaderPath)
 	styleManager.styles[res].loaded[styleName].created.shader[shader] = true	--Add a shader into created list in a specific style with a specific resource
 	dgsSetData(shader,"styleResource",res or "global")
 	dgsSetData(shader,"styleName",styleName)
-	return shaderPath
+	return shader
 end
 
 function deleteFont()
