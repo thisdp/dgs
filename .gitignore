@@ -1,3 +1,9 @@
+# Ignore custom styles in the styleManager directory
+styleManager/**
+styleManager/styleMapper.lua
 
+# Except for the default style
+!styleManager/Default/
+
+# Ignore the deprecated config file
 config.txt
-DGSCursor.psd
