@@ -357,17 +357,15 @@ function dgsEditCheckAutoComplete()
 			local textLenRaw = utf8Len(text)
 			for k,v in pairs(acTable) do
 				local isAdvanced = type(v) == "table"
-				if isAdvanced then
-					isSensitive = v[1]
-				else
+				if not isAdvanced then
 					isSensitive = v
-				end
-				local _inputAC = utf8Sub(k,1,textLenRaw)
-				local textAutoComplete = isSensitive and _inputAC or utf8Lower(_inputAC)
-				local textInputRaw = isSensitive and text or lowerTextRaw
-				
-				if textInputRaw == textAutoComplete then
-					foundAC[#foundAC+1] = {k,true}
+					local _inputAC = utf8Sub(k,1,textLenRaw)
+					local textAutoComplete = isSensitive and _inputAC or utf8Lower(_inputAC)
+					local textInputRaw = isSensitive and text or lowerTextRaw
+					
+					if textInputRaw == textAutoComplete then
+						foundAC[#foundAC+1] = {k,true}
+					end
 				end
 			end
 
@@ -398,26 +396,32 @@ function dgsEditCheckAutoComplete()
 					autoCompleteResult[1] = text..utf8Sub(foundACBestMatch[1],textLenRaw+1)
 				else
 					local spaceStartPos = utf8Find(foundACBestMatch[1]," ",textLen+1)
-					autoCompleteResult[1] = textTable[1]..utf8Sub(foundACBestMatch[1],textLen+1,(spaceStartPos or utf8Len(foundACBestMatch[1]))-1)
-					for i=2,#textTable do
-						local textParam = textTable[i]
-						local paramLen = utf8Len(textParam)
-						autoCompleteResult[i] = textParam
-						if eleData.caretPos >= currentStart and eleData.caretPos <= currentStart+paramLen+1 then
-							local acParamFunctionName = type(acTable[foundACBestMatch[1]]) == "table" and acTable[foundACBestMatch[1]][i]
-							if acParamFunctionName then
-								local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input)
-									if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
-										return acParamFunctionName
+					autoCompleteResult[1] = textTable[1]..utf8Sub(foundACBestMatch[1],textLen+1,(spaceStartPos or utf8Len(foundACBestMatch[1])))
+					if #textTable == 1 then
+						for i=2,#acTable[foundACBestMatch[1]] do
+							autoCompleteResult[i] = acTable[foundACBestMatch[1]][i]
+						end
+					else
+						for i=2,#textTable do
+							local textParam = textTable[i]
+							local paramLen = utf8Len(textParam)
+							autoCompleteResult[i] = textParam
+							if eleData.caretPos >= currentStart and eleData.caretPos <= currentStart+paramLen+1 then
+								local acParamFunctionName = type(acTable[foundACBestMatch[1]]) == "table" and acTable[foundACBestMatch[1]][i]
+								if acParamFunctionName then
+									local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input)
+										if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
+											return acParamFunctionName
+										end
+									end
+									local fullParam = acParamFunction(textParam)
+									if fullParam then
+										autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
 									end
 								end
-								local fullParam = acParamFunction(textParam)
-								if fullParam then
-									autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
-								end
 							end
+							currentStart = currentStart+paramLen+1
 						end
-						currentStart = currentStart+paramLen+1
 					end
 				end
 			else
@@ -1040,14 +1044,14 @@ function dgsEditAddAutoComplete(edit,str,isSensitive,isAdvanced)
 	if not dgsIsType(edit,"dgs-dxedit") then error(dgsGenAsrt(edit,"dgsEditAddAutoComplete",1,"dgs-dxedit")) end
 	local strTyp = type(str)
 	if strTyp == "table" then
-		if isAdvanced then
+		if isAdvanced then	--Add Advanced autoComplete
 			local autoComplete = dgsElementData[edit].autoComplete
 			if not autoComplete[identifier] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount+1 end
 			local identifier = str[1]
-			str[1] = isSensitive == nil and v or isSensitive
+			str[1] = isSensitive
 			autoComplete[identifier] = str
 			return true
-		else
+		else	--Add Multiple autoComplete
 			local autoComplete = dgsElementData[edit].autoComplete
 			for k,v in pairs(str) do
 				if not autoComplete[k] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount+1 end
