@@ -73,6 +73,7 @@ local type = type
 local mathFloor = math.floor
 local utf8Sub = utf8.sub
 local utf8Len = utf8.len
+local utf8Find = utf8.find
 local utf8Gsub = utf8.gsub
 local utf8Lower = utf8.lower
 local utf8GetCharType = utf8.getCharType
@@ -333,6 +334,13 @@ function dgsEditCheckMultiClick(button,state,x,y,times)
 	end
 end
 
+function dgsEditACCompare(a, b)
+	if not a or not b then return false end
+	if a[1] < b[1] then return true end
+    if a[2] and not b[2] then return true end
+	return false
+end
+
 function dgsEditCheckAutoComplete()
 	local eleData = dgsElementData[source]
 	if not eleData.autoCompleteSkip and eleData.autoCompleteCount ~= 0 then
@@ -341,12 +349,32 @@ function dgsEditCheckAutoComplete()
 		local autoCompleteShow = eleData.autoCompleteShow or {}
 		if text ~= "" then
 			local currentStart = 0
-			local textTable = string.split(text," ")
 			local acTable = eleData.autoComplete
-			local lowerText = utf8Lower(textTable[1])
-			local isSensitive
-			local textLen = utf8Len(textTable[1])
 			local foundAC = {}
+			local isSensitive
+			--Check Raw Text
+			local lowerTextRaw = utf8Lower(text)
+			local textLenRaw = utf8Len(text)
+			for k,v in pairs(acTable) do
+				local isAdvanced = type(v) == "table"
+				if isAdvanced then
+					isSensitive = v[1]
+				else
+					isSensitive = v
+				end
+				local _inputAC = utf8Sub(k,1,textLenRaw)
+				local textAutoComplete = isSensitive and _inputAC or utf8Lower(_inputAC)
+				local textInputRaw = isSensitive and text or lowerTextRaw
+				
+				if textInputRaw == textAutoComplete then
+					foundAC[#foundAC+1] = {k,true}
+				end
+			end
+
+
+			local textTable = string.split(text," ")
+			local lowerText = utf8Lower(textTable[1])
+			local textLen = utf8Len(textTable[1])
 			autoCompleteResult[1] = textTable[1]
 			for k,v in pairs(acTable) do
 				local isAdvanced = type(v) == "table"
@@ -359,32 +387,38 @@ function dgsEditCheckAutoComplete()
 				local textAutoComplete = isSensitive and _inputAC or utf8Lower(_inputAC)
 				local textInput = isSensitive and textTable[1] or lowerText
 				if textInput == textAutoComplete then
-					foundAC[#foundAC+1] = k
+					foundAC[#foundAC+1] = {k}
 				end
 			end
 			currentStart = currentStart+textLen+1
-			table.sort(foundAC)
-			if foundAC[1] then
-				autoCompleteResult[1] = textTable[1]..utf8Sub(foundAC[1],textLen+1)
-				for i=2,#textTable do
-					local textParam = textTable[i]
-					local paramLen = utf8Len(textParam)
-					autoCompleteResult[i] = textParam
-					if eleData.caretPos >= currentStart and eleData.caretPos <= currentStart+paramLen+1 then
-						local acParamFunctionName = type(acTable[foundAC[1]]) == "table" and acTable[foundAC[1]][i]
-						if acParamFunctionName then
-							local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input)
-								if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
-									return acParamFunctionName
+			table.sort(foundAC,dgsEditACCompare)
+			foundACBestMatch = foundAC[1]
+			if foundACBestMatch then
+				if foundACBestMatch[2] then
+					autoCompleteResult[1] = text..utf8Sub(foundACBestMatch[1],textLenRaw+1)
+				else
+					local spaceStartPos = utf8Find(foundACBestMatch[1]," ",textLen+1)
+					autoCompleteResult[1] = textTable[1]..utf8Sub(foundACBestMatch[1],textLen+1,(spaceStartPos or utf8Len(foundACBestMatch[1]))-1)
+					for i=2,#textTable do
+						local textParam = textTable[i]
+						local paramLen = utf8Len(textParam)
+						autoCompleteResult[i] = textParam
+						if eleData.caretPos >= currentStart and eleData.caretPos <= currentStart+paramLen+1 then
+							local acParamFunctionName = type(acTable[foundACBestMatch[1]]) == "table" and acTable[foundACBestMatch[1]][i]
+							if acParamFunctionName then
+								local acParamFunction = autoCompleteParameterFunction[acParamFunctionName] and autoCompleteParameterFunction[acParamFunctionName][1] or function(input)
+									if input:lower() == acParamFunctionName:sub(1,input:len()):lower() then
+										return acParamFunctionName
+									end
+								end
+								local fullParam = acParamFunction(textParam)
+								if fullParam then
+									autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
 								end
 							end
-							local fullParam = acParamFunction(textParam)
-							if fullParam then
-								autoCompleteResult[i] = textParam..utf8Sub(fullParam,paramLen+1)
-							end
 						end
+						currentStart = currentStart+paramLen+1
 					end
-					currentStart = currentStart+paramLen+1
 				end
 			else
 				autoCompleteShow.result = ""
