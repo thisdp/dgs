@@ -270,6 +270,7 @@ end
 function dgsComboBoxCheckState(state)
 	if not wasEventCancelled() then
 		local box = dgsElementData[source].myBox
+		if not isElement(box) then return false end	--Make sure box is not destroyed
 		if state then
 			dgsSetVisible(box,true)
 			dgsFocus(box)
@@ -701,7 +702,10 @@ function configComboBox(combobox,remainBox)
 	local scrollbar = eleData.scrollbar
 	local itemHeight = eleData.itemHeight
 	local allHeight = iLen*itemHeight
-	dgsSetVisible(scrollbar,allHeight > size[2])
+	local forceState = eleData.scrollBarState
+	local scbState = allHeight > size[2]
+	if forceState ~= nil then scbState = forceState end
+	dgsSetVisible(scrollbar,scbState and true or false)
 	if not remainBox then
 		local boxSize = dgsElementData[box].absSize
 		local scbThick = eleData.scrollBarThick
@@ -750,6 +754,18 @@ function dgsComboBoxGetScrollPosition(combobox)
 	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetScrollPosition",1,"dgs-dxcombobox")) end
 	local scb = dgsElementData[combobox].scrollbar
 	return dgsScrollBarGetScrollPosition(scb)
+end
+
+function dgsComboBoxSetScrollBarState(combobox,state)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(gridlist,"dgsComboBoxSetScrollBarState",1,"dgs-dxcombobox")) end
+	dgsSetData(combobox,"scrollBarState",state,true)
+	dgsSetData(combobox,"configNextFrame",true)
+	return true
+end
+
+function dgsComboBoxGetScrollBarState(combobox)
+	if not dgsIsType(combobox,"dgs-dxcombobox") then error(dgsGenAsrt(combobox,"dgsComboBoxGetScrollBarState",1,"dgs-dxcombobox")) end
+	return dgsElementData[combobox].scrollBarState
 end
 
 function dgsComboBoxSetViewCount(combobox,count)
@@ -899,10 +915,8 @@ end
 dgsOnMouseScrollAction["dgs-dxcombobox-Box"] = function(dgsEle,isWheelDown)
 	local combo = dgsElementData[dgsEle].myCombo
 	local scrollbar = dgsElementData[combo].scrollbar
-	if dgsGetVisible(scrollbar) then
-		dgsSetData(scrollbar,"moveType","slow")
-		scrollScrollBar(scrollbar,isWheelDown)
-	end
+	dgsSetData(scrollbar,"moveType","slow")
+	scrollScrollBar(scrollbar,isWheelDown)
 end
 
 ----------------------------------------------------------------

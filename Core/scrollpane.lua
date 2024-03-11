@@ -84,7 +84,6 @@ function dgsCreateScrollPane(...)
 		scrollBarThick = scbThick,
 		scrollBarAlignment = {"right","bottom"},
 		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
-		wheelScrollable = {true,true},
 		scrollBarLength = {},
 		maxChildSize = {0,0},
 		horizontalMoveOffset = 0,

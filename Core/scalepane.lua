@@ -73,7 +73,6 @@ function dgsCreateScalePane(...)
 		scrollBarThick = scbThick,
 		scrollBarAlignment = {"right","bottom"},
 		scrollBarState = {nil,nil}, --true: force on; false: force off; nil: auto
-		wheelScrollable = {true,true},
 		scrollBarLength = {},
 		horizontalMoveOffsetTemp = 0,
 		verticalMoveOffsetTemp = 0,

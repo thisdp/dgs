@@ -183,6 +183,10 @@ function dgsCoreRender()
 			MouseData.cursorPosWld[0] = false
 			MouseData.cursorPosScr[0] = false
 			MouseData.cursorPos[0] = false
+			if MouseData.entered ~= nil then
+				dgsTriggerEvent("onDgsMouseLeave",MouseData.entered,mx,my,hits)
+				MouseData.entered = nil
+			end
 		end
 		MouseData.visibleLastFrame = cursorShowing
 	end
@@ -1070,6 +1074,14 @@ function onClientKeyTriggered(button)
 		end
 	end
 	return makeEventCancelled
+end
+
+function dgsMouseEnter()	--todo
+
+end
+
+function dgsMouseLeave()
+
 end
 
 function dgsCheckHit(hits,cursorShowing)
