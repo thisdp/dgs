@@ -10,12 +10,13 @@ function requestQuadShader()
 	return str
 end
 
-function dgsCreateQuad(points,color,texture)
+function dgsCreateQuad(vertices,color,texture)
+	if type(vertices) ~= "table" then error(dgsGenAsrt(vertices,"dgsCreateQuad",1,"table")) end
 	local quad = dxCreateShader(requestQuadShader())
 	if not quad then return false end
-	dxSetShaderValue(quad,"vertices",points)
 	dxSetShaderValue(quad,"sourceTexture",DGSBuiltInTex.white_1x1)
 	dgsSetData(quad,"asPlugin","dgs-dxquad")
+	dgsQuadSetVertices(quad,vertices)
 	dgsQuadSetColorOverwritten(quad,true)
 	dgsQuadSetTexture(quad,texture)
 	dgsQuadSetColor(quad,color or tocolor(255,255,255,255))
@@ -40,6 +41,31 @@ end
 function dgsQuadGetTexture(quad)
 	if not(dgsGetPluginType(quad) == "dgs-dxquad") then error(dgsGenAsrt(quad,"dgsQuadGetTexture",1,"plugin dgs-dxquad")) end
 	return dgsElementData[quad].sourceTexture
+end
+
+function dgsQuadSetVertices(quad,vertices)
+	if not(dgsGetPluginType(quad) == "dgs-dxquad") then error(dgsGenAsrt(quad,"dgsQuadSetVertices",1,"plugin dgs-dxquad")) end
+	if dgsGetType(vertices) ~= "table" then error(dgsGenAsrt(vertices,"dgsQuadSetVertices",2,"table")) end
+	local oldVertices = dgsElementData[quad].vertices
+	local _ve,_re = {},{}
+	local t = {}
+	for i=1,4 do
+		vertices[i] = vertices[i] or oldVertices[i]
+		vertices[i][1] = tonumber(vertices[i][1]) or 0
+		vertices[i][2] = tonumber(vertices[i][2]) or 0
+		vertices[i][3] = vertices[i][3] ~= false
+		_ve[i*2-1],_ve[i*2] = vertices[i][1],vertices[i][2]
+		_re[i] = vertices[i][3] and 1 or 0
+	end
+	dxSetShaderValue(quad,"vertices",_ve)
+	dxSetShaderValue(quad,"isRelative",_re)
+	dgsSetData(quad,"vertices",vertices)
+	return true
+end
+
+function dgsQuadGetVertices(quad)
+	if not(dgsGetPluginType(quad) == "dgs-dxquad") then error(dgsGenAsrt(quad,"dgsQuadGetVertices",1,"plugin dgs-dxquad")) end
+	return dgsElementData[quad].vertices
 end
 
 function dgsQuadSetTextureRotation(quad,rot,rotCenterX,rotCenterY)

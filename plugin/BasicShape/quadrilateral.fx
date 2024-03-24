@@ -1,4 +1,3 @@
-// 定义四边形的四个顶点
 float4x2 vertices = {
     0,0,
     0,0,
@@ -8,6 +7,7 @@ float4x2 vertices = {
 float4 color = float4(1,1,1,1);
 float borderSoft = 0.01;
 float4 UV = float4(0,0,1,1);
+float4 isRelative = 0;
 float textureRot = 0;
 float rotation = 0;
 float2 textureRotCenter = float2(0.5,0.5);
@@ -71,6 +71,10 @@ float4 checkPointInQuad(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
         nVertices[3].y *= a;
 		nBorderSoft *= dd.x;
 	}
+    nVertices[0] = isRelative.x==1?nVertices[0]:nVertices[0]*dd;
+    nVertices[1] = isRelative.y==1?nVertices[1]:nVertices[1]*dd;
+    nVertices[2] = isRelative.z==1?nVertices[2]:nVertices[2]*dd;
+    nVertices[3] = isRelative.w==1?nVertices[3]:nVertices[3]*dd;
     float2 d1 = nVertices[1] - nVertices[0];
     float2 d2 = nVertices[2] - nVertices[1];
     float2 d3 = nVertices[3] - nVertices[2];
