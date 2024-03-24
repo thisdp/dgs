@@ -928,8 +928,8 @@
 	<export function="dgsCircleGetTextureRotation" type="client" />
 	
 	<export function="dgsCreateQuad" type="client" />
-	<export function="dgsQuadSetRadius" type="client" />
-	<export function="dgsQuadGetRadius" type="client" />
+	<export function="dgsQuadSetVertices" type="client" />
+	<export function="dgsQuadGetVertices" type="client" />
 	<export function="dgsQuadSetTexture" type="client" />
 	<export function="dgsQuadGetTexture" type="client" />
 	<export function="dgsQuadSetColor" type="client" />
