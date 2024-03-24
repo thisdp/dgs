@@ -42,7 +42,7 @@ end
 function dgsCircleSetTexture(circle,texture)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetTexture",1,"plugin dgs-dxcircle")) end
 	if isElement(texture) then
-		if not(isMaterial(texture) == "texture") then error(dgsGenAsrt(dgsCircleSetTexture,"dgsCreateMask",1,"texture")) end
+		if not(isMaterial(texture) == "texture") then error(dgsGenAsrt(dgsCircleSetTexture,"dgsCircleSetTexture",1,"texture")) end
 		dxSetShaderValue(circle,"sourceTexture",texture)
 		dgsSetData(circle,"sourceTexture",texture)
 	else
@@ -134,14 +134,14 @@ function dgsCircleGetAngle(circle)
 	return dgsElementData[circle].angle
 end
 
-function dgsCircleSetRotation(circle,angle)
+function dgsCircleSetRotation(circle,rot)
 	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleSetRotation",1,"plugin dgs-dxcircle")) end
-	if not(type(angle) == "number") then error(dgsGenAsrt(angle,"dgsCircleSetRotation",2,"number")) end
-	dxSetShaderValue(circle,"rotation",angle)
-	return dgsSetData(circle,"rotation",angle)
+	if not(type(rot) == "number") then error(dgsGenAsrt(rot,"dgsCircleSetRotation",2,"number")) end
+	dxSetShaderValue(circle,"rotation",rot)
+	return dgsSetData(circle,"rotation",rot)
 end
 
-function dgsCircleGetAngle(circle)
-	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetAngle",1,"plugin dgs-dxcircle")) end
+function dgsCircleGetRotation(circle)
+	if not(dgsGetPluginType(circle) == "dgs-dxcircle") then error(dgsGenAsrt(circle,"dgsCircleGetRotation",1,"plugin dgs-dxcircle")) end
 	return dgsElementData[circle].rotation
 end

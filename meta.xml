@@ -66,6 +66,8 @@
 	<script src="plugin/BasicShape/roundedRectangle.lua" type="client" />
 	<file src="plugin/BasicShape/circle.fx" />
 	<script src="plugin/BasicShape/circle.lua" type="client" />
+	<file src="plugin/BasicShape/quadrilateral.fx" />
+	<script src="plugin/BasicShape/quadrilateral.lua" type="client" />
 
 	<script src="plugin/QRCode.lua" type="client" />
 	
@@ -925,6 +927,20 @@
 	<export function="dgsCircleSetTextureRotation" type="client" />
 	<export function="dgsCircleGetTextureRotation" type="client" />
 	
+	<export function="dgsCreateQuad" type="client" />
+	<export function="dgsQuadSetRadius" type="client" />
+	<export function="dgsQuadGetRadius" type="client" />
+	<export function="dgsQuadSetTexture" type="client" />
+	<export function="dgsQuadGetTexture" type="client" />
+	<export function="dgsQuadSetColor" type="client" />
+	<export function="dgsQuadGetColor" type="client" />
+	<export function="dgsQuadSetColorOverwritten" type="client" />
+	<export function="dgsQuadGetColorOverwritten" type="client" />
+	<export function="dgsQuadSetRotation" type="client" />
+	<export function="dgsQuadSetRotation" type="client" />
+	<export function="dgsQuadSetTextureRotation" type="client" />
+	<export function="dgsQuadGetTextureRotation" type="client" />
+
 	<export function="dgsCreateChart" type="client" />
 	<export function="dgsChartAddDataset" type="client" />
 	<export function="dgsChartSetLabels" type="client" />
