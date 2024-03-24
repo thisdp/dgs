@@ -14,14 +14,13 @@ float2 textureRotCenter = float2(0.5,0.5);
 bool colorOverwritten = true;
 texture sourceTexture;
 
-
 SamplerState tSampler{
 	Texture = sourceTexture;
 	MinFilter = Linear;
 	MagFilter = Linear;
 	MipFilter = Linear;
 };
-// 点到边的距离
+
 float pToLine(float2 p, float2 startPoint, float2 dir){
     return ((p.x - startPoint.x) * dir.y - (p.y - startPoint.y) * dir.x)/length(dir);
 }
@@ -72,7 +71,6 @@ float4 checkPointInQuad(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
         nVertices[3].y *= a;
 		nBorderSoft *= dd.x;
 	}
-
     float2 d1 = nVertices[1] - nVertices[0];
     float2 d2 = nVertices[2] - nVertices[1];
     float2 d3 = nVertices[3] - nVertices[2];
