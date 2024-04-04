@@ -419,7 +419,7 @@ dgsRenderer["dgs-dxbutton"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherit
 				local shadowoffx,shadowoffy,shadowColor,shadowIsOutline = iconShadow[1],iconShadow[2],iconShadow[3],iconShadow[4]
 				if shadowoffx and shadowoffy and shadowColor then
 					shadowColor = applyColorAlpha(shadowColor,parentAlpha)
-					dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowc,isPostGUI,rndtgt)
+					dxDrawImage(posX+shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowColor,isPostGUI,rndtgt)
 					if shadowIsOutline then
 						dxDrawImage(posX-shadowoffx,posY+shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowColor,isPostGUI,rndtgt)
 						dxDrawImage(posX-shadowoffx,posY-shadowoffy,iconWidth,iconHeight,iconImage,0,0,0,shadowColor,isPostGUI,rndtgt)
