@@ -85,7 +85,7 @@ float4 checkPointInQuad(float2 tex:TEXCOORD0,float4 _color:COLOR0):COLOR0{
         cross2d(d3,-d4) < 0 ? min(x3,x4) : max(x3,x4),
         cross2d(d4,-d1) < 0 ? min(x4,x1) : max(x4,x1),
     };
-    result.a = max(s.x*s.z,s.y*s.w);
+    result.a *= saturate(max(s.x*s.z,s.y*s.w));
     return result;
 }
 
