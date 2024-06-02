@@ -1860,7 +1860,7 @@ addEventHandler("onClientClick",root,function(button,state,x,y)
 			dgsTriggerEvent("onDgsMousePreClick",dgsEle,button,state,mouseX,mouseY,isCoolingDown)	--Up
 		end
 		if not isElement(dgsEle) then return end
-		if wasEventCancelled() then return end
+		if isCoolingDown or wasEventCancelled() then return end	--event was cancelled or was cooling down
 
 		local mouseButtons = eleData.mouseButtons
 		local canLeftClick,canRightClick,canMiddleClick = true,false,false
