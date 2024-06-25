@@ -62,7 +62,8 @@ function dgsCreateDetectArea(...)
 		dgsSetData(detectarea,"debugMode",false)
 		dgsSetData(detectarea,"debugModeAlpha",128)
 		calculateGuiPositionSize(detectarea,x,y,relative or false,w,h,relative or false,true)
-		dgsTriggerEvent("onDgsCreate",detectarea,sRes)
+		dgsApplyGeneralProperties(detectarea,sRes)
+		onDGSElementCreate(detectarea,sRes)
 		dgsDetectAreaSetFunction(detectarea,detectAreaBuiltIn.default)
 		return detectarea
 	end
