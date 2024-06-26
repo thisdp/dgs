@@ -23,7 +23,7 @@ function dgsPasteHandlerSetEnabled(state)
 
 		addEventHandler("DGSI_Paste",GlobalPasteHandler,function(data,theType)
 			if theType == "file" then
-				local result = base64Decode(split(data,",")[2])
+				local result = decodeString("base64", split(data,",")[2])
 				return dgsTriggerEvent("onDgsPaste",resourceRoot,result,theType)
 			elseif theType == "string" then
 				return dgsTriggerEvent("onDgsPaste",resourceRoot,data,theType)
