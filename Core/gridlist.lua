@@ -832,6 +832,7 @@ function dgsGridListAddColumn(gridlist,name,len,c,alignment)
 		end
 	end
 	eleData.configNextFrame = true
+	eleData.updateFilterNextFrame = true
 	return c
 end
 
@@ -1079,7 +1080,8 @@ function dgsGridListRemoveColumn(gridlist,c)
 	end
 	dgsGridListSelectItem(gridlist,1,c,false)	--unselect this column
 	tableRemove(cData,c)
-	dgsElementData[gridlist].configNextFrame = true
+	eleData.configNextFrame = true
+	eleData.updateFilterNextFrame = true
 	return true
 end
 
@@ -1392,6 +1394,7 @@ function dgsGridListAddRow(gridlist,r,...)
 	end
 	tableInsert(rData,r,rowTable)
 	eleData.configNextFrame = true
+	eleData.updateFilterNextFrame = true
 	return r
 end
 
@@ -1446,7 +1449,8 @@ function dgsGridListAddRows(gridlist,r,t,isRawData)
 			tableInsert(rowData,r+i,rowTable)
 		end
 	end
-	dgsElementData[gridlist].configNextFrame = true
+	eleData.configNextFrame = true
+	eleData.updateFilterNextFrame = true
 	return true
 end
 
@@ -1676,7 +1680,8 @@ function dgsGridListRemoveRow(gridlist,r)
 	r = r-r%1
 	dgsGridListSelectItem(gridlist,r,1,false)	--unselect this row
 	tableRemove(rData,r)
-	dgsElementData[gridlist].configNextFrame = true
+	eleData.configNextFrame = true
+	eleData.updateFilterNextFrame = true
 	return true
 end
 
@@ -2020,9 +2025,8 @@ function dgsGridListSetItemText(gridlist,r,c,text,isSection)
 	if isSection then
 		dgsGridListSetRowAsSection(gridlist,r,true)
 	end
-	if dgsElementData[gridlist].autoSort then
-		dgsElementData[gridlist].nextRenderSort = true
-	end
+	if eleData.autoSort then eleData.nextRenderSort = true end
+	eleData.updateFilterNextFrame = true
 	return true
 end
 
