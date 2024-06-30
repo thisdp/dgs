@@ -2685,6 +2685,7 @@ function dgsGridListUpdateFilter(gridlist)
 	else
 		eleData.rowData.isFiltered = false
 	end
+	eleData.configNextFrame = true
 end
 
 function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
@@ -3011,8 +3012,8 @@ end
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
-	if eleData.configNextFrame then configGridList(source) end
 	if eleData.updateFilterNextFrame then dgsGridListUpdateFilter(source) end
+	if eleData.configNextFrame then configGridList(source) end
 	local scrollbar = eleData.scrollbars
 	if MouseData.hit == source then
 		MouseData.topScrollable = source
