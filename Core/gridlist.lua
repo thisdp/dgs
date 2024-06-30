@@ -2,7 +2,7 @@ dgsLogLuaMemory()
 dgsRegisterType("dgs-dxgridlist","dgsBasic","dgsType2D")
 dgsRegisterProperties('dgs-dxgridlist',{
 	autoSort = 				{	PArg.Bool	},
-	bgOffset = 		{	PArg.Number	},
+	bgOffset = 				{	PArg.Number	},
 	bgColor = 				{	PArg.Color	},
 	bgImage = 				{	PArg.Number	},
 	clip = 					{	PArg.Bool 	},
@@ -117,6 +117,7 @@ local type = type
 local mathLerp = math.lerp
 local mathMin = math.min
 local mathMax = math.max
+local mathClamp = math.clamp
 local tableSort = table.sort
 local tableInsert = table.insert
 local tableRemove = table.remove
@@ -217,8 +218,11 @@ function dgsCreateGridList(...)
 		nextRenderSort = false,
 		preSelect = {-1,-1},
 		preSelectLastFrame = {-1,-1},
+		filter = nil,
+		filterLogic = "or",
+		updateFilterNextFrame = false,
 		rowColor = {cColorR,hColorR,sColorR},	--Normal/Hover/Selected
-		rowData = {},
+		rowData = {isFiltered = false, filteredData = {}},
 		rowHeight = sStyle.rowHeight,	--_RowHeight
 		rowImage = {nImageR,hImageR,sImageR},	--Normal/Hover/Selected
 		rowMoveOffset = 0,
@@ -234,7 +238,6 @@ function dgsCreateGridList(...)
 		scrollBarThick = scbThick,
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
-		wheelScrollable = {true,true},
 		scrollFloor = {false,false},--move offset ->int or float
 		scrollBarAlignment = {"right","bottom"},
 		scrollSize = 60,			--60 pixels
@@ -2038,50 +2041,81 @@ function dgsGridListGetItemText(gridlist,r,c)
 	return rData[r][c][glItem_text]
 end
 
-function dgsGridListGetSelectedItem(gridlist)
+function dgsGridListGetSelectedItem(gridlist, ignoreFilter)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetSelectedItem",1,"dgs-dxgridlist")) end
+	local isFiltered = dgsElementData[gridlist].rowData.isFiltered
 	local r,data = next(dgsElementData[gridlist].rowSelect or {})
+	if isFiltered and not ignoreFilter then
+		r = dgsElementData[gridlist].rowData.filteredData[r] or -1
+	end
 	local c,bool = next(data or {})
 	return r or -1,c or -1
 end
 
-function dgsGridListGetPreselectedItem(gridlist)
+function dgsGridListGetPreselectedItem(gridlist, ignoreFilter)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetPreselectedItem",1,"dgs-dxgridlist")) end
 	local preSelect = dgsElementData[gridlist].preSelect or {}
-	return preSelect[1] or -1,preSelect[2] or -1
+	local preSelectRow,preSelectColumn = preSelect[1] or -1,preSelect[2] or -1
+	local isFiltered = dgsElementData[gridlist].rowData.isFiltered
+	if isFiltered and not ignoreFilter then
+		if preSelectRow >= 1 then
+			preSelectRow = dgsElementData[gridlist].rowData.filteredData[preSelectRow] or -1
+		end
+	end
+	return preSelectRow,preSelectColumn
 end
 
 function dgsGridListGetSelectedItems(gridlist,isOrigin)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListGetSelectedItems",1,"dgs-dxgridlist")) end
-	local items = dgsElementData[gridlist].rowSelect
+	local eleData = dgsElementData[gridlist]
+	local isFiltered = eleData.rowData.isFiltered
+	local items = eleData.rowSelect
 	if isOrigin then return items end
-	local selectionMode = dgsElementData[gridlist].selectionMode
-	local columndata = dgsElementData[gridlist].columnData
-	local rowData = dgsElementData[gridlist].rowData
+	local selectionMode = eleData.selectionMode
+	local columndata = eleData.columnData
+	local rowData = eleData.rowData
 	local newSelectTable = {}
 	local cnt = 0
 	if not next(items) then return {} end
 	if selectionMode == 1 then
 		for r,val in pairs(items) do
+			local rowID = r
+			if isFiltered then
+				if rowID >= 1 then
+					rowID = eleData.rowData.filteredData[rowID] or -1
+				end
+			end
 			for c=1,#columndata do
 				cnt = cnt+1
-				newSelectTable[cnt] = {row=r,column=c}
+				newSelectTable[cnt] = {row=rowID,column=c}
 			end
 		end
 		return newSelectTable
 	elseif selectionMode == 2 then
 		for r=1,#rowData do
+			local rowID = r
+			if isFiltered then
+				if rowID >= 1 then
+					rowID = eleData.rowData.filteredData[rowID] or -1
+				end
+			end
 			for c,val in pairs(items[1]) do
 				cnt = cnt+1
-				newSelectTable[cnt] = {row=r,column=c}
+				newSelectTable[cnt] = {row=rowID,column=c}
 			end
 		end
 		return newSelectTable
 	elseif selectionMode == 3 then
 		for r,val in pairs(items) do
+			local rowID = r
+			if isFiltered then
+				if rowID >= 1 then
+					rowID = eleData.rowData.filteredData[rowID] or -1
+				end
+			end
 			for c,_ in pairs(val) do
 				cnt = cnt+1
-				newSelectTable[cnt] = {row=r,column=c}
+				newSelectTable[cnt] = {row=rowID,column=c}
 			end
 		end
 		return newSelectTable
@@ -2093,9 +2127,18 @@ function dgsGridListSetSelectedItems(gridlist,tab,isOrigin)
 	if dgsGetType(gridlist) ~= "dgs-dxgridlist" then error(dgsGenAsrt(gridlist,"dgsGridListSetSelectedItems",1,"dgs-dxgridlist")) end
 	if not (type(tab) == "table") then error(dgsGenAsrt(tab,"dgsGridListSetSelectedItems",2,"table")) end
 	local originSel
+	local eleData = dgsElementData[gridlist]
+	local isFiltered = eleData.rowData.isFiltered
+	if isFiltered then
+		for index,selection in ipairs(tab) do
+			if selection.row >= 1 then
+				selection.row = eleData.rowData.filteredData[selection.row] or -1
+			end
+		end
+	end
 	if isOrigin == true then
 		originSel = {}
-		local selectionMode = dgsElementData[gridlist].selectionMode
+		local selectionMode = eleData.selectionMode
 		if selectionMode == 1 then
 			for k,v in ipairs(tab) do
 				originSel[v.row] = {true}
@@ -2571,6 +2614,79 @@ function dgsGridListGetItemBackGroundImage(gridlist,r,c)
 	return false,false,false
 end
 
+--[[
+filter = {
+	[columnID] = string,
+}
+]]
+function dgsGridListSetFilter(gridlist,filter)
+	local eleData = dgsElementData[gridlist]
+	if type(filter) == "string" then
+		fnc,err = loadstring(filter)
+		if not fnc then error("Bad Argument @'dgsGridListSetFilter' at argument 1, failed to load the function:\n"..err) end
+		eleData.filter = fnc
+	else
+		eleData.filter = filter
+	end
+	eleData.updateFilterNextFrame = true
+	return true
+end
+
+function dgsGridListUpdateFilter(gridlist)
+	local eleData = dgsElementData[gridlist]
+	eleData.updateFilterNextFrame = false
+	local filter = eleData.filter
+	local rowData = eleData.rowData
+	if not eleData.rowData.filteredData then eleData.rowData.filteredData = {} end
+	local rowDataFiltered = eleData.rowData.filteredData
+	local filterLogic = eleData.filterLogic
+	local columnData = eleData.columnData
+	local rowFilteredCount = 0
+	if type(filter) == "table" then	--For table as "filter"
+		if filterLogic == "or" then
+			for row=1,#rowData do
+				local isRowFiltered = false
+				local currentFilter
+				for col=1,#columnData do
+					if filter[col] ~= false then	--Skip filter = false, no need to filter
+						if filter[col] ~= nil then currentFilter = filter[col] end	--Default filter
+						if currentFilter and utf8.find(rowData[row][col][glCol_text],currentFilter) then  --Skip invalid filter, and not matched row
+							isRowFiltered = true
+						end
+					end
+				end
+				if isRowFiltered then
+					rowFilteredCount = rowFilteredCount+1
+					rowDataFiltered[rowFilteredCount] = row
+				end
+			end
+		elseif filterLogic == "and" then
+			for row=1,#rowData do
+				local isRowFiltered = true
+				local currentFilter
+				for col=1,#columnData do
+					if filter[col] ~= false then	--Skip filter = false, no need to filter
+						if filter[col] ~= nil then currentFilter = filter[col] end	--Default filter
+						if not (currentFilter and utf8.find(rowData[row][col][glCol_text],currentFilter)) then  --Skip invalid filter, and not matched row
+							isRowFiltered = false
+						end
+					end
+				end
+				if isRowFiltered then
+					rowFilteredCount = rowFilteredCount+1
+					rowDataFiltered[rowFilteredCount] = row
+				end
+			end
+		end
+		rowDataFiltered.count = rowFilteredCount
+		eleData.rowData.isFiltered = true
+	elseif type(filter) == "function" then	--For string as "filter"
+		eleData.rowData.isFiltered = true
+	else
+		eleData.rowData.isFiltered = false
+	end
+end
+
 function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local eleData = dgsElementData[gridlist]
 	rowMoveOffset = tonumber(rowMoveOffset) or eleData.rowMoveOffsetTemp
@@ -2603,7 +2719,13 @@ function configGridList(gridlist)
 	local columnHeight,rowHeight,leading = eleData.columnHeight,eleData.rowHeight,eleData.leading--_RowHeight
 	local scbThick = eleData.scrollBarThick
 	local columnWidth = dgsGridListGetColumnAllWidth(gridlist,#eleData.columnData,false,true)
-	local rowLength = #eleData.rowData*(rowHeight+leading)--_RowHeight
+	local rowLength
+	if eleData.rowData.isFiltered then	--If filter is enabled
+		if not eleData.rowData.filteredData then eleData.rowData.filteredData = {} end
+		rowLength = #eleData.rowData.filteredData*(rowHeight+leading)--_RowHeight
+	else
+		rowLength = #eleData.rowData*(rowHeight+leading)--_RowHeight
+	end
 	local scbAlignment = eleData.scrollBarAlignment
 	local scbAlignmentV,scbAlignmentH = scbAlignment[1],scbAlignment[2]
 	local scbX,scbY = scbAlignmentV ~= "left" and w-scbThick or 0, h-scbThick
@@ -2890,6 +3012,7 @@ end
 ----------------------------------------------------------------
 dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt,xRT,yRT,xNRT,yNRT,OffsetX,OffsetY,visible)
 	if eleData.configNextFrame then configGridList(source) end
+	if eleData.updateFilterNextFrame then dgsGridListUpdateFilter(source) end
 	local scrollbar = eleData.scrollbars
 	if MouseData.hit == source then
 		MouseData.topScrollable = source
@@ -2904,6 +3027,10 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local columnHeight = eleData.columnHeight
 	local columnData,rowData = eleData.columnData,eleData.rowData
 	local columnCount,rowCount = #columnData,#rowData
+	local isFiltered = eleData.rowData.isFiltered
+	if isFiltered then
+		rowCount = eleData.rowData.filteredData.count
+	end
 	local columnTextColor = eleData.columnTextColor
 	local columnWordBreak = eleData.columnWordBreak
 	local rowHeight = eleData.rowHeight--_RowHeight
@@ -3093,9 +3220,14 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	if eleData.rowRT then
 		dxSetRenderTarget(eleData.rowRT,true)
 		if cPosStart and cPosEnd then
-			for i=eleData.FromTo[1],eleData.FromTo[2] do
+			local rFrom,rTo = mathClamp(eleData.FromTo[1],1,rowCount+1),mathClamp(eleData.FromTo[2],0,rowCount)
+			for i=rFrom,rTo do
 				if not elementBuffer[i] then elementBuffer[i] = {} end
 				local cRow = rowData[i]
+				if isFiltered then
+					local cRowIndex = rowData.filteredData[i]
+					cRow = rowData[cRowIndex]
+				end
 				local image = cRow[glRow_bgImage] or rowImage
 				local isSection = cRow[glRow_isSection]
 				local color = cRow[glRow_bgColor] or rowColor
