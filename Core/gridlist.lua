@@ -333,8 +333,16 @@ function checkGridListScrollBar(scb,new,old)
 		local scrollbars = eleData.scrollbars
 		local scbThick = eleData.scrollBarThick
 		if source == scrollbars[1] then
+			local rowHeight = eleData.rowHeight
+			local leading = eleData.leading
+			local rowLength
 			local scbThickH = dgsElementData[scrollbars[2]].visible and scbThick or 0
-			local rowLength = #eleData.rowData*(eleData.rowHeight+eleData.leading)--_RowHeight
+			if eleData.rowData.isFiltered then	--If filter is enabled
+				if not eleData.rowData.filteredData then eleData.rowData.filteredData = {} end
+				rowLength = eleData.rowData.filteredData.count*(rowHeight+leading)--_RowHeight
+			else
+				rowLength = #eleData.rowData*(rowHeight+leading)--_RowHeight
+			end
 			local temp = -new*(rowLength-eleData.absSize[2]+scbThickH+eleData.columnHeight)/100
 			if temp <= 0 then
 				temp = eleData.scrollFloor[1] and temp-temp%1 or temp
@@ -2701,7 +2709,13 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 	local scbThickH = dgsElementData[scrollbar].visible and eleData.scrollBarThick or 0
 	local h = eleData.absSize[2]
 	local columnHeight = eleData.columnHeight
-	local rowCount = #eleData.rowData
+	local rowCount
+	if eleData.rowData.isFiltered then	--If filter is enabled
+		if not eleData.rowData.filteredData then eleData.rowData.filteredData = {} end
+		rowCount = eleData.rowData.filteredData.count
+	else
+		rowCount = #eleData.rowData
+	end
 	local whichRowToStart,whichRowToEnd
 	if eleData.rowShowUnclippedOnly then
 		local temp1 = rowMoveOffset/rowHeightLeadingTemp
@@ -2719,6 +2733,7 @@ end
 
 function configGridList(gridlist)
 	local eleData = dgsElementData[gridlist]
+	eleData.configNextFrame = false
 	local scrollbar = eleData.scrollbars
 	local w,h = eleData.absSize[1],eleData.absSize[2]
 	local columnHeight,rowHeight,leading = eleData.columnHeight,eleData.rowHeight,eleData.leading--_RowHeight
@@ -2727,7 +2742,7 @@ function configGridList(gridlist)
 	local rowLength
 	if eleData.rowData.isFiltered then	--If filter is enabled
 		if not eleData.rowData.filteredData then eleData.rowData.filteredData = {} end
-		rowLength = #eleData.rowData.filteredData*(rowHeight+leading)--_RowHeight
+		rowLength = eleData.rowData.filteredData.count*(rowHeight+leading)--_RowHeight
 	else
 		rowLength = #eleData.rowData*(rowHeight+leading)--_RowHeight
 	end
@@ -2761,6 +2776,7 @@ function configGridList(gridlist)
 	--if scbStateV and scbStateV ~= oriScbStateV  then
 		--dgsSetData(scrollbar[1],"scrollPosition",0)
 	--end
+
 	dgsSetVisible(scrollbar[1],scbStateV and true or false)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 
@@ -2793,7 +2809,6 @@ function configGridList(gridlist)
 	dgsSetData(scrollbar[2],"moveType","sync")
 	dgsGridListRecreateRenderTarget(gridlist,true)
 	dgsGridListUpdateRowMoveOffset(gridlist)
-	eleData.configNextFrame = false
 end
 
 ----------------------------------------------------------------
