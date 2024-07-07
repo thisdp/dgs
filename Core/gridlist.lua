@@ -235,6 +235,7 @@ function dgsCreateGridList(...)
 		rowWordBreak = nil,
 		rowShowUnclippedOnly = false,
 		rowAlignment = {"left","center"},
+		itemPadding = {0,0},
 		scrollBarThick = scbThick,
 		scrollBarLength = {},
 		scrollBarState = {nil,nil},
@@ -3058,6 +3059,7 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local rowWordBreak = eleData.rowWordBreak
 	local rowColor = eleData.rowColor
 	local itemColorTemplate = eleData.itemColorTemplate
+	local itemPadding = eleData.itemPadding
 	local rowImage = eleData.rowImage
 	local columnTextPosOffset = eleData.columnTextPosOffset
 	local leading = eleData.leading
@@ -3308,7 +3310,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 					local itemUsingBGColor,itemUsingBGImage = applyColorAlpha(itemBGColor[rowState] or color[rowState],parentAlpha),itemBGImage[rowState] or image[rowState]
 					if itemUsingBGImage then
 						if not eleData.rowImageStyle or eleData.rowImageStyle == 1 then
-							dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
+							local itemX,itemY,itemW,itemH = rowBGX+itemPadding[1],rowY+itemPadding[2],backgroundWidth-itemPadding[1]*2,rowHeight-itemPadding[2]*2
+							dxDrawImage(x,y,w,h,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						elseif eleData.rowImageStyle == 2 then
 							local allColumnWidth = dgsGridListGetColumnAllWidth(source,#eleData.columnData)
 							if viewWidth > allColumnWidth then
@@ -3322,7 +3325,8 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,-materialWidth*(columnMoveOffset-rowBGX)/(allColumnWidth-bgOffset),0,materialWidth*backgroundWidth/(allColumnWidth-bgOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
+							local itemX,itemY,itemW,itemH = rowBGX+itemPadding[1],rowY+itemPadding[2],backgroundWidth-itemPadding[1]*2,rowHeight-itemPadding[2]*2
+							dxDrawImageSection(itemX,itemY,itemW,itemH,-materialWidth*(columnMoveOffset-rowBGX)/(allColumnWidth-bgOffset),0,materialWidth*backgroundWidth/(allColumnWidth-bgOffset),materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						elseif eleData.rowImageStyle == 3 then
 							if rowBGX+backgroundWidth >= viewWidth then
 								backgroundWidth = viewWidth-rowBGX
@@ -3334,10 +3338,12 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if imageType == "texture" or imageType == "svg" then
 								materialWidth,materialHeight = dxGetMaterialSize(itemUsingBGImage)
 							end
-							dxDrawImageSection(rowBGX,rowY,backgroundWidth,rowHeight,materialWidth*rowBGX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
+							local itemX,itemY,itemW,itemH = rowBGX+itemPadding[1],rowY+itemPadding[2],backgroundWidth-itemPadding[1]*2,rowHeight-itemPadding[2]*2
+							dxDrawImageSection(itemX,itemY,itemW,itemH,materialWidth*rowBGX/viewWidth,0,materialWidth*backgroundWidth/viewWidth,materialHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 						end
 					else
-						dxDrawImage(rowBGX,rowY,backgroundWidth,rowHeight,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
+						local itemX,itemY,itemW,itemH = rowBGX+itemPadding[1],rowY+itemPadding[2],backgroundWidth-itemPadding[1]*2,rowHeight-itemPadding[2]*2
+						dxDrawImage(itemX,itemY,itemW,itemH,itemUsingBGImage,0,0,0,itemUsingBGColor,false,true)--_RowHeight
 					end
 					elementBuffer[i][id] = elementBuffer[i][id] or {}
 					local eBuffer = elementBuffer[i][id]
