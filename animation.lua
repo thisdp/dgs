@@ -251,18 +251,6 @@ function onAnimQueueProcess()
 	end
 end
 
---[[
-if not getElementData(resourceRoot,"DGS-disableCompatibilityCheck") then
-	if not getElementData(localPlayer,"DGS-DEBUG-C") then
-		outputDebugString("Deprecated usage of @'dgsMoveTo' at argument 5, 'moveType' is no longer supported, use '/debugdgs c' to find",2)
-		if getElementData(localPlayer,"DGS-DEBUG") == 3 then
-			dgsTriggerEvent("DGSI_onDebug",sourceResourceRoot or resourceRoot,"ArgumentCompatibility",5,"'moveType' is no longer supported")
-		end
-	else
-		error("Found deprecated usage of @'dgsMoveTo' at argument 5, 'moveType' is no longer supported")
-	end
-end]]
-
 function dgsMoveTo(...)
 	local dgsEle,x,y,relative,easing,duration,delay,reversedProgress
 	if select("#",...) == 1 and type(select(1,...)) == "table" then
