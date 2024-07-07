@@ -2718,6 +2718,13 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 		rowCount = #eleData.rowData
 	end
 	local whichRowToStart,whichRowToEnd
+	if (-rowMoveOffset+h-columnHeight-scbThickH)/rowHeightLeadingTemp > rowCount then
+		if (h-columnHeight-scbThickH)/rowHeightLeadingTemp > rowCount then
+			dgsGridListSetScrollPosition(gridlist,0)
+		else
+			dgsGridListSetScrollPosition(gridlist,100)
+		end
+	end
 	if eleData.rowShowUnclippedOnly then
 		local temp1 = rowMoveOffset/rowHeightLeadingTemp
 		whichRowToStart = -(temp1-temp1%1)+1
