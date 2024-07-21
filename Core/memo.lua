@@ -318,6 +318,19 @@ function dgsMemoBlur()
 	dgsElementData[GlobalMemo].linkedDxMemo = nil
 end
 
+function dgsMemoFocusFnc(source)
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.EditMemoCursor = true
+	guiFocus(GlobalMemo)
+	dgsElementData[GlobalMemo].linkedDxMemo = source
+end
+
+function dgsMemoBlurFnc(source)
+	guiBlur(GlobalMemo)
+	if not dgsElementData[GlobalMemo] then dgsElementData[GlobalMemo] = {} end
+	dgsElementData[GlobalMemo].linkedDxMemo = nil
+end
+
 function dgsMemoMultiClickCheck(button,state,x,y,times)
 	if state == "down" then
 		local eleData = dgsElementData[source]
@@ -2048,29 +2061,32 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 
 		dxSetBlendMode(rndtgt and "modulate_add" or "blend")
-		if MouseData.focused == source and MouseData.EditMemoCursor then
-			local CaretShow = true
-			if eleData.readOnly then
-				CaretShow = eleData.readOnlyCaretShow
-			end
-			if CaretShow then
-				showLine = eleData.showLine
-				local currentLine = eleData.caretPos[2]
-				if currentLine >= showLine and currentLine <= showLine+canHoldLines then
-					local lineStart = fontHeight*(currentLine-showLine)
-					local theText = (text[caretPos[2]] or {[0]=""})[0]
-					local cursorPX = caretPos[1]
-					local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
-					if eleData.caretStyle == 0 then
-						local selStartY = py+lineStart+fontHeight*(1-caretHeight)
-						local selEndY = py+lineStart+fontHeight*caretHeight
-						local caretOffset = eleData.caretOffset
-						dxDrawLine(px+width-showPos-1,selStartY-caretOffset,px+width-showPos-1,selEndY-caretOffset,caretColor,eleData.caretThick,isPostGUI)
-					elseif eleData.caretStyle == 1 then
-						local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
-						cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
-						local caretOffset = eleData.caretOffset
-						dxDrawLine(px+width-showPos,py+ph-4-caretOffset,px+width-showPos+cursorWidth+2,py+ph-4-caretOffset,caretColor,eleData.caretThick,isPostGUI)
+		if MouseData.focused == source then
+			dgsMemoFocusFnc(source)
+			if MouseData.EditMemoCursor then
+				local CaretShow = true
+				if eleData.readOnly then
+					CaretShow = eleData.readOnlyCaretShow
+				end
+				if CaretShow then
+					showLine = eleData.showLine
+					local currentLine = eleData.caretPos[2]
+					if currentLine >= showLine and currentLine <= showLine+canHoldLines then
+						local lineStart = fontHeight*(currentLine-showLine)
+						local theText = (text[caretPos[2]] or {[0]=""})[0]
+						local cursorPX = caretPos[1]
+						local width = dxGetTextWidth(utf8Sub(theText,1,cursorPX),txtSizX,font)
+						if eleData.caretStyle == 0 then
+							local selStartY = py+lineStart+fontHeight*(1-caretHeight)
+							local selEndY = py+lineStart+fontHeight*caretHeight
+							local caretOffset = eleData.caretOffset
+							dxDrawLine(px+width-showPos-1,selStartY-caretOffset,px+width-showPos-1,selEndY-caretOffset,caretColor,eleData.caretThick,isPostGUI)
+						elseif eleData.caretStyle == 1 then
+							local cursorWidth = dxGetTextWidth(utf8Sub(theText,cursorPX+1,cursorPX+1),txtSizX,font)
+							cursorWidth = cursorWidth ~= 0 and cursorWidth or txtSizX*8
+							local caretOffset = eleData.caretOffset
+							dxDrawLine(px+width-showPos,py+ph-4-caretOffset,px+width-showPos+cursorWidth+2,py+ph-4-caretOffset,caretColor,eleData.caretThick,isPostGUI)
+						end
 					end
 				end
 			end

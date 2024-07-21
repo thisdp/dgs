@@ -93,10 +93,10 @@ end
 
 function dgsInitializeGlobalEdit()
 	if not isElement(GlobalEditParent) then
-		GlobalEditParent = guiCreateLabel(-1,0,0,0,"",true)
+		GlobalEditParent = guiCreateLabel(-1,-1,0,0,"",true)
 	end
 	if not isElement(GlobalEdit) then
-		GlobalEdit = guiCreateEdit(-1,0,0,0,"",true,GlobalEditParent)
+		GlobalEdit = guiCreateEdit(0,0,1,1,"",true,GlobalEditParent)
 		dgsSetData(GlobalEdit,"linkedDxEdit",nil)
 		addEventHandler("onClientGUIBlur",GlobalEdit,function()
 			local dgsEdit = dgsElementData[source].linkedDxEdit
@@ -295,6 +295,19 @@ function dgsEditFocus()
 end
 
 function dgsEditBlur()
+	guiBlur(GlobalEdit)
+	if not dgsElementData[GlobalEdit] then dgsElementData[GlobalEdit] = {} end
+	dgsElementData[GlobalEdit].linkedDxEdit = nil
+end
+
+function dgsEditFocusFnc(source)
+	resetTimer(MouseData.EditMemoTimer)
+	MouseData.EditMemoCursor = true
+	guiFocus(GlobalEdit)
+	dgsElementData[GlobalEdit].linkedDxEdit = source
+end
+
+function dgsEditBlurFnc(source)
 	guiBlur(GlobalEdit)
 	if not dgsElementData[GlobalEdit] then dgsElementData[GlobalEdit] = {} end
 	dgsElementData[GlobalEdit].linkedDxEdit = nil
@@ -1474,38 +1487,41 @@ dgsRenderer["dgs-dxedit"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		end
 	end
 
-	if MouseData.focused == source and MouseData.EditMemoCursor then
-		local CaretShow = true
-		if eleData.readOnly then
-			CaretShow = eleData.readOnlyCaretShow
-		end
-		if CaretShow then
-			local caretStyle = eleData.caretStyle
-			local selStartX = selectX+x+paddingX-1
-			selStartX = selStartX-selStartX%1
-			if caretStyle == 0 then
-				if selStartX+1 >= x+paddingX and selStartX <= x+w-paddingX then
-					local offset = eleData.caretOffset
-					selStartY = h/2-h/2*caretHeight+paddingY
-					selEndY = (h/2-selStartY)*2
-					dxDrawLine(selStartX,y+selStartY-offset,selStartX,y+selEndY+selStartY-offset,caretColor,eleData.caretThick,isPostGUI)
-				end
-			elseif caretStyle == 1 then
-				local caretWidth = eleData.caretWidth
-				if caretWidth[3] == true then
-					local cWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
-					if cWidth == 0 then
-						cWidth = txtSizX*caretWidth[2]
+	if MouseData.focused == source then
+		dgsEditFocusFnc(source)
+		if MouseData.EditMemoCursor then
+			local CaretShow = true
+			if eleData.readOnly then
+				CaretShow = eleData.readOnlyCaretShow
+			end
+			if CaretShow then
+				local caretStyle = eleData.caretStyle
+				local selStartX = selectX+x+paddingX-1
+				selStartX = selStartX-selStartX%1
+				if caretStyle == 0 then
+					if selStartX+1 >= x+paddingX and selStartX <= x+w-paddingX then
+						local offset = eleData.caretOffset
+						selStartY = h/2-h/2*caretHeight+paddingY
+						selEndY = (h/2-selStartY)*2
+						dxDrawLine(selStartX,y+selStartY-offset,selStartX,y+selEndY+selStartY-offset,caretColor,eleData.caretThick,isPostGUI)
 					end
-					caretWidth = cWidth*caretWidth[1]
-				else
-					caretWidth = caretWidth[1]
-				end
-				if selStartX+1 >= x+paddingX and selStartX+caretWidth <= x+w-paddingX then
-					local offset = eleData.caretOffset
-					local textBottomeight = dxGetFontHeight(txtSizY,font)
-					selStartY = y+h/2+textBottomeight/2+paddingY-offset
-					dxDrawLine(selStartX,selStartY,selStartX+caretWidth,selStartY,caretColor,eleData.caretThick,isPostGUI)
+				elseif caretStyle == 1 then
+					local caretWidth = eleData.caretWidth
+					if caretWidth[3] == true then
+						local cWidth = dxGetTextWidth(utf8Sub(text,caretPos+1,caretPos+1),txtSizX,font)
+						if cWidth == 0 then
+							cWidth = txtSizX*caretWidth[2]
+						end
+						caretWidth = cWidth*caretWidth[1]
+					else
+						caretWidth = caretWidth[1]
+					end
+					if selStartX+1 >= x+paddingX and selStartX+caretWidth <= x+w-paddingX then
+						local offset = eleData.caretOffset
+						local textBottomeight = dxGetFontHeight(txtSizY,font)
+						selStartY = y+h/2+textBottomeight/2+paddingY-offset
+						dxDrawLine(selStartX,selStartY,selStartX+caretWidth,selStartY,caretColor,eleData.caretThick,isPostGUI)
+					end
 				end
 			end
 		end
