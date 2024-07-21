@@ -17,6 +17,7 @@ dgsRegisterProperties("dgs-dxtabpanel",{
 	tabOffset = 	{	{ PArg.Number, PArg.Bool }	},
 	tabPadding = 	{	{ PArg.Number, PArg.Bool }	},
 	wordBreak = 	{	PArg.Bool	},
+	clip = 			{	PArg.Bool	},
 })
 dgsRegisterProperties("dgs-dxtab",{
 	bgColor = 		{	PArg.Color	},
@@ -31,6 +32,7 @@ dgsRegisterProperties("dgs-dxtab",{
 	textColor = 	{	PArg.Number	},
 	textSize = 		{	{ PArg.Number,PArg.Number }	},
 	wordBreak = 	{	PArg.Bool	},
+	clip = 			{	PArg.Bool	},
 })
 --Dx Functions
 local __dxDrawImage = __dxDrawImage
@@ -129,6 +131,7 @@ function dgsCreateTabPanel(...)
 		tabLengthAll = 0,
 		colorCoded = nil,
 		wordBreak = nil,
+		clip = nil,
 		tabAlignment = "left",
 		tabOffset = {0,false},
 		textRenderBuffer = {},
@@ -235,6 +238,7 @@ function dgsCreateTab(...)
 		iconSize = {1,1,true}, -- Text's font heigh,
 		colorCoded = nil,
 		wordBreak = nil,
+		clip = nil,
 	}
 	dgsSetParent(tab,tabpanel,true,true)
 	dgsApplyGeneralProperties(tab,sRes)
@@ -557,6 +561,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 	local colorCoded = eleData.colorCoded
 	local shadow = eleData.shadow
 	local wordBreak = eleData.wordBreak
+	local clip = eleData.clip
 	local tabAlignment = eleData.tabAlignment
 	local tabImageP = eleData.tabImage
 	local tabColorP = eleData.tabColor
@@ -588,7 +593,9 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 				local tabData = dgsElementData[t]
 				local tabColorCoded = tabData.colorCoded ~= nil and tabData.colorCoded or colorCoded
 				if tabData.visible then
-					local tshadow = tabData.shadow or shadow
+					local tWordBreak = tabData.wordBreak or wordBreak
+					local tClip = tabData.clip or clip
+					local tShadow = tabData.shadow or shadow
 					local width = tabData.width+tabPadding*2
 					if tabX+width >= 0 and tabX <= w then
 						local tabTextColor = tabData.textColor
@@ -676,8 +683,10 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 						textRenderBuffer[textRenderBuffer.count][7] = textSizeX
 						textRenderBuffer[textRenderBuffer.count][8] = textSizeY
 						textRenderBuffer[textRenderBuffer.count][9] = tabFont
-						textRenderBuffer[textRenderBuffer.count][10] = tabColorCoded	--Color Coded
-						textRenderBuffer[textRenderBuffer.count][11] = tshadow	--Shadow
+						textRenderBuffer[textRenderBuffer.count][10] = tWordBreak	--Shadow
+						textRenderBuffer[textRenderBuffer.count][11] = tClip	--Shadow
+						textRenderBuffer[textRenderBuffer.count][12] = tabColorCoded	--Color Coded
+						textRenderBuffer[textRenderBuffer.count][13] = tShadow	--Shadow
 						if mx and my and mx >= tabX+cx and mx <= tabX+cx+width and my > cy and my < cy+tabHeight and tabData.enabled and enabledSelf then
 							eleData.rndPreSelect = d
 							tabData.cursorPosition[0] = dgsRenderInfo.frames
@@ -693,11 +702,11 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			for i=1,textRenderBuffer.count do
 				local tRB = textRenderBuffer[i]
 				local text = tRB[1]
-				if tRB[11] then
-					shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = tRB[11][1],tRB[11][2],tRB[11][3],tRB[11][4],tRB[11][5]
+				if tRB[13] then
+					shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = tRB[13][1],tRB[13][2],tRB[13][3],tRB[13][4],tRB[13][5]
 					shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
 				end
-				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",false,false,false,tRB[10],false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"center","center",tRB[10],tRB[11],false,tRB[12],false,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 		end
 		eleData.preSelect = -1
