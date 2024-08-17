@@ -346,12 +346,19 @@ function dgsEditCheckMultiClick(button,state,x,y,times)
 		end
 	end
 end
-
+--[[
 function dgsEditACCompare(a, b)
 	if not a or not b then return false end
 	if a[1] < b[1] then return true end
     if a[2] and not b[2] then return true end
 	return false
+end
+]]
+function dgsEditACCompare(a, b)
+    if not a or not b then return false end
+    if a[1] < b[1] then return true end
+    if a[1] > b[1] then return false end
+    return a[2] and not b[2]
 end
 
 function dgsEditCheckAutoComplete()
