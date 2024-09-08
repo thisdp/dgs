@@ -1,6 +1,6 @@
 dgsLogLuaMemory()
 local loadstring = loadstring
-focusBrowser()
+--focusBrowser()
 ------------Copyrights thisdp's DirectX Graphical User Interface System
 --Speed Up
 local mathAbs = math.abs
