@@ -206,7 +206,7 @@ function dgs3DInterfaceProcessLineOfSight(interface,sx,sy,sz,ex,ey,ez)
 			fx,fy,fz = fx-x,fy-y,fz-z
 		end
 		local isHit,hitX,hitY,hx,hy,hz = dgsCalculate3DInterfaceMouse(x,y,z,fx,fy,fz,w,h,lnVP1,lnVP2,lnVP3,lnVP4,lnVP5,lnVP6,roll)
-		return hitX,hitY,hx,hy,hz,isHit
+		return isHit,hx,hy,hz,hitX,hitY
 	end
 	return false
 end
