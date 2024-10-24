@@ -24,7 +24,7 @@ local createElement = createElement
 --This is a special dgs element that won't be rendered itself.
 --This dgs element is usually used for plugins
 --Note: There will be nothing if you use this dgs element as a child element or a parent element
-function dgsCreateCustomRenderer(customFnc,width,height)
+function dgsCreateCustomRenderer(customFnc,width,height,useRT)
 	local sRes = sourceResource or resource
 	local cr = createElement("dgs-dxcustomrenderer")
 	dgsSetType(cr,"dgs-dxcustomrenderer")
@@ -33,27 +33,31 @@ function dgsCreateCustomRenderer(customFnc,width,height)
 	else
 		dgsSetData(cr,"customRenderer",function() return false end)
 	end
-	if width and width > 0 and height and height > 0 then
-		local crRenderTarget,err = dgsCreateRenderTarget(width,height,true,cr)
-		if crRenderTarget then
-			dgsAttachToAutoDestroy(crRenderTarget,cr,-1)
+	dgsSetData(cr,"useRenderTarget",useRT)
+	if useRT then
+		if width and width > 0 and height and height > 0 then
+			local crRenderTarget,err = dgsCreateRenderTarget(width,height,true,cr)
+			if crRenderTarget then
+				dgsAttachToAutoDestroy(crRenderTarget,cr,-1)
+			else
+				outputDebugString(err,2)
+			end
+			dgsSetData(cr,"renderTarget",crRenderTarget)
+			dgsSetData(cr,"renderTargetResolution",{width,height})
 		else
-			outputDebugString(err,2)
+			dgsSetData(cr,"renderTargetResolution",{0,0})
 		end
-		dgsSetData(cr,"renderTarget",crRenderTarget)
-		dgsSetData(cr,"renderTargetResolution",{width,height})
-	else
-		dgsSetData(cr,"renderTargetResolution",{0,0})
 	end
 	dgsTriggerEvent("onDgsCreate",cr,sRes)
 	return cr
 end
 
-function dgsCustomRendererSetrenderTargetResolution(cr,width,height)
-	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererSetrenderTargetResolution",1,"dgs-dxcustomrenderer")) end
-	if not(not width or type(width) == "number") then error(dgsGenAsrt(width,"dgsCustomRendererSetrenderTargetResolution",2,"number/nil")) end
-	if not(not height or type(height) == "number") then error(dgsGenAsrt(height,"dgsCustomRendererSetrenderTargetResolution",3,"number/nil")) end
+function dgsCustomRendererSetRenderTargetResolution(cr,width,height)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererSetRenderTargetResolution",1,"dgs-dxcustomrenderer")) end
+	if not(not width or type(width) == "number") then error(dgsGenAsrt(width,"dgsCustomRendererSetRenderTargetResolution",2,"number/nil")) end
+	if not(not height or type(height) == "number") then error(dgsGenAsrt(height,"dgsCustomRendererSetRenderTargetResolution",3,"number/nil")) end
 	local eleData = dgsElementData[cr]
+	if not eleData.useRenderTarget then error(dgsGenAsrt(height,"dgsCustomRendererSetRenderTargetResolution",1,_,"Render Target is not enabled for this custom renderer")) end
 	if eleData.renderTargetResolution[1] ~= width or eleData.renderTargetResolution[2] ~= height then
 		if isElement(eleData.renderTarget) then destroyElement(eleData.renderTarget) end
 		if not width or width == 0 or not height or height == 0 then
@@ -73,8 +77,8 @@ function dgsCustomRendererSetrenderTargetResolution(cr,width,height)
 	return true
 end
 
-function dgsCustomRendererGetrenderTargetResolution(cr)
-	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererGetrenderTargetResolution",1,"dgs-dxcustomrenderer")) end
+function dgsCustomRendererGetRenderTargetResolution(cr)
+	if dgsGetType(cr) ~= "dgs-dxcustomrenderer" then error(dgsGenAsrt(cr,"dgsCustomRendererGetRenderTargetResolution",1,"dgs-dxcustomrenderer")) end
 	return dgsElementData[cr].renderTargetResolution[1],dgsElementData[cr].renderTargetResolution[2]
 end
 
