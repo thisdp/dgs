@@ -91,10 +91,8 @@ function dgsCreateLabel(...)
 	dgsAttachToTranslation(label,resourceTranslation[sRes])
 	if type(text) == "table" then
 		dgsElementData[label]._translation_text = text
-		dgsSetData(label,"text",text)
-	else
-		dgsSetData(label,"text",tostring(text or ""))
 	end
+	dgsSetData(label,"text",text)
 	calculateGuiPositionSize(label,x,y,relative or false,w,h,relative or false,true)
 	dgsApplyGeneralProperties(label,sRes)
 	onDGSElementCreate(label,sRes)
