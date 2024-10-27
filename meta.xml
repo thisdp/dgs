@@ -1,5 +1,5 @@
 <meta>
-	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="DGS Community" version="3.523" />
+	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="DGS Community" version="3.524" />
 	<file src="html/media.html" />
 	<file src="styleManager/styleMapper.lua"/>
 	<script src="lua.lua" type="server" />
