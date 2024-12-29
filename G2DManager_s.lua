@@ -153,7 +153,7 @@ setmetatable(AnalyzerState,{
 				lexResult=lexResult,
 				replacedFunction = {},
 				replacedEvent = {},
-				executeProcess = function(iself)
+				executeProcess = function(self)
 					local GUIFnc = self.replacedFunction[1]
 					local DGSFnc = self.replacedFunction[2]
 					local GUIEvt = self.replacedEvent[1]
