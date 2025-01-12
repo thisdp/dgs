@@ -113,7 +113,7 @@ function dgsCreateWindow(...)
 		sizable = true,
 		clip = true,
 		wordBreak = false,
-		alignment = {"center","center"},
+		alignment = sStyle.alignment or {"center","center"},
 		minSize = {60,60},
 	}
 	dgsSetParent(window,nil,true,true)
