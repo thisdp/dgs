@@ -11,6 +11,7 @@ dgsRegisterProperties("dgs-dxcombobox",{
 	clip = 								{	PArg.Bool	},
 	caption = 							{	PArg.Text	},
 	scrollBarThick = 					{	PArg.Number	},
+	scrollBarAlignment = 				{	PArg.String	},
 	color = 							{	{ PArg.Color, PArg.Color, PArg.Color }	},
 	bgColor = 							{	PArg.Color	},
 	bgImage = 							{	PArg.Material	},
@@ -185,6 +186,7 @@ function dgsCreateComboBox(...)
 		arrowSettings = sStyle.arrowSettings or {0.3,0.15,0.04},
 		arrowOutSideColor = sStyle.arrowOutSideColor,
 		scrollBarThick = scbThick,
+		scrollBarAlignment = "right",
 		itemData = {},
 		alignment = {"left","center"},
 		itemAlignment = {"left","center"},
@@ -709,7 +711,12 @@ function configComboBox(combobox,remainBox)
 	if not remainBox then
 		local boxSize = dgsElementData[box].absSize
 		local scbThick = eleData.scrollBarThick
-		dgsSetPosition(scrollbar,boxSize[1]-scbThick,0,false)
+		local scbAlign = eleData.scrollBarAlignment
+		if not scbAlign or scbAlign == "right" then
+			dgsSetPosition(scrollbar,boxSize[1]-scbThick,0,false)
+		elseif scbAlign == "left" then
+			dgsSetPosition(scrollbar,0,0,false)
+		end
 		dgsSetSize(scrollbar,scbThick,boxSize[2],false)
 		local higLen = 1-(allHeight-boxSize[2])/allHeight
 		higLen = higLen >= 0.95 and 0.95 or higLen
@@ -955,6 +962,9 @@ dgsOnPropertyChange["dgs-dxcombobox"] = {
 	scrollBarThick = function(dgsEle,key,value,oldValue)
 		assert(type(value) == "number","Bad argument 'dgsSetData' at 3,expect number got"..type(value))
 		local scrollbar = dgsElementData[dgsEle].scrollbar
+		configComboBox(dgsEle)
+	end,
+	scrollBarAlignment = function(dgsEle,key,value,oldValue)
 		configComboBox(dgsEle)
 	end,
 	listState = function(dgsEle,key,value,oldValue)

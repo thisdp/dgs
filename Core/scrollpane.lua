@@ -1,14 +1,15 @@
 dgsLogLuaMemory()
 dgsRegisterType("dgs-dxscrollpane","dgsBasic","dgsType2D")
 dgsRegisterProperties("dgs-dxscrollpane",{
-	bgColor = 			{	PArg.Color	},
-	bgImage = 			{	PArg.Material+PArg.Nil	},
-	moveHardness = 		{	{ PArg.Number, PArg.Number }	},
-	basePointOffset = 	{	{ PArg.Number, PArg.Number, PArg.Bool }	},
-	minViewSize = 		{	{ PArg.Number, PArg.Number, PArg.Bool }	},
-	scrollBarThick = 	{	PArg.Number	},
-	scrollBarState = 	{	{ PArg.Bool+PArg.String+PArg.Nil, PArg.Bool+PArg.String+PArg.Nil }	},
-	scrollBarLength = 	{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
+	bgColor = 				{	PArg.Color	},
+	bgImage = 				{	PArg.Material+PArg.Nil	},
+	moveHardness = 			{	{ PArg.Number, PArg.Number }	},
+	basePointOffset = 		{	{ PArg.Number, PArg.Number, PArg.Bool }	},
+	minViewSize = 			{	{ PArg.Number, PArg.Number, PArg.Bool }	},
+	scrollBarThick = 		{	PArg.Number	},
+	scrollBarState = 		{	{ PArg.Bool+PArg.String+PArg.Nil, PArg.Bool+PArg.String+PArg.Nil }	},
+	scrollBarLength = 		{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
+	scrollBarAlignment = 	{	{ PArg.String, PArg.String }	},
 })
 --Dx Functions
 local dxDrawImage = dxDrawImage
@@ -256,6 +257,7 @@ function configScrollPane(scrollpane)
 	if forceState[2] ~= nil then
 		scbStateH = forceState[2]
 	end
+	local scbAlign = eleData.scrollBarAlignment
 	local scbThickV,scbThickH = scbStateV and scbThick or 0,scbStateH and scbThick or 0
 	local relSizX,relSizY = sx-scbThickV,sy-scbThickH
 	--[[if scbStateH and scbStateH ~= oriScbStateH then
@@ -268,8 +270,16 @@ function configScrollPane(scrollpane)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	dgsElementData[scrollbar[1]].ignoreParentTitle = eleData.ignoreParentTitle
 	dgsElementData[scrollbar[2]].ignoreParentTitle = eleData.ignoreParentTitle
-	dgsSetPosition(scrollbar[1],x+sx-scbThick,y,false)
-	dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
+	if scbAlign[1] == "right" then
+		dgsSetPosition(scrollbar[1],x+sx-scbThick,y,false)
+	elseif scbAlign[1] == "left" then
+		dgsSetPosition(scrollbar[1],x,y,false)
+	end
+	if scbAlign[2] == "bottom" then
+		dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
+	elseif scbAlign[2] == "top" then
+		dgsSetPosition(scrollbar[2],x,y,false)
+	end
 	dgsSetSize(scrollbar[1],scbThick,relSizY,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].scrollPosition
@@ -461,6 +471,7 @@ dgsOnPropertyChange["dgs-dxscrollpane"] = {
 	scrollBarState = configScrollPane,
 	scrollBarOffset = configScrollPane,
 	scrollBarLength = configScrollPane,
+	scrollBarAlignment = configScrollPane,
 	ignoreParentTitle = function(dgsEle,key,value,oldValue)
 		configPosSize(dgsEle,false,true)
 		configScrollPane(dgsEle)
