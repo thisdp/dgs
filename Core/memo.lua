@@ -254,7 +254,7 @@ function dgsCreateMemo(...)
 		rebuildMapTableNextFrame = nil,
 		maxLength = 0x3FFFFFFF,
 		scrollBarLength = {},
-		scrollBarAlignment = {"right","bottom"}
+		scrollBarAlignment = {"right","bottom"},
 		multiClickCounter = {false,false,0},
 		colorCoded = true,
 		textRenderBuffer = {},
