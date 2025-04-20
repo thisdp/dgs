@@ -25,6 +25,7 @@ dgsRegisterProperties("dgs-dxmemo",{
 	readOnly = 						{	PArg.Bool	},
 	readOnlyCaretShow =				{	PArg.Bool	},
 	scrollBarState = 				{	{ PArg.Bool+PArg.Nil, PArg.Bool+PArg.Nil }	},
+	scrollBarAlignment = 			{	{ PArg.String, PArg.String }	},
 	scrollBarThick = 				{	PArg.Number	},
 	scrollBarLength = 				{	{ { PArg.Number, PArg.Bool }, { PArg.Number, PArg.Bool } }, { PArg.Nil, PArg.Nil }	},
 	scrollSize = 					{	PArg.Number	},
@@ -253,6 +254,7 @@ function dgsCreateMemo(...)
 		rebuildMapTableNextFrame = nil,
 		maxLength = 0x3FFFFFFF,
 		scrollBarLength = {},
+		scrollBarAlignment = {"right","bottom"}
 		multiClickCounter = {false,false,0},
 		colorCoded = true,
 		textRenderBuffer = {},
@@ -1348,6 +1350,7 @@ function configMemo(memo)
 	local textSize = eleData.textSize
 	local fontHeight = dxGetFontHeight(eleData.textSize[2],font)
 	local scbThick = eleData.scrollBarThick
+	local scbAlign = eleData.scrollBarAlignment
 	local scbStateH = false
 	if not eleData.wordWrap then
 		scbStateH = eleData.rightLength[1] > size[1]-padding[1]*2
@@ -1366,8 +1369,16 @@ function configMemo(memo)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	scbTakes1 = scbStateV and scbThick or 0
 	scbTakes2 = scbStateH and scbThick or 0
-	dgsSetPosition(scrollbar[1],size[1]-scbThick,0,false)
-	dgsSetPosition(scrollbar[2],0,size[2]-scbThick,false)
+	if scbAlign[1] == "right" then
+		dgsSetPosition(scrollbar[1],size[1]-scbThick,0,false)
+	elseif scbAlign[1] == "left" then
+		dgsSetPosition(scrollbar[1],0,0,false)
+	end
+	if scbAlign[2] == "bottom" then
+		dgsSetPosition(scrollbar[2],0,size[2]-scbThick,false)
+	elseif scbAlign[2] == "top" then
+		dgsSetPosition(scrollbar[2],0,0,false)
+	end
 	dgsSetSize(scrollbar[1],scbThick,size[2]-scbTakes2,false)
 	dgsSetSize(scrollbar[2],size[1]-scbTakes1,scbThick,false)
 
@@ -1614,6 +1625,7 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 	end,
 	scrollBarThick = configMemo,
 	scrollBarState = configMemo,
+	scrollBarAlignment = configMemo,
 	textSize = function(dgsEle,key,value,oldValue)
 		dgsMemoRebuildTextTable(dgsEle)
 		dgsElementData[dgsEle].updateRTNextFrame = true

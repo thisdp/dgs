@@ -172,6 +172,7 @@ function configScalePane(scalepane)
 	local pos,size = eleData.absPos,eleData.absSize
 	local x,y,sx,sy = pos[1],pos[2],size[1],size[2]
 	local scbThick = eleData.scrollBarThick
+	local scbAlign = eleData.scrollBarAlignment
 	local resolution = eleData.resolution
 	local scale = eleData.scale
 	local scaleBoundingX,scaleBoundingY = resolution[1]*scale[1],resolution[2]*scale[2]
@@ -207,8 +208,16 @@ function configScalePane(scalepane)
 	dgsSetVisible(scrollbar[2],scbStateH and true or false)
 	dgsElementData[scrollbar[1]].ignoreParentTitle = eleData.ignoreParentTitle
 	dgsElementData[scrollbar[2]].ignoreParentTitle = eleData.ignoreParentTitle
-	dgsSetPosition(scrollbar[1],x+sx-scbThick,y,false)
-	dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
+	if scbAlign[1] == "right" then
+		dgsSetPosition(scrollbar[1],x+sx-scbThick,y,false)
+	elseif scbAlign[1] == "left" then
+		dgsSetPosition(scrollbar[1],x,y,false)
+	end
+	if scbAlign[2] == "bottom" then
+		dgsSetPosition(scrollbar[2],x,y+sy-scbThick,false)
+	elseif scbAlign[2] == "top" then
+		dgsSetPosition(scrollbar[2],x,y,false)
+	end
 	dgsSetSize(scrollbar[1],scbThick,relSizY,false)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].scrollPosition
@@ -414,6 +423,7 @@ dgsOnPropertyChange["dgs-dxscalepane"] = {
 	scrollBarState = configScalePane,
 	scrollBarOffset = configScalePane,
 	scrollBarLength = configScalePane,
+	scrollBarAlignment = configScalePane,
 	scale = configScalePane,
 }
 
