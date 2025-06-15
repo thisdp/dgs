@@ -399,9 +399,11 @@ function dgsCoreRender()
 			end
 		end
 		local version = getElementData(resourceRoot,"Version") or "?"
-		local freeMemory = " | Free VMemory: "..(dxGetStatus().VideoMemoryFreeForMTA).."M" or "N/A"
+		local freeVideoMemory = " | Free VMemory: "..(dxGetStatus().VideoMemoryFreeForMTA).."M"
+		local memoryTake = "Memory used: "..(string.format("%.2f",collectgarbage("count"))).."K"
 
-		dgsDrawText("DGS "..version..freeMemory,5,sH*0.4-160,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("DGS "..version..freeVideoMemory,5,sH*0.4-175,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText(memoryTake,5,sH*0.4-160,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		local renderTimeStr = dgsRenderInfo.frameRenderTimeTotal.."ms-"..dgsRenderInfo.frameRenderTimeScreen.."ms-"..dgsRenderInfo.frameRenderTime3D.."ms"
 		local tickColor
 		if dgsRenderInfo.frameRenderTimeTotal <= 8 then
@@ -420,18 +422,23 @@ function dgsCoreRender()
 		dgsDrawText("Cursor Pos On Screen: "..(mx or "Hidden")..","..(my or "Hidden"),10,sH*0.4-130,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		local cursorPosDGS = MouseData.cursorPos
 		dgsDrawText("Cursor Pos DGS: "..(cursorPosDGS[0] and cursorPosDGS[1]-cursorPosDGS[1]%1 or "Hidden")..","..(cursorPosDGS[0] and cursorPosDGS[2]-cursorPosDGS[2]%1 or "Hidden"),10,sH*0.4-115,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("Focused: "..Focused,10,sH*0.4-100,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("Enter: "..enterStr,10,sH*0.4-85,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("Click:",10,sH*0.4-70,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("L: "..leftStr,40,sH*0.4-70,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("M: "..middleStr,40,sH*0.4-55,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-		dgsDrawText("R: "..rightStr,40,sH*0.4-40,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Focused:",10,sH*0.4-100,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText(Focused,80,sH*0.4-100,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Enter:",10,sH*0.4-85,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText(enterStr,80,sH*0.4-85,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Click L:",10,sH*0.4-70,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText(leftStr,80,sH*0.4-70,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Click M:",10,sH*0.4-55,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText(middleStr,80,sH*0.4-55,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Click R:",10,sH*0.4-40,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText(rightStr,80,sH*0.4-40,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		dgsRenderInfo.created = 0
 		local index = 1
 		for value in pairs(dgsType) do
 			local elements = #getElementsByType(value)
 			dgsRenderInfo.created = dgsRenderInfo.created+elements
-			dgsDrawText(value.." : "..elements,15,sH*0.4-15+15*index+5,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+			dgsDrawText(value,50,sH*0.4-15+15*index+5,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+			dgsDrawText(tostring(elements),15,sH*0.4-15+15*index+5,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 			index = index+1
 		end
 		dgsDrawText("Rendering: "..dgsRenderInfo.rendering,10,sH*0.4-25,sW,sH,green,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
@@ -439,22 +446,24 @@ function dgsCoreRender()
 		dgsRenderInfo.runningAnimation = #animQueue
 		dgsDrawText("Running Animations: "..dgsRenderInfo.runningAnimation,300,sH*0.4-115,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 		ResCount = 0
-		for ka,va in pairs(boundResource) do
-			if type(ka) == "userdata" and va then
-				local resDGSCnt = 0
-				for ele in pairs(va) do
-					if dgsType[dgsGetType(ele)] then
-						resDGSCnt = resDGSCnt+1
+		for res,elementList in pairs(boundResource) do
+			if boundResource[res] then
+				if type(res) == "userdata" and elementList then
+					local resDGSCnt = 0
+					for ele in pairs(elementList) do
+						if dgsType[dgsGetType(ele)] then
+							resDGSCnt = resDGSCnt+1
+						end
+					end
+					if resDGSCnt ~= 0 then
+						ResCount = ResCount +1
+						dgsDrawText(getResourceName(res).." : #00FF00"..(dgsRenderInfo.renderingResource[res] or 0).."#FFFFFF/#FFFF00"..resDGSCnt,300,sH*0.4-100+15*ResCount,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 					end
 				end
-				if resDGSCnt ~= 0 then
-					ResCount = ResCount +1
-					dgsDrawText(getResourceName(ka).." : #00FF00"..(dgsRenderInfo.renderingResource[ka] or 0).."#FFFFFF/#FFFF00"..resDGSCnt,300,sH*0.4-100+15*ResCount,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
-				end
+				dgsRenderInfo.renderingResource[res] = 0
 			end
-			dgsRenderInfo.renderingResource[ka] = 0
 		end
-		dgsDrawText("Resource("..ResCount..") Elements: #00FF00Rendering #FFFFFF/ #FFFF00Created",300,sH*0.4-100,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+		dgsDrawText("Resource Elements: #00FF00Rendering #FFFFFF/ #FFFF00Created",300,sH*0.4-100,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 	end
 end
 
@@ -2085,6 +2094,7 @@ function dgsApplyGeneralProperties(source,theResource)
 	eleData.functionRunBefore = true --true : after render; false : before render
 	eleData.disabledColor = style.disabledColor
 	eleData.disabledColorPercent = style.disabledColorPercent
+	eleData.updateVisualNextFrame = true
 	--eleData.postGUI = nil
 	--eleData.outline = false
 	eleData.changeOrder = style.changeOrder --Change the order when "bring to front" or clicked
