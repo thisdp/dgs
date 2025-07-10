@@ -15,6 +15,13 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
+local function fromColor(color)
+	local a = math.floor(color / 16777216) % 256
+	local r = math.floor(color / 65536) % 256
+	local g = math.floor(color / 256) % 256
+	local b = color % 256
+	return r, g, b, a
+end
 --
 local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
@@ -256,11 +263,22 @@ function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
 	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	local itemColors = item[-5] or eleData.itemTextColor
 	if notSplitColor then
-		return item[-5][1],item[-5][2]
+		if type(itemColors) == "table" then
+			return itemColors[1],itemColors[2]
+		else
+			return itemColors,itemColors
+		end
 	else
-		local dR,dG,dB,dA = fromColor(item[-5][1])
-		local hR,hG,hB,hA = fromColor(item[-5][2])
+		local color1, color2
+		if type(itemColors) == "table" then
+			color1, color2 = itemColors[1], itemColors[2]
+		else
+			color1, color2 = itemColors, itemColors
+		end
+		local dR,dG,dB,dA = fromColor(color1)
+		local hR,hG,hB,hA = fromColor(color2)
 		return dR,dG,dB,dA,hR,hG,hB,hA
 	end
 end
@@ -389,7 +407,7 @@ end
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxmenu"] = {
 	visible = function(source)
-		
+
 	end,
 }
 ----------------------------------------------------------------
