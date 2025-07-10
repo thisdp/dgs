@@ -257,11 +257,17 @@ function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
 	local item = itemMap[uniqueID]
 	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	local itemColor = item[-5] or eleData.itemColor
-	if notSplitColor then
-		return itemColor[1],itemColor[2]
+	local itemColor1,itemColor2
+	if type(itemColors) == "table" then
+		itemColor1,itemColor2 = itemColor[1],itemColor[2]
 	else
-		local dR,dG,dB,dA = fromColor(itemColor[1])
-		local hR,hG,hB,hA = fromColor(itemColor[2])
+		itemColor1,itemColor2 = itemColor,itemColor
+	end
+	if notSplitColor then
+		return itemColor1,itemColor2
+	else
+		local dR,dG,dB,dA = fromColor(itemColor1)
+		local hR,hG,hB,hA = fromColor(itemColor2)
 		return dR,dG,dB,dA,hR,hG,hB,hA
 	end
 end
