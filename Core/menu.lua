@@ -459,6 +459,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 		local commandOrIsSeparator = item[-3]
 		local selectable = item[-4]
 		local textColor = item[-5] or itemTextColor
+		local textSize = item[-6] or itemTextSize
 		if commandOrIsSeparator == true then
 			drawPosY = drawPosY+separatorGap
 			if text == nil then	--If no text specified, use "line" instead
