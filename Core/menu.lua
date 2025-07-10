@@ -302,7 +302,8 @@ function dgsMenuGetItemTextSize(menu,uniqueID)
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
 	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemTextSize",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
-	return item[-6][1],item[-6][2]
+	local itemTextSize = item[-6] or eleData.itemTextSize
+	return itemTextSize[1],itemTextSize[2]
 end
 
 function dgsMenuSetItemTextSize(menu,uniqueID,textSizeX,textSizeY)
@@ -312,6 +313,7 @@ function dgsMenuSetItemTextSize(menu,uniqueID,textSizeX,textSizeY)
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
 	if not item then error(dgsGenAsrt(menu,"dgsMenuSetItemTextSize",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	if not item[-6] then item[-6] = {} end
 	item[-6][1] = textSizeX
 	item[-6][2] = textSizeY or textSizeX
 	return true
