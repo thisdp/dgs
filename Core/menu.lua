@@ -465,7 +465,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			if text == nil then	--If no text specified, use "line" instead
 				dxDrawImage(x+drawPosX+separatorLineStart,y+drawPosY,separatorLineEnd-separatorLineStart,separatorHeight,_,0,0,0,separatorTextColor,isPostGUI,rndtgt)
 			else	--Use text
-				dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,separatorTextColor,itemTextSize[1],itemTextSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,separatorTextColor,textSize[1],textSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 			drawPosY = drawPosY+separatorHeight
 			drawPosY = drawPosY+separatorGap
@@ -483,9 +483,9 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 				textColor = textColor[clickState]
 			end
 			dxDrawImage(x+drawPosX,y+drawPosY,drawWidth,itemHeight,itemImage[clickState],0,0,0,itemColor[clickState],isPostGUI,rndtgt)
-			dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,textColor,itemTextSize[1],itemTextSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+			dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,textColor,textSize[1],textSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			if #item >= 1 then
-				dgsDrawText(">",x+w-padding[1],y+drawPosY,x+w-padding[1],y+drawPosY+itemHeight,textColor,itemTextSize[1],itemTextSize[2],font,"right","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(">",x+w-padding[1],y+drawPosY,x+w-padding[1],y+drawPosY+itemHeight,textColor,textSize[1],textSize[2],font,"right","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 			drawPosY = drawPosY+itemHeight
 			drawPosY = drawPosY+itemGap
