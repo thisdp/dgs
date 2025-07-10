@@ -16,6 +16,7 @@ local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
 --
+local fromColor = fromcolor
 local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
 local dgsSetType = dgsSetType
@@ -258,7 +259,7 @@ function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
 	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
 	local itemColor = item[-5] or eleData.itemColor
 	local itemColor1,itemColor2
-	if type(itemColors) == "table" then
+if type(itemColor) == "table" then
 		itemColor1,itemColor2 = itemColor[1],itemColor[2]
 	else
 		itemColor1,itemColor2 = itemColor,itemColor
@@ -298,7 +299,8 @@ function dgsMenuSetItemColor(menu,uniqueID,...)
 		local clr = tocolor(...)
 		colors = {clr,clr}
 	end
-	item[-5] = colors
+item[-5] = colors
+	local itemColors = item[-5]
 	return true
 end
 
