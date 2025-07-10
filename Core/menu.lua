@@ -15,13 +15,6 @@ local dxGetPixelColor = dxGetPixelColor
 local dxSetRenderTarget = dxSetRenderTarget
 local dxGetTextWidth = dxGetTextWidth
 local dxSetBlendMode = dxSetBlendMode
-local function fromColor(color)
-	local a = math.floor(color / 16777216) % 256
-	local r = math.floor(color / 65536) % 256
-	local g = math.floor(color / 256) % 256
-	local b = color % 256
-	return r, g, b, a
-end
 --
 local dgsTriggerEvent = dgsTriggerEvent
 local createElement = createElement
@@ -71,7 +64,7 @@ function dgsCreateMenu(...)
 		itemData = {},
 		itemHeight = sStyle.itemHeight,
 		itemGap = sStyle.itemGap,
-		itemColor = {sStyle.itemColor[1],sStyle.itemColor[2]},
+		itemColor = {sStyle.itemColor[1],sStyle.itemColor[2]},	--normalColor, hoveringColor
 		itemTextColor = sStyle.itemTextColor,
 		itemTextOffset = {sStyle.itemTextOffset[1],sStyle.itemTextOffset[2]},
 		itemImage = {normalImage,hoveringImage},
@@ -263,22 +256,18 @@ function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
 	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
-	local itemColors = item[-5] or eleData.itemTextColor
-	if notSplitColor then
-		if type(itemColors) == "table" then
-			return itemColors[1],itemColors[2]
-		else
-			return itemColors,itemColors
-		end
+	local itemColor = item[-5] or eleData.itemColor
+	local itemColor1,itemColor2
+	if type(itemColors) == "table" then
+		itemColor1,itemColor2 = itemColor[1],itemColor[2]
 	else
-		local color1, color2
-		if type(itemColors) == "table" then
-			color1, color2 = itemColors[1], itemColors[2]
-		else
-			color1, color2 = itemColors, itemColors
-		end
-		local dR,dG,dB,dA = fromColor(color1)
-		local hR,hG,hB,hA = fromColor(color2)
+		itemColor1,itemColor2 = itemColor,itemColor
+	end
+	if notSplitColor then
+		return itemColor1,itemColor2
+	else
+		local dR,dG,dB,dA = fromColor(itemColor1)
+		local hR,hG,hB,hA = fromColor(itemColor2)
 		return dR,dG,dB,dA,hR,hG,hB,hA
 	end
 end
