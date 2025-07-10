@@ -64,7 +64,7 @@ function dgsCreateMenu(...)
 		itemData = {},
 		itemHeight = sStyle.itemHeight,
 		itemGap = sStyle.itemGap,
-		itemColor = {sStyle.itemColor[1],sStyle.itemColor[2]},
+		itemColor = {sStyle.itemColor[1],sStyle.itemColor[2]},	--normalColor, hoveringColor
 		itemTextColor = sStyle.itemTextColor,
 		itemTextOffset = {sStyle.itemTextOffset[1],sStyle.itemTextOffset[2]},
 		itemImage = {normalImage,hoveringImage},
@@ -256,11 +256,12 @@ function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
 	local itemMap = eleData.itemMap
 	local item = itemMap[uniqueID]
 	if not item then error(dgsGenAsrt(menu,"dgsMenuGetItemColor",2,_,_,"Invalid index '"..tostring(uniqueID).."'")) end
+	local itemColor = item[-5] or eleData.itemColor
 	if notSplitColor then
-		return item[-5][1],item[-5][2]
+		return itemColor[1],itemColor[2]
 	else
-		local dR,dG,dB,dA = fromColor(item[-5][1])
-		local hR,hG,hB,hA = fromColor(item[-5][2])
+		local dR,dG,dB,dA = fromColor(itemColor[1])
+		local hR,hG,hB,hA = fromColor(itemColor[2])
 		return dR,dG,dB,dA,hR,hG,hB,hA
 	end
 end
