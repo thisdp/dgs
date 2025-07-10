@@ -266,8 +266,8 @@ function dgsMenuGetItemColor(menu,uniqueID,notSplitColor)
 	if notSplitColor then
 		return itemColor1,itemColor2
 	else
-		local dR,dG,dB,dA = fromColor(itemColor1)
-		local hR,hG,hB,hA = fromColor(itemColor2)
+		local dR,dG,dB,dA = fromcolor(itemColor1)
+		local hR,hG,hB,hA = fromcolor(itemColor2)
 		return dR,dG,dB,dA,hR,hG,hB,hA
 	end
 end
