@@ -144,7 +144,12 @@ function dgsMenuAutoResize(menu)
 		local commandOrIsSeparator = item[-3]
 		if commandOrIsSeparator == true then
 			drawPosY = drawPosY+separatorGap
-			drawPosY = drawPosY+separatorHeight
+			local text = item[-2]
+			if text == nil then
+				drawPosY = drawPosY+separatorHeight
+			else
+				drawPosY = drawPosY+itemHeight
+			end
 			drawPosY = drawPosY+separatorGap
 		else
 			drawPosY = drawPosY+itemGap
@@ -396,7 +401,7 @@ end
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxmenu"] = {
 	visible = function(source)
-		
+
 	end,
 }
 ----------------------------------------------------------------
@@ -471,10 +476,11 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			drawPosY = drawPosY+separatorGap
 			if text == nil then	--If no text specified, use "line" instead
 				dxDrawImage(x+drawPosX+separatorLineStart,y+drawPosY,separatorLineEnd-separatorLineStart,separatorHeight,_,0,0,0,separatorTextColor,isPostGUI,rndtgt)
+				drawPosY = drawPosY+separatorHeight
 			else	--Use text
 				dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,separatorTextColor,textSize[1],textSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				drawPosY = drawPosY+itemHeight
 			end
-			drawPosY = drawPosY+separatorHeight
 			drawPosY = drawPosY+separatorGap
 		else
 			drawPosY = drawPosY+itemGap
