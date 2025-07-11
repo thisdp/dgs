@@ -344,7 +344,8 @@ function dgsMenuRemoveItem(menu,uniqueID)
 		if parentUniqueID == 0 then	--Root
 			for i=1,#eleData.itemData do	--Find item in root
 				if eleData.itemData[i] == item then
-					table.remove(eleData.itemData[i],item)	--Remove from root
+					table.remove(eleData.itemData,i)	--Remove from root
+					break
 				end
 			end
 		else
@@ -353,6 +354,7 @@ function dgsMenuRemoveItem(menu,uniqueID)
 				for i=1,#parent[3] do	--Find item in parent
 					if parent[3][i] == item then
 						table.remove(parent[3],i)	--Remove from parent
+						break
 					end
 				end
 			end
