@@ -10,6 +10,7 @@ dgsRegisterProperties("dgs-dxprogressbar",{
 	padding = 			{	{ PArg.Number, PArg.Number } },
 	progress = 			{	PArg.Number },
 	style = 			{	PArg.String },
+	progressReverse =   {   PArg.Bool },
 
 	__Special = 		{
 		{	__Basis  = "style",
@@ -88,7 +89,16 @@ local ProgressBarStyle = {
 					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
 				end
 				dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[1],0,0,0,indicatorColor2,isPostGUI)
+				if indicatorImage[1] then
+					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)	
+				else
+					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
+				end
+				if indicatorImage[2] then
+					dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
+				else
+					dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
+				end
 			else
 				dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
 				dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
@@ -141,22 +151,30 @@ local ProgressBarStyle = {
 				else
 					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
 				end
-				dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy2,sx2,sy2*(1-percent),indicatorImage[1],0,0,0,indicatorColor2,isPostGUI)
+				if indicatorImage[1] then
+					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
+				else
+					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
+				end
+				if indicatorImage[2] then
+					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,0,sx2,sy2*(1-percent),indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
+				else
+					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
+				end
 			else
-				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				dxDrawImage(iPosX,iSizYPercent+iPosY,iSizX,iSizY-iSizYPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor[2],isPostGUI)
+				dxDrawImage(iPosX,iSizYPercent+iPosY,iSizX,iSizY-iSizYPercent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
+				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
 			end
 		elseif isElement(indicatorImage) then
 			if type(indicatorColor) == "table" then
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 					if not sx or not sy then sx,sy = dgsGetMaterialSize(indicatorImage,iSizX,iSizYPercent) end
-					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor[1],isPostGUI)
-					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy,sx,sy*(1-percent),indicatorImage,0,0,0,indicatorColor[2],isPostGUI)
+					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor1,isPostGUI)
+					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy,sx,sy*(1-percent),indicatorImage,0,0,0,indicatorColor2,isPostGUI)
 				else
 					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor[1],isPostGUI)
-					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage,0,0,0,indicatorColor[2],isPostGUI)
+					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage,0,0,0,indicatorColor2,isPostGUI)
 				end
 			else
 				if indicatorMode then
@@ -168,8 +186,8 @@ local ProgressBarStyle = {
 				end
 			end
 		elseif type(indicatorColor) == "table" then
-			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor[1],isPostGUI)
-			dxDrawRectangle(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorColor[2],isPostGUI)
+			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor1,isPostGUI)
+			dxDrawRectangle(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorColor2,isPostGUI)
 		else
 			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor,isPostGUI)
 		end
@@ -569,7 +587,7 @@ dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledIn
 	end
 	local indicatorMode = eleData.indicatorMode
 	local padding = eleData.padding
-	local percent = eleData.progress*0.01
+	local percent = eleData.progressReverse and 1-eleData.progress*0.01 or eleData.progress*0.01
 	dxSetBlendMode("blend")
 	ProgressBarStyle[eleData.style](source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet,rndtgt)
 	return rndtgt,false,mx,my,0,0
