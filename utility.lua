@@ -126,8 +126,8 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 local pi180 = math.pi/180
 sW,sH = guiGetScreenSize()
-local __dxDrawImageSection = dxDrawImageSection
-local __dxDrawImage = dxDrawImage
+__dxDrawImageSection = dxDrawImageSection
+__dxDrawImage = dxDrawImage
 local dxGetMaterialSize = dxGetMaterialSize
 
 -------Built-in DX Fonts
