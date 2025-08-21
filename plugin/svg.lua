@@ -41,13 +41,11 @@ dgsCustomTexture["dgs-dxsvg"] = function(posX,posY,width,height,u,v,usize,vsize,
 		svgSetDocumentXML(image,eleData.svgDocument)
 		eleData.svgDocumentUpdate = false
 	end
-	dxSetBlendMode("add")
 	if u and v and usize and vsize then
 		dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI)
 	else
 		dxDrawImage(posX,posY,width,height,image,rotation,rotationX,rotationY,color,postGUI)
 	end
-	dxSetBlendMode("blend")
 	return true
 end
 
