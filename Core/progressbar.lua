@@ -136,8 +136,8 @@ local ProgressBarStyle = {
 			if indicatorMode then
 				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
 				if not sx or not sy then
-					sx1,sy1 = dxGetMaterialSize(indicatorImage[1])
-					sx2,sy2 = dxGetMaterialSize(indicatorImage[2])
+					sx1,sy1 = dgsGetMaterialSize(indicatorImage[1],iSizX,iSizYPercent)
+					sx2,sy2 = dgsGetMaterialSize(indicatorImage[2],iSizX,iSizY-iSizYPercent)
 				else
 					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
 				end
@@ -151,7 +151,7 @@ local ProgressBarStyle = {
 			if type(indicatorColor) == "table" then
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
+					if not sx or not sy then sx,sy = dgsGetMaterialSize(indicatorImage,iSizX,iSizYPercent) end
 					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor[1],isPostGUI)
 					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy,sx,sy*(1-percent),indicatorImage,0,0,0,indicatorColor[2],isPostGUI)
 				else
@@ -161,8 +161,8 @@ local ProgressBarStyle = {
 			else
 				if indicatorMode then
 					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-					if not sx or not sy then sx,sy = dxGetMaterialSize(indicatorImage) end
-					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,0,sx,sy*percent,indicatorImage,0,0,0,indicatorColor,isPostGUI)
+					if not sx or not sy then sx,sy = dgsGetMaterialSize(indicatorImage,iSizX,iSizYPercent) end
+					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor,isPostGUI)
 				else
 					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor,isPostGUI)
 				end
