@@ -126,8 +126,10 @@ local tableInsert = table.insert
 local tableRemove = table.remove
 local pi180 = math.pi/180
 sW,sH = guiGetScreenSize()
-__dxDrawImageSection = dxDrawImageSection
-__dxDrawImage = dxDrawImage
+local __dxDrawImageSection = dxDrawImageSection
+local __dxDrawImage = dxDrawImage
+local dxGetMaterialSize = dxGetMaterialSize
+
 -------Built-in DX Fonts
 fontBuiltIn = {
 	["default"]=true,
@@ -969,6 +971,15 @@ function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,ali
 		return false
 	end
 	return true
+end
+
+function dgsGetMaterialSize(material,fbWidth,fbHeight)
+	if not material then return fbWidth or 1,fbHeight or 1 end
+	local materialType = dgsGetType(material)
+	if materialType == "texture" or materialType == "svg" then
+		return dxGetMaterialSize(material)
+	end
+	return fbWidth or 1, fbHeight or 1
 end
 --[[
 function dgsCreateTextBuffer(text,leading,textSizeX,textSizeY,font,isColorCoded,isWordWrap,lineSpacing,tabSpacing)
