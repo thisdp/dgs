@@ -48,6 +48,8 @@
 
 	<script src="plugin/cmd.lua" type="client" />
 
+	<script src="plugin/gif.lua" type="client" />
+
 	<script src="plugin/ColorPicker/colorPicker.lua" type="client" />
 	<file src="plugin/ColorPicker/HSVRingSel.fx" type="client" />
 	<file src="plugin/ColorPicker/HSVRing.fx" type="client" />
@@ -834,6 +836,22 @@
 	<export function="dgsEffect3DSetAlwaysEnabled" type="client" />
 	<export function="dgsEffect3DGetAlwaysEnabled" type="client" />
 
+
+
+	<export function="dgsCreateGIF" type="client" />
+	<export function="dgsGIFGetSize" type="client" />
+	<export function="dgsGIFGetImageCount" type="client" />
+	<export function="dgsGIFGetImages" type="client" />
+	<export function="dgsGIFPlay" type="client" />
+	<export function="dgsGIFStop" type="client" />
+	<export function="dgsGIFSetSpeed" type="client" />
+	<export function="dgsGIFGetSpeed" type="client" />
+	<export function="dgsGIFGetPlaying" type="client" />
+	<export function="dgsGIFSetLooped" type="client" />
+	<export function="dgsGIFGetLooped" type="client" />
+	<export function="dgsGIFSetFrameID" type="client" />
+	<export function="dgsGIFGetFrameID" type="client" />
+
 	<export function="dgsRGBToHSV" type="client" />
 	<export function="dgsRGBToHSL" type="client" />
 	<export function="dgsHSLToRGB" type="client" />
@@ -1004,4 +1022,5 @@
 	</settings>
 
 	<download_priority_group>999</download_priority_group>
-</meta>
+</meta>p>999</download_priority_group>
+</meta>>
