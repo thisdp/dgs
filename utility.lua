@@ -1133,39 +1133,118 @@ end)
 
 --------------------------------Dx Utility
 function dgsIsPixelPNG(pixel)
-	local pngHeader = string.char(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)
-	local pngTail = string.char(0xAE, 0x42, 0x60, 0x82)
-	return #pixel >= 12 and pixel:sub(1,8) == pngHeader and pixel:sub(-4) == pngTail
+    local pngHeader = string.char(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)
+    return #pixel >= 8 and pixel:sub(1,8) == pngHeader
 end
 
 function dgsIsPixelJPEG(pixel)
-	local JpegHeader = string.char(0xFF, 0xD8, 0xFF)
-	local JpegTail = string.char(0xFF, 0xD9)
-	if #pixel >= 5 and pixel:sub(1,3) == JpegHeader and pixel:sub(-2) == JpegTail then
-		local uiSeg1Size = pixel:sub(5,5):byte()*256+pixel:sub(6,6):byte()
-		return uiSeg1Size + 5 < #pixel and pixel:sub(5+uiSeg1Size,5+uiSeg1Size):byte() == 0xFF
-	end
-    return false
+    local jpegHeader = string.char(0xFF, 0xD8, 0xFF)
+    local jpegTail = string.char(0xFF, 0xD9)
+    return #pixel >= 2 and pixel:sub(1,3) == jpegHeader and pixel:sub(-2) == jpegTail
+end
+
+function dgsIsPixelGIF(pixel)
+    local gifHeader87a = "GIF87a"
+    local gifHeader89a = "GIF89a"
+    return #pixel >= 6 and (pixel:sub(1,6) == gifHeader87a or pixel:sub(1,6) == gifHeader89a)
+end
+
+function dgsIsPixelWebP(pixel)
+    local webpHeader = "RIFF"
+    local webpSignature = "WEBP"
+    return #pixel >= 12 and pixel:sub(1,4) == webpHeader and pixel:sub(9,12) == webpSignature
 end
 
 function dgsIsPixelDDS(pixel)
-	local ddsHeader = string.char(0x44, 0x44, 0x53, 0x20)
-	return #pixel >= 4 and pixel:sub(1,4) == ddsHeader
+    local ddsHeader = string.char(0x44, 0x44, 0x53, 0x20) -- "DDS "
+    return #pixel >= 4 and pixel:sub(1,4) == ddsHeader
+end
+
+function dgsIsPixelBMP(pixel)
+    local bmpHeader = "BM"
+    return #pixel >= 2 and pixel:sub(1,2) == bmpHeader
+end
+
+function dgsIsPixelSVG(pixel)
+    if #pixel < 10 then return false end
+    local content = pixel:lower()
+    return content:find("<svg") ~= nil or content:find("<?xml") ~= nil
+end
+
+function dgsIsPixelICO(pixel)
+    local icoHeader = string.char(0x00, 0x00, 0x01, 0x00)
+    return #pixel >= 4 and pixel:sub(1,4) == icoHeader
+end
+
+function dgsIsPixelTIFF(pixel)
+    local tiffHeader1 = string.char(0x49, 0x49, 0x2A, 0x00) -- Little endian
+    local tiffHeader2 = string.char(0x4D, 0x4D, 0x00, 0x2A) -- Big endian
+    return #pixel >= 4 and (pixel:sub(1,4) == tiffHeader1 or pixel:sub(1,4) == tiffHeader2)
 end
 
 function dgsGetPixelsFormat(pixels)
+    if not pixels or type(pixels) ~= "string" then
+        return false
+    end
     if dgsIsPixelPNG(pixels) then return "png" end
     if dgsIsPixelJPEG(pixels) then return "jpeg" end
+    if dgsIsPixelGIF(pixels) then return "gif" end
+    if dgsIsPixelWebP(pixels) then return "webp" end
+    if dgsIsPixelSVG(pixels) then return "svg" end
+    if dgsIsPixelICO(pixels) then return "ico" end
     if dgsIsPixelDDS(pixels) then return "dds" end
+    if dgsIsPixelBMP(pixels) then return "bmp" end
+    if dgsIsPixelTIFF(pixels) then return "tiff" end
+    -- Plain 
     if (#pixels >= 8) then
-		local widA,widB = pixels:sub(-4,-3):byte(1,2)
-		local width = widA*256+widB
-		local heiA,heiB = pixels:sub(-2,-1):byte(1,2)
-		local height = heiA*256+heiB
-		if #pixels == width * height * 4 + 4 then return "plain" end
+        local success, widA, widB = pcall(function() return pixels:sub(-4,-3):byte(1,2) end)
+        if success and widA and widB then
+            local width = widA*256+widB
+            local heiA,heiB = pixels:sub(-2,-1):byte(1,2)
+            local height = heiA*256+heiB
+            if #pixels == width * height * 4 + 4 then return "plain" end
+        end
     end
-	return false
+    
+    return false
 end
+
+function dgsGetMimeType(format)
+    local mimeTypes = {
+        png = "image/png",
+        jpeg = "image/jpeg",
+        jpg = "image/jpeg",
+        gif = "image/gif",
+        webp = "image/webp",
+        svg = "image/svg+xml",
+        ico = "image/x-icon",
+        bmp = "image/bmp",
+        tiff = "image/tiff",
+    }
+    return mimeTypes[format] or "application/octet-stream"
+end
+
+function dgsIsBrowserSupportedImage(format)
+    local supportedFormats = {
+        png = true,
+        jpeg = true,
+        gif = true,
+        webp = true,
+        svg = true,
+        ico = true,
+        bmp = true,
+        tiff = true,
+    }
+    return supportedFormats[format] or false
+end
+
+-- Generate Data URL
+function dgsToDataUrl(pixels, format)
+    local mimeType = dgsGetMimeType(format)
+    local base64Data = encodeString("base64",pixels)
+    return "data:" .. mimeType .. ";base64," .. base64Data
+end
+
 --Render Target Assigner [Project AI]
 --[[
 RTState:
