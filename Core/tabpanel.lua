@@ -612,7 +612,7 @@ dgsRenderer["dgs-dxtabpanel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 							if type(eleData.disabledColor) == "number" then
 								finalcolor = applyColorAlpha(eleData.disabledColor,parentAlpha)
 							elseif eleData.disabledColor == true then
-								local r,g,b,a = fromcolor(tabColor[1])
+								local r,g,b,a = fromcolor(tabColor)
 								local average = (r+g+b)/3*eleData.disabledColorPercent
 								finalcolor = tocolor(average,average,average,a*parentAlpha)
 							else
