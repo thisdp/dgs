@@ -19,6 +19,8 @@ function dgsCreateScreenSource(uPos,vPos,uSize,vSize,relative)
 	if not isElement(GlobalScreenSource) then
 		GlobalScreenSource = dxCreateScreenSource(sW*GlobalScreenSourceWidthFactor,sH*GlobalScreenSourceHeightFactor)
 	end
+	dgsSetData(ss, "screenSourceTexture", GlobalScreenSource)
+
 	return ss
 end
 
