@@ -366,7 +366,12 @@ function dgsCoreRender()
 				dgsDrawText("RLT H: "..rltH , sW*0.5-100,115,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 				local debugData = dgsElementData[highlight].debugData
 				if debugData then
-					local sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/10,100,50))
+					local sideColor
+					if dgsGetEnabled(debugHitElement) then
+						sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/5,100,80))
+					else
+						sideColor = tocolor(dgsHSVToRGB(getTickCount()%3600/5,0,50))
+					end
 					local sideSize = math.sin(getTickCount()/500%2*math.pi)*2+4
 					local hSideSize = sideSize*0.5
 					local x,y,w,h = debugData[5],debugData[6],absW,absH
@@ -379,6 +384,7 @@ function dgsCoreRender()
 			local parent = debugHitElement
 			dgsDrawText("Parent List:", sW*0.5+90,10,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 			dgsDrawText("DGS Root("..tostring(resourceRoot)..")", sW*0.5+100,25,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
+			dgsDrawText(dgsGetEnabled(debugHitElement) and "Enabled" or "Disabled", sW*0.5-200,10,sW,sH,white,1,1,"default","left","top",false,false,true,true,false,0,0,0,0,1,1,black)
 			local parents = {}
 			while(parent) do
 				tableInsert(parents,1,parent)
@@ -573,6 +579,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 								if checkFnc(_mx,_my,mx,my,xNRT,yNRT,w,h) then
 									if enabledInherited then
 										MouseData.hit = source
+										MouseData.hitDebug = source
 									elseif checkDisabledElement then
 										MouseData.hitDebug = source
 									end
@@ -586,6 +593,7 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 								if gray >= 128 then
 									if enabledInherited then
 										MouseData.hit = source
+										MouseData.hitDebug = source
 									elseif checkDisabledElement then
 										MouseData.hitDebug = source
 									end
@@ -597,9 +605,10 @@ function renderGUI(source,mx,my,enabledInherited,enabledSelf,rndtgt,xRT,yRT,xNRT
 						daDebugColor = daEleData.debugModeAlpha*0x1000000+daDebugColor
 					end
 				else
-					hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h) or MouseData.hit
+					local hit = (dgsCollider[eleType] or dgsCollider.default)(source,mx,my,xNRT,yNRT,w,h)
 					if enabledInherited then
 						MouseData.hit = hit or MouseData.hit
+						MouseData.hitDebug = hit or MouseData.hitDebug
 					elseif checkDisabledElement then
 						MouseData.hitDebug = hit or MouseData.hitDebug
 					end
