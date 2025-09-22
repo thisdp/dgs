@@ -59,6 +59,7 @@ function dgsCreateMenu(...)
 	dgsElementData[menu] = {
 		autoHide = true,	--Hide when mouse click
 
+		arrowOffset = {0,false},
 		bgColor = sStyle.bgColor,
 		bgImage = sStyle.bgImage,
 		itemData = {},
@@ -398,6 +399,9 @@ function onDgsMenuHover(source,nPreSelect,nPreSelectDrawPos)
 			separatorTextColor = eleData.separatorTextColor,
 			separatorGap = eleData.separatorGap,
 			separatorLine = eleData.separatorLine,
+
+			font = eleData.font,
+			arrowOffset = eleData.arrowOffset,
 		})
 
 		local subMenuEleData = dgsElementData[eleData.subMenu]
@@ -475,6 +479,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local itemTextOffset = eleData.itemTextOffset[2] and eleData.itemTextOffset[1]*w or eleData.itemTextOffset[1]
 	local colorCoded = eleData.colorCoded
 	local padding = eleData.padding
+	local arrowOffset = (eleData.arrowOffset and eleData.arrowOffset[2] and eleData.arrowOffset[1]*w or eleData.arrowOffset[1]) or 0
 	local drawWidth = w-padding[2]*2
 	local drawPosX = padding[1]
 	local drawPosY = padding[2]
@@ -521,7 +526,7 @@ dgsRenderer["dgs-dxmenu"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			dxDrawImage(x+drawPosX,y+drawPosY,drawWidth,itemHeight,itemImage[clickState],0,0,0,itemColor[clickState],isPostGUI,rndtgt)
 			dgsDrawText(text,x+drawPosX+itemTextOffset,y+drawPosY,x+drawPosX+itemTextOffset+drawWidth,y+drawPosY+itemHeight,textColor,textSize[1],textSize[2],font,"left","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			if #item >= 1 then
-				dgsDrawText(">",x+w-padding[1],y+drawPosY,x+w-padding[1],y+drawPosY+itemHeight,textColor,textSize[1],textSize[2],font,"right","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(">",x+w-padding[1]+arrowOffset,y+drawPosY,x+w-padding[1]+arrowOffset,y+drawPosY+itemHeight,textColor,textSize[1],textSize[2],font,"right","center",false,false,isPostGUI,colorCoded,subPixelPositioning,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 			drawPosY = drawPosY+itemHeight
 			drawPosY = drawPosY+itemGap
