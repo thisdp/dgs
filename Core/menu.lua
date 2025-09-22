@@ -71,7 +71,6 @@ function dgsCreateMenu(...)
 		itemTextSize = {sStyle.itemTextSize[1],sStyle.itemTextSize[2]},
 		itemIconSize = {1,1,true},
 		itemIconOffset = {0,0,false},
-		-- to do
 
 		padding = {sStyle.padding[1],sStyle.padding[2]},
 		colorCoded = false,
@@ -379,6 +378,28 @@ function onDgsMenuHover(source,nPreSelect,nPreSelectDrawPos)
 		local width,height = eleData.absSize[1],eleData.absSize[2]
 		local padding = eleData.padding
 		eleData.subMenu = dgsCreateMenu(width,nPreSelectDrawPos-padding[2],width,height,false,source)
+
+		dgsSetProperties(eleData.subMenu,{
+			bgColor = eleData.bgColor,
+			bgImage = eleData.bgImage,
+			itemHeight = eleData.itemHeight,
+			itemGap = eleData.itemGap,
+			itemColor = eleData.itemColor,
+			itemTextColor = eleData.itemTextColor,
+			itemTextOffset = eleData.itemTextOffset,
+			itemImage = eleData.itemImage,
+			itemTextSize = eleData.itemTextSize,
+			itemIconSize = eleData.itemIconSize,
+			itemIconOffset = eleData.itemIconOffset,
+
+			padding = eleData.padding,
+			colorCoded = eleData.colorCoded,
+			separatorHeight = eleData.separatorHeight,
+			separatorTextColor = eleData.separatorTextColor,
+			separatorGap = eleData.separatorGap,
+			separatorLine = eleData.separatorLine,
+		})
+
 		local subMenuEleData = dgsElementData[eleData.subMenu]
 		subMenuEleData.itemData = itemMap[nPreSelect]
 		subMenuEleData.itemMap = itemMap
