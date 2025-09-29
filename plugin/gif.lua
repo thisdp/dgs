@@ -9,23 +9,27 @@ local mathMin = math.min
 local mathClamp = math.clamp
 local tableConcat = table.concat
 local powTable = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304,8388608,16777216,33554432,67108864,134217728,268435456,536870912,1073741824,2147483648}
--- Pure-Lua GIF decoder (client-side), lazy-decodes frames on demand.
 
 addEvent("onDgsGIFPlay", true)
 addEvent("onDgsGIFStop", true)
 
-local MAX_FRAMES_DEFAULT = math.huge -- no limit
+local MAX_FRAMES_DEFAULT = math.huge
 
 local function readLE16(s, pos)
     local a, b = strByte(s, pos, pos + 1)
     return a + (b or 0) * 256
 end
 
--- LZW Decoder
+-- LZW Decoder (unchanged - outputs indices as numbers)
 local function lzwDecode(minCodeSize, data, expectedSize)
-    local dataBytes = {}
-    for i = 1, #data do
-        dataBytes[i] = strByte(data, i)
+    local dataBytes
+    if type(data) == "table" then
+        dataBytes = data
+    else
+        dataBytes = {}
+        for i = 1, #data do
+            dataBytes[i] = strByte(data, i)
+        end
     end
     local dataLen = #dataBytes
     local dataPos = 1
@@ -41,7 +45,7 @@ local function lzwDecode(minCodeSize, data, expectedSize)
 
     local dict = {}
     for i = 1, dictSize do
-        dict[i] = strChar(i-1)
+        dict[i] = {i-1}
     end
     local nextCode = nextCodeInit
     local codeSize = codeSizeInit
@@ -52,10 +56,11 @@ local function lzwDecode(minCodeSize, data, expectedSize)
 
     while true do
         local code
-        do  --Read bits
+        do
             while bitCount < codeSize and dataPos <= dataLen do
+                local b = dataBytes[dataPos] or 0
+                bitBuffer = bitBuffer + b * powTable[bitCount + 1]
                 dataPos = dataPos + 1
-                bitBuffer = bitBuffer + (dataBytes[dataPos] or 0) * powTable[bitCount + 1]
                 bitCount = bitCount + 8
             end
             local mask = powTable[codeSize + 1]
@@ -65,10 +70,9 @@ local function lzwDecode(minCodeSize, data, expectedSize)
             bitCount = bitCount - codeSize
         end
         if code == clearCode then
-            -- Reset Dict
             dict = {}
             for i = 1, dictSize do
-                dict[i] = strChar(i-1)
+                dict[i] = {i-1}
             end
             nextCode = nextCodeInit
             codeSize = codeSizeInit
@@ -80,19 +84,24 @@ local function lzwDecode(minCodeSize, data, expectedSize)
             local entry = dict[code+1]
             if not entry then
                 if code == nextCode and prev then
-                    entry = prev .. strSub(prev, 1, 1)
+                    local e = {}
+                    for k = 1, #prev do e[k] = prev[k] end
+                    e[#e+1] = prev[1]
+                    entry = e
                 else
                     break
                 end
             end
-            local entryLen = #entry
-            for i = 1, entryLen do
+            for k = 1, #entry do
                 outLen = outLen + 1
-                out[outLen] = strByte(entry, i)
+                out[outLen] = entry[k]
             end
             if prev then
+                local newEntry = {}
+                for k = 1, #prev do newEntry[k] = prev[k] end
+                newEntry[#newEntry+1] = entry[1]
                 nextCode = nextCode + 1
-                dict[nextCode] = prev .. strSub(entry, 1, 1)
+                dict[nextCode] = newEntry
                 if nextCode >= limit and codeSize < 12 then
                     codeSize = codeSize + 1
                     limit = limit * 2
@@ -102,89 +111,83 @@ local function lzwDecode(minCodeSize, data, expectedSize)
         end
         if expectedSize and outLen >= expectedSize then break end
     end
-
     return out
 end
 
 local function deinterlace(indices, w, h)
     local out = {}
-    local rows = {}
     local idx = 1
-    local function fill(start, step)
-        for y = start, h-1, step do
-            rows[y+1] = {}
-            for x=1,w do
-                rows[y+1][x] = indices[idx]
+    local function pass(start, step)
+        for y = start, h - 1, step do
+            for x = 0, w - 1 do
+                out[y * w + x + 1] = indices[idx]
                 idx = idx + 1
             end
         end
     end
-    fill(0,8)
-    fill(4,8)
-    fill(2,4)
-    fill(1,2)
-    for y=1,h do
-        for x=1,w do out[#out+1] = rows[y][x] end
-    end
+    pass(0, 8)
+    pass(4, 8)
+    pass(2, 4)
+    pass(1, 2)
     return out
 end
 
+-- ✅ MODIFIED: palette now stores BGRA strings
 local function parseColorTable(data, pos, count)
     local palette = {}
     for i = 1, count do
-        palette[i - 1] = {strByte(data, pos, pos + 2)}
+        local r = strByte(data, pos)
+        local g = strByte(data, pos + 1)
+        local b = strByte(data, pos + 2)
+        palette[i - 1] = strChar(b, g, r, 255)  -- BGRA
         pos = pos + 3
     end
     return palette, pos
 end
 
--- backup/restore helpers (file scope so ensureDecodedUpTo can use them)
-local function backupRegion(c,left,top,iw,ih,w,h)
+-- ✅ MODIFIED: backup/restore for string-based canvas
+local function backupRegion(c, left, top, iw, ih, w, h)
     local rows = {}
-    local x0 = mathMax(0,left)
-    local y0 = mathMax(0,top)
-    local x1 = mathMin(w-1,left+iw-1)
-    local y1 = mathMin(h-1,top+ih-1)
+    local x0 = mathMax(0, left)
+    local y0 = mathMax(0, top)
+    local x1 = mathMin(w - 1, left + iw - 1)
+    local y1 = mathMin(h - 1, top + ih - 1)
     for y = y0, y1 do
-        local rowPieces = {}
+        local rowPixels = {}
         for x = x0, x1 do
-            local p = y * w + x + 1
-            local v = c[p]
-            if v then
-                rowPieces[#rowPieces+1] = strChar(v[1] or 0, v[2] or 0, v[3] or 0, v[4] or 0)
-            else
-                rowPieces[#rowPieces+1] = strChar(0,0,0,0)
-            end
+            rowPixels[#rowPixels + 1] = c[y * w + x + 1]
         end
-        rows[#rows+1] = {y, x0, x1, tableConcat(rowPieces)}
+        rows[#rows + 1] = {y, x0, x1, tableConcat(rowPixels)}
     end
     return rows
 end
 
 local function restoreRegion(c, backup, w)
     if not backup then return end
-    for i=1, #backup do
+    for i = 1, #backup do
         local entry = backup[i]
         local y, x0, x1, data = entry[1], entry[2], entry[3], entry[4]
         local idx = 1
-        local YxWidth = y * w + 1
-        for x = x0+YxWidth, x1+YxWidth do
-            c[x] = {strByte(data, idx, idx+3)}
+        for x = x0, x1 do
+            c[y * w + x + 1] = strSub(data, idx, idx + 3)
             idx = idx + 4
         end
     end
 end
 
+-- ✅ MODIFIED: buildDDS now trivial
 local function writeLE32(n)
-    local a = n % 256
-    local b = mathFloor(n / 256) % 256
-    local c = mathFloor(n / 65536) % 256
-    local d = mathFloor(n / 16777216) % 256
+    local a = n % 0x100
+    n = (n-a)/0x100
+    local b = n % 0x100
+    n = (n-b)/0x100
+    local c = n % 0x100
+    n = (n-c)/0x100
+    local d = n % 0x100
     return strChar(a,b,c,d)
 end
 
-function buildDDS(w,h,canvas)
-    -- Uncompressed 32-bit DDS (RGBA) using BITFIELDS masks
+function buildDDS(w, h, canvas)   -- canvas is table of BGRA strings
     local DDSD_CAPS = 0x1
     local DDSD_HEIGHT = 0x2
     local DDSD_WIDTH = 0x4
@@ -194,55 +197,36 @@ function buildDDS(w,h,canvas)
     local DDPF_RGB = 0x40
     local DDSCAPS_TEXTURE = 0x1000
 
-    local rowStride = w * 4
-    local pixelDataSize = rowStride * h
     local LE32D0 = writeLE32(0)
     local parts = {
         "DDS ",
-        writeLE32(124), -- dwSize
-        writeLE32(DDSD_CAPS + DDSD_HEIGHT + DDSD_WIDTH + DDSD_PIXELFORMAT + DDSD_PITCH), -- dwFlags
-        writeLE32(h), -- dwHeight
-        writeLE32(w), -- dwWidth
-        writeLE32(rowStride), -- dwPitchOrLinearSize
-        LE32D0, -- dwDepth
-        LE32D0, -- dwMipMapCount
-        --11 dwReserved
+        writeLE32(124),
+        writeLE32(DDSD_CAPS + DDSD_HEIGHT + DDSD_WIDTH + DDSD_PIXELFORMAT + DDSD_PITCH),
+        writeLE32(h),
+        writeLE32(w),
+        writeLE32(w * 4),
+        LE32D0, LE32D0,
         LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
         LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
-        -- DDPIXELFORMAT
-        writeLE32(32), -- dwSize
-        writeLE32(DDPF_ALPHAPIXELS + DDPF_RGB), -- dwFlags
-        LE32D0, -- dwFourCC
-        writeLE32(32), -- dwRGBBitCount
-        writeLE32(0x00FF0000), -- dwRBitMask
-        writeLE32(0x0000FF00), -- dwGBitMask
-        writeLE32(0x000000FF), -- dwBBitMask
-        writeLE32(0xFF000000), -- dwABitMask
-        -- DDSCAPS2
-        writeLE32(DDSCAPS_TEXTURE), -- dwCaps1
-        LE32D0, -- dwCaps2
-        LE32D0, -- dwCapsReserved1
-        LE32D0, -- dwCapsReserved2
-        LE32D0, -- dwReserved2
+        writeLE32(32),
+        writeLE32(DDPF_ALPHAPIXELS + DDPF_RGB),
+        LE32D0,
+        writeLE32(32),
+        writeLE32(0x00FF0000),
+        writeLE32(0x0000FF00),
+        writeLE32(0x000000FF),
+        writeLE32(0xFF000000),
+        writeLE32(DDSCAPS_TEXTURE), LE32D0, LE32D0, LE32D0, LE32D0,
     }
-    -- pixel data (top-down): append each pixel's BGRA bytes directly into parts
-    local base, c
-    for y = 0, h-1 do
-        base = y * w
-        for p = 1+base, w+base do
-            c = canvas[p] or {0,0,0,0}
-            parts[#parts+1] = strChar(c[3] or 0, c[2] or 0, c[1] or 0, c[4] or 0)
-        end
-    end
+    parts[#parts + 1] = tableConcat(canvas)
     return tableConcat(parts)
 end
 
--- Decode GIF file and return frames metadata (raw), delays, width, height, initial prevCanvas, palette and bgIndex
+-- ✅ MODIFIED: dgsGIFDecode uses string-based canvas
 function dgsGIFDecode(input, maxFrames)
     maxFrames = maxFrames or MAX_FRAMES_DEFAULT
     if type(input) ~= "string" then error(dgsGenAsrt(input,"dgsGIFDecode",1,"string or binary string")) end
     local raw
-    -- First try treating input as a path: resolve resource-relative path and check file existence
     local sR = sourceResource or resource
     local name = getResourceName(sR)
     local finalPath = input
@@ -257,7 +241,6 @@ function dgsGIFDecode(input, maxFrames)
         raw = fileRead(f, fileSize)
         fileClose(f)
     else
-        -- If not an existing file, treat input as raw GIF binary if it has a valid header
         local hdr = input:sub(1,6)
         if hdr == "GIF87a" or hdr == "GIF89a" then
             raw = input
@@ -279,37 +262,36 @@ function dgsGIFDecode(input, maxFrames)
     if gctFlag then
         globalPalette, pos = parseColorTable(raw, pos, gctSize)
     end
+    local totalPixels = width * height
     local prevCanvas = {}
-    if globalPalette and globalPalette[bgIndex] then
-        local c = globalPalette[bgIndex]
-        for i=1,width*height do
-            prevCanvas[i] = {c[1],c[2],c[3],255}
-        end
-    else
-        for i=1, width*height do
-            prevCanvas[i] = {0,0,0,0}
-        end
+    local bgPixel = globalPalette and globalPalette[bgIndex] or "\0\0\0\255"
+    for i = 1, totalPixels do
+        prevCanvas[i] = bgPixel
     end
+
     local framesMeta = {}
     local delays = {}
     local gce = {delay = 0, transparent = false, transIndex = 0, disposal = 0}
-    local subBlockBuffer = {}
+
     local function readSubBlocks()
-        local outLength = 0
+        local out = {}
+        local outLen = 0
         while true do
             local blockSize = strByte(raw, pos); pos = pos + 1
             if blockSize == 0 then break end
-            outLength = outLength+1
-            subBlockBuffer[outLength] = strSub(raw, pos, pos+blockSize-1)
+            for i = 0, blockSize - 1 do
+                outLen = outLen + 1
+                out[outLen] = strByte(raw, pos + i)
+            end
             pos = pos + blockSize
         end
-        return tableConcat(subBlockBuffer,nil,nil,outLength)
+        return out
     end
 
     while pos <= #raw do
         local b = strByte(raw, pos); pos = pos + 1
         if not b then break end
-        if b == 0x2C then -- Image Descriptor
+        if b == 0x2C then
             local left = readLE16(raw, pos); pos = pos + 2
             local top = readLE16(raw, pos); pos = pos + 2
             local iw = readLE16(raw, pos); pos = pos + 2
@@ -323,7 +305,6 @@ function dgsGIFDecode(input, maxFrames)
             local lzwMin = strByte(raw, pos); pos = pos + 1
             local imgData = readSubBlocks()
 
-            -- Lazy: store compressed image data and frame metadata instead of decoding immediately.
             if #framesMeta < maxFrames then
                 framesMeta[#framesMeta+1] = {
                     left = left,
@@ -340,11 +321,10 @@ function dgsGIFDecode(input, maxFrames)
                 }
                 delays[#delays+1] = gce.delay
             end
-            -- reset GCE after consuming it for this image
             gce = {delay = 0, transparent = false, transIndex = 0, disposal = 0}
-        elseif b == 0x21 then -- Extension
+        elseif b == 0x21 then
             local label = strByte(raw, pos); pos = pos + 1
-            if label == 0xF9 then -- Graphic Control Extension
+            if label == 0xF9 then
                 local blockSize,packed,delayL,delayH,transIndex,terminator = strByte(raw, pos, pos + 5)
                 local delay = delayL+delayH*256
                 pos = pos+6
@@ -355,14 +335,14 @@ function dgsGIFDecode(input, maxFrames)
             else
                 local _ = readSubBlocks()
             end
-        else    --b == 0x3B or others
+        else
             break
         end
     end
     return framesMeta, delays, width, height, prevCanvas, globalPalette, bgIndex
 end
 
--- Ensure frames up to target are decoded (decompress + create texture), maintaining prevCanvas and disposal behavior
+-- ✅ MODIFIED: ensureDecodedUpTo uses string canvas
 local function ensureDecodedUpTo(gif, target)
     if not isElement(gif) then return end
     local data = dgsElementData[gif]
@@ -381,33 +361,39 @@ local function ensureDecodedUpTo(gif, target)
         local meta = framesMeta[i]
         if not meta then break end
         local prevBackup
-        iprint(meta.gce,meta.interlaced)
         if meta.gce and meta.gce.disposal == 3 then
             prevBackup = backupRegion(prevCanvas, meta.left, meta.top, meta.iw, meta.ih, width, height)
         end
+
+        local profiling = dgsElementData[gif] and dgsElementData[gif].profiling
+        local frameStart = profiling and getTickCount()
+        local t0 = profiling and getTickCount()
         local indices = lzwDecode(meta.lzwMin, meta.imgData, meta.iw * meta.ih)
-        if meta.interlaced then indices = deinterlace(indices, meta.iw, meta.ih) end
-        local frameCanvas = {}
-        for j = 1, width * height do
-            local v = prevCanvas[j] or {0,0,0,0}
-            frameCanvas[j] = {v[1], v[2], v[3], v[4]}
+        local t1 = profiling and getTickCount()
+        local t2 = t1
+        if meta.interlaced then
+            indices = deinterlace(indices, meta.iw, meta.ih)
+            if profiling then t2 = getTickCount() end
         end
+
+        -- ✅ Write pixels as BGRA strings
         local idx = 1
+        local t_pixels_start = profiling and getTickCount()
         for outY = meta.top, meta.top + meta.ih - 1 do
             if outY >= 0 and outY < height then
-                local outYxWidth = outY * width + 1
                 for outX = meta.left, meta.left + meta.iw - 1 do
                     if outX >= 0 and outX < width then
                         local paletteIndex = indices[idx]
-                        if not (meta.gce and meta.gce.transparent and paletteIndex == (meta.gce.transIndex or 0)) then
+                        local pixelPos = outY * width + outX + 1
+                        if meta.gce and meta.gce.transparent and paletteIndex == (meta.gce.transIndex or 0) then
+                            prevCanvas[pixelPos] = "\0\0\0\0"  -- fully transparent
+                        else
                             local pal = meta.palette or globalPalette
-                            local col = pal and pal[paletteIndex]
-                            if col then
-                                local px = outYxWidth + outX
-                                frameCanvas[px][1] = col[1]
-                                frameCanvas[px][2] = col[2]
-                                frameCanvas[px][3] = col[3]
-                                frameCanvas[px][4] = 255
+                            local colStr = pal and pal[paletteIndex]
+                            if colStr then
+                                prevCanvas[pixelPos] = colStr
+                            else
+                                prevCanvas[pixelPos] = "\0\0\0\255"
                             end
                         end
                     end
@@ -417,59 +403,81 @@ local function ensureDecodedUpTo(gif, target)
                 idx = idx + meta.iw
             end
         end
-        -- create texture from frameCanvas
-        local dds = buildDDS(width, height, frameCanvas)
+        local t_pixels_end = profiling and getTickCount()
+
+        local t3 = profiling and getTickCount()
+        local dds = buildDDS(width, height, prevCanvas)
+        local t_dds_built = profiling and getTickCount()
         local tex = dxCreateTexture(dds)
-        if not isElement(tex) then
-            tex = dxCreateTexture(width, height)
-            local pixels = dxGetTexturePixels(tex)
-            for y = 0, height - 1 do
-                for x = 0, width - 1 do
-                    local p = y * width + x + 1
-                    local c = frameCanvas[p] or {0,0,0,0}
-                    dxSetPixelColor(pixels, x, y, c[1] or 0, c[2] or 0, c[3] or 0, c[4] or 0)
-                end
-            end
-            dxSetTexturePixels(tex, pixels)
-        end
+        local t_texture_created = profiling and getTickCount()
+        local t4 = profiling and getTickCount()
         textures[i] = tex
-        if isElement(tex) and dgsAttachToAutoDestroy then
+        if isElement(tex) then
             pcall(dgsAttachToAutoDestroy, tex, gif)
         end
+
         -- apply disposal
+        local t_disposal_start = profiling and getTickCount()
         if meta.gce and meta.gce.disposal == 2 then
+            local bgPixel = globalPalette and globalPalette[bgIndex] or "\0\0\0\255"
             for y = meta.top, meta.top + meta.ih - 1 do
                 for x = meta.left, meta.left + meta.iw - 1 do
-                    local px = y * width + x + 1
-                    if globalPalette and globalPalette[bgIndex] then
-                        local c = globalPalette[bgIndex]
-                        prevCanvas[px] = {c[1], c[2], c[3], 255}
-                    else
-                        prevCanvas[px] = {0, 0, 0, 0}
+                    if y >= 0 and y < height and x >= 0 and x < width then
+                        prevCanvas[y * width + x + 1] = bgPixel
                     end
                 end
             end
         elseif meta.gce and meta.gce.disposal == 3 then
             if prevBackup then restoreRegion(prevCanvas, prevBackup, width) end
-        else
-            prevCanvas = frameCanvas
         end
+        local t_disposal_end = profiling and getTickCount()
+
         data.prevCanvas = prevCanvas
         data.frames = textures
         data.decodedUpTo = i
+
+        if profiling then
+            local stats = dgsElementData[gif].profileStats or {frames = {}, totals = {lzw=0, deint=0, tex=0, total=0}}
+            local LZW = (t1 and t0) and (t1 - t0) or 0
+            local DEINT = (t2 and t1) and (t2 - t1) or 0
+            local PIXELS = (t_pixels_end and t_pixels_start) and (t_pixels_end - t_pixels_start) or 0
+            local DDS_BUILD = (t_dds_built and t3) and (t_dds_built - t3) or 0
+            local TEXTURE_CREATE = (t_texture_created and t_dds_built) and (t_texture_created - t_dds_built) or 0
+            local DISPOSAL = (t_disposal_end and t_disposal_start) and (t_disposal_end - t_disposal_start) or 0
+            local TOTAL = (frameStart and t4) and (t4 - frameStart) or 0
+            stats.frames[#stats.frames+1] = {frame = i, lzw = LZW, deint = DEINT, pixels = PIXELS, dds = DDS_BUILD, texCreate = TEXTURE_CREATE, disposal = DISPOSAL, tex = TEXTURE_CREATE, total = TOTAL}
+            stats.totals.lzw = (stats.totals.lzw or 0) + LZW
+            stats.totals.deint = (stats.totals.deint or 0) + DEINT
+            stats.totals.pixels = (stats.totals.pixels or 0) + PIXELS
+            stats.totals.dds = (stats.totals.dds or 0) + DDS_BUILD
+            stats.totals.texCreate = (stats.totals.texCreate or 0) + TEXTURE_CREATE
+            stats.totals.disposal = (stats.totals.disposal or 0) + DISPOSAL
+            stats.totals.tex = (stats.totals.tex or 0) + TEXTURE_CREATE
+            stats.totals.total = (stats.totals.total or 0) + TOTAL
+            dgsSetData(gif, 'profileStats', stats)
+            iprint("Frame "..i..": LZW="..LZW.."ms, Deinterlace="..DEINT.."ms, Pixels="..PIXELS.."ms, DDS="..DDS_BUILD.."ms, TextureCreate="..TEXTURE_CREATE.."ms, Disposal="..DISPOSAL.."ms, Total="..TOTAL.."ms")
+        end
+
+        if data.decodedUpTo == #framesMeta then
+            data.prevCanvas = nil
+            data.globalPalette = nil
+            data.bgIndex = nil
+            collectgarbage()
+            print("Decoded, Clear")
+        end
     end
 end
 
---DGS GIF Interface (lazy)
+-- DGS GIF Interface (unchanged logic, but uses new internals)
 function dgsCreateGIF(pathOrData)
     if type(pathOrData) ~= "string" then error(dgsGenAsrt(pathOrData,"dgsCreateGIF",1,"string or binary data")) end
     local framesMeta, delays, width, height, initialPrevCanvas, globalPalette, bgIndex = dgsGIFDecode(pathOrData)
     local gif = createElement("dgs-dxgif")
     dgsSetData(gif, "asPlugin", "dgs-dxgif")
-    -- placeholders for textures (nil entries); textures will be created lazily
     local placeholders = {}
     for i = 1, #framesMeta do placeholders[i] = nil end
     dgsSetData(gif, "frames", placeholders)
+    dgsSetData(gif, "profiling", true)
     dgsSetData(gif, "framesMeta", framesMeta)
     dgsSetData(gif, "delays", delays)
     dgsSetData(gif, "size", {width, height})
@@ -485,6 +493,7 @@ function dgsCreateGIF(pathOrData)
     return gif
 end
 
+-- Helper functions (unchanged)
 function dgsGIFGetSize(gif)
     if not dgsGetPluginType(gif) == "dgs-dxgif" then error(dgsGenAsrt(gif,"dgsGIFGetSize",1,"plugin dgs-dxgif")) end
     local s = dgsElementData[gif].size or {0,0}
@@ -565,20 +574,20 @@ function dgsGIFSetLooped(gif, looped)
 end
 
 function dgsGIFGetLooped(gif)
-    if not isElement(gif) or dgsGetPluginType(gif) ~= "dgsGIFGetLooped" then error(dgsGenAsrt(gif,"dgsGIFGetLooped",1,"plugin dgs-dxgif")) end
+    if not isElement(gif) or dgsGetPluginType(gif) ~= "dgs-dxgif" then error(dgsGenAsrt(gif,"dgsGIFGetLooped",1,"plugin dgs-dxgif")) end
     return dgsElementData[gif].loop
 end
 
 function dgsGIFSetFrameID(gif, frame)
     if not isElement(gif) or dgsGetPluginType(gif) ~= "dgs-dxgif" then error(dgsGenAsrt(gif,"dgsGIFSetFrameID",1,"plugin dgs-dxgif")) end
     local imageCount = dgsElementData[gif].imageCount or 0
-    frame = frame-frame%1
+    frame = frame - frame % 1
     frame = mathClamp(frame, 1, imageCount)
     local delays = dgsElementData[gif].delays or {}
     local sum = 0
     local spd = dgsElementData[gif].speed or 1
     for i=1, frame-1 do
-        local ms = (delays[i] or 1) * 10 / spd
+        local ms = (delays[i] * 10) / spd
         if ms < 10 then ms = 10 end
         sum = sum + ms
     end
@@ -602,7 +611,6 @@ function dgsGIFGetFrameID(gif)
     return cur
 end
 
--- compute current frame based on elapsed time (ms) since startTick and frame delays
 function dgsGIFCalculateCurrentFrameID(gif)
     local data = dgsElementData[gif]
     if not data then return 1 end
@@ -611,7 +619,6 @@ function dgsGIFCalculateCurrentFrameID(gif)
     local delays = data.delays or {}
     local speed = data.speed or 1
     local loop = data.loop
-    -- build ms delays and total duration
     local msDelays = {}
     local total = 0
     for i=1,#delays do
@@ -645,7 +652,7 @@ function dgsGIFCalculateCurrentFrameID(gif)
     return imageCount
 end
 
--- Register custom texture renderer for GIF plugin (ensure decode before draw)
+-- Custom renderer (unchanged)
 dgsCustomTexture["dgs-dxgif"] = function(posX,posY,width,height,u,v,usize,vsize,image,rotation,rotationX,rotationY,color,postGUI,isInRndTgt)
     local data = dgsElementData[image]
     if not data then return end
@@ -659,7 +666,6 @@ dgsCustomTexture["dgs-dxgif"] = function(posX,posY,width,height,u,v,usize,vsize,
         idx = data.currentFrame or 1
     end
     idx = mathClamp(idx, 1, imageCount)
-    -- ensure requested frame is decoded
     ensureDecodedUpTo(image, idx)
     local tex = (dgsElementData[image].frames or {})[idx]
     if not isElement(tex) then return end
