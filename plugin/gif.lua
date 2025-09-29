@@ -23,6 +23,16 @@ local function readLE16(s, pos)
 end
 
 -- LZW Decoder (unchanged - outputs indices as numbers)
+-- 预先计算 2^n 表
+local powTable = {}
+for i = 0, 16 do
+    powTable[i+1] = 2^i
+end
+
+-- 固定栈（最大只需要 4096 深度，因为 LZW codeSize 最大 12 bit）
+local decodeStack = {}
+local stackTop = 0
+
 local function lzwDecode(minCodeSize, data, expectedSize)
     local dataLen = #data
     local dataPos = 1
@@ -36,18 +46,22 @@ local function lzwDecode(minCodeSize, data, expectedSize)
     local codeSizeInit = minCodeSize + 1
     local limitInit = powTable[codeSizeInit + 1]
 
-    local dict = {}
-    for i = 1, dictSize do
-        dict[i] = {i-1}
+    -- 字典存储为 prefix/lastByte，避免数组复制
+    local dictPrefix = {}
+    local dictByte = {}
+    for i = 0, dictSize-1 do
+        dictPrefix[i] = -1
+        dictByte[i] = i
     end
+
     local nextCode = nextCodeInit
     local codeSize = codeSizeInit
     local limit = limitInit
-    local prev = nil
+    local prevCode = -1
     local out = {}
     local outLen = 0
-
     while true do
+        -- 取一个 code
         local code
         do
             while bitCount < codeSize and dataPos <= dataLen do
@@ -58,54 +72,57 @@ local function lzwDecode(minCodeSize, data, expectedSize)
             end
             local mask = powTable[codeSize + 1]
             code = bitBuffer % mask
-            bitBuffer = bitBuffer / mask
-            bitBuffer = bitBuffer - bitBuffer % 1
+            bitBuffer = (bitBuffer - code) / mask
             bitCount = bitCount - codeSize
         end
         if code == clearCode then
-            dict = {}
-            for i = 1, dictSize do
-                dict[i] = {i-1}
+            -- reset dictionary
+            for i = 0, dictSize-1 do
+                dictPrefix[i] = -1
+                dictByte[i] = i
             end
             nextCode = nextCodeInit
             codeSize = codeSizeInit
             limit = limitInit
-            prev = nil
+            prevCode = -1
         elseif code == endCode then
             break
         else
-            local entry = dict[code+1]
-            if not entry then
-                if code == nextCode and prev then
-                    local e = {}
-                    for k = 1, #prev do e[k] = prev[k] end
-                    e[#e+1] = prev[1]
-                    entry = e
-                else
-                    break
-                end
+            local firstByte
+            stackTop = 0
+            local cur = code
+            if cur >= nextCode then
+                cur = prevCode
+                stackTop = stackTop + 1
+                decodeStack[stackTop] = firstByte or dictByte[cur]
             end
-            for k = 1, #entry do
+            while cur >= 0 do
+                local b = dictByte[cur]
+                stackTop = stackTop + 1
+                decodeStack[stackTop] = b
+                firstByte = b
+                cur = dictPrefix[cur]
+            end
+            for i = stackTop, 1, -1 do
                 outLen = outLen + 1
-                out[outLen] = entry[k]
+                out[outLen] = decodeStack[i]
             end
-            if prev then
-                local newEntry = {}
-                for k = 1, #prev do newEntry[k] = prev[k] end
-                newEntry[#newEntry+1] = entry[1]
+            if prevCode >= 0 then
+                dictPrefix[nextCode] = prevCode
+                dictByte[nextCode] = firstByte
                 nextCode = nextCode + 1
-                dict[nextCode] = newEntry
                 if nextCode >= limit and codeSize < 12 then
                     codeSize = codeSize + 1
                     limit = limit * 2
                 end
             end
-            prev = entry
+            prevCode = code
         end
         if expectedSize and outLen >= expectedSize then break end
     end
     return out
 end
+
 
 local function deinterlace(indices, w, h)
     local out = {}
@@ -193,38 +210,38 @@ local function writeLE32(n)
     return strChar(a,b,c,d)
 end
 
-function buildDDS(w, h, canvas)   -- canvas is table of BGRA strings
-    local DDSD_CAPS = 0x1
-    local DDSD_HEIGHT = 0x2
-    local DDSD_WIDTH = 0x4
-    local DDSD_PITCH = 0x8
-    local DDSD_PIXELFORMAT = 0x1000
-    local DDPF_ALPHAPIXELS = 0x1
-    local DDPF_RGB = 0x40
-    local DDSCAPS_TEXTURE = 0x1000
+local DDSD_CAPS = 0x1
+local DDSD_HEIGHT = 0x2
+local DDSD_WIDTH = 0x4
+local DDSD_PITCH = 0x8
+local DDSD_PIXELFORMAT = 0x1000
+local DDPF_ALPHAPIXELS = 0x1
+local DDPF_RGB = 0x40
+local DDSCAPS_TEXTURE = 0x1000
+local LE32D0 = writeLE32(0)
+local LE32D32 = writeLE32(32)
+local DDSHeadA = tableConcat({
+    "DDS ",
+    writeLE32(124),
+    writeLE32(DDSD_CAPS + DDSD_HEIGHT + DDSD_WIDTH + DDSD_PIXELFORMAT + DDSD_PITCH)
+})
+local DDSHeadB = tableConcat({
+    LE32D0,LE32D0,
+    LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
+    LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
+    LE32D32,
+    writeLE32(DDPF_ALPHAPIXELS + DDPF_RGB),
+    LE32D0,
+    LE32D32,
+    writeLE32(0x00FF0000),
+    writeLE32(0x0000FF00),
+    writeLE32(0x000000FF),
+    writeLE32(0xFF000000),
+    writeLE32(DDSCAPS_TEXTURE), LE32D0, LE32D0, LE32D0, LE32D0,
+})
 
-    local LE32D0 = writeLE32(0)
-    local LE32D32 = writeLE32(32)
-    local parts = tableConcat({
-        "DDS ",
-        writeLE32(124),
-        writeLE32(DDSD_CAPS + DDSD_HEIGHT + DDSD_WIDTH + DDSD_PIXELFORMAT + DDSD_PITCH),
-        writeLE32(h),
-        writeLE32(w),
-        writeLE32(w * 4),
-        LE32D0,LE32D0,
-        LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
-        LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
-        LE32D32,
-        writeLE32(DDPF_ALPHAPIXELS + DDPF_RGB),
-        LE32D0,
-        LE32D32,
-        writeLE32(0x00FF0000),
-        writeLE32(0x0000FF00),
-        writeLE32(0x000000FF),
-        writeLE32(0xFF000000),
-        writeLE32(DDSCAPS_TEXTURE), LE32D0, LE32D0, LE32D0, LE32D0,
-    })
+function buildDDS(w, h, canvas)   -- canvas is table of BGRA strings
+    local parts = tableConcat({DDSHeadA,writeLE32(h),writeLE32(w),writeLE32(w * 4),DDSHeadB})
     table.insert(canvas,1,parts)
     local result = tableConcat(canvas)
     table.remove(canvas,1)
@@ -472,7 +489,7 @@ local function ensureDecodedUpTo(gif, target)
             stats.totals.tex = (stats.totals.tex or 0) + TEXTURE_CREATE
             stats.totals.total = (stats.totals.total or 0) + TOTAL
             dgsSetData(gif, 'profileStats', stats)
-            iprint("Frame "..i..": LZW="..LZW.."ms, Deinterlace="..DEINT.."ms, Pixels="..PIXELS.."ms, DDS="..DDS_BUILD.."ms, TextureCreate="..TEXTURE_CREATE.."ms, Disposal="..DISPOSAL.."ms, Total="..TOTAL.."ms")
+            --iprint("Frame "..i..": LZW="..LZW.."ms, Deinterlace="..DEINT.."ms, Pixels="..PIXELS.."ms, DDS="..DDS_BUILD.."ms, TextureCreate="..TEXTURE_CREATE.."ms, Disposal="..DISPOSAL.."ms, Total="..TOTAL.."ms")
         end
 
         if data.decodedUpTo == #framesMeta then
@@ -480,7 +497,7 @@ local function ensureDecodedUpTo(gif, target)
             data.globalPalette = nil
             data.bgIndex = nil
             collectgarbage()
-            print("Decoded, Clear")
+            --print("Decoded, Clear")
         end
     end
 end
