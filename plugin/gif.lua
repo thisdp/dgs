@@ -9,6 +9,8 @@ local mathMin = math.min
 local mathClamp = math.clamp
 local tableConcat = table.concat
 local powTable = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304,8388608,16777216,33554432,67108864,134217728,268435456,536870912,1073741824,2147483648}
+local TRANSPARENT_PIXEL = "\0\0\0\0"
+local DEFAULT_PIXEL = "\0\0\0\255"
 
 addEvent("onDgsGIFPlay", true)
 addEvent("onDgsGIFStop", true)
@@ -22,16 +24,7 @@ end
 
 -- LZW Decoder (unchanged - outputs indices as numbers)
 local function lzwDecode(minCodeSize, data, expectedSize)
-    local dataBytes
-    if type(data) == "table" then
-        dataBytes = data
-    else
-        dataBytes = {}
-        for i = 1, #data do
-            dataBytes[i] = strByte(data, i)
-        end
-    end
-    local dataLen = #dataBytes
+    local dataLen = #data
     local dataPos = 1
     local bitBuffer = 0
     local bitCount = 0
@@ -58,7 +51,7 @@ local function lzwDecode(minCodeSize, data, expectedSize)
         local code
         do
             while bitCount < codeSize and dataPos <= dataLen do
-                local b = dataBytes[dataPos] or 0
+                local b = data[dataPos] or 0
                 bitBuffer = bitBuffer + b * powTable[bitCount + 1]
                 dataPos = dataPos + 1
                 bitCount = bitCount + 8
@@ -147,30 +140,43 @@ end
 
 -- ✅ MODIFIED: backup/restore for string-based canvas
 local function backupRegion(c, left, top, iw, ih, w, h)
-    local rows = {}
-    local x0 = mathMax(0, left)
-    local y0 = mathMax(0, top)
-    local x1 = mathMin(w - 1, left + iw - 1)
-    local y1 = mathMin(h - 1, top + ih - 1)
+    local x0 = left >= 0 and left or 0
+    local y0 = top >= 0 and top or 0
+    local x1 = mathMin(w-1, left+iw-1)
+    local y1 = mathMin(h-1, top+ih-1)
+    if x0 > x1 or y0 > y1 then return nil end
+
+    local width = x1 - x0 + 1
+    local height = y1 - y0 + 1
+    local totalPixels = width * height
+    if totalPixels == 0 then return nil end
+
+    -- 预分配 table，避免动态增长
+    local buffer = {}
+    buffer[1] = y0
+    buffer[2] = x0
+    buffer[3] = width
+    buffer[4] = height
+    local idx = 5
+
     for y = y0, y1 do
-        local rowPixels = {}
         for x = x0, x1 do
-            rowPixels[#rowPixels + 1] = c[y * w + x + 1]
+            buffer[idx] = c[y * w + x + 1]  -- BGRA string
+            idx = idx + 1
         end
-        rows[#rows + 1] = {y, x0, x1, tableConcat(rowPixels)}
     end
-    return rows
+
+    return buffer  -- {y0, x0, width, height, pixel1, pixel2, ..., pixelN}
 end
 
 local function restoreRegion(c, backup, w)
     if not backup then return end
-    for i = 1, #backup do
-        local entry = backup[i]
-        local y, x0, x1, data = entry[1], entry[2], entry[3], entry[4]
-        local idx = 1
-        for x = x0, x1 do
-            c[y * w + x + 1] = strSub(data, idx, idx + 3)
-            idx = idx + 4
+    local y0, x0, width, height = backup[1], backup[2], backup[3], backup[4]
+    local idx = 5
+    for y = y0, y0 + height - 1 do
+        for x = x0, x0 + width - 1 do
+            c[y * w + x + 1] = backup[idx]
+            idx = idx + 1
         end
     end
 end
@@ -198,28 +204,31 @@ function buildDDS(w, h, canvas)   -- canvas is table of BGRA strings
     local DDSCAPS_TEXTURE = 0x1000
 
     local LE32D0 = writeLE32(0)
-    local parts = {
+    local LE32D32 = writeLE32(32)
+    local parts = tableConcat({
         "DDS ",
         writeLE32(124),
         writeLE32(DDSD_CAPS + DDSD_HEIGHT + DDSD_WIDTH + DDSD_PIXELFORMAT + DDSD_PITCH),
         writeLE32(h),
         writeLE32(w),
         writeLE32(w * 4),
-        LE32D0, LE32D0,
+        LE32D0,LE32D0,
         LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
         LE32D0,LE32D0,LE32D0,LE32D0,LE32D0,
-        writeLE32(32),
+        LE32D32,
         writeLE32(DDPF_ALPHAPIXELS + DDPF_RGB),
         LE32D0,
-        writeLE32(32),
+        LE32D32,
         writeLE32(0x00FF0000),
         writeLE32(0x0000FF00),
         writeLE32(0x000000FF),
         writeLE32(0xFF000000),
         writeLE32(DDSCAPS_TEXTURE), LE32D0, LE32D0, LE32D0, LE32D0,
-    }
-    parts[#parts + 1] = tableConcat(canvas)
-    return tableConcat(parts)
+    })
+    table.insert(canvas,1,parts)
+    local result = tableConcat(canvas)
+    table.remove(canvas,1)
+    return result
 end
 
 -- ✅ MODIFIED: dgsGIFDecode uses string-based canvas
@@ -264,7 +273,7 @@ function dgsGIFDecode(input, maxFrames)
     end
     local totalPixels = width * height
     local prevCanvas = {}
-    local bgPixel = globalPalette and globalPalette[bgIndex] or "\0\0\0\255"
+    local bgPixel = globalPalette and globalPalette[bgIndex] or DEFAULT_PIXEL
     for i = 1, totalPixels do
         prevCanvas[i] = bgPixel
     end
@@ -375,32 +384,31 @@ local function ensureDecodedUpTo(gif, target)
             indices = deinterlace(indices, meta.iw, meta.ih)
             if profiling then t2 = getTickCount() end
         end
-
-        -- ✅ Write pixels as BGRA strings
-        local idx = 1
         local t_pixels_start = profiling and getTickCount()
-        for outY = meta.top, meta.top + meta.ih - 1 do
-            if outY >= 0 and outY < height then
-                for outX = meta.left, meta.left + meta.iw - 1 do
-                    if outX >= 0 and outX < width then
-                        local paletteIndex = indices[idx]
-                        local pixelPos = outY * width + outX + 1
-                        if meta.gce and meta.gce.transparent and paletteIndex == (meta.gce.transIndex or 0) then
-                            prevCanvas[pixelPos] = "\0\0\0\0"  -- fully transparent
-                        else
-                            local pal = meta.palette or globalPalette
-                            local colStr = pal and pal[paletteIndex]
-                            if colStr then
-                                prevCanvas[pixelPos] = colStr
-                            else
-                                prevCanvas[pixelPos] = "\0\0\0\255"
-                            end
-                        end
+        --Optimized
+        local idx = 1
+        local yStart = math.max(meta.top, 0)
+        local yEnd   = math.min(meta.top + meta.ih - 1, height - 1)
+        local xStart = math.max(meta.left, 0)
+        local xEnd   = math.min(meta.left + meta.iw - 1, width - 1)
+        if yStart <= yEnd and xStart <= xEnd then
+            local skipBefore = (yStart - meta.top) * meta.iw + (xStart - meta.left)
+            idx = idx + skipBefore
+            local gce = meta.gce
+            local isTransparent = gce and gce.transparent
+            local transparentIndex = gce and gce.transIndex or 0
+            local palette = meta.palette or globalPalette
+            local lineWidth = (meta.iw - (xEnd - xStart + 1))
+            for yPos = yStart * width, yEnd * width, width do
+                for outX = xStart+1, xEnd+1 do
+                    local paletteIndex = indices[idx]
+                    if isTransparent and paletteIndex == transparentIndex then
+                        prevCanvas[yPos+outX] = TRANSPARENT_PIXEL
+                    else
+                        prevCanvas[yPos+outX] = palette[paletteIndex] or DEFAULT_PIXEL
                     end
                     idx = idx + 1
                 end
-            else
-                idx = idx + meta.iw
             end
         end
         local t_pixels_end = profiling and getTickCount()
@@ -417,13 +425,22 @@ local function ensureDecodedUpTo(gif, target)
         end
 
         -- apply disposal
+        --Optimized
         local t_disposal_start = profiling and getTickCount()
         if meta.gce and meta.gce.disposal == 2 then
-            local bgPixel = globalPalette and globalPalette[bgIndex] or "\0\0\0\255"
-            for y = meta.top, meta.top + meta.ih - 1 do
-                for x = meta.left, meta.left + meta.iw - 1 do
-                    if y >= 0 and y < height and x >= 0 and x < width then
-                        prevCanvas[y * width + x + 1] = bgPixel
+            local bgPixel = globalPalette and globalPalette[bgIndex] or DEFAULT_PIXEL
+            local top, left, iw, ih = meta.top, meta.left, meta.iw, meta.ih
+            local yStart = top >= 0 and top or 0
+            local yEnd   = top + ih - 1 < height and top + ih - 1 or height - 1
+            local xStart = left >= 0 and left or 0
+            local xEnd   = left + iw - 1 < width and left + iw - 1 or width - 1
+            if yStart <= yEnd and xStart <= xEnd then
+                xStart = xStart+1
+                xEnd = xEnd+1
+                -- 💥 高效填充
+                for yPos = yStart * width, yEnd * width, width do
+                    for xPos = xStart, xEnd do
+                        prevCanvas[yPos+xPos] = bgPixel
                     end
                 end
             end
