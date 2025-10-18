@@ -550,6 +550,10 @@ function findRotation3D(x1,y1,z1,x2,y2,z2)
 	return rotx, 0,rotz
 end
 
+function math.map(value,in_min,in_max,out_min,out_max)
+	return (value-in_min)/(in_max-in_min)*(out_max-out_min)+out_min
+end
+
 function math.clamp(value,n_min,n_max)
 	if value <= n_min then
 		return n_min
@@ -926,6 +930,10 @@ function dxDrawImageSection(posX,posY,width,height,u,v,usize,vsize,image,rotatio
 end
 
 function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+	font = font or "default"
+	if dgsGetType(font) == "dgs-dxsmartfont" then
+		font = dgsSmartFontRequestSize(font,math.max(scaleY,scaleX))
+	end
 	if type(text) ~= "string" then
 		local pluginType = dgsGetPluginType(text)
 		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[text].disableCustomTexture then
@@ -1065,6 +1073,38 @@ addEventHandler("onClientRender",root,function()
 	dgsDrawRichText(rt,10,10)
 end)]]
 --------------------------------Other Utility
+function parseHostFromURL(url)
+    if type(url) ~= "string" then return "" end
+    url = url:gsub("^%s+", ""):gsub("%s+$", "")
+    if not url:find("^[a-zA-Z][a-zA-Z0-9+.-]*://") then url = "http://" .. url end
+    local hostpart = url:match("^[a-zA-Z][a-zA-Z0-9+.-]*://([^/\\?#]+)")
+    if not hostpart then return nil end
+    local at = hostpart:find("@", 1, true)
+    if at then
+        hostpart = hostpart:sub(at + 1)
+    end
+    if hostpart:sub(1,1) == "[" then
+        local ipv6 = hostpart:match("^%[([^%]]+)%]")
+        if ipv6 then
+            return "[" .. ipv6 .. "]"
+        else
+            ipv6 = hostpart:match("^%[([^:%]]+)")
+            return ipv6 and ("[" .. ipv6 .. "]") or hostpart
+        end
+    end
+    local last_colon = #hostpart
+    while last_colon > 0 do
+        if hostpart:sub(last_colon, last_colon) == ":" then
+            local port = hostpart:sub(last_colon + 1)
+            if port:match("^%d*$") then
+                return hostpart:sub(1, last_colon - 1)
+            end
+        end
+        last_colon = last_colon - 1
+    end
+    return hostpart
+end
+
 function urlEncode(s)
     s = gsub(s,"([^%w%.%- ])",function(c)
 		return format("%%%02X",c:byte())
