@@ -971,8 +971,10 @@ function handleDxEditText(edit,text,noclear,noAffectCaret,index,historyRecState)
 	newTextData = eleData.masked and strRep(eleData.maskText,utf8Len(newTextData)) or newTextData
 	eleData.textFontLen = dxGetTextWidth(newTextData,eleData.textSize[1],font)
 	if not noAffectCaret then
-		if index <= _index then
-			dgsEditSetCaretPosition(edit,index+textLen)
+		if not utf8.isContainsArabic(text) then
+			if index <= _index then
+				dgsEditSetCaretPosition(edit,index+textLen)
+			end
 		end
 	end
 	eleData.updateRTNextFrame = true

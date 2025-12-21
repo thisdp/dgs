@@ -535,6 +535,64 @@ function dgsSearchFullWordType(text,index,side)
 	return frontPos,backPos-1,startType
 end
 
+function utf8.isContainsArabic(text)
+    local len = #text
+    local i = 1
+    while i <= len do
+        local b1 = text:byte(i)
+        if not b1 then break end
+        if b1 >= 216 and b1 <= 219 then  -- U+0600–U+06FF (ا, ن, ...)
+            return true
+        elseif b1 == 217 then  -- U+0750–U+075F
+            local b2 = text:byte(i + 1)
+            if b2 and b2 >= 144 and b2 <= 159 then
+                return true
+            end
+        elseif b1 == 218 then  -- U+0760–U+077F
+            local b2 = text:byte(i + 1)
+            if b2 and b2 >= 128 and b2 <= 191 then
+                return true
+            end
+        elseif b1 == 224 then  -- U+08A0–U+08FF
+            local b2 = text:byte(i + 1)
+            local b3 = text:byte(i + 2)
+            if b2 == 162 and b3 and b3 >= 160 and b3 <= 191 then
+                return true
+            elseif b2 == 163 and b3 and b3 >= 128 and b3 <= 191 then
+                return true
+            end
+        elseif b1 == 239 then  -- U+FB50–U+FDFF, U+FE70–U+FEFF
+            local b2 = text:byte(i + 1)
+            local b3 = text:byte(i + 2)
+            if b2 and b3 then
+                if (b2 >= 172 and b2 <= 175) or (b2 >= 186 and b2 <= 191) then
+                    return true
+                end
+            end
+        elseif b1 == 240 then  -- U+1EE00–U+1EEFF
+            local b2 = text:byte(i + 1)
+            local b3 = text:byte(i + 2)
+            local b4 = text:byte(i + 3)
+            if b2 == 158 and b3 and b4 and
+               b3 >= 184 and b3 <= 187 and
+               b4 >= 128 and b4 <= 191 then
+                return true
+            end
+        end
+        if b1 < 128 then
+            i = i + 1
+        elseif b1 < 192 then
+            i = i + 1
+        elseif b1 < 224 then
+            i = i + 2
+        elseif b1 < 240 then
+            i = i + 3
+        else
+            i = i + 4
+        end
+    end
+    return false
+end
 --------------------------------Math Utility
 function findRotation(x1,y1,x2,y2,offsetFix)
 	local t = -deg(atan2(x2-x1,y2-y1))+offsetFix
