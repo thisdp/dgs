@@ -2418,7 +2418,7 @@ function dgsGridListSetItemColor(gridlist,r,c,...)
 		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemColor",5,"number")) end
 		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemColor",6,"number")) end
 		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemColor",7,"nil/number")) end
-		local clr = tocolor(...)
+		local clr = tocolor(args[1],args[2],args[3],args[4] or 255)
 		colors = {clr,clr,clr}
 	end
 	if r == -1 then
@@ -2505,7 +2505,7 @@ function dgsGridListSetItemBackGroundColor(gridlist,r,c,...)
 		if not (type(args[2]) == "number") then error(dgsGenAsrt(args[2],"dgsGridListSetItemBackGroundColor",5,"number")) end
 		if not (type(args[3]) == "number") then error(dgsGenAsrt(args[3],"dgsGridListSetItemBackGroundColor",6,"number")) end
 		if not (not args[4] or type(args[4]) == "number") then error(dgsGenAsrt(args[4],"dgsGridListSetItemBackGroundColor",7,"nil/number")) end
-		local clr = tocolor(...)
+		local clr = tocolor(args[1],args[2],args[3],args[4] or 255)
 		colors = {clr,clr,clr}
 	end
 	if r == -1 then
