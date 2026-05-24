@@ -26,6 +26,12 @@ end
 local decodeStack = {}
 local stackTop = 0
 
+local yieldEnabled = true  -- toggled per-GIF by processDecodeQueue
+
+local function tryYield()
+    if yieldEnabled and coroutine.running() then coroutine.yield() end
+end
+
 local function lzwDecode(minCodeSize, data, expectedSize)
     local dataLen = #data
     local dataPos = 1
@@ -55,6 +61,7 @@ local function lzwDecode(minCodeSize, data, expectedSize)
     local out = {}
     out[8192] = nil
     local outLen = 0
+    local iterCount = 0
     while true do
         local code
         do
@@ -106,6 +113,10 @@ local function lzwDecode(minCodeSize, data, expectedSize)
                 end
             end
             prevCode = code
+        end
+        iterCount = iterCount + 1
+        if iterCount % 4000 == 0 then
+            tryYield()
         end
         if expectedSize and outLen >= expectedSize then break end
     end
@@ -480,8 +491,9 @@ local function ensureDecodedUpTo(gif, target)
 end
 
 -- DGS GIF Interface (unchanged logic, but uses new internals)
-function dgsCreateGIF(pathOrData)
+function dgsCreateGIF(pathOrData, lazyLoad)
     if type(pathOrData) ~= "string" then error(dgsGenAsrt(pathOrData,"dgsCreateGIF",1,"string or binary data")) end
+    if lazyLoad == nil then lazyLoad = true end
     local framesMeta, delays, width, height, initialPrevCanvas, globalPalette, bgIndex = dgsGIFDecode(pathOrData)
     local gif = createElement("dgs-dxgif")
     dgsSetData(gif, "asPlugin", "dgs-dxgif")
@@ -499,6 +511,7 @@ function dgsCreateGIF(pathOrData)
     dgsSetData(gif, "currentFrame", 1)
     dgsSetData(gif, "playing", false)
     dgsSetData(gif, "loop", true)
+    dgsSetData(gif, "lazyLoad", lazyLoad)
     dgsTriggerEvent("onDgsPluginCreate",gif,sourceResource)
     return gif
 end
@@ -690,10 +703,11 @@ dgsCustomTexture["dgs-dxgif"] = function(posX,posY,width,height,u,v,usize,vsize,
     return __dxDrawImage(posX,posY,width,height,tex,rotation,rotationX,rotationY,color,postGUI)
 end
 
--- Background decode queue to avoid blocking the render thread.
-local decodeQueue = {} -- [gif] = targetIndex
+-- Background decode queue — coroutine-based. Each GIF gets a coroutine that yields
+-- within decode phases (LZW, pixel rows, DDS, texture), keeping per-tick cost low.
+local decodeQueue = {} -- [gif] = {target = N, co = coroutine}
 local decodeHandlerAttached = false
-local DECODE_TIME_BUDGET_MS = 5 -- ms per frame (tuneable)
+local DECODE_BUDGET_MS = 8 -- max ms per render tick for decode work
 
 local function decodeSingleFrame(gif, i)
     if not isElement(gif) then return false end
@@ -714,7 +728,11 @@ local function decodeSingleFrame(gif, i)
     end
 
     local indices = lzwDecode(meta.lzwMin, meta.imgData, meta.iw * meta.ih)
-    if meta.interlaced then indices = deinterlace(indices, meta.iw, meta.ih) end
+    tryYield()
+    if meta.interlaced then
+        indices = deinterlace(indices, meta.iw, meta.ih)
+        tryYield()
+    end
 
     -- write pixels to prevCanvas (string-based)
     local idx = 1
@@ -734,6 +752,7 @@ local function decodeSingleFrame(gif, i)
         local transparentIndex = gce and gce.transIndex or 0
         local palette = meta.palette or globalPalette
         if isTransparent then
+            local rowCount = 0
             for yPos = yStart * width, yEnd * width, width do
                 for outX = xStart+1, xEnd+1 do
                     local paletteIndex = indices[idx]
@@ -744,20 +763,32 @@ local function decodeSingleFrame(gif, i)
                     end
                     idx = idx + 1
                 end
+                rowCount = rowCount + 1
+                if rowCount % 80 == 0 then
+                    tryYield()
+                end
             end
         else
+            local rowCount = 0
             for yPos = yStart * width, yEnd * width, width do
                 for outX = xStart+1, xEnd+1 do
                     prevCanvas[yPos+outX] = palette[indices[idx]] or DEFAULT_PIXEL
                     idx = idx + 1
+                end
+                rowCount = rowCount + 1
+                if rowCount % 80 == 0 then
+                    tryYield()
                 end
             end
         end
     end
 
     -- build texture
+    tryYield()
     local dds = buildDDS(width, height, prevCanvas)
+    tryYield()
     local tex = dxCreateTexture(dds)
+    tryYield()
     if isElement(tex) then pcall(dgsAttachToAutoDestroy, tex, gif) end
 
     -- apply disposal
@@ -766,15 +797,21 @@ local function decodeSingleFrame(gif, i)
             local bgPixel = globalPalette and globalPalette[bgIndex] or DEFAULT_PIXEL
             local xS = xStart + 1
             local xE = xEnd + 1
+            local rowCount = 0
             for yPos = yStart * width, yEnd * width, width do
                 for xPos = xS, xE do
                     prevCanvas[yPos+xPos] = bgPixel
+                end
+                rowCount = rowCount + 1
+                if rowCount % 80 == 0 then
+                    tryYield()
                 end
             end
         end
     elseif meta.gce and meta.gce.disposal == 3 then
         if prevBackup then restoreRegion(prevCanvas, prevBackup, width) end
     end
+    tryYield()
 
     data.prevCanvas = prevCanvas
     data.frames = data.frames or {}
@@ -790,30 +827,57 @@ local function decodeSingleFrame(gif, i)
     return true
 end
 
+local function gifDecodeWorker(gif)
+    local data = dgsElementData[gif]
+    if data.lazyLoad == false then
+        coroutine.yield()  -- eager: yield immediately so scheduleEnsureDecodedUpTo never blocks
+    end
+    while true do
+        local entry = decodeQueue[gif]
+        if not entry then return end
+        local decodedUpTo = data.decodedUpTo or 0
+        if decodedUpTo >= entry.target then
+            decodeQueue[gif] = nil
+            return
+        end
+        if not isElement(gif) then
+            decodeQueue[gif] = nil
+            return
+        end
+        if not decodeSingleFrame(gif, decodedUpTo + 1) then
+            decodeQueue[gif] = nil
+            return
+        end
+        if data.lazyLoad == false then
+            coroutine.yield()  -- eager: yield after each complete frame
+        end
+    end
+end
+
 local function processDecodeQueue()
     local start = getTickCount()
-    local budget = DECODE_TIME_BUDGET_MS
-    for gif, target in pairs(decodeQueue) do
+    for gif, entry in pairs(decodeQueue) do
         if not isElement(gif) then
             decodeQueue[gif] = nil
         else
-            local data = dgsElementData[gif]
-            if not data then decodeQueue[gif] = nil
+            local co = entry.co
+            local status = coroutine.status(co)
+            if status == "dead" then
+                decodeQueue[gif] = nil
             else
-                local decodedUpTo = data.decodedUpTo or 0
-                if decodedUpTo < target then
-                    local ok = decodeSingleFrame(gif, decodedUpTo + 1)
-                    if not ok then decodeQueue[gif] = nil end
-                else
+                local data = dgsElementData[gif]
+                yieldEnabled = (not data) or (data.lazyLoad ~= false)
+                coroutine.resume(co)
+                yieldEnabled = true
+                if coroutine.status(co) == "dead" then
                     decodeQueue[gif] = nil
                 end
             end
         end
-        if getTickCount() - start >= budget then break end
+        if getTickCount() - start >= DECODE_BUDGET_MS then break end
     end
-    -- detach handler when queue is empty
     local empty = true
-    for k,v in pairs(decodeQueue) do empty = false; break end
+    for _ in pairs(decodeQueue) do empty = false; break end
     if empty and decodeHandlerAttached then
         removeEventHandler("onClientRender", root, processDecodeQueue)
         decodeHandlerAttached = false
@@ -826,7 +890,14 @@ function scheduleEnsureDecodedUpTo(gif, target)
     if not data then return end
     target = math.min(target, #(data.framesMeta or {}))
     if target <= (data.decodedUpTo or 0) then return end
-    decodeQueue[gif] = math.max(decodeQueue[gif] or 0, target)
+    local entry = decodeQueue[gif]
+    if not entry then
+        local co = coroutine.create(gifDecodeWorker)
+        decodeQueue[gif] = {target = target, co = co}
+        coroutine.resume(co, gif)  -- lazy: ~2ms then yield; eager: immediate yield (0ms)
+    else
+        entry.target = math.max(entry.target, target)
+    end
     if not decodeHandlerAttached then
         addEventHandler("onClientRender", root, processDecodeQueue)
         decodeHandlerAttached = true
