@@ -3,6 +3,7 @@ dgsRegisterPluginType("dgs-dxgif")
 local strByte = string.byte
 local strSub = string.sub
 local strChar = string.char
+local strRev = string.reverse
 local mathFloor = math.floor
 local mathMax = math.max
 local mathMin = math.min
@@ -22,14 +23,6 @@ local function readLE16(s, pos)
     return a + (b or 0) * 256
 end
 
--- LZW Decoder (unchanged - outputs indices as numbers)
--- 预先计算 2^n 表
-local powTable = {}
-for i = 0, 16 do
-    powTable[i+1] = 2^i
-end
-
--- 固定栈（最大只需要 4096 深度，因为 LZW codeSize 最大 12 bit）
 local decodeStack = {}
 local stackTop = 0
 
@@ -46,9 +39,10 @@ local function lzwDecode(minCodeSize, data, expectedSize)
     local codeSizeInit = minCodeSize + 1
     local limitInit = powTable[codeSizeInit + 1]
 
-    -- 字典存储为 prefix/lastByte，避免数组复制
     local dictPrefix = {}
     local dictByte = {}
+    dictPrefix[dictSize-1] = nil
+    dictByte[dictSize-1] = nil
     for i = 0, dictSize-1 do
         dictPrefix[i] = -1
         dictByte[i] = i
@@ -59,9 +53,9 @@ local function lzwDecode(minCodeSize, data, expectedSize)
     local limit = limitInit
     local prevCode = -1
     local out = {}
+    out[8192] = nil
     local outLen = 0
     while true do
-        -- 取一个 code
         local code
         do
             while bitCount < codeSize and dataPos <= dataLen do
@@ -76,11 +70,6 @@ local function lzwDecode(minCodeSize, data, expectedSize)
             bitCount = bitCount - codeSize
         end
         if code == clearCode then
-            -- reset dictionary
-            for i = 0, dictSize-1 do
-                dictPrefix[i] = -1
-                dictByte[i] = i
-            end
             nextCode = nextCodeInit
             codeSize = codeSizeInit
             limit = limitInit
@@ -142,20 +131,17 @@ local function deinterlace(indices, w, h)
     return out
 end
 
--- ✅ MODIFIED: palette now stores BGRA strings
 local function parseColorTable(data, pos, count)
     local palette = {}
-    for i = 1, count do
-        local r = strByte(data, pos)
-        local g = strByte(data, pos + 1)
-        local b = strByte(data, pos + 2)
-        palette[i - 1] = strChar(b, g, r, 255)  -- BGRA
+    palette[count] = nil
+    for i = 0, count-1 do
+        local r,g,b = strByte(data, pos, pos+2)
+        palette[i] = strChar(b, g, r, 255)  -- BGRA
         pos = pos + 3
     end
     return palette, pos
 end
 
--- ✅ MODIFIED: backup/restore for string-based canvas
 local function backupRegion(c, left, top, iw, ih, w, h)
     local x0 = left >= 0 and left or 0
     local y0 = top >= 0 and top or 0
@@ -168,12 +154,7 @@ local function backupRegion(c, left, top, iw, ih, w, h)
     local totalPixels = width * height
     if totalPixels == 0 then return nil end
 
-    -- 预分配 table，避免动态增长
-    local buffer = {}
-    buffer[1] = y0
-    buffer[2] = x0
-    buffer[3] = width
-    buffer[4] = height
+    local buffer = {y0,x0,width,height}
     local idx = 5
 
     for y = y0, y1 do
@@ -198,7 +179,6 @@ local function restoreRegion(c, backup, w)
     end
 end
 
--- ✅ MODIFIED: buildDDS now trivial
 local function writeLE32(n)
     local a = n % 0x100
     n = (n-a)/0x100
@@ -241,14 +221,9 @@ local DDSHeadB = tableConcat({
 })
 
 function buildDDS(w, h, canvas)   -- canvas is table of BGRA strings
-    local parts = tableConcat({DDSHeadA,writeLE32(h),writeLE32(w),writeLE32(w * 4),DDSHeadB})
-    table.insert(canvas,1,parts)
-    local result = tableConcat(canvas)
-    table.remove(canvas,1)
-    return result
+    return tableConcat({DDSHeadA, writeLE32(h), writeLE32(w), writeLE32(w * 4), DDSHeadB, tableConcat(canvas)})
 end
 
--- ✅ MODIFIED: dgsGIFDecode uses string-based canvas
 function dgsGIFDecode(input, maxFrames)
     maxFrames = maxFrames or MAX_FRAMES_DEFAULT
     if type(input) ~= "string" then error(dgsGenAsrt(input,"dgsGIFDecode",1,"string or binary string")) end
@@ -305,9 +280,10 @@ function dgsGIFDecode(input, maxFrames)
         while true do
             local blockSize = strByte(raw, pos); pos = pos + 1
             if blockSize == 0 then break end
-            for i = 0, blockSize - 1 do
+            local blockEnd = pos + blockSize - 1
+            for i = pos, blockEnd do
                 outLen = outLen + 1
-                out[outLen] = strByte(raw, pos + i)
+                out[outLen] = strByte(raw, i)
             end
             pos = pos + blockSize
         end
@@ -368,7 +344,6 @@ function dgsGIFDecode(input, maxFrames)
     return framesMeta, delays, width, height, prevCanvas, globalPalette, bgIndex
 end
 
--- ✅ MODIFIED: ensureDecodedUpTo uses string canvas
 local function ensureDecodedUpTo(gif, target)
     if not isElement(gif) then return end
     local data = dgsElementData[gif]
@@ -391,7 +366,7 @@ local function ensureDecodedUpTo(gif, target)
             prevBackup = backupRegion(prevCanvas, meta.left, meta.top, meta.iw, meta.ih, width, height)
         end
 
-        local profiling = dgsElementData[gif] and dgsElementData[gif].profiling
+        local profiling = false
         local frameStart = profiling and getTickCount()
         local t0 = profiling and getTickCount()
         local indices = lzwDecode(meta.lzwMin, meta.imgData, meta.iw * meta.ih)
@@ -402,29 +377,40 @@ local function ensureDecodedUpTo(gif, target)
             if profiling then t2 = getTickCount() end
         end
         local t_pixels_start = profiling and getTickCount()
-        --Optimized
         local idx = 1
-        local yStart = math.max(meta.top, 0)
-        local yEnd   = math.min(meta.top + meta.ih - 1, height - 1)
-        local xStart = math.max(meta.left, 0)
-        local xEnd   = math.min(meta.left + meta.iw - 1, width - 1)
+        local top = meta.top
+        local left = meta.left
+        local bottom = top + meta.ih - 1
+        local right = left + meta.iw - 1
+        local yStart = top > 0 and top or 0
+        local yEnd = bottom < height and bottom or height - 1
+        local xStart = left > 0 and left or 0
+        local xEnd = right < width and right or width - 1
         if yStart <= yEnd and xStart <= xEnd then
-            local skipBefore = (yStart - meta.top) * meta.iw + (xStart - meta.left)
+            local skipBefore = (yStart - top) * meta.iw + (xStart - left)
             idx = idx + skipBefore
             local gce = meta.gce
             local isTransparent = gce and gce.transparent
             local transparentIndex = gce and gce.transIndex or 0
             local palette = meta.palette or globalPalette
-            local lineWidth = (meta.iw - (xEnd - xStart + 1))
-            for yPos = yStart * width, yEnd * width, width do
-                for outX = xStart+1, xEnd+1 do
-                    local paletteIndex = indices[idx]
-                    if isTransparent and paletteIndex == transparentIndex then
-                        prevCanvas[yPos+outX] = TRANSPARENT_PIXEL
-                    else
-                        prevCanvas[yPos+outX] = palette[paletteIndex] or DEFAULT_PIXEL
+            if isTransparent then
+                for yPos = yStart * width, yEnd * width, width do
+                    for outX = xStart+1, xEnd+1 do
+                        local paletteIndex = indices[idx]
+                        if paletteIndex == transparentIndex then
+                            prevCanvas[yPos+outX] = TRANSPARENT_PIXEL
+                        else
+                            prevCanvas[yPos+outX] = palette[paletteIndex] or DEFAULT_PIXEL
+                        end
+                        idx = idx + 1
                     end
-                    idx = idx + 1
+                end
+            else
+                for yPos = yStart * width, yEnd * width, width do
+                    for outX = xStart+1, xEnd+1 do
+                        prevCanvas[yPos+outX] = palette[indices[idx]] or DEFAULT_PIXEL
+                        idx = idx + 1
+                    end
                 end
             end
         end
@@ -433,7 +419,7 @@ local function ensureDecodedUpTo(gif, target)
         local t3 = profiling and getTickCount()
         local dds = buildDDS(width, height, prevCanvas)
         local t_dds_built = profiling and getTickCount()
-        local tex = dxCreateTexture(dds)
+        local tex = dxCreateTexture(dds,"argb",false)
         local t_texture_created = profiling and getTickCount()
         local t4 = profiling and getTickCount()
         textures[i] = tex
@@ -441,22 +427,14 @@ local function ensureDecodedUpTo(gif, target)
             pcall(dgsAttachToAutoDestroy, tex, gif)
         end
 
-        -- apply disposal
-        --Optimized
         local t_disposal_start = profiling and getTickCount()
         if meta.gce and meta.gce.disposal == 2 then
-            local bgPixel = globalPalette and globalPalette[bgIndex] or DEFAULT_PIXEL
-            local top, left, iw, ih = meta.top, meta.left, meta.iw, meta.ih
-            local yStart = top >= 0 and top or 0
-            local yEnd   = top + ih - 1 < height and top + ih - 1 or height - 1
-            local xStart = left >= 0 and left or 0
-            local xEnd   = left + iw - 1 < width and left + iw - 1 or width - 1
             if yStart <= yEnd and xStart <= xEnd then
-                xStart = xStart+1
-                xEnd = xEnd+1
-                -- 💥 高效填充
+                local bgPixel = globalPalette and globalPalette[bgIndex] or DEFAULT_PIXEL
+                local xS = xStart + 1
+                local xE = xEnd + 1
                 for yPos = yStart * width, yEnd * width, width do
-                    for xPos = xStart, xEnd do
+                    for xPos = xS, xE do
                         prevCanvas[yPos+xPos] = bgPixel
                     end
                 end
@@ -469,7 +447,6 @@ local function ensureDecodedUpTo(gif, target)
         data.prevCanvas = prevCanvas
         data.frames = textures
         data.decodedUpTo = i
-
         if profiling then
             local stats = dgsElementData[gif].profileStats or {frames = {}, totals = {lzw=0, deint=0, tex=0, total=0}}
             local LZW = (t1 and t0) and (t1 - t0) or 0
@@ -489,7 +466,7 @@ local function ensureDecodedUpTo(gif, target)
             stats.totals.tex = (stats.totals.tex or 0) + TEXTURE_CREATE
             stats.totals.total = (stats.totals.total or 0) + TOTAL
             dgsSetData(gif, 'profileStats', stats)
-            --iprint("Frame "..i..": LZW="..LZW.."ms, Deinterlace="..DEINT.."ms, Pixels="..PIXELS.."ms, DDS="..DDS_BUILD.."ms, TextureCreate="..TEXTURE_CREATE.."ms, Disposal="..DISPOSAL.."ms, Total="..TOTAL.."ms")
+            iprint("Frame "..i..": LZW="..LZW.."ms, Deinterlace="..DEINT.."ms, Pixels="..PIXELS.."ms, DDS="..DDS_BUILD.."ms, TextureCreate="..TEXTURE_CREATE.."ms, Disposal="..DISPOSAL.."ms, Total="..TOTAL.."ms")
         end
 
         if data.decodedUpTo == #framesMeta then
@@ -497,7 +474,7 @@ local function ensureDecodedUpTo(gif, target)
             data.globalPalette = nil
             data.bgIndex = nil
             collectgarbage()
-            --print("Decoded, Clear")
+            print("Decoded, Clear")
         end
     end
 end
@@ -511,7 +488,6 @@ function dgsCreateGIF(pathOrData)
     local placeholders = {}
     for i = 1, #framesMeta do placeholders[i] = nil end
     dgsSetData(gif, "frames", placeholders)
-    dgsSetData(gif, "profiling", true)
     dgsSetData(gif, "framesMeta", framesMeta)
     dgsSetData(gif, "delays", delays)
     dgsSetData(gif, "size", {width, height})
@@ -543,7 +519,7 @@ function dgsGIFGetImages(gif)
     if not dgsGetPluginType(gif) == "dgs-dxgif" then error(dgsGenAsrt(gif,"dgsGIFGetImages",1,"plugin dgs-dxgif")) end
     local meta = dgsElementData[gif]
     if meta then
-        ensureDecodedUpTo(gif, meta.imageCount or (#(meta.framesMeta or {})))
+        scheduleEnsureDecodedUpTo(gif, meta.imageCount or (#(meta.framesMeta or {})))
     end
     return dgsElementData[gif].frames or {}
 end
@@ -570,6 +546,7 @@ function dgsGIFPlay(gif, speed, frame)
     dgsSetData(gif, 'startTick', getTickCount() - sum)
     dgsSetData(gif, 'pausedElapsed', nil)
     dgsSetData(gif, 'playing', true)
+    scheduleEnsureDecodedUpTo(gif, math.min(5, imageCount))
     dgsTriggerEvent("onDgsGIFPlay", gif)
     return true
 end
@@ -700,8 +677,158 @@ dgsCustomTexture["dgs-dxgif"] = function(posX,posY,width,height,u,v,usize,vsize,
         idx = data.currentFrame or 1
     end
     idx = mathClamp(idx, 1, imageCount)
-    ensureDecodedUpTo(image, idx)
-    local tex = (dgsElementData[image].frames or {})[idx]
+    scheduleEnsureDecodedUpTo(image, math.min(idx + 3, imageCount))
+    local frames = data.frames or {}
+    local tex = frames[idx]
+    if not isElement(tex) then
+        local decodedUpTo = data.decodedUpTo or 0
+        if decodedUpTo > 0 then
+            tex = frames[decodedUpTo]
+        end
+    end
     if not isElement(tex) then return end
     return __dxDrawImage(posX,posY,width,height,tex,rotation,rotationX,rotationY,color,postGUI)
+end
+
+-- Background decode queue to avoid blocking the render thread.
+local decodeQueue = {} -- [gif] = targetIndex
+local decodeHandlerAttached = false
+local DECODE_TIME_BUDGET_MS = 5 -- ms per frame (tuneable)
+
+local function decodeSingleFrame(gif, i)
+    if not isElement(gif) then return false end
+    local data = dgsElementData[gif]
+    if not data then return false end
+    local framesMeta = data.framesMeta or {}
+    local meta = framesMeta[i]
+    if not meta then return false end
+
+    local width, height = (data.size or {0,0})[1] or 0, (data.size or {0,0})[2] or 0
+    local prevCanvas = data.prevCanvas or {}
+    local globalPalette = data.globalPalette
+    local bgIndex = data.bgIndex
+
+    local prevBackup
+    if meta.gce and meta.gce.disposal == 3 then
+        prevBackup = backupRegion(prevCanvas, meta.left, meta.top, meta.iw, meta.ih, width, height)
+    end
+
+    local indices = lzwDecode(meta.lzwMin, meta.imgData, meta.iw * meta.ih)
+    if meta.interlaced then indices = deinterlace(indices, meta.iw, meta.ih) end
+
+    -- write pixels to prevCanvas (string-based)
+    local idx = 1
+    local top = meta.top
+    local left = meta.left
+    local bottom = top + meta.ih - 1
+    local right = left + meta.iw - 1
+    local yStart = top > 0 and top or 0
+    local yEnd = bottom < height and bottom or height - 1
+    local xStart = left > 0 and left or 0
+    local xEnd = right < width and right or width - 1
+    if yStart <= yEnd and xStart <= xEnd then
+        local skipBefore = (yStart - top) * meta.iw + (xStart - left)
+        idx = idx + skipBefore
+        local gce = meta.gce
+        local isTransparent = gce and gce.transparent
+        local transparentIndex = gce and gce.transIndex or 0
+        local palette = meta.palette or globalPalette
+        if isTransparent then
+            for yPos = yStart * width, yEnd * width, width do
+                for outX = xStart+1, xEnd+1 do
+                    local paletteIndex = indices[idx]
+                    if paletteIndex == transparentIndex then
+                        prevCanvas[yPos+outX] = TRANSPARENT_PIXEL
+                    else
+                        prevCanvas[yPos+outX] = palette[paletteIndex] or DEFAULT_PIXEL
+                    end
+                    idx = idx + 1
+                end
+            end
+        else
+            for yPos = yStart * width, yEnd * width, width do
+                for outX = xStart+1, xEnd+1 do
+                    prevCanvas[yPos+outX] = palette[indices[idx]] or DEFAULT_PIXEL
+                    idx = idx + 1
+                end
+            end
+        end
+    end
+
+    -- build texture
+    local dds = buildDDS(width, height, prevCanvas)
+    local tex = dxCreateTexture(dds)
+    if isElement(tex) then pcall(dgsAttachToAutoDestroy, tex, gif) end
+
+    -- apply disposal
+    if meta.gce and meta.gce.disposal == 2 then
+        if yStart <= yEnd and xStart <= xEnd then
+            local bgPixel = globalPalette and globalPalette[bgIndex] or DEFAULT_PIXEL
+            local xS = xStart + 1
+            local xE = xEnd + 1
+            for yPos = yStart * width, yEnd * width, width do
+                for xPos = xS, xE do
+                    prevCanvas[yPos+xPos] = bgPixel
+                end
+            end
+        end
+    elseif meta.gce and meta.gce.disposal == 3 then
+        if prevBackup then restoreRegion(prevCanvas, prevBackup, width) end
+    end
+
+    data.prevCanvas = prevCanvas
+    data.frames = data.frames or {}
+    data.frames[i] = tex
+    data.decodedUpTo = i
+
+    if data.decodedUpTo == #framesMeta then
+        data.prevCanvas = nil
+        data.globalPalette = nil
+        data.bgIndex = nil
+        collectgarbage()
+    end
+    return true
+end
+
+local function processDecodeQueue()
+    local start = getTickCount()
+    local budget = DECODE_TIME_BUDGET_MS
+    for gif, target in pairs(decodeQueue) do
+        if not isElement(gif) then
+            decodeQueue[gif] = nil
+        else
+            local data = dgsElementData[gif]
+            if not data then decodeQueue[gif] = nil
+            else
+                local decodedUpTo = data.decodedUpTo or 0
+                if decodedUpTo < target then
+                    local ok = decodeSingleFrame(gif, decodedUpTo + 1)
+                    if not ok then decodeQueue[gif] = nil end
+                else
+                    decodeQueue[gif] = nil
+                end
+            end
+        end
+        if getTickCount() - start >= budget then break end
+    end
+    -- detach handler when queue is empty
+    local empty = true
+    for k,v in pairs(decodeQueue) do empty = false; break end
+    if empty and decodeHandlerAttached then
+        removeEventHandler("onClientRender", root, processDecodeQueue)
+        decodeHandlerAttached = false
+    end
+end
+
+function scheduleEnsureDecodedUpTo(gif, target)
+    if not isElement(gif) or dgsGetPluginType(gif) ~= "dgs-dxgif" then return end
+    local data = dgsElementData[gif]
+    if not data then return end
+    target = math.min(target, #(data.framesMeta or {}))
+    if target <= (data.decodedUpTo or 0) then return end
+    decodeQueue[gif] = math.max(decodeQueue[gif] or 0, target)
+    if not decodeHandlerAttached then
+        addEventHandler("onClientRender", root, processDecodeQueue)
+        decodeHandlerAttached = true
+    end
 end
