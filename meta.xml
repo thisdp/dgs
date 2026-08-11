@@ -2,6 +2,7 @@
 	<info type="script" name="dgs" description="thisdp's directx graphic user interface system" author="DGS Community" version="3.524" />
 	<file src="html/media.html" />
 	<file src="styleManager/styleMapper.lua"/>
+	<file src="test1.gif" />
 	<script src="lua.lua" type="server" />
 	<script src="server.lua" type="server" />
 	<script src="utility.lua" type="client" />
@@ -90,6 +91,9 @@
 	
 	<script src="plugin/screenSource.lua" type="client" />
 	
+	<script src="plugin/smartfont.lua" type="client" />
+	<file src="fzht.ttf" type="client" />
+
 	<script src="plugin/svg.lua" type="client" />
 	
 	<script src="plugin/chart.lua" type="client" />
@@ -1022,5 +1026,4 @@
 	</settings>
 
 	<download_priority_group>999</download_priority_group>
-</meta>p>999</download_priority_group>
-</meta>>
+</meta>
