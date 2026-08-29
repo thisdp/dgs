@@ -346,8 +346,10 @@ function checkGridListScrollBar(scb,new,old)
 			end
 			local temp = -new*(rowLength-eleData.absSize[2]+scbThickH+eleData.columnHeight)/100
 			if temp <= 0 then
-				temp = eleData.scrollFloor[1] and temp-temp%1 or temp
+				temp = eleData.scrollFloor[1] and (temp >= 0 and temp-temp%1 or math.ceil(temp)) or temp
 				dgsSetData(gridlist,"rowMoveOffset",temp)
+			else
+				dgsSetData(gridlist,"rowMoveOffset",0)
 			end
 			dgsTriggerEvent("onDgsElementScroll",gridlist,source,new,old)
 		elseif source == scrollbars[2] then
@@ -356,8 +358,10 @@ function checkGridListScrollBar(scb,new,old)
 			local columnOffset = eleData.columnOffset
 			local temp = -new*(columnWidth-eleData.absSize[1]+scbThickV+columnOffset)/100
 			if temp <= 0 then
-				temp = eleData.scrollFloor[2] and temp-temp%1 or temp
+				temp = eleData.scrollFloor[2] and (temp >= 0 and temp-temp%1 or math.ceil(temp)) or temp
 				dgsSetData(gridlist,"columnMoveOffset",temp)
+			else
+				dgsSetData(gridlist,"columnMoveOffset",0)
 			end
 			dgsTriggerEvent("onDgsElementScroll",gridlist,source,new,old)
 		end
@@ -2718,13 +2722,6 @@ function dgsGridListUpdateRowMoveOffset(gridlist,rowMoveOffset)
 		rowCount = #eleData.rowData
 	end
 	local whichRowToStart,whichRowToEnd
-	if (-rowMoveOffset+h-columnHeight-scbThickH)/rowHeightLeadingTemp > rowCount then
-		if (h-columnHeight-scbThickH)/rowHeightLeadingTemp > rowCount then
-			dgsGridListSetScrollPosition(gridlist,0)
-		else
-			dgsGridListSetScrollPosition(gridlist,100)
-		end
-	end
 	if eleData.rowShowUnclippedOnly then
 		local temp1 = rowMoveOffset/rowHeightLeadingTemp
 		whichRowToStart = -(temp1-temp1%1)+1
@@ -2798,21 +2795,30 @@ function configGridList(gridlist)
 	dgsSetSize(scrollbar[2],relSizX,scbThick,false)
 	local scroll1 = dgsElementData[scrollbar[1]].scrollPosition
 	local scroll2 = dgsElementData[scrollbar[2]].scrollPosition
-	dgsSetData(gridlist,"rowMoveOffset",-scroll1*(rowLength-rowShowRange)/100)
+	if rowLength <= rowShowRange or rowShowRange <= 0 then
+		dgsSetData(gridlist,"rowMoveOffset",0)
+		dgsSetData(gridlist,"rowMoveOffsetTemp",0)
+		if scroll1 ~= 0 then
+			dgsScrollBarSetScrollPosition(scrollbar[1],0)
+		end
+	else
+		local currentOffset = -scroll1*(rowLength-rowShowRange)/100
+		dgsSetData(gridlist,"rowMoveOffset",currentOffset)
+	end
 
 	local scbLengthVrt = eleData.scrollBarLength[1]
-	local higLen = 1-(rowLength-rowShowRange)/rowLength
-	higLen = higLen >= 0.95 and 0.95 or higLen
+	local higLen = rowLength > 0 and (1-(rowLength-rowShowRange)/rowLength) or 1
+	higLen = higLen >= 0.95 and 0.95 or (higLen <= 0.05 and 0.05 or higLen)
 	dgsSetData(scrollbar[1],"cursorLength",scbLengthVrt or {higLen,true})
-	local verticalScrollSize = eleData.scrollSize/(rowLength-rowShowRange)
+	local verticalScrollSize = (rowLength > rowShowRange) and (eleData.scrollSize/(rowLength-rowShowRange)) or 1
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	dgsSetData(scrollbar[1],"moveType","sync")
 
 	local scbLengthHoz = dgsElementData[gridlist].scrollBarLength[2]
-	local widLen = 1-(columnWidth-columnShowRange)/columnWidth
-	widLen = widLen >= 0.95 and 0.95 or widLen
+	local widLen = columnWidth > 0 and (1-(columnWidth-columnShowRange)/columnWidth) or 1
+	widLen = widLen >= 0.95 and 0.95 or (widLen <= 0.05 and 0.05 or widLen)
 	dgsSetData(scrollbar[2],"cursorLength",scbLengthHoz or {widLen,true})
-	local horizontalScrollSize = eleData.scrollSize*5/(columnWidth-columnShowRange)
+	local horizontalScrollSize = (columnWidth > columnShowRange) and (eleData.scrollSize*5/(columnWidth-columnShowRange)) or 1
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	dgsSetData(scrollbar[2],"moveType","sync")
 	dgsGridListRecreateRenderTarget(gridlist,true)
@@ -3092,11 +3098,11 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			mHardness = eleData.moveHardness[2]
 		end
 		eleData.rowMoveOffsetTemp = mathLerp(mHardness,eleData.rowMoveOffsetTemp,_rowMoveOffset)
-		local rMoveOffset = eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1
 		if _rowMoveOffset-eleData.rowMoveOffsetTemp <= 0.5 and _rowMoveOffset-eleData.rowMoveOffsetTemp >= -0.5 then
 			eleData.rowMoveOffsetTemp = _rowMoveOffset
 			dgsElementData[scb1].moveType = "sync"
 		end
+		local rMoveOffset = eleData.rowMoveOffsetTemp >= 0 and eleData.rowMoveOffsetTemp-eleData.rowMoveOffsetTemp%1 or math.ceil(eleData.rowMoveOffsetTemp)
 		dgsGridListUpdateRowMoveOffset(source)
 		rowMoveOffset = rMoveOffset
 	end
@@ -3115,11 +3121,11 @@ dgsRenderer["dgs-dxgridlist"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInher
 			mHardness = eleData.moveHardness[2]
 		end
 		eleData.columnMoveOffsetTemp = mathLerp(mHardness,eleData.columnMoveOffsetTemp,_columnMoveOffset)
-		local cMoveOffset = eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1
 		if _columnMoveOffset-eleData.columnMoveOffsetTemp <= 0.5 and _columnMoveOffset-eleData.columnMoveOffsetTemp >= -0.5 then
 			eleData.columnMoveOffsetTemp = _columnMoveOffset
 			dgsElementData[scb2].moveType = "sync"
 		end
+		local cMoveOffset = eleData.columnMoveOffsetTemp >= 0 and eleData.columnMoveOffsetTemp-eleData.columnMoveOffsetTemp%1 or math.ceil(eleData.columnMoveOffsetTemp)
 		columnMoveOffset = cMoveOffset
 	end
 	--

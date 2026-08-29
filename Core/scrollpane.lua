@@ -292,20 +292,20 @@ function configScrollPane(scrollpane)
 	dgsSetEnabled(scrollbar[2],lengthHorizontal  ~= 1 and true or false)
 
 	local scbLengthVrt = eleData.scrollBarLength[1]
-	local higLen = 1-(childBoundingH-relSizY)/childBoundingH
-	higLen = higLen >= 0.95 and 0.95 or higLen
+	local higLen = childBoundingH > 0 and (1-(childBoundingH-relSizY)/childBoundingH) or 1
+	higLen = higLen >= 0.95 and 0.95 or (higLen <= 0.05 and 0.05 or higLen)
 	length = scbLengthVrt or {higLen,true}
 	dgsSetData(scrollbar[1],"cursorLength",length)
-	local verticalScrollSize = eleData.scrollSize/(childBoundingH-relSizY)
+	local verticalScrollSize = (childBoundingH > relSizY) and (eleData.scrollSize/(childBoundingH-relSizY)) or 1
 	dgsSetData(scrollbar[1],"multiplier",{verticalScrollSize,true})
 	dgsSetData(scrollbar[1],"moveType","sync")
 
 	local scbLengthHoz = eleData.scrollBarLength[2]
-	local widLen = 1-(childBoundingW-relSizX)/childBoundingW
-	widLen = widLen >= 0.95 and 0.95 or widLen
+	local widLen = childBoundingW > 0 and (1-(childBoundingW-relSizX)/childBoundingW) or 1
+	widLen = widLen >= 0.95 and 0.95 or (widLen <= 0.05 and 0.05 or widLen)
 	local length = scbLengthHoz or {widLen,true}
 	dgsSetData(scrollbar[2],"cursorLength",length)
-	local horizontalScrollSize = eleData.scrollSize*5/(childBoundingW-relSizX)
+	local horizontalScrollSize = (childBoundingW > relSizX) and (eleData.scrollSize*5/(childBoundingW-relSizX)) or 1
 	dgsSetData(scrollbar[2],"multiplier",{horizontalScrollSize,true})
 	dgsSetData(scrollbar[2],"moveType","sync")
 	dgsSetData(scrollpane,"configNextFrame",false)
@@ -541,8 +541,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		end
 		if offsetX >= 0 then offsetX = 0 end
 		eleData.horizontalMoveOffset = offsetX
-		eleData.horizontalMoveOffsetRelative = -offsetX/maxX
-		offsetX = offsetX-offsetX%1
+		eleData.horizontalMoveOffsetRelative = maxX ~= 0 and -offsetX/maxX or 0
+		offsetX = offsetX >= 0 and offsetX-offsetX%1 or math.ceil(offsetX)
 	end
 	local _offsetY = -maxY*dgsElementData[ scrollbar[1] ].scrollPosition*0.01
 	offsetY = eleData.verticalMoveOffset
@@ -561,8 +561,8 @@ dgsRenderer["dgs-dxscrollpane"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInh
 		end
 		if offsetY >= 0 then offsetY = 0 end
 		eleData.verticalMoveOffset = offsetY
-		eleData.verticalMoveOffsetRelative = -offsetY/maxY
-		offsetY = offsetY-offsetY%1
+		eleData.verticalMoveOffsetRelative = maxY ~= 0 and -offsetY/maxY or 0
+		offsetY = offsetY >= 0 and offsetY-offsetY%1 or math.ceil(offsetY)
 	end
 
 	local basePointOffset = eleData.basePointOffset
