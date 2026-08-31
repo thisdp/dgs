@@ -18,6 +18,7 @@ dgsRegisterProperties("dgs-dxmemo",{
 	placeHolder = 					{	PArg.String	},
 	placeHolderColor = 				{	PArg.Color	},
 	placeHolderColorCoded = 		{	PArg.Bool	},
+	colorCoded = 						{	PArg.Bool	},
 	placeHolderFont = 				{	PArg.Font	},
 	placeHolderIgnoreRenderTarget = {	PArg.Bool	},
 	placeHolderOffset = 			{	{ PArg.Number, PArg.Number }	},
@@ -1631,6 +1632,7 @@ dgsOnPropertyChange["dgs-dxmemo"] = {
 		dgsElementData[dgsEle].updateRTNextFrame = true
 	end,
 	textColor = dgsMemoUpdateRTNextFrame,
+	colorCoded = dgsMemoUpdateRTNextFrame,
 	font = function(dgsEle,key,value,oldValue)
 		--Multilingual
 		if type(value) == "table" then
@@ -1729,6 +1731,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 	local textRenderBuffer = eleData.textRenderBuffer
 	textRenderBuffer.count = 0
 	local textColor = eleData.textColor
+	local colorCoded = eleData.colorCoded
 
 	local isPlaceHolderShown = (#text == 1 and text[1][0] == "") and placeHolder ~= "" and (MouseData.focused ~= source or eleData.placeHolderVisibleWhenFocus)
 	if renderBuffer.placeHolderState ~= isPlaceHolderShown then
@@ -1875,7 +1878,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
-				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 		end
 		dxSetRenderTarget(rndtgt)
@@ -2032,7 +2035,7 @@ dgsRenderer["dgs-dxmemo"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited
 			end
 			for i=1,textRenderBuffer.count do
 				tRB = textRenderBuffer[i]
-				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,false,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
+				dgsDrawText(tRB[1],tRB[2],tRB[3],tRB[4],tRB[5],tRB[6],tRB[7],tRB[8],tRB[9],"left","top",false,false,false,colorCoded,subPixelPos,0,0,0,0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 			end
 		end
 		dxSetRenderTarget(rndtgt)
