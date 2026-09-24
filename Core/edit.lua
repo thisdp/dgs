@@ -1133,7 +1133,7 @@ function dgsEditDeleteAutoComplete(edit,str)
 		local autoComplete = dgsElementData[edit].autoComplete
 		for k,v in pairs(str) do
 			if autoComplete[k] then dgsElementData[edit].autoCompleteCount = dgsElementData[edit].autoCompleteCount-1 end
-			autoComplete[k] = isSensitive == nil and v or isSensitive
+			autoComplete[k] = nil
 		end
 		return true
 	elseif strTyp == "string" then

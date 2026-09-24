@@ -234,11 +234,12 @@ end
 function dgsSVGNodeSetAttributes(svgEle,attributeWithData)
 	if type(svgEle) == "table" then
 		for i=1,#svgEle do dgsSVGNodeSetAttributes(svgEle[i],attributeWithData) end
+		return true
 	end
 	local svgType = xmlNodeGetName(svgEle)
 	for attr,data in pairs(attributeWithData) do
 		local handleFunction = SVGElementAttribute[svgType] and SVGElementAttribute[svgType][attr] or SVGElementAttribute.default[attr]
-		result = data
+		local result = data
 		if handleFunction and handleFunction.set then
 			if type(data) == "table" then
 				result = handleFunction.set(unpack(data))

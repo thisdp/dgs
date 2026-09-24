@@ -1,6 +1,6 @@
 dgsLogLuaMemory()
 dgsRegisterPluginType("dgs-dxmask")
-masks = {
+local masks = {
 	circle="plugin/mask/mask-Circle.fx",
 	backgroundFilter="plugin/mask/mask-BackGroundFilter.fx",
 	colorInverter="plugin/mask/mask-ColorInverter.fx",
@@ -8,7 +8,6 @@ masks = {
 
 function dgsCreateMask(texture1,texture2,settings)
 	settings = settings or {}
-	local tex1Type = dgsGetType(texture1)
 	if not(isMaterial(texture1) == "texture") then error(dgsGenAsrt(texture1,"dgsCreateMask",1,"texture")) end
 	local tex2Type = dgsGetType(texture2)
 	local maskResult

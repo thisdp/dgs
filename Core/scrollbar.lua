@@ -187,8 +187,8 @@ end
 
 function dgsScrollBarSetGrades(scrollbar,grades,remainMultipler)
 	if dgsGetType(scrollbar) ~= "dgs-dxscrollbar" then error(dgsGenAsrt(scrollbar,"dgsScrollBarSetGrades",1,"dgs-dxscrollbar")) end
-	if grades and type(grades) ~= "number" then error(dgsGenAsrt(grades,"dgsScrollBarSetGrades",2,"number")) end
-	if not remainMultipler then
+	if grades and (type(grades) ~= "number" or grades <= 0) then error(dgsGenAsrt(grades,"dgsScrollBarSetGrades",2,"number")) end
+	if grades and not remainMultipler then
 		dgsSetData(scrollbar,"multiplier",{1/grades,true})
 	end
 	return dgsSetData(scrollbar,"grades",grades)

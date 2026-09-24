@@ -42,7 +42,7 @@ function dgsTooltipRemoveFrom(ele)
 end
 
 function DGSTooltipRender()
-	if not isElement(showingToolTip) then return dgsRemoveFastEvent("onDgsRender","DGSTooltipRender") end
+	if not isElement(showingToolTip) then return dgsRemoveFastEventHandler("onDgsRender","DGSTooltipRender") end
 	local tooltipData = dgsElementData[showingToolTip]
 	local textColor = tooltipData.textColor
 	local textSize = tooltipData.textSize
