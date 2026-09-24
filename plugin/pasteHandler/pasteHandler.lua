@@ -6,30 +6,33 @@ function dgsPasteHandlerSetEnabled(state)
 	if not state and isElement(GlobalPasteHandler) then
 		return destroyElement(GlobalPasteHandler)
 	elseif state and not isElement(GlobalPasteHandler) then
-		GlobalPasteHandler = createBrowser(1,1,true,true)
-		dgsSetData(GlobalPasteHandler,"asPlugin","dgs-dxpastehandler")
-		dgsSetData(GlobalPasteHandler,"isReady",false)
-		addEventHandler("onClientBrowserCreated",GlobalPasteHandler,function()
-			loadBrowserURL(GlobalPasteHandler,"http://mta/local/plugin/pasteHandler/pasteHandler.html")
-		end,false)
-		addEventHandler("onClientBrowserDocumentReady",GlobalPasteHandler,function()
-			dgsSetData(GlobalPasteHandler,"isReady",true)
-		--setDevelopmentMode(true,true)
-		--toggleBrowserDevTools(GlobalPasteHandler,true)
-		--focusBrowser(GlobalPasteHandler)
-		end,false)
+		GlobalPasteHandler = createBrowser(1, 1, true, true)
+		dgsSetData(GlobalPasteHandler, "asPlugin", "dgs-dxpastehandler")
+		dgsSetData(GlobalPasteHandler, "isReady", false)
 
-		dgsTriggerEvent("onDgsPluginCreate",GlobalPasteHandler,sourceResource)
+		addEventHandler("onClientBrowserCreated", GlobalPasteHandler, function()
+			loadBrowserURL(GlobalPasteHandler, "http://mta/local/plugin/pasteHandler/pasteHandler.html")
+		end, false)
+		addEventHandler("onClientBrowserDocumentReady", GlobalPasteHandler, function()
+			dgsSetData(GlobalPasteHandler, "isReady", true)
+			--setDevelopmentMode(true,true)
+			--toggleBrowserDevTools(GlobalPasteHandler,true)
+			--focusBrowser(GlobalPasteHandler)
+		end, false)
 
-		addEventHandler("DGSI_Paste",GlobalPasteHandler,function(data,theType)
+		dgsTriggerEvent("onDgsPluginCreate", GlobalPasteHandler, sourceResource)
+
+		addEventHandler("DGSI_Paste", GlobalPasteHandler, function(data, theType)
 			if theType == "file" then
-				local result = decodeString("base64", split(data,",")[2])
-				return dgsTriggerEvent("onDgsPaste",resourceRoot,result,theType)
+				local result = decodeString("base64", split(data, ",")[2])
+
+				return dgsTriggerEvent("onDgsPaste", resourceRoot, result, theType)
 			elseif theType == "string" then
-				return dgsTriggerEvent("onDgsPaste",resourceRoot,data,theType)
+				return dgsTriggerEvent("onDgsPaste", resourceRoot, data, theType)
 			end
 		end)
 	end
+
 	return true
 end
 
@@ -43,6 +46,7 @@ function dgsPasteHandlerSetFocused(state)
 			return focusBrowser()
 		end
 	end
+
 	return false
 end
 

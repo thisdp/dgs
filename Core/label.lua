@@ -1,6 +1,6 @@
 dgsLogLuaMemory()
-dgsRegisterType("dgs-dxlabel","dgsBasic","dgsType2D")
-dgsRegisterProperties("dgs-dxlabel",{
+dgsRegisterType("dgs-dxlabel", "dgsBasic", "dgsType2D")
+dgsRegisterProperties("dgs-dxlabel", {
 	alignment = 			{	{ PArg.String, PArg.String }	},
 	clip = 					{	PArg.Bool	},
 	colorCoded = 			{	PArg.Bool	},
@@ -39,8 +39,9 @@ local type = type
 
 function dgsCreateLabel(...)
 	local sRes = sourceResource or resource
-	local x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,shadowOffsetX,shadowOffsetY,shadowColor,hAlign,vAlign
-	if select("#",...) == 1 and type(select(1,...)) == "table" then
+	local x, y, w, h, text, relative, parent, textColor, scaleX, scaleY, shadowOffsetX, shadowOffsetY, shadowColor, hAlign, vAlign
+
+	if select("#", ...) == 1 and type(select(1, ...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
@@ -58,117 +59,181 @@ function dgsCreateLabel(...)
 		hAlign = argTable.hAlign or argTable.horizontalAlign or argTable.horizontalAlignment or argTable[14]
 		vAlign = argTable.vAlign or argTable.verticalAlign or argTable.verticalAlignment or argTable[15]
 	else
-		x,y,w,h,text,relative,parent,textColor,scaleX,scaleY,shadowOffsetX,shadowOffsetY,shadowColor,hAlign,vAlign = ...
+		x, y, w, h, text, relative, parent, textColor, scaleX, scaleY, shadowOffsetX, shadowOffsetY, shadowColor, hAlign, vAlign = ...
 	end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateLabel",1,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateLabel",2,"number")) end
-	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateLabel",3,"number")) end
-	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateLabel",4,"number")) end
+
+	if not(type(x) == "number") then
+		error(dgsGenAsrt(x, "dgsCreateLabel", 1, "number"))
+	end
+
+	if not(type(y) == "number") then
+		error(dgsGenAsrt(y, "dgsCreateLabel", 2, "number"))
+	end
+
+	if not(type(w) == "number") then
+		error(dgsGenAsrt(w, "dgsCreateLabel", 3, "number"))
+	end
+
+	if not(type(h) == "number") then
+		error(dgsGenAsrt(h, "dgsCreateLabel", 4, "number"))
+	end
+
 	local label = createElement("dgs-dxlabel")
-	dgsSetType(label,"dgs-dxlabel")
+	dgsSetType(label, "dgs-dxlabel")
 
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
+
 	style = style.loaded[using]
 
 	local sStyle = style.label
-	local textSizeX,textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
+	local textSizeX, textSizeY = tonumber(scaleX) or sStyle.textSize[1], tonumber(scaleY) or sStyle.textSize[2]
 	dgsElementData[label] = {
-		alignment = {hAlign or "left",vAlign or "top"},
+		alignment = {hAlign or "left", vAlign or "top"},
 		rotation = 0,
 		rotationCenter = {0, 0},
-		shadow = (shadowOffestX and shadowOffsetY and shadowColor) and {shadowOffsetX,shadowOffsetY,shadowColor} or nil,
+		shadow = (shadowOffestX and shadowOffsetY and shadowColor) and {shadowOffsetX, shadowOffsetY, shadowColor} or nil,
 		subPixelPositioning = nil,
 		textColor = textColor or sStyle.textColor,
-		textSize = {textSizeX,textSizeY},
-		textOffset = {0,0,false},
+		textSize = {textSizeX, textSizeY},
+		textOffset = {0, 0, false},
 		clip = nil,
 		colorCoded = nil,
 		wordBreak = nil,
 	}
-	dgsSetParent(label,parent,true,true)
-	dgsAttachToTranslation(label,resourceTranslation[sRes])
+	dgsSetParent(label, parent, true, true)
+	dgsAttachToTranslation(label, resourceTranslation[sRes])
+
 	if type(text) == "table" then
 		dgsElementData[label]._translation_text = text
 	end
-	dgsSetData(label,"text",text)
-	calculateGuiPositionSize(label,x,y,relative or false,w,h,relative or false,true)
-	dgsApplyGeneralProperties(label,sRes)
-	onDGSElementCreate(label,sRes)
+
+	dgsSetData(label, "text", text)
+	calculateGuiPositionSize(label, x, y, relative or false, w, h, relative or false, true)
+	dgsApplyGeneralProperties(label, sRes)
+	onDGSElementCreate(label, sRes)
+
 	return label
 end
 
-function dgsLabelSetColor(label,r,g,b,a)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelSetColor",1,"dgs-dxlabel")) end
+function dgsLabelSetColor(label, r, g, b, a)
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelSetColor", 1, "dgs-dxlabel"))
+	end
+
 	if tonumber(r) and g == true then
-		return dgsSetData(label,"textColor",r)
+		return dgsSetData(label, "textColor", r)
 	else
-		local _r,_g,_b,_a = fromcolor(dgsElementData[label].textColor)
-		return dgsSetData(label,"textColor",tocolor(r or _r,g or _g,b or _b,a or _a))
+		local _r, _g, _b, _a = fromcolor(dgsElementData[label].textColor)
+
+		return dgsSetData(label, "textColor", tocolor(r or _r, g or _g, b or _b, a or _a))
 	end
 end
 
-function dgsLabelGetColor(label,notSplit)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetColor",1,"dgs-dxlabel")) end
+function dgsLabelGetColor(label, notSplit)
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelGetColor", 1, "dgs-dxlabel"))
+	end
+
 	local textColor = dgsElementData[label].textColor
-	if notSplit then return textColor end
+
+	if notSplit then
+		return textColor
+	end
+
 	return fromcolor(textColor)
 end
 
-function dgsLabelSetHorizontalAlign(label,align,wordbreak)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetColor",1,"dgs-dxlabel")) end
-	if not HorizontalAlign[align] then error(dgsGenAsrt(align,"dgsLabelSetHorizontalAlign",2,"string","left/center/right")) end
-	dgsSetData(label,"wordBreak",wordbreak)
+function dgsLabelSetHorizontalAlign(label, align, wordbreak)
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelGetColor", 1, "dgs-dxlabel"))
+	end
+
+	if not HorizontalAlign[align] then
+		error(dgsGenAsrt(align, "dgsLabelSetHorizontalAlign", 2, "string", "left/center/right"))
+	end
+
+	dgsSetData(label, "wordBreak", wordbreak)
 	local alignment = dgsElementData[label].alignment
-	return dgsSetData(label,"alignment",{align,alignment[2]})
+
+	return dgsSetData(label, "alignment", {align, alignment[2]})
 end
 
-function dgsLabelSetVerticalAlign(label,align)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelSetVerticalAlign",1,"dgs-dxlabel")) end
-	if not VerticalAlign[align] then error(dgsGenAsrt(align,"dgsLabelSetVerticalAlign",2,"string","top/center/bottom")) end
+function dgsLabelSetVerticalAlign(label, align)
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelSetVerticalAlign", 1, "dgs-dxlabel"))
+	end
+
+	if not VerticalAlign[align] then
+		error(dgsGenAsrt(align, "dgsLabelSetVerticalAlign", 2, "string", "top/center/bottom"))
+	end
+
 	local alignment = dgsElementData[label].alignment
-	return dgsSetData(label,"alignment",{alignment[1],align})
+
+	return dgsSetData(label, "alignment", {alignment[1], align})
 end
 
 function dgsLabelGetHorizontalAlign(label)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetHorizontalAlign",1,"dgs-dxlabel")) end
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelGetHorizontalAlign", 1, "dgs-dxlabel"))
+	end
+
 	local alignment = dgsElementData[label].alignment
+
 	return alignment[1]
 end
 
 function dgsLabelGetVerticalAlign(label)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetVerticalAlign",1,"dgs-dxlabel")) end
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelGetVerticalAlign", 1, "dgs-dxlabel"))
+	end
+
 	local alignment = dgsElementData[label].alignment
+
 	return alignment[2]
 end
 
 function dgsLabelGetTextExtent(label)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetTextExtent",1,"dgs-dxlabel")) end
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelGetTextExtent", 1, "dgs-dxlabel"))
+	end
+
 	local eleData = dgsElementData[label]
 	local style = styleManager.styles[eleData.resource or "global"]
+
 	style = style.loaded[style.using]
 	local font = eleData.font or style.label.font or style.systemFontElement
 	local textSizeX = eleData.textSize[1]
 	local text = eleData.text
 	local colorCoded = eleData.colorCoded
-	return dxGetTextWidth(text,textSizeX,font,colorCoded)
+
+	return dxGetTextWidth(text, textSizeX, font, colorCoded)
 end
 
 function dgsLabelGetFontHeight(label)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetFontHeight",1,"dgs-dxlabel")) end
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelGetFontHeight", 1, "dgs-dxlabel"))
+	end
+
 	local eleData = dgsElementData[label]
 	local style = styleManager.styles[eleData.resource or "global"]
+
 	style = style.loaded[style.using]
 	local font = eleData.font or style.label.font or style.systemFontElement
 	local textSizeY = dgsElementData[label].textSize[2]
-	return dxGetFontHeight(textSizeY,font)
+
+	return dxGetFontHeight(textSizeY, font)
 end
 
 function dgsLabelGetTextSize(label)
-	if dgsGetType(label) ~= "dgs-dxlabel" then error(dgsGenAsrt(label,"dgsLabelGetTextSize",1,"dgs-dxlabel")) end
+	if dgsGetType(label) ~= "dgs-dxlabel" then
+		error(dgsGenAsrt(label, "dgsLabelGetTextSize", 1, "dgs-dxlabel"))
+	end
+
 	local eleData = dgsElementData[label]
 	local style = styleManager.styles[eleData.resource or "global"]
+
 	style = style.loaded[style.using]
 	local font = eleData.font or style.label.font or style.systemFontElement
 	local textSizeX = eleData.textSize[1]
@@ -177,38 +242,46 @@ function dgsLabelGetTextSize(label)
 	local text = eleData.text
 	local colorCoded = eleData.colorCoded
 	local wordBreak = eleData.wordBreak
-    return dxGetTextSize(text,absSize[1],textSizeX,textSizeY,font,wordBreak,colorCoded)
+
+	return dxGetTextSize(text, absSize[1], textSizeX, textSizeY, font, wordBreak, colorCoded)
 end
 
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxlabel"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	
+dgsRenderer["dgs-dxlabel"] = function(source, x, y, w, h, mx, my, cx, cy, enabledInherited, enabledSelf, eleData, parentAlpha, isPostGUI, rndtgt)
+
 	local style = styleManager.styles[eleData.resource or "global"]
 	style = style.loaded[style.using]
 	local font = eleData.font or style.label.font or style.systemFontElement
 	local alignment = eleData.alignment
-	local textColor = applyColorAlpha(eleData.textColor,parentAlpha)
+	local textColor = applyColorAlpha(eleData.textColor, parentAlpha)
 	local clip = eleData.clip
 	local wordBreak = eleData.wordBreak
 	local text = eleData.text
-	local txtSizX,txtSizY = eleData.textSize[1],eleData.textSize[2]
+
+	local txtSizX, txtSizY = eleData.textSize[1], eleData.textSize[2]
 	local colorCoded = eleData.colorCoded
 	local textOffset = eleData.textOffset
+
 	if textOffset then
 		x = x + (textOffset[3] and textOffset[1]*w or textOffset[1])
 		y = y + (textOffset[3] and textOffset[2]*h or textOffset[2])
 	end
+
 	local shadow = eleData.shadow
 	local subPixelPos = eleData.subPixelPositioning
 	local rotation = eleData.rotation
 	local rotationCenter = eleData.rotationCenter
-	local shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont
+
+	local shadowOffsetX, shadowOffsetY, shadowColor, shadowIsOutline, shadowFont
+
 	if shadow then
-		shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont = shadow[1],shadow[2],shadow[3],shadow[4],shadow[5]
-		shadowColor = applyColorAlpha(shadowColor or white,parentAlpha)
+		shadowOffsetX, shadowOffsetY, shadowColor, shadowIsOutline, shadowFont = shadow[1], shadow[2], shadow[3], shadow[4], shadow[5]
+		shadowColor = applyColorAlpha(shadowColor or white, parentAlpha)
 	end
-	dgsDrawText(text,x,y,x+w,y+h,textColor,txtSizX,txtSizY,font,alignment[1],alignment[2],clip,wordBreak,isPostGUI,colorCoded,subPixelPos,rotation,x+rotationCenter[1],y+rotationCenter[2],0,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
-	return rndtgt,false,mx,my,0,0
+
+	dgsDrawText(text, x, y, x+w, y+h, textColor, txtSizX, txtSizY, font, alignment[1], alignment[2], clip, wordBreak, isPostGUI, colorCoded, subPixelPos, rotation, x+rotationCenter[1], y+rotationCenter[2], 0, shadowOffsetX, shadowOffsetY, shadowColor, shadowIsOutline, shadowFont)
+
+	return rndtgt, false, mx, my, 0, 0
 end

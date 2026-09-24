@@ -1,6 +1,6 @@
 dgsLogLuaMemory()
-dgsRegisterType("dgs-dxexample","dgsBasic","dgsType2D")
-dgsRegisterProperties("dgs-dxexample",{
+dgsRegisterType("dgs-dxexample", "dgsBasic", "dgsType2D")
+dgsRegisterProperties("dgs-dxexample", {
 
 })
 
@@ -26,8 +26,9 @@ local applyColorAlpha = applyColorAlpha
 
 function dgsCreateExample(...)
 	local sRes = sourceResource or resource
-	local x,y,w,h,relative,parent
-	if select("#",...) == 1 and type(select(1,...)) == "table" then
+	local x, y, w, h, relative, parent
+
+	if select("#", ...) == 1 and type(select(1, ...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
@@ -36,32 +37,47 @@ function dgsCreateExample(...)
 		relative = argTable.relative or argTable.rlt or argTable[5]
 		parent = argTable.parent or argTable[6]
 	else
-		x,y,w,h,relative,parent = ...
+		x, y, w, h, relative, parent = ...
 	end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateExample",1,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateExample",2,"number")) end
-	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateExample",3,"number")) end
-	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateExample",4,"number")) end
+
+	if not(type(x) == "number") then
+		error(dgsGenAsrt(x, "dgsCreateExample", 1, "number"))
+	end
+
+	if not(type(y) == "number") then
+		error(dgsGenAsrt(y, "dgsCreateExample", 2, "number"))
+	end
+
+	if not(type(w) == "number") then
+		error(dgsGenAsrt(w, "dgsCreateExample", 3, "number"))
+	end
+
+	if not(type(h) == "number") then
+		error(dgsGenAsrt(h, "dgsCreateExample", 4, "number"))
+	end
+
 	local example = createElement("dgs-dxexample")
-	dgsSetType(example,"dgs-dxexample")
-	
+	dgsSetType(example, "dgs-dxexample")
+
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
+
 	style = style.loaded[using]
-	
+
 	local systemFont = style.systemFontElement
 
 	style = style.example
 	dgsElementData[example] = {
-        
+
 	}
-	dgsSetParent(example,parent,true,true)
+	dgsSetParent(example, parent, true, true)
 
-	calculateGuiPositionSize(example,x,y,relative,w,h,relative,true)
-	dgsApplyGeneralProperties(example,sRes)
+	calculateGuiPositionSize(example, x, y, relative, w, h, relative, true)
+	dgsApplyGeneralProperties(example, sRes)
 
-	onDGSElementCreate(example,sRes)
+	onDGSElementCreate(example, sRes)
+
 	return example
 end
 
@@ -69,18 +85,16 @@ end
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 
-
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxexample"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,isPostGUI,rndtgt)
-	local color = applyColorAlpha(eleData.color,parentAlpha)
+dgsRenderer["dgs-dxexample"] = function(source, x, y, w, h, mx, my, cx, cy, enabledInherited, enabledSelf, eleData, parentAlpha, isPostGUI, rndtgt)
+	local color = applyColorAlpha(eleData.color, parentAlpha)
 
 	local style = styleManager.styles[eleData.resource or "global"]
+
 	style = style.loaded[style.using]
 	local systemFont = style.systemFontElement
 
-
-	
-	return rndtgt,false,mx,my,0
+	return rndtgt, false, mx, my, 0
 end

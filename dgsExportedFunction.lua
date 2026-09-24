@@ -3,12 +3,15 @@ local loadstring = loadstring
 dgsExportedFunctionName = {}
 dgsResName = getResourceName(resource)
 
-addEventHandler("onClientResourceStart",resourceRoot,function()
-	triggerEvent("onDgsStart",resourceRoot,dgsResName)
+addEventHandler("onClientResourceStart", resourceRoot, function()
+	triggerEvent("onDgsStart", resourceRoot, dgsResName)
 end)
 
 function dgsImportFunction()
-	if not sourceResource or sourceResource == resource then return "return true" end
+	if not sourceResource or sourceResource == resource then
+		return "return true"
+	end
+
 	local allCode = [[
 	--Check Error Message Above
 	if not dgsImportHead then
@@ -21,7 +24,8 @@ function dgsImportFunction()
 		local DGSCallMT = {}
 		local functionCallLogger = {}
 		dgsImportHead = {}
-		dgsImportHead.dgsName = "]]..dgsResName..[["
+		dgsImportHead.dgsName = "]]
+..dgsResName..[["
 		dgsImportHead.dgsResource = getResourceFromName(dgsImportHead.dgsName)
 		dgsRoot = getResourceRootElement(dgsImportHead.dgsResource)
 		dgsImportHead.dgsTypes = getElementData(dgsRoot,"DGSType")
@@ -119,28 +123,34 @@ function dgsImportFunction()
 		triggerEvent("DGSI_onImport",root,resourceRoot)
 	end
 	]]
-	for i,fnName in ipairs(getResourceExportedFunctions()) do
+
+	for i, fnName in ipairs(getResourceExportedFunctions()) do
 		allCode = allCode.."\n "..fnName.." = DGS."..fnName..";"
 	end
+
 	return allCode
 end
 
 G2DHookerEvents = {}
+
 function dgsG2DLoadHooker(isLocal)
 	if table.count(G2DHookerEvents) == 0 then
-		addEventHandler("onDgsEditAccepted",root,handleHookerEvents)
-		addEventHandler("onDgsTextChange",root,handleHookerEvents)
-		addEventHandler("onDgsComboBoxSelect",root,handleHookerEvents)
-		addEventHandler("onDgsTabSelect",root,handleHookerEvents)
+		addEventHandler("onDgsEditAccepted", root, handleHookerEvents)
+		addEventHandler("onDgsTextChange", root, handleHookerEvents)
+		addEventHandler("onDgsComboBoxSelect", root, handleHookerEvents)
+		addEventHandler("onDgsTabSelect", root, handleHookerEvents)
 	end
+
 	G2DHookerEvents[sourceResource or resource] = true
 	local usingLocal = isLocal and "local" or ""
+
 	return [[
 		if loadedG2D then return end
 		isGUIGridList = {}
 		isGUIComboBox = {}
 		loadedG2D = true
-		loadstring(exports["]]..dgsResName..[["]:dgsImportFunction())()
+		loadstring(exports["]]
+..dgsResName..[["]:dgsImportFunction())()
 		for fName,fnc in pairs(_G) do
 			if fName:sub(1,3) == "gui" then
 				_G["_"..fName] = fnc
@@ -571,52 +581,79 @@ function dgsG2DLoadHooker(isLocal)
 end
 
 function handleHookerEvents(...)
-	triggerEvent(eventName.."-C",source,source,...)
+	triggerEvent(eventName.."-C", source, source, ...)
 end
 
 -------Inside DGS
-setElementData(root,"__DGSRes",resource,false)
-addEventHandler("onClientResourceStop",resourceRoot,function() setElementData(root,"__DGSRes",false,false) end)
+setElementData(root, "__DGSRes", resource, false)
+addEventHandler("onClientResourceStop", resourceRoot, function()
+	setElementData(root, "__DGSRes", false, false)
+end)
 
 OOPImportCache = nil
 OOPImportTimer = nil
 
 function dgsImportOOPClass()
-	if OOPImportCache then return OOPImportCache end
+	if OOPImportCache then
+		return OOPImportCache
+	end
+
 	local handle = fileOpen("classlib.lua", true)
 	local buffer = fileGetContents(handle)
+
 	fileClose(handle)
-	if not buffer then return outputChatBox("[DGS] Failed to load classlib.lua (File mismatch)",255,0,0) end
+
+	if not buffer then
+		return outputChatBox("[DGS] Failed to load classlib.lua (File mismatch)", 255, 0, 0)
+	end
+
 	local str = buffer
+
 	if fileExists("customOOP.lua") then
 		local handle = fileOpen("customOOP.lua", true)
 		local buffer = fileGetContents(handle)
+
 		fileClose(handle)
-		if not buffer then outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)",255,0,0) return str end
-		local s = buffer:gsub("\r\n","\n")
-		local list = split(s,"\n")
-		for i=1,#list do
+
+		if not buffer then
+			outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)", 255, 0, 0)
+
+			return str
+		end
+
+		local s = buffer:gsub("\r\n", "\n")
+		local list = split(s, "\n")
+
+		for i = 1, #list do
 			if fileExists(list[i]) then
 				local handle = fileOpen(list[i], true)
 				local buffer = fileGetContents(handle)
+
 				fileClose(handle)
-				if not buffer then outputChatBox("[DGS] Failed to load "..list[i].." (File mismatch)",255,0,0) end
-				local f,e = loadstring(buffer)
+
+				if not buffer then
+					outputChatBox("[DGS] Failed to load "..list[i].." (File mismatch)", 255, 0, 0)
+				end
+
+				local f, e = loadstring(buffer)
+
 				if f then
 					str = str.."\n"..buffer
 				else
-					outputDebugString("[DGS]Failed to load custom OOP script ("..list[i]..":"..e..")",1)
+					outputDebugString("[DGS]Failed to load custom OOP script ("..list[i]..":"..e..")", 1)
 				end
 			else
-				outputDebugString("[DGS]Failed to load custom OOP script (Could not find "..list[i]..")",1)
+				outputDebugString("[DGS]Failed to load custom OOP script (Could not find "..list[i]..")", 1)
 			end
 		end
 	end
+
 	OOPImportCache = str
 	OOPImportTimer = setTimer(function()
 		OOPImportCache = nil
 		OOPImportTimer = nil
 		collectgarbage()
-	end,1000,1) --Clear cache
+	end, 1000, 1) --Clear cache
+
 	return OOPImportCache
 end
