@@ -14,7 +14,7 @@ function dgsCreateNineSlice(texture,gridXLeft,gridXRight,gridYTop,gridYBottom,re
 	local imgType = dgsGetType(texture)
 	if not(imgType == "texture" or imgType == "svg") then error(dgsGenAsrt(texture,"dgsCreateNineSlice",1,"texture")) end
 	if not(type(gridXLeft) == "number") then error(dgsGenAsrt(gridXLeft,"dgsCreateNineSlice",2,"number")) end
-	if not(type(gridXLeft) == "number") then error(dgsGenAsrt(gridXLeft,"dgsCreateNineSlice",3,"number")) end
+	if not(type(gridXRight) == "number") then error(dgsGenAsrt(gridXRight,"dgsCreateNineSlice",3,"number")) end
 	if not(type(gridYTop) == "number") then error(dgsGenAsrt(gridYTop,"dgsCreateNineSlice",4,"number")) end
 	if not(type(gridYBottom) == "number") then error(dgsGenAsrt(gridYBottom,"dgsCreateNineSlice",5,"number")) end
 	local nineSlice = dgsCreateCustomRenderer()

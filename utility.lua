@@ -989,9 +989,6 @@ end
 
 function dgsDrawText(text,leftX,topY,rightX,bottomY,color,scaleX,scaleY,font,alignX,alignY,clip,wordBreak,postGUI,colorCoded,subPixelPositioning,fRot,fRotCenterX,fRotCenterY,flineSpacing,shadowOffsetX,shadowOffsetY,shadowColor,shadowIsOutline,shadowFont)
 	font = font or "default"
-	if dgsGetType(font) == "dgs-dxsmartfont" then
-		font = dgsSmartFontRequestSize(font,math.max(scaleY,scaleX))
-	end
 	if type(text) ~= "string" then
 		local pluginType = dgsGetPluginType(text)
 		if pluginType and dgsCustomTexture[pluginType] and not dgsElementData[text].disableCustomTexture then

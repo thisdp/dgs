@@ -591,8 +591,6 @@ class {
 		getTranslationName = gObjFnc("dgsGetTranslationName"),
 		addDragHandler = gObjFnc("dgsAddDragHandler",true),
 		removeDragHandler = gObjFnc("dgsRemoveDragHandler",true),
-		addDropHandler = gObjFnc("dgsAddDropHandler",true),
-		removeDropHandler = gObjFnc("dgsRemoveDropHandler",true),
 	};
 	default = {
 
@@ -717,8 +715,6 @@ class {
 		isAttached = gObjFnc("dgsElementIsAttached"),
 		addDragHandler = gObjFnc("dgsAddDragHandler",true),
 		removeDragHandler = gObjFnc("dgsRemoveDragHandler",true),
-		addDropHandler = gObjFnc("dgsAddDropHandler",true),
-		removeDropHandler = gObjFnc("dgsRemoveDropHandler",true),
 		applyDetectArea = function(self,da) return dgsApplyDetectArea(self.dgsElement,da.dgsElement) end,
 		removeDetectArea = gObjFnc("dgsRemoveDetectArea",true),
 		getDetectArea = gObjFnc("dgsGetDetectArea",true),
@@ -887,7 +883,7 @@ class {
 		setAutoComplete = gObjFnc("dgsEditSetAutoComplete",true),
 		getAutoComplete = gObjFnc("dgsEditGetAutoComplete"),
 		addAutoComplete = gObjFnc("dgsEditAddAutoComplete",true),
-		removeAutoComplete = gObjFnc("dgsEditRemoveAutoComplete",true),
+		removeAutoComplete = gObjFnc("dgsEditDeleteAutoComplete",true),
 	};
 }
 --------------------------GridList
@@ -902,7 +898,8 @@ class {
 		getScrollBar = gObjFnc("dgsGridListGetScrollBar"),
 		setScrollPosition = gObjFnc("dgsGridListSetScrollPosition",true),
 		getScrollPosition = gObjFnc("dgsGridListGetScrollPosition"),
-		scollTo = gObjFnc("dgsGridListScrollTo",true),
+		scrollTo = gObjFnc("dgsGridListScrollTo",true),
+		scollTo = gObjFnc("dgsGridListScrollTo",true), -- kept for backward compatibility (typo of scrollTo [PR #150])
 		setHorizontalScrollPosition = gObjFnc("dgsGridListSetHorizontalScrollPosition",true),
 		getHorizontalScrollPosition = gObjFnc("dgsGridListGetHorizontalScrollPosition"),
 		setVerticalScrollPosition = gObjFnc("dgsGridListSetVerticalScrollPosition",true),
@@ -1109,15 +1106,8 @@ class {
 		setProgress = gObjFnc("dgsProgressBarSetProgress",true),
 		getMode = gObjFnc("dgsProgressBarGetMode"),
 		setMode = gObjFnc("dgsProgressBarSetMode",true),
-		getVerticalSide = gObjFnc("dgsProgressBarGetVerticalSide"),
-		setVerticalSide = gObjFnc("dgsProgressBarSetVerticalSide",true),
-		getHorizontalSide = gObjFnc("dgsProgressBarGetHorizontalSide"),
-		setHorizontalSide = gObjFnc("dgsProgressBarSetHorizontalSide",true),
 		getStyle = gObjFnc("dgsProgressBarGetStyle"),
 		setStyle = gObjFnc("dgsProgressBarSetStyle",true),
-		getStyleProperties = gObjFnc("dgsProgressBarGetStyleProperties"),
-		setStyleProperty = gObjFnc("dgsProgressBarSetStyleProperty",true),
-		getStyleProperty = gObjFnc("dgsProgressBarGetStyleProperty"),
 	};
 }
 

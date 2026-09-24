@@ -5,12 +5,15 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 	local radType = dgsGetType(radius)
 	if not(radType == "number" or radType == "table") then error(dgsGenAsrt(radius,"dgsCreateRoundRect",1,"number/table")) end
 	local shader = dxCreateShader("plugin/BasicShape/roundedRectangle.fx")
+	if not shader then return false end
 	dxSetShaderValue(shader,"sourceTexture",DGSBuiltInTex.white_1x1)
 	dgsSetData(shader,"asPlugin","dgs-dxroundrectangle")
 	if type(radius) ~= "table" then
 		local rlt = dgsGetType(relative) == "boolean"
-		if not rlt then destroyElement(shader) end
-		if not(rlt) then error(dgsGenAsrt(relative,"dgsCreateRoundRect",2,"boolean")) end
+		if not rlt then
+			destroyElement(shader)
+			error(dgsGenAsrt(relative,"dgsCreateRoundRect",2,"boolean"))
+		end
 		dgsRoundRectSetRadius(shader,radius,relative)
 	else
 		for i=1,4 do
@@ -21,7 +24,6 @@ function dgsCreateRoundRect(radius,relative,color,texture,colorOverwritten,borde
 		color,texture,colorOverwritten,borderOnlyOrColor,borderThicknessHorizontal,borderThicknessVertical = relative,color,texture,colorOverwritten,borderOnlyOrColor,borderThicknessHorizontal
 		dgsRoundRectSetRadius(shader,radius)
 	end
-	if not shader then return false end
 	color = color or tocolor(255,255,255,255)
 	if type(borderOnlyOrColor) == "number" then
 		dgsRoundRectSetBorderThickness(shader,borderThicknessHorizontal or 0.2,borderThicknessVertical or borderThicknessHorizontal or 0.2)

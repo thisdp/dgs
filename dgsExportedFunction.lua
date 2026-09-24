@@ -592,8 +592,8 @@ function dgsImportOOPClass()
 		local handle = fileOpen("customOOP.lua", true)
 		local buffer = fileGetContents(handle)
 		fileClose(handle)
-		if not buffer then outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)",255,0,0) end
-		local s = content:gsub("\r\n","\n")
+		if not buffer then outputChatBox("[DGS] Failed to load customOOP.lua (File mismatch)",255,0,0) return str end
+		local s = buffer:gsub("\r\n","\n")
 		local list = split(s,"\n")
 		for i=1,#list do
 			if fileExists(list[i]) then
