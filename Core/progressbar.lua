@@ -1,10 +1,10 @@
 dgsLogLuaMemory()
-dgsRegisterType("dgs-dxprogressbar","dgsBasic","dgsType2D")
-dgsRegisterProperties("dgs-dxprogressbar",{
+dgsRegisterType("dgs-dxprogressbar", "dgsBasic", "dgsType2D")
+dgsRegisterProperties("dgs-dxprogressbar", {
 	bgColor = 			{	PArg.Color	},
 	bgImage = 			{	PArg.Material+PArg.Nil	},
 	indicatorColor = 	{	{ PArg.Color, PArg.Color }, PArg.Color	},
-	indicatorImage = 	{	{ PArg.Material+PArg.Nil,PArg.Material+PArg.Nil }, PArg.Material+PArg.Nil	},
+	indicatorImage = 	{	{ PArg.Material+PArg.Nil, PArg.Material+PArg.Nil }, PArg.Material+PArg.Nil	},
 	indicatorMode = 	{	PArg.Bool	},
 	map = 				{	{ PArg.Number, PArg.Number } },
 	padding = 			{	{ PArg.Number, PArg.Number } },
@@ -68,195 +68,238 @@ local PI2 = math.pi*2
 
 ProgressBarShaders = {}
 local ProgressBarStyle = {
-	["normal-horizontal"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,isPostGUI,hasRT)
-		local eleData = dgsElementData[source]
-		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2
-		local iSizXPercent = iSizX*percent
-		dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,isPostGUI)
-		if type(indicatorImage) == "table" then
-			local indicatorColor1,indicatorColor2
-			if type(indicatorColor) == "table" then
-				indicatorColor1,indicatorColor2 = indicatorColor[1],indicatorColor[2]
+	["normal-horizontal"] = function(source, x, y, w, h, bgImage, bgColor, indicatorImage, indicatorColor, indicatorMode, padding, percent, isPostGUI, hasRT)
+	local eleData = dgsElementData[source]
+	local iPosX, iPosY, iSizX, iSizY = x+padding[1], y+padding[2], w-padding[1]*2, h-padding[2]*2
+	local iSizXPercent = iSizX*percent
+	dxDrawImage(x, y, w, h, bgImage, 0, 0, 0, bgColor, isPostGUI)
+
+	if type(indicatorImage) == "table" then
+		local indicatorColor1, indicatorColor2
+
+		if type(indicatorColor) == "table" then
+			indicatorColor1, indicatorColor2 = indicatorColor[1], indicatorColor[2]
+		else
+			indicatorColor1 = indicatorColor
+		end
+
+		if indicatorMode then
+			local sx, sy = eleData.indicatorUVSize[1], eleData.indicatorUVSize[2]
+
+			if not sx or not sy then
+				sx1, sy1 = dgsGetMaterialSize(indicatorImage[1], iSizXPercent, iSizY)
+				sx2, sy2 = dgsGetMaterialSize(indicatorImage[2], iSizX-iSizXPercent, iSizY)
 			else
-				indicatorColor1 = indicatorColor
+				sx1, sy1, sx2, sy2 = sx, sy, sx, sy
 			end
+
+			dxDrawImageSection(iPosX, iPosY, iSizXPercent, iSizY, 0, 0, sx1*percent, sy1, indicatorImage[1], 0, 0, 0, indicatorColor1, isPostGUI)
+
+			if indicatorImage[1] then
+				dxDrawImageSection(iPosX, iPosY, iSizXPercent, iSizY, 0, 0, sx1*percent, sy1, indicatorImage[1], 0, 0, 0, indicatorColor1, isPostGUI)
+			else
+				dxDrawImage(iPosX, iPosY, iSizXPercent, iSizY, indicatorImage[1], 0, 0, 0, indicatorColor1, isPostGUI)
+			end
+
+			if indicatorImage[2] then
+				dxDrawImageSection(iSizXPercent+iPosX, iPosY, iSizX-iSizXPercent, iSizY, sx2*percent, 0, sx2*(1-percent), sy2, indicatorImage[2], 0, 0, 0, indicatorColor2, isPostGUI)
+			else
+				dxDrawImage(iSizXPercent+iPosX, iPosY, iSizX-iSizXPercent, iSizY, indicatorImage[2], 0, 0, 0, indicatorColor2, isPostGUI)
+			end
+		else
+			dxDrawImage(iPosX, iPosY, iSizXPercent, iSizY, indicatorImage[1], 0, 0, 0, indicatorColor1, isPostGUI)
+			dxDrawImage(iSizXPercent+iPosX, iPosY, iSizX-iSizXPercent, iSizY, indicatorImage[2], 0, 0, 0, indicatorColor2, isPostGUI)
+		end
+	elseif isElement(indicatorImage) then
+		if type(indicatorColor) == "table" then
 			if indicatorMode then
-				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+				local sx, sy = eleData.indicatorUVSize[1], eleData.indicatorUVSize[2]
+
 				if not sx or not sy then
-					sx1,sy1 = dgsGetMaterialSize(indicatorImage[1],iSizXPercent,iSizY)
-					sx2,sy2 = dgsGetMaterialSize(indicatorImage[2],iSizX-iSizXPercent,iSizY)
-				else
-					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
+					sx, sy = dgsGetMaterialSize(indicatorImage, iSizXPercent, iSizY)
 				end
-				dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				if indicatorImage[1] then
-					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx1*percent,sy1,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)	
-				else
-					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				end
-				if indicatorImage[2] then
-					dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx2*percent,0,sx2*(1-percent),sy2,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
-				else
-					dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
-				end
+
+				dxDrawImageSection(iPosX, iPosY, iSizXPercent, iSizY, 0, 0, sx*percent, sy, indicatorImage, 0, 0, 0, indicatorColor[1], isPostGUI)
+				dxDrawImageSection(iSizXPercent+iPosX, iPosY, iSizX-iSizXPercent, iSizY, sx*percent, 0, sx*(1-percent), sy, indicatorImage, 0, 0, 0, indicatorColor[2], isPostGUI)
 			else
-				dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
+				dxDrawImage(iPosX, iPosY, iSizXPercent, iSizY, indicatorImage, 0, 0, 0, indicatorColor[1], isPostGUI)
+				dxDrawImage(iSizXPercent+iPosX, iPosY, iSizX-iSizXPercent, iSizY, indicatorImage, 0, 0, 0, indicatorColor[2], isPostGUI)
 			end
-		elseif isElement(indicatorImage) then
-			if type(indicatorColor) == "table" then
-				if indicatorMode then
-					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-					if not sx or not sy then sx,sy = dgsGetMaterialSize(indicatorImage,iSizXPercent,iSizY) end
-					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor[1],isPostGUI)
-					dxDrawImageSection(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,sx*percent,0,sx*(1-percent),sy,indicatorImage,0,0,0,indicatorColor[2],isPostGUI)
-				else
-					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[1],isPostGUI)
-					dxDrawImage(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor[2],isPostGUI)
-				end
-			else
-				if indicatorMode then
-					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-					if not sx or not sy then sx,sy = dgsGetMaterialSize(indicatorImage,iSizXPercent,iSizY) end
-					dxDrawImageSection(iPosX,iPosY,iSizXPercent,iSizY,0,0,sx*percent,sy,indicatorImage,0,0,0,indicatorColor,isPostGUI)
-				else
-					dxDrawImage(iPosX,iPosY,iSizXPercent,iSizY,indicatorImage,0,0,0,indicatorColor,isPostGUI)
-				end
-			end
-		elseif type(indicatorColor) == "table" then
-			dxDrawRectangle(iPosX,iPosY,iSizXPercent,iSizY,indicatorColor[1],isPostGUI)
-			dxDrawRectangle(iSizXPercent+iPosX,iPosY,iSizX-iSizXPercent,iSizY,indicatorColor[2],isPostGUI)
 		else
-			dxDrawRectangle(iPosX,iPosY,iSizXPercent,iSizY,indicatorColor,isPostGUI)
-		end
-	end,
-	["normal-vertical"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,isPostGUI,hasRT)
-		local eleData = dgsElementData[source]
-		local iPosX,iPosY,iSizX,iSizY = x+padding[1],y+padding[2],w-padding[1]*2,h-padding[2]*2
-		local iSizYPercent = iSizY*percent
-		local iSizYPercentRev = iSizY*(1-percent)
-		dxDrawImage(x,y,w,h,bgImage,0,0,0,bgColor,isPostGUI)
-		if type(indicatorImage) == "table" then
-			local indicatorColor1,indicatorColor2
-			if type(indicatorColor) == "table" then
-				indicatorColor1,indicatorColor2 = indicatorColor[1],indicatorColor[2]
-			else
-				indicatorColor1 = indicatorColor
-			end
 			if indicatorMode then
-				local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
+				local sx, sy = eleData.indicatorUVSize[1], eleData.indicatorUVSize[2]
+
 				if not sx or not sy then
-					sx1,sy1 = dgsGetMaterialSize(indicatorImage[1],iSizX,iSizYPercent)
-					sx2,sy2 = dgsGetMaterialSize(indicatorImage[2],iSizX,iSizY-iSizYPercent)
-				else
-					sx1,sy1,sx2,sy2 = sx,sy,sx,sy
+					sx, sy = dgsGetMaterialSize(indicatorImage, iSizXPercent, iSizY)
 				end
-				if indicatorImage[1] then
-					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy1*(1-percent),sx1,sy1*percent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				else
-					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				end
-				if indicatorImage[2] then
-					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,0,sx2,sy2*(1-percent),indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
-				else
-					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
-				end
+
+				dxDrawImageSection(iPosX, iPosY, iSizXPercent, iSizY, 0, 0, sx*percent, sy, indicatorImage, 0, 0, 0, indicatorColor, isPostGUI)
 			else
-				dxDrawImage(iPosX,iSizYPercent+iPosY,iSizX,iSizY-iSizYPercent,indicatorImage[1],0,0,0,indicatorColor1,isPostGUI)
-				dxDrawImage(iPosX,iPosY,iSizX,iSizYPercent,indicatorImage[2],0,0,0,indicatorColor2,isPostGUI)
+				dxDrawImage(iPosX, iPosY, iSizXPercent, iSizY, indicatorImage, 0, 0, 0, indicatorColor, isPostGUI)
 			end
-		elseif isElement(indicatorImage) then
-			if type(indicatorColor) == "table" then
-				if indicatorMode then
-					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-					if not sx or not sy then sx,sy = dgsGetMaterialSize(indicatorImage,iSizX,iSizYPercent) end
-					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor1,isPostGUI)
-					dxDrawImageSection(iPosX,iPosY,iSizX,iSizY-iSizYPercent,0,sy,sx,sy*(1-percent),indicatorImage,0,0,0,indicatorColor2,isPostGUI)
-				else
-					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor[1],isPostGUI)
-					dxDrawImage(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorImage,0,0,0,indicatorColor2,isPostGUI)
-				end
+		end
+	elseif type(indicatorColor) == "table" then
+		dxDrawRectangle(iPosX, iPosY, iSizXPercent, iSizY, indicatorColor[1], isPostGUI)
+		dxDrawRectangle(iSizXPercent+iPosX, iPosY, iSizX-iSizXPercent, iSizY, indicatorColor[2], isPostGUI)
+	else
+		dxDrawRectangle(iPosX, iPosY, iSizXPercent, iSizY, indicatorColor, isPostGUI)
+	end
+end,
+	["normal-vertical"] = function(source, x, y, w, h, bgImage, bgColor, indicatorImage, indicatorColor, indicatorMode, padding, percent, isPostGUI, hasRT)
+	local eleData = dgsElementData[source]
+	local iPosX, iPosY, iSizX, iSizY = x+padding[1], y+padding[2], w-padding[1]*2, h-padding[2]*2
+	local iSizYPercent = iSizY*percent
+	local iSizYPercentRev = iSizY*(1-percent)
+
+	dxDrawImage(x, y, w, h, bgImage, 0, 0, 0, bgColor, isPostGUI)
+
+	if type(indicatorImage) == "table" then
+		local indicatorColor1, indicatorColor2
+
+		if type(indicatorColor) == "table" then
+			indicatorColor1, indicatorColor2 = indicatorColor[1], indicatorColor[2]
+		else
+			indicatorColor1 = indicatorColor
+		end
+
+		if indicatorMode then
+			local sx, sy = eleData.indicatorUVSize[1], eleData.indicatorUVSize[2]
+
+			if not sx or not sy then
+				sx1, sy1 = dgsGetMaterialSize(indicatorImage[1], iSizX, iSizYPercent)
+				sx2, sy2 = dgsGetMaterialSize(indicatorImage[2], iSizX, iSizY-iSizYPercent)
 			else
-				if indicatorMode then
-					local sx,sy = eleData.indicatorUVSize[1],eleData.indicatorUVSize[2]
-					if not sx or not sy then sx,sy = dgsGetMaterialSize(indicatorImage,iSizX,iSizYPercent) end
-					dxDrawImageSection(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,0,sy*(1-percent),sx,sy*percent,indicatorImage,0,0,0,indicatorColor,isPostGUI)
-				else
-					dxDrawImage(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorImage,0,0,0,indicatorColor,isPostGUI)
-				end
+				sx1, sy1, sx2, sy2 = sx, sy, sx, sy
 			end
-		elseif type(indicatorColor) == "table" then
-			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor1,isPostGUI)
-			dxDrawRectangle(iPosX,iPosY,iSizX,iSizY-iSizYPercent,indicatorColor2,isPostGUI)
-		else
-			dxDrawRectangle(iPosX,iPosY+iSizYPercentRev,iSizX,iSizYPercent,indicatorColor,isPostGUI)
-		end
-	end,
-	["ring-round"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,isPostGUI,hasRT)
-		local eleData = dgsElementData[source]
-		local startPoint,endPoint = 0,percent
-		local bgStartPoint,bgEndPoint = 0,eleData.bgProgress or 1
-		if eleData.isClockwise then
-			bgStartPoint,bgEndPoint = 1-bgEndPoint,1-bgStartPoint
-			startPoint,endPoint = 1-endPoint,1-startPoint
-		end
-		local circle = eleData.elements.circleShader
-		local circleBG = eleData.elements.circleShaderBG
-		dxSetShaderValue(circle,"progress",startPoint,endPoint)
-		if startPoint == endPoint then
-			dxSetShaderValue(circle,"indicatorColor",0,0,0,0)
-		else
-			dxSetShaderValue(circle,"indicatorColor",fromcolor(indicatorColor,true))
-		end
-		dxSetShaderValue(circle,"thickness",eleData.thickness)
-		dxSetShaderValue(circle,"radius",eleData.radius)
-		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)
 
-		dxSetShaderValue(circleBG,"progress",bgStartPoint,bgEndPoint)
-		if bgStartPoint == bgEndPoint then
-			dxSetShaderValue(circleBG,"indicatorColor",0,0,0,0)
+			if indicatorImage[1] then
+				dxDrawImageSection(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, 0, sy1*(1-percent), sx1, sy1*percent, indicatorImage[1], 0, 0, 0, indicatorColor1, isPostGUI)
+			else
+				dxDrawImage(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, indicatorImage[1], 0, 0, 0, indicatorColor1, isPostGUI)
+			end
+
+			if indicatorImage[2] then
+				dxDrawImageSection(iPosX, iPosY, iSizX, iSizY-iSizYPercent, 0, 0, sx2, sy2*(1-percent), indicatorImage[2], 0, 0, 0, indicatorColor2, isPostGUI)
+			else
+				dxDrawImage(iPosX, iPosY, iSizX, iSizY-iSizYPercent, indicatorImage[2], 0, 0, 0, indicatorColor2, isPostGUI)
+			end
 		else
-			dxSetShaderValue(circleBG,"indicatorColor",fromcolor(bgColor,true))
+			dxDrawImage(iPosX, iSizYPercent+iPosY, iSizX, iSizY-iSizYPercent, indicatorImage[1], 0, 0, 0, indicatorColor1, isPostGUI)
+			dxDrawImage(iPosX, iPosY, iSizX, iSizYPercent, indicatorImage[2], 0, 0, 0, indicatorColor2, isPostGUI)
 		end
-		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
-		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
-		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
-		dxDrawImage(x,y,w,h,circleBG,eleData.bgRotation or eleData.rotation,0,0,0,isPostGUI)
+	elseif isElement(indicatorImage) then
+		if type(indicatorColor) == "table" then
+			if indicatorMode then
+				local sx, sy = eleData.indicatorUVSize[1], eleData.indicatorUVSize[2]
 
-		dxDrawImage(x,y,w,h,circle,eleData.rotation,0,0,0,isPostGUI)
-	end,
-	["ring-plain"] = function(source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,isPostGUI,hasRT)
-		local eleData = dgsElementData[source]
-		local circle = eleData.elements.circleShader
-		local circleBG = eleData.elements.circleShaderBG
-		local bgProgress = eleData.bgProgress or 1
-		local progress = percent
-		if eleData.isClockwise then
-			bgProgress = 1-bgProgress
-			progress = 1-progress
+				if not sx or not sy then
+					sx, sy = dgsGetMaterialSize(indicatorImage, iSizX, iSizYPercent)
+				end
+
+				dxDrawImageSection(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, 0, sy*(1-percent), sx, sy*percent, indicatorImage, 0, 0, 0, indicatorColor1, isPostGUI)
+				dxDrawImageSection(iPosX, iPosY, iSizX, iSizY-iSizYPercent, 0, sy, sx, sy*(1-percent), indicatorImage, 0, 0, 0, indicatorColor2, isPostGUI)
+			else
+				dxDrawImage(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, indicatorImage, 0, 0, 0, indicatorColor[1], isPostGUI)
+				dxDrawImage(iPosX, iPosY, iSizX, iSizY-iSizYPercent, indicatorImage, 0, 0, 0, indicatorColor2, isPostGUI)
+			end
+		else
+			if indicatorMode then
+				local sx, sy = eleData.indicatorUVSize[1], eleData.indicatorUVSize[2]
+
+				if not sx or not sy then
+					sx, sy = dgsGetMaterialSize(indicatorImage, iSizX, iSizYPercent)
+				end
+
+				dxDrawImageSection(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, 0, sy*(1-percent), sx, sy*percent, indicatorImage, 0, 0, 0, indicatorColor, isPostGUI)
+			else
+				dxDrawImage(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, indicatorImage, 0, 0, 0, indicatorColor, isPostGUI)
+			end
 		end
-		dxSetShaderValue(circleBG,"progress",bgProgress)
-		dxSetShaderValue(circleBG,"isClockwise",eleData.isClockwise)
-		dxSetShaderValue(circleBG,"indicatorColor",fromcolor(bgColor,true))
-		dxSetShaderValue(circleBG,"thickness",eleData.bgThickness or eleData.thickness)
-		dxSetShaderValue(circleBG,"radius",eleData.bgRadius or eleData.radius)
-		dxSetShaderValue(circleBG,"antiAliased",eleData.antiAliased)
-		dxDrawImage(x,y,w,h,circleBG,eleData.bgRotation or eleData.rotation,0,0,0,isPostGUI)
+	elseif type(indicatorColor) == "table" then
+		dxDrawRectangle(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, indicatorColor1, isPostGUI)
+		dxDrawRectangle(iPosX, iPosY, iSizX, iSizY-iSizYPercent, indicatorColor2, isPostGUI)
+	else
+		dxDrawRectangle(iPosX, iPosY+iSizYPercentRev, iSizX, iSizYPercent, indicatorColor, isPostGUI)
+	end
+end,
+	["ring-round"] = function(source, x, y, w, h, bgImage, bgColor, indicatorImage, indicatorColor, indicatorMode, padding, percent, isPostGUI, hasRT)
+	local eleData = dgsElementData[source]
+	local startPoint, endPoint = 0, percent
+	local bgStartPoint, bgEndPoint = 0, eleData.bgProgress or 1
 
-		dxSetShaderValue(circle,"progress",progress)
-		dxSetShaderValue(circle,"isClockwise",eleData.isClockwise)
-		dxSetShaderValue(circle,"indicatorColor",fromcolor(indicatorColor,true))
-		dxSetShaderValue(circle,"thickness",eleData.thickness)
-		dxSetShaderValue(circle,"radius",eleData.radius)
-		dxSetShaderValue(circle,"antiAliased",eleData.antiAliased)
-		dxDrawImage(x,y,w,h,circle,eleData.rotation,0,0,0,isPostGUI)
-	end,
+	if eleData.isClockwise then
+		bgStartPoint, bgEndPoint = 1-bgEndPoint, 1-bgStartPoint
+		startPoint, endPoint = 1-endPoint, 1-startPoint
+	end
+
+	local circle = eleData.elements.circleShader
+	local circleBG = eleData.elements.circleShaderBG
+
+	dxSetShaderValue(circle, "progress", startPoint, endPoint)
+
+	if startPoint == endPoint then
+		dxSetShaderValue(circle, "indicatorColor", 0, 0, 0, 0)
+	else
+		dxSetShaderValue(circle, "indicatorColor", fromcolor(indicatorColor, true))
+	end
+
+	dxSetShaderValue(circle, "thickness", eleData.thickness)
+	dxSetShaderValue(circle, "radius", eleData.radius)
+	dxSetShaderValue(circle, "antiAliased", eleData.antiAliased)
+
+	dxSetShaderValue(circleBG, "progress", bgStartPoint, bgEndPoint)
+
+	if bgStartPoint == bgEndPoint then
+		dxSetShaderValue(circleBG, "indicatorColor", 0, 0, 0, 0)
+	else
+		dxSetShaderValue(circleBG, "indicatorColor", fromcolor(bgColor, true))
+	end
+
+	dxSetShaderValue(circleBG, "thickness", eleData.bgThickness or eleData.thickness)
+	dxSetShaderValue(circleBG, "radius", eleData.bgRadius or eleData.radius)
+	dxSetShaderValue(circleBG, "antiAliased", eleData.antiAliased)
+
+	dxDrawImage(x, y, w, h, circleBG, eleData.bgRotation or eleData.rotation, 0, 0, 0, isPostGUI)
+
+	dxDrawImage(x, y, w, h, circle, eleData.rotation, 0, 0, 0, isPostGUI)
+end,
+	["ring-plain"] = function(source, x, y, w, h, bgImage, bgColor, indicatorImage, indicatorColor, indicatorMode, padding, percent, isPostGUI, hasRT)
+	local eleData = dgsElementData[source]
+	local circle = eleData.elements.circleShader
+	local circleBG = eleData.elements.circleShaderBG
+	local bgProgress = eleData.bgProgress or 1
+	local progress = percent
+
+	if eleData.isClockwise then
+		bgProgress = 1-bgProgress
+		progress = 1-progress
+	end
+
+	dxSetShaderValue(circleBG, "progress", bgProgress)
+	dxSetShaderValue(circleBG, "isClockwise", eleData.isClockwise)
+	dxSetShaderValue(circleBG, "indicatorColor", fromcolor(bgColor, true))
+	dxSetShaderValue(circleBG, "thickness", eleData.bgThickness or eleData.thickness)
+	dxSetShaderValue(circleBG, "radius", eleData.bgRadius or eleData.radius)
+	dxSetShaderValue(circleBG, "antiAliased", eleData.antiAliased)
+
+	dxDrawImage(x, y, w, h, circleBG, eleData.bgRotation or eleData.rotation, 0, 0, 0, isPostGUI)
+
+	dxSetShaderValue(circle, "progress", progress)
+	dxSetShaderValue(circle, "isClockwise", eleData.isClockwise)
+	dxSetShaderValue(circle, "indicatorColor", fromcolor(indicatorColor, true))
+	dxSetShaderValue(circle, "thickness", eleData.thickness)
+	dxSetShaderValue(circle, "radius", eleData.radius)
+	dxSetShaderValue(circle, "antiAliased", eleData.antiAliased)
+
+	dxDrawImage(x, y, w, h, circle, eleData.rotation, 0, 0, 0, isPostGUI)
+end,
 }
 
 function dgsCreateProgressBar(...)
 	local sRes = sourceResource or resource
-	local x,y,w,h,relative,parent,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode
-	if select("#",...) == 1 and type(select(1,...)) == "table" then
+	local x, y, w, h, relative, parent, bgImage, bgColor, indicatorImage, indicatorColor, indicatorMode
+
+	if select("#", ...) == 1 and type(select(1, ...)) == "table" then
 		local argTable = ...
 		x = argTable.x or argTable[1]
 		y = argTable.y or argTable[2]
@@ -270,65 +313,95 @@ function dgsCreateProgressBar(...)
 		indicatorColor = argTable.indicatorColor or argTable[10]
 		indicatorMode = argTable.indicatorMode or argTable[11]
 	else
-		x,y,w,h,relative,parent,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode = ...
+		x, y, w, h, relative, parent, bgImage, bgColor, indicatorImage, indicatorColor, indicatorMode = ...
 	end
-	if not(type(x) == "number") then error(dgsGenAsrt(x,"dgsCreateProgressBar",1,"number")) end
-	if not(type(y) == "number") then error(dgsGenAsrt(y,"dgsCreateProgressBar",2,"number")) end
-	if not(type(w) == "number") then error(dgsGenAsrt(w,"dgsCreateProgressBar",3,"number")) end
-	if not(type(h) == "number") then error(dgsGenAsrt(h,"dgsCreateProgressBar",4,"number")) end
+
+	if not(type(x) == "number") then
+		error(dgsGenAsrt(x, "dgsCreateProgressBar", 1, "number"))
+	end
+
+	if not(type(y) == "number") then
+		error(dgsGenAsrt(y, "dgsCreateProgressBar", 2, "number"))
+	end
+
+	if not(type(w) == "number") then
+		error(dgsGenAsrt(w, "dgsCreateProgressBar", 3, "number"))
+	end
+
+	if not(type(h) == "number") then
+		error(dgsGenAsrt(h, "dgsCreateProgressBar", 4, "number"))
+	end
+
 	if isElement(bgImage) then
-		if not isMaterial(bgImage) then error(dgsGenAsrt(bgImage,"dgsCreateProgressBar",7,"texture")) end
+		if not isMaterial(bgImage) then
+			error(dgsGenAsrt(bgImage, "dgsCreateProgressBar", 7, "texture"))
+		end
 	end
+
 	if isElement(indicatorImage) then
-		if not isMaterial(indicatorImage) then error(dgsGenAsrt(indicatorImage,"dgsCreateProgressBar",9,"material")) end
+		if not isMaterial(indicatorImage) then
+			error(dgsGenAsrt(indicatorImage, "dgsCreateProgressBar", 9, "material"))
+		end
 	end
+
 	local progressbar = createElement("dgs-dxprogressbar")
-	dgsSetType(progressbar,"dgs-dxprogressbar")
+	dgsSetType(progressbar, "dgs-dxprogressbar")
 
 	local res = sRes ~= resource and sRes or "global"
 	local style = styleManager.styles[res]
 	local using = style.using
+
 	style = style.loaded[using]
 
 	local sStyle = style.progressbar
 	dgsElementData[progressbar] = {
 		renderBuffer = {},
 		bgColor = bgColor or sStyle.bgColor,
-		bgImage = bgImage or dgsCreateTextureFromStyle(using,res,sStyle.bgImage),
+		bgImage = bgImage or dgsCreateTextureFromStyle(using, res, sStyle.bgImage),
 		indicatorColor = indicatorColor or sStyle.indicatorColor,
-		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(using,res,sStyle.indicatorImage),
+		indicatorImage = indicatorImage or dgsCreateTextureFromStyle(using, res, sStyle.indicatorImage),
 		indicatorMode = indicatorMode and true or false,
 		padding = sStyle.padding,
 		style = "normal-horizontal",
 		progress = 0,
-		map = {0,100},
+		map = {0, 100},
 	}
-	dgsSetParent(progressbar,parent,true,true)
-	calculateGuiPositionSize(progressbar,x,y,relative or false,w,h,relative or false,true)
-	dgsApplyGeneralProperties(progressbar,sRes)
-	local mx,my = false,false
+	dgsSetParent(progressbar, parent, true, true)
+	calculateGuiPositionSize(progressbar, x, y, relative or false, w, h, relative or false, true)
+	dgsApplyGeneralProperties(progressbar, sRes)
+	local mx, my = false, false
+
 	if isElement(indicatorImage) then
-		mx,my = dxGetMaterialSize(indicatorImage)
+		mx, my = dxGetMaterialSize(indicatorImage)
 	end
-	dgsElementData[progressbar].indicatorUVSize = {mx,my}
-	onDGSElementCreate(progressbar,sRes)
+
+	dgsElementData[progressbar].indicatorUVSize = {mx, my}
+	onDGSElementCreate(progressbar, sRes)
+
 	return progressbar
 end
 
-function dgsProgressBarSetStyle(progressbar,style,settingTable)
+function dgsProgressBarSetStyle(progressbar, style, settingTable)
 	if type(progressbar) == "table" then
-		for i=1,#progressbar do
-			dgsProgressBarSetStyle(progressbar[i],style,settingTable)
+		for i = 1, #progressbar do
+			dgsProgressBarSetStyle(progressbar[i], style, settingTable)
 		end
+
 		return true
 	end
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetStyle",1,"dgs-dxprogressbar")) end
+
+	if not dgsIsType(progressbar, "dgs-dxprogressbar") then
+		error(dgsGenAsrt(progressbar, "dgsProgressBarSetStyle", 1, "dgs-dxprogressbar"))
+	end
+
 	if ProgressBarStyle[style] then
-		dgsSetData(progressbar,"style",style)
+		dgsSetData(progressbar, "style", style)
 		local eleData = dgsElementData[progressbar]
-		for k,v in pairs(eleData.elements or {}) do
+
+		for k, v in pairs(eleData.elements or {}) do
 			destroyElement(v)
 		end
+
 		if style == "ring-round" then
 			eleData.elements = {}
 			eleData.elements.circleShader = dxCreateShader(ProgressBarShaders["ring-round"])
@@ -356,52 +429,87 @@ function dgsProgressBarSetStyle(progressbar,style,settingTable)
 			eleData.bgThickness = nil
 			eleData.bgProgress = nil
 		end
-		for k,v in pairs(settingTable or {}) do
+
+		for k, v in pairs(settingTable or {}) do
 			dgsElementData[progressbar][k] = v
 		end
+
 		return true
 	end
+
 	return false
 end
 
 function dgsProgressBarGetStyle(progressbar)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetStyle",1,"dgs-dxprogressbar")) end
+	if not dgsIsType(progressbar, "dgs-dxprogressbar") then
+		error(dgsGenAsrt(progressbar, "dgsProgressBarGetStyle", 1, "dgs-dxprogressbar"))
+	end
+
 	return dgsElementData[progressbar].style
 end
 
-function dgsProgressBarGetProgress(progressbar,isAbsolute)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetProgress",1,"dgs-dxprogressbar")) end
+function dgsProgressBarGetProgress(progressbar, isAbsolute)
+	if not dgsIsType(progressbar, "dgs-dxprogressbar") then
+		error(dgsGenAsrt(progressbar, "dgsProgressBarGetProgress", 1, "dgs-dxprogressbar"))
+	end
+
 	local progress = dgsElementData[progressbar].progress
 	local scaler = dgsElementData[progressbar].map
+
 	if not isAbsolute then
 		progress = progress/100*(scaler[2]-scaler[1])+scaler[1]
 	end
+
 	return progress
 end
 
-function dgsProgressBarSetProgress(progressbar,progress,isAbsolute)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetProgress",1,"dgs-dxprogressbar")) end
+function dgsProgressBarSetProgress(progressbar, progress, isAbsolute)
+	if not dgsIsType(progressbar, "dgs-dxprogressbar") then
+		error(dgsGenAsrt(progressbar, "dgsProgressBarSetProgress", 1, "dgs-dxprogressbar"))
+	end
+
 	local scaler = dgsElementData[progressbar].map
-	if progress < 0 then progress = 0 end
-	if progress > 100 then progress = 100 end
+
+	if progress < 0 then
+		progress = 0
+	end
+
+	if progress > 100 then
+		progress = 100
+	end
+
 	if not isAbsolute then
 		progress = (progress-scaler[1])/(scaler[2]-scaler[1])*100
 	end
-	if progress < 0 then progress = 0 end
-	if progress > 100 then progress = 100 end
-	if dgsElementData[progressbar].progress ~= progress then
-		dgsSetData(progressbar,"progress",progress)
+
+	if progress < 0 then
+		progress = 0
 	end
+
+	if progress > 100 then
+		progress = 100
+	end
+
+	if dgsElementData[progressbar].progress ~= progress then
+		dgsSetData(progressbar, "progress", progress)
+	end
+
 	return true
 end
 
-function dgsProgressBarSetMode(progressbar,mode)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarSetMode",1,"dgs-dxprogressbar")) end
-	return dgsSetData(progressbar,"indicatorMode",mode and true or false)
+function dgsProgressBarSetMode(progressbar, mode)
+	if not dgsIsType(progressbar, "dgs-dxprogressbar") then
+		error(dgsGenAsrt(progressbar, "dgsProgressBarSetMode", 1, "dgs-dxprogressbar"))
+	end
+
+	return dgsSetData(progressbar, "indicatorMode", mode and true or false)
 end
 
 function dgsProgressBarGetMode(progressbar)
-	if not dgsIsType(progressbar,"dgs-dxprogressbar") then error(dgsGenAsrt(progressbar,"dgsProgressBarGetMode",1,"dgs-dxprogressbar")) end
+	if not dgsIsType(progressbar, "dgs-dxprogressbar") then
+		error(dgsGenAsrt(progressbar, "dgsProgressBarGetMode", 1, "dgs-dxprogressbar"))
+	end
+
 	return dgsElementData[progressbar].indicatorMode
 end
 
@@ -569,26 +677,31 @@ technique circleTechnique{
 -----------------------PropertyListener-------------------------
 ----------------------------------------------------------------
 dgsOnPropertyChange["dgs-dxprogressbar"] = {
-	progress = function(dgsEle,key,value,oldValue)
-		dgsTriggerEvent("onDgsProgressBarChange",dgsEle,value,oldValue)
-	end
+	progress = function(dgsEle, key, value, oldValue)
+	dgsTriggerEvent("onDgsProgressBarChange", dgsEle, value, oldValue)
+end
 }
 ----------------------------------------------------------------
 --------------------------Renderer------------------------------
 ----------------------------------------------------------------
-dgsRenderer["dgs-dxprogressbar"] = function(source,x,y,w,h,mx,my,cx,cy,enabledInherited,enabledSelf,eleData,parentAlpha,rendSet,rndtgt)
+dgsRenderer["dgs-dxprogressbar"] = function(source, x, y, w, h, mx, my, cx, cy, enabledInherited, enabledSelf, eleData, parentAlpha, rendSet, rndtgt)
 	local bgImage = eleData.bgImage
-	local bgColor = applyColorAlpha(eleData.bgColor,parentAlpha)
-	local indicatorImage,indicatorColor = eleData.indicatorImage,eleData.indicatorColor
+	local bgColor = applyColorAlpha(eleData.bgColor, parentAlpha)
+
+	local indicatorImage, indicatorColor = eleData.indicatorImage, eleData.indicatorColor
+
 	if type(indicatorColor) == "table" then
-		indicatorColor = {applyColorAlpha(indicatorColor[1],parentAlpha),applyColorAlpha(indicatorColor[2],parentAlpha)}
+		indicatorColor = {applyColorAlpha(indicatorColor[1], parentAlpha), applyColorAlpha(indicatorColor[2], parentAlpha)}
 	else
-		indicatorColor = applyColorAlpha(indicatorColor,parentAlpha)
+		indicatorColor = applyColorAlpha(indicatorColor, parentAlpha)
 	end
+
 	local indicatorMode = eleData.indicatorMode
 	local padding = eleData.padding
 	local percent = eleData.progressReverse and 1-eleData.progress*0.01 or eleData.progress*0.01
+
 	dxSetBlendMode("blend")
-	ProgressBarStyle[eleData.style](source,x,y,w,h,bgImage,bgColor,indicatorImage,indicatorColor,indicatorMode,padding,percent,rendSet,rndtgt)
-	return rndtgt,false,mx,my,0,0
+	ProgressBarStyle[eleData.style](source, x, y, w, h, bgImage, bgColor, indicatorImage, indicatorColor, indicatorMode, padding, percent, rendSet, rndtgt)
+
+	return rndtgt, false, mx, my, 0, 0
 end
